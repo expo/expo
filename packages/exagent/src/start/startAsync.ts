@@ -1,12 +1,29 @@
 import { holdDevServerLockAsync } from '../devLock';
+import type { ResolvedDevServerPort } from '../devLock/port';
 import { dependsOnDevClientSync, reportFollowUps } from '../followups';
 import { autoSyncSkillsAsync } from '../skills/skillsAsync';
-import { runExpoAsync } from '../utils/expoCli';
+import { CommandError } from '../utils/errors';
+import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
+import type { SubprocessOutput } from '../utils/subprocess';
 import { resolveStartFollowUps } from './followUps';
 import type { StartOptions } from './resolveOptions';
 
 /** How long to wait after spawning `expo start` before syncing skills. */
 export const SKILLS_SYNC_IDLE_DELAY_MS = 3000;
+
+/** What one dev-server run amounts to, for a caller that has to report on it. */
+export interface DevServerRun {
+  /** The exit code of the subprocess. */
+  exitCode: number;
+  /** What it printed, empty in `inherit` mode where this process never saw it. */
+  stdout: string;
+  stderr: string;
+  /**
+   * The port the dev server ended up on, as the lock resolved it, or null when the lock could not
+   * run at all. `source: 'default'` means nothing reported one — there is no port to point at.
+   */
+  port: ResolvedDevServerPort | null;
+}
 
 /**
  * Run `expo start` as a subprocess and sync skills a few seconds later.
@@ -29,9 +46,13 @@ export async function startAsync(projectRoot: string, options: StartOptions): Pr
     })
   );
 
-  return runDevServerAsync(projectRoot, ['start', ...options.expoArgs], {
+  // `exagent start` hands the terminal over untouched, whatever this process' streams are: it is
+  // the "forward everything to `expo start`" command, and capturing its output would take the
+  // bundler's interactive keypresses away from a person who has one.
+  const run = await runDevServerAsync(projectRoot, ['start', ...options.expoArgs], {
     agentSkills: options.agentSkills,
   });
+  return run.exitCode;
 }
 
 /**
@@ -51,12 +72,12 @@ export async function startAsync(projectRoot: string, options: StartOptions): Pr
 export async function runDevServerAsync(
   projectRoot: string,
   args: string[],
-  { agentSkills }: { agentSkills: boolean }
-): Promise<number> {
+  { agentSkills, output = 'inherit' }: { agentSkills: boolean; output?: SubprocessOutput }
+): Promise<DevServerRun> {
   let timer: NodeJS.Timeout | undefined;
   if (agentSkills) {
     timer = setTimeout(() => {
-      autoSyncSkillsAsync(projectRoot).catch(() => {});
+      autoSyncSkillsAsync(projectRoot, { silent: output === 'capture' }).catch(() => {});
     }, SKILLS_SYNC_IDLE_DELAY_MS);
     // Don't let a pending sync hold the CLI open.
     timer.unref?.();
@@ -68,7 +89,8 @@ export async function runDevServerAsync(
   // server is the command.
   const startedAt = Date.now();
   let running = true;
-  const run = runExpoAsync(projectRoot, args).finally(() => {
+  let port: ResolvedDevServerPort | null = null;
+  const run = spawnDevServerAsync(projectRoot, args, output).finally(() => {
     running = false;
   });
   const lock = holdDevServerLockAsync(projectRoot, args, {
@@ -80,12 +102,48 @@ export async function runDevServerAsync(
       () => undefined,
       () => undefined
     ),
+    // What the dev server itself said, which is the only thing a caller may claim about it.
+    onResolved: (resolved) => {
+      port = resolved;
+    },
   });
 
   try {
-    return await run;
+    const result = await run;
+    // Awaited here, not only in the `finally`: the lock is what resolves the port, and a caller
+    // that has to report where the dev server was needs that answer to be part of the result
+    // rather than to arrive after it. `holdDevServerLockAsync` never rejects.
+    await lock;
+    return { ...result, port };
   } finally {
     clearTimeout(timer);
     (await lock)?.release();
   }
+}
+
+/**
+ * Spawn the dev server, either handing the terminal over or keeping what it printed.
+ *
+ * `inherit` is what a person watching gets: the bundler's own output, its keypress menu, and its
+ * signals. Everything else is a run nobody is watching — an agent, a log file, CI — where the
+ * output has to be *kept* instead, because a dev server that stops on a question the Expo CLI
+ * asked says so on a stream that would otherwise go nowhere (llp/0010 §Needs-human protocol).
+ */
+async function spawnDevServerAsync(
+  projectRoot: string,
+  args: string[],
+  output: SubprocessOutput
+): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  if (output === 'inherit') {
+    return { exitCode: await runExpoAsync(projectRoot, args), stdout: '', stderr: '' };
+  }
+
+  const { result } = await spawnExpoAsync(projectRoot, args, { output });
+  if (result.spawnError) {
+    throw new CommandError(
+      'EXPO_CLI_NOT_FOUND',
+      `Could not run the Expo CLI (${result.spawnError.code ?? result.spawnError.message}), so no dev server was started. Install Expo in the project with "npm install expo", then run this command again.`
+    );
+  }
+  return { exitCode: result.exitCode ?? 1, stdout: result.stdout, stderr: result.stderr };
 }

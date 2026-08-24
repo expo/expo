@@ -8,8 +8,9 @@ import { emitStartPlan } from '../../plan/emit';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../../plan/lastBuild';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
-import { runDevServerAsync } from '../../start/startAsync';
-import { runExpoAsync } from '../../utils/expoCli';
+import { runDevServerAsync, type DevServerRun } from '../../start/startAsync';
+import { runExpoAsync, spawnExpoAsync } from '../../utils/expoCli';
+import { isInteractive } from '../../utils/interactive';
 import { confirmPlanAsync } from '../confirmPlan';
 import { devAsync } from '../devAsync';
 import { resolveDevOptions } from '../resolveOptions';
@@ -24,11 +25,35 @@ jest.mock('../../plan/lastBuild', () => ({
   recordLastBuildFingerprint: jest.fn(),
 }));
 jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
-jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
+jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn(), spawnExpoAsync: jest.fn() }));
 jest.mock('../../start/startAsync', () => ({ runDevServerAsync: jest.fn() }));
+// A person at a terminal by default, which is the path these tests were written for: the plan's
+// steps inherit the terminal, and nothing about their output is this command's business. The
+// runs nobody is watching get their own block at the end of the file.
+jest.mock('../../utils/interactive', () => ({ isInteractive: jest.fn(() => true) }));
+// The follow-ups of a run are reported rather than embedded in the emitted plan, so this is where
+// a test reads them. The real reporter still runs, so the `Suggested next:` section is real too.
+jest.mock('../../followups', () => {
+  const actual = jest.requireActual('../../followups');
+  return {
+    ...actual,
+    reportFollowUps: jest.fn((command: string, followups: any[], options: any) => {
+      mockReported.push(followups);
+      return actual.reportFollowUps(command, followups, options);
+    }),
+  };
+});
+
+/** Every list of follow-ups the run reported, in order. */
+const mockReported: any[][] = [];
 
 const projectRoot = '/project';
 const fingerprintHash = 'abc123def4567890';
+
+/** What one dev-server run answers with, as `runDevServerAsync` reports it. */
+function devServerRun(overrides: Partial<DevServerRun> = {}): DevServerRun {
+  return { exitCode: 0, stdout: '', stderr: '', port: null, ...overrides };
+}
 const realPlatform = process.platform;
 
 function mockPlatform(value: typeof process.platform) {
@@ -62,10 +87,9 @@ function mockStaleDevClientState(overrides: Partial<ProjectState> = {}): Project
   });
 }
 
-/** The follow-ups the run handed to the plan emitter, which are the ones it reported. */
+/** The follow-ups the run reported, which are the ones a caller sees. */
 function emittedFollowUps(): FollowUp[] {
-  const call = jest.mocked(emitStartPlan).mock.calls.at(-1);
-  return call?.[1].followups ?? [];
+  return mockReported.at(-1) ?? [];
 }
 
 function emittedFollowUpIds(): string[] {
@@ -85,9 +109,15 @@ function mockLanAddress(address: string | null) {
 
 beforeEach(() => {
   vol.reset();
+  mockReported.length = 0;
   jest.mocked(readLastBuildFingerprints).mockReturnValue({});
   jest.mocked(runExpoAsync).mockResolvedValue(0);
-  jest.mocked(runDevServerAsync).mockResolvedValue(0);
+  jest.mocked(isInteractive).mockReturnValue(true);
+  jest.mocked(spawnExpoAsync).mockResolvedValue({
+    cli: { command: 'expo', args: [] },
+    result: { exitCode: 0, stdout: '', stderr: '' },
+  });
+  jest.mocked(runDevServerAsync).mockResolvedValue(devServerRun());
   jest.mocked(confirmPlanAsync).mockResolvedValue(true);
   mockLanAddress('192.168.1.5');
 });
@@ -135,11 +165,12 @@ describe(devAsync, () => {
 
       expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
         mode: 'smart',
-        json: false,
-        followups: expect.any(Array),
+        print: 'text',
+        followups: [],
       });
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
         agentSkills: true,
+        output: 'inherit',
       });
     });
 
@@ -151,6 +182,7 @@ describe(devAsync, () => {
       expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--platform', 'ios']);
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:ios'], {
         agentSkills: true,
+        output: 'inherit',
       });
     });
   });
@@ -204,8 +236,8 @@ describe(devAsync, () => {
 
       expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
         mode: 'smart',
-        json: false,
-        followups: expect.any(Array),
+        print: 'text',
+        followups: [],
       });
     });
 
@@ -217,7 +249,7 @@ describe(devAsync, () => {
       expect(runDevServerAsync).toHaveBeenCalledWith(
         projectRoot,
         ['start', '--go', '--port', '8082'],
-        { agentSkills: true }
+        { agentSkills: true, output: 'inherit' }
       );
       expect(runExpoAsync).not.toHaveBeenCalled();
     });
@@ -229,6 +261,7 @@ describe(devAsync, () => {
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
         agentSkills: false,
+        output: 'inherit',
       });
     });
 
@@ -239,6 +272,7 @@ describe(devAsync, () => {
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--web'], {
         agentSkills: true,
+        output: 'inherit',
       });
     });
 
@@ -251,6 +285,7 @@ describe(devAsync, () => {
       expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--platform', 'ios']);
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:ios'], {
         agentSkills: true,
+        output: 'inherit',
       });
     });
 
@@ -309,7 +344,7 @@ describe(devAsync, () => {
 
     it(`should not record a fingerprint of a build that failed`, async () => {
       mockStaleDevClientState();
-      jest.mocked(runDevServerAsync).mockResolvedValue(1);
+      jest.mocked(runDevServerAsync).mockResolvedValue(devServerRun({ exitCode: 1 }));
 
       await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(1);
 
@@ -332,14 +367,14 @@ describe(devAsync, () => {
 
       expect(emitStartPlan).toHaveBeenCalledWith(
         expect.objectContaining({ rule: 'dev-client-fresh' }),
-        { mode: 'smart', json: false, followups: expect.any(Array) }
+        { mode: 'smart', print: 'text', followups: [] }
       );
       expect(runExpoAsync).not.toHaveBeenCalled();
       // `--ios` is an `expo start` option, so it reaches the dev server it asked for.
       expect(runDevServerAsync).toHaveBeenCalledWith(
         projectRoot,
         ['start', '--dev-client', '--ios'],
-        { agentSkills: true }
+        { agentSkills: true, output: 'inherit' }
       );
     });
 
@@ -351,6 +386,7 @@ describe(devAsync, () => {
       expect(Log.warn).toHaveBeenCalledWith(expect.stringMatching(/--port 8082/));
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:ios'], {
         agentSkills: true,
+        output: 'inherit',
       });
     });
 
@@ -390,6 +426,7 @@ describe(devAsync, () => {
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:android'], {
         agentSkills: true,
+        output: 'inherit',
       });
     });
   });
@@ -483,6 +520,7 @@ describe(devAsync, () => {
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
         agentSkills: true,
+        output: 'inherit',
       });
     });
 
@@ -492,6 +530,126 @@ describe(devAsync, () => {
       await devAsync(projectRoot, resolveDevOptions(['--plan', '--ios']));
 
       expect(emittedFollowUps().length).toBeLessThanOrEqual(3);
+    });
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope, §Needs-human protocol
+  // The run nobody is watching. `exagent dev --yes` is the documented non-interactive entry point,
+  // and on a busy port it used to start nothing, print unparseable stdout, and tell its caller to
+  // open another project's app [observed — friction run, 2026-08-23].
+  describe('a run with no terminal', () => {
+    /** The non-interactive stop of the Expo CLI, verbatim. */
+    const NEEDS_INPUT = [
+      "Input is required, but 'npx expo' is in non-interactive mode.",
+      'Required input:',
+      '> Use port 8082 instead?',
+    ].join('\n');
+
+    beforeEach(() => {
+      jest.mocked(isInteractive).mockReturnValue(false);
+    });
+
+    it(`should keep what the steps print, so a stop on a question can be recognised`, async () => {
+      mockProjectState();
+
+      await devAsync(projectRoot, resolveDevOptions([]));
+
+      expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
+        agentSkills: true,
+        output: 'tee',
+      });
+    });
+
+    it(`should print nothing on stdout before the run in --json mode`, async () => {
+      mockProjectState();
+
+      await devAsync(projectRoot, resolveDevOptions(['--json']));
+
+      expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
+        mode: 'smart',
+        print: 'none',
+        followups: [],
+      });
+      expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
+        agentSkills: true,
+        output: 'capture',
+      });
+    });
+
+    it(`should print exactly one JSON object, when the run has ended`, async () => {
+      mockProjectState();
+      jest
+        .mocked(runDevServerAsync)
+        .mockResolvedValue(devServerRun({ port: { port: 8082, source: 'log' } }));
+
+      await devAsync(projectRoot, resolveDevOptions(['--json']));
+
+      const printed = jest.mocked(Log.log).mock.calls.map(([line]) => line);
+      expect(printed).toHaveLength(1);
+      expect(JSON.parse(printed[0]!)).toMatchObject({ rule: 'expo-go', target: 'expo-go' });
+    });
+
+    // Exit 7 is the definition of this stop: no re-run of the same command gets past a question.
+    it(`should hand a stop on a question back to a person`, async () => {
+      mockProjectState();
+      jest
+        .mocked(runDevServerAsync)
+        .mockResolvedValue(devServerRun({ exitCode: 1, stderr: NEEDS_INPUT }));
+
+      await expect(devAsync(projectRoot, resolveDevOptions(['--yes', '--json']))).rejects.toMatchObject({
+        isNeedsHuman: true,
+        exitCode: 7,
+        needsHuman: { scenario: 'expo-prompt', detectedBy: 'exit-signature' },
+      });
+    });
+
+    it(`should name --port as the way to answer the port question up front`, async () => {
+      mockProjectState();
+      jest
+        .mocked(runDevServerAsync)
+        .mockResolvedValue(devServerRun({ exitCode: 1, stderr: NEEDS_INPUT }));
+
+      await expect(
+        devAsync(projectRoot, resolveDevOptions(['--yes']))
+      ).rejects.toThrow(/npx exagent dev --port 8082/);
+    });
+
+    it(`should forward an ordinary failure as it always did`, async () => {
+      mockProjectState();
+      jest.mocked(runDevServerAsync).mockResolvedValue(devServerRun({ exitCode: 3 }));
+
+      await expect(devAsync(projectRoot, resolveDevOptions([]))).resolves.toBe(3);
+    });
+
+    describe('the follow-ups of a run', () => {
+      it(`should name the port the dev server reported, not the one it was not given`, async () => {
+        mockProjectState();
+        jest
+          .mocked(runDevServerAsync)
+          .mockResolvedValue(devServerRun({ port: { port: 8099, source: 'log' } }));
+
+        await devAsync(projectRoot, resolveDevOptions(['--json']));
+
+        expect(emittedFollowUps()[0]!.command).toBe('exp://192.168.1.5:8099');
+      });
+
+      // The bug this exists for: nothing reported a port, so the URL was built on the assumption
+      // that 8081 was free — and it was another project's dev server.
+      it(`should name no URL when nothing reported a port`, async () => {
+        mockProjectState();
+        jest
+          .mocked(runDevServerAsync)
+          .mockResolvedValue(
+            devServerRun({ exitCode: 1, port: { port: 8081, source: 'default' } })
+          );
+
+        await devAsync(projectRoot, resolveDevOptions(['--json']));
+
+        expect(emittedFollowUpIds()).toContain('dev-server-port-unknown');
+        expect(emittedFollowUps().map((followup) => followup.command)).not.toContain(
+          'exp://192.168.1.5:8081'
+        );
+      });
     });
   });
 });

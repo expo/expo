@@ -94,6 +94,23 @@ describe(readAuthPreflightAsync, () => {
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({ loggedIn: null });
   });
 
+  // The difference that matters: a binary that is not the EAS CLI exits non-zero exactly like a
+  // signed-out one, and calling that "signed out" would stop a command that had every right to
+  // run and hand the user a login they do not need.
+  it('answers "unknown" when the binary under that name is not the CLI', async () => {
+    withProjectEas();
+    mockWhoami({
+      exitCode: 101,
+      stderr: 'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   2: tuft::main\n',
+    });
+
+    await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
+      loggedIn: null,
+      user: null,
+      source: null,
+    });
+  });
+
   it('answers "unknown" when the CLI could not be started', async () => {
     withProjectEas();
     mockWhoami({

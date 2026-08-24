@@ -1,14 +1,18 @@
 import { checkpointBeforeAsync } from '../checkpoint/integration';
+import type { CheckpointResult } from '../checkpoint/types';
 import { buildInstallFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
+import type { FollowUp } from '../followups/types';
+import * as Log from '../log';
 import type { InstallImpactReport } from '../project/types';
 import {
   autoSyncSkillsAsync,
   listSkillPackagesAsync,
   printSkillsForAgentAsync,
 } from '../skills/skillsAsync';
-import { runExpoAsync } from '../utils/expoCli';
+import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
 import { reportInstallImpactAsync } from './impactReport';
 import type { InstallPlan } from './resolveOptions';
+import type { InstallReport } from './types';
 
 /**
  * Run `expo install` as a subprocess, then report what it changed and link the skills of what it
@@ -22,59 +26,141 @@ import type { InstallPlan } from './resolveOptions';
  */
 export async function installAsync(projectRoot: string, plan: InstallPlan): Promise<number> {
   // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints: taken before the mutating phase, so
-  // `exagent checkpoint:undo` puts back the manifest and lockfile `expo install` is about to rewrite.
-  await checkpointBeforeAsync(projectRoot, {
+  // `exagent checkpoint:undo` puts back the manifest and lockfile `expo install` is about to
+  // rewrite. Every argument was checked in `resolveInstallPlan` before this ran: a rejected
+  // invocation must not leave behind a snapshot of an install that never happened.
+  const checkpoint = await checkpointBeforeAsync(projectRoot, {
     label: 'exagent install',
     enabled: plan.checkpoint,
+    // `--json` owns stdout, and the line naming the snapshot is not the object a caller parses.
+    silent: plan.json,
   });
 
-  const exitCode = await runExpoAsync(projectRoot, ['install', ...plan.expoArgs]);
+  const { exitCode, checkPayload } = await runInstallAsync(projectRoot, plan);
   if (exitCode !== 0) {
+    // Nothing was installed, so there is nothing to classify and nothing to link — but a caller
+    // that asked for JSON still gets one object, the way a successful run does.
+    await reportAsync(projectRoot, plan, { exitCode, checkpoint, impact: [], checkPayload });
     return exitCode;
   }
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §Sub-features — post-install impact
-  const reports = plan.impact ? await reportInstallImpactAsync(projectRoot, plan.packages) : [];
+  const impact = plan.impact
+    ? await reportInstallImpactAsync(projectRoot, plan.packages, { silent: plan.json })
+    : [];
 
-  if (plan.syncScope === 'none') {
-    await reportInstallFollowUpsAsync(projectRoot, plan, reports);
-    return exitCode;
+  if (plan.syncScope !== 'none') {
+    await autoSyncSkillsAsync(projectRoot, {
+      ...(plan.syncScope === 'packages' ? { packages: plan.packages } : null),
+      silent: plan.json,
+    });
+
+    // Dumping skills only makes sense for a known set of new packages, so a full sync
+    // (`expo install --fix`, a bare `expo install`) prints nothing.
+    if (plan.skillContext && plan.syncScope === 'packages') {
+      await printSkillsForAgentAsync(projectRoot, { packages: plan.packages });
+    }
   }
 
-  await autoSyncSkillsAsync(
-    projectRoot,
-    plan.syncScope === 'packages' ? { packages: plan.packages } : {}
-  );
-
-  // Dumping skills only makes sense for a known set of new packages, so a full sync
-  // (`expo install --fix`, a bare `expo install`) prints nothing.
-  if (plan.skillContext && plan.syncScope === 'packages') {
-    await printSkillsForAgentAsync(projectRoot, { packages: plan.packages });
-  }
-
-  await reportInstallFollowUpsAsync(projectRoot, plan, reports);
+  await reportAsync(projectRoot, plan, { exitCode, checkpoint, impact, checkPayload });
   return exitCode;
 }
 
 /**
- * Say what the install left to do: rebuild or reload, and which skill to read.
+ * Run `expo install`, and read the `--check` report out of it when there is one.
+ *
+ * The subprocess inherits this terminal for a human run, because watching an install is the point
+ * of watching one. In `--json` mode it is captured instead: stdout belongs to the one object this
+ * command prints, and a package manager writing into the middle of it is exactly what makes such
+ * output unparseable.
+ */
+async function runInstallAsync(
+  projectRoot: string,
+  plan: InstallPlan
+): Promise<{ exitCode: number; checkPayload: unknown }> {
+  const args = ['install', ...plan.expoArgs];
+
+  if (!plan.json) {
+    return { exitCode: await runExpoAsync(projectRoot, args), checkPayload: null };
+  }
+
+  const { result } = await spawnExpoAsync(projectRoot, args, { output: 'capture' });
+  // What the tool printed is for a person, not for the caller's parser, so it goes to stderr. A
+  // `--check` run is the exception: there its stdout *is* the answer, and it travels in `check`.
+  const printed = `${result.stdout}${result.stderr}`.trim();
+  if (printed && !plan.check) {
+    Log.error(printed);
+  }
+  return {
+    exitCode: result.exitCode ?? 1,
+    checkPayload: plan.check ? parseJsonOrNull(result.stdout) : null,
+  };
+}
+
+/** The last JSON value on a stream, or null when it holds none. */
+function parseJsonOrNull(stdout: string): unknown {
+  const line = stdout
+    .split('\n')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .findLast((entry) => entry.startsWith('{') || entry.startsWith('['));
+  if (!line) {
+    return null;
+  }
+  try {
+    return JSON.parse(line);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Print what the run amounts to: the JSON report for a caller, and the next actions either way.
  *
  * @ref llp/0009-smart-followups.rfc.md §Examples per command — `install`. The classification the
  * impact report already made is the whole input, so no probe runs twice.
  */
-async function reportInstallFollowUpsAsync(
+async function reportAsync(
   projectRoot: string,
   plan: InstallPlan,
-  reports: InstallImpactReport[]
+  {
+    exitCode,
+    checkpoint,
+    impact,
+    checkPayload,
+  }: {
+    exitCode: number;
+    checkpoint: CheckpointResult;
+    impact: InstallImpactReport[];
+    checkPayload: unknown;
+  }
 ): Promise<void> {
-  if (!followUpsEnabled(plan.followups) || !reports.length) {
-    return;
+  // Only when something reads it: the follow-up wording, or the JSON report. Walking the
+  // dependency graph for an answer nobody prints is work an install does not owe anyone.
+  const wanted = followUpsEnabled(plan.followups) && impact.length > 0;
+  const skillPackages =
+    plan.agentSkills && exitCode === 0 && (plan.json || wanted)
+      ? await listSkillPackagesAsync(projectRoot, plan.packages)
+      : [];
+
+  const followups: FollowUp[] = wanted
+    ? buildInstallFollowUps({ reports: impact, packagesWithSkills: skillPackages })
+    : [];
+
+  if (plan.json) {
+    const report: InstallReport = {
+      projectRoot,
+      packages: plan.packages,
+      installed: exitCode === 0 && !plan.check,
+      exitCode,
+      impact,
+      checkpoint: checkpoint.record ? { id: checkpoint.record.id, files: checkpoint.files } : null,
+      skillPackages,
+      check: checkPayload,
+      followups,
+    };
+    Log.log(JSON.stringify(report, null, 2));
   }
 
-  let packagesWithSkills: string[] = [];
-  if (plan.agentSkills) {
-    packagesWithSkills = await listSkillPackagesAsync(projectRoot, plan.packages);
-  }
-
-  reportFollowUps('install', buildInstallFollowUps({ reports, packagesWithSkills }));
+  reportFollowUps('install', followups, { json: plan.json });
 }

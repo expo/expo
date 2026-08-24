@@ -199,7 +199,7 @@ export async function cleanSkillsAsync(
  */
 export async function autoSyncSkillsAsync(
   projectRoot: string,
-  options: { packages?: string[] } = {}
+  options: { packages?: string[]; silent?: boolean } = {}
 ): Promise<void> {
   try {
     const persistedIds = await getPersistedAgentIdsAsync(projectRoot);
@@ -224,7 +224,9 @@ export async function autoSyncSkillsAsync(
     if (created.length || pruned.length) {
       await updateGitIgnoreAsync(projectRoot, uniqueSkillsDirs(getAllAgents()), {});
     }
-    if (created.length || pruned.length) {
+    // The caller may own stdout, e.g. it prints one JSON object (`--json`), and a line about
+    // linked skills in the middle of that object is what makes it unparseable.
+    if ((created.length || pruned.length) && !options.silent) {
       Log.log(
         chalk.gray(
           `Synced agent skills: ${created.length} linked, ${pruned.length} removed. Run ${chalk.bold(
@@ -234,7 +236,9 @@ export async function autoSyncSkillsAsync(
       );
     }
   } catch (error: any) {
-    Log.warn(`Skipping agent skills auto-sync: ${error.message}`);
+    if (!options.silent) {
+      Log.warn(`Skipping agent skills auto-sync: ${error.message}`);
+    }
   }
 }
 

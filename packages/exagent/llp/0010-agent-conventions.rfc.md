@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
@@ -38,19 +38,21 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 
 [observed — 2026-08-23, `src/builds/`] `exagent build:wait <id>` is the first command whose whole answer is its exit code, and it is what the `20`–`29` band was reserved for. It attaches to an EAS build that already exists — one started by CI, by the dashboard, or by another agent — polls `eas build:view <id> --json`, and leaves with what the build did:
 
-| Code | The build                                                         | Where it is decided       |
-| ---- | ----------------------------------------------------------------- | ------------------------- |
-| `0`  | `FINISHED`                                                        | `src/builds/status.ts`    |
-| `20` | `ERRORED`                                                         | `src/builds/status.ts`    |
-| `21` | `CANCELED`, **or this wait was interrupted**                      | `src/builds/status.ts`    |
-| `22` | still running when `--timeout` elapsed                            | `src/builds/waitAsync.ts` |
-| `1`  | not readable: bad id, no `eas`, not signed in, three failed polls | `CommandError`            |
+| Code | The build                                                          | Where it is decided            |
+| ---- | ------------------------------------------------------------------ | ------------------------------ |
+| `0`  | `FINISHED`                                                         | `src/builds/status.ts`         |
+| `20` | `ERRORED`                                                          | `src/builds/status.ts`         |
+| `21` | `CANCELED`, **or this wait was interrupted**                       | `src/builds/status.ts`         |
+| `22` | still running when `--timeout` elapsed                             | `src/builds/waitAsync.ts`      |
+| `7`  | nobody is signed in, so no build is visible                        | `src/needsHuman/assertAuth.ts` |
+| `1`  | not readable: bad id, no `eas`, three failed polls                 | `CommandError`                 |
 
 Three details of the mapping are decisions rather than transcription:
 
 - **An unrecognized status is not terminal.** The status enum belongs to a service that ships without this CLI, so a status the table has never seen keeps the wait polling. Ending on it would report an outcome nobody observed; the timeout is what stops a wait that is wrong about this, and `22` says "inconclusive" rather than claiming a result. `PENDING_CANCEL` is the concrete case — a cancellation asked for and not yet happened, which still resolves to `CANCELED` or `FINISHED`.
 - **An interrupted wait exits `21`, not `130`.** The definition of `21` above is "canceled by the caller (a declined prompt, `SIGINT`) or by the service", and a Ctrl-C is the caller cancelling. `130` would have been a second convention for the same fact. The two are told apart on the event stream (`cli:build_wait.interrupted`) rather than in the `--json` payload, whose key set is fixed.
-- **Three failed polls is `1`, not an outcome.** A wait that cannot read the build has not learned anything about it, so it is a tool failure — and its `Try:` line names `eas workflow:status <id> --wait --json`, because a build id and a workflow id look alike and come from the same places.
+- **Three failed polls is `1`, not an outcome.** A wait that cannot read the build has not learned anything about it, so it is a tool failure. Its *prose* names `eas workflow:status <id> --wait --json`, because a build id and a workflow id look alike and come from the same places — but not its `Try:` line [revised — 2026-08-23]. The `How:` sentence states a condition ("*if* it names a workflow run"), and the last line of a failure is what a driving agent acts on, so putting the workflow command there strips the condition and sends the agent to run something that fails again for the same reason [observed — friction run, 2026-08-23: signed out, and `Try:` recommended the workflow command for an id that was obviously not a build]. `Try:` is now `<the eas that ran> whoami`, which is worth running whatever the cause.
+- **Signed out is `7`, and it is asked before the first poll** [added — 2026-08-23]. The auth preflight of §Needs-human protocol runs first: a wait that nobody is signed in for cannot see any build, so its three polls are three doomed subprocesses ending in a "gave up waiting" that names the wrong cause. A preflight answering `null` — no EAS CLI, a timeout, or a binary under that name that is not the CLI — is **not** "signed out", and the wait proceeds exactly as before.
 
 Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never to stdout, so `--json` still prints exactly one object ([[0006-agent-native-cli-surface]] §Output contract).
 
@@ -159,20 +161,65 @@ Rows with no signature are not a gap. `ios-credentials`, `device-register` and `
 
 ### Four layers, in priority order
 
-1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`].
+1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`], and `src/needsHuman/assertAuth.ts` is the same answer *raised* — for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
+
+   Three things count as "cannot run", and the third was a bug [fixed — 2026-08-23]. No `eas` on this machine, a run that passed the deadline, and **a binary under that name that is not the EAS CLI**. The third exits non-zero exactly like a signed-out CLI does, so it read as "signed out" — and on a machine whose PATH `eas` is a wrapper that crashes (this is not hypothetical: the friction run's was), every command with a preflight would have stopped and handed its user a login they did not need. `looksLikeWrapperCrash` (§The binary may not be the CLI) is what tells the two apart.
 2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`].
 3. **Exit signature** — match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share.
 4. **Prompt-hang guard** — for a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
 
 The prompt shape is `/[?:]\s*$|^\s*[?›»]\s+\S|\(y\/N\)|\(Y\/n\)|Password|passphrase/i` [observed — `src/needsHuman/detect.ts`]. The leading-marker half was added because `prompts` and `inquirer` write the marker at the _start_ — `? Select a platform` is a question that ends in neither a question mark nor a colon.
 
+### The binary may not be the CLI
+
+Decision [confirmed — Kudo, 2026-08-23]. Every one of the four layers above assumes that the thing on the other side of the spawn is the CLI. Across a process boundary that is an assumption, not a fact: what runs is whatever the machine has under that name, and a shim, a stale link, or a wrapper from another project will answer instead. The friction run of 2026-08-23 was driven on such a machine — PATH `eas` was a Rust wrapper that panicked — and it broke two things at once.
+
+`src/utils/wrapperCrash.ts` is the one guard, and it is deliberately conservative: a failure counts as "not the CLI" only when the output holds **nothing** that looks like that CLI's *and* the process died the way a wrapper dies (exit `101`, `126`, `127`, `134`, `139`, or a panic/backtrace signature). A false positive hides a real failure's output, which is worse than the vagueness it buys, so both halves have to agree.
+
+Two callers, for the two things that broke:
+
+- **The preflight** answers `null` instead of `false`, per layer 1 above. Reading a crash as "signed out" is the more expensive error of the two: it stops a command that would have worked.
+- **The error message** says `The eas at <path> failed to run at all (this may not be the real CLI)` instead of quoting the bytes under `What the tool printed:`. The heading is a claim about provenance, and it was false: an agent reading a Rust backtrace attributed to eas-cli goes looking for a missing file inside a program that was never involved.
+
+The `Try:` lines of `deploy` and `build:wait` changed for the same reason. `npx eas-cli whoami` checks a *different* program than the one that just failed — a healthy answer from it proves nothing — so the check names the resolved path that actually ran.
+
 ### What it costs, and the hole that stays
 
 The breaking change [observed — `e2e/__tests__/deploy-test.ts`]: the deploy's two auth failures exited `1` and now exit `7`. At 0.0.2 that is the right moment; a CHANGELOG entry records it.
 
-Two limits, both deliberate. First, the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified — `src/passthrough/` is unchanged on purpose. Second, there is **no `--json` error envelope** [observed — `src/cli.ts`, `src/utils/errors.ts`]: a failing command prints prose on stderr and nothing on stdout, whatever mode it was asked for, so the handoff travels on the printed block and on `cli:needs_human`, both machine-readable. Adding a JSON error object for every command is a separate decision about the whole error path, not a needs-human one.
+The plan engine joined the protocol on the same terms [added — 2026-08-23]. `exagent dev` runs its steps as subprocesses, and a step whose output this process can see is a step whose stop can be classified — so `dev` captures its steps whenever nobody is watching a terminal (`--json`, or a non-TTY run) and inherits when somebody is. `Input is required, but 'npx expo' is in non-interactive mode.` is then exit `7` rather than the subprocess's own `1`, which is the definition of the code: what the command is waiting for is an answer, and no re-run supplies one. The message names `--port` for the case that produces it almost every time — 8081 already taken, and the CLI asking whether to use 8082 — because that flag answers the question before it is asked. The friction run of 2026-08-23 is what this is for: `exagent dev --yes` is the documented non-interactive entry point, and on a busy port it exited 1 having started nothing.
+
+One limit stays, deliberately: the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified — `src/passthrough/` is unchanged on purpose. The second limit recorded here — that there was no `--json` error envelope — has since been lifted; see the section below.
 
 Signature matching is version-coupled to two CLIs that do not promise their wording — which is why the generic rows exist, why they are last, and why the upstream ask below is the real fix.
+
+## The `--json` error envelope
+
+Decision [confirmed — Kudo, 2026-08-23]. **A command invoked with `--json` prints one JSON object on stdout whether it succeeded or failed.** The failure object is:
+
+```json
+{
+  "error": {
+    "code": "EAS_DEPLOY_FAILED",
+    "message": "The export was built, but EAS Hosting did not accept it …",
+    "suggestedCommand": "npx eas-cli whoami",
+    "needsHuman": { "scenario": "eas-login", "need": "…", "command": "npx eas login", "…": "…" }
+  }
+}
+```
+
+This replaces the "no `--json` error envelope" limit recorded above [superseded — 2026-08-23]. What changed the answer is a friction run: an agent driving the CLI hit `deploy --json`, `build:wait --json` and `status --json` outside a project, and got **zero bytes on stdout** from all three. Under `--json` the caller has committed to parsing stdout; an empty parse tells it nothing, so it falls back to scraping English out of stderr — the exact failure mode the flag exists to remove. The prose was never the problem, and it does not move: stderr still carries the what / **Why:** / **How:** / `Try:` block, unchanged, because that is what a person reads.
+
+Four properties are load-bearing:
+
+- **The key set never varies.** `suggestedCommand` and `needsHuman` are `null` rather than absent, per [[0006-agent-native-cli-surface]] §Output contract, so a caller reading `error.needsHuman` after a plain tool error branches on a value instead of on a missing key. `needsHuman` carries the whole record — the same one `cli:needs_human` carries — because an agent that has to hand a step to its user needs the URL and the environment variables, not a boolean.
+- **The code is the one the site already shipped.** Reclassification never renames a code (the rule of §Needs-human protocol), and the envelope reports `error.code` verbatim.
+- **Success paths are untouched.** Nothing about a command that works changes, and no command gained a second object: a failing command printed nothing on stdout before, so the envelope is the *only* thing there.
+- **The exit code is still the first thing to read.** The envelope explains a failure; it does not signal one. `7` and the `20`–`29` band mean exactly what the table above says.
+
+Implementation [observed — `src/utils/jsonMode.ts`, `src/utils/errors.ts`, `src/cli.ts`]: `logCmdError` is the one function every command's failure funnels into, and it runs *after* the command module threw — often before that module ever parsed its own arguments. So the flag is answered once, by the launcher, from the raw argv: `setJsonRequested(argvRequestsJson(commandArgs))`. `argvRequestsJson` only looks before a `--` separator, because `install` and `start` forward everything after it to another tool and `exagent install -- --json` is npm's flag, not ours. The alternative — an argument on `logCmdError` and on every `.catch(logCmdError)` — is thirty call sites carrying one boolean that cannot change during a run.
+
+One consequence for a command that prints its payload *before* it can fail. `exagent dev --json` used to emit the plan object and then run the plan, so a failing run would have printed two objects — and, worse, the dev server it spawned inherited stdout and appended raw Metro log lines to the JSON [observed — friction run, 2026-08-23: `JSON.parse` failed at the byte after the closing brace]. In `--json` mode `dev` now captures the subprocess and prints exactly one object when the run ends: the plan (with the step results) on a clean exit, or the envelope. `dev --plan --json` is unchanged — there the plan *is* the answer and nothing runs after it. The plan still reaches a driving agent before the first step either way, on the `cli:start_plan` event.
 
 ## Registry rules
 
@@ -245,5 +292,7 @@ Libraries:
 Unit tests pin the constants and all three resolution rules, including a synthetic group registered under a forwarded name for rule (b) [observed — `src/__tests__/exitCodes-test.ts`, `src/__tests__/commandRegistry-test.ts`]. E2E tests pin what the process boundary actually shows: the exit code and the last line of output for a group given options with no action [observed — `e2e/__tests__/wrapper-test.ts`, `e2e/__tests__/build-wait-test.ts`]. Per [[0002-testing-and-evals]], every layer runs with no TTY attached.
 
 The outcome band gets its own discipline, because a code is not testable by reading it. `build:wait`'s status table is exhaustive at the unit level — every status in both casings and both separators, plus values it has never heard of — and each of the four exit codes gets a separate e2e test against a stub `eas` bin walking a scripted status sequence [observed — `src/builds/__tests__/status-test.ts`, `e2e/__tests__/build-wait-test.ts`]. One test asserting "some non-zero code" would pass while the distinction the band exists for was broken.
+
+The `--json` error envelope is tested at both tiers as well [observed — 2026-08-23]. Unit: `argvRequestsJson` against a table including the `--` separator case, and `logCmdError` asserting that nothing reaches stdout without the flag, that the key set is complete with the flag, and that a needs-human failure carries the whole record. E2E, through the published bin: a failing `--json` run whose stdout is fed to `JSON.parse`, so the property the envelope exists for is checked as the property and not as a substring.
 
 The needs-human protocol is tested the same way, at both tiers [observed — 2026-08-23]. Unit: the classifier against a table of recorded output, one sample per signature that exists plus the cases that must answer `null`; the registry invariants (unique ids and codes, `SCREAMING_SNAKE` codes, a command or a URL for every row that is not a generic fallback, the fallbacks last); `logCmdError` with a `NeedsHumanError`, asserting the event pair, the three printed lines and exit `7`; the preflight answering from one subprocess however often it is asked; the hang guard on fake timers, including the two cases it must _not_ fire in. E2E, through the published bin with stdin closed: a stub `eas` printing the real `SessionManager` auth line, a stub `expo` printing the real non-interactive line, and a stub that prints a question and then waits forever — each asserting the exit code, the printed block and the `cli:needs_human` event in `LOG_EVENTS` [observed — `e2e/__tests__/deploy-test.ts`].

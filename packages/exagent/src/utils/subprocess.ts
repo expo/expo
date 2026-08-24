@@ -58,6 +58,18 @@ export interface SubprocessOptions {
    * gets no deadline. See {@link SubprocessResult.timedOut}.
    */
   timeoutMs?: number;
+  /**
+   * Rewrite or drop each line before it is printed. What is *captured* is never touched.
+   *
+   * For a tool whose output is written for a terminal that this run does not have — a spinner
+   * animation with no cursor to move, or a "what to do next" block the wrapper is about to answer
+   * better itself. Returning `null` drops the line.
+   *
+   * Only in the printing modes, and only with a filter: printing is line-buffered while one is
+   * set, because a filter cannot decide about half a line. Without one, the bytes reach the
+   * terminal exactly as they arrive.
+   */
+  printFilter?: (line: string) => string | null;
 }
 
 export interface SubprocessResult {
@@ -98,7 +110,14 @@ const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
 export function spawnSubprocessAsync(
   command: string,
   args: string[],
-  { cwd, output = 'capture', env: childEnv, promptGuard, timeoutMs }: SubprocessOptions = {}
+  {
+    cwd,
+    output = 'capture',
+    env: childEnv,
+    promptGuard,
+    timeoutMs,
+    printFilter,
+  }: SubprocessOptions = {}
 ): Promise<SubprocessResult> {
   return new Promise<SubprocessResult>((resolve) => {
     // `eas`, `create-expo` and `npx` all resolve to a batch shim on Windows, which needs `cmd.exe`.
@@ -142,12 +161,17 @@ export function spawnSubprocessAsync(
           })
         : null;
 
+    // Line-buffered only when a filter is set: a filter cannot decide about half a line, and a
+    // caller without one must keep the byte-for-byte passthrough it has always had.
+    const toOut = printerFor(process.stdout, printFilter);
+    const toErr = printerFor(process.stderr, printFilter);
+
     child.stdout?.on('data', (chunk) => {
       const text = chunk.toString();
       stdout += text;
       guard?.sawOutput();
       if (output === 'tee') {
-        process.stdout.write(text);
+        toOut.write(text);
       }
     });
     child.stderr?.on('data', (chunk) => {
@@ -155,7 +179,7 @@ export function spawnSubprocessAsync(
       stderr += text;
       guard?.sawOutput();
       if (output === 'tee' || output === 'capture-stdout') {
-        process.stderr.write(text);
+        toErr.write(text);
       }
     });
 
@@ -169,6 +193,9 @@ export function spawnSubprocessAsync(
     const stopWatching = () => {
       guard?.stop();
       clearTimeout(deadline);
+      // A tool that ends without a trailing newline still said what it said.
+      toOut.flush();
+      toErr.flush();
       for (const { signal, forward } of listeners) {
         process.off(signal, forward);
       }
@@ -195,6 +222,53 @@ export function spawnSubprocessAsync(
       resolve({ exitCode, stdout, stderr });
     });
   });
+}
+
+/**
+ * Where the printed half of a captured run goes.
+ *
+ * Without a filter this is `stream.write`, unchanged and unbuffered. With one, whole lines are
+ * handed over one at a time — the filter's unit — and whatever the tool left without a trailing
+ * newline is flushed when it exits.
+ */
+function printerFor(
+  stream: NodeJS.WriteStream,
+  filter: ((line: string) => string | null) | undefined
+): { write(text: string): void; flush(): void } {
+  if (!filter) {
+    return {
+      write(text: string) {
+        stream.write(text);
+      },
+      flush() {},
+    };
+  }
+
+  let pending = '';
+  const emit = (line: string) => {
+    const printed = filter(line);
+    if (printed != null) {
+      stream.write(`${printed}\n`);
+    }
+  };
+
+  return {
+    write(text: string) {
+      pending += text;
+      const lines = pending.split('\n');
+      // The last piece is whatever came after the final newline, which is not a line yet.
+      pending = lines.pop() ?? '';
+      for (const line of lines) {
+        emit(line);
+      }
+    },
+    flush() {
+      if (pending) {
+        emit(pending);
+        pending = '';
+      }
+    },
+  };
 }
 
 /**

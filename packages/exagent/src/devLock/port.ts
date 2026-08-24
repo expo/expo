@@ -114,6 +114,15 @@ export interface ResolveDevServerPortOptions {
   stopped?: Promise<unknown>;
   intervalMs?: number;
   timeoutMs?: number;
+  /**
+   * Called with the answer as soon as there is one, before the lock does anything with it.
+   *
+   * For a caller that has to say something about the dev server it started — where to open it, in
+   * the follow-ups — and must not say it about a port nothing reported. `source` is the whole
+   * point: `default` means neither the dev server nor the command line named a port, so there is
+   * nothing to vouch for.
+   */
+  onResolved?: (resolved: ResolvedDevServerPort) => void;
 }
 
 /**
@@ -132,14 +141,19 @@ export async function resolveDevServerPortAsync(
     stopped,
     intervalMs = PORT_WATCH_INTERVAL_MS,
     timeoutMs = PORT_WATCH_TIMEOUT_MS,
+    onResolved,
   }: ResolveDevServerPortOptions
 ): Promise<ResolvedDevServerPort> {
   const deadline = Date.now() + timeoutMs;
+  const answer = (resolved: ResolvedDevServerPort): ResolvedDevServerPort => {
+    onResolved?.(resolved);
+    return resolved;
+  };
 
   for (;;) {
     const logged = readLastLoggedDevServerPort(projectRoot, { since });
     if (logged != null) {
-      return { port: logged, source: 'log' };
+      return answer({ port: logged, source: 'log' });
     }
     // A dev server that is gone will never report a port, and neither will one that has taken
     // longer than any start takes.
@@ -150,9 +164,11 @@ export async function resolveDevServerPortAsync(
   }
 
   const requested = readPortArg(args);
-  return requested != null
-    ? { port: requested, source: 'arg' }
-    : { port: DEFAULT_DEV_SERVER_PORT, source: 'default' };
+  return answer(
+    requested != null
+      ? { port: requested, source: 'arg' }
+      : { port: DEFAULT_DEV_SERVER_PORT, source: 'default' }
+  );
 }
 
 /**

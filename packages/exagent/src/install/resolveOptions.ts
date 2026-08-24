@@ -1,3 +1,5 @@
+import { CommandError } from '../utils/errors';
+
 /** Flags that `exagent install` handles itself and does not forward to `expo install`. */
 const EXAGENT_ONLY_FLAGS = [
   '--no-agent-skills',
@@ -5,6 +7,27 @@ const EXAGENT_ONLY_FLAGS = [
   '--no-impact',
   '--no-followups',
   '--no-checkpoint',
+  '--json',
+];
+
+/**
+ * The flags `expo install` accepts, in its own order.
+ *
+ * Source of truth: `packages/@expo/cli/src/install/resolveOptions.ts` [observed — 2026-08-23]. A
+ * hand-kept list, like `forwardedCommands` in `src/commandRegistry.ts`, and for the same reason:
+ * the alternative is finding out that an argument was wrong *after* this command has taken a
+ * checkpoint and started rewriting the manifest.
+ */
+const EXPO_INSTALL_FLAGS = [
+  '--check',
+  '--dev',
+  '--fix',
+  '--npm',
+  '--pnpm',
+  '--yarn',
+  '--bun',
+  '-h',
+  '--help',
 ];
 
 /** Which skills to link after the install finishes. */
@@ -33,6 +56,10 @@ export interface InstallPlan {
   followups: boolean;
   /** Snapshot the project before `expo install` runs, cleared by `--no-checkpoint`. */
   checkpoint: boolean;
+  /** Print one JSON object instead of the human output (`--json`). */
+  json: boolean;
+  /** `--check` was passed, so nothing is installed and nothing changes. */
+  check: boolean;
 }
 
 /**
@@ -42,21 +69,44 @@ export interface InstallPlan {
  * `expo install` takes no flags with a separate value, so every argument that does not
  * start with `-` (before a `--` separator) is a package spec.
  *
+ * Everything a caller can get wrong is decided **here**, before anything is spawned and before the
+ * checkpoint is taken. A rejected invocation used to reach `expo install` and be rejected there,
+ * by which time this command had already written a snapshot for an install that never happened
+ * [observed — friction run, 2026-08-23].
+ *
  * @see llp/0003-knowledge-tools-and-skills.rfc.md §Migration
+ * @throws {CommandError} `BAD_ARGS` for a flag neither CLI has, or a pair that cannot both apply.
  */
 export function resolveInstallPlan(argv: string[]): InstallPlan {
-  const expoArgs = argv.filter((arg) => !EXAGENT_ONLY_FLAGS.includes(arg));
   const separatorIndex = argv.indexOf('--');
-  const positional = (separatorIndex >= 0 ? argv.slice(0, separatorIndex) : argv).filter(
-    (arg) => !arg.startsWith('-')
-  );
+  // Everything after `--` belongs to the package manager, verbatim, and is not ours to judge.
+  const own = separatorIndex >= 0 ? argv.slice(0, separatorIndex) : argv;
+  assertKnownFlags(own);
 
-  const agentSkills = !argv.includes('--no-agent-skills');
-  // `--check` only reports outdated versions, so there is nothing new to link.
-  const installsNothing = argv.includes('--check');
+  const check = own.includes('--check');
+  const json = own.includes('--json');
+
+  if (check && own.includes('--fix')) {
+    throw badArgs(
+      `--check and --fix cannot both apply, so nothing ran. Why: --check only reports what is out of date, and --fix rewrites it. How: pass one of them.`,
+      'npx exagent install --check'
+    );
+  }
+
+  const positional = own.filter((arg) => !arg.startsWith('-'));
+
+  // `--json` is this command's own flag now, so it is stripped from the forwarded arguments —
+  // except in a `--check` run, where the answer *is* the Expo CLI's report and this command has
+  // to be given it to embed.
+  const expoArgs = argv.filter((arg) => !EXAGENT_ONLY_FLAGS.includes(arg));
+  if (check && json) {
+    expoArgs.push('--json');
+  }
+
+  const agentSkills = !own.includes('--no-agent-skills');
 
   let syncScope: SyncScope = 'none';
-  if (agentSkills && !installsNothing) {
+  if (agentSkills && !check) {
     syncScope = positional.length ? 'packages' : 'all';
   }
 
@@ -64,13 +114,46 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
     expoArgs,
     packages: positional,
     agentSkills,
-    skillContext: agentSkills && !argv.includes('--no-skill-context'),
+    // The skills travel in the JSON report instead of onto stdout, which that mode owns.
+    skillContext: agentSkills && !json && !own.includes('--no-skill-context'),
     syncScope,
     // The impact of a full `expo install --fix` is not one package's impact, so the report only
     // runs for named packages. It is independent of the skill flags.
-    impact: !argv.includes('--no-impact') && !installsNothing && positional.length > 0,
-    followups: !argv.includes('--no-followups'),
+    impact: !own.includes('--no-impact') && !check && positional.length > 0,
+    followups: !own.includes('--no-followups'),
     // `--check` changes nothing, so there is nothing to snapshot for.
-    checkpoint: !argv.includes('--no-checkpoint') && !installsNothing,
+    checkpoint: !own.includes('--no-checkpoint') && !check,
+    json,
+    check,
   };
+}
+
+/**
+ * Reject a flag neither this command nor `expo install` has.
+ *
+ * Only the arguments before `--`: what follows is the package manager's, and npm's flags are not
+ * ours to enumerate.
+ */
+function assertKnownFlags(own: string[]): void {
+  const known = [...EXAGENT_ONLY_FLAGS, ...EXPO_INSTALL_FLAGS];
+  const unknown = own.find((arg) => arg.startsWith('-') && !known.includes(arg));
+  if (!unknown) {
+    return;
+  }
+  const forwarded = EXPO_INSTALL_FLAGS.filter((flag) => flag.startsWith('--') && flag !== '--help');
+  throw badArgs(
+    [
+      `"${unknown}" is not an option of "exagent install", so nothing ran.`,
+      `Why: this command forwards to "expo install", which takes ${forwarded.join(', ')}; the wrapper adds ${EXAGENT_ONLY_FLAGS.join(', ')}. "${unknown}" is in neither set.`,
+      `How: drop it, or hand it to the package manager instead — everything after a "--" separator is forwarded untouched, as in "npx exagent install react -- ${unknown}".`,
+    ].join('\n'),
+    'npx exagent install --help'
+  );
+}
+
+function badArgs(message: string, suggestedCommand: string): CommandError {
+  const error = new CommandError('BAD_ARGS', message);
+  // Errors are prompts (llp/0006 §Errors are prompts): a bad invocation answers with a good one.
+  error.suggestedCommand = suggestedCommand;
+  return error;
 }

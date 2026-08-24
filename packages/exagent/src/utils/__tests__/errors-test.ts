@@ -1,5 +1,5 @@
 import { EXIT_NEEDS_HUMAN } from '../../exitCodes';
-import { warn } from '../../log';
+import { log, warn } from '../../log';
 import {
   CommandError,
   NeedsHumanError,
@@ -8,6 +8,7 @@ import {
   logCmdError,
   type NeedsHuman,
 } from '../errors';
+import { setJsonRequested } from '../jsonMode';
 
 const emitted: { name: string; payload: any }[] = [];
 
@@ -22,6 +23,7 @@ jest.mock('2g', () => {
 jest.mock('../../log', () => ({
   exit: jest.fn(),
   exception: jest.fn(),
+  log: jest.fn(),
   warn: jest.fn(),
 }));
 
@@ -119,6 +121,66 @@ describe(logCmdError, () => {
       'Ask the user    npx eas login',
       'Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)',
     ]);
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+  describe('the --json error envelope', () => {
+    afterEach(() => setJsonRequested(false));
+
+    /** The one object stdout carried, or null when nothing was printed there. */
+    function stdoutObject(): any {
+      const calls = jest.mocked(log).mock.calls;
+      expect(calls.length).toBeLessThanOrEqual(1);
+      return calls.length ? JSON.parse(calls[0]![0]!) : null;
+    }
+
+    it('prints nothing on stdout when JSON was not asked for', async () => {
+      await exitCodeOfAsync(new CommandError('BAD_ARGS', 'nope'));
+
+      expect(stdoutObject()).toBeNull();
+    });
+
+    it('prints one object with the stable key set', async () => {
+      setJsonRequested(true);
+      const error = new CommandError('PROJECT_NOT_FOUND', 'Project root directory not found.');
+      error.suggestedCommand = 'npx exagent new my-app';
+
+      await exitCodeOfAsync(error);
+
+      expect(stdoutObject()).toEqual({
+        error: {
+          code: 'PROJECT_NOT_FOUND',
+          message: 'Project root directory not found.',
+          suggestedCommand: 'npx exagent new my-app',
+          needsHuman: null,
+        },
+      });
+    });
+
+    it('carries the whole handoff for a needs-human failure', async () => {
+      setJsonRequested(true);
+
+      await exitCodeOfAsync(
+        new NeedsHumanError('EAS_LOGIN_REQUIRED', 'Nobody is signed in.', needsHuman())
+      );
+
+      expect(stdoutObject()).toEqual({
+        error: {
+          code: 'EAS_LOGIN_REQUIRED',
+          message: 'Nobody is signed in.',
+          suggestedCommand: 'npx eas login',
+          needsHuman: needsHuman(),
+        },
+      });
+    });
+
+    it('reports a null suggestedCommand rather than dropping the key', async () => {
+      setJsonRequested(true);
+
+      await exitCodeOfAsync(new CommandError('BAD_ARGS', 'nope'));
+
+      expect(stdoutObject().error).toHaveProperty('suggestedCommand', null);
+    });
   });
 });
 

@@ -91,7 +91,7 @@ describe(startAsync, () => {
     const promise = startAsync(projectRoot, resolveStartOptions([]));
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS);
-    expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot);
+    expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot, { silent: false });
 
     end(0);
     await promise;
@@ -209,7 +209,7 @@ describe(runDevServerAsync, () => {
 
     expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['run:ios']);
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS);
-    expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot);
+    expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot, { silent: false });
 
     end(0);
     await promise;
@@ -287,7 +287,7 @@ describe(runDevServerAsync, () => {
 
       end(3);
       // The lock is a convenience; the exit code of the dev server is the answer either way.
-      await expect(promise).resolves.toBe(3);
+      await expect(promise).resolves.toMatchObject({ exitCode: 3 });
     });
   });
 });

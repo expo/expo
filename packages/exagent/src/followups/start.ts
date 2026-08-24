@@ -18,6 +18,14 @@ export interface StartFollowUpInput {
   web: boolean;
   /** `exp://<lan ip>:<port>`, or null when this host has no LAN address. */
   lanUrl: string | null;
+  /**
+   * Whether the port of the dev server is known at all.
+   *
+   * Defaults to true, which is what every caller that reads a port off the command line means.
+   * `false` says the dev server never reported one — it did not start, or it walked past the port
+   * it was given without saying where it landed — and then no URL may be named for it.
+   */
+  portKnown?: boolean;
   /** The project has an `eas.json`. */
   easJson: boolean;
 }
@@ -48,7 +56,16 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
 }
 
 /** How to reach the dev server from a phone, which is the one thing a terminal cannot show. */
-function realDeviceFollowUp({ expoGo, lanUrl }: StartFollowUpInput): FollowUp {
+function realDeviceFollowUp({ expoGo, lanUrl, portKnown = true }: StartFollowUpInput): FollowUp {
+  if (!portKnown) {
+    // Naming a URL here would be a guess about which process holds the default port, and a wrong
+    // guess sends a device into another project's app and reports it as success.
+    return {
+      id: 'dev-server-port-unknown',
+      command: 'npx exagent status --json',
+      why: 'The dev server did not report a port, so no URL can be named for it — status says which dev server this project actually has. Pass --port to decide it up front.',
+    };
+  }
   if (expoGo && lanUrl) {
     return {
       id: 'real-device',

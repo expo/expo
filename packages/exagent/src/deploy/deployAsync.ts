@@ -8,6 +8,7 @@ import path from 'path';
 import { followUpsEnabled, reportFollowUps } from '../followups';
 import { buildDeployFollowUps } from '../followups/deploy';
 import * as Log from '../log';
+import { assertSignedInAsync } from '../needsHuman/assertAuth';
 import { classifySubprocessFailure } from '../needsHuman/detect';
 import { needsHumanErrorFrom } from '../needsHuman/error';
 import type { NeedsHumanTool } from '../needsHuman/registry';
@@ -21,6 +22,12 @@ import { CommandError } from '../utils/errors';
 import { spawnExpoAsync } from '../utils/expoCli';
 import { toPosixPath } from '../utils/filePath';
 import { spawnSubprocessAsync, type CapturedOutput } from '../utils/subprocess';
+import {
+  checkBinaryCommand,
+  looksLikeWrapperCrash,
+  wrapperCrashDetail,
+  type WrapperCrashTool,
+} from '../utils/wrapperCrash';
 import { debugEvent, event } from './events';
 import { launchProjectAsync } from './launchAsync';
 import { resolveCreateLaunchCli } from './launchCli';
@@ -65,6 +72,17 @@ export async function deployAsync(projectRoot: string, options: DeployOptions): 
     easCli: easCli?.command ?? null,
     easCliSource: easCli?.source ?? 'none',
     launchCli: launchCli ? [launchCli.command, ...launchCli.args].join(' ') : null,
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 1 — the cheap question
+  // first. Both rails ship as a signed-in Expo account, and the export that comes next takes
+  // minutes; finding out afterwards that nobody is signed in is minutes spent for nothing
+  // [observed — friction run, 2026-08-23: ten seconds of exporting, then the auth failure].
+  await assertSignedInAsync(projectRoot, {
+    action: deploysWeb ? 'the upload to EAS Hosting' : 'the launch',
+    because: deploysWeb
+      ? 'EAS Hosting accepts an export as an account, never anonymously'
+      : 'the launch is created as the signed in Expo user',
   });
 
   // In `--json` mode this command owns stdout, so the tools are captured; otherwise their output is
@@ -214,7 +232,7 @@ async function deployWebAsync(
         `The web bundle could not be exported, so there was nothing to deploy (${howItStopped('expo export', exported)}).`,
         `Why: the export bundles the app for the web platform, and the bundler stopped on something in the project.`,
         `How: fix what the bundler reported, then run this command again. Running the export on its own prints the full output.`,
-        fence(exported, output),
+        fence(exported, output, { tool: 'expo', binPath: expoCli.command }),
       ]
         .filter(Boolean)
         .join('\n')
@@ -233,18 +251,22 @@ async function deployWebAsync(
   }
   const outputText = `${deployed.stdout}${deployed.stderr}`;
   if (deployed.exitCode !== 0 || deployed.promptHang) {
+    // The check names the binary that actually ran. `npx eas-cli whoami` would download and ask a
+    // *different* program than the one that just failed, so a healthy answer from it would prove
+    // nothing about this run [observed — friction run, 2026-08-23].
+    const whoami = checkBinaryCommand(easCli.command, ['whoami']);
     const error = new CommandError(
       'EAS_DEPLOY_FAILED',
       [
         `The export was built, but EAS Hosting did not accept it (${howItStopped('eas deploy', deployed)}).`,
         `Why: the upload ran non-interactively, so anything that needs an answer — most often an account that is not signed in — fails instead of prompting.`,
-        `How: check who the CLI is acting as with "npx eas-cli whoami"; for a headless machine, set EXPO_TOKEN to an access token from expo.dev instead of signing in.`,
-        fence(deployed, output),
+        `How: check who that CLI is acting as with "${whoami}"; for a headless machine, set EXPO_TOKEN to an access token from expo.dev instead of signing in.`,
+        fence(deployed, output, { tool: 'eas', binPath: easCli.command }),
       ]
         .filter(Boolean)
         .join('\n')
     );
-    error.suggestedCommand = 'npx eas-cli whoami';
+    error.suggestedCommand = whoami;
     throw handoffOr(error, deployed, 'eas', DEPLOY_COMMAND);
   }
 
@@ -294,11 +316,20 @@ function handoffOr(
  *
  * Only in `capture` mode: in `tee` mode the output is already on the terminal, and repeating it
  * would bury the three lines that say what to do.
+ *
+ * When what ran was not the CLI at all, the tail is replaced by a sentence saying so. Printing a
+ * Rust backtrace from a shim under "What the tool printed" claims the EAS CLI reported a missing
+ * file, and a reader — a person or an agent — then goes looking for that file
+ * [observed — friction run, 2026-08-23].
  */
 function fence(
-  result: { stdout: string; stderr: string },
-  output: CapturedOutput
+  result: { exitCode: number | null; stdout: string; stderr: string },
+  output: CapturedOutput,
+  { tool, binPath }: { tool: WrapperCrashTool; binPath: string }
 ): string | undefined {
+  if (looksLikeWrapperCrash({ tool, ...result })) {
+    return wrapperCrashDetail({ tool, exitCode: result.exitCode }, binPath);
+  }
   if (output !== 'capture') {
     return undefined;
   }

@@ -11,10 +11,27 @@ import { formatStartPlan } from './format';
 /** Whether the emitted plan is about to be executed. */
 export type StartPlanMode = 'plan' | 'smart';
 
+/** Where the emitted plan goes on stdout. The `cli:start_plan` event is written either way. */
+export type StartPlanPrint =
+  /** The table, for a person. */
+  | 'text'
+  /** One JSON object, for a caller that parses stdout. */
+  | 'json'
+  /**
+   * Nowhere.
+   *
+   * For a `--json` run of the plan: stdout carries exactly one object, printed when the run ends,
+   * and the plan printed up front would be a second one (llp/0010 §The `--json` error envelope).
+   * The plan still reaches a driving agent first, on the event stream.
+   */
+  | 'none';
+
 export interface EmitStartPlanOptions {
   mode: StartPlanMode;
   /** Print the plan as JSON instead of a table, for callers that parse stdout. */
   json?: boolean;
+  /** Where the plan goes. Defaults to what {@link EmitStartPlanOptions.json} asks for. */
+  print?: StartPlanPrint;
   /**
    * Next actions to embed in the `--json` payload, empty when they are suppressed. The `Suggested next:`
    * section of the text output and the `cli:followups` event are the caller's own, so the plan
@@ -27,7 +44,7 @@ export interface EmitStartPlanOptions {
 
 export function emitStartPlan(
   plan: StartPlan,
-  { mode, json, followups = [] }: EmitStartPlanOptions
+  { mode, json, print = json ? 'json' : 'text', followups = [] }: EmitStartPlanOptions
 ): void {
   event('start_plan', {
     mode,
@@ -36,7 +53,10 @@ export function emitStartPlan(
     steps: plan.steps,
     reasons: plan.reasons,
   });
+  if (print === 'none') {
+    return;
+  }
   // In JSON mode the plan is the only thing on stdout, so `exagent dev --plan --json` can be
   // piped into a parser. Agents that read the JSONL events get the same plan either way.
-  Log.log(json ? JSON.stringify({ ...plan, followups }, null, 2) : formatStartPlan(plan));
+  Log.log(print === 'json' ? JSON.stringify({ ...plan, followups }, null, 2) : formatStartPlan(plan));
 }

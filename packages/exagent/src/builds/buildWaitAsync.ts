@@ -10,6 +10,7 @@ import { event } from '../events';
 import { exitWithCodeAsync } from '../exitCodes';
 import { buildBuildWaitFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
+import { assertSignedInAsync } from '../needsHuman/assertAuth';
 import { resolveEasCliOrThrow } from '../utils/easCli';
 import { formatBuildWaitReport } from './format';
 import { readBuildDetails, readString } from './parseView';
@@ -30,6 +31,16 @@ export async function buildWaitAsync(
   // Resolved before the first poll, so a missing EAS CLI is reported in milliseconds rather than
   // after the first interval — the same "check the preconditions first" rule as `deploy`.
   const easCli = resolveEasCliOrThrow(projectRoot);
+
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 1. A wait that nobody is
+  // signed in for cannot see any build, so its three polls are three doomed subprocesses and a
+  // "gave up waiting" that names the wrong cause [observed — friction run, 2026-08-23]. Asking
+  // first turns that into one accurate answer, in about a second. A preflight that could not run
+  // answers `null` and the wait proceeds exactly as before.
+  await assertSignedInAsync(projectRoot, {
+    action: `reading ${options.kind === 'submission' ? 'this submission' : 'this build'}`,
+    because: 'a build is visible to the account that owns it, and to no one else',
+  });
 
   const result = await pollBuildAsync(easCli, projectRoot, options);
   const report = buildWaitReport(options, result);

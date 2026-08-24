@@ -8,9 +8,12 @@ import {
   buildStartPlanFollowUps,
   followUpsEnabled,
   reportFollowUps,
+  resolveDevServerPort,
   type FollowUp,
 } from '../followups';
 import { Log } from '../log';
+import { classifySubprocessFailure, lastNonEmptyLine } from '../needsHuman/detect';
+import { needsHumanErrorFrom } from '../needsHuman/error';
 import { decideStartPlan } from '../plan/decide';
 import { emitStartPlan } from '../plan/emit';
 import { event } from '../plan/events';
@@ -20,9 +23,11 @@ import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { resolveStartFollowUps } from '../start/followUps';
-import { runDevServerAsync } from '../start/startAsync';
+import { runDevServerAsync, type DevServerRun } from '../start/startAsync';
 import { CommandError } from '../utils/errors';
-import { runExpoAsync } from '../utils/expoCli';
+import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
+import { isInteractive } from '../utils/interactive';
+import type { SubprocessOutput } from '../utils/subprocess';
 import { confirmPlanAsync } from './confirmPlan';
 import type { DevOptions } from './resolveOptions';
 
@@ -43,24 +48,34 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   });
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command
-  // `--plan` stops here, so its follow-ups are about the plan itself; a run that executes the
-  // plan ends in a dev server, so its follow-ups are that server's. Both are computed before the
-  // plan is emitted, because `--json` carries them inside the plan object.
-  const followups = resolveModeFollowUps(projectRoot, plan, state, options);
-
-  // The plan is always emitted before anything runs, so `--plan` and a run of the plan show the
-  // same plan and a driving agent can approve one it has already seen.
-  emitStartPlan(plan, {
-    mode: options.mode === 'plan' ? 'plan' : 'smart',
-    json: options.json,
-    followups,
-  });
-  // Printed after the plan table and before the first step, so the terminal reads in the order
-  // things happen and nothing lands in the middle of the dev server's own output.
-  reportFollowUps('dev', followups, { json: options.json });
-
+  // `--plan` stops here, so its follow-ups are about the plan itself and the plan object is the
+  // whole answer.
   if (options.mode === 'plan') {
+    const followups = followUpsEnabled(options.followups)
+      ? buildStartPlanFollowUps(plan, state)
+      : [];
+    emitStartPlan(plan, { mode: 'plan', json: options.json, followups });
+    reportFollowUps('dev', followups, { json: options.json });
     return 0;
+  }
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+  // The plan is always emitted before anything runs — on the `cli:start_plan` event for a driving
+  // agent, and as a table for a person. In `--json` mode it is *not* printed here: stdout is
+  // reserved for the one object this run prints when it ends, which is either the plan with its
+  // follow-ups or the error envelope. Printing the plan first and then running a dev server that
+  // appends its log to the same stream is what made this command's output unparseable.
+  emitStartPlan(plan, {
+    mode: 'smart',
+    print: options.json ? 'none' : 'text',
+    followups: [],
+  });
+
+  // The follow-ups of a run are the *dev server's*, and in `--json` mode they are computed after
+  // it so they can name the port it actually took. A terminal cannot wait for that: the bundler
+  // takes the screen and anything printed afterwards scrolls away with its output.
+  if (!options.json) {
+    reportFollowUps('dev', resolveRunFollowUps(projectRoot, plan, options, null), {});
   }
 
   // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run — the plan was printed above, so the
@@ -81,25 +96,38 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
     });
   }
 
-  return executePlanAsync(projectRoot, plan, state, options);
+  const run = await executePlanAsync(projectRoot, plan, state, options);
+
+  if (options.json) {
+    // One object, when the run is over and there is something true to say about it.
+    const followups = resolveRunFollowUps(projectRoot, plan, options, run.devServer);
+    reportFollowUps('dev', followups, { json: true });
+    Log.log(JSON.stringify({ ...plan, followups }, null, 2));
+  }
+
+  return run.exitCode;
 }
 
-/** The follow-ups of the mode this run is in, or an empty list when they are suppressed. */
-function resolveModeFollowUps(
-  projectRoot: string,
-  plan: StartPlan,
-  state: ProjectState,
-  options: DevOptions
-): FollowUp[] {
-  if (options.mode === 'plan') {
-    return followUpsEnabled(options.followups) ? buildStartPlanFollowUps(plan, state) : [];
+/**
+ * Where the output of the plan's subprocesses goes.
+ *
+ * `--json` owns stdout, so nothing a subprocess prints may reach it. A run with no terminal keeps
+ * the output *and* prints it, because a step that stopped on a question the Expo CLI asked says so
+ * on a stream that would otherwise go nowhere. A person watching gets the tools' own stdio, which
+ * is what makes the bundler's keypress menu and its signals work.
+ */
+function stepOutputFor(options: DevOptions): SubprocessOutput {
+  if (options.json) {
+    return 'capture';
   }
-  // The plan knows which app the dev server will be opened in, which `exagent start` has to read
-  // off the command line.
-  return resolveStartFollowUps(projectRoot, options, {
-    expoGo: plan.target === 'expo-go',
-    web: plan.target === 'web',
-  });
+  return isInteractive() ? 'inherit' : 'tee';
+}
+
+/** What one execution of a plan amounts to. */
+interface PlanRun {
+  exitCode: number;
+  /** The dev server the run started, or null when it started none. */
+  devServer: DevServerRun | null;
 }
 
 async function executePlanAsync(
@@ -107,7 +135,9 @@ async function executePlanAsync(
   plan: StartPlan,
   state: ProjectState,
   options: DevOptions
-): Promise<number> {
+): Promise<PlanRun> {
+  const output = stepOutputFor(options);
+  let devServer: DevServerRun | null = null;
   let exitCode = 0;
 
   for (const [index, step] of plan.steps.entries()) {
@@ -119,20 +149,107 @@ async function executePlanAsync(
       total: plan.steps.length,
     });
 
-    exitCode = isDevServerStep(step)
-      ? await runDevServerAsync(projectRoot, args, { agentSkills: options.agentSkills })
-      : await runExpoAsync(projectRoot, args);
+    const result = isDevServerStep(step)
+      ? await runDevServerAsync(projectRoot, args, { agentSkills: options.agentSkills, output })
+      : await runStepAsync(projectRoot, args, output);
+    if (isDevServerStep(step)) {
+      devServer = result as DevServerRun;
+    }
+    exitCode = result.exitCode;
     event('start_plan_step_exit', { id: step.id, code: exitCode });
 
     if (exitCode !== 0) {
+      // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 3 — a step that
+      // stopped because the Expo CLI needed an answer is not a failed command, it is a command
+      // waiting on a person. Nothing is captured in `inherit` mode, so there is nothing to
+      // classify there and the exit code is forwarded as it always was.
+      assertNotNeedsHuman(step, args, result);
       // Every later step depends on this one having worked, so the plan stops here.
-      return exitCode;
+      return { exitCode, devServer };
     }
 
     recordBuildOf(projectRoot, step, state);
   }
 
-  return exitCode;
+  return { exitCode, devServer };
+}
+
+/** Run a plan step that is not a dev server, in the output mode this run is in. */
+async function runStepAsync(
+  projectRoot: string,
+  args: string[],
+  output: SubprocessOutput
+): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  if (output === 'inherit') {
+    return { exitCode: await runExpoAsync(projectRoot, args), stdout: '', stderr: '' };
+  }
+  const { result } = await spawnExpoAsync(projectRoot, args, { output });
+  return { exitCode: result.exitCode ?? 1, stdout: result.stdout, stderr: result.stderr };
+}
+
+/**
+ * Turn a step that stopped on a prompt into the handoff it is.
+ *
+ * `Input is required, but 'npx expo' is in non-interactive mode.` is the definition of exit 7: no
+ * re-run of the same command gets past it, because what it is waiting for is an answer. The
+ * classifier's generic `expo-prompt` row names the command that stopped, and the message quotes
+ * what the CLI actually asked so the reader can see the question.
+ *
+ * @throws {NeedsHumanError} when the registry recognises what stopped the step.
+ */
+function assertNotNeedsHuman(
+  step: PlanStep,
+  args: string[],
+  result: { exitCode: number; stdout: string; stderr: string }
+): void {
+  const invocation = `npx expo ${args.join(' ')}`;
+  const needsHuman = classifySubprocessFailure({ tool: 'expo', invocation, ...result });
+  if (!needsHuman) {
+    return;
+  }
+
+  const asked = lastNonEmptyLine(result.stderr) ?? lastNonEmptyLine(result.stdout);
+  throw needsHumanErrorFrom(needsHuman, {
+    code: 'EXPO_NEEDS_INPUT',
+    message: [
+      `The plan stopped at "${step.id}": "${invocation}" needed an answer and this run has no terminal to give one.`,
+      `Why: the Expo CLI asks before it does something it cannot decide — most often "port 8081 is busy, use another one?" — and a run with no terminal fails there instead of prompting.`,
+      `How: for the port question, name the port yourself with "npx exagent dev --port 8082", which is answered before the CLI has to ask. Otherwise run the command above in a terminal once, and answer it.`,
+      asked ? `\nWhat it asked for:\n${asked}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
+  });
+}
+
+/**
+ * The follow-ups of a run, which are the dev server's.
+ *
+ * `devServer` is what the run learned about the server it started, and null before it has started
+ * one. The port is only claimed when something reported it: `source: 'default'` means neither the
+ * dev server nor the command line named one, and a URL built on that assumption is how this
+ * command came to tell an agent to open a *different project's* app
+ * [observed — friction run, 2026-08-23].
+ */
+function resolveRunFollowUps(
+  projectRoot: string,
+  plan: StartPlan,
+  options: DevOptions,
+  devServer: DevServerRun | null
+): FollowUp[] {
+  const port = devServer
+    ? // After the run: what the dev server reported, and nothing when it reported nothing.
+      devServer.port && devServer.port.source !== 'default'
+      ? devServer.port.port
+      : null
+    : // Before it: the flag, or the port `expo start` uses when none is named.
+      resolveDevServerPort(options.expoArgs);
+
+  return resolveStartFollowUps(projectRoot, options, {
+    expoGo: plan.target === 'expo-go',
+    web: plan.target === 'web',
+    port,
+  });
 }
 
 /**

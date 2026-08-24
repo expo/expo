@@ -39,6 +39,57 @@ describe('exagent install', () => {
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('install');
     expect(result.all).toContain('--no-agent-skills');
+    // The two flags the help used to leave out, while the errors named them.
+    expect(result.all).toContain('--check');
+    expect(result.all).toContain('--json');
+  });
+
+  // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
+  // The one common agent action that had no machine-readable result: `--json` was rejected by
+  // `expo install` and the wrapper's own report existed only as prose.
+  describe('--json', () => {
+    it('prints one object with a stable key set, and nothing else', async () => {
+      const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--json']);
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(Object.keys(report).sort()).toEqual([
+        'check',
+        'checkpoint',
+        'exitCode',
+        'followups',
+        'impact',
+        'installed',
+        'packages',
+        'projectRoot',
+        'skillPackages',
+      ]);
+      expect(report).toMatchObject({ packages: ['expo-camera'], installed: true, exitCode: 0 });
+      // `--json` is this wrapper's flag now, so the Expo CLI — which rejects it — never sees it.
+      expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['install', 'expo-camera']);
+    });
+
+    it('carries the impact classification the human output prints', async () => {
+      const result = await executeExagentAsync(projectRoot, [
+        'install',
+        'fake-module-plain',
+        '--json',
+      ]);
+
+      expect(JSON.parse(result.stdout).impact).toEqual([
+        expect.objectContaining({ packageName: 'fake-module-plain', action: expect.any(String) }),
+      ]);
+    });
+
+    it('prints one object for a failed install too, with the exit code forwarded', async () => {
+      const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--json'], {
+        env: { STUB_EXPO_EXIT_CODE: '42' },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(42);
+      expect(JSON.parse(result.stdout)).toMatchObject({ installed: false, exitCode: 42 });
+    });
   });
 
   it('forwards the packages to the expo CLI', async () => {
@@ -293,6 +344,25 @@ describe('expo passthrough', () => {
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 
+  // A name that is only the *action* half is a caller that knows what it wants and not which
+  // group owns it, so the error names every group that has an action by that name.
+  it('names the closest commands for a name that is only an action', async () => {
+    const result = await executeExagentAsync(projectRoot, ['wait'], { reject: false });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.all).toContain('npx exagent build:wait');
+    expect(result.all).toContain('npx exagent dev:wait');
+    // Two candidates are a choice, so the last line stays the full listing.
+    expect(result.all).toContain('Try: npx exagent --help');
+  });
+
+  it('recovers into the one close command for a mistyped name', async () => {
+    const result = await executeExagentAsync(projectRoot, ['stauts'], { reject: false });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.all).toContain('Try: npx exagent status --help');
+  });
+
   it('forwards the exit code of the expo CLI', async () => {
     const result = await executeExagentAsync(projectRoot, ['prebuild', '--clean'], {
       env: { STUB_EXPO_EXIT_CODE: '17' },
@@ -400,5 +470,66 @@ describe('command registry', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('runtime:eval');
+  });
+});
+
+// @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+// The property, checked as a property: a caller that committed to parsing stdout can parse a
+// failure too. Every assertion here runs `JSON.parse` over the whole of stdout, because a
+// substring match would pass for the very output that broke this before (a payload with prose
+// appended after the closing brace).
+describe('the --json error envelope', () => {
+  let projectRoot: string;
+
+  beforeEach(async () => {
+    projectRoot = await setupFixtureAsync('skills-app');
+  });
+
+  it('prints one parseable object for a bad invocation', async () => {
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['deploy', '--upload-root', '..', '--json'],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout)).toEqual({
+      error: {
+        code: 'BAD_ARGS',
+        message: expect.stringContaining('--upload-root'),
+        suggestedCommand: expect.any(String),
+        needsHuman: null,
+      },
+    });
+    // The prose is unchanged and stays where a person reads it.
+    expect(result.stderr).toContain('--upload-root only describes the native deploy');
+  });
+
+  it('prints one parseable object for a command neither CLI has', async () => {
+    const result = await executeExagentAsync(projectRoot, ['wait', '--json'], { reject: false });
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).error).toMatchObject({ code: 'UNKNOWN_COMMAND' });
+  });
+
+  // The listing that accompanies a group error is prose, so under `--json` it moves to stderr:
+  // stdout has to hold the envelope and nothing else.
+  it('keeps the group listing off stdout so the envelope stays parseable', async () => {
+    const result = await executeExagentAsync(projectRoot, ['runtime', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).error).toMatchObject({ code: 'UNKNOWN_ACTION' });
+    expect(result.stderr).toContain('runtime:eval');
+  });
+
+  it('prints nothing on stdout without the flag', async () => {
+    const result = await executeExagentAsync(projectRoot, ['deploy', '--upload-root', '..'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe('');
   });
 });

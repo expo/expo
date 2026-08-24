@@ -62,6 +62,8 @@ const BUILD_URL = 'https://expo.dev/accounts/e2e/projects/go-app/builds/e2e';
  * Environment variables the tests steer it with:
  * - STUB_EAS_STATUSES: comma-separated statuses, one per poll; the last one repeats forever
  * - STUB_EAS_EXIT_CODE: exit code to return instead of answering (default 0)
+ * - STUB_EAS_WHOAMI_EXIT_CODE: exit code of the auth preflight's `eas whoami` (default 0)
+ * - STUB_EAS_WHOAMI_STDERR: what that `whoami` prints before a non-zero exit
  */
 const STUB_EAS = `#!/usr/bin/env node
 'use strict';
@@ -74,6 +76,19 @@ fs.appendFileSync(
   path.join(cwd, ${JSON.stringify(STUB_EAS_LOG_NAME)}),
   JSON.stringify({ args, cwd, isTTY: !!process.stdin.isTTY }) + '\\n'
 );
+
+// The auth preflight asks this before the first poll (llp/0010 §Needs-human protocol, layer 1),
+// so it answers on its own switch: a test steering the *polls* must not also decide whether the
+// wait starts at all.
+if (args[0] === 'whoami') {
+  const whoamiExit = Number(process.env.STUB_EAS_WHOAMI_EXIT_CODE || 0);
+  if (whoamiExit !== 0) {
+    process.stderr.write((process.env.STUB_EAS_WHOAMI_STDERR || 'Not logged in') + '\\n');
+    process.exit(whoamiExit);
+  }
+  process.stdout.write('e2e-account\\n');
+  process.exit(0);
+}
 
 const exitCode = Number(process.env.STUB_EAS_EXIT_CODE || 0);
 if (exitCode !== 0) {
@@ -139,8 +154,17 @@ async function setupAsync(): Promise<string> {
   return fs.promises.realpath(projectRoot);
 }
 
-/** Every invocation of the stub `eas` bin recorded for a project. */
-function readStubEasInvocations(projectRoot: string): StubEasInvocation[] {
+/**
+ * The work the wrapper asked the stub `eas` bin to do.
+ *
+ * The auth preflight's `eas whoami` is left out unless a caller asks for it: it is a question
+ * about the machine rather than a step of the command, and every assertion about *what ran* means
+ * the steps. `{ includeProbes: true }` is how the preflight itself is asserted.
+ */
+function readStubEasInvocations(
+  projectRoot: string,
+  { includeProbes = false }: { includeProbes?: boolean } = {}
+): StubEasInvocation[] {
   const logPath = path.join(projectRoot, STUB_EAS_LOG_NAME);
   if (!fs.existsSync(logPath)) {
     return [];
@@ -149,7 +173,8 @@ function readStubEasInvocations(projectRoot: string): StubEasInvocation[] {
     .readFileSync(logPath, 'utf8')
     .split('\n')
     .filter(Boolean)
-    .map((line) => JSON.parse(line));
+    .map((line) => JSON.parse(line))
+    .filter((invocation) => includeProbes || invocation.args[0] !== 'whoami');
 }
 
 /** Every JSONL event of one run, as `2g` wrote them. */
@@ -169,6 +194,15 @@ function readEvents(eventsFile: string): Record<string, any>[] {
  * race the scripted sequence would make every one of them fail on a loaded machine instead.
  */
 const FAST = ['--interval', '50ms', '--timeout', '30s'];
+
+/**
+ * Exit code of a run that stopped on a step only a person can finish (llp/0010 §Exit codes).
+ *
+ * Spelled out rather than imported, like the four outcome codes below it: an e2e test pins what
+ * the process boundary shows, and one that read the constant from the source could not notice the
+ * number changing.
+ */
+const EXIT_NEEDS_HUMAN = 7;
 
 describe('exagent build:wait', () => {
   // Each exit code is the contract for one outcome, so each one gets its own test.
@@ -387,9 +421,46 @@ describe('exagent build:wait', () => {
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('3 times in a row');
       expect(result.stderr).toContain('Build not found');
-      expect(result.stderr).toContain(`Try: npx eas workflow:status ${BUILD_ID} --wait --json`);
+      // The workflow command is a conditional suggestion, so it stays inside the `How:` sentence
+      // that states the condition. The last line — what a driving agent acts on — is the check
+      // that is worth running unconditionally, against the binary that actually ran.
+      expect(result.stderr).toContain(`npx eas workflow:status ${BUILD_ID} --wait --json`);
+      expect(result.stderr).toMatch(/Try: .*[/\\]\.stub-bin[/\\]eas(\.cmd)? whoami/);
+      expect(result.stderr).not.toContain(`Try: npx eas workflow:status`);
       // It gave up after three, rather than polling for the whole timeout.
       expect(readStubEasInvocations(projectRoot)).toHaveLength(3);
+    });
+
+    // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 1 — a wait that nobody
+    // is signed in for cannot see any build, so three doomed polls and a "gave up waiting" that
+    // names the wrong cause become one accurate answer, before anything is spent.
+    it('exits 7 without polling when nobody is signed in', async () => {
+      const projectRoot = await setupAsync();
+
+      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+        env: { STUB_EAS_WHOAMI_EXIT_CODE: '1' },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(EXIT_NEEDS_HUMAN);
+      expect(result.stderr).toContain('Needs a human   eas-login');
+      expect(readStubEasInvocations(projectRoot)).toEqual([]);
+    });
+
+    // The other half: a preflight that could not answer is not an answer of "no".
+    it('polls as usual when the preflight could not answer', async () => {
+      const projectRoot = await setupAsync();
+
+      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+        env: {
+          STUB_EAS_STATUSES: 'FINISHED',
+          STUB_EAS_WHOAMI_EXIT_CODE: '101',
+          STUB_EAS_WHOAMI_STDERR: 'Stack backtrace:\n   2: tuft::main',
+        },
+      });
+
+      expect(result.exitCode).toBe(0);
+      expect(readStubEasInvocations(projectRoot)).toHaveLength(1);
     });
 
     it('exits 1 and spends nothing when no id was given', async () => {

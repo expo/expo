@@ -11,6 +11,8 @@ describe(resolveInstallPlan, () => {
       impact: true,
       followups: true,
       checkpoint: true,
+      json: false,
+      check: false,
     });
   });
 
@@ -89,5 +91,72 @@ describe(resolveInstallPlan, () => {
   it(`should skip the sync for --check, which installs nothing`, () => {
     expect(resolveInstallPlan(['--check']).syncScope).toBe('none');
     expect(resolveInstallPlan(['expo-sqlite', '--check']).syncScope).toBe('none');
+  });
+
+  describe('--json', () => {
+    it(`should own the flag rather than forward it`, () => {
+      const plan = resolveInstallPlan(['expo-sqlite', '--json']);
+
+      expect(plan.json).toBe(true);
+      // `expo install` rejects `--json` without `--check`, and this command answers for itself now.
+      expect(plan.expoArgs).toEqual(['expo-sqlite']);
+    });
+
+    // The `--check` report belongs to the Expo CLI, so the flag is handed on and the payload
+    // travels inside this command's own object.
+    it(`should forward the flag for a --check run`, () => {
+      expect(resolveInstallPlan(['--check', '--json']).expoArgs).toEqual(['--check', '--json']);
+    });
+
+    it(`should keep the skill dump off stdout`, () => {
+      expect(resolveInstallPlan(['expo-sqlite', '--json']).skillContext).toBe(false);
+      expect(resolveInstallPlan(['expo-sqlite']).skillContext).toBe(true);
+    });
+  });
+
+  // Everything a caller can get wrong is decided here, before the checkpoint is written: a
+  // rejected invocation must not leave a snapshot of an install that never happened.
+  describe('arguments that cannot work', () => {
+    it(`should reject a flag neither CLI has, naming both sets`, () => {
+      expect(() => resolveInstallPlan(['react', '--verbose'])).toThrow(
+        /"--verbose" is not an option/
+      );
+      expect(() => resolveInstallPlan(['react', '--no-checkpont'])).toThrow(/is not an option/);
+    });
+
+    it(`should point a package-manager flag at the separator that forwards it`, () => {
+      expect(() => resolveInstallPlan(['react', '--verbose'])).toThrow(
+        /npx exagent install react -- --verbose/
+      );
+    });
+
+    it(`should accept every flag either CLI has`, () => {
+      const flags = [
+        '--check',
+        '--dev',
+        '--npm',
+        '--pnpm',
+        '--yarn',
+        '--bun',
+        '--json',
+        '--no-agent-skills',
+        '--no-skill-context',
+        '--no-impact',
+        '--no-followups',
+        '--no-checkpoint',
+      ];
+      for (const flag of flags) {
+        expect(() => resolveInstallPlan([flag])).not.toThrow();
+      }
+      expect(() => resolveInstallPlan(['react', '--fix'])).not.toThrow();
+    });
+
+    it(`should reject --check with --fix, the way the Expo CLI does`, () => {
+      expect(() => resolveInstallPlan(['--check', '--fix'])).toThrow(/cannot both apply/);
+    });
+
+    it(`should never judge what comes after the separator`, () => {
+      expect(() => resolveInstallPlan(['react', '--', '--verbose', '--legacy-peer-deps'])).not.toThrow();
+    });
   });
 });

@@ -11,6 +11,7 @@
 
 import { resolveEasCliOrThrow } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
+import { looksLikeWrapperCrash } from '../utils/wrapperCrash';
 import { lastNonEmptyLine } from './detect';
 
 /** Who the Expo CLI family acts as on this machine. */
@@ -78,6 +79,13 @@ async function probeAsync(projectRoot: string, timeoutMs: number): Promise<AuthP
   });
 
   if (result.spawnError || result.timedOut) {
+    return fromTokenAlone();
+  }
+  // A binary that is not the EAS CLI answers nothing about the account. It exits non-zero like a
+  // signed-out CLI does, and reading that as "signed out" would hand the user a login they do not
+  // need — and, worse, would stop a command that had every right to run. `null` is the honest
+  // answer, and the caller falls back to recognising a real failure when it happens (layer 3).
+  if (looksLikeWrapperCrash({ tool: 'eas', ...result })) {
     return fromTokenAlone();
   }
   if (result.exitCode !== 0) {

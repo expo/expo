@@ -4,7 +4,8 @@ import { execSync } from 'child_process';
 
 import { event as cliEvent } from '../events';
 import { EXIT_ERROR, EXIT_NEEDS_HUMAN, exitWithCodeAsync } from '../exitCodes';
-import { exit, exception, warn } from '../log';
+import { exit, exception, log, warn } from '../log';
+import { isJsonRequested } from './jsonMode';
 
 const ERROR_PREFIX = 'Error: ';
 
@@ -132,6 +133,51 @@ export function formatNeedsHumanBlock(needsHuman: NeedsHuman): string[] {
   return lines;
 }
 
+/**
+ * The one JSON object a failing `--json` run prints on stdout.
+ *
+ * @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+ */
+export interface JsonErrorEnvelope {
+  error: {
+    /** The `CommandError` code, e.g. `BAD_ARGS`. The same string the `cli:error` event carries. */
+    code: string;
+    /** The prose that went to stderr, verbatim, newlines and all. */
+    message: string;
+    /** The command that most likely resolves this, or null when there is none. */
+    suggestedCommand: string | null;
+    /** The whole handoff when a person has to finish the step, null otherwise. */
+    needsHuman: NeedsHuman | null;
+  };
+}
+
+/**
+ * Build the envelope of one failure.
+ *
+ * The keys never vary — a caller that reads `error.needsHuman` after a plain tool error gets
+ * `null`, not a missing key ([[0006-agent-native-cli-surface]] §Output contract).
+ */
+export function jsonErrorEnvelope({
+  code,
+  message,
+  suggestedCommand,
+  needsHuman,
+}: {
+  code: string;
+  message: string;
+  suggestedCommand?: string;
+  needsHuman?: NeedsHuman | null;
+}): JsonErrorEnvelope {
+  return {
+    error: {
+      code,
+      message,
+      suggestedCommand: suggestedCommand ?? null,
+      needsHuman: needsHuman ?? null,
+    },
+  };
+}
+
 export class AbortCommandError extends CommandError {
   constructor() {
     super('ABORTED', 'Interactive prompt was cancelled.');
@@ -196,6 +242,19 @@ export function logCmdError(error: any): never {
       }
     } else if (suggestedCommand) {
       warn(`Try: ${suggestedCommand}`);
+    }
+    // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — a run asked for
+    // machine-readable output gets one, whether it succeeded or not. The prose above stays on
+    // stderr, where nothing is parsing; this is the only thing on stdout, so `JSON.parse` of a
+    // failing `--json` command works exactly as it does for a successful one.
+    if (isJsonRequested()) {
+      log(
+        JSON.stringify(
+          jsonErrorEnvelope({ code, message: error.message, suggestedCommand, needsHuman }),
+          null,
+          2
+        )
+      );
     }
     // `process.exit` drops buffered JSONL events (the `cli:error` above never reached
     // LOG_EVENTS), so `exitWithCodeAsync` flushes first. It never settles, which keeps the

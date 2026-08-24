@@ -4,6 +4,7 @@ import arg from 'arg';
 import { boolish } from 'getenv';
 
 import {
+  commandGroups,
   flagsWithoutActionMessage,
   flagsWithoutActionSuggestion,
   formatGroupHelp,
@@ -11,9 +12,11 @@ import {
   resolveCommand,
   unknownActionMessage,
   unknownCommandMessage,
+  unknownCommandSuggestion,
 } from './commandRegistry';
 import { EXIT_OK } from './exitCodes';
 import * as Log from './log';
+import { argvRequestsJson, setJsonRequested } from './utils/jsonMode';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG`, the same way
 // `@expo/cli` does, so the two CLIs share one debug switch. This must run before
@@ -47,6 +50,11 @@ const subcommand = args._[0] ?? null;
 // and `install`/`start` forward everything after it to the package manager.
 const rawArgv = process.argv.slice(2);
 const commandArgs = subcommand == null ? [] : rawArgv.slice(rawArgv.indexOf(subcommand) + 1);
+
+// @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — the error path is one
+// function shared by every command, and it runs after (often instead of) the command's own
+// argument parsing, so the launcher answers "was JSON asked for" once, from the raw argv.
+setJsonRequested(argvRequestsJson(commandArgs));
 
 // Push the help flag onto the command args, e.g. for `npx exagent --help skills`. This runs before
 // the command is resolved, so `exagent --help runtime` is the same request as `exagent runtime -h`.
@@ -87,6 +95,21 @@ if (resolution == null) {
   Log.exit(formatTopLevelHelp(), EXIT_OK);
 }
 
+/**
+ * Print a listing that accompanies an error.
+ *
+ * On stdout for a person, on stderr for a `--json` run: there the only thing that may be on stdout
+ * is the error envelope, or the caller's `JSON.parse` gets a help page (llp/0010 §The `--json`
+ * error envelope).
+ */
+function logErrorListing(text: string): void {
+  if (argvRequestsJson(commandArgs)) {
+    Log.error(text);
+  } else {
+    Log.log(text);
+  }
+}
+
 // No signal hooks are installed here. `install`, `start` and the `expo` passthrough hand the
 // terminal to the `expo` subprocess and forward the signals to it, in `utils/expoCli.ts`.
 switch (resolution.kind) {
@@ -94,16 +117,28 @@ switch (resolution.kind) {
     resolution.load().then((exec) => exec(resolution.argv));
     break;
 
-  case 'group-help':
-    Log.exit(formatGroupHelp(resolution.group), EXIT_OK);
+  // @ref llp/0010-agent-conventions.rfc.md §Registry rules — the listing, and then the options of
+  // the action the bare name runs. `exagent dev --help` used to print only the two action names,
+  // so a caller checking the help of the command it was about to run never learned that `--plan`
+  // exists — the one flag that makes `exagent dev` safe to run unattended. A group whose bare name
+  // does something has to document what that something takes.
+  case 'group-help': {
+    Log.log(formatGroupHelp(resolution.group));
+    const { defaultAction, actions } = commandGroups[resolution.group]!;
+    if (!defaultAction) {
+      process.exit(EXIT_OK);
+    }
+    // The action's own `--help` path prints its block and exits 0, so nothing follows this.
+    actions[defaultAction]!.load().then((exec) => exec(['--help']));
     break;
+  }
 
   // The listing comes first and the error last: the last line is what a driving agent acts on
   // (llp/0006 "errors are prompts").
   case 'unknown-action': {
     const { CommandError, logCmdError } =
       require('./utils/errors') as typeof import('./utils/errors');
-    Log.log(formatGroupHelp(resolution.group));
+    logErrorListing(formatGroupHelp(resolution.group));
     const error = new CommandError(
       'UNKNOWN_ACTION',
       unknownActionMessage(resolution.group, resolution.action)
@@ -118,7 +153,7 @@ switch (resolution.kind) {
   case 'flags-without-action': {
     const { CommandError, logCmdError } =
       require('./utils/errors') as typeof import('./utils/errors');
-    Log.log(formatGroupHelp(resolution.group));
+    logErrorListing(formatGroupHelp(resolution.group));
     const error = new CommandError(
       'UNKNOWN_ACTION',
       flagsWithoutActionMessage(resolution.group, resolution.flags)
@@ -134,7 +169,8 @@ switch (resolution.kind) {
     const { CommandError, logCmdError } =
       require('./utils/errors') as typeof import('./utils/errors');
     const error = new CommandError('UNKNOWN_COMMAND', unknownCommandMessage(resolution.command));
-    error.suggestedCommand = 'npx exagent --help';
+    // One close name is a recovery to run; several are a choice, and the message lists them.
+    error.suggestedCommand = unknownCommandSuggestion(resolution.command);
     logCmdError(error);
     break;
   }

@@ -80,7 +80,23 @@ if (process.env.STUB_CREATE_EXPO_GIT === '1') {
   fs.writeFileSync(path.join(projectRoot, '.git', 'HEAD'), 'ref: refs/heads/main\\n');
 }
 
-process.stdout.write('Your project is ready!\\n');
+// The closing output of the real tool, in its real shape: a spinner whose frames are separated by
+// carriage returns (which is what a run with no cursor to move receives), then the "what to do
+// next" block that ends every scaffold [observed — packages/create-expo/src/Template.ts].
+process.stdout.write('Creating an Expo project using the expo-template-default template.\\n');
+process.stdout.write(
+  '⠋ Locating project files.\\r⠙ Locating project files.\\r⠹ Locating project files.\\r✔ Downloaded and extracted project files.\\n'
+);
+process.stdout.write('✅ Your project is ready!\\n');
+process.stdout.write('\\n');
+process.stdout.write(
+  'To run your project, navigate to the directory and run one of the following npm commands.\\n'
+);
+process.stdout.write('\\n- cd ' + directory + '\\n');
+process.stdout.write('- npm run android\\n');
+process.stdout.write('- npm run ios\\n');
+process.stdout.write('- npm run web\\n');
+process.stdout.write('⚠️  Before running your app, make sure you have modules installed:\\n');
 `;
 
 /**
@@ -148,6 +164,25 @@ describe('exagent new', () => {
     expect(result.stdout).toContain(path.join(workDir, 'my-app'));
     expect(result.stdout).toContain('Suggested next:');
     expect(result.stdout).toContain('cd my-app && npx exagent status');
+  });
+
+  // The scaffolder writes for a person at a terminal, and this run has none: its spinner has no
+  // cursor to move, and its closing instructions arrive directly above this command's own.
+  it(`should filter the scaffolder's terminal output when nobody is watching one`, async () => {
+    const workDir = await setupWorkDirAsync();
+
+    const result = await executeExagentAsync(workDir, ['new', 'my-app']);
+
+    // What the tool said stays.
+    expect(result.stdout).toContain('Creating an Expo project using the expo-template-default');
+    expect(result.stdout).toContain('✅ Your project is ready!');
+    // Only the frame a terminal would have ended on, not the animation.
+    expect(result.stdout).toContain('✔ Downloaded and extracted project files.');
+    expect(result.stdout).not.toContain('⠙ Locating project files.');
+    // And one set of instructions for the project, not two.
+    expect(result.stdout).not.toContain('npm run ios');
+    expect(result.stdout).not.toContain('make sure you have modules installed');
+    expect(result.stdout).toContain('Suggested next:');
   });
 
   it(`should print one JSON object with a stable key set`, async () => {

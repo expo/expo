@@ -8,7 +8,10 @@ import {
   formatTopLevelHelp,
   helpSections,
   resolveCommand,
+  suggestCommandNames,
   topLevelCommands,
+  unknownCommandMessage,
+  unknownCommandSuggestion,
   withAction,
 } from '../commandRegistry';
 import type { Command } from '../types';
@@ -636,5 +639,66 @@ describe('helpSections', () => {
         expect(names.some((name) => advertised.includes(name))).toBe(true);
       }
     }
+  });
+});
+
+// @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts
+// A name that is in no map is answered with the names that are closest to it. The value of the
+// feature is entirely in *which* names it picks, so the table pins them.
+describe(suggestCommandNames, () => {
+  it.each([
+    // The action name on its own: not a typo, a caller that does not know which group owns it.
+    ['wait', ['build:wait', 'dev:wait']],
+    ['sync', ['skills:sync']],
+    ['setup', ['agents:setup']],
+    ['effective', ['config:effective']],
+    // A small number of edits away from a name that exists.
+    ['stauts', ['status']],
+    ['deploi', ['deploy']],
+    ['isntall', ['install']],
+    ['prebiuld', ['prebuild']],
+    // Two edits into a five-letter name is a different word, not a typo of it: `exagent logs` is
+    // a command that does not exist, and answering it with `login` would be a confident wrong
+    // guess about what the caller wanted.
+    ['logs', []],
+    ['zzzzzzzz', []],
+  ])('answers %p with %p', (command, expected) => {
+    expect(suggestCommandNames(command)).toEqual(expected);
+  });
+
+  it('never answers with more than three names', () => {
+    expect(suggestCommandNames('run').length).toBeLessThanOrEqual(3);
+  });
+
+  // A short name is held to one edit; a long one may be two away and still be the same word.
+  it('scales the edit budget with the length of the name', () => {
+    // Two names are one edit from `dew`, and both are offered: a tie is answered honestly.
+    expect(suggestCommandNames('dew')).toEqual(['new', 'dev']);
+    expect(suggestCommandNames('dxx')).toEqual([]);
+  });
+});
+
+describe(unknownCommandMessage, () => {
+  it('names the closest commands', () => {
+    const message = unknownCommandMessage('wait');
+
+    expect(message).toContain('"exagent wait" is not a command');
+    expect(message).toContain('npx exagent build:wait');
+    expect(message).toContain('npx exagent dev:wait');
+  });
+
+  it('says nothing about close names when there are none', () => {
+    expect(unknownCommandMessage('zzzzzzzz')).not.toContain('closest');
+  });
+});
+
+describe(unknownCommandSuggestion, () => {
+  it('recovers into the one close name', () => {
+    expect(unknownCommandSuggestion('stauts')).toBe('npx exagent status --help');
+  });
+
+  it('falls back to the listing when the answer is a choice', () => {
+    expect(unknownCommandSuggestion('wait')).toBe('npx exagent --help');
+    expect(unknownCommandSuggestion('zzzzzzzz')).toBe('npx exagent --help');
   });
 });

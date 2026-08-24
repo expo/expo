@@ -100,6 +100,8 @@ describe('exagent checkpoint', () => {
     expect(result.all).toContain('checkpoint:undo');
     // The bare command is the snapshot, which the listing says out loud.
     expect(result.all).toContain('npx exagent checkpoint');
+    // And the options that snapshot takes, because the bare name is what runs it.
+    expect(result.all).toContain('--label');
   });
 
   it('prints the options of the snapshot with `checkpoint:create --help`', async () => {
@@ -337,6 +339,34 @@ describe('checkpoints of a mutating command', () => {
     await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--no-checkpoint']);
 
     expect(readStore(projectRoot)).toEqual([]);
+  });
+
+  // A snapshot is a record of a change, and a rejected invocation changes nothing. `install` used
+  // to take one and *then* hand the arguments to `expo install`, which rejected them — leaving a
+  // checkpoint of an install that never happened [observed — friction run, 2026-08-23].
+  it('are not taken for an invocation that is rejected', async () => {
+    await initGitRepoAsync(projectRoot);
+
+    const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--verbose'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('is not an option');
+    expect(readStore(projectRoot)).toEqual([]);
+  });
+
+  // `--json` owns stdout, so the line naming the snapshot has to move: it is not the object a
+  // caller parses, and it used to land in front of one.
+  it('are reported inside the JSON object rather than in front of it', async () => {
+    await initGitRepoAsync(projectRoot);
+
+    const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--json']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).not.toContain('Checkpoint');
+    const report = JSON.parse(result.stdout);
+    expect(report.checkpoint).toMatchObject({ id: readStore(projectRoot)[0]!.id });
   });
 
   it('are skipped with EXAGENT_NO_CHECKPOINT', async () => {

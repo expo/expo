@@ -73,6 +73,8 @@ const STUB_DEPLOYMENT_URL = 'https://go-app--e2e123.expo.app';
  *   wrapper the exact wording the real CLI uses
  * - STUB_EAS_HANG: `1` to print a prompt and then wait forever, like a CLI asking a question
  *   nobody can answer
+ * - STUB_EAS_WHOAMI_EXIT_CODE: exit code of the auth preflight's `eas whoami` (default 0)
+ * - STUB_EAS_WHOAMI_STDERR: what that `whoami` prints before a non-zero exit
  */
 const STUB_EAS = `#!/usr/bin/env node
 'use strict';
@@ -85,6 +87,19 @@ fs.appendFileSync(
   path.join(cwd, ${JSON.stringify(STUB_EAS_LOG_NAME)}),
   JSON.stringify({ args, cwd, isTTY: !!process.stdin.isTTY }) + '\\n'
 );
+
+// The auth preflight (llp/0010 §Needs-human protocol, layer 1) asks this before anything runs, so
+// it answers on its own switch: a test that steers the *deploy* must not accidentally steer the
+// question that decides whether the deploy happens at all.
+if (args[0] === 'whoami') {
+  const whoamiExit = Number(process.env.STUB_EAS_WHOAMI_EXIT_CODE || 0);
+  if (whoamiExit !== 0) {
+    process.stderr.write((process.env.STUB_EAS_WHOAMI_STDERR || 'Not logged in') + '\\n');
+    process.exit(whoamiExit);
+  }
+  process.stdout.write('e2e-account\\n');
+  process.exit(0);
+}
 
 if (process.env.STUB_EAS_HANG === '1') {
   process.stderr.write('Resolving the deployment\\n');
@@ -252,8 +267,17 @@ function launchEnv(
 /** A directory that holds no Expo session, and never will. */
 const NO_EXPO_HOME = path.join(getTemporaryPath(), 'no-expo-home');
 
-/** Every invocation of the stub `eas` bin recorded for a project. */
-function readStubEasInvocations(projectRoot: string): StubEasInvocation[] {
+/**
+ * The work the wrapper asked the stub `eas` bin to do.
+ *
+ * The auth preflight's `eas whoami` is left out unless a caller asks for it: it is a question
+ * about the machine rather than a step of the command, and every assertion about *what ran* means
+ * the steps. `{ includeProbes: true }` is how the preflight itself is asserted.
+ */
+function readStubEasInvocations(
+  projectRoot: string,
+  { includeProbes = false }: { includeProbes?: boolean } = {}
+): StubEasInvocation[] {
   const logPath = path.join(projectRoot, STUB_EAS_LOG_NAME);
   if (!fs.existsSync(logPath)) {
     return [];
@@ -262,7 +286,8 @@ function readStubEasInvocations(projectRoot: string): StubEasInvocation[] {
     .readFileSync(logPath, 'utf8')
     .split('\n')
     .filter(Boolean)
-    .map((line) => JSON.parse(line));
+    .map((line) => JSON.parse(line))
+    .filter((invocation) => includeProbes || invocation.args[0] !== 'whoami');
 }
 
 describe('exagent deploy', () => {
@@ -350,7 +375,37 @@ describe('exagent deploy', () => {
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('exited with code 7');
-      expect(result.stderr).toContain('Try: npx eas-cli whoami');
+      // The check names the binary that actually ran, not a different package with a similar
+      // name: `npx eas-cli whoami` would answer for a program that was never involved.
+      expect(result.stderr).toMatch(/Try: .*[/\\]\.stub-bin[/\\]eas(\.cmd)? whoami/);
+      expect(result.stderr).not.toContain('npx eas-cli whoami');
+    });
+
+    // A `.tuft-bin/eas`, a stale link, or any wrapper under that name is not the EAS CLI, and its
+    // output is not EAS output. Quoting a Rust backtrace under "What the tool printed" tells the
+    // reader the EAS CLI reported a missing file [observed — friction run, 2026-08-23].
+    it(`should say the binary is not the CLI instead of quoting its crash`, async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+        env: {
+          STUB_EAS_EXIT_CODE: '101',
+          STUB_EAS_STDERR:
+            'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   0: <std::backtrace::Backtrace>::create\n   2: tuft::main',
+        },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('failed to run at all');
+      expect(result.stderr).toContain('this may not be the real CLI');
+      expect(result.stderr).not.toContain('What the tool printed');
+      expect(result.stderr).not.toContain('tuft::main');
+      // The same failure, as data: the envelope carries the message a person read.
+      expect(JSON.parse(result.stdout).error).toMatchObject({
+        code: 'EAS_DEPLOY_FAILED',
+        message: expect.stringContaining('failed to run at all'),
+      });
     });
 
     // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol
@@ -358,6 +413,61 @@ describe('exagent deploy', () => {
     // wording of the tool, the exit code, the printed block and the event, with stdin closed
     // throughout (which is the default condition of every e2e run here).
     describe('a step only a person can finish', () => {
+      // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 1
+      // The whole point is *when*: the export takes minutes, and the account is knowable in one
+      // short subprocess before it starts [observed — friction run, 2026-08-23: ten seconds of
+      // exporting, and only then the auth failure].
+      it(`should stop before the export when nobody is signed in`, async () => {
+        const projectRoot = await setupAsync('go-app');
+        const eventsFile = path.join(projectRoot, 'events.jsonl');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+          env: { STUB_EAS_WHOAMI_EXIT_CODE: '1', LOG_EVENTS: eventsFile },
+          reject: false,
+        });
+
+        expect(result.exitCode).toBe(EXIT_NEEDS_HUMAN);
+        // Nothing was spent: no export, and no upload.
+        expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+        expect(readStubEasInvocations(projectRoot)).toEqual([]);
+        // The preflight did ask, once.
+        expect(
+          readStubEasInvocations(projectRoot, { includeProbes: true }).map(({ args }) => args)
+        ).toEqual([['whoami']]);
+
+        expect(lastLines(result.stderr, 3)).toEqual([
+          'Needs a human   eas-login',
+          'Ask the user    npx eas login',
+          'Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)',
+        ]);
+        expect(readEvents(eventsFile).find((entry) => entry._e === 'cli:needs_human')).toMatchObject(
+          { scenario: 'eas-login', detectedBy: 'preflight' }
+        );
+        // And as data, for the agent that asked for JSON.
+        expect(JSON.parse(result.stdout).error).toMatchObject({
+          code: 'EAS_LOGIN_REQUIRED',
+          needsHuman: { scenario: 'eas-login', detectedBy: 'preflight' },
+        });
+      });
+
+      // The correctness half of the preflight. A binary that is not the EAS CLI exits non-zero
+      // just like a signed-out one; reading that as "signed out" would stop a deploy that had
+      // every right to run, on a machine whose `eas` is a broken shim.
+      it(`should deploy anyway when the preflight could not answer`, async () => {
+        const projectRoot = await setupAsync('go-app');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+          env: {
+            STUB_EAS_WHOAMI_EXIT_CODE: '101',
+            STUB_EAS_WHOAMI_STDERR: 'Stack backtrace:\n   2: tuft::main',
+          },
+          reject: false,
+        });
+
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout).web.url).toBe(STUB_DEPLOYMENT_URL);
+      });
+
       it(`should recognise the EAS CLI asking for a login`, async () => {
         const projectRoot = await setupAsync('go-app');
         const eventsFile = path.join(projectRoot, 'events.jsonl');

@@ -286,4 +286,16 @@ describe('exagent doctor:check', () => {
     expect(result.stdout).toContain('--json');
     expect(readInvocations(projectRoot)).toEqual([]);
   });
+
+  // The bare group name runs `doctor:check`, so the group listing documents what it takes.
+  it('lists the actions with `doctor --help`, then the default action’s options', async () => {
+    const projectRoot = await setupAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['doctor', '--help']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('doctor:check');
+    expect(result.stdout).toContain('--json');
+    expect(readInvocations(projectRoot)).toEqual([]);
+  });
 });
