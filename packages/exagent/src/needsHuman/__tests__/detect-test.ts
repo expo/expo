@@ -26,6 +26,14 @@ const SAMPLES = {
   /** create-launch, when nobody is signed in. */
   launchUnauthenticated:
     'You need to be authenticated with Expo before launching in non-interactive',
+  /**
+   * `expo start --ios` on a Mac that has granted no Automation permission
+   * [observed live, 2026-08-23]. The `-1743` line is osascript's own; the Expo CLI usually shows
+   * only the wrapper sentence, so both halves have to be recognised on their own.
+   */
+  osascriptRefused:
+    'Error: osascript -e tell app "System Events" to count processes whose name is "Simulator" or name is "DeviceHub" exited with non-zero code: 1\n    at isSimulatorAppRunningAsync (/app/node_modules/@expo/cli/build/src/start/platforms/ios/ensureSimulatorAppRunning.js:98:58)',
+  appleEventsRefused: 'execution error: Not authorized to send Apple events to System Events. (-1743)',
 } as const;
 
 /** A failed run of one tool, with the sample it printed on stderr. */
@@ -68,6 +76,30 @@ describe(classifySubprocessFailure, () => {
         failure({ stderr: SAMPLES.easNonInteractive, invocation: 'npx eas deploy' })
       )
     ).toMatchObject({ scenario: 'eas-prompt', command: 'npx eas deploy' });
+  });
+
+  it.each([
+    ['the wrapper sentence the Expo CLI prints', SAMPLES.osascriptRefused],
+    ['the -1743 line osascript itself prints', SAMPLES.appleEventsRefused],
+  ])('recognises a refused macOS Automation permission from %s', (_label, stderr) => {
+    expect(
+      classifySubprocessFailure(
+        failure({ tool: 'expo', stderr, invocation: 'npx expo start --go --ios' })
+      )
+    ).toMatchObject({
+      scenario: 'macos-automation',
+      // Not the invocation that stopped: this row is specific, so it keeps its own recovery —
+      // the command that puts the permission switch on screen.
+      command: 'open "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation"',
+      url: 'x-apple.systempreferences:com.apple.preference.security?Privacy_Automation',
+      detectedBy: 'exit-signature',
+    });
+  });
+
+  it('leaves an AppleScript failure of another tool alone', () => {
+    // The row is scoped to `expo`: the EAS CLI drives no simulator, so its output must not be read
+    // for one.
+    expect(classifySubprocessFailure(failure({ stderr: SAMPLES.osascriptRefused }))).toBeNull();
   });
 
   it('prefers the specific scenario over the generic one that also matches', () => {

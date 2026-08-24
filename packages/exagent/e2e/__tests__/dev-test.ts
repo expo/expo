@@ -236,8 +236,11 @@ describe('exagent dev', () => {
       expect(result.stdout).toContain('stub_expo_start');
     });
 
-    // The follow-ups of a run that started nothing may not name a dev server.
-    it('names no dev-server URL when the run started none', async () => {
+    // @ref llp/0010-agent-conventions.rfc.md §A failed plan step reports a failure, not a plan
+    // A run that started nothing has no plan to report and no dev server to point at. It used to
+    // print the plan object with its success-shaped follow-ups and let the exit code be the only
+    // thing that disagreed [observed — friction run 2, 2026-08-23].
+    it('reports a failed step as a failure, and names no dev server', async () => {
       const projectRoot = await setupAsync('go-app');
 
       const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
@@ -245,10 +248,15 @@ describe('exagent dev', () => {
         reject: false,
       });
 
+      // The subprocess's own code, forwarded exactly as it always was.
       expect(result.exitCode).toBe(9);
-      const followups = JSON.parse(result.stdout).followups as { id: string; command: string }[];
-      expect(followups.map((followup) => followup.id)).toContain('dev-server-port-unknown');
-      expect(followups.some((followup) => followup.command.startsWith('exp://'))).toBe(false);
+      const payload = JSON.parse(result.stdout);
+      expect(payload).toMatchObject({
+        error: { code: 'PLAN_STEP_FAILED', needsHuman: null },
+      });
+      expect(payload.steps).toBeUndefined();
+      expect(payload.followups).toBeUndefined();
+      expect(result.stdout).not.toContain('exp://');
     });
   });
 

@@ -216,6 +216,19 @@ describe(formatNeedsHumanBlock, () => {
     );
   });
 
+  it('does not repeat a URL the command already spells out', () => {
+    expect(
+      formatNeedsHumanBlock(
+        needsHuman({
+          scenario: 'macos-automation',
+          command: 'open "x-apple.systempreferences:com.apple.preference.security"',
+          url: 'x-apple.systempreferences:com.apple.preference.security',
+          unattendedEnv: [],
+        })
+      )[1]
+    ).toBe('Ask the user    open "x-apple.systempreferences:com.apple.preference.security"');
+  });
+
   it('falls back to the need when a scenario names neither', () => {
     expect(
       formatNeedsHumanBlock(needsHuman({ command: null, url: null, unattendedEnv: [] }))[1]

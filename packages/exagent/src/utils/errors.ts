@@ -119,7 +119,10 @@ export function isNeedsHumanError(error: unknown): error is NeedsHumanError {
 export function formatNeedsHumanBlock(needsHuman: NeedsHuman): string[] {
   const row = (label: string, value: string) => `${label.padEnd(NEEDS_HUMAN_LABEL_WIDTH)}${value}`;
   const ask = needsHuman.command ?? needsHuman.url ?? needsHuman.need;
-  const parenthesizedUrl = needsHuman.url ? `  (${needsHuman.url})` : '';
+  // Never twice on one line: a command whose whole job is to open the URL already spells it, and
+  // `open "<url>"  (<url>)` reads as two different places to go.
+  const parenthesizedUrl =
+    needsHuman.url && !ask.includes(needsHuman.url) ? `  (${needsHuman.url})` : '';
 
   const lines = [row('Needs a human', needsHuman.scenario)];
   if (needsHuman.unattendedEnv.length) {

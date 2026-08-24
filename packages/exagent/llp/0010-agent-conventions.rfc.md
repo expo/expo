@@ -235,6 +235,43 @@ The breaking change [observed — `e2e/__tests__/deploy-test.ts`]: the deploy's 
 
 The plan engine joined the protocol on the same terms [added — 2026-08-23]. `exagent dev` runs its steps as subprocesses, and a step whose output this process can see is a step whose stop can be classified — so `dev` captures its steps whenever nobody is watching a terminal (`--json`, or a non-TTY run) and inherits when somebody is. `Input is required, but 'npx expo' is in non-interactive mode.` is then exit `7` rather than the subprocess's own `1`, which is the definition of the code: what the command is waiting for is an answer, and no re-run supplies one. The message names `--port` for the case that produces it almost every time — 8081 already taken, and the CLI asking whether to use 8082 — because that flag answers the question before it is asked. The friction run of 2026-08-23 is what this is for: `exagent dev --yes` is the documented non-interactive entry point, and on a busy port it exited 1 having started nothing.
 
+### A failed plan step reports a failure, not a plan
+
+Decision [confirmed — Kudo, 2026-08-23]. `exagent dev` prints its plan object only when every step
+of it worked. A run whose step failed raises instead, so `--json` gets the error envelope of §The
+`--json` error envelope and a terminal gets what / **Why:** / **How:**.
+
+The finding [observed — friction run 2, 2026-08-23]: `exagent dev --yes --json --ios` exited **7**
+with the plan object on stdout — keys `target`, `rule`, `steps`, `reasons`, `followups`, no `error`
+— zero bytes on stderr, and no dev server on the port. An agent parsing stdout read a started dev
+server, an agent reading stderr read nothing, and only the exit code disagreed with both.
+
+Three things were wrong at once, and each is fixed on its own terms:
+
+- **The payload.** The plan describes what the run *meant* to do. After a step failed it is a
+  description of something that did not happen, and its follow-ups ("The dev server is up but opens
+  nothing…", `exp://…:8131`) are advice about a dev server that does not exist. `PLAN_STEP_FAILED`
+  is the envelope now, and in `capture` mode it carries the tail of what the step printed —
+  otherwise `--json` throws that output away and the agent has nothing at all.
+- **The classification.** The step failed on `osascript`: `expo start --ios` drives Simulator.app
+  through AppleScript, and this Mac had granted no Automation permission (`-1743`). The Expo CLI
+  does not catch the rejection, so it ends the process — the dev server with it. That is a person
+  flipping a switch in System Settings, which is the definition of exit `7`, so it is a registry row
+  now (`macos-automation`) and arrives with the whole handoff instead of a bare code.
+- **The `7` itself was a coincidence.** Node leaves with `7` after an unhandled rejection inside an
+  exception handler [observed live, 2026-08-23], and `exagent dev` forwards a step's code verbatim,
+  so the CLI's own needs-human code arrived by accident. The forwarding rule does **not** change —
+  inventing a code would hide the one the tool reported — but the payload now says which it is: a
+  genuine stop carries `error.needsHuman`, and a coincidence carries `null` under
+  `PLAN_STEP_FAILED`. The exit code was never meant to be read alone; the envelope is what
+  disambiguates it.
+
+What is deliberately *not* changed: `--ios` stays in the plan's argv. It is the step that opens the
+app, it works on a Mac with the permission granted, and llp/0004's `reason` already tells a reader
+what each form does. The recovery an agent can take without a person — start without `--ios`, then
+`exagent navigate /`, which deep-links through `simctl openurl` and needs no Automation grant — is
+named in the error's `How:` line, where it is read at the moment it is useful.
+
 One limit stays, deliberately: the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified — `src/passthrough/` is unchanged on purpose. The second limit recorded here — that there was no `--json` error envelope — has since been lifted; see the section below.
 
 Signature matching is version-coupled to two CLIs that do not promise their wording — which is why the generic rows exist, why they are last, and why the upstream ask below is the real fix.
