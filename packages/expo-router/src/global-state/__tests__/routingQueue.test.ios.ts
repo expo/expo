@@ -2,6 +2,7 @@ import type { RefObject } from 'react';
 
 import type { NavigationContainerRef, ParamListBase } from '../../react-navigation/native';
 import { getNavigateAction } from '../getNavigationAction';
+import { defaultRouteInfo } from '../getRouteInfoFromState';
 import { routingQueue } from '../routingQueue';
 
 jest.mock('../getNavigationAction', () => ({
@@ -87,7 +88,7 @@ describe('routingQueue', () => {
     routingQueue.add({ type: 'GO_BACK' });
     routingQueue.add({ type: 'POP_TO_TOP' });
 
-    routingQueue.run(ref);
+    routingQueue.run(ref, defaultRouteInfo);
 
     expect(routingQueue.queue).toHaveLength(0);
   });
@@ -97,7 +98,7 @@ describe('routingQueue', () => {
 
     routingQueue.add({ type: 'GO_BACK' });
 
-    routingQueue.run(ref);
+    routingQueue.run(ref, defaultRouteInfo);
 
     expect(ref.current!.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
   });
@@ -148,7 +149,7 @@ describe('routingQueue', () => {
       payload: { href: '/redirect', options: { event: 'NAVIGATE' } },
     });
 
-    routingQueue.run(ref);
+    routingQueue.run(ref, defaultRouteInfo);
 
     expect(ref.current!.dispatch).not.toHaveBeenCalled();
   });
@@ -158,7 +159,7 @@ describe('routingQueue', () => {
 
     routingQueue.add({ type: 'GO_BACK' });
 
-    routingQueue.run(ref as any);
+    routingQueue.run(ref as any, defaultRouteInfo);
 
     // Queue should still be drained (reset identity happens before dispatch loop)
     expect(routingQueue.queue).toHaveLength(0);
@@ -171,7 +172,7 @@ describe('routingQueue', () => {
 
     const oldQueue = routingQueue.queue;
 
-    routingQueue.run(ref);
+    routingQueue.run(ref, defaultRouteInfo);
 
     // The queue should be a new array reference
     expect(routingQueue.queue).not.toBe(oldQueue);
