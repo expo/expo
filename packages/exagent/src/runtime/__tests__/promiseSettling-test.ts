@@ -218,9 +218,9 @@ describe(parseSettledPromiseSlot, () => {
 
   // `value: undefined` and no `value` are different answers: one promise resolved with undefined.
   it(`should keep a value of undefined apart from an absent one`, () => {
-    expect(parseSettledPromiseSlot({ state: 'fulfilled', type: 'undefined', value: undefined })).toEqual(
-      { state: 'fulfilled', type: 'undefined', value: undefined }
-    );
+    expect(
+      parseSettledPromiseSlot({ state: 'fulfilled', type: 'undefined', value: undefined })
+    ).toEqual({ state: 'fulfilled', type: 'undefined', value: undefined });
     expect(parseSettledPromiseSlot({ state: 'fulfilled', type: 'function' })).toEqual({
       state: 'fulfilled',
       type: 'function',

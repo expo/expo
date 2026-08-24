@@ -180,12 +180,17 @@ export async function symbolicateFramesAsync(
   }
 
   const url = `${devServerUrl.replace(/\/+$/, '')}/symbolicate`;
+  // An `AbortController` rather than `AbortSignal.timeout`, because the latter's timer cannot be
+  // cleared: it would keep the process alive for the whole budget after a request that has already
+  // answered, which is a five-second pause at the end of every run.
+  const abort = new AbortController();
+  const deadline = setTimeout(() => abort.abort(), SYMBOLICATE_TIMEOUT_MS);
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ stack: frames }),
-      signal: AbortSignal.timeout(SYMBOLICATE_TIMEOUT_MS),
+      signal: abort.signal,
     });
     if (!response.ok) {
       debugEvent('symbolicate_failed', { url, reason: `answered ${response.status}` });
@@ -206,6 +211,8 @@ export async function symbolicateFramesAsync(
       reason: error instanceof Error ? error.message : String(error),
     });
     return frames;
+  } finally {
+    clearTimeout(deadline);
   }
 }
 

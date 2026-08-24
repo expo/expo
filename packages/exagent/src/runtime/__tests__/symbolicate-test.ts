@@ -92,9 +92,7 @@ describe(splitTextStack, () => {
       splitTextStack(`Error: BOOM_PROJECT_FRAME\n    at wave3bBoom (${BUNDLE_URL}:193817:24)`)
     ).toEqual({
       message: 'Error: BOOM_PROJECT_FRAME',
-      frames: [
-        { methodName: 'wave3bBoom', file: BUNDLE_URL, lineNumber: 193817, column: 23 },
-      ],
+      frames: [{ methodName: 'wave3bBoom', file: BUNDLE_URL, lineNumber: 193817, column: 23 }],
     });
   });
 
