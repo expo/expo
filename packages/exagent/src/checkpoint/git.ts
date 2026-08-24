@@ -69,7 +69,7 @@ interface RunGitOptions {
  *
  * @throws {GitError} when git exits non-zero or cannot be started.
  */
-async function runGitAsync(args: string[], options: RunGitOptions): Promise<string> {
+export async function runGitAsync(args: string[], options: RunGitOptions): Promise<string> {
   const { stdout, stderr, exitCode, spawnError } = await new Promise<{
     stdout: string;
     stderr: string;

@@ -1,0 +1,91 @@
+{
+  "hash": "29306a01ea89b57d159cf933fca69fc073b68e61",
+  "sources": [
+    {
+      "type": "file",
+      "filePath": ".gitignore",
+      "reasons": [
+        "bareGitIgnore"
+      ],
+      "hash": "1b3d2a4eff0b7dfcc184f6ffc9dd95a283bf18d6"
+    },
+    {
+      "type": "file",
+      "filePath": "assets/images/icon.png",
+      "reasons": [
+        "expoConfigExternalFile"
+      ],
+      "overrideHashKey": "expoConfigExternalFile:contentsOnly",
+      "hash": "80bf044d3f2d87b752e55c7a5bcafc055a084224"
+    },
+    {
+      "type": "file",
+      "filePath": "node_modules/bplist-parser/bplistParser.js",
+      "reasons": [
+        "expoConfigPlugins"
+      ],
+      "hash": "c1e95333be94a8420cdf10e66f9f6ce7bdceff93"
+    },
+    {
+      "type": "dir",
+      "filePath": "node_modules/@expo/dom-webview/ios",
+      "reasons": [
+        "expoAutolinkingIos"
+      ],
+      "hash": "31f4bbab7a2ec0090700aea25f7eefccc3e8f077"
+    },
+    {
+      "type": "dir",
+      "filePath": "node_modules/@react-native-async-storage/async-storage",
+      "reasons": [
+        "rncoreAutolinkingIos"
+      ],
+      "hash": "c8abbd95b5a4de71497e32dc315b03711023ee53"
+    },
+    {
+      "type": "dir",
+      "filePath": "node_modules/expo",
+      "reasons": [
+        "expoAutolinkingIos",
+        "rncoreAutolinkingIos"
+      ],
+      "hash": "015e900019b99a868c097715bac1a3b86a2d8425"
+    },
+    {
+      "type": "dir",
+      "filePath": "node_modules/expo-modules-core",
+      "reasons": [
+        "expoAutolinkingIos",
+        "expoAutolinkingIos"
+      ],
+      "hash": "3534a0047cc6e8340cf35eb7aee9b459e6475f1a"
+    },
+    {
+      "type": "contents",
+      "id": "expoConfig",
+      "contents": "{\"android\":{\"adaptiveIcon\":{\"backgroundColor\":\"#E6F4FE\",\"backgroundImage\":\"./assets/images/android-icon-background.png\",\"foregroundImage\":\"./assets/images/android-icon-foreground.png\",\"monochromeImage\":\"./assets/images/android-icon-monochrome.png\"},\"predictiveBackGestureEnabled\":false},\"experiments\":{\"reactCompiler\":true,\"typedRoutes\":true},\"extra\":{\"router\":{}},\"icon\":\"./assets/images/icon.png\",\"ios\":{\"icon\":\"./assets/expo.icon\"},\"name\":\"notesapp\",\"orientation\":\"portrait\",\"platforms\":[\"android\",\"ios\",\"web\"],\"plugins\":[\"expo-router\",[\"expo-splash-screen\",{\"backgroundColor\":\"#208AEF\",\"image\":\"./assets/images/splash-icon.png\",\"imageWidth\":76}]],\"scheme\":\"notesapp\",\"sdkVersion\":\"57.0.0\",\"slug\":\"notesapp\",\"userInterfaceStyle\":\"automatic\",\"version\":\"1.0.0\",\"web\":{\"favicon\":\"./assets/images/favicon.png\",\"output\":\"static\"}}",
+      "reasons": [
+        "expoConfig"
+      ],
+      "hash": "83ba6629d952436184b1447a6dc1f2a896e15e1b"
+    },
+    {
+      "type": "contents",
+      "id": "package:react-native",
+      "contents": "{\"name\":\"react-native\",\"version\":\"0.86.2\",\"description\":\"A framework for building native apps using React\",\"license\":\"MIT\",\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/react/react-native.git\",\"directory\":\"packages/react-native\"},\"homepage\":\"https://reactnative.dev/\",\"keywords\":[\"react\",\"react-native\",\"android\",\"ios\",\"mobile\",\"cross-platform\",\"app-framework\",\"mobile-development\"],\"bugs\":\"https://github.com/react/react-native/issues\",\"engines\":{\"node\":\"^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0\"},\"bin\":{\"react-native\":\"cli.js\"},\"main\":\"./index.js\",\"types\":\"types\",\"exports\":{\".\":{\"react-native-strict-api\":\"./types_generated/index.d.ts\",\"types\":\"./types/index.d.ts\",\"default\":\"./index.js\"},\"./*\":{\"react-native-strict-api\":null,\"types\":\"./*.d.ts\",\"default\":\"./*.js\"},\"./*.js\":{\"react-native-strict-api\":null,\"default\":\"./*.js\"},\"./Libraries/*.d.ts\":{\"react-native-strict-api\":null,\"default\":\"./Libraries/*.d.ts\"},\"./scripts/*\":\"./scripts/*\",\"./src/*\":{\"react-native-strict-api\":null,\"default\":\"./src/*.js\"},\"./types/*.d.ts\":{\"react-native-strict-api\":null,\"default\":\"./types/*.d.ts\"},\"./gradle/*\":null,\"./React/*\":null,\"./ReactAndroid/*\":null,\"./ReactApple/*\":null,\"./ReactCommon/*\":null,\"./sdks/*\":null,\"./src/fb_internal/*\":\"./src/fb_internal/*\",\"./third-party-podspecs/*\":null,\"./types/*\":null,\"./types_generated/*\":null,\"./package.json\":\"./package.json\"},\"jest-junit\":{\"outputDirectory\":\"reports/junit\",\"outputName\":\"js-test-results.xml\"},\"files\":[\"build.gradle.kts\",\"cli.js\",\"flow\",\"gradle.properties\",\"gradle/libs.versions.toml\",\"index.js\",\"index.js.flow\",\"interface.js\",\"jest-preset.js\",\"Libraries\",\"LICENSE\",\"React-Core.podspec\",\"React-Core-prebuilt.podspec\",\"react-native.config.js\",\"React.podspec\",\"React\",\"!React/Fabric/RCTThirdPartyFabricComponentsProvider.*\",\"ReactAndroid\",\"!ReactAndroid/.cxx\",\"!ReactAndroid/build\",\"!ReactAndroid/external-artifacts/artifacts\",\"!ReactAndroid/external-artifacts/build\",\"!ReactAndroid/hermes-engine/.cxx\",\"!ReactAndroid/hermes-engine/build\",\"!ReactAndroid/src/main/third-party\",\"!ReactAndroid/src/test\",\"ReactApple\",\"ReactCommon\",\"README.md\",\"rn-get-polyfills.js\",\"scripts/replace-rncore-version.js\",\"scripts/bundle.js\",\"scripts/cocoapods\",\"scripts/codegen\",\"scripts/compose-source-maps.js\",\"scripts/find-node-for-xcode.sh\",\"scripts/generate-codegen-artifacts.js\",\"scripts/generate-provider-cli.js\",\"scripts/generate-specs-cli.js\",\"scripts/hermes/hermes-utils.js\",\"scripts/hermes/prepare-hermes-for-build.js\",\"scripts/ios-configure-glog.sh\",\"scripts/native_modules.rb\",\"scripts/node-binary.sh\",\"scripts/packager-reporter.js\",\"scripts/packager.sh\",\"scripts/react_native_pods_utils/script_phases.rb\",\"scripts/react_native_pods_utils/script_phases.sh\",\"scripts/react_native_pods.rb\",\"scripts/react-native-xcode.sh\",\"scripts/xcode/ccache-clang.sh\",\"scripts/xcode/ccache-clang++.sh\",\"scripts/xcode/ccache.conf\",\"scripts/xcode/with-environment.sh\",\"sdks/.hermesversion\",\"sdks/.hermesv1version\",\"sdks/hermes-engine\",\"sdks/hermesc\",\"settings.gradle.kts\",\"src\",\"!src/private/testing\",\"third-party-podspecs\",\"types\",\"types_generated\",\"!**/__docs__/**\",\"!**/__fixtures__/**\",\"!**/__flowtests__/**\",\"!**/__mocks__/**\",\"!**/__tests__/**\",\"!**/__typetests__/**\"],\"scripts\":{\"prepack\":\"node ./scripts/prepack.js\",\"featureflags\":\"node ./scripts/featureflags/index.js\"},\"peerDependencies\":{\"@react-native/jest-preset\":\"0.86.2\",\"@types/react\":\"^19.1.1\",\"react\":\"^19.2.3\"},\"peerDependenciesMeta\":{\"@types/react\":{\"optional\":true},\"@react-native/jest-preset\":{\"optional\":true}},\"dependencies\":{\"@react-native/assets-registry\":\"0.86.2\",\"@react-native/codegen\":\"0.86.2\",\"@react-native/community-cli-plugin\":\"0.86.2\",\"@react-native/gradle-plugin\":\"0.86.2\",\"@react-native/js-polyfills\":\"0.86.2\",\"@react-native/normalize-colors\":\"0.86.2\",\"@react-native/virtualized-lists\":\"0.86.2\",\"abort-controller\":\"^3.0.0\",\"anser\":\"^1.4.9\",\"ansi-regex\":\"^5.0.0\",\"babel-plugin-syntax-hermes-parser\":\"0.36.0\",\"base64-js\":\"^1.5.1\",\"commander\":\"^12.0.0\",\"flow-enums-runtime\":\"^0.0.6\",\"hermes-compiler\":\"250829098.0.16\",\"invariant\":\"^2.2.4\",\"memoize-one\":\"^5.0.0\",\"metro-runtime\":\"^0.84.3\",\"metro-source-map\":\"^0.84.3\",\"nullthrows\":\"^1.1.1\",\"pretty-format\":\"^29.7.0\",\"promise\":\"^8.3.0\",\"react-devtools-core\":\"^6.1.5\",\"react-refresh\":\"^0.14.0\",\"regenerator-runtime\":\"^0.13.2\",\"scheduler\":\"0.27.0\",\"semver\":\"^7.1.3\",\"stacktrace-parser\":\"^0.1.10\",\"tinyglobby\":\"^0.2.15\",\"whatwg-fetch\":\"^3.0.0\",\"ws\":\"^7.5.10\",\"yargs\":\"^17.6.2\"},\"codegenConfig\":{\"libraries\":[{\"name\":\"FBReactNativeSpec\",\"type\":\"all\",\"ios\":{\"modules\":{\"AccessibilityManager\":{\"unstableRequiresMainQueueSetup\":true},\"Appearance\":{\"unstableRequiresMainQueueSetup\":true},\"AppState\":{\"unstableRequiresMainQueueSetup\":true},\"DeviceInfo\":{\"unstableRequiresMainQueueSetup\":true},\"PlatformConstants\":{\"unstableRequiresMainQueueSetup\":true},\"StatusBarManager\":{\"unstableRequiresMainQueueSetup\":true}}},\"android\":{},\"jsSrcsDir\":\"src\"}]}}",
+      "reasons": [
+        "package:react-native"
+      ],
+      "hash": "816452a087641e8cc8b6595ed570ccdbb862936c"
+    },
+    {
+      "type": "contents",
+      "id": "packageJson:scripts",
+      "contents": "{\"start\":\"expo start\",\"reset-project\":\"node ./scripts/reset-project.js\",\"web\":\"expo start --web\",\"lint\":\"expo lint\"}",
+      "reasons": [
+        "packageJson:scripts"
+      ],
+      "hash": "80eeb0de366dc1d9cdc6b56a44c5a940a446aa8e"
+    }
+  ]
+}

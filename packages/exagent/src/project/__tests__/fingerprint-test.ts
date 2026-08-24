@@ -3,7 +3,14 @@ import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { generateFingerprintAsync, resolveFingerprintCli } from '../fingerprint';
+import {
+  buildGenerateArgs,
+  diffItemSource,
+  generateFingerprintAsync,
+  parseDiffItems,
+  parseFingerprint,
+  resolveFingerprintCli,
+} from '../fingerprint';
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
@@ -78,7 +85,7 @@ describe(generateFingerprintAsync, () => {
     child.stdout.emit('data', JSON.stringify({ sources: [], hash: 'abc123' }));
     child.emit('close', 0, null);
 
-    await expect(promise).resolves.toEqual({ hash: 'abc123' });
+    await expect(promise).resolves.toEqual({ hash: 'abc123', sources: [] });
     expect(spawn).toHaveBeenCalledWith(
       projectBin('fingerprint'),
       ['fingerprint:generate', projectRoot],
@@ -95,7 +102,7 @@ describe(generateFingerprintAsync, () => {
     child.stdout.emit('data', `${JSON.stringify({ hash: 'def456' })}\n`);
     child.emit('close', 0, null);
 
-    await expect(promise).resolves.toEqual({ hash: 'def456' });
+    await expect(promise).resolves.toEqual({ hash: 'def456', sources: null });
   });
 
   it(`should report a missing CLI without spawning anything`, async () => {
@@ -145,7 +152,117 @@ describe(generateFingerprintAsync, () => {
 
     await expect(promise).resolves.toEqual({
       hash: null,
+      sources: null,
       error: expect.stringContaining('ENOENT'),
     });
+  });
+});
+
+describe(buildGenerateArgs, () => {
+  it(`should generate for the project with no options`, () => {
+    expect(buildGenerateArgs(projectRoot)).toEqual(['fingerprint:generate', projectRoot]);
+  });
+
+  it(`should pass the platform through`, () => {
+    // A fingerprint of both platforms answers a freshness question and the wrong per-platform
+    // one: a change under `ios/` would move the android answer too.
+    expect(buildGenerateArgs(projectRoot, { platform: 'ios' })).toEqual([
+      'fingerprint:generate',
+      projectRoot,
+      '--platform',
+      'ios',
+    ]);
+  });
+
+  it(`should pass the preset through`, () => {
+    expect(buildGenerateArgs(projectRoot, { preset: 'strict' })).toEqual([
+      'fingerprint:generate',
+      projectRoot,
+      '--preset',
+      'strict',
+    ]);
+  });
+
+  it(`should pass both`, () => {
+    expect(buildGenerateArgs(projectRoot, { platform: 'android', preset: 'relaxed' })).toEqual([
+      'fingerprint:generate',
+      projectRoot,
+      '--platform',
+      'android',
+      '--preset',
+      'relaxed',
+    ]);
+  });
+});
+
+describe(parseFingerprint, () => {
+  it(`should read the hash and the sources`, () => {
+    expect(parseFingerprint(JSON.stringify({ sources: [{ type: 'file' }], hash: 'abc' }))).toEqual({
+      hash: 'abc',
+      sources: [{ type: 'file' }],
+    });
+  });
+
+  it(`should read a hash with no sources as sources null`, () => {
+    // Still a usable freshness answer, so the sources degrade rather than failing the parse.
+    expect(parseFingerprint(JSON.stringify({ hash: 'abc' }))).toEqual({
+      hash: 'abc',
+      sources: null,
+    });
+  });
+
+  it(`should read the last JSON line, past a warning`, () => {
+    const output = `warning: something\n${JSON.stringify({ hash: 'def', sources: [] })}\n`;
+
+    expect(parseFingerprint(output)).toEqual({ hash: 'def', sources: [] });
+  });
+
+  it(`should answer null when there is no hash anywhere`, () => {
+    expect(parseFingerprint('not json at all')).toBeNull();
+    expect(parseFingerprint(JSON.stringify({ sources: [] }))).toBeNull();
+  });
+});
+
+describe(parseDiffItems, () => {
+  it(`should read the pretty-printed array the CLI prints`, () => {
+    // `fingerprint:diff` pretty-prints, so the array spans many lines and the reverse-line scan
+    // that reads a generate does not apply here.
+    const output = JSON.stringify([{ op: 'added', addedSource: { type: 'file' } }], null, 2);
+
+    expect(parseDiffItems(output)).toEqual([{ op: 'added', addedSource: { type: 'file' } }]);
+  });
+
+  it(`should read an empty diff`, () => {
+    expect(parseDiffItems('[]')).toEqual([]);
+  });
+
+  it(`should skip anything printed before the array`, () => {
+    expect(parseDiffItems('debug line\n[]')).toEqual([]);
+  });
+
+  it(`should answer null for output with no array in it`, () => {
+    expect(parseDiffItems('nothing here')).toBeNull();
+    expect(parseDiffItems('{"hash":"abc"}')).toBeNull();
+  });
+
+  it(`should answer null for an unparsable array`, () => {
+    expect(parseDiffItems('[{')).toBeNull();
+  });
+});
+
+describe(diffItemSource, () => {
+  it(`should read the added source`, () => {
+    expect(diffItemSource({ op: 'added', addedSource: { id: 'a' } })).toEqual({ id: 'a' });
+  });
+
+  it(`should read the removed source`, () => {
+    expect(diffItemSource({ op: 'removed', removedSource: { id: 'r' } })).toEqual({ id: 'r' });
+  });
+
+  it(`should read the *after* side of a change`, () => {
+    // The reasons of a source that is still there are what it is there for now.
+    expect(
+      diffItemSource({ op: 'changed', beforeSource: { id: 'b' }, afterSource: { id: 'a' } })
+    ).toEqual({ id: 'a' });
   });
 });

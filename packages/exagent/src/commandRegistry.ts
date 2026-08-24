@@ -68,6 +68,9 @@ export function withAction(action: string, load: CommandLoader): CommandLoader {
 /** Commands with a name of their own. Add a new top-level command here. */
 export const topLevelCommands: { [command: string]: CommandLoader } = {
   deploy: () => import('./deploy').then((i) => i.exagentDeploy),
+  // A capability only this CLI has gets a verb of its own (llp/0006 naming rule): `expo` has no
+  // `impact` command, so there is no `expo` behaviour for this name to have to match.
+  impact: () => import('./impact').then((i) => i.exagentImpact),
   install: () => import('./install').then((i) => i.exagentInstall),
   navigate: () => import('./navigate').then((i) => i.exagentNavigate),
   new: () => import('./new').then((i) => i.exagentNew),
@@ -409,7 +412,17 @@ export interface HelpSection {
 export const helpSections: HelpSection[] = [
   {
     title: 'Develop',
-    commands: ['dev', 'dev:wait', 'dev:logs', 'dev:stop', 'typecheck', 'start', 'install', 'status'],
+    commands: [
+      'dev',
+      'dev:wait',
+      'dev:logs',
+      'dev:stop',
+      'typecheck',
+      'impact',
+      'start',
+      'install',
+      'status',
+    ],
     note: 'dev blocks this terminal; dev --detach does not, and dev:logs reads what it printed.',
   },
   {

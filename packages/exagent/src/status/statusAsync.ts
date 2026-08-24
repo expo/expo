@@ -151,7 +151,14 @@ export async function collectStatusReportAsync(
     const lastBuild = readLastBuildFingerprints(projectRoot);
     // The probe rides along whole, so `--json` is also the project brief: the sections round its
     // facts off for a terminal, and a caller that wants them exactly reads `probe`.
-    report.probe = state;
+    //
+    // Whole except the fingerprint's `sources`, which are dropped here and nowhere else. They are
+    // the list the hash was computed from — tens of thousands of bytes for a real project
+    // [observed — ~25 KB for iOS on an SDK 57 Expo Router app, 2026-08-24] — and this report
+    // answers a freshness question, for which the hash is the entire answer. `exagent impact` is
+    // the command that reads them, and it fingerprints for itself. Dropping them keeps `status`
+    // the instant, small report its contract promises (llp/0004 §`exagent status`).
+    report.probe = { ...state, fingerprint: { ...state.fingerprint, sources: undefined } };
     report.project = buildProjectStatus(state, packageName);
     report.expoGo = buildExpoGoStatus(state);
     report.freshness = buildFreshnessStatus(state, lastBuild);

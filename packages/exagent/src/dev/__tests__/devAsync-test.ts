@@ -340,11 +340,10 @@ describe(devAsync, () => {
 
       await devAsync(projectRoot, resolveDevOptions(['--android']));
 
-      expect(recordLastBuildFingerprint).toHaveBeenCalledWith(
-        projectRoot,
-        'android',
-        fingerprintHash
-      );
+      expect(recordLastBuildFingerprint).toHaveBeenCalledWith(projectRoot, 'android', {
+        hash: fingerprintHash,
+        sources: null,
+      });
     });
 
     it(`should not record a fingerprint of a build that failed`, async () => {

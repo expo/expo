@@ -220,12 +220,12 @@ test and the dev server's own bind, and retrying forever on that is a loop nobod
 [observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/status/`, `src/dev/`, `exagent dev [--plan]`) with these deliberate approximations of the table above:
 
 1. **No device probe.** "Go/dev client installed on the device" is unobservable without simctl/adb; those rows are dropped — `expo start` prompts for Go itself and `expo run:*` installs what it builds.
-2. **No build-cache lookup.** Freshness = probe fingerprint vs `.expo/exagent-last-build.json` (written after a successful `run:*` step). Unrecorded ⇒ stale: v1 over-plans a build at worst, never under-plans.
-3. The recorded hash is the pre-build probe hash (what an unchanged project re-probes to).
+2. **No build-cache lookup.** Freshness = probe fingerprint vs `.expo/exagent-last-build.json` (written after a successful `run:*` step). Unrecorded ⇒ stale: v1 over-plans a build at worst, never under-plans. **Closed for `impact`** [added — 2026-08-24]: `eas build:list --fingerprint-hash` is a build-cache lookup, and [[0011-impact-and-freshness]] §The build-cache lookup uses it to turn "you need a native build" into "a finished build already exists for this exact fingerprint". The *plan engine* does not consult it yet, and that is the remaining half of this item.
+3. The recorded hash is the pre-build probe hash (what an unchanged project re-probes to). The record now holds the whole fingerprint rather than the hash alone [added — 2026-08-24], because a hash cannot be diffed and "what changed" is the whole of what `impact` reports; a bare string still reads, as a record whose sources are null. See [[0011-impact-and-freshness]] §The record has to hold the sources, including the measurement behind storing it uncompressed.
 4. The `web` rule fires only on an explicit `--web`; `ProjectState` cannot prove "web-only".
 5. Bare-vs-CNG uses "any native dir present"; the argv uses the resolved platform.
 6. `sdkVersion: null` never forces a rule; `expoGo.compatible` is the single Go verdict.
-7. Config plugins are read from static config only (`app.json`); dynamic `app.config.js/ts` yields a debug event and best-effort skip — resolving it needs an `expo config` subprocess (follow-up).
+7. Config plugins are read from static config only (`app.json`); dynamic `app.config.js/ts` yields a debug event and best-effort skip — resolving it needs an `expo config` subprocess (follow-up). **The subprocess exists now** [added — 2026-08-24]: [[0011-impact-and-freshness]] §A fingerprint change is not "OTA-unsafe" spawns `expo config --json --type public` to resolve the `runtimeVersion` of a project whose config is code, with the static read as its fallback. The *plugins* half of this item is still static-only; what `impact` established is the mechanism and the parse (the Expo CLI writes its own event lines to stdout ahead of the answer, so the last JSON line is the one to read).
 
 ## Testing
 
