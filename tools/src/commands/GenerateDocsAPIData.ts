@@ -37,6 +37,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'swift-ui/AccessoryWidgetBackground/index.tsx',
     'expo-ui',
   ],
+  'expo-ui/swift-ui/background': ['swift-ui/Background/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],

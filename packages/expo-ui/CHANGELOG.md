@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))
+
 ### 🐛 Bug fixes
 
 - Fixed the keyboard staying open when tapping outside a text field hosted by `<Host>`. A parent `ScrollView`'s tap-to-dismiss, its `keyboardShouldPersistTaps` setting, and `Keyboard.dismiss()` now reach hosted text fields. React Native treats the whole `<Host>` as the input, so a tap on other content inside the same host still keeps the keyboard open. ([#48788](https://github.com/expo/expo/pull/48788) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
