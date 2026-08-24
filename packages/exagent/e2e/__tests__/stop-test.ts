@@ -26,8 +26,18 @@ const EXPO_GO_TARGET = {
   webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=1&page=1',
 };
 
-/** Install a stub `xcrun` that reports one booted simulator and records every invocation. */
-async function installStubXcrunAsync(projectRoot: string): Promise<() => string[][]> {
+/**
+ * Install a stub `xcrun` that reports one booted simulator and records every invocation.
+ *
+ * `runningAppIds` is what `simctl terminate` will find something to terminate for. The default is
+ * "anything", which keeps the argv assertions below about argv; a test that names the list gets
+ * the real refusal instead — `simctl` exits non-zero with `found nothing to terminate` for an app
+ * that was not running, and that is half of what tells a typo from an app that has already gone.
+ */
+async function installStubXcrunAsync(
+  projectRoot: string,
+  { runningAppIds }: { runningAppIds?: string[] } = {}
+): Promise<() => string[][]> {
   const logPath = path.join(projectRoot, '.stub-xcrun.jsonl');
   const scriptPath = path.join(projectRoot, '.stub-bin', 'xcrun-stub.js');
   await fs.promises.mkdir(path.dirname(scriptPath), { recursive: true });
@@ -39,6 +49,11 @@ async function installStubXcrunAsync(projectRoot: string): Promise<() => string[
       `fs.appendFileSync(${JSON.stringify(logPath)}, JSON.stringify(args) + '\\n');`,
       `if (args[1] === 'list') {`,
       `  process.stdout.write(JSON.stringify({ devices: { 'com.apple.CoreSimulator.SimRuntime.iOS-26-0': [{ udid: ${JSON.stringify(SIMULATOR_UDID)}, name: 'iPhone 17 Pro', state: 'Booted' }] } }));`,
+      `}`,
+      `const running = ${JSON.stringify(runningAppIds ?? null)};`,
+      `if (args[1] === 'terminate' && running && !running.includes(args[3])) {`,
+      `  process.stderr.write('An error was encountered processing the command: found nothing to terminate');`,
+      `  process.exit(4);`,
       `}`,
       `process.exit(0);`,
     ].join('\n')
@@ -252,10 +267,12 @@ describe('exagent runtime:stop', () => {
       );
 
       expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
+        'appIdMismatch',
         'bundleId',
         'bundleIdReason',
         'bundleIdSource',
         'command',
+        'connectedAppIds',
         'deviceId',
         'followups',
         'platform',
@@ -263,6 +280,80 @@ describe('exagent runtime:stop', () => {
         'stopped',
         'wasRunning',
       ]);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §An `--app-id` nobody is running — friction run 4, F42.
+  // `runtime:stop --app-id host.exp.Exponent2` used to exit 0 with `Stopped yes · it was not
+  // running`, and the app the caller could see on the simulator kept running. This tier is where
+  // the whole conjunction is real at once: a device tool that refuses, and a dev server that is
+  // reporting some other app.
+  it('exits 20 when --app-id names an app that is not the one connected', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const readXcrun = await installStubXcrunAsync(projectRoot, {
+      runningAppIds: ['host.exp.Exponent'],
+    });
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        [
+          'runtime:stop',
+          '--ios',
+          '--app-id',
+          'host.exp.Exponent2',
+          '--json',
+          '--dev-server-url',
+          stub.url,
+        ],
+        { env: stubExpoEnv(projectRoot), reject: false }
+      );
+
+      expect(result.exitCode).toBe(20);
+      expect(JSON.parse(result.stdout)).toMatchObject({
+        wasRunning: false,
+        bundleId: 'host.exp.Exponent2',
+        connectedAppIds: ['host.exp.Exponent'],
+        appIdMismatch: true,
+      });
+      // The id the caller gave is the id that was tried: the flag is still obeyed, and the
+      // disagreement is reported rather than silently corrected.
+      expect(readXcrun()).toContainEqual([
+        'simctl',
+        'terminate',
+        SIMULATOR_UDID,
+        'host.exp.Exponent2',
+      ]);
+      expect(result.stderr).toContain('runtime:stop --app-id host.exp.Exponent');
+    } finally {
+      await stub.close();
+    }
+  });
+
+  // Stopping an app twice must stay a success, which is what makes the command idempotent. With
+  // nothing connected there is no second app for the id to disagree with.
+  it('stays at 0 for a repeat stop with nothing connected', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    await installStubXcrunAsync(projectRoot, { runningAppIds: [] });
+    const stub = await startStubDevServerAsync({ targets: [] });
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:stop', '--ios', '--json', '--dev-server-url', stub.url],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout)).toMatchObject({
+        stopped: true,
+        wasRunning: false,
+        appIdMismatch: false,
+        connectedAppIds: [],
+      });
     } finally {
       await stub.close();
     }

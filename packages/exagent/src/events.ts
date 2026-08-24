@@ -273,6 +273,11 @@ declare module '2g' {
       platform: string;
       deviceId: string;
       bundleId: string;
+      /**
+       * `--app-id` named an app that was not running, while the dev server reports another one
+       * that is. The run stopped nothing, and exits 20 (llp/0005 §An `--app-id` nobody is running).
+       */
+      appIdMismatch: boolean;
     };
     'cli:navigate': {
       route: string;

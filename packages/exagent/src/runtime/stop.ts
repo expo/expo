@@ -56,6 +56,11 @@ export const exagentRuntimeStop: Command = async (argv) => {
         chalk`  An app that was not running is a success with a note, not a failure: the state the`,
         chalk`  caller asked for is the state it is in. {bold wasRunning} in {bold --json} says which it was.`,
         '',
+        chalk`  {bold The one exception is exit 20:} {bold --app-id} named an app that was not running {bold and}`,
+        chalk`  the dev server is reporting a different app that is. Nothing was stopped, and the app`,
+        chalk`  on the device is untouched — a typo in the id looks exactly like this. The error`,
+        chalk`  names the connected id and the same command aimed at it.`,
+        '',
       ].join('\n')
     );
   }

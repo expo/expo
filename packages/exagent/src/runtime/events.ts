@@ -3,7 +3,12 @@ import { events } from '2g';
 declare module '2g' {
   interface EventRegistry {
     'runtime:stop_app_resolved': { appId: string; source: string };
-    'runtime:stop_app_done': { stopped: boolean; wasRunning: boolean };
+    'runtime:stop_app_done': {
+      stopped: boolean;
+      wasRunning: boolean;
+      /** `--app-id` named an app that was not running while another one is connected. */
+      appIdMismatch: boolean;
+    };
     'runtime:cdp_message': { url: string; message: string };
     'runtime:cdp_socket_error': { url: string; error: string };
     'runtime:cdp_target_skipped': { url: string; reason: string };
