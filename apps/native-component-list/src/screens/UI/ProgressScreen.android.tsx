@@ -119,6 +119,45 @@ export default function ProgressScreen() {
         </Card>
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Wave amplitude</ComposeText>
+            <ComposeText>Flat, default and full wave height.</ComposeText>
+            <LinearWavyProgressIndicator
+              progress={progress}
+              amplitude={0}
+              modifiers={[fillMaxWidth()]}
+            />
+            <LinearWavyProgressIndicator progress={progress} modifiers={[fillMaxWidth()]} />
+            <LinearWavyProgressIndicator
+              progress={progress}
+              amplitude={1}
+              modifiers={[fillMaxWidth()]}
+            />
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Wavelength and wave speed</ComposeText>
+            <ComposeText>Longer waves travelling at different speeds.</ComposeText>
+            <LinearWavyProgressIndicator
+              progress={progress}
+              wavelength={40}
+              waveSpeed={0}
+              modifiers={[fillMaxWidth()]}
+            />
+            <LinearWavyProgressIndicator
+              progress={progress}
+              wavelength={40}
+              waveSpeed={80}
+              modifiers={[fillMaxWidth()]}
+            />
+            <Row horizontalArrangement={{ spacedBy: 16 }}>
+              <CircularWavyProgressIndicator wavelength={40} waveSpeed={0} />
+              <CircularWavyProgressIndicator wavelength={40} waveSpeed={80} />
+            </Row>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Wavy custom colors</ComposeText>
             <ComposeText>Wave animation with custom colors.</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 16 }}>

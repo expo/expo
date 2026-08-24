@@ -180,6 +180,22 @@ export default function WavyExample() {
 
 </ComponentExample>
 
+### Wave configuration
+
+Use `amplitude` for the wave height, `wavelength` for the length of a single wave in dp, and `waveSpeed` for how fast the wave travels in dp per second. `waveSpeed` defaults to `wavelength`, and `waveSpeed={0}` renders a static wave.
+
+```tsx WaveConfigExample.tsx
+import { Host, LinearWavyProgressIndicator } from '@expo/ui/jetpack-compose';
+
+export default function WaveConfigExample() {
+  return (
+    <Host matchContents>
+      <LinearWavyProgressIndicator progress={0.6} amplitude={0.4} wavelength={24} waveSpeed={18} />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
