@@ -49,6 +49,62 @@ export function resolveDevServerUrlFlag(value: unknown): string {
   return url;
 }
 
+/**
+ * The dev server a caller named, through either of the two flags that name one, or null.
+ *
+ * `--port 8195` is `--dev-server-url http://127.0.0.1:8195` and nothing else. It exists because
+ * `exagent dev --port 8195` is the command that started the server, and every command that then
+ * talks to it wanted the *other* spelling — so an agent that had just typed a port had to translate
+ * it into a URL, and got `unknown or unexpected option: --port` when it did not
+ * [observed — friction run 4, 2026-08-23]. One flag name across the group is cheaper than the
+ * translation, and the URL form stays for a dev server on another host.
+ *
+ * @param url the `--dev-server-url` value, or null/undefined when the caller named none.
+ * @param port the `--port` value, or null/undefined when the caller named none.
+ * @param command the command as a caller types it, for the error that names both flags.
+ * @throws {CommandError} `BAD_ARGS` when both are named, or when the port is not a port.
+ */
+export function resolveDevServerTarget(
+  url: unknown,
+  port: unknown,
+  command: string
+): string | null {
+  if (url != null && port != null) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--dev-server-url and --port both name a dev server for "exagent ${command}", and they name different ones.`,
+        `Why: --port <n> is shorthand for --dev-server-url http://127.0.0.1:<n>, so passing both leaves two answers to one question and no rule for which wins.`,
+        `How: pass one. Use --port ${port} for a dev server on this machine, or --dev-server-url ${url} for one anywhere else.`,
+      ].join('\n')
+    );
+  }
+  if (port != null) {
+    return `http://127.0.0.1:${resolvePortFlag(port, command)}`;
+  }
+  return url == null ? null : resolveDevServerUrlFlag(url);
+}
+
+/**
+ * A `--port` value as a port number.
+ *
+ * @throws {CommandError} `BAD_ARGS` when the value is not a port.
+ */
+export function resolvePortFlag(value: unknown, command: string): number {
+  const port = Number(value);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--port must be a port number from 1 to 65535, but got ${String(value) || '(nothing)'}.`,
+        `Why: it names the port the dev server listens on, which is what this command connects to.`,
+        `How: pass one, as in "npx exagent ${command} --port 8081". Leaving it out lets this command find the dev server of this project on its own.`,
+      ].join('\n')
+    );
+  }
+  return port;
+}
+
 /** Ports `discoverDevServerAsync` scans when no explicit URL was given: Metro's default and
  * the ports `expo start` walks to when 8081 is taken. */
 export const DEV_SERVER_SCAN_PORTS = [8081, 8082, 8083, 8084, 8085];

@@ -4,7 +4,8 @@
 // anything a user can get wrong.
 
 import type { NavigatePlatform } from '../../navigate/device';
-import { resolveDevServerUrlFlag } from '../devServer';
+import { resolveDevServerTarget } from '../devServer';
+import { resolveDevicePlatform } from '../devicePlatform';
 import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../../utils/args';
 import { CommandError } from '../../utils/errors';
 
@@ -52,6 +53,9 @@ const RELOAD_ARGS = {
   '--ios': Boolean,
   '--android': Boolean,
   '--dev-server-url': String,
+  // Sugar for the URL above (llp/0005 §The dev server a caller names).
+  '--port': String,
+  '--platform': String,
   '--app-id': String,
   '--timeout': String,
   '--json': Boolean,
@@ -62,18 +66,11 @@ const RELOAD_ARGS = {
 /**
  * Resolve the arguments of `exagent runtime:reload`.
  *
- * @throws {CommandError} `BAD_ARGS` for both platform flags at once, an unknown method, an
- * unusable timeout, or a positional argument this command has no place for.
+ * @throws {CommandError} `BAD_ARGS` for two platforms at once, an unknown method, an unusable
+ * timeout or port, or a positional argument this command has no place for.
  */
 export function resolveReloadOptions(argv: string[]): ReloadOptions {
-  const args = parseArgsOrThrow(RELOAD_ARGS, argv);
-
-  if (args['--ios'] && args['--android']) {
-    throw new CommandError(
-      'BAD_ARGS',
-      `--ios and --android name two different devices, so only one of them can be used. Run the command twice to reload on both.`
-    );
-  }
+  const args = parseArgsOrThrow(RELOAD_ARGS, argv, 'runtime:reload');
 
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d). The route is a flag here,
   // not a positional, because the command's subject is the app and not a route — so a bare word is
@@ -95,9 +92,10 @@ export function resolveReloadOptions(argv: string[]): ReloadOptions {
   return {
     route: args['--route'] ? String(args['--route']) : null,
     method,
-    devServerUrl:
-      args['--dev-server-url'] == null ? null : resolveDevServerUrlFlag(args['--dev-server-url']),
-    platform: args['--ios'] ? 'ios' : args['--android'] ? 'android' : undefined,
+    devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:reload'),
+    platform: resolveDevicePlatform(args, 'runtime:reload', {
+      bothHint: 'run the command twice, once per device.',
+    }),
     scheme: args['--scheme'] ? String(args['--scheme']) : undefined,
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
     timeoutMs: resolveDuration(args['--timeout'], '--timeout', DEFAULT_RELOAD_TIMEOUT_MS, {

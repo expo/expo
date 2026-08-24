@@ -9,7 +9,7 @@ import {
   strayArgumentError,
 } from '../utils/args';
 import { CommandError } from '../utils/errors';
-import { resolveDevServerUrlFlag } from './devServer';
+import { resolveDevServerTarget } from './devServer';
 
 /** Actions of the `runtime` group, in the order the help prints them. */
 export const RUNTIME_ACTIONS = ['eval', 'errors', 'network'] as const;
@@ -70,6 +70,8 @@ export type RuntimeCommandOptions =
 
 const SHARED_ARGS = {
   '--dev-server-url': String,
+  // Sugar for the URL above (llp/0005 §The dev server a caller names).
+  '--port': String,
   '--json': Boolean,
 };
 
@@ -135,7 +137,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   }
 
   if (action === 'eval') {
-    const args = parseArgsOrThrow(EVAL_ARGS, argv);
+    const args = parseArgsOrThrow(EVAL_ARGS, argv, 'runtime:eval');
     const positional = args._.slice(1);
     if (positional.length === 0) {
       throw new CommandError(
@@ -153,7 +155,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     return {
       action: 'eval',
       expression: positional[0]!,
-      devServerUrl: resolveExplicitDevServerUrl(args['--dev-server-url']),
+      devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:eval'),
       timeoutMs: resolveDuration(args['--timeout'], '--timeout', 5000, { allowZero: false }),
       awaitPromise: !args['--no-await-promise'],
       json: !!args['--json'],
@@ -161,7 +163,11 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   }
 
   const windowAction = action as 'errors' | 'network';
-  const args = parseArgsOrThrow(windowAction === 'errors' ? ERRORS_ARGS : WINDOW_ARGS, argv);
+  const args = parseArgsOrThrow(
+    windowAction === 'errors' ? ERRORS_ARGS : WINDOW_ARGS,
+    argv,
+    `runtime:${windowAction}`
+  );
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw strayArgumentError(`runtime:${windowAction}`, positional, {
@@ -170,7 +176,11 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   }
 
   const shared = {
-    devServerUrl: resolveExplicitDevServerUrl(args['--dev-server-url']),
+    devServerUrl: resolveDevServerTarget(
+      args['--dev-server-url'],
+      args['--port'],
+      `runtime:${windowAction}`
+    ),
     durationMs: resolveDuration(args['--duration'], '--duration', DEFAULT_WINDOW_MS[windowAction], {
       allowZero: true,
     }),
@@ -183,12 +193,3 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     : { action: 'network', ...shared };
 }
 
-/**
- * The `--dev-server-url` the caller named, validated, or null when they named none.
- *
- * The validation is unchanged — a value that is not an http(s) URL is still `BAD_ARGS` — only the
- * absent case differs: it resolves to nothing to find rather than to the default port.
- */
-function resolveExplicitDevServerUrl(value: unknown): string | null {
-  return value == null ? null : resolveDevServerUrlFlag(value);
-}

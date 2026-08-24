@@ -7,6 +7,7 @@ import { resolve } from 'path';
 
 import * as Log from '../log';
 import { CommandError } from './errors';
+import { argParseError } from './unknownOption';
 
 /**
  * Parse the first argument as a project directory.
@@ -82,7 +83,13 @@ export function assertWithOptionsArgs(
     // Only errors from `arg`, which does not start with `ARG_CONFIG_` are user input errors.
     // See: https://github.com/vercel/arg/releases/tag/5.0.0
     if ('code' in error && error.code.startsWith('ARG_') && !error.code.startsWith('ARG_CONFIG_')) {
-      Log.exit(error.message, 1);
+      // Reported through the error path, not `Log.exit`: this runs outside the command's own
+      // `.catch(logCmdError)`, and exiting here skipped the `cli:error` event, the `Try:` line and
+      // the `--json` envelope every other failure of the same command prints
+      // (llp/0010 §The `--json` error envelope).
+      const { logCmdError } = require('./errors') as typeof import('./errors');
+      const { argParseError } = require('./unknownOption') as typeof import('./unknownOption');
+      logCmdError(argParseError(command, error.message, error.code));
     }
     // Otherwise rethrow the error.
     throw error;
@@ -136,15 +143,23 @@ export function strayArgumentError(
  *
  * Use this when the arguments of a subcommand are resolved by a pure function: the caller keeps
  * one error path for both a bad flag and a bad value, and the resolver stays testable.
+ *
+ * @param command the command as a caller types it, e.g. `dev:wait`. Required, and not inferred,
+ * because it is what the error names — both in the `Try:` line and in the sentence that says which
+ * *other* command takes the option ({@link import('./unknownOption').OPTION_OWNERS}).
  */
-export function parseArgsOrThrow(schema: arg.Spec, argv: string[]): arg.Result<arg.Spec> {
+export function parseArgsOrThrow(
+  schema: arg.Spec,
+  argv: string[],
+  command: string
+): arg.Result<arg.Spec> {
   try {
     return arg(schema, { argv, permissive: false });
   } catch (error: any) {
     // Only errors from `arg` that do not start with `ARG_CONFIG_` are user input errors.
     // See: https://github.com/vercel/arg/releases/tag/5.0.0
     if ('code' in error && error.code.startsWith('ARG_') && !error.code.startsWith('ARG_CONFIG_')) {
-      throw new CommandError('BAD_ARGS', error.message);
+      throw argParseError(command, error.message, error.code);
     }
     throw error;
   }

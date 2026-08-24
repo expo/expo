@@ -31,11 +31,12 @@ export const exagentReload: Command = async (argv) => {
       [
         `--route <route>         Open this route once the app is back`,
         `--method <method>       auto (default), dev-server, or device`,
-        `--ios                   Reload the app on the booted iOS simulator`,
+        `--ios, --platform ios   Reload the app on the booted iOS simulator`,
         `--android               Reload the app on the attached Android device`,
         `--scheme <scheme>       URL scheme for --route, instead of the one in app.json`,
         `--app-id <id>           Application id to stop, for the device method`,
         `--dev-server-url <url>  Dev server to reload through (default: the project's own)`,
+        `--port <number>         Dev server on this port, short for --dev-server-url`,
         `--timeout ${DURATION_METAVAR}    How long to wait for the app to come back (default: 30s)`,
         `--json                  Print the result as JSON`,
         `--no-route-check        Open --route without checking it against the project`,

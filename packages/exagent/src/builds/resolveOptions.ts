@@ -64,7 +64,7 @@ const WAIT_ARGS = {
  *   duration, or a poll interval that cannot fit inside the wait.
  */
 export function resolveBuildWaitOptions(argv: string[]): BuildWaitOptions {
-  const args = parseArgsOrThrow(WAIT_ARGS, argv);
+  const args = parseArgsOrThrow(WAIT_ARGS, argv, 'build:wait');
   const kind: BuildWaitKind = args['--submission'] ? 'submission' : 'build';
   const positional = args._;
 

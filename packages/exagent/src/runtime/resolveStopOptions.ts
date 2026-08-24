@@ -4,8 +4,8 @@
 
 import type { NavigatePlatform } from '../navigate/device';
 import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
-import { CommandError } from '../utils/errors';
-import { resolveDevServerUrlFlag } from './devServer';
+import { resolveDevServerTarget } from './devServer';
+import { resolveDevicePlatform } from './devicePlatform';
 
 export interface RuntimeStopOptions {
   /** Platform to stop the app on. Undefined means "whichever device is booted". */
@@ -25,6 +25,9 @@ const RUNTIME_STOP_ARGS = {
   '--android': Boolean,
   '--app-id': String,
   '--dev-server-url': String,
+  // Sugar for the two flags above (llp/0005 §The dev server a caller names).
+  '--port': String,
+  '--platform': String,
   '--json': Boolean,
   '--no-followups': Boolean,
 };
@@ -32,18 +35,11 @@ const RUNTIME_STOP_ARGS = {
 /**
  * Resolve the arguments of `exagent runtime:stop`.
  *
- * @throws {CommandError} `BAD_ARGS` for both platform flags at once, an unusable dev server URL,
+ * @throws {CommandError} `BAD_ARGS` for two platforms at once, an unusable dev server URL or port,
  * or a positional argument this command has no place for.
  */
 export function resolveRuntimeStopOptions(argv: string[]): RuntimeStopOptions {
-  const args = parseArgsOrThrow(RUNTIME_STOP_ARGS, argv);
-
-  if (args['--ios'] && args['--android']) {
-    throw new CommandError(
-      'BAD_ARGS',
-      `--ios and --android name two different devices, so only one of them can be used. Run the command twice to stop the app on both.`
-    );
-  }
+  const args = parseArgsOrThrow(RUNTIME_STOP_ARGS, argv, 'runtime:stop');
 
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d). `runtime:stop <bundle-id>`
   // is the natural line to type, and dropping it would stop whatever this command worked out on
@@ -55,10 +51,11 @@ export function resolveRuntimeStopOptions(argv: string[]): RuntimeStopOptions {
   }
 
   return {
-    platform: args['--ios'] ? 'ios' : args['--android'] ? 'android' : undefined,
+    platform: resolveDevicePlatform(args, 'runtime:stop', {
+      bothHint: 'run the command twice, once per device.',
+    }),
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
-    devServerUrl:
-      args['--dev-server-url'] == null ? null : resolveDevServerUrlFlag(args['--dev-server-url']),
+    devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:stop'),
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };

@@ -28,10 +28,11 @@ export const exagentRuntimeStop: Command = async (argv) => {
       `Stop the app on the device it is running on`,
       chalk`npx exagent runtime:stop`,
       [
-        `--ios                   Stop the app on the booted iOS simulator`,
+        `--ios, --platform ios   Stop the app on the booted iOS simulator`,
         `--android               Stop the app on the attached Android device`,
         `--app-id <id>           Application id to stop, instead of the one this works out`,
         `--dev-server-url <url>  Dev server to ask which app is running (default: the project's own)`,
+        `--port <number>         Dev server on this port, short for --dev-server-url`,
         `--json                  Print the result as JSON`,
         `--no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
         `-h, --help              Usage info`,

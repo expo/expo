@@ -47,6 +47,7 @@ export const exagentRuntime: Command = async (argv) => {
         `  --no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
         '',
         `--dev-server-url <url>    Dev server to talk to (default: the project's own, then 8081)`,
+        `--port <number>           Dev server on this port, short for --dev-server-url`,
         `--json                    Print the result as JSON`,
         `-h, --help                Usage info`,
       ].join('\n'),
