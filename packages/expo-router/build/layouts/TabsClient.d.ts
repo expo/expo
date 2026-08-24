@@ -149,7 +149,9 @@ declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<impo
     id?: undefined;
 } | {
     id: string;
-})), "children">> & import("react").RefAttributes<unknown>> & {
+})), "children">> & import("react").RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: import("react").ComponentType<import("..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("..").ScreenProps<TabsProps, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
     Protected: typeof Protected;
 };

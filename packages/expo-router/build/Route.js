@@ -1,7 +1,7 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = exports.SuspenseFallbackContext = void 0;
+exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = exports.ScreenErrorBoundaryContext = exports.SuspenseFallbackContext = void 0;
 exports.useRouteNode = useRouteNode;
 exports.useContextKey = useContextKey;
 exports.Route = Route;
@@ -14,6 +14,8 @@ Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function (
 const CurrentRouteContext = (0, react_1.createContext)(null);
 /** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
 exports.SuspenseFallbackContext = (0, react_1.createContext)(undefined);
+/** This context carries the error boundary configured by the current layout or navigator. */
+exports.ScreenErrorBoundaryContext = (0, react_1.createContext)(undefined);
 exports.LocalRouteParamsContext = (0, react_1.createContext)({});
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';

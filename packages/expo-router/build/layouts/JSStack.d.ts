@@ -101,7 +101,9 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     id?: undefined;
 } | {
     id: string;
-})), "children">> & import("react").RefAttributes<unknown>> & {
+})), "children">> & import("react").RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: import("react").ComponentType<import("..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("..").ScreenProps<StackNavigationOptions, StackNavigationState<ParamListBase>, StackNavigationEventMap>) => null;
     Protected: typeof Protected;
 };

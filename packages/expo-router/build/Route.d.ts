@@ -62,6 +62,8 @@ export type RouteNode = {
 };
 /** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
 export declare const SuspenseFallbackContext: import("react").Context<ComponentType<SuspenseFallbackProps> | undefined>;
+/** This context carries the error boundary configured by the current layout or navigator. */
+export declare const ScreenErrorBoundaryContext: import("react").Context<ComponentType<ErrorBoundaryProps> | undefined>;
 export declare const LocalRouteParamsContext: import("react").Context<object | undefined>;
 /** Return the RouteNode at the current contextual boundary. */
 export declare function useRouteNode(): RouteNode | null;

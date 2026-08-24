@@ -50,7 +50,9 @@ declare const MaterialTopTabs: import("react").ForwardRefExoticComponent<Omit<im
     id?: undefined;
 } | {
     id: string;
-})), "children">, "ref"> & import("react").RefAttributes<unknown>> & {
+})), "children">, "ref"> & import("react").RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: import("react").ComponentType<import("..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("..").ScreenProps<MaterialTopTabNavigationOptions, TabNavigationState<ParamListBase>, MaterialTopTabNavigationEventMap>) => null;
     Protected: typeof Protected;
 };

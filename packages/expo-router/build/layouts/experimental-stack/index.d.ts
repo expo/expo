@@ -92,7 +92,9 @@ declare const RNExperimentalStack: import("react").ForwardRefExoticComponent<Omi
     id?: undefined;
 } | {
     id: string;
-})), "children">> & import("react").RefAttributes<unknown>> & {
+})), "children">> & import("react").RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: import("react").ComponentType<import("../..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("../..").ScreenProps<ExperimentalStackNavigationOptions, StackNavigationState<ParamListBase>, ExperimentalStackNavigationEventMap>) => null;
     Protected: typeof Protected;
 };

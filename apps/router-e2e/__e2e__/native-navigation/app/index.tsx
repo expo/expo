@@ -1,9 +1,10 @@
-import { Link, usePathname, type Href } from 'expo-router';
+import { Link, usePathname, useRouter, type Href } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
 
 const HomeIndex = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     console.log(
@@ -34,6 +35,13 @@ const HomeIndex = () => {
       <CaseLink href="/js-tabs" text="JS Tabs" />
       <CaseLink href="/top-tabs" text="JS Top Tabs" />
       <CaseLink href="/experimental-stack" text="Experimental Stack" />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Error boundaries"
+        onPress={() => router.push('/error-boundaries')}
+        style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+        <Text style={{ color: '#fff' }}>Error boundaries</Text>
+      </Pressable>
     </ScrollView>
   );
 };
@@ -42,7 +50,10 @@ function CaseLink({ href, text }: { href: Href; text: string }) {
   return (
     <Link href={href} asChild>
       <Link.Trigger>
-        <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={text}
+          style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
           <Text style={{ color: '#fff' }}>{text}</Text>
         </Pressable>
       </Link.Trigger>

@@ -8,7 +8,7 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey } from '../Route';
+import { ScreenErrorBoundaryContext, useContextKey } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { PickPartial } from '../types';
@@ -17,6 +17,7 @@ import { useSortedScreens } from '../useScreens';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 export function useFilterScreenChildren(
   children: ReactNode,
@@ -157,34 +158,52 @@ export function withLayoutContext<
   useOnlyUserDefinedScreens: boolean = false
 ) {
   return Object.assign(
-    forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
-      const contextKey = useContextKey();
+    forwardRef(
+      ({ children: userDefinedChildren, unstable_screenErrorBoundary, ...props }: any, ref) => {
+        const contextKey = useContextKey();
 
-      const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
-        contextKey,
-      });
+        const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
+          contextKey,
+        });
 
-      const processed = processor ? processor(screens ?? []) : screens;
+        const processed = processor ? processor(screens ?? []) : screens;
 
-      const sorted = useSortedScreens(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
+        const sorted = useSortedScreens(
+          processed ?? [],
+          protectedScreens,
+          useOnlyUserDefinedScreens
+        );
 
-      // Prevent throwing an error when there are no screens.
-      if (!sorted.length) {
-        return null;
+        // Prevent throwing an error when there are no screens.
+        if (!sorted.length) {
+          return null;
+        }
+
+        const content = (
+          <IsWithinLayoutContext value>
+            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          </IsWithinLayoutContext>
+        );
+
+        return unstable_screenErrorBoundary ? (
+          <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+            {content}
+          </ScreenErrorBoundaryContext>
+        ) : (
+          content
+        );
       }
-
-      return (
-        <IsWithinLayoutContext value>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
-        </IsWithinLayoutContext>
-      );
-    }),
+    ),
     {
       Screen,
       Protected,
     }
   ) as ForwardRefExoticComponent<
-    PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> & RefAttributes<unknown>
+    PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> &
+      RefAttributes<unknown> & {
+        /** A component to render when an individual screen in this navigator throws an error. */
+        unstable_screenErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+      }
   > & {
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
     Protected: typeof Protected;

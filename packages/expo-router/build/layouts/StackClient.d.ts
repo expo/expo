@@ -136,7 +136,9 @@ declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & {
     id?: undefined;
-}, "children">> & import("react").RefAttributes<unknown>> & {
+}, "children">> & import("react").RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: import("react").ComponentType<import("..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("..").ScreenProps<ExtendedStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
     Protected: typeof Protected;
 };

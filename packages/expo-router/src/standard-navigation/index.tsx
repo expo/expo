@@ -4,6 +4,7 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
+import { ScreenErrorBoundaryContext } from '../Route';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
@@ -160,7 +161,10 @@ export function unstable_integrateWithRouter<
     RouterOptions
   >;
 
-  function StandardRouterNavigator(props: NavPropsType) {
+  function StandardRouterNavigator(allProps: NavPropsType) {
+    const { unstable_screenErrorBoundary, ...rest } = allProps;
+    // Omitting the boundary prop from a generic intersection is not preserved by TypeScript.
+    const props = rest as NavPropsType;
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
       State,
@@ -190,7 +194,7 @@ export function unstable_integrateWithRouter<
       emitter: useStandardEmitter(navigation),
     };
 
-    return (
+    const content = (
       <NavigationContent>
         <NavigatorContent
           // `extraProps` is everything that is not a `useNavigationBuilder` option, which is the
@@ -206,6 +210,14 @@ export function unstable_integrateWithRouter<
           {...standardArgs}
         />
       </NavigationContent>
+    );
+
+    return unstable_screenErrorBoundary ? (
+      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+        {content}
+      </ScreenErrorBoundaryContext>
+    ) : (
+      content
     );
   }
 
