@@ -28,11 +28,9 @@ export function useImperativeApiEmitter(
     routingQueue.snapshot
   );
   const runQueue = useEffectEvent(() => {
-    routingQueue.run(ref, {
-      routeInfo,
+    routingQueue.run(ref, routeInfo, {
       linking,
       redirects: store.redirects,
-      navigationRef: ref.current!,
     });
   });
   useEffect(() => {

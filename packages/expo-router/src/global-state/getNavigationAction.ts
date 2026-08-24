@@ -7,11 +7,16 @@ import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
+import type { NavigationContainerRef, ParamListBase } from '../react-navigation/native';
 import type { SingularOptions } from '../useScreens';
 import type { UrlObject } from './getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
-import { store } from './store';
+import type { StoreContextValue } from './storeContext';
 import type { LinkToOptions } from './types';
+
+export type NavigationActionContext = Pick<StoreContextValue, 'linking' | 'redirects'> & {
+  navigationRef: NavigationContainerRef<ParamListBase>;
+};
 
 export function getNavigateAction(
   baseHref: string,
@@ -20,31 +25,24 @@ export function getNavigateAction(
   withAnchor: boolean | undefined,
   singular: SingularOptions | undefined,
   isPreviewNavigation: boolean | undefined,
-  { segments, params: routeParams }: Pick<UrlObject, 'segments' | 'params'>
+  { segments, params: routeParams }: Pick<UrlObject, 'segments' | 'params'>,
+  { navigationRef, linking, redirects }: NavigationActionContext
 ) {
   let href: string | undefined = baseHref;
-  store.assertIsReady();
-  const navigationRef = store.navigationRef.current;
-
-  if (navigationRef == null) {
-    throw new Error(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-    );
-  }
-  if (!store.linking) {
+  if (!linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
   const rootState = navigationRef.getRootState();
 
   href = resolveHrefStringWithSegments(href, { segments, params: routeParams }, options);
-  href = applyRedirects(href, store.redirects) ?? undefined;
+  href = applyRedirects(href, redirects) ?? undefined;
 
   // If the href is undefined, it means that the redirect has already been handled by the navigation
   if (!href) {
     return;
   }
 
-  const state = getStateFromPath(href, store.linking.config, segments);
+  const state = getStateFromPath(href, linking.config, segments);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);

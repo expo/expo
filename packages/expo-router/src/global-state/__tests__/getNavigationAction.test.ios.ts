@@ -24,7 +24,12 @@ function getNavigateAction(
     withAnchor,
     singular,
     isPreviewNavigation,
-    routeInfo
+    routeInfo,
+    {
+      navigationRef: store.navigationRef.current!,
+      linking: store.linking,
+      redirects: [],
+    }
   );
 }
 
@@ -116,25 +121,6 @@ beforeEach(() => {
 });
 
 describe(getNavigateAction, () => {
-  it('throws when navigation is not ready (assertIsReady throws)', () => {
-    (store.assertIsReady as jest.Mock).mockImplementationOnce(() => {
-      throw new Error('Not ready');
-    });
-
-    expect(() => getNavigateAction('/home', {})).toThrow('Not ready');
-  });
-
-  it('throws when navigationRef.current is null', () => {
-    const originalCurrent = store.navigationRef.current;
-    (store.navigationRef as any).current = null;
-
-    expect(() => getNavigateAction('/home', {})).toThrow(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-    );
-
-    (store.navigationRef as any).current = originalCurrent;
-  });
-
   it('throws when store.linking is falsy', () => {
     const originalLinking = store.linking;
     Object.defineProperty(store, 'linking', {

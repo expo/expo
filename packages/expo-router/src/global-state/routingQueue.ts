@@ -6,6 +6,7 @@ import type {
   NavigationContainerRef,
 } from '../react-navigation/native';
 import { getNavigateAction } from './getNavigationAction';
+import type { NavigationActionContext } from './getNavigationAction';
 import type { UrlObject } from './getRouteInfoFromState';
 import type { LinkToOptions } from './types';
 
@@ -37,7 +38,8 @@ export const routingQueue = {
   },
   run(
     ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
-    routeInfo: Pick<UrlObject, 'segments' | 'params'>
+    routeInfo: Pick<UrlObject, 'segments' | 'params'>,
+    context: Omit<NavigationActionContext, 'navigationRef'>
   ) {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
@@ -58,7 +60,8 @@ export const routingQueue = {
             options.withAnchor,
             options.dangerouslySingular,
             !!options.__internal__PreviewKey,
-            routeInfo
+            routeInfo,
+            { ...context, navigationRef: ref.current }
           );
           // TODO: Consider warning when getNavigateAction returns undefined
           if (action) {
