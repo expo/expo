@@ -41,34 +41,17 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
 
   val effectiveLower = maxOf(props.min, props.lowerLimit ?: Float.NEGATIVE_INFINITY)
   val effectiveUpper = minOf(props.max, props.upperLimit ?: Float.POSITIVE_INFINITY)
-  val clampedPropsValue = props.value.coerceIn(effectiveLower, effectiveUpper)
 
-  val sliderState = remember(props.min, props.max, props.steps) {
-    SliderState(
-      value = clampedPropsValue,
-      steps = props.steps,
-      valueRange = props.min..props.max
-    )
-  }
+  var localValue by remember { mutableFloatStateOf(props.value.coerceIn(effectiveLower, effectiveUpper)) }
   var isDragging by remember { mutableStateOf(false) }
-  var prevPropsValue by remember(props.min, props.max, props.steps) { mutableFloatStateOf(clampedPropsValue) }
+  val clampedPropsValue = props.value.coerceIn(effectiveLower, effectiveUpper)
+  var prevPropsValue by remember { mutableFloatStateOf(clampedPropsValue) }
 
   if (clampedPropsValue != prevPropsValue) {
     prevPropsValue = clampedPropsValue
     if (!isDragging) {
-      sliderState.value = clampedPropsValue
+      localValue = clampedPropsValue
     }
-  }
-
-  sliderState.onValueChange = {
-    val clamped = it.coerceIn(effectiveLower, effectiveUpper)
-    isDragging = true
-    sliderState.value = clamped
-    onValueChange(SliderValueChangedEvent(clamped))
-  }
-  sliderState.onValueChangeFinished = {
-    isDragging = false
-    onValueChangeFinished(Unit)
   }
 
   val thumbSlotView = findChildSlotView(view, "thumb")
@@ -87,6 +70,25 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     composableScope,
     globalEventDispatcher
   )
+
+  val sliderState = remember(props.min, props.max, props.steps) {
+    SliderState(
+      value = localValue,
+      steps = props.steps,
+      valueRange = props.min..props.max
+    )
+  }
+  sliderState.onValueChange = {
+    val clamped = it.coerceIn(effectiveLower, effectiveUpper)
+    isDragging = true
+    localValue = clamped
+    onValueChange(SliderValueChangedEvent(clamped))
+  }
+  sliderState.onValueChangeFinished = {
+    isDragging = false
+    onValueChangeFinished(Unit)
+  }
+  sliderState.value = localValue
 
   when {
     thumbSlotView != null && trackSlotView != null -> VerticalSlider(
