@@ -23,8 +23,6 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var mediaServicesDidReset = false
   private var currentOptions: RecordingOptions?
   private var currentSessionOptions: AVAudioSession.CategoryOptions = []
-  // The duration a recording was armed with via `record({ forDuration })`.
-  // Remembered so an interruption resume can re-apply it — see `startRecording()`.
   private var durationLimitSeconds: TimeInterval?
 
   private var isPrepared: Bool {
@@ -132,9 +130,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     // boundaries instead.
   }
 
-  /// Arms `record(forDuration:)` and remembers the limit so it survives a
-  /// pause/resume. Callers should use this rather than driving `ref` directly.
   func recordForDuration(_ seconds: TimeInterval, atTime absoluteTime: TimeInterval? = nil) {
+    if currentState == .paused && ref.currentTime >= seconds {
+      stopRecording()
+      return
+    }
+
     if let absoluteTime {
       ref.record(atTime: absoluteTime, forDuration: seconds)
     } else {
@@ -142,6 +143,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
     updateStateForDirectRecording()
     durationLimitSeconds = seconds
+  }
+
+  func record(atTime absoluteTime: TimeInterval) {
+    ref.record(atTime: absoluteTime)
+    updateStateForDirectRecording()
+    durationLimitSeconds = nil
   }
 
   func startRecording() throws -> [String: Any] {
@@ -157,13 +164,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       resetDurationTracking()
     }
 
-    // If the recording was armed with a duration, re-apply it. A bare
-    // `ref.record()` carries no duration, so resuming after an interruption
-    // silently dropped the limit and the recording would continue indefinitely.
-    //
-    // `forDuration` is absolute rather than incremental — the recorder stops
-    // when its own `currentTime` reaches the value — so the ORIGINAL limit is
-    // re-applied, not a remaining-time calculation.
+    // If the recording was armed with a duration, re-apply it.
     if let limit = durationLimitSeconds {
       if ref.currentTime >= limit {
         // The allowance is already spent; stop rather than resume.

@@ -488,8 +488,7 @@ public class AudioModule: Module {
         case let (atTime?, nil):
           // Convert relative delay to absolute device time
           let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
-          recorder.ref.record(atTime: absoluteTime)
-          recorder.updateStateForDirectRecording()
+          recorder.record(atTime: absoluteTime)
           return recorder.getRecordingStatus()
         case let (nil, forDuration?):
           recorder.recordForDuration(TimeInterval(forDuration))
@@ -515,7 +514,7 @@ public class AudioModule: Module {
 
       Function("startRecordingAtTime") { (recorder, seconds: Double) in
         try checkPermissions()
-        recorder.ref.record(atTime: TimeInterval(seconds))
+        recorder.record(atTime: TimeInterval(seconds))
       }
 
       Function("recordForDuration") { (recorder, seconds: Double) in
