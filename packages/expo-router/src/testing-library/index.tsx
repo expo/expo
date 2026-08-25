@@ -6,6 +6,8 @@ import { ExpoRoot } from '../ExpoRoot';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { ReactNavigationState } from '../global-state/router-store';
 import { store } from '../global-state/router-store';
+// TODO(@ubax): replace this singleton reader when store ownership has commit/teardown semantics.
+// https://linear.app/expo/issue/ENG-26124
 import { router } from '../imperative-api';
 import { type MockContextConfig, getMockContext } from './mock-config';
 
@@ -172,7 +174,7 @@ export const testRouter = {
   },
   /** Update the current route query params and assert the new pathname */
   setParams(params: Record<string, string>, path?: string) {
-    router.setParams(params);
+    rnTestingLibrary.act(() => router.setParams(params));
     if (path) {
       expect(screen).toHavePathnameWithParams(path);
     }

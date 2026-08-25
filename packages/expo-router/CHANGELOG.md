@@ -4,13 +4,22 @@
 
 ### 🛠 Breaking changes
 
+- Preserve the focused route when switching navigator types in a conditional layout. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Generate deterministic navigation states and route keys. Complete states from custom routers or persisted state must include `routeKeySeq`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Defer `navigation.dispatch` and navigation helper actions until after commit. Use `navigation.dispatchSync` for synchronous dispatch; dispatch functions are no longer supported. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Require complete state in `CommonActions.reset` and remove `Router.getRehydratedState` from `expo-router/react-navigation`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Remove `resetRoot` from `NavigationContainerRef` and `createNavigationContainerRef`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Remove `NavigatorScreenParams`, `getActionFromState`, and `LinkingOptions.getActionFromState` from `expo-router/react-navigation`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Represent nested navigation only as navigation state. The `screen`, `params`, and `initial` params are now ordinary user params. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Stop copying ancestor route params into descendant routes during imperative navigation, matching cold-start deep-link behavior. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Custom routers must return `{ state, affectedRouteKey }` from `getStateForAction` instead of returning navigation state directly. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
 - The `freezeOnBlur` screen option is disabled and screens are never frozen when blurred. ([#49163](https://github.com/expo/expo/pull/49163) by [@Ubax](https://github.com/Ubax))
 - Remove the experimental web modal implementation. See the [web modals guide](https://docs.expo.dev/router/advanced/web-modals/). ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
 - Remove `NavigationIndependentTree` and `useNavigationIndependentTree` from `expo-router/react-navigation`. To embed an isolated navigation tree in a screen, use `@react-navigation/native`. ([#49172](https://github.com/expo/expo/pull/49172) by [@Ubax](https://github.com/Ubax))
 - Remove the deprecated `Link` and `useLinkProps` exports from `expo-router/react-navigation`. Use `Link` from `expo-router` with an `href` instead. ([#48895](https://github.com/expo/expo/pull/48895) by [@Ubax](https://github.com/Ubax))
 - Remove the deprecated `navigateDeprecated` action and the `navigationInChildEnabled` container prop from `expo-router/react-navigation`. ([#49102](https://github.com/expo/expo/pull/49102) by [@Ubax](https://github.com/Ubax))
-- Remove `getInitialState` from the `Router` interface. Custom routers no longer create initial state; the navigator creates it and passes it to `getRehydratedState`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
-- Remove `routeParamList` from `RouterConfigOptions` and remove the `RouterActionOptions` type. Custom routers receive `RouterConfigOptions` in both `getRehydratedState` and `getStateForAction`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
+- Remove `getInitialState` from the `Router` interface. Custom routers no longer create initial state. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
+- Remove `routeParamList` from `RouterConfigOptions` and remove the `RouterActionOptions` type. Custom routers receive `RouterConfigOptions` in `getStateForAction`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
 - Remove the deprecated `NavigationContainer` export ([#48760](https://github.com/expo/expo/pull/48760) by [@Ubax](https://github.com/Ubax))
 - Remove the static `default` field from `DrawerNavigationState` and deprecate `getDrawerStatusFromState`. ([#48750](https://github.com/expo/expo/pull/48750) by [@Ubax](https://github.com/Ubax))
 - Remove the `preloadedRouteKeys` field from `TabNavigationState`. ([#48718](https://github.com/expo/expo/pull/48718) by [@Ubax](https://github.com/Ubax))
@@ -71,6 +80,8 @@
 
 - Move Expo Router store values into React context. ([#49218](https://github.com/expo/expo/pull/49218) by [@Ubax](https://github.com/Ubax))
 - Remove the ignored `linking.enabled` option. ([#49103](https://github.com/expo/expo/pull/49103) by [@Ubax](https://github.com/Ubax))
+- Build the complete initial navigation state from a deep link. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Rename the routing queue intent `ROUTER_LINK` to `NAVIGATE_TO_HREF` and add a generic `ACTION` intent for raw navigation actions. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
 - Render only the focused tab route during the first render. ([#48618](https://github.com/expo/expo/pull/48618) by [@Ubax](https://github.com/Ubax))
 - Order JS Tabs, NativeTabs, headless tabs and Drawer by `routeNames` order ([#48374](https://github.com/expo/expo/pull/48374) by [@Ubax](https://github.com/Ubax))
 - Integrate native stack with standard navigation ([#48114](https://github.com/expo/expo/pull/48114) by [@Ubax](https://github.com/Ubax))

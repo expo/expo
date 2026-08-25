@@ -45,8 +45,8 @@ const RNStack = unstable_integrateWithRouter<
   StackRouterOptions,
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
-  createProps: ({ state, dispatch, navigation }) => ({
-    pop: makePopAction(dispatch, state.key),
+  createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
+    pop: makePopAction(dispatchSync, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
     subscribePopToTopOnParentTabPress: () =>
       // @ts-expect-error: there may not be a tab navigator in parent

@@ -3,8 +3,8 @@
 import { use, useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import type { RouteNode } from '../../Route';
-import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
+import { findRouteNodeAndParamsForState, type RouteNode } from '../../Route';
+import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { store } from '../../global-state/router-store';
@@ -141,11 +141,6 @@ function getParamsAndNodeFromHref(
 ) {
   const index = hrefState?.index ?? 0;
   if (hrefState?.routes[index] && hrefState.routes[index].name !== INTERNAL_SLOT_NAME) {
-    const name = hrefState.routes[index].name;
-    if (name === SITEMAP_ROUTE_NAME || name === NOT_FOUND_ROUTE_NAME) {
-      console.log(rootRouteNode);
-      console.log(hrefState);
-    }
     const error = `Expo Router Error: Expected navigation state to begin with one of [${getRootStackRouteNames().join(', ')}] routes`;
     if (process.env.NODE_ENV !== 'production') {
       throw new Error(error);
@@ -154,20 +149,10 @@ function getParamsAndNodeFromHref(
     }
   }
   const initialState = hrefState?.routes[index]?.state;
-  let state = initialState;
-  let routeNode = rootRouteNode;
+  const { routeNode, params } = findRouteNodeAndParamsForState(rootRouteNode, initialState);
 
-  const params: UnknownOutputParams = {};
-
-  while (state && routeNode) {
-    // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
-    const route = state.routes[state.index ?? state.routes.length - 1]!;
-    Object.assign(params, route.params);
-    state = route.state;
-    routeNode = routeNode.children.find((child) => child.route === route.name);
-  }
-
-  return { params, routeNode, state: initialState };
+  // Linking has already parsed these values into the public search-param shape.
+  return { params: params as UnknownOutputParams, routeNode, state: initialState };
 }
 
 const displayWarningForProp = (prop: string) => {
@@ -205,6 +190,7 @@ const navigationPropWithWarnings: NavigationProp<ParamListBase> = {
     displayWarningForProp('getState');
     return {
       key: '',
+      routeKeySeq: 0,
       index: 0,
       routeNames: [],
       routes: [],
