@@ -2,9 +2,8 @@
 
 import * as React from 'react';
 
-import { routingQueue, type RoutingIntent } from './routingQueue';
-
-const drainers: symbol[] = [];
+import type { RoutingIntent } from './routingQueue';
+import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
 
 type Props = {
   ready: boolean;
@@ -12,44 +11,14 @@ type Props = {
 };
 
 export function RoutingQueueDrainer({ ready, processIntent }: Props) {
-  const intents = React.useSyncExternalStore(
-    routingQueue.subscribe,
-    routingQueue.snapshot,
-    routingQueue.snapshot
-  );
-
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      return undefined;
-    }
-
-    if (drainers.length) {
-      console.error(
-        [
-          'Looks like you have multiple navigation containers draining the shared routing queue. Only one container will receive queued actions, while the others will drop them. Make sure that:',
-          "- You don't have multiple NavigationContainers in the app",
-          '- Only a single instance of the root component is rendered',
-        ].join('\n')
-      );
-    }
-
-    // TODO(@ubax): move routingQueue into a per-container context so sibling containers each drain their own queue and pending intents are cleared on unmount.
-    const drainer = Symbol();
-    drainers.push(drainer);
-
-    return () => {
-      const index = drainers.indexOf(drainer);
-      if (index > -1) {
-        drainers.splice(index, 1);
-      }
-    };
-  }, []);
+  const intents = React.use(PendingIntentsContext);
+  const { dequeue } = React.use(RoutingQueueApiContext)!;
 
   React.useEffect(() => {
     if (!ready || intents.length === 0) {
       return;
     }
-    for (const intent of routingQueue.drain(intents)) {
+    for (const intent of intents) {
       // Only catches errors thrown while dispatching. The navigation reducer runs
       // during the next render, so errors from it surface there, not here.
       try {
@@ -67,7 +36,8 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
         );
       }
     }
-  }, [intents, processIntent, ready]);
+    dequeue(intents);
+  }, [dequeue, intents, processIntent, ready]);
 
   return null;
 }

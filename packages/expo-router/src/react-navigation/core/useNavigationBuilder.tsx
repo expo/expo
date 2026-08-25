@@ -7,7 +7,7 @@ import { isValidElementType } from 'react-is';
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
-import { routingQueue } from '../../global-state/routingQueue';
+import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { resetNavigatorState } from '../../global-state/stateUtils';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -262,6 +262,7 @@ export function useNavigationBuilder<
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
+  const enqueue = useEnqueueRoutingIntent();
 
   const {
     children,
@@ -530,7 +531,7 @@ export function useNavigationBuilder<
       pendingRouteNamesRef.current = undefined;
     } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
       pendingRouteNamesRef.current = routeNames;
-      routingQueue.add({
+      enqueue({
         type: 'ACTION',
         payload: {
           action: {

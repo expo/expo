@@ -6,7 +6,7 @@ import {
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
-import { routingQueue } from '../global-state/routingQueue';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { StoreContext } from '../global-state/storeContext';
 import {
   type LinkingOptions,
@@ -60,6 +60,7 @@ export function useLinking(
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
   const store = use(StoreContext);
+  const enqueue = useEnqueueRoutingIntent();
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -180,7 +181,7 @@ export function useLinking(
           return;
         }
 
-        routingQueue.add({
+        enqueue({
           type: 'NAVIGATE_TO_HREF',
           payload: {
             href: path,
@@ -192,7 +193,7 @@ export function useLinking(
     };
 
     return subscribe(listener);
-  }, [getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
+  }, [enqueue, getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
 
   return {
     getInitialState,

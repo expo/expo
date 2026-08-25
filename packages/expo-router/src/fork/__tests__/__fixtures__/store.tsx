@@ -2,8 +2,14 @@ import {
   render as renderWithoutStore,
   renderHook as renderHookWithoutStore,
 } from '@testing-library/react-native';
-import type { ReactElement, ReactNode } from 'react';
+import { useMemo, useState, type ReactElement, type ReactNode } from 'react';
 
+import { routingQueue, type RoutingIntent } from '../../../global-state/routingQueue';
+import {
+  PendingIntentsContext,
+  RoutingQueueApiContext,
+  type RoutingQueueApi,
+} from '../../../global-state/routingQueueContext';
 import { storeRef } from '../../../global-state/store';
 import { StoreContext, type StoreContextValue } from '../../../global-state/storeContext';
 
@@ -27,7 +33,28 @@ export const storeValue: StoreContextValue = {
 };
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  return <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>;
+  const [queue, setQueue] = useState<RoutingIntent[]>([]);
+  const api = useMemo<RoutingQueueApi>(
+    () => ({
+      enqueue: (intent) => {
+        routingQueue.queue = [...routingQueue.queue, intent];
+        setQueue((previous) => [...previous, intent]);
+      },
+      dequeue: (processed) =>
+        setQueue((previous) =>
+          previous === processed ? [] : previous.slice(processed.length)
+        ),
+    }),
+    []
+  );
+
+  return (
+    <RoutingQueueApiContext.Provider value={api}>
+      <PendingIntentsContext.Provider value={queue}>
+        <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>
+      </PendingIntentsContext.Provider>
+    </RoutingQueueApiContext.Provider>
+  );
 }
 
 export function render(element: ReactElement): ReturnType<typeof renderWithoutStore> {

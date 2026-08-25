@@ -36,6 +36,7 @@ export type RoutingIntent =
       onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
     };
 
+/** Queue used by the module-level `router` when no React context is available. */
 export const routingQueue = {
   queue: [] as RoutingIntent[],
   subscribers: new Set<() => void>(),

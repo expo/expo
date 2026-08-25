@@ -13,7 +13,7 @@ import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
-import { routingQueue } from './routingQueue';
+import { routingQueue, type RoutingIntent } from './routingQueue';
 import { store } from './store';
 import type { LinkToOptions, NavigationOptions } from './types';
 
@@ -25,8 +25,12 @@ function assertIsReady() {
   }
 }
 
-export function navigate(url: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
+function navigateImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  url: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
 
 export function reload() {
@@ -34,47 +38,63 @@ export function reload() {
   throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 
-export function prefetch(href: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(href), { ...options, event: 'PRELOAD' });
+function prefetchImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  href: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 
-export function push(url: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(url), { ...options, event: 'PUSH' });
+function pushImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  url: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(url), { ...options, event: 'PUSH' });
 }
 
 // `GO_BACK` follows focused back handling; `POP` explicitly removes stack routes.
-export function dismiss(count: number = 1) {
+function dismissImpl(enqueue: (intent: RoutingIntent) => void, count: number = 1) {
   if (emitDomDismiss(count)) {
     return;
   }
 
-  routingQueue.add({
+  enqueue({
     type: 'ACTION',
     payload: { action: { type: 'POP', payload: { count } } },
   });
 }
 
-export function dismissTo(href: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(href), { ...options, event: 'POP_TO' });
+function dismissToImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  href: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(href), { ...options, event: 'POP_TO' });
 }
 
-export function replace(url: Href, options?: NavigationOptions) {
-  return linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
+function replaceImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  url: Href,
+  options?: NavigationOptions
+) {
+  return linkToImpl(enqueue, resolveHref(url), { ...options, event: 'REPLACE' });
 }
 
-export function dismissAll() {
+function dismissAllImpl(enqueue: (intent: RoutingIntent) => void) {
   if (emitDomDismissAll()) {
     return;
   }
-  routingQueue.add({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
+  enqueue({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
 }
 
 // `GO_BACK` follows focused back handling; `POP` (used by `dismiss`) explicitly removes stack routes.
-export function goBack() {
+function goBackImpl(enqueue: (intent: RoutingIntent) => void) {
   if (emitDomGoBack()) {
     return;
   }
-  routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+  enqueue({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 }
 
 export function canGoBack(): boolean {
@@ -127,7 +147,11 @@ export function setParams(
   return (store.navigationRef?.current?.setParams as any)(params);
 }
 
-export function linkTo(originalHref: Href | string, options: LinkToOptions = {}) {
+function linkToImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  originalHref: Href | string,
+  options: LinkToOptions = {}
+) {
   let href: string | undefined | null =
     typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
 
@@ -145,7 +169,7 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
   }
 
   if (href === '..' || href === '../') {
-    return goBack();
+    return goBackImpl(enqueue);
   }
 
   // TODO(@ubax): Extract this change to standalone PR
@@ -157,7 +181,7 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
     },
   };
 
-  routingQueue.add(linkAction);
+  enqueue(linkAction);
 }
 
 /**
@@ -243,17 +267,31 @@ export type ImperativeRouter = {
 /**
  * @hidden
  */
-export const router: ImperativeRouter = {
-  navigate,
-  push,
-  dismiss,
-  dismissAll,
-  dismissTo,
-  canDismiss,
-  replace,
-  back: () => goBack(),
-  canGoBack,
-  reload,
-  prefetch,
-  setParams: setParams as ImperativeRouter['setParams'],
+type InternalRouter = ImperativeRouter & {
+  goBack: () => void;
+  linkTo: (href: Href | string, options?: LinkToOptions) => void;
 };
+
+export function createImperativeRouter(enqueue: (intent: RoutingIntent) => void): InternalRouter {
+  return {
+    navigate: (href, options) => navigateImpl(enqueue, href, options),
+    push: (href, options) => pushImpl(enqueue, href, options),
+    dismiss: (count) => dismissImpl(enqueue, count),
+    dismissAll: () => dismissAllImpl(enqueue),
+    dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
+    canDismiss,
+    replace: (href, options) => replaceImpl(enqueue, href, options),
+    back: () => goBackImpl(enqueue),
+    goBack: () => goBackImpl(enqueue),
+    canGoBack,
+    reload,
+    prefetch: (href) => prefetchImpl(enqueue, href),
+    setParams: setParams as ImperativeRouter['setParams'],
+    linkTo: (href, options) => linkToImpl(enqueue, href, options),
+  };
+}
+
+export const router = createImperativeRouter(routingQueue.add);
+
+export const { navigate, push, dismiss, dismissAll, dismissTo, replace, goBack, prefetch, linkTo } =
+  router;

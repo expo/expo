@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { routingQueue } from '../../global-state/routingQueue';
+import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import {
   CommonActions,
   type NavigationAction,
@@ -37,6 +37,7 @@ export function useNavigationHelpers<
   EventMap extends Record<string, any>,
 >({ id: navigatorId, handleAction, getState, emitter, router }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
+  const enqueue = useEnqueueRoutingIntent();
 
   return React.useMemo(() => {
     const dispatchSync = (action: Action) => {
@@ -44,7 +45,7 @@ export function useNavigationHelpers<
     };
 
     const dispatch = (action: Action) => {
-      routingQueue.add({
+      enqueue({
         type: 'NAVIGATOR_ACTION',
         payload: {
           action,
@@ -104,5 +105,5 @@ export function useNavigationHelpers<
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
-  }, [router, parentNavigationHelpers, emitter.emit, getState, handleAction, navigatorId]);
+  }, [enqueue, router, parentNavigationHelpers, emitter.emit, getState, handleAction, navigatorId]);
 }

@@ -10,6 +10,7 @@ import { NavigationContainer as UpstreamNavigationContainer } from './fork/Navig
 import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { useStore } from './global-state/router-store';
 import { RouterRegistryProvider } from './global-state/routerRegistry';
+import { RoutingQueueProvider } from './global-state/routingQueueContext';
 import { maybeHideSplashScreen } from './global-state/store';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
@@ -81,7 +82,11 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
     [ParentWrapper]
   );
 
-  return <ContextNavigator {...props} wrapper={wrapper} />;
+  return (
+    <RoutingQueueProvider>
+      <ContextNavigator {...props} wrapper={wrapper} />
+    </RoutingQueueProvider>
+  );
 }
 
 const initialUrl =
