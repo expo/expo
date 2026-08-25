@@ -13,6 +13,10 @@ There are two parts, and they are separable:
 
 You can use the library without the service. The default endpoint is EAS Observe.
 
+## Platforms supported
+
+Android, iOS, and tvOS.
+
 ## Requirements
 
 - Expo SDK 55 or later
@@ -87,6 +91,8 @@ Observe.configure({ integrations: { 'expo-router': true } });
 
 TTI per screen uses `markInteractive()`.
 
+**Update downloads:** apps that use EAS Update also report how long each update bundle takes to download. This needs no instrumentation.
+
 **Device state the web has no concept of.** TTI events carry frozen frames, slow frames, total delay, thermal state, low power mode, battery level and charging state, network type, and whether the connection is metered or constrained. They also summarize the requests the app made during launch: count, failures, bytes, throughput, and facts about the slowest one. Some params are platform-specific, and each is omitted when the OS reports no value. Tools built for browsers do not collect these fields, because on the web they do not exist.
 
 **Context, on every event:** app version and build number, environment, OS and OS version, device model and name, Expo SDK version, React Native version, language tag, app identifier and route. Sessions running an EAS build or an EAS Update also carry the build ID, the update ID and the channel.
@@ -155,6 +161,11 @@ eas observe:events
 ```
 
 All six accept `--json --non-interactive`, so you can pipe them into a script or hand them to a coding agent. `--platform` filters every command except `observe:session`, which already targets one session. The `eas-observe` skill covers setup, metrics and queries: https://docs.expo.dev/skills/.
+
+## Documentation
+
+- [EAS Observe guides](https://docs.expo.dev/eas/observe/): setup, dashboard, configuration, integrations and the metrics reference
+- [API reference](https://docs.expo.dev/versions/latest/sdk/observe/): every method, option and type in this package
 
 ## Contributing
 
