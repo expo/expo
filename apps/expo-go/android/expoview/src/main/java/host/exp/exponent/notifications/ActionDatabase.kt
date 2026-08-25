@@ -35,7 +35,7 @@ object ActionDatabase {
 
   @JvmStatic fun init(context: Context) {
     dao = Room.databaseBuilder(context, ActionRoomDatabase::class.java, "$NAME.db")
-      .fallbackToDestructiveMigration() 
+      .fallbackToDestructiveMigration()
       .allowMainThreadQueries()
       .build()
       .actionDao()

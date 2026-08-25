@@ -14,9 +14,11 @@ class ActionObject() {
 
   @ColumnInfo var buttonTitle: String? = null
 
-  @ColumnInfo var isDestructive: Boolean? = null
+  // Non-null with defaults: Room's KSP2 processor cannot match the setter of an
+  // `is`-prefixed nullable Boolean property.
+  @ColumnInfo var isDestructive: Boolean = false
 
-  @ColumnInfo var isAuthenticationRequired: Boolean? = null
+  @ColumnInfo var isAuthenticationRequired: Boolean = false
 
   @ColumnInfo var submitButtonTitle: String? = null
 
@@ -31,8 +33,8 @@ class ActionObject() {
     categoryId = map["categoryId"] as String?
     actionId = map["actionId"] as String? ?: ""
     buttonTitle = map["buttonTitle"] as String?
-    isDestructive = map["isDestructive"] as Boolean?
-    isAuthenticationRequired = map["isAuthenticationRequired"] as Boolean?
+    isDestructive = map["isDestructive"] as Boolean? ?: false
+    isAuthenticationRequired = map["isAuthenticationRequired"] as Boolean? ?: false
     isShouldShowTextInput = map["textInput"] != null
     if (isShouldShowTextInput && map["textInput"] is Map<*, *>) {
       val subMap = map["textInput"] as Map<String, Any>?
