@@ -162,14 +162,9 @@ export function useHostedTextInput<T extends TextInputHandle>(
     []
   );
 
-  // Blur before React removes the field's native views. A field left first responder while the
-  // row holding it is being removed makes UIKit assert: "The first responder contained inside of
-  // a deleted section or item refused to resign." SwiftUI restores focus from its still-set
-  // `@FocusState` during the collection view's delete pass, so the field reports that it resigned
-  // while remaining first responder. Every native teardown hook runs too late to prevent that —
-  // by then the row is already being deleted. A layout-effect cleanup runs in the commit's
-  // mutation phase, before the host views are torn down, which is early enough.
-  // https://github.com/expo/expo/issues/49348
+  // Blur before React removes the field's native views: a field left first responder while its
+  // row is deleted makes UIKit assert ("refused to resign"), and every native teardown hook runs
+  // too late to clear SwiftUI's `@FocusState`. https://github.com/expo/expo/issues/49348
   useLayoutEffect(() => {
     return () => {
       callHandle(nativeRef.current, 'blur');
