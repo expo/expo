@@ -205,7 +205,7 @@ import { useImage } from 'expo-image';
 import { AppleMaps } from 'expo-maps';
 
 export default function Map() {
-  const icon = useImage('https://example.com/marker.svg');
+  const icon = useImage('https://example.com/marker.svg', { maxWidth: 48, maxHeight: 48 });
 
   return (
     <AppleMaps.View
