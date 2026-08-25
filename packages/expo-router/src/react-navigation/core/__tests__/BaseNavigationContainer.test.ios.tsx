@@ -1017,7 +1017,7 @@ test('logs an error when a sibling root container drains the shared routing queu
   expect(error).toHaveBeenCalledTimes(1);
   expect(error).toHaveBeenCalledWith(
     [
-      'Looks like you have multiple navigation containers draining the shared routing queue. Only one container will receive queued actions, while the others will drop them. Make sure that:',
+      'Looks like you have multiple navigation containers consuming the shared imperative routing queue. Only one container will receive queued actions. Make sure that:',
       "- You don't have multiple NavigationContainers in the app",
       '- Only a single instance of the root component is rendered',
     ].join('\n')

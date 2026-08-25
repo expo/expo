@@ -12,6 +12,10 @@ import {
 } from '../../global-state/getRouteInfoFromState';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
+import {
+  RoutingQueueApiContext,
+  RoutingQueueProvider,
+} from '../../global-state/routingQueueContext';
 import { StoreContext } from '../../global-state/storeContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import useLatestCallback from '../../utils/useLatestCallback';
@@ -66,6 +70,16 @@ const duplicateNameWarnings: string[] = [];
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
   const registry = use(RouterRegistryContext);
+  const routingQueueApi = use(RoutingQueueApiContext);
+
+  // TODO(@ubax): Remove this when marking BaseNavigationContainer as kind of singleton
+  if (routingQueueApi === undefined) {
+    return (
+      <RoutingQueueProvider>
+        <BaseNavigationContainer {...props} />
+      </RoutingQueueProvider>
+    );
+  }
 
   // TODO(@ubax): investigate if this is really needed
   if (registry === undefined) {

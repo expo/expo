@@ -1,7 +1,14 @@
-import { screen, act, waitFor, fireEvent, render } from '@testing-library/react-native';
+import {
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+  render as renderWithoutQueue,
+} from '@testing-library/react-native';
 import React from 'react';
 import { Button, Platform, Text, View } from 'react-native';
 
+import { RoutingQueueProvider } from '../../global-state/routingQueueContext';
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
@@ -18,6 +25,10 @@ import {
   type NativeLinkPreviewProps,
   NativeLinkPreview,
 } from '../preview/native';
+
+function render(element: React.ReactElement) {
+  return renderWithoutQueue(element, { wrapper: RoutingQueueProvider });
+}
 
 // Render and observe the props of the Link component.
 

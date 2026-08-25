@@ -1,7 +1,11 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { routingQueue } from '../../../global-state/routingQueue';
+import type { RoutingIntent } from '../../../global-state/routingQueue';
+import {
+  RoutingQueueApiContext,
+  RoutingQueueProvider,
+} from '../../../global-state/routingQueueContext';
 import {
   CommonActions,
   type NavigationState,
@@ -299,38 +303,61 @@ test('ignores dispatches from a preloaded stack screen until it is promoted', ()
   };
   const ref = createNavigationContainerRef<ParamListBase>();
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const enqueue = jest.fn<void, [RoutingIntent]>();
+
+  function CaptureEnqueue({ children }: React.PropsWithChildren) {
+    const parentApi = React.use(RoutingQueueApiContext)!;
+    const api = React.useMemo(
+      () => ({
+        ...parentApi,
+        enqueue: (intent: RoutingIntent) => {
+          enqueue(intent);
+          parentApi.enqueue(intent);
+        },
+      }),
+      [parentApi]
+    );
+
+    return (
+      <RoutingQueueApiContext.Provider value={api}>{children}</RoutingQueueApiContext.Provider>
+    );
+  }
 
   render(
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="first">{() => null}</Screen>
-        <Screen name="second" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
+    <RoutingQueueProvider>
+      <CaptureEnqueue>
+        <BaseNavigationContainer ref={ref}>
+          <TestNavigator>
+            <Screen name="first">{() => null}</Screen>
+            <Screen name="second" component={TestScreen} />
+          </TestNavigator>
+        </BaseNavigationContainer>
+      </CaptureEnqueue>
+    </RoutingQueueProvider>
   );
 
   act(() => ref.current?.dispatch(CommonActions.preload('second')));
   const preloadedNavigation = navigation;
   const preloadedState = ref.current?.getRootState();
-  const add = jest.spyOn(routingQueue, 'add');
+  enqueue.mockClear();
 
   act(() => preloadedNavigation.goBack());
 
   expect(warn).toHaveBeenCalledWith(
     "Ignored a navigation action dispatched from the preloaded screen 'second'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching."
   );
-  expect(add).not.toHaveBeenCalled();
+  expect(enqueue).not.toHaveBeenCalled();
   expect(ref.current?.getRootState()).toEqual(preloadedState);
 
   act(() => ref.current?.navigate('second'));
 
   expect(navigation).toBe(preloadedNavigation);
-  add.mockClear();
+  enqueue.mockClear();
 
   act(() => preloadedNavigation.dispatch(CommonActions.goBack()));
 
-  expect(add).toHaveBeenCalledTimes(1);
-  expect(add).toHaveBeenCalledWith({
+  expect(enqueue).toHaveBeenCalledTimes(1);
+  expect(enqueue).toHaveBeenCalledWith({
     type: 'NAVIGATOR_ACTION',
     payload: expect.objectContaining({
       action: expect.objectContaining({

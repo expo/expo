@@ -59,7 +59,7 @@ test('queues an incoming deep link using its extracted app path', () => {
   }
 
   render(<Sample />);
-  listener?.('example://home?from=link');
+  act(() => listener?.('example://home?from=link'));
 
   expect(getStateFromPath).toHaveBeenCalledWith('home?from=link', undefined, []);
   expect(routingQueue.queue).toEqual([
@@ -100,7 +100,7 @@ test('reports an incoming deep link using its extracted app path', () => {
   }
 
   render(<Sample />);
-  listener?.('myapp://foo/bar');
+  act(() => listener?.('myapp://foo/bar'));
 
   expect(onUnhandledLinking).toHaveBeenCalledWith('/foo/bar');
   expect(routingQueue.queue[0]).toMatchObject({
@@ -178,7 +178,7 @@ test('resubscribes on re-render and cleans up the previous subscription', () => 
 
   const element = render(<Sample />);
   element.rerender(<Sample />);
-  listeners[1]?.('example://home');
+  act(() => listeners[1]?.('example://home'));
 
   expect(subscribe).toHaveBeenCalledTimes(2);
   expect(unsubscribes[0]).toHaveBeenCalledTimes(1);
