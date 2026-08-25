@@ -6,6 +6,7 @@
 
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
+#include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
 #include "ExpoViewProps.h"
 #include "ExpoViewState.h"
@@ -49,6 +50,31 @@ public:
   static facebook::react::ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     return traits;
+  }
+
+  /**
+   Used by `RNHostView`. Reports where this view's contents were actually drawn, for views laid
+   out by SwiftUI or Compose instead of Yoga. Without it `measure()` returns this node's Yoga box,
+   which is not where the hosted content ended up.
+   */
+  facebook::react::Point getContentOriginOffset(bool includeTransform) const override {
+    // A `false` caller is asking for a scroll offset, which this view never has. Only the layout
+    // path passes `true`, and that is the one this override is for.
+    if (!includeTransform) {
+      return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
+    }
+
+    auto contentOrigin = ContentOriginRegistry::find(this->getTag());
+    if (!contentOrigin) {
+      return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
+    }
+
+    // `computeRelativeLayoutMetrics` adds this node's own Yoga origin before consulting us, 
+    // so subtract them as we only want content origin to be considered. 
+    // Publish only the part Yoga cannot see: where
+    // the native layout system placed the content inside its host.
+    auto ownOrigin = this->getLayoutMetrics().frame.origin;
+    return {.x = contentOrigin->x - ownOrigin.x, .y = contentOrigin->y - ownOrigin.y};
   }
 
 private:

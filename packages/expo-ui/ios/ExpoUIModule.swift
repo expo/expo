@@ -10,6 +10,9 @@ public final class ExpoUIModule: Module {
     View(RNHostView.self)
 
     OnDestroy {
+      // Clear all registered content origins when the module is destroyed
+      ContentOriginRegistry.clearAll()
+
       Task { @MainActor in
         NamespaceRegistry.shared.removeAll()
       }
