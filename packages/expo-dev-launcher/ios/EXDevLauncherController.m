@@ -52,6 +52,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 @property (nonatomic, strong) NSString *defaultLaunchURLString;
 @property (nonatomic, strong) NSURL *defaultLaunchURL;
 @property (nonatomic) BOOL useDefaultLaunchUrlFallback;
+@property (nonatomic) BOOL isAppLoading;
 
 @end
 
@@ -293,6 +294,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 {
   NSAssert([NSThread isMainThread], @"This function must be called on main thread");
 
+  self.isAppLoading = NO;
+
   [self invalidateDevMenuApp];
 
   self.networkInterceptor = nil;
@@ -398,6 +401,25 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
       onSuccess:(void (^ _Nullable)(void))onSuccess
         onError:(void (^ _Nullable)(NSError *error))onError
 {
+  // From here until `navigateToLauncher`, the launcher UI is not what the user looks at.
+  // Stop the work that only its own screens consume, such as the Bonjour browse behind the
+  // dev server list. A launch from a deep link or `--initialUrl` never passes through the
+  // view model, so the launcher cannot see it any other way.
+  self.isAppLoading = YES;
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf.devLauncherViewController stopServerDiscovery];
+  });
+
+  void (^originalOnError)(NSError *) = onError;
+  onError = ^(NSError *error) {
+    // The launcher UI stays on screen after a failed launch, so let it work again.
+    weakSelf.isAppLoading = NO;
+    if (originalOnError) {
+      originalOnError(error);
+    }
+  };
+
 #if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
   // A dev server has been chosen — re-allow packager access (denied at launcher boot in
   // `start:launchOptions:`). Replaces the RCTBundleURLProvider.guessPackagerHost swizzle.
@@ -600,6 +622,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
+  self.isAppLoading = YES;
   RCTDevLoadingViewSetEnabled(NO);
   [self _initAppWithUrl:bundleUrl bundleUrl:bundleUrl manifest:nil];
   self.manifestURL = nil;

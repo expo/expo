@@ -269,6 +269,12 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func startServerDiscovery() {
+    // The browse only feeds the launcher's dev server list. That list is off screen while an
+    // app loads and while it runs, so a browse started now has no consumer.
+    if EXDevLauncherController.sharedInstance().isAppLoading {
+      return
+    }
+
     if browser != nil {
       return
     }

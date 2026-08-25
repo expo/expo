@@ -79,6 +79,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isAppRunning;
 
+/**
+ * `YES` from the moment a launch starts until `navigateToLauncher` puts the launcher UI back
+ * on screen, or the launch fails. Work that only the launcher's own screens consume should
+ * not run while this is `YES`.
+ */
+@property (nonatomic, readonly) BOOL isAppLoading;
+
 - (UIWindow * _Nullable)currentWindow;
 
 - (EXDevLauncherErrorManager *)errorManager;
