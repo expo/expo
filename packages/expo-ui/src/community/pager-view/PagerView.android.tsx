@@ -77,13 +77,7 @@ export function PagerView(props: PagerViewProps) {
   const pages = Children.toArray(children)
     .filter((child): child is ReactElement => isValidElement(child))
     .map((child, index) => (
-      <RNHostView
-        key={child.key ?? String(index)}
-        // Overlap pages at one origin so each page's RN shadow position matches
-        // where Compose draws it; otherwise `measure()`-based hit-testing
-        // (e.g. `Pressable`) misfires on pages after the first (#46386).
-        style={StyleSheet.absoluteFill}
-        modifiers={[fillMaxSize()]}>
+      <RNHostView key={child.key ?? String(index)} modifiers={[fillMaxSize()]}>
         <View style={styles.page} pointerEvents={index === settledPage ? 'auto' : 'none'}>
           {child}
         </View>

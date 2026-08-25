@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Removed the `style` prop from `RNHostView`. It set a React Native style on a view that Jetpack Compose positions and sizes; use `modifiers` instead. Hosted views are now measured where Compose drew them, so a style is no longer needed to keep `measure()` and the drawn position in agreement. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
 - [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))
@@ -13,6 +15,9 @@
 
 - Fixed the keyboard staying open when tapping outside a text field hosted by `<Host>`. A parent `ScrollView`'s tap-to-dismiss, its `keyboardShouldPersistTaps` setting, and `Keyboard.dismiss()` now reach hosted text fields. React Native treats the whole `<Host>` as the input, so a tap on other content inside the same host still keeps the keyboard open. ([#48788](https://github.com/expo/expo/pull/48788) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix a hosted `Pressable` dropping its press when the finger moves, by measuring hosted React Native views where SwiftUI placed them. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix hosted React Native views receiving no touches inside a `BottomSheet` or `Popover`. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix touch handling for hosted React Native views: a `Pressable` dropped its press when the finger moved, hosted content stole gestures from enclosing scrollables, a back gesture was reported as a long press, a press fired after a Jetpack Compose pager or scrollable had already claimed the gesture, and content inside `AlertDialog`, `DropdownMenu`, `ExposedDropdownMenu` and `TooltipBox` received no touches at all. Hosted views are now measured where Jetpack Compose placed them, and dispatch their own touches only when presented in their own window. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix a hosted `Pressable` in a `PagerView` ignoring presses on pages after the first, where a re-parented host kept the bounds of the holder it left and answered for a screen area it no longer occupied. ([#46386](https://github.com/expo/expo/issues/46386) by [@TomCorvus](https://github.com/TomCorvus)) ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

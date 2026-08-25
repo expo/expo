@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
 import type { ModifierConfig } from '../../types';
 import type { PrimitiveBaseProps } from '../layout';
 export interface RNHostProps extends PrimitiveBaseProps {
@@ -18,11 +17,6 @@ export interface RNHostProps extends PrimitiveBaseProps {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-    /**
-     * Style applied to the host view's React Native shadow node. Useful for
-     * controlling its layout position (e.g. `position: 'absolute'`).
-     */
-    style?: StyleProp<ViewStyle>;
 }
 export declare function RNHostView(props: RNHostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
