@@ -21,6 +21,7 @@ const val speakingErrorEvent = "Exponent.speakingError"
 class SpeechModule : Module() {
   private val delayedUtterances: Queue<Utterance> = ArrayDeque()
   private val delayedGetVoices: Queue<Promise> = ArrayDeque()
+  private var ttsState = TtsState.PENDING
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSpeech")
@@ -46,17 +47,15 @@ class SpeechModule : Module() {
     }
 
     AsyncFunction("getVoices") { promise: Promise ->
-      if (isTextToSpeechReady) {
-        promise.resolve(getVoices())
-      } else if (ttsFailed) {
-        // The engine already failed to initialize once; it will never become
-        // ready, so answer immediately instead of queueing forever.
-        promise.resolve(emptyList<VoiceRecord>())
-      } else {
-        delayedGetVoices.add(promise)
+      when (ttsState) {
+        TtsState.READY -> promise.resolve(getVoices())
+        TtsState.FAILED -> promise.resolve(emptyList<VoiceRecord>())
+        TtsState.PENDING -> {
+          delayedGetVoices.add(promise)
 
-        // Init TTS, the promise will be fulfilled after onInit
-        textToSpeech
+          // Init TTS, the promise will be fulfilled after onInit
+          textToSpeech
+        }
       }
     }
 
@@ -69,16 +68,15 @@ class SpeechModule : Module() {
         throw SpeechInputIsToLongException()
       }
 
-      if (isTextToSpeechReady) {
-        speakOut(id, text, options)
-      } else if (ttsFailed) {
-        // The engine can never become ready; fail the utterance loudly.
-        sendEvent(speakingErrorEvent, idToMap(id))
-      } else {
-        delayedUtterances.add(Utterance(id, text, options))
+      when (ttsState) {
+        TtsState.READY -> speakOut(id, text, options)
+        TtsState.FAILED -> sendEvent(speakingErrorEvent, idToMap(id))
+        TtsState.PENDING -> {
+          delayedUtterances.add(Utterance(id, text, options))
 
-        // init TTS, speaking will be available only after onInit
-        textToSpeech
+          // init TTS, speaking will be available only after onInit
+          textToSpeech
+        }
       }
       Unit
     }
@@ -152,18 +150,12 @@ class SpeechModule : Module() {
 
   // TextToSpeech object related code
 
-  private val isTextToSpeechReady
-    get() = _ttsReady
-
-  private val ttsFailed
-    get() = _ttsFailed
-
   private val textToSpeech: TextToSpeech by lazy {
     val newTtsInstance = TextToSpeech(appContext.reactContext) { status: Int ->
       if (status == TextToSpeech.SUCCESS) {
         // synchronize because in some cases this runs on another thread and _textToSpeech is null
         synchronized(this@SpeechModule) {
-          _ttsReady = true
+          ttsState = TtsState.READY
           _textToSpeech!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
 
             override fun onStart(utteranceId: String) {
@@ -199,20 +191,10 @@ class SpeechModule : Module() {
           }
         }
       } else {
-        // The TTS engine failed to initialize (e.g. no engine is installed on
-        // the device). Settle every queued promise so callers get "no voices"
-        // instead of an await that never returns, and fail queued utterances
-        // through the error event instead of dropping them silently.
         synchronized(this@SpeechModule) {
-          _ttsFailed = true
-          while (true) {
-            val promise = delayedGetVoices.poll() ?: break
-            promise.resolve(emptyList<VoiceRecord>())
-          }
-          while (true) {
-            val utterance = delayedUtterances.poll() ?: break
-            sendEvent(speakingErrorEvent, idToMap(utterance.id))
-          }
+          ttsState = TtsState.FAILED
+          delayedGetVoices.forEach { it.resolve(emptyList<VoiceRecord>()) }
+          delayedUtterances.forEach { sendEvent(speakingErrorEvent, idToMap(it.id)) }
         }
       }
     }
@@ -231,8 +213,12 @@ class SpeechModule : Module() {
     val options: SpeechOptions
   )
 
-  // do not refer to these - they're only needed when initializing `textToSpeech`
+  private enum class TtsState {
+    PENDING,
+    READY,
+    FAILED
+  }
+
+  // do not refer to this - it's only needed when initializing `textToSpeech`
   private var _textToSpeech: TextToSpeech? = null
-  private var _ttsReady = false
-  private var _ttsFailed = false
 }
