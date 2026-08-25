@@ -1,6 +1,7 @@
 export interface RNHostViewProps {
     /**
-     * When `true`, the RNHost will update its size in the React Native view tree to match the children's size.
+     * When `true`, the RNHost will update its size in the React Native view tree to match the
+     * children's size.
      * When `false`, the RNHost will use the size of the parent SwiftUI View.
      * Can be only set once on mount.
      * @default false

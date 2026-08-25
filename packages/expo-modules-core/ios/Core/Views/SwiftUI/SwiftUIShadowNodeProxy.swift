@@ -12,5 +12,8 @@ extension ExpoSwiftUI {
 
     public var setViewSize: ((CGSize) -> Void)?
     public var setStyleSize: ((NSNumber?, NSNumber?) -> Void)?
+    // Where the native layout system drew this view's contents, relative to its host.
+    public var setContentOrigin: ((CGPoint) -> Void)?
+    public var clearContentOrigin: (() -> Void)?
   }
 }

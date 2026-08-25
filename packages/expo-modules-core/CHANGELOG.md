@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Measure hosted React Native views where SwiftUI placed them, instead of at their Yoga box. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.13 — 2026-08-24
