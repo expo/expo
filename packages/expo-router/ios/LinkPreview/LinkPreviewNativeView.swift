@@ -105,6 +105,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
           }
         }
         super.unmountChildComponentView(child, index: index)
+        self.directChild = nil
       } else {
         logger?.warn(
           "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
