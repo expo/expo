@@ -25,6 +25,7 @@
 - Fix DOM components dropping prop updates that are emitted while the WebView is still loading. ([#48813](https://github.com/expo/expo/pull/48813) by [@expo-bot](https://github.com/expo-bot))
 - Fix `import.meta.url` being `null` on web when `transform.inlineRequires` is enabled. ([#49045](https://github.com/expo/expo/pull/49045) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix `expo/fetch` `Response.body` never closing or erroring when the request fails after the response was delivered but before anything read the body.
+- [Android] Fix `expo/fetch` delivering a truncated response body to JS as a successful, complete one when the request fails after the response was delivered, and make `Response.text()` / `.arrayBuffer()` reject on such a failure.
 
 ### 💡 Others
 
