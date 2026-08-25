@@ -21,3 +21,7 @@ export function prefersDarkTheme() {
 export function prefersReducedMotion() {
   return window?.matchMedia('(prefers-reduced-motion)').matches ?? false;
 }
+
+export function isDarkTheme() {
+  return document.documentElement.classList.contains('dark-theme');
+}
