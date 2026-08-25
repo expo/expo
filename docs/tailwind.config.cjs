@@ -3,7 +3,7 @@ const merge = require('lodash/merge');
 const plugin = require('tailwindcss/plugin');
 
 const lightVariant = plugin(({ addVariant }) => {
-  addVariant('light', '&:is([class*="light-theme"] *)');
+  addVariant('light', '&:is(:root:not([class*="dark-theme"]) *)');
 });
 
 function getExpoTheme(extend = {}, plugins = []) {
