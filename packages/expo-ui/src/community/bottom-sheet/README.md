@@ -68,15 +68,27 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 - The "persistent peek" pattern (e.g., a 10% strip always visible at the bottom like Google Maps) does not work — the sheet is either fully presented or hidden
 - On iOS, `enablePanDownToClose` enables both swipe-to-dismiss and backdrop tap dismiss — SwiftUI does not allow separating these behaviors
 
+### Keyboard
+
+iOS presents the sheet in its own view controller. React Native lays the sheet content out from the sheet's own origin, so `KeyboardAvoidingView` computes the wrong inset there and the keyboard can cover a focused `TextInput`.
+
+Use `BottomSheetScrollView`, `BottomSheetFlatList` or `BottomSheetSectionList` for scrollable sheet content. They set `automaticallyAdjustKeyboardInsets` on iOS, which the native scroll view applies from its own window frame, so the focused input scrolls above the keyboard. Pass `automaticallyAdjustKeyboardInsets={false}` to turn it off.
+
+A plain React Native `ScrollView` inside the sheet needs the same prop:
+
+```tsx
+<ScrollView automaticallyAdjustKeyboardInsets>
+```
+
 ### Exports
 
 | Export                        | Supported | Notes                                                          |
 | ----------------------------- | --------- | -------------------------------------------------------------- |
 | `BottomSheet` (default)       | Yes       | Modal on iOS/Android, vaul drawer on web                       |
 | `BottomSheetView`             | Yes       | Pass-through `View` wrapper (strips `flex` for fit-to-content) |
-| `BottomSheetScrollView`       | Yes       | Re-export of `ScrollView`                                      |
-| `BottomSheetFlatList`         | Yes       | Re-export of `FlatList`                                        |
-| `BottomSheetSectionList`      | Yes       | Re-export of `SectionList`                                     |
+| `BottomSheetScrollView`       | Yes       | `ScrollView` with `automaticallyAdjustKeyboardInsets` on iOS   |
+| `BottomSheetFlatList`         | Yes       | `FlatList` with `automaticallyAdjustKeyboardInsets` on iOS     |
+| `BottomSheetSectionList`      | Yes       | `SectionList` with `automaticallyAdjustKeyboardInsets` on iOS  |
 | `BottomSheetTextInput`        | Yes       | Re-export of `TextInput`                                       |
 | `BottomSheetModal`            | Yes       | Starts closed, opened via `present()`                          |
 | `BottomSheetModalProvider`    | Yes       | No-op wrapper for compatibility                                |

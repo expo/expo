@@ -1,5 +1,16 @@
-import { type ReactNode, useContext, useImperativeHandle, useRef } from 'react';
-import { FlatList, ScrollView, SectionList, StyleSheet, TextInput, View } from 'react-native';
+import { type ReactNode, type Ref, useContext, useImperativeHandle, useRef } from 'react';
+import {
+  FlatList,
+  Platform,
+  ScrollView,
+  SectionList,
+  StyleSheet,
+  TextInput,
+  View,
+  type FlatListProps,
+  type ScrollViewProps,
+  type SectionListProps,
+} from 'react-native';
 
 import { BottomSheet as BottomSheetComponent } from './BottomSheet';
 import { BottomSheetInternalContext } from './context';
@@ -79,37 +90,57 @@ function stripFlexStyle(style: BottomSheetViewProps['style']): BottomSheetViewPr
 
 // #region Scroll wrappers
 
+// The sheet presents its content in its own view controller, so React Native lays the content out
+// from the sheet's own origin and not from the screen. `KeyboardAvoidingView` reads that origin, so
+// it computes an inset that is too small and the keyboard still covers a focused input.
+// `automaticallyAdjustKeyboardInsets` does not have that problem: the native scroll view reads its
+// own window frame, insets the content by the real overlap and scrolls the focused input into view.
+// The prop is iOS only. Callers can still pass `automaticallyAdjustKeyboardInsets={false}`.
+const keyboardInsetProps =
+  Platform.OS === 'ios' ? ({ automaticallyAdjustKeyboardInsets: true } as const) : null;
+
 /**
  * A scrollable view for use inside a `BottomSheet`.
  *
- * @remarks This is a direct re-export of React Native's `ScrollView`.
- * Native platform sheets handle scroll coordination automatically,
- * so no special gesture handling is needed (unlike `@gorhom/bottom-sheet`
- * which overrides scroll behavior for gesture coordination).
+ * @remarks React Native's `ScrollView` with `automaticallyAdjustKeyboardInsets` enabled on iOS, so
+ * the keyboard does not cover a focused `TextInput` inside the sheet. Native platform sheets handle
+ * scroll coordination automatically, so no special gesture handling is needed (unlike
+ * `@gorhom/bottom-sheet` which overrides scroll behavior for gesture coordination).
  */
-const BottomSheetScrollView = ScrollView;
+function BottomSheetScrollView({ ref, ...props }: ScrollViewProps & { ref?: Ref<ScrollView> }) {
+  return <ScrollView ref={ref} {...keyboardInsetProps} {...props} />;
+}
 
 /**
  * A flat list for use inside a `BottomSheet`.
  *
- * @remarks This is a direct re-export of React Native's `FlatList`.
- * See `BottomSheetScrollView` remarks for details.
+ * @remarks See `BottomSheetScrollView` remarks for details.
  */
-const BottomSheetFlatList = FlatList;
+function BottomSheetFlatList<ItemT = any>({
+  ref,
+  ...props
+}: FlatListProps<ItemT> & { ref?: Ref<FlatList<ItemT>> }) {
+  return <FlatList ref={ref} {...keyboardInsetProps} {...props} />;
+}
 
 /**
  * A section list for use inside a `BottomSheet`.
  *
- * @remarks This is a direct re-export of React Native's `SectionList`.
- * See `BottomSheetScrollView` remarks for details.
+ * @remarks See `BottomSheetScrollView` remarks for details.
  */
-const BottomSheetSectionList = SectionList;
+function BottomSheetSectionList<ItemT = any, SectionT = any>({
+  ref,
+  ...props
+}: SectionListProps<ItemT, SectionT> & { ref?: Ref<SectionList<ItemT, SectionT>> }) {
+  return <SectionList ref={ref} {...keyboardInsetProps} {...props} />;
+}
 
 /**
  * A text input for use inside a `BottomSheet`.
  *
- * @remarks This is a direct re-export of React Native's `TextInput`.
- * Native platform sheets handle keyboard behavior automatically.
+ * @remarks This is a direct re-export of React Native's `TextInput`. Put it inside
+ * `BottomSheetScrollView`, `BottomSheetFlatList` or `BottomSheetSectionList` so the keyboard does
+ * not cover it.
  */
 const BottomSheetTextInput: typeof TextInput = TextInput;
 
