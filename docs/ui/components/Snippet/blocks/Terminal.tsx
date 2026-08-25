@@ -94,7 +94,7 @@ export const Terminal = ({
         activeManager={activeManager}
         tokens={preferenceTokens}
         onSelect={setActiveManager}
-        className="ml-6 max-[640px]:hidden"
+        className="ml-6 hidden min-[641px]:inline-flex"
       />
     </>
   ) : null;
