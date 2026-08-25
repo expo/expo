@@ -14,6 +14,11 @@ final class DeviceLoginStateMachineTests: XCTestCase {
     XCTAssertEqual(machine().firstStep, .poll(after: 5, matchValue: nil))
   }
 
+  func testNonPositiveIntervalIsClampedToOneSecond() {
+    XCTAssertEqual(machine(interval: 0).firstStep, .poll(after: 1, matchValue: nil))
+    XCTAssertEqual(machine(interval: -5).firstStep, .poll(after: 1, matchValue: nil))
+  }
+
   func testPendingKeepsTheInterval() {
     var subject = machine()
     XCTAssertEqual(subject.advance(with: .pending, now: start), .poll(after: 5, matchValue: nil))
@@ -31,6 +36,16 @@ final class DeviceLoginStateMachineTests: XCTestCase {
     var subject = machine(expiresIn: 600)
     let past = start.addingTimeInterval(601)
     XCTAssertEqual(subject.advance(with: .pending, now: past), .failed(.expired))
+  }
+
+  func testSessionAfterTheDeadlineStillSignsIn() {
+    var subject = machine(expiresIn: 600)
+    let past = start.addingTimeInterval(601)
+    let expiry = start.addingTimeInterval(3600)
+    XCTAssertEqual(
+      subject.advance(with: .session(secret: "secret", expiresAt: expiry), now: past),
+      .signedIn(secret: "secret", expiresAt: expiry)
+    )
   }
 
   func testMatchRequiredMovesToMatching() {

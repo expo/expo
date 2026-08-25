@@ -23,7 +23,7 @@ struct MeActorResponse: Codable {
 }
 
 struct MeActorData: Codable {
-  /// Null for a `Robot`, which has no username, and for an unauthenticated request.
+  /// Null for an unauthenticated request.
   let meActor: UserActor?
 }
 

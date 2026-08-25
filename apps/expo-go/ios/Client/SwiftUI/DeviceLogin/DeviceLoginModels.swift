@@ -124,14 +124,6 @@ enum TokenOutcome: Equatable {
 enum DeviceLoginDates {
   /// The API sends fractional seconds, which `JSONDecoder`'s `.iso8601` strategy rejects.
   static func parseExpiry(_ value: String) -> Date? {
-    let withFractionalSeconds = ISO8601DateFormatter()
-    withFractionalSeconds.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    if let date = withFractionalSeconds.date(from: value) {
-      return date
-    }
-
-    let withoutFractionalSeconds = ISO8601DateFormatter()
-    withoutFractionalSeconds.formatOptions = [.withInternetDateTime]
-    return withoutFractionalSeconds.date(from: value)
+    parseISO8601Date(value)
   }
 }
