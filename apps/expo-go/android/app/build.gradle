@@ -230,35 +230,8 @@ dependencies {
   implementation 'androidx.core:core-splashscreen:1.0.1'
 
   // Our dependencies from ExpoView
-  // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:10.2.1'
-  implementation 'de.greenrobot:eventbus:2.4.0'
-
-  implementation 'com.squareup.picasso:picasso:2.5.2'
-  implementation 'com.google.android.gms:play-services-analytics:16.0.1'
-  implementation 'com.google.android.gms:play-services-maps:18.0.0'
-  implementation 'com.google.android.gms:play-services-auth:15.0.1'
-  implementation 'com.google.android.gms:play-services-location:15.0.1'
-  debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  // debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
-  releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
-  implementation 'commons-io:commons-io:1.4'
-  implementation 'com.airbnb.android:lottie:6.5.2'
-  implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation 'com.vanniktech:android-image-cropper:4.6.0'
-  implementation 'commons-codec:commons-codec:1.10'
-  implementation 'com.google.zxing:core:3.3.3'
-  implementation 'net.openid:appauth:0.4.1'
-  implementation "androidx.exifinterface:exifinterface:1.3.3"
-  implementation 'com.squareup.okio:okio:1.9.0'
-  implementation 'com.facebook.soloader:soloader:0.12.1'
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-
-  // expo-file-system
-  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
