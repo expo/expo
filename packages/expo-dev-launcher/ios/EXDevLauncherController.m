@@ -52,7 +52,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 @property (nonatomic, strong) NSString *defaultLaunchURLString;
 @property (nonatomic, strong) NSURL *defaultLaunchURL;
 @property (nonatomic) BOOL useDefaultLaunchUrlFallback;
-@property (nonatomic) BOOL isAppLoading;
+@property (nonatomic) BOOL hasActiveAppLaunch;
 
 @end
 
@@ -294,7 +294,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 {
   NSAssert([NSThread isMainThread], @"This function must be called on main thread");
 
-  self.isAppLoading = NO;
+  self.hasActiveAppLaunch = NO;
 
   [self invalidateDevMenuApp];
 
@@ -405,7 +405,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   // Stop the work that only its own screens consume, such as the Bonjour browse behind the
   // dev server list. A launch from a deep link or `--initialUrl` never passes through the
   // view model, so the launcher cannot see it any other way.
-  self.isAppLoading = YES;
+  self.hasActiveAppLaunch = YES;
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf.devLauncherViewController stopServerDiscovery];
@@ -414,7 +414,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   void (^originalOnError)(NSError *) = onError;
   onError = ^(NSError *error) {
     // The launcher UI stays on screen after a failed launch, so let it work again.
-    weakSelf.isAppLoading = NO;
+    weakSelf.hasActiveAppLaunch = NO;
     if (originalOnError) {
       originalOnError(error);
     }
@@ -622,7 +622,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
-  self.isAppLoading = YES;
+  self.hasActiveAppLaunch = YES;
   RCTDevLoadingViewSetEnabled(NO);
   [self _initAppWithUrl:bundleUrl bundleUrl:bundleUrl manifest:nil];
   self.manifestURL = nil;

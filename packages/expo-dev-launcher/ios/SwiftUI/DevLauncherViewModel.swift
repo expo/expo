@@ -269,9 +269,11 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func startServerDiscovery() {
-    // The browse only feeds the launcher's dev server list. That list is off screen while an
-    // app loads and while it runs, so a browse started now has no consumer.
-    if EXDevLauncherController.sharedInstance().isAppLoading {
+    // The browse only feeds the launcher's dev server list, which is off screen while an app
+    // loads and while it runs. `isAppRunning` reads the react host directly, so the guard
+    // still holds if an app is ever started without going through `loadApp:`.
+    let controller = EXDevLauncherController.sharedInstance()
+    if controller.hasActiveAppLaunch || controller.isAppRunning() {
       return
     }
 

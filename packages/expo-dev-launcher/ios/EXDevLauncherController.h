@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
  * on screen, or the launch fails. Work that only the launcher's own screens consume should
  * not run while this is `YES`.
  */
-@property (nonatomic, readonly) BOOL isAppLoading;
+@property (nonatomic, readonly) BOOL hasActiveAppLaunch;
 
 - (UIWindow * _Nullable)currentWindow;
 
