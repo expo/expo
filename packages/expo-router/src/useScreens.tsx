@@ -409,6 +409,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
             <React.Suspense
               name={route ? `Route(${route.name})` : undefined}
               fallback={
+                // `ResolvedSuspenseFallback` only selects between statically defined
+                // components; nothing is created during render.
+                // oxlint-disable-next-line react/static-components
                 <ResolvedSuspenseFallback
                   route={value.contextKey}
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
