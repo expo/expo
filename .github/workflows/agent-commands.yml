@@ -33,7 +33,8 @@
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
 # (hosted E2B Linux sandboxes, GHA VMs for image-specific checks — Windows
-# Server, macOS 15, Ubuntu CI — proxied EAS builds, hosted iOS simulators).
+# Server, macOS 15, Ubuntu CI — proxied EAS builds, hosted iOS and Android
+# simulator sessions).
 # Linux E2B + the hosted simulator stay the default. A GHA VM is the
 # exception: same image as GitHub Actions, not a pauseable sandbox and not
 # EAS Simulator. An Expo app on that VM can still be shown on the hosted
