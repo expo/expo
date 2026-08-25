@@ -140,6 +140,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fix `expo run:ios --device` hanging instead of exiting after installing and launching the app on a device connected over Wi-Fi. ([#46936](https://github.com/expo/expo/pull/46936) by [@helios1138](https://github.com/helios1138))
 - Focus the booted device in Device Hub using its `devices://` deep link instead of only bringing the app forward. ([#46809](https://github.com/expo/expo/pull/46809) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 56.1.15 - 2026-06-10
