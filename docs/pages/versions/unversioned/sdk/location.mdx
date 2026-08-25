@@ -74,6 +74,13 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       default: '"Allow $(PRODUCT_NAME) to use your location"',
     },
     {
+      name: 'motionUsagePermission',
+      platform: 'ios',
+      description:
+        'A string to set the [`NSMotionUsageDescription`](#permission-nsmotionusagedescription) permission message. `getMotionActivityAsync` and `watchMotionActivityAsync` require this key. Set this property to `false` to delete the key from **Info.plist**. `false` only changes **Info.plist**. It does not remove the Core Motion code from the iOS build, so App Store Connect can reject the archive with `ITMS-90683`. To use your own message, pass a string here, or omit this property and set `ios.infoPlist.NSMotionUsageDescription`. Do not combine `false` with `ios.infoPlist`, because the plugin deletes the key that `ios.infoPlist` adds.',
+      default: '"Allow $(PRODUCT_NAME) to detect your current motion activity"',
+    },
+    {
       name: 'isIosBackgroundLocationEnabled',
       platform: 'ios',
       description: 'A boolean to enable `location` in the `UIBackgroundModes` in **Info.plist**.',
@@ -91,6 +98,13 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       platform: 'android',
       description:
         'A boolean to enable the [`FOREGROUND_SERVICE`](#permission-foreground_service) permission and [`FOREGROUND_SERVICE_LOCATION`](#permission-foreground_service_location) (required on Android 14 and later when running a location foreground service). Defaults to `true` if `isAndroidBackgroundLocationEnabled` is `true`, otherwise `false`.',
+    },
+    {
+      name: 'isAndroidMotionActivityEnabled',
+      platform: 'android',
+      description:
+        'A boolean to enable the [`ACTIVITY_RECOGNITION`](#permission-activity_recognition) and `com.google.android.gms.permission.ACTIVITY_RECOGNITION` permissions. `getMotionActivityAsync` and `watchMotionActivityAsync` require these permissions.',
+      default: 'false',
     },
     {
       name: 'androidForegroundServiceIcon',
@@ -360,6 +374,7 @@ The following permissions are optional:
     'FOREGROUND_SERVICE',
     'FOREGROUND_SERVICE_LOCATION',
     'ACCESS_BACKGROUND_LOCATION',
+    'ACTIVITY_RECOGNITION',
   ]}
 />
 
@@ -382,6 +397,7 @@ The following usage description keys are used by this library:
     'NSLocationAlwaysAndWhenInUseUsageDescription',
     'NSLocationAlwaysUsageDescription',
     'NSLocationWhenInUseUsageDescription',
+    'NSMotionUsageDescription',
   ]}
 />
 

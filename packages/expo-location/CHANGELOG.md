@@ -18,6 +18,7 @@
 ### 💡 Others
 
 - Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
+- [iOS] Document that `motionUsagePermission: false` only deletes `NSMotionUsageDescription` and does not remove the Core Motion code, and add config plugin tests for the option.
 
 ## 57.0.7 - 2026-07-29
 
