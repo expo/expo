@@ -14,10 +14,6 @@ export function getViewportSize() {
   };
 }
 
-export function prefersDarkTheme() {
-  return window?.matchMedia('(prefers-color-scheme: dark)').matches ?? false;
-}
-
 export function prefersReducedMotion() {
   return window?.matchMedia('(prefers-reduced-motion)').matches ?? false;
 }
