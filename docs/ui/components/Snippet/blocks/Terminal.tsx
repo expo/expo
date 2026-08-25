@@ -5,7 +5,6 @@ import { Language, Prism } from 'prism-react-renderer';
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { CODE } from '~/ui/components/Text';
-import { useIsMobileView } from '~/ui/components/utils/isMobileView';
 
 import { Select } from '../../Select';
 import { Snippet } from '../Snippet';
@@ -82,24 +81,22 @@ export const Terminal = ({
     shouldShowPackageTabs,
     setActiveManager,
   } = usePackageManagerState(packageManagers, fallbackCmd);
-  const isMobileView = useIsMobileView();
   const packageManagerSlot = shouldShowPackageTabs ? (
-    isMobileView ? (
+    <>
       <PackageSelect
         managers={availableManagers}
         activeManager={activeManager}
         onSelect={setActiveManager}
-        className="ml-4"
+        className="ml-4 min-[641px]:hidden"
       />
-    ) : (
       <PackageTabs
         managers={availableManagers}
         activeManager={activeManager}
         tokens={preferenceTokens}
         onSelect={setActiveManager}
-        className="ml-6"
+        className="ml-6 max-[640px]:hidden"
       />
-    )
+    </>
   ) : null;
 
   return (

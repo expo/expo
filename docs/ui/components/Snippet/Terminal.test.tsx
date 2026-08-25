@@ -84,6 +84,20 @@ describe(Terminal, () => {
     ]);
   });
 
+  it('renders both package manager controls so CSS can pick one before hydration', () => {
+    render(
+      <Terminal
+        cmd={{
+          npm: ['$ npm install expo'],
+          yarn: ['$ yarn add expo'],
+        }}
+      />
+    );
+
+    expect(screen.getByRole('tablist')).toBeInTheDocument();
+    expect(screen.getByLabelText('Select package manager')).toBeInTheDocument();
+  });
+
   it('points managers the snippet does not offer at the fallback command', () => {
     render(
       <Terminal
