@@ -1,7 +1,3 @@
-/**
- * @deprecated Use `Link` from `expo-router` instead. Will be removed in a future SDK.
- */
-export { Link } from './Link';
 export { LinkingContext } from './LinkingContext';
 /**
  * @deprecated Use the `I18nManager` API from `react-native` to read or override the layout
@@ -27,10 +23,6 @@ export { UnhandledLinkingContext as UNSTABLE_UnhandledLinkingContext } from './U
  * @deprecated Use `Link` from `expo-router`. Will be removed in a future SDK.
  */
 export { useLinkBuilder } from './useLinkBuilder';
-/**
- * @deprecated Use `Link` from `expo-router`. Will be removed in a future SDK.
- */
-export { type LinkProps, useLinkProps } from './useLinkProps';
 /**
  * @deprecated Use `useRouter` from `expo-router` instead. Will be removed in a future SDK.
  */

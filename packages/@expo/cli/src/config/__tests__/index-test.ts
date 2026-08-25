@@ -45,7 +45,7 @@ describe('config mode', () => {
     );
   });
 
-  it('uses the production mode from EXPO_CONFIG_MODE', async () => {
+  it('uses the production mode from __EXPO_CONFIG_MODE', async () => {
     getConfigEnvMode.mockReturnValue('production');
 
     await expoConfig([]);

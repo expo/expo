@@ -112,15 +112,18 @@ export type AudioPlayerOptions = {
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
   /**
-   * If set to `true`, the audio session will not be deactivated when this player pauses or finishes playback.
-   * This prevents interrupting other audio sources (like videos) when the audio ends.
+   * If set to `true`, the audio session (iOS) or audio focus (Android) will remain active when this
+   * player pauses or finishes playback.
    *
-   * Useful for sound effects that should not interfere with ongoing video playback or other audio.
-   * The audio session for this player will not be deactivated automatically when the player finishes playback.
+   * On iOS, the `AVAudioSession` stays active. On Android, any audio focus acquired by the player is
+   * retained. Android does not request audio focus in modes that mix with other audio, but the player
+   * will retain focus if a later audio mode change causes it to be acquired.
    *
-   * > **Note:** If needed, you can manually deactivate the audio session using `setIsAudioActiveAsync(false)`.
+   * > **Note:** If needed, you can manually deactivate audio and release focus using
+   * > `setIsAudioActiveAsync(false)`.
    *
    * @platform ios
+   * @platform android
    * @default false
    */
   keepAudioSessionActive?: boolean;
@@ -599,11 +602,17 @@ export type AudioMode = {
   /**
    * Determines how the audio session interacts with other audio sessions.
    *
-   * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+   * - `'doNotMix'`: Requests transient exclusive audio focus. Other apps will pause their audio
+   *   and may resume when your app no longer needs focus.
+   * - `'doNotMixPersistent'`: Requests persistent exclusive audio focus. Other apps will pause
+   *   their audio and should not automatically resume when your app no longer needs focus.
    * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
    * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
    *   On Android, this means no audio focus is requested. Best suited for sound effects,
    *   UI feedback, or short audio clips.
+   *
+   * > **Note:** `doNotMixPersistent` does not keep the audio session active after playback
+   * > stops by itself. Set **keepAudioSessionActive** to `true` to keep it active.
    *
    * @default 'mixWithOthers'
    */
@@ -651,7 +660,10 @@ export type AudioMode = {
  *
  * Controls how your app's audio interacts with other apps' audio.
  *
- * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+ * - `'doNotMix'`: Requests transient exclusive audio focus. Other apps will pause their audio
+ *   and may resume when your app no longer needs focus.
+ * - `'doNotMixPersistent'`: Requests persistent exclusive audio focus. Other apps will pause
+ *   their audio and should not automatically resume when your app no longer needs focus.
  * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
  * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
  *
@@ -659,11 +671,12 @@ export type AudioMode = {
  *   UI feedback, or short audio clips. Note that on Android your app won't receive
  *   audio focus loss callbacks (for example, during phone calls) when using this mode.
  *
- *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
+ *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix` or
+ *  > `doNotMixPersistent`.
  *
  * @default 'mixWithOthers'
  */
-export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
+export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'doNotMixPersistent' | 'duckOthers';
 
 /**
  * @deprecated Use `InterruptionMode` instead, which now works on both platforms.

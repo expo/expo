@@ -15,6 +15,27 @@ import { getMockContext, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
 import { Slot } from '../views/Navigator';
 
+it('preserves live navigation state when the initial location changes on re-render', () => {
+  const routes = {
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="second" />
+      </Stack>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+  const result = renderRouter(routes, { initialUrl: '/' });
+  act(() => router.push('/second'));
+  const navigationState = store.state;
+
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
+
+  expect(store.state).toStrictEqual(navigationState);
+  expect(screen.getByTestId('second')).toBeVisible();
+});
+
 it('does not crash when a route file is removed and the app re-renders', () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
@@ -56,6 +77,29 @@ it('does not crash when a route file is added and the app re-renders', () => {
   expect(result.getRouterState()!.routes[0]!.state!.routeNames).toContain('second');
   act(() => router.navigate('/second'));
   expect(screen.getByTestId('second')).toBeVisible();
+});
+
+// TODO(@ubax): seed the new nested navigator before it renders; intent deduplication alone
+// cannot repair the missing child state synchronously.
+// https://linear.app/expo/issue/ENG-26163/fix-hot-module-reloading-by-utilizing-global-state
+it.skip('seeds state when a route gains a nested layout', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/second' });
+  expect(screen.getByTestId('second')).toBeVisible();
+
+  delete routes.second;
+  routes['second/_layout'] = () => <Stack />;
+  routes['second/index'] = () => <Text testID="second-index">Second index</Text>;
+
+  expect(() =>
+    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
+  ).not.toThrow();
+  expect(screen.getByTestId('second-index')).toBeVisible();
 });
 
 it('does not crash when the currently focused route file is removed', () => {
@@ -172,6 +216,7 @@ it('repairs Slot state when all screen files are replaced', () => {
 });
 
 it('repairs top tabs state when all screen files are replaced', () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => {
       const screens = [];
@@ -200,6 +245,11 @@ it('repairs top tabs state when all screen files are replaced', () => {
   const state = result.getRouterState()!.routes[0]!.state!;
   expect(state.routeNames).toStrictEqual(['third', 'fourth']);
   expect(state.routes.map((route) => route.name)).toStrictEqual(['third', 'fourth']);
+  // TODO: Assert that this warning is not called once HMR state and descriptors reconcile together.
+  expect(warn).toHaveBeenCalledWith(
+    'No screens are declared in ./_layout.js, so the navigator renders nothing. Only screens declared in the layout become visible. Declare each screen you want to show, for example <Tabs.Screen name="index" /> or <NativeTabs.Trigger name="index" />. Undeclared routes: index, second.'
+  );
+  warn.mockRestore();
 });
 
 it('preserves surviving stack history when a route file is renamed', () => {

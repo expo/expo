@@ -377,7 +377,6 @@ export const general = [
       makePage('guides/using-sentry.mdx'),
       makePage('guides/using-bugsnag.mdx'),
       makePage('guides/using-logrocket.mdx'),
-      makePage('guides/using-vexo.mdx'),
       makeGroup(
         'Using PostHog',
         [makePage('guides/using-posthog/index.mdx'), makePage('guides/using-posthog/recipes.mdx')],
@@ -634,8 +633,10 @@ export const eas = [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/eas-cli.mdx'),
     makePage('eas/observe/eas-update.mdx'),
     makePage('eas/observe/events.mdx'),
+    makePage('eas/observe/errors.mdx'),
     makePage('eas/observe/configuration.mdx'),
     makeGroup('Integrations', [
       makePage('eas/observe/integrations/expo-router.mdx'),

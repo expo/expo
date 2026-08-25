@@ -650,6 +650,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  // Escape before re-injecting as HTML: cheerio would otherwise parse a generic
+  // like Promise<PermissionResponse> as a tag and lowercase the type name.
+  const escapeHtml = (value: string) =>
+    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   // Convert API returns sections to inline "Returns: type" text.
   main.find('[data-md="api-returns"]').each((_, el) => {
     const $el = $(el);
@@ -657,14 +662,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const typeText =
       codeEl.length > 0 ? codeEl.text().trim() : $el.text().replace('Returns:', '').trim();
     if (typeText) {
-      $el.replaceWith('<p>Returns: <code>' + typeText + '</code></p>');
+      $el.replaceWith('<p>Returns: <code>' + escapeHtml(typeText) + '</code></p>');
     }
   });
 
   // Convert API parameter name spans to <code> for backtick formatting.
   main.find('[data-md="api-param-name"]').each((_, el) => {
     const $el = $(el);
-    $el.replaceWith('<code>' + $el.text() + '</code>');
+    $el.replaceWith('<code>' + escapeHtml($el.text()) + '</code>');
   });
 
   // Preserve angle brackets around unknown HTML elements in type signatures.
@@ -811,14 +816,22 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       });
     }
     // Clean up artifacts from block flattening:
-    // - Collapse ". ." / ".." from nested unwrapping
+    // - Collapse ". ." / ".." from nested unwrapping. Skip <code>/<pre> so "..." is untouched.
+    // - Repeat until stable: a single pass leaves ". ." from triple nesting.
     // - Trim leading ". " at cell start
     // - Remove orphan "-" after periods (upstream renders a bare dash for empty descriptions)
-    const cellHtml = $cell
-      .html()!
-      .replace(/\.\s*\.\s*/g, '. ')
+    const blocks: string[] = [];
+    let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
+      blocks.push(match);
+      return `%%MD_CODE_${blocks.length - 1}%%`;
+    });
+    while (/\.\s*\./.test(cellHtml)) {
+      cellHtml = cellHtml.replace(/\.\s*\./g, '. ');
+    }
+    cellHtml = cellHtml
       .replace(/^\s*\.\s*/, '')
-      .replace(/\.\s*-\s*$/, '.');
+      .replace(/\.\s*-\s*$/, '.')
+      .replace(/%%MD_CODE_(\d+)%%/g, (_, i) => blocks[Number(i)]);
     $cell.html(cellHtml);
   });
 
@@ -1025,6 +1038,10 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
 
   if (CI_CSS_CLASS_PATTERN.test(prose)) {
     errors.push('Contains CSS class names in text');
+  }
+
+  if (markdown.includes('. .')) {
+    errors.push('Contains ". ." (corrupted ellipsis or doubled period)');
   }
 
   return errors.filter(error => !exemptions.some(ex => error.startsWith(ex)));

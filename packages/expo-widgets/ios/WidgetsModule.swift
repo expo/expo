@@ -100,6 +100,10 @@ public final class WidgetsModule: Module {
     }
 
     Class("LiveActivity", LiveActivity.self) {
+      Function("getId") { (instance: LiveActivity) in
+        instance.id
+      }
+
       AsyncFunction("update") { (instance: LiveActivity, props: String?, staleDate: Date?) in
         try await instance.update(props: props, staleDate: staleDate)
       }

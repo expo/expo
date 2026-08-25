@@ -11,6 +11,7 @@ import expo.modules.haptics.arguments.HapticsNotificationType
 import expo.modules.haptics.arguments.HapticsSelectionType
 import expo.modules.haptics.arguments.HapticsVibrationType
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -40,10 +41,14 @@ class HapticsModule : Module() {
       vibrate(HapticsImpactType.fromString(style))
     }
 
+    // `View.performHapticFeedback` is main-thread affine, and an `AsyncFunction`
+    // without a queue runs on the modules dispatcher, where the call is a
+    // silent no-op. The other functions here use `Vibrator`, which is thread
+    // safe, so only this one needs the main queue.
     AsyncFunction("performHapticsAsync") { type: HapticType ->
       val view = appContext.currentActivity?.findViewById<View>(android.R.id.content)
       view?.performHapticFeedback(type.toHapticFeedbackType())
-    }
+    }.runOnQueue(Queues.MAIN)
   }
 
   private fun vibrate(type: HapticsVibrationType) {

@@ -25,6 +25,7 @@ export function isIgnoredEnvKey(name: string) {
   switch (name) {
     // NOTE: Expo internal env vars
     case '__EXPO_ENV_LOADED':
+    case '__EXPO_CONFIG_MODE':
     case 'EXPO_NO_DOTENV':
     case 'EXPO_UNSAFE_DOTENV_KEYS':
       return true;

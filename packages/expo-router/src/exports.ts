@@ -28,6 +28,7 @@ export { useSitemap, type SitemapType } from './views/useSitemap';
 export type { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 export { SuspenseFallback, type SuspenseFallbackProps } from './views/SuspenseFallback';
+export { NavigationAwareActivity } from './views/NavigationAwareActivity';
 export type { ScreenProps } from './useScreens';
 
 // Platform
@@ -83,6 +84,11 @@ export type { RouteSource } from './react-navigation/native';
 
 // Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
 export { StackRouter, TabRouter } from './react-navigation/routers';
+export { NativeStackView } from './react-navigation/native-stack';
+export type {
+  NativeStackDescriptorMap,
+  NativeStackViewState,
+} from './react-navigation/native-stack';
 export type {
   StackNavigationState,
   StackRouterOptions,

@@ -8,6 +8,8 @@ platforms: ['android', 'ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `MenuView` component with an API compatible with [`@react-native-menu/menu`](https://www.npmjs.com/package/@react-native-menu/menu). Supports both single-tap (default) and long-press (`shouldOpenOnLongPress`) triggers.
 
@@ -17,6 +19,21 @@ Under the hood this component wraps the platform-specific `@expo/ui` primitives:
 - **iOS**: [SwiftUI Menu](../swift-ui/menu) for tap triggers and [SwiftUI ContextMenu](../swift-ui/contextmenu) for long-press triggers.
 
 If you need lower-level control, use those primitives directly.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-menu/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-menu/android-dark.webp',
+    alt: 'An open menu with an Edit row and a Delete row',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-menu/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-menu/ios-dark.webp',
+    alt: 'An open menu with an Edit row and a red Delete row',
+  }}
+/>
 
 ## Installation
 
@@ -35,10 +52,23 @@ If you need lower-level control, use those primitives directly.
 
 Pass any view as the trigger. `MenuView` attaches its own tap or long-press handling.
 
-```tsx MenuExample.tsx
+<ComponentExample
+  title="MenuExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-menu-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-basic-android-dark.webp',
+    alt: 'An open menu with an Edit row and a Delete row',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-menu-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-basic-ios-dark.webp',
+    alt: 'An open menu with an Edit row and a red Delete row',
+  }}>
+
+```tsx
 import { Icon } from '@expo/ui';
 import { MenuView } from '@expo/ui/community/menu';
-import { Text, View } from 'react-native';
+import { Text, useColorScheme, View } from 'react-native';
 
 const editIcon = Icon.select({
   ios: 'pencil',
@@ -51,6 +81,7 @@ const deleteIcon = Icon.select({
 });
 
 export default function MenuExample() {
+  const colorScheme = useColorScheme();
   return (
     <MenuView
       actions={[
@@ -59,21 +90,36 @@ export default function MenuExample() {
       ]}
       onPressAction={e => console.log(e.nativeEvent.event)}>
       <View>
-        <Text>Open menu</Text>
+        <Text style={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>Open menu</Text>
       </View>
     </MenuView>
   );
 }
 ```
 
+</ComponentExample>
+
 ## Long-press (context menu)
 
 Set `shouldOpenOnLongPress` to render as a context menu. On Android, the same controlled `DropdownMenu` opens from a long press on the trigger instead of a tap. On iOS, this uses SwiftUI's `ContextMenu` and shows the trigger as a blurred preview.
 
-```tsx LongPressMenuExample.tsx
+<ComponentExample
+  title="LongPressMenuExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-menu-long-press-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-long-press-android-dark.webp',
+    alt: 'An open menu with Copy and Share rows',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-menu-long-press-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-long-press-ios-dark.webp',
+    alt: 'An open context menu with Copy and Share rows',
+  }}>
+
+```tsx
 import { Icon } from '@expo/ui';
 import { MenuView } from '@expo/ui/community/menu';
-import { Text, View } from 'react-native';
+import { Text, useColorScheme, View } from 'react-native';
 
 const copyIcon = Icon.select({
   ios: 'doc.on.doc',
@@ -86,6 +132,7 @@ const shareIcon = Icon.select({
 });
 
 export default function LongPressMenuExample() {
+  const colorScheme = useColorScheme();
   return (
     <MenuView
       shouldOpenOnLongPress
@@ -94,23 +141,39 @@ export default function LongPressMenuExample() {
         { id: 'share', title: 'Share', image: shareIcon },
       ]}
       onPressAction={e => console.log(e.nativeEvent.event)}>
-      <View>
-        <Text>Long-press me</Text>
+      <View style={{ padding: 8 }}>
+        <Text style={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>Long-press me</Text>
       </View>
     </MenuView>
   );
 }
 ```
 
+</ComponentExample>
+
 ## Submenus and inline sections
 
 `subactions` renders nested actions as a submenu by default. Set `displayInline: true` on the parent to render the children as an inline section instead, which is useful for grouping. On Android, only the divider appears (Material's `DropdownMenu` has no section primitive). On iOS, the parent's `title` becomes the section header.
 
-```tsx SubmenuExample.tsx
+<ComponentExample
+  title="SubmenuExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-menu-submenu-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-submenu-android-dark.webp',
+    alt: 'An open menu with the Sort by submenu expanded',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-menu-submenu-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-submenu-ios-dark.webp',
+    alt: 'An open menu with the Sort by submenu expanded',
+  }}>
+
+```tsx
 import { MenuView } from '@expo/ui/community/menu';
-import { Text, View } from 'react-native';
+import { Text, useColorScheme, View } from 'react-native';
 
 export default function SubmenuExample() {
+  const colorScheme = useColorScheme();
   return (
     <MenuView
       actions={[
@@ -136,23 +199,39 @@ export default function SubmenuExample() {
       ]}
       onPressAction={e => console.log(e.nativeEvent.event)}>
       <View>
-        <Text>Open menu</Text>
+        <Text style={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>Open menu</Text>
       </View>
     </MenuView>
   );
 }
 ```
 
+</ComponentExample>
+
 ## Toggle items with checkmarks
 
 Set `state` to `'on'` or `'off'` to render an action as a togglable item with a leading checkmark when on. Selecting the action fires `onPressAction` and the caller is responsible for updating the state.
 
-```tsx ToggleMenuExample.tsx
+<ComponentExample
+  title="ToggleMenuExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-menu-toggle-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-toggle-android-dark.webp',
+    alt: 'An open menu with a checkmark next to Pin to top',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-menu-toggle-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-menu-toggle-ios-dark.webp',
+    alt: 'An open menu with a checkmark next to Pin to top',
+  }}>
+
+```tsx
 import { MenuView } from '@expo/ui/community/menu';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, useColorScheme, View } from 'react-native';
 
 export default function ToggleMenuExample() {
+  const colorScheme = useColorScheme();
   const [pinned, setPinned] = useState(false);
   return (
     <MenuView
@@ -161,12 +240,16 @@ export default function ToggleMenuExample() {
         if (e.nativeEvent.event === 'pin') setPinned(p => !p);
       }}>
       <View>
-        <Text>{pinned ? 'Pinned' : 'Not pinned'}</Text>
+        <Text style={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
+          {pinned ? 'Pinned' : 'Not pinned'}
+        </Text>
       </View>
     </MenuView>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -175,3 +258,5 @@ import { MenuView } from '@expo/ui/community/menu';
 ```
 
 <APISection packageName="expo-ui/community/menu" apiName="MenuView" />
+
+</PlatformTabsGroup>

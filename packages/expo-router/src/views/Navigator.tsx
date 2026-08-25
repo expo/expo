@@ -4,7 +4,12 @@
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getValidInitialRouteName, useContextKey, useRouteNode } from '../Route';
+import {
+  getValidInitialRouteName,
+  ScreenErrorBoundaryContext,
+  useContextKey,
+  useRouteNode,
+} from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
@@ -12,6 +17,7 @@ import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
+import type { ErrorBoundaryProps } from './Try';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;
@@ -32,6 +38,8 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   children?: UseNavigationBuilderOptions['children'];
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
+  /** A component to render when an individual screen in this navigator throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
@@ -46,6 +54,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   children,
   router,
   routerOptions,
+  unstable_screenErrorBoundary,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
@@ -79,6 +88,12 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     return null;
   }
 
+  const content = (
+    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+      {nonScreenChildren}
+    </GuardContextProvider>
+  );
+
   return (
     <NavigatorContext.Provider
       value={{
@@ -86,9 +101,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-        {nonScreenChildren}
-      </GuardContextProvider>
+      {unstable_screenErrorBoundary ? (
+        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+          {content}
+        </ScreenErrorBoundaryContext>
+      ) : (
+        content
+      )}
     </NavigatorContext.Provider>
   );
 }
@@ -104,7 +123,7 @@ export function useNavigatorContext() {
   return context;
 }
 
-function SlotNavigator(props: NavigatorProps<any>) {
+function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProps<any>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
 
@@ -121,12 +140,20 @@ function SlotNavigator(props: NavigatorProps<any>) {
   });
   const focusedRouteKey = state.routes[state.index]?.key;
 
-  return (
+  const content = (
     <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
       <NavigationContent>
         {focusedRouteKey ? descriptors[focusedRouteKey]!.render() : null}
       </NavigationContent>
     </GuardContextProvider>
+  );
+
+  return unstable_screenErrorBoundary ? (
+    <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+      {content}
+    </ScreenErrorBoundaryContext>
+  ) : (
+    content
   );
 }
 
