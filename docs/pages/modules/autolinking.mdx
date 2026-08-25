@@ -114,32 +114,34 @@ module.exports = {
 
 > **info** Available in **SDK 55 and later**.
 
-A list of additional package names to verify for deduplication. This is useful for utility libraries that should not be duplicated because of singleton or internal state, even when they aren't native modules.
+A list of additional package names to verify for deduplication. This is useful for utility libraries that should not be duplicated because of singleton or internal state, even when they aren't native modules. For when to reach for this option, see [Checking packages that aren't native modules](#checking-packages-that-arent-native-modules).
 
 ```json package.json
 {
   "expo": {
     "autolinking": {
-      "include": ["third-party-expo-module"]
+      "include": ["third-party-library"]
     }
   }
 }
 ```
 
-Unlike other options, per-platform `include` lists are merged with the root list rather than overridden. The configuration below verifies a third-party library on every platform and additionally checks for platform-specific library only on Android:
+Unlike other options, per-platform `include` lists are merged with the root list rather than overridden. The configuration below verifies a third-party library on every platform and additionally checks a platform-specific library only on Android:
 
 ```json package.json
 {
   "expo": {
     "autolinking": {
-      "include": ["third-party-expo-module"],
+      "include": ["third-party-library"],
       "android": {
-        "include": ["third-party-android-module"]
+        "include": ["third-party-android-library"]
       }
     }
   }
 }
 ```
+
+Packages in this list are not linked into your native build. They are only added to the duplicate checks and to Metro's module resolution.
 
 </PaddedAPIBox>
 <PaddedAPIBox header="flags" platforms={["ios"]}>
@@ -321,9 +323,56 @@ Autolinking and Node resolution have different goals and the module resolution a
 
 This is an especially common problem with isolated dependencies or monorepos, and you should [check for and deduplicate native modules in your dependencies](/guides/monorepos/#duplicate-native-packages-within-monorepos).
 
+### Finding duplicate packages
+
+[` expo-doctor`](/develop/tools/#expo-doctor) lists every duplicated native module in your project, with the path of each installation:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-doctor'],
+    yarn: ['$ yarn dlx expo-doctor'],
+    pnpm: ['$ pnpm dlx expo-doctor'],
+    bun: ['$ bunx expo-doctor'],
+  }}
+/>
+
+The [`verify`](#verify) command reports the same duplicates without running the other project checks. Deduplicating your dependencies is the complete fix. For the steps for each package manager, see [Resolving dependency issues](https://expo.fyi/resolving-dependency-issues).
+
+### Working around duplicates
+
 From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true` in your [app config](/workflow/configuration/) to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that **autolinking** resolves.
 
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "autolinkingModuleResolution": true
+    }
+  }
+}
+```
+
 From **SDK 55**, the `experiments.autolinkingModuleResolution` flag is enabled by default for apps in monorepos.
+
+The duplicate installation stays in your **node_modules** directory, so this flag is a workaround rather than a replacement for deduplicating your dependencies. Use it for the duplicates you cannot remove.
+
+### Checking packages that aren't native modules
+
+The duplicate checks and `experiments.autolinkingModuleResolution` act on the native modules that autolinking resolves, plus a built-in list of packages that must not be duplicated. Packages that aren't native modules can break when they're duplicated as well. A library that creates a React context or keeps state in a module-level variable is a common example.
+
+Add these packages to the [`include`](#include) option to treat them the same way:
+
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "include": ["third-party-library"]
+    }
+  }
+}
+```
+
+`npx expo-doctor` and the `verify` command now report duplicates for `third-party-library`, and `experiments.autolinkingModuleResolution` resolves it to a single copy when bundling. Nothing is added to your native build, so listing a package that contains no native code is safe.
 
 ## Common questions
 
