@@ -42,9 +42,16 @@ public final class SecureStoreModule: Module {
 
     AsyncFunction("deleteValueWithKeyAsync") { (key: String, options: SecureStoreOptions) in
       _ = try options.resolvedAuthenticationRequirement()
-      SecItemDelete(query(with: key, options: options) as CFDictionary)
+
+      // Delete every alias before reporting a failure, so that a failing alias
+      // cannot leave the remaining entries behind.
+      var statuses = [SecItemDelete(query(with: key, options: options) as CFDictionary)]
       for suffix in ["no-auth", "auth", "auth-deviceCredentials"] {
-        SecItemDelete(query(with: key, options: options, serviceSuffix: suffix) as CFDictionary)
+        statuses.append(SecItemDelete(query(with: key, options: options, serviceSuffix: suffix) as CFDictionary))
+      }
+
+      if let failure = statuses.first(where: { $0 != errSecSuccess && $0 != errSecItemNotFound }) {
+        throw KeyChainException(failure)
       }
     }
 
@@ -104,14 +111,7 @@ public final class SecureStoreModule: Module {
         }
       }
 
-      var error: Unmanaged<CFError>? = nil
-      let accessControlFlag: SecAccessControlCreateFlags = isDeviceCredentialsRequired ? .userPresence : .biometryCurrentSet
-
-      guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, accessControlFlag, &error) else {
-        let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
-        throw SecAccessControlError(errorCode)
-      }
-      setItemQuery[kSecAttrAccessControl as String] = accessOptions
+      setItemQuery[kSecAttrAccessControl as String] = try accessControlWith(options: options)
     }
 
     let status = SecItemAdd(setItemQuery as CFDictionary, nil)
@@ -134,8 +134,19 @@ public final class SecureStoreModule: Module {
     let authenticationRequirement = try options.resolvedAuthenticationRequirement()
     var query = query(with: key, options: options, serviceSuffix: options.serviceSuffix(for: authenticationRequirement))
 
-    let valueData = value.data(using: .utf8)
-    let updateDictionary = [kSecValueData as String: valueData]
+    let valueData = Data(value.utf8)
+
+    var updateDictionary: [CFString: Any] = [kSecValueData: valueData]
+
+    // Keychain updates keep the existing access settings by default, so include the
+    // requested accessibility setting when one is provided.
+    if options.keychainAccessible != nil {
+      if authenticationRequirement != nil {
+        updateDictionary[kSecAttrAccessControl] = try accessControlWith(options: options)
+      } else {
+        updateDictionary[kSecAttrAccessible] = attributeWith(options: options)
+      }
+    }
 
     if let authPrompt = options.authenticationPrompt {
       query[kSecUseOperationPrompt as String] = authPrompt
@@ -199,7 +210,7 @@ public final class SecureStoreModule: Module {
   }
 
   private func attributeWith(options: SecureStoreOptions) -> CFString {
-    switch options.keychainAccessible {
+    switch options.keychainAccessible ?? .whenUnlocked {
     case .afterFirstUnlock:
       return kSecAttrAccessibleAfterFirstUnlock
     case .afterFirstUnlockThisDeviceOnly:
@@ -215,6 +226,24 @@ public final class SecureStoreModule: Module {
     case .whenUnlockedThisDeviceOnly:
       return kSecAttrAccessibleWhenUnlockedThisDeviceOnly
     }
+  }
+
+  private func accessControlWith(options: SecureStoreOptions) throws -> SecAccessControl {
+    // Device credentials authentication accepts the passcode as a fallback, biometry doesn't.
+    let accessControlFlag: SecAccessControlCreateFlags =
+      try options.requiresDeviceCredentials() ? .userPresence : .biometryCurrentSet
+
+    var error: Unmanaged<CFError>?
+    guard let accessControl = SecAccessControlCreateWithFlags(
+      kCFAllocatorDefault,
+      attributeWith(options: options),
+      accessControlFlag,
+      &error
+    ) else {
+      let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
+      throw SecAccessControlError(errorCode)
+    }
+    return accessControl
   }
 
   private func validate(for key: String) -> String? {

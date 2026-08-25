@@ -173,8 +173,12 @@ module Expo
 
     # Appends the macro plugin flags to the target's `OTHER_SWIFT_FLAGS` and saves the xcconfig,
     # skipping it when the flags are already present.
+    #
+    # Read the file from disk rather than `build_settings.xcconfig`. Earlier `post_install`
+    # hooks write to it too — React Native's puts its module map flags there — and rebuilding
+    # it from CocoaPods' in-memory settings would throw those away.
     def self.append_macro_flags(build_settings, xcconfig_path, macro_flags)
-      xcconfig = build_settings.xcconfig
+      xcconfig = File.exist?(xcconfig_path) ? Xcodeproj::Config.new(xcconfig_path) : build_settings.xcconfig
       swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
       return if swift_flags.include?(macro_flags)
 

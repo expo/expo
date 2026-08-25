@@ -18,6 +18,10 @@ export type ExpoTabsProps = ExpoTabsNavigatorOptions;
 export type ExpoTabsNavigatorScreenOptions = {
   detachInactiveScreens?: boolean;
   unmountOnBlur?: boolean;
+  // TODO(@ubax): Remove this prop
+  /**
+   * @deprecated This option has no effect in Expo Router.
+   */
   freezeOnBlur?: boolean;
   lazy?: boolean;
 };
@@ -108,6 +112,7 @@ export const TabsStateContext = createContext<TabsContextValue['state']>({
   history: [],
   index: -1,
   key: '',
+  routeKeySeq: 0,
   stale: false,
   routeNames: [],
   routes: [],

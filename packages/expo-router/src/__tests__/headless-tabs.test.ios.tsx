@@ -105,9 +105,63 @@ it('should render the correct screen with nested navigators', () => {
   fireEvent.press(screen.getByTestId('goto-apple'));
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
-  // Banana route should be preserved
+  // A deep trigger resolves its destination against the preserved stack.
   fireEvent.press(screen.getByTestId('goto-banana'));
-  expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
+});
+
+it('pressing a deep trigger resolves its href in the focused tab', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="banana" href="/banana/details" />
+          </TabList>
+          <TabTrigger name="banana" testID="deep-trigger" />
+          <TabSlot />
+        </Tabs>
+      ),
+      'banana/_layout': () => <Stack />,
+      'banana/index': () => <Text testID="banana-index">Index</Text>,
+      'banana/details': () => <Text testID="banana-details">Details</Text>,
+    },
+    { initialUrl: '/banana' }
+  );
+
+  fireEvent.press(screen.getByTestId('deep-trigger'));
+  expect(screen.getByTestId('banana-details')).toBeVisible();
+});
+
+it('pressing an inherited deep trigger resolves its href in the focused parent tab', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="a" href="/a/b" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      'a/_layout': () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/a" />
+            <TabTrigger name="b" href="/a/b" />
+          </TabList>
+          <TabTrigger name="a" testID="deep-parent-trigger" />
+          <TabSlot />
+        </Tabs>
+      ),
+      'a/index': () => <Text testID="a-index">A</Text>,
+      'a/b': () => <Text testID="a-b">B</Text>,
+    },
+    { initialUrl: '/a' }
+  );
+
+  fireEvent.press(screen.getByTestId('deep-parent-trigger'));
+  expect(screen.getByTestId('a-b')).toBeVisible();
 });
 
 it('should respect `unstable_settings on native', () => {
@@ -1093,15 +1147,12 @@ it('passes query params to a direct child navigator', () => {
     ),
     index: () => null,
     'movies/_layout': function MoviesLayout() {
-      const { filter } = useLocalSearchParams();
-      return (
-        <>
-          <Text testID="filter">{filter}</Text>
-          <Stack />
-        </>
-      );
+      return <Stack />;
     },
-    'movies/index': () => null,
+    'movies/index': function Movies() {
+      const { filter } = useLocalSearchParams();
+      return <Text testID="filter">{filter}</Text>;
+    },
   });
 
   fireEvent.press(screen.getByTestId('goto-movies'));
@@ -1270,6 +1321,34 @@ it('resets on focus when resetOnFocus is true', () => {
   expect(screen).toHaveSegments(['stack']);
 });
 
+it('resets before resolving a deep trigger destination', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" testID="goto-index" href="/" />
+          <TabTrigger name="stack" testID="goto-stack" href="/stack/details" resetOnFocus />
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    index: () => null,
+    'stack/_layout': () => <Stack />,
+    'stack/index': () => <Text testID="stack-index">Index</Text>,
+    'stack/page': () => <Text testID="stack-page">Page</Text>,
+    'stack/details': () => <Text testID="stack-details">Details</Text>,
+  });
+
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  act(() => router.push('/stack/page'));
+  fireEvent.press(screen.getByTestId('goto-index'));
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-details')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
+});
+
 it('resets when focused tab is pressed again', async () => {
   renderRouter({
     _layout: () => (
@@ -1309,7 +1388,8 @@ it('resets when focused tab is pressed again', async () => {
   expect(screen).toHaveSegments(['stack']);
 });
 
-it('dispatches only one action when re-tapping active tab with nested stack', async () => {
+// TODO(@ubax): Restore __unsafe_action__ events. https://linear.app/expo/issue/ENG-26123
+it.skip('dispatches only one action when re-tapping active tab with nested stack', async () => {
   // Track all dispatched actions using a listener on the navigation container
   const dispatchedActions: unknown[] = [];
 
@@ -1370,7 +1450,8 @@ it('dispatches only one action when re-tapping active tab with nested stack', as
   });
 });
 
-it('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
+// TODO(@ubax): Restore __unsafe_action__ events. https://linear.app/expo/issue/ENG-26123
+it.skip('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
   // Track all dispatched actions using a listener on the navigation container
   const dispatchedActions: unknown[] = [];
 

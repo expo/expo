@@ -20,10 +20,9 @@ class AuthenticationHelper(
 ) {
   private var isAuthenticating = false
 
-  suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: String?, title: String): Cipher {
-    if (requiresAuthentication != null) {
-      val isDeviceCredentialsRequired = requiresAuthentication == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
-      return openAuthenticationPrompt(cipher, title, isDeviceCredentialsRequired).cryptoObject?.cipher
+  internal suspend fun authenticateCipher(cipher: Cipher, options: AuthenticationPromptOptions): Cipher {
+    if (options.isAuthenticationRequired) {
+      return openAuthenticationPrompt(cipher, options).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
     return cipher
@@ -31,8 +30,7 @@ class AuthenticationHelper(
 
   private suspend fun openAuthenticationPrompt(
     cipher: Cipher,
-    title: String,
-    isDeviceCredentialsRequired: Boolean
+    options: AuthenticationPromptOptions
   ): BiometricPrompt.AuthenticationResult {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       throw AuthenticationException("Biometric authentication requires Android API 23")
@@ -44,7 +42,7 @@ class AuthenticationHelper(
     isAuthenticating = true
 
     try {
-      if (isDeviceCredentialsRequired) {
+      if (options.isDeviceCredentialsRequired) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
           throw UnsupportedDeviceCredentialsException()
         }
@@ -56,7 +54,13 @@ class AuthenticationHelper(
       val fragmentActivity = getCurrentActivity() as? FragmentActivity
         ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
-      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title, isDeviceCredentialsRequired)
+      val authenticationPrompt = AuthenticationPrompt(
+        fragmentActivity,
+        context,
+        options.authenticationPrompt,
+        options.requireConfirmation,
+        options.isDeviceCredentialsRequired
+      )
 
       return withContext(Dispatchers.Main.immediate) {
         return@withContext authenticationPrompt.authenticate(cipher)

@@ -33,7 +33,7 @@ internal struct SecureStoreOptions: Record {
   var authenticationPrompt: String?
 
   @Field
-  var keychainAccessible: SecureStoreAccessible = .whenUnlocked
+  var keychainAccessible: SecureStoreAccessible?
 
   @Field
   var keychainService: String?
@@ -48,6 +48,10 @@ internal struct SecureStoreOptions: Record {
 extension SecureStoreOptions {
   func resolvedAuthenticationRequirement() throws -> String? {
     return try normalizeAuthenticationRequirement(requireAuthentication)
+  }
+
+  func requiresDeviceCredentials() throws -> Bool {
+    return try resolvedAuthenticationRequirement() == authenticationMethodDeviceCredentials
   }
 
   func serviceSuffix(for authenticationRequirement: String?) -> String {

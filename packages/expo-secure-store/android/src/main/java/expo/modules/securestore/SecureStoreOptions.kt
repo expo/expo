@@ -11,7 +11,8 @@ class SecureStoreOptions(
   // Prompt can't be an empty string
   @Field var authenticationPrompt: String = " ",
   @Field var keychainService: String = SecureStoreModule.DEFAULT_KEYSTORE_ALIAS,
-  @Field var requireAuthentication: Either<Boolean, String>? = null
+  @Field var requireAuthentication: Either<Boolean, String>? = null,
+  @Field var requireConfirmation: Boolean = true
 ) : Record, Serializable {
   val authenticationRequirement: String?
     get() = requireAuthentication?.let { value ->
@@ -28,3 +29,23 @@ class SecureStoreOptions(
   val isDeviceCredentialsRequired: Boolean
     get() = authenticationRequirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
 }
+
+internal data class AuthenticationPromptOptions(
+  val authenticationPrompt: String,
+  val authenticationRequirement: String?,
+  val requireConfirmation: Boolean
+) {
+  val isAuthenticationRequired: Boolean
+    get() = authenticationRequirement != null
+
+  val isDeviceCredentialsRequired: Boolean
+    get() = authenticationRequirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
+}
+
+internal fun SecureStoreOptions.toAuthenticationPromptOptions(
+  authenticationRequirement: String? = this.authenticationRequirement
+) = AuthenticationPromptOptions(
+  authenticationPrompt = authenticationPrompt,
+  authenticationRequirement = authenticationRequirement,
+  requireConfirmation = requireConfirmation
+)

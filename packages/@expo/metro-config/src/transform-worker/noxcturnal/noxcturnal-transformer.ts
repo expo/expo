@@ -83,11 +83,18 @@ export function sortedUniqueCaptureNames(captures: readonly NodeView[]): string[
   return [...new Set(captures.map((capture) => String(capture.name)))].sort();
 }
 
+export interface MetroPseudoGlobals {
+  global: string;
+  module: string;
+  exports: string;
+}
+
 export interface MetroTransformPluginData extends ExpoTransformPluginData {
   input: NoxcturnalMetroTransformInput;
   shared: MetroDependencyShared;
   collectOnly: boolean;
   normalizePseudoGlobals: boolean;
+  pseudoGlobals: MetroPseudoGlobals;
 }
 
 export function expoPluginInput(context: { pluginData: unknown }): NoxcturnalTransformInput {
@@ -140,6 +147,11 @@ function createMetroTransformPluginData(
       input.config.unstable_disableModuleWrapping !== true &&
       input.source.length <= (input.config.optimizationSizeLimit ?? Number.POSITIVE_INFINITY) &&
       !sourceFacts.hasPseudoGlobals,
+    pseudoGlobals: {
+      global: 'g',
+      module: 'm',
+      exports: 'e',
+    },
   };
 }
 

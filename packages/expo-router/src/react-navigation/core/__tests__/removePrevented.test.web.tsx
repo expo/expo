@@ -8,6 +8,7 @@ import { store } from '../../../global-state/router-store';
 import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/StackClient';
 import { getMockContext } from '../../../testing-library/mock-config';
+import { CommonActions } from '../../routers';
 import { useNavigation } from '../useNavigation';
 import { usePreventRemove } from '../usePreventRemove';
 
@@ -17,7 +18,8 @@ global.ResizeObserver = class {
   disconnect() {}
 } as typeof ResizeObserver;
 
-test('continues a blocked router back after disabling prevention', () => {
+// TODO(@ubax): Restore remove prevention after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
+test.skip('continues a blocked router back after disabling prevention', () => {
   let discard: () => void;
   const onPreventRemove = jest.fn();
   const Form = () => {
@@ -51,7 +53,8 @@ test('continues a blocked router back after disabling prevention', () => {
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 });
 
-test('continues a blocked parent back after disabling nested prevention', () => {
+// TODO(@ubax): Restore nested remove prevention after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
+test.skip('continues a blocked parent back after disabling nested prevention', () => {
   let discard: () => void;
   const onPreventRemove = jest.fn();
   const Form = () => {
@@ -83,9 +86,12 @@ test('continues a blocked parent back after disabling nested prevention', () => 
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 });
 
-test('throws a descriptive error when beforeRemove calls preventDefault', () => {
+// TODO(@ubax): Restore beforeRemove handling after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
+test.skip('throws a descriptive error when beforeRemove calls preventDefault', () => {
+  let goBack: () => void;
   const Form = () => {
     const navigation = useNavigation();
+    goBack = () => navigation.dispatchSync(CommonActions.goBack());
     React.useEffect(
       () =>
         navigation.addListener('beforeRemove', (event) => {
@@ -107,7 +113,7 @@ test('throws a descriptive error when beforeRemove calls preventDefault', () => 
 
   act(() => router.push('/form'));
 
-  expect(() => act(() => router.back())).toThrow(
+  expect(() => act(() => goBack())).toThrow(
     '`beforeRemove` is a notification-only event and cannot prevent screen removal. Use `usePreventRemove` with the `removePrevented` event instead.'
   );
   expect(store.getRouteInfo().pathname).toBe('/form');

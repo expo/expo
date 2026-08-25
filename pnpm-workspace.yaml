@@ -5,6 +5,7 @@ packages:
   - tools
   - apps/brownfield-tester/expo-app
   - apps/bare-expo/e2e/image-comparison
+  - packages/expo-sqlite/dev-plugin-webui
 
 ignoreWorkspaceCycles: true
 

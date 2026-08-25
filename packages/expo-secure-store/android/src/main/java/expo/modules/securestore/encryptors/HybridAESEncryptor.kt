@@ -66,10 +66,8 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
   override suspend fun createEncryptedItem(
     plaintextValue: String,
     keyStoreEntry: KeyStore.PrivateKeyEntry,
-    requireAuthentication: Boolean,
-    authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper,
-    isDeviceCredentialsRequired: Boolean
+    options: SecureStoreOptions,
+    authenticationHelper: AuthenticationHelper
   ): JSONObject {
     // This should never be called after we dropped Android SDK 22 support.
     throw EncryptException(

@@ -219,12 +219,18 @@ type NavigationHelpersCommon<
   State extends NavigationState = NavigationState,
 > = {
   /**
-   * Dispatch an action or an update function to the router.
-   * The update function will receive the current state,
+   * Queues an action to be dispatched after the current React commit.
    *
-   * @param action Action object or update function.
+   * @param action Action object to dispatch.
    */
-  dispatch(action: NavigationAction | ((state: Readonly<State>) => NavigationAction)): void;
+  dispatch(action: NavigationAction): void;
+
+  /**
+   * Dispatches an action synchronously.
+   *
+   * @param action Action object to dispatch synchronously.
+   */
+  dispatchSync(action: NavigationAction): void;
 
   /**
    * Navigate to a screen in the current or parent navigator.
@@ -273,39 +279,6 @@ type NavigationHelpersCommon<
           path?: string;
           merge?: boolean;
           pop?: boolean;
-        }
-      : never
-  ): void;
-
-  /**
-   * Navigate to a route in current navigation tree.
-   *
-   * @deprecated Use `navigate` instead.
-   *
-   * @param screen Name of the route to navigate to.
-   * @param [params] Params object for the route.
-   */
-  navigateDeprecated<RouteName extends keyof ParamList>(
-    ...args: RouteName extends unknown
-      ? undefined extends ParamList[RouteName]
-        ? [screen: RouteName, params?: ParamList[RouteName]]
-        : [screen: RouteName, params: ParamList[RouteName]]
-      : never
-  ): void;
-
-  /**
-   * Navigate to a route in current navigation tree.
-   *
-   * @deprecated Use `navigate` instead.
-   *
-   * @param options Object with `name` for the route to navigate to, and a `params` object.
-   */
-  navigateDeprecated<RouteName extends keyof ParamList>(
-    options: RouteName extends unknown
-      ? {
-          name: RouteName;
-          params: ParamList[RouteName];
-          merge?: boolean;
         }
       : never
   ): void;
@@ -420,18 +393,9 @@ export type NavigationContainerProps = {
   onReady?: () => void;
   /**
    * Callback which is called when an action is not handled.
+   * TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
    */
   onUnhandledAction?: (action: Readonly<NavigationAction>) => void;
-  /**
-   * Whether child navigator should handle a navigation action.
-   * The child navigator needs to be mounted before it can handle the action.
-   * Defaults to `false`.
-   *
-   * This will be removed in the next major release.
-   *
-   * @deprecated Use nested navigation API instead
-   */
-  navigationInChildEnabled?: boolean;
   /**
    * Theme object for the UI elements.
    */
@@ -798,15 +762,8 @@ export type NavigationContainerEventMap = {
   };
 };
 
-type NotUndefined<T> = T extends undefined ? never : T;
-
 export type ParamListRoute<ParamList extends ParamListBase> = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  [RouteName in keyof ParamList]: NavigatorScreenParams<{}> extends ParamList[RouteName]
-    ? NotUndefined<ParamList[RouteName]> extends NavigatorScreenParams<infer T>
-      ? ParamListRoute<T>
-      : Route<Extract<RouteName, string>, ParamList[RouteName]>
-    : Route<Extract<RouteName, string>, ParamList[RouteName]>;
+  [RouteName in keyof ParamList]: Route<Extract<RouteName, string>, ParamList[RouteName]>;
 }[keyof ParamList];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -818,13 +775,7 @@ type MaybeParamListRoute<ParamList extends {}> = ParamList extends ParamListBase
 export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<ParamList> &
   EventConsumer<NavigationContainerEventMap> & {
     /**
-     * Reset the navigation state of the root navigator to the provided state.
-     *
-     * @param state Navigation state object.
-     */
-    resetRoot(state?: PartialState<NavigationState> | NavigationState): void;
-    /**
-     * Get the rehydrated navigation state of the navigation tree.
+     * Get the current state of the navigation tree.
      */
     getRootState(): NavigationState;
     /**
@@ -961,39 +912,6 @@ type TypedNavigatorInternal<
   ) => null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type NavigatorScreenParams<ParamList extends {}> =
-  | {
-      screen?: never;
-      params?: never;
-      merge?: never;
-      initial?: never;
-      pop?: never;
-      path?: string;
-      state: PartialState<NavigationState> | NavigationState | undefined;
-    }
-  | {
-      [RouteName in keyof ParamList]: undefined extends ParamList[RouteName]
-        ? {
-            screen: RouteName;
-            params?: ParamList[RouteName];
-            merge?: boolean;
-            initial?: boolean;
-            path?: string;
-            pop?: boolean;
-            state?: never;
-          }
-        : {
-            screen: RouteName;
-            params: ParamList[RouteName];
-            merge?: boolean;
-            initial?: boolean;
-            path?: string;
-            pop?: boolean;
-            state?: never;
-          };
-    }[keyof ParamList];
-
 type PathConfigAlias = {
   /**
    * Path string to match against.
@@ -1046,11 +964,5 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type PathConfigMap<ParamList extends {}> = {
-  [RouteName in keyof ParamList]?: NonNullable<ParamList[RouteName]> extends NavigatorScreenParams<
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    infer T extends {}
-  >
-    ? string | PathConfig<T>
-    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
+  [RouteName in keyof ParamList]?: string | PathConfig<ParamListBase>;
 };

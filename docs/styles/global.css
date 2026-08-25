@@ -6,14 +6,15 @@
 /* Selectors are doubled to outrank the same-specificity declarations in
    @expo/styleguide/dist/expo-theme.css, which _app.tsx imports after this file. */
 :root:root {
-  /* AA contrast on palette blue3/blue4 backgrounds, where text-link falls short */
-  --expo-theme-text-link-on-blue: #0c6bbf;
+  /* AA contrast on inline-code and blue3/blue4 backgrounds, where text-link falls
+     short. blue4 clears by 0.02, so do not lighten this. */
+  --expo-theme-text-link: #0c6bbf;
   /* AA contrast: styleguide maps tertiary text to slate-10, a solid-background step */
   --expo-theme-text-tertiary: #686c75;
 }
 
 .dark-theme.dark-theme {
-  --expo-theme-text-link-on-blue: var(--blue-11);
+  --expo-theme-text-link: var(--blue-11);
   --expo-theme-text-tertiary: #888c94;
 }
 
@@ -267,12 +268,12 @@ div.tippy-box {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  @apply text-palette-gray10;
+  @apply text-palette-gray11;
 }
 
 .token.operator,
 .token.punctuation {
-  @apply text-palette-gray9;
+  @apply text-palette-gray11;
 }
 
 .token.attr-name,
@@ -281,7 +282,7 @@ div.tippy-box {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  @apply text-palette-red10;
+  @apply text-palette-red11;
 }
 
 .token.selector,
@@ -289,7 +290,7 @@ div.tippy-box {
 .token.builtin,
 .token.script,
 .token.inserted {
-  @apply text-palette-green10;
+  @apply text-palette-green11;
 }
 
 .token.entity,
@@ -298,7 +299,7 @@ div.tippy-box {
 }
 
 .token.keyword {
-  @apply text-palette-pink10;
+  @apply text-palette-pink11;
 }
 
 .token.property,
@@ -312,18 +313,18 @@ div.tippy-box {
 .token.regex,
 .token.important,
 .token.tag {
-  @apply text-palette-orange11;
+  @apply text-[#c24900] dark:text-palette-orange11;
 }
 
 .token.number,
 .token.string {
-  @apply text-palette-yellow11;
+  @apply text-[#a65e00] dark:text-palette-yellow11;
 }
 
 .token.url,
 .token.literal-property,
 .token.property-access {
-  @apply text-palette-blue11;
+  @apply text-[#006fd7] dark:text-palette-blue11;
 }
 
 .token.important {

@@ -1,23 +1,43 @@
-import type { RefObject } from 'react';
-
-import type {
-  NavigationAction,
-  ParamListBase,
-  NavigationContainerRef,
-} from '../react-navigation/native';
-import { getNavigateAction } from './getNavigationAction';
+import type { NavigationAction } from '../react-navigation/native';
 import type { LinkToOptions } from './types';
 
-export interface LinkAction {
-  type: 'ROUTER_LINK';
+interface NavigateToHrefIntent {
+  type: 'NAVIGATE_TO_HREF';
   payload: {
     options: LinkToOptions;
     href: string;
+    originalHref?: string;
+  };
+  metadata?: RoutingIntentMetadata;
+  onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
+}
+
+interface RoutingIntentMetadata {
+  history?: {
+    path: string;
   };
 }
 
+export type RoutingIntent =
+  | NavigateToHrefIntent
+  | {
+      type: 'NAVIGATOR_ACTION';
+      payload: {
+        action: NavigationAction;
+        dispatchSync: (action: NavigationAction) => void;
+      };
+      metadata?: RoutingIntentMetadata;
+      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
+    }
+  | {
+      type: 'ACTION';
+      payload: { action: NavigationAction; originKey?: string };
+      metadata?: RoutingIntentMetadata;
+      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
+    };
+
 export const routingQueue = {
-  queue: [] as (NavigationAction | LinkAction)[],
+  queue: [] as RoutingIntent[],
   subscribers: new Set<() => void>(),
   subscribe(callback: () => void) {
     routingQueue.subscribers.add(callback);
@@ -28,41 +48,20 @@ export const routingQueue = {
   snapshot() {
     return routingQueue.queue;
   },
-  add(action: NavigationAction | LinkAction) {
-    routingQueue.queue.push(action);
+  add(intent: RoutingIntent) {
+    routingQueue.queue = [...routingQueue.queue, intent];
     for (const callback of routingQueue.subscribers) {
       callback();
     }
   },
-  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
-    // Reset the identity of the queue.
-    const events = routingQueue.queue;
-    routingQueue.queue = [];
-    let action: NavigationAction | LinkAction | undefined;
-    while ((action = events.shift())) {
-      // TODO: Consider warning when ref.current is null — actions are silently dropped
-      if (ref.current) {
-        if (action.type === 'ROUTER_LINK') {
-          const {
-            payload: { href, options },
-          } = action as LinkAction;
-
-          action = getNavigateAction(
-            href,
-            options,
-            options.event,
-            options.withAnchor,
-            options.dangerouslySingular,
-            !!options.__internal__PreviewKey
-          );
-          // TODO: Consider warning when getNavigateAction returns undefined
-          if (action) {
-            ref.current.dispatch(action);
-          }
-        } else {
-          ref.current.dispatch(action);
-        }
-      }
+  drain(snapshot: RoutingIntent[]) {
+    if (snapshot !== routingQueue.queue) {
+      return [];
     }
+    routingQueue.queue = [];
+    for (const callback of routingQueue.subscribers) {
+      callback();
+    }
+    return snapshot;
   },
 };

@@ -2582,7 +2582,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNScreens (4.26.0):
+  - RNScreens (4.27.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2604,9 +2604,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNScreens/common (= 4.26.0)
+    - RNScreens/common (= 4.27.0)
     - Yoga
-  - RNScreens/common (4.26.0):
+  - RNScreens/common (4.27.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2845,7 +2845,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0_@babel+core@7.29.7_@rea_0b1cb48f64769e8cdee0e87c7385a41f/node_modules/@react-native-masked-view/masked-view`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.86.0_@babel+core@7.29.7_@react-native_4aa76a0e73afa3150b371a7bceafc5bf/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_b6ef5a1d7ea42cde643b3b398d3f65d1/node_modules/react-native-reanimated`)"
-  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0_react-native@0.86.0_@babel+core@7.29.7_@react-native+jest-p_095d8f27a4d7296418051aaa10e4a8e3/node_modules/react-native-screens`)"
+  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.27.0_react-native@0.86.0_@babel+core@7.29.7_@react-native+jest-p_fbb4148dd8c191603315f880208118ec/node_modules/react-native-screens`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_3c2da4b685ce12ff0e10894541b0a9fd/node_modules/react-native-worklets`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - UMAppLoader/Tests (from `../../../packages/unimodules-app-loader/ios`)
@@ -3091,7 +3091,7 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_b6ef5a1d7ea42cde643b3b398d3f65d1/node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0_react-native@0.86.0_@babel+core@7.29.7_@react-native+jest-p_095d8f27a4d7296418051aaa10e4a8e3/node_modules/react-native-screens"
+    :path: "../../../node_modules/.pnpm/react-native-screens@4.27.0_react-native@0.86.0_@babel+core@7.29.7_@react-native+jest-p_fbb4148dd8c191603315f880208118ec/node_modules/react-native-screens"
   RNWorklets:
     :path: "../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_3c2da4b685ce12ff0e10894541b0a9fd/node_modules/react-native-worklets"
   UMAppLoader:
@@ -3123,10 +3123,10 @@ SPEC CHECKSUMS:
   ExpoRouter: 224087330cc8f5a39700e6f4d7a55f55ecb2f90d
   ExpoTaskManager: d52427f67bf8f00fa56d52f9603919049c67cfc5
   EXStructuredHeaders: 1423c3602a30eb078e03b63b251ef912267dd4c0
-  EXUpdates: 01f1b6c3ef1df0a981f84af9a91dc027baed4a07
+  EXUpdates: e8c071fa483afb3d9d1de09e8f4f9427278af0a1
   EXUpdatesInterface: 92d2aa5194b6fb93ca8ab749db75665cb28b2e60
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: ebe8b908c0614fa2c4e3655af31dcbadd9e73c67
+  hermes-engine: dd9a9191125ffe9f57c224173db85afb0210cd23
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3208,7 +3208,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNGestureHandler: a426f18ab9021991fe2cbc8bf1677b740e20e70c
   RNReanimated: 33a84b527cb75525b45bb101f4a33bf24f698f3f
-  RNScreens: 62693e770c4b73093c018aa7845b691f5ba9988d
+  RNScreens: de068bbd7d91b820fedac25c597d4b14830de74b
   RNWorklets: 6a415fb05d596e7b7c248d14cceeeb26f41731a0
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57

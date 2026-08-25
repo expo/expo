@@ -1,6 +1,9 @@
 import { emit } from '.';
 import { storeRef } from '../global-state/store';
 
+// TODO(@ubax): replace this singleton reader when store ownership has commit/teardown semantics.
+// https://linear.app/expo/issue/ENG-26124
+
 let unsubscribe: (() => void) | undefined;
 
 export function handleNavigationOnReady() {

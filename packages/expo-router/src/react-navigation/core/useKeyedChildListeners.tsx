@@ -4,14 +4,13 @@ import * as React from 'react';
 import type { KeyedListenerMap } from './NavigationBuilderContext';
 
 /**
- * Hook which lets child navigators add getters to be called for obtaining rehydrated state.
+ * Hook which lets child navigators add keyed listeners.
  */
 export function useKeyedChildListeners() {
   const { current: keyedListeners } = React.useRef<{
     [K in keyof KeyedListenerMap]: Record<string, KeyedListenerMap[K] | undefined>;
   }>(
     Object.assign(Object.create(null), {
-      getState: {},
       preventRemove: {},
       beforeRemove: {},
     })

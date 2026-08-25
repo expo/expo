@@ -216,7 +216,12 @@ open class SecureStoreModule : Module() {
        back a value.
        */
       val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
-      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.isAuthenticationRequired, options.authenticationPrompt, authenticationHelper, options.isDeviceCredentialsRequired)
+      val encryptedItem = mAESEncryptor.createEncryptedItem(
+        value,
+        secretKeyEntry,
+        options,
+        authenticationHelper
+      )
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
       saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.authenticationRequirement, options.keychainService)
 
@@ -256,22 +261,12 @@ open class SecureStoreModule : Module() {
   }
 
   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
-    var success = true
-    val prefs = getSharedPreferences()
-    val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
-    val legacyPrefs = PreferenceManager.getDefaultSharedPreferences(reactContext)
-
-    if (prefs.contains(keychainAwareKey)) {
-      success = prefs.edit().remove(keychainAwareKey).commit()
-    }
-
-    if (prefs.contains(key)) {
-      success = prefs.edit().remove(key).commit() && success
-    }
-
-    if (legacyPrefs.contains(key)) {
-      success = legacyPrefs.edit().remove(key).commit() && success
-    }
+    val success = removeItem(
+      getSharedPreferences(),
+      PreferenceManager.getDefaultSharedPreferences(reactContext),
+      key,
+      createKeychainAwareKey(key, options.keychainService)
+    )
 
     if (!success) {
       throw DeleteException("Could not delete the item from SecureStore", key, options.keychainService)
@@ -420,4 +415,15 @@ open class SecureStoreModule : Module() {
     const val DEVICE_CREDENTIALS_KEYSTORE_SUFFIX = "keystoreDeviceCredentials"
     const val UNAUTHENTICATED_KEYSTORE_SUFFIX = "keystoreUnauthenticated"
   }
+}
+
+internal fun removeItem(
+  prefs: SharedPreferences,
+  legacyPrefs: SharedPreferences,
+  key: String,
+  keychainAwareKey: String
+): Boolean {
+  val removedFromPrefs = prefs.edit().remove(keychainAwareKey).remove(key).commit()
+  val removedFromLegacyPrefs = legacyPrefs.edit().remove(key).commit()
+  return removedFromPrefs && removedFromLegacyPrefs
 }

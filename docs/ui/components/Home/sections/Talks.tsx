@@ -79,7 +79,7 @@ export function TalkGridCell({
             backgroundImage: `url(${
               thumbnail
                 ? `/static/thumbnails/${thumbnail}`
-                : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+                : `https://i.ytimg.com/vi_webp/${videoId}/maxresdefault.webp`
             })`,
           }}
           className="h-34.5 border-b border-b-default bg-cover bg-center max-sm:h-42"

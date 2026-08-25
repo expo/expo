@@ -5,13 +5,12 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import expo.modules.securestore.AuthenticationHelper
-import expo.modules.securestore.AUTHENTICATION_METHOD_BIOMETRY
-import expo.modules.securestore.AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
 import expo.modules.securestore.UnsupportedDeviceCredentialsException
 import expo.modules.securestore.normalizeAuthenticationRequirement
+import expo.modules.securestore.toAuthenticationPromptOptions
 import org.json.JSONException
 import org.json.JSONObject
 import java.nio.charset.StandardCharsets
@@ -97,22 +96,18 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
   override suspend fun createEncryptedItem(
     plaintextValue: String,
     keyStoreEntry: KeyStore.SecretKeyEntry,
-    requireAuthentication: Boolean,
-    authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper,
-    isDeviceCredentialsRequired: Boolean
+    options: SecureStoreOptions,
+    authenticationHelper: AuthenticationHelper
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
     val cipher = Cipher.getInstance(AES_CIPHER)
     cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
     val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
-    val requireAuthenticationString = if (requireAuthentication) {
-      if (isDeviceCredentialsRequired) AUTHENTICATION_METHOD_DEVICE_CREDENTIALS else AUTHENTICATION_METHOD_BIOMETRY
-    } else {
-      null
-    }
-    val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthenticationString, authenticationPrompt)
+    val authenticatedCipher = authenticationHelper.authenticateCipher(
+      cipher,
+      options.toAuthenticationPromptOptions()
+    )
 
     return createEncryptedItemWithCipher(plaintextValue, authenticatedCipher, gcmSpec)
   }
@@ -157,7 +152,10 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
       throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)
     }
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.secretKey, gcmSpec)
-    val unlockedCipher = authenticationHelper.authenticateCipher(cipher, requiresAuthentication, options.authenticationPrompt)
+    val unlockedCipher = authenticationHelper.authenticateCipher(
+      cipher,
+      options.toAuthenticationPromptOptions(authenticationRequirement = requiresAuthentication)
+    )
     return String(unlockedCipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8)
   }
 

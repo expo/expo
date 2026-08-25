@@ -6,10 +6,15 @@
 
 ### 🎉 New features
 
+- Add an Android-only `requireConfirmation` option for authenticated reads and writes. ([#48556](https://github.com/expo/expo/pull/48556) by [@skylarbarrera](https://github.com/skylarbarrera))
 - Add `canUseDeviceCredentialsAuthentication` function. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
 - Add `requireAuthentication: 'deviceCredentials'` for device credential fallback (on Android, requires API 30+). Authenticated entries written on Android are not backward compatible with older versions and may be deleted after a downgrade. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
 
 ### 🐛 Bug fixes
+
+- [Android] Fix `deleteItemAsync` resolving when a retried delete left the value on disk. ([#49151](https://github.com/expo/expo/pull/49151) by [@vonovak](https://github.com/vonovak))
+- [iOS] Reject `deleteItemAsync` when the keychain refuses the delete, instead of resolving as if the item was removed. ([#49146](https://github.com/expo/expo/pull/49146) by [@vonovak](https://github.com/vonovak))
+- [iOS] Apply `keychainAccessible` when overwriting an existing item, instead of silently keeping the accessibility it was first stored with. ([#49128](https://github.com/expo/expo/pull/49128) by [@JoRo-Code](https://github.com/JoRo-Code) and [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

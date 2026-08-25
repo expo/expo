@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `setFakeAgeSignals` to fake age signals from JS, through Google Play's `FakeAgeSignalsManager`. ([#48909](https://github.com/expo/expo/pull/48909) by [@kmadden84](https://github.com/kmadden84))
+
 ### 🐛 Bug fixes
 
 - [iOS] Report `ageRangeDeclaration: 'confirmed'` for the six system-verified cases that iOS 26.2 added and iOS 26.5 deprecated, instead of reporting them as `'selfDeclared'`. ([#48486](https://github.com/expo/expo/pull/48486) by [@vonovak](https://github.com/vonovak))

@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import type { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -67,7 +68,12 @@ type NativeMenuProps = {
  * Children should be `DropdownMenuItem` components or other native views.
  */
 export function Items(props: { children: ReactNode }) {
-  return <SlotNativeView slotName="items">{props.children}</SlotNativeView>;
+  // The items are presented in their own popup window; the trigger stays in the React Native surface.
+  return (
+    <SlotNativeView slotName="items">
+      <PresentedContent>{props.children}</PresentedContent>
+    </SlotNativeView>
+  );
 }
 Items.tag = 'Items';
 

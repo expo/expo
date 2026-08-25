@@ -22,7 +22,6 @@ test.describe('dev console errors', () => {
     env: {
       NODE_ENV: 'development',
       EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: '06-errors',
       E2E_ROUTER_ASYNC: 'development',
 

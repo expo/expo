@@ -13,16 +13,20 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String, isDeviceCredentialsRequired: Boolean) {
-  private var authType: Int = if (isDeviceCredentialsRequired) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
+class AuthenticationPrompt(
+  private val currentActivity: FragmentActivity,
+  context: Context,
+  title: String,
+  requireConfirmation: Boolean,
+  isDeviceCredentialsRequired: Boolean
+) {
   private var executor: Executor = ContextCompat.getMainExecutor(context)
-  private var promptInfo = PromptInfo.Builder().apply {
-    setTitle(title)
-    setAllowedAuthenticators(authType)
-    if (!isDeviceCredentialsRequired) {
-      setNegativeButtonText(context.getString(android.R.string.cancel))
-    }
-  }.build()
+  private var promptInfo = buildAuthenticationPromptInfo(
+    context,
+    title,
+    requireConfirmation,
+    isDeviceCredentialsRequired
+  )
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
     suspendCoroutine { continuation ->
@@ -63,3 +67,20 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
     }
   }
 }
+
+internal fun buildAuthenticationPromptInfo(
+  context: Context,
+  title: String,
+  requireConfirmation: Boolean = true,
+  isDeviceCredentialsRequired: Boolean = false
+): PromptInfo = PromptInfo.Builder().apply {
+  setTitle(title)
+  setAllowedAuthenticators(
+    if (isDeviceCredentialsRequired) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
+  )
+  setConfirmationRequired(requireConfirmation)
+  // A negative button is not allowed (and throws) when DEVICE_CREDENTIAL is an allowed authenticator.
+  if (!isDeviceCredentialsRequired) {
+    setNegativeButtonText(context.getString(android.R.string.cancel))
+  }
+}.build()
