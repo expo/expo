@@ -35,6 +35,7 @@ import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
+import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
 import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
@@ -72,6 +73,11 @@ class ExpoUIModule : Module() {
     }
 
     OnDestroy {
+      // `RNHostView` publishes its content origin into a process-global registry keyed by view tag.
+      // Tags restart in the next app context, so an entry whose view was never torn down would be
+      // read by an unrelated view after a reload.
+      NativeStatePropsGetter().clearAllContentOrigins()
+
       imageLoader?.close()
       imageLoader = null
       okHttpClient?.dispatcher?.executorService?.shutdown()
@@ -173,9 +179,17 @@ class ExpoUIModule : Module() {
     }
 
     View(RNHostView::class) {
-      // Consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
-      // `RootNodeKind` trait. Declared here only so React Native forwards the prop to native
-      Prop("layoutRoot") { _, _: Boolean -> }
+      // Also consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
+      // `RootNodeKind` trait so `measure()` reports positions relative to this view. Kotlin reads
+      // the same prop to decide whether this view dispatches its subtree's touches, so the
+      // position in `measure()` and the dispatcher can never disagree.
+      Prop("layoutRoot") { view: RNHostView, layoutRoot: Boolean ->
+        view.setLayoutRoot(layoutRoot)
+      }
+
+      OnViewDestroys { view: RNHostView ->
+        view.clearPublishedContentOrigin()
+      }
     }
 
     View(SlotView::class) {
