@@ -361,6 +361,35 @@ div.tippy-box {
   }
 }
 
+/* Package manager selection */
+
+[data-pm-block] {
+  display: none;
+}
+
+.pm-npm [data-pm-block~='npm'],
+.pm-yarn [data-pm-block~='yarn'],
+.pm-pnpm [data-pm-block~='pnpm'],
+.pm-bun [data-pm-block~='bun'] {
+  display: contents;
+}
+
+[data-pm-tab] {
+  @apply text-palette-gray11;
+}
+
+[data-pm-tab]:hover,
+[data-pm-tab]:focus-visible {
+  @apply bg-palette-gray5;
+}
+
+.pm-npm [data-pm-tab~='npm'],
+.pm-yarn [data-pm-tab~='yarn'],
+.pm-pnpm [data-pm-tab~='pnpm'],
+.pm-bun [data-pm-tab~='bun'] {
+  @apply bg-palette-gray6 text-palette-white;
+}
+
 /* Misc */
 
 .react-player > video {

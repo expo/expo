@@ -43,17 +43,24 @@ type CopyButtonProps = {
 
 type BrowserActionProps = NonNullable<TerminalProps['browserAction']>;
 
-type PackageTabsProps = {
+type PackageSelectorProps = {
   managers: PackageManagerKey[];
   activeManager: PackageManagerKey | null;
   onSelect: (manager: PackageManagerKey) => void;
   className?: string;
 };
 
+type PackageTokens = Map<PackageManagerKey, string>;
+
+type PackageTabsProps = PackageSelectorProps & {
+  tokens: PackageTokens;
+};
+
 type PackageManagerState = {
   availableManagers: PackageManagerKey[];
   activeManager: PackageManagerKey | null;
   activeCmd: string[];
+  preferenceTokens: PackageTokens;
   shouldShowPackageTabs: boolean;
   setActiveManager: (manager: PackageManagerKey) => void;
 };
@@ -67,8 +74,14 @@ export const Terminal = ({
   browserAction,
 }: TerminalProps) => {
   const [fallbackCmd, packageManagers] = Array.isArray(cmd) ? [cmd, undefined] : [[], cmd];
-  const { availableManagers, activeManager, activeCmd, shouldShowPackageTabs, setActiveManager } =
-    usePackageManagerState(packageManagers, fallbackCmd);
+  const {
+    availableManagers,
+    activeManager,
+    activeCmd,
+    preferenceTokens,
+    shouldShowPackageTabs,
+    setActiveManager,
+  } = usePackageManagerState(packageManagers, fallbackCmd);
   const isMobileView = useIsMobileView();
   const packageManagerSlot = shouldShowPackageTabs ? (
     isMobileView ? (
@@ -82,6 +95,7 @@ export const Terminal = ({
       <PackageTabs
         managers={availableManagers}
         activeManager={activeManager}
+        tokens={preferenceTokens}
         onSelect={setActiveManager}
         className="ml-6"
       />
@@ -104,7 +118,13 @@ export const Terminal = ({
         </div>
       </SnippetHeader>
       <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
-        {activeCmd.map(cmdMapper)}
+        {shouldShowPackageTabs
+          ? availableManagers.map(manager => (
+              <div key={manager} data-pm-block={preferenceTokens.get(manager)}>
+                {(packageManagers?.[manager] ?? fallbackCmd).map(cmdMapper)}
+              </div>
+            ))
+          : activeCmd.map(cmdMapper)}
       </SnippetContent>
     </Snippet>
   );
@@ -132,6 +152,15 @@ const CopyButton = ({ cmd, cmdCopy }: CopyButtonProps) => {
   return <CopyAction alwaysDark text={copyText} />;
 };
 
+function resolvePreferenceTokens(available: PackageManagerKey[]): PackageTokens {
+  const fallback = available[0];
+  const tokens = new Map(available.map(manager => [manager, [manager] as string[]]));
+  PACKAGE_MANAGER_ORDER.filter(manager => !tokens.has(manager)).forEach(manager => {
+    tokens.get(fallback)?.push(manager);
+  });
+  return new Map([...tokens].map(([manager, keys]) => [manager, keys.join(' ')]));
+}
+
 /**
  * Manages the state for the package manager tabs.
  */
@@ -142,6 +171,10 @@ function usePackageManagerState(
   const availableManagers = useMemo(
     () => PACKAGE_MANAGER_ORDER.filter(manager => packageManagers?.[manager]?.length),
     [packageManagers]
+  );
+  const preferenceTokens = useMemo(
+    () => resolvePreferenceTokens(availableManagers),
+    [availableManagers]
   );
 
   const preferredManager = useSyncExternalStore(
@@ -176,48 +209,51 @@ function usePackageManagerState(
     availableManagers,
     activeManager,
     activeCmd,
+    preferenceTokens,
     shouldShowPackageTabs,
     setActiveManager,
   };
 }
 
 /**
+ * Which tab looks selected comes from CSS, keyed on `data-pm-tab`, so the right one
+ * is highlighted on the first frame. `aria-selected` still comes from React, which
+ * settles it at hydration.
  *
  * @param managers - The available package managers.
  * @param activeManager - The currently active package manager.
+ * @param tokens - The saved preferences each manager answers to.
  * @param onSelect - The function to call when a package manager is selected.
- * @returns
  */
-const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
+const PackageTabs = ({
+  managers,
+  activeManager,
+  tokens,
+  onSelect,
+  className,
+}: PackageTabsProps) => (
   <span
     role="tablist"
     aria-label="Package managers"
     className={mergeClasses('inline-flex items-center gap-1 whitespace-nowrap', className)}>
-    {managers.map(manager => {
-      const isActive = manager === activeManager;
-      return (
-        <button
-          key={manager}
-          type="button"
-          role="tab"
-          aria-selected={isActive}
-          className={mergeClasses(
-            'rounded-md px-2 py-1 text-sm font-semibold transition-colors',
-            isActive
-              ? 'bg-palette-gray6 text-palette-white'
-              : 'text-palette-gray11 hocus:bg-palette-gray5'
-          )}
-          onClick={() => {
-            onSelect(manager);
-          }}>
-          {manager}
-        </button>
-      );
-    })}
+    {managers.map(manager => (
+      <button
+        key={manager}
+        type="button"
+        role="tab"
+        data-pm-tab={tokens.get(manager)}
+        aria-selected={manager === activeManager}
+        className="rounded-md px-2 py-1 text-sm font-semibold transition-colors"
+        onClick={() => {
+          onSelect(manager);
+        }}>
+        {manager}
+      </button>
+    ))}
   </span>
 );
 
-const PackageSelect = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
+const PackageSelect = ({ managers, activeManager, onSelect, className }: PackageSelectorProps) => (
   <Select
     className={mergeClasses(
       'h-6! min-h-4! min-w-19 gap-1! px-2! py-0! text-sm [&_svg]:size-3!',

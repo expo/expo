@@ -62,7 +62,47 @@ describe(Terminal, () => {
     expect(screen.queryByText('Copy')).toBe(null);
   });
 
-  it('renders package manager tabs and switches commands with correct copy', async () => {
+  it('renders every package manager command so CSS can pick one before hydration', () => {
+    render(
+      <Terminal
+        cmd={{
+          npm: ['$ npm install expo'],
+          yarn: ['$ yarn add expo'],
+          pnpm: ['$ pnpm add expo'],
+          bun: ['$ bun add expo'],
+        }}
+      />
+    );
+
+    const blocks = screen.getAllByRole('generic').filter(element => element.dataset.pmBlock);
+    expect(blocks.map(block => block.dataset.pmBlock)).toEqual(['npm', 'yarn', 'pnpm', 'bun']);
+    expect(blocks.map(block => block.textContent)).toEqual([
+      expect.stringContaining('npm install expo'),
+      expect.stringContaining('yarn add expo'),
+      expect.stringContaining('pnpm add expo'),
+      expect.stringContaining('bun add expo'),
+    ]);
+  });
+
+  it('points managers the snippet does not offer at the fallback command', () => {
+    render(
+      <Terminal
+        cmd={{
+          npm: ['$ npm install expo'],
+          yarn: ['$ yarn add expo'],
+        }}
+      />
+    );
+
+    const blocks = screen.getAllByRole('generic').filter(element => element.dataset.pmBlock);
+    expect(blocks.map(block => block.dataset.pmBlock)).toEqual(['npm pnpm bun', 'yarn']);
+    expect(screen.getAllByRole('tab').map(tab => tab.dataset.pmTab)).toEqual([
+      'npm pnpm bun',
+      'yarn',
+    ]);
+  });
+
+  it('stamps the chosen manager on the document element and follows it when copying', async () => {
     render(
       <>
         <Terminal
@@ -79,26 +119,10 @@ describe(Terminal, () => {
 
     const user = userEvent.setup();
 
-    expect(screen.getByRole('tab', { name: /^npm$/i })).toHaveAttribute('aria-selected', 'true');
-    const npmLine = screen.getAllByText((_, node) => {
-      const text = node?.textContent ?? '';
-      return !!(text.includes('npm install expo') && node?.tagName.toLowerCase() === 'code');
-    })[0];
-    expect(npmLine).toBeVisible();
-
     await user.click(screen.getByRole('tab', { name: /^yarn$/i }));
+    expect(document.documentElement.classList.contains('pm-yarn')).toBe(true);
+    expect(document.documentElement.classList.contains('pm-npm')).toBe(false);
     expect(screen.getByRole('tab', { name: /^yarn$/i })).toHaveAttribute('aria-selected', 'true');
-    expect(
-      screen.queryByText((_, node) => {
-        const text = node?.textContent ?? '';
-        return !!(text.includes('npm install expo') && node?.tagName.toLowerCase() === 'code');
-      })
-    ).toBeNull();
-    const yarnLine = screen.getAllByText((_, node) => {
-      const text = node?.textContent ?? '';
-      return !!(text.includes('yarn add expo') && node?.tagName.toLowerCase() === 'code');
-    })[0];
-    expect(yarnLine).toBeVisible();
 
     await user.click(screen.getByText('Copy'));
     await user.click(screen.getByRole('textbox'));
