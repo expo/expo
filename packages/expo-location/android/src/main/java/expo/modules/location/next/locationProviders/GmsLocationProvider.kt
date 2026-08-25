@@ -1,26 +1,39 @@
 package expo.modules.location.next.locationProviders
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.location.Location
 import android.os.Looper
 import android.util.Log
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
+import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.CancellationTokenSource
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.location.next.PausableWatchSession
 import expo.modules.location.next.LocationProvider
-import expo.modules.location.next.LocationWatchHandle
+import expo.modules.location.next.PositionWatchHandle
 import expo.modules.location.next.PositionWatchSession
 import expo.modules.location.next.Position
-import expo.modules.location.next.ProviderOutcome
+import expo.modules.location.next.ProviderResult
 import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 fun gmsWatchSessionImpl(fusedLocationProvider: FusedLocationProviderClient): (onPosition: (Position) -> Unit) -> WatchSession {
   val request = LocationRequest
@@ -151,10 +164,17 @@ class GmsWatchSession(val gmsLocationProvider: GmsLocationProvider): PositionWat
 }
 
 class GmsLocationProvider(
-  val fusedLocationProvider: FusedLocationProviderClient
+  val fusedLocationProvider: FusedLocationProviderClient,
+  val settingsClient: SettingsClient,
+  val isServiceAvailable: () -> Boolean,
 ): LocationProvider, LocationCallback() {
+  override fun name(): String {
+    return "GMS"
+  }
+
   @SuppressLint("MissingPermission")
-  override suspend fun getCurrentPosition(): ProviderOutcome<Position> {
+  override suspend fun getCurrentPosition(): ProviderResult<Position> {
+    if (!isServiceAvailable()) return ProviderResult.Unavailable;
     val cts = CancellationTokenSource()
     val location: Location? = suspendCancellableCoroutine { continuation ->
       // TODO(@HubertBer) add option to select Priority
@@ -166,12 +186,13 @@ class GmsLocationProvider(
         .addOnCanceledListener { continuation.cancel() }
     }
     if (location == null) {
-      return ProviderOutcome.Unavailable
+      return ProviderResult.Unavailable
     }
-    return ProviderOutcome.Success(location.toPosition())
+    return ProviderResult.Success(location.toPosition())
   }
 
-  override fun watchPosition(): ProviderOutcome<LocationWatchHandle> {
+  override fun watchPosition(): ProviderResult<PositionWatchHandle> {
+    if (!isServiceAvailable()) return ProviderResult.Unavailable;
     val locationRequest = LocationRequest
       .Builder(Priority.PRIORITY_HIGH_ACCURACY, 200L)
       .setMinUpdateDistanceMeters(0f)
@@ -194,12 +215,51 @@ class GmsLocationProvider(
         }
       }
     }
-    val locationWatchHandle = LocationWatchHandle(watchSession)
-    return ProviderOutcome.Success(locationWatchHandle)
+    val locationWatchHandle = PositionWatchHandle(watchSession)
+    return ProviderResult.Success(locationWatchHandle)
+  }
+
+  override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
+    if (!isServiceAvailable()) return ProviderResult.Unavailable;
+    val settingsRequest = LocationSettingsRequest
+      .Builder()
+      .addLocationRequest(LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 1000L).build())
+      .build()
+
+    val resolvable: ResolvableApiException? = try {
+      suspendCancellableCoroutine { continuation ->
+        settingsClient.checkLocationSettings(settingsRequest)
+          .addOnSuccessListener { continuation.resume(null) }
+          .addOnFailureListener { e ->
+            if (e is ResolvableApiException) continuation.resume(e) else continuation.resumeWithException(e)
+          }
+          .addOnCanceledListener { continuation.cancel() }
+      }
+    } catch (e: ApiException) {
+      return ProviderResult.Unavailable
+    }
+    if (resolvable == null) {
+      return ProviderResult.Success(true)
+    }
+    val enabled = suspendCoroutine { continuation ->
+      storeContinuationObject(continuation)
+      try {
+        activity.startIntentSenderForResult(
+          resolvable.resolution.intentSender,
+          SETTINGS_REQUEST_CODE,
+          null, 0, 0, 0
+        )
+      } catch (e: Throwable) {
+        continuation.resume(false)
+      }
+    }
+    return ProviderResult.Success(enabled)
   }
 
   @SuppressLint("MissingPermission")
   override suspend fun getLastKnownPosition(): Position? {
+    // TODO(@HubertBer) Change return type to ProviderResult as it actually makes sense
+    if (!isServiceAvailable()) return null;
     val location: Location? = suspendCancellableCoroutine { continuation ->
       try {
         fusedLocationProvider

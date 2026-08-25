@@ -1,29 +1,39 @@
 package expo.modules.location.next.locationProviders
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.Looper
+import android.provider.Settings
 import androidx.core.location.LocationListenerCompat
 import expo.modules.location.next.LocationProvider
-import expo.modules.location.next.LocationWatchHandle
+import expo.modules.location.next.PositionWatchHandle
 import expo.modules.location.next.PausableWatchSession
 import expo.modules.location.next.Position
-import expo.modules.location.next.ProviderOutcome
+import expo.modules.location.next.ProviderResult
 import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
+public const val SETTINGS_REQUEST_CODE = 1492
 class AndroidLocationProvider(private val context: Context): LocationProvider {
   val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
+  override fun name(): String {
+    return "Android"
+  }
+
   @SuppressLint("MissingPermission")
-  override suspend fun getCurrentPosition(): ProviderOutcome<Position> {
+  override suspend fun getCurrentPosition(): ProviderResult<Position> {
     // TODO(@HubertBer) Add options
     val provider = LocationManager.GPS_PROVIDER
     val locationResult: Location? =
@@ -59,13 +69,13 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
     }
 
     if (locationResult == null) {
-      return ProviderOutcome.Unavailable
+      return ProviderResult.Unavailable
     }
-    return ProviderOutcome.Success(locationResult.toPosition())
+    return ProviderResult.Success(locationResult.toPosition())
   }
 
 
-  override fun watchPosition(): ProviderOutcome<LocationWatchHandle> {
+  override fun watchPosition(): ProviderResult<PositionWatchHandle> {
     val watchSession = PausableWatchSession { onPosition: (Position) -> Unit ->
       val provider = LocationManager.GPS_PROVIDER
       return@PausableWatchSession object: WatchSession, LocationListenerCompat {
@@ -83,8 +93,8 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
         }
       }
     }
-    val locationWatchHandle = LocationWatchHandle(watchSession)
-    return ProviderOutcome.Success(locationWatchHandle)
+    val locationWatchHandle = PositionWatchHandle(watchSession)
+    return ProviderResult.Success(locationWatchHandle)
   }
 
   override suspend fun getLastKnownPosition(): Position? {
@@ -96,31 +106,17 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
       }
     }.maxByOrNull { it.time }?.toPosition()
   }
-}
 
-//class AndroidWatchSession(androidlocationProvider: AndroidLocationProvider): PositionWatchSession {
-//  override fun pause() {
-//    TODO("Not yet implemented")
-//  }
-//
-//  override fun resume() {
-//    TODO("Not yet implemented")
-//  }
-//
-//  override fun start(onPosition: (Position) -> Unit) {
-//    TODO("Not yet implemented")
-//  }
-//
-//  override fun stop() {
-//    TODO("Not yet implemented")
-//  }
-//
-//  override fun release() {
-//    TODO("Not yet implemented")
-//  }
-//
-//  override fun getLastKnownPosition(): Position? {
-//    TODO("Not yet implemented")
-//  }
-//
-//}
+  // On plain android we can only move user to settings.
+  override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
+    val enabled = suspendCoroutine { continuation ->
+      storeContinuationObject(continuation)
+      try {
+        activity.startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), SETTINGS_REQUEST_CODE)
+      } catch (e: Throwable) {
+        continuation.resume(false)
+      }
+    }
+    return ProviderResult.Success(enabled)
+  }
+}

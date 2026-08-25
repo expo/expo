@@ -170,7 +170,7 @@ internal class LocationObjectCoords(
     longitude?.let { putDouble("longitude", it) }
     altitude?.let { putDouble("altitude", it) }
     accuracy?.let { putDouble("accuracy", it) }
-    altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
+    altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) ?: putString("altitudeAccuracy", null) }
     heading?.let { putDouble("heading", it) }
     speed?.let { putDouble("speed", it) }
   }
