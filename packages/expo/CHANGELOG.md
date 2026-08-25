@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.30 — 2026-08-25
+
+### 💡 Others
+
 - Bump to `@expo/metro@55.1.2` and `metro@0.83.8` ([#49220](https://github.com/expo/expo/pull/49220) by [@kitten](https://github.com/kitten))
 
 ## 55.0.29 — 2026-08-17

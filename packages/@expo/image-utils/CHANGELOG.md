@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.8.17 — 2026-08-25
+
+_This version does not introduce any user-facing changes._
+
 ## 0.8.16 — 2026-08-17
 
 _This version does not introduce any user-facing changes._
