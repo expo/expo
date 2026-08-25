@@ -411,7 +411,9 @@ private class TouchDispatchingRootViewGroup(
   @OptIn(UnstableReactNativeAPI::class)
   override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
     if (!dispatchesTouchesToJS) {
-      // No stream of ours to cancel; the ancestor root that owns this subtree handles it.
+      // React Native notifies only the first RootView above the child, which is us. Relay it to the
+      // root that actually dispatches, or a Pressable inside a hosted scrollable fires after a scroll.
+      notifyAncestorRootViews { it.onChildStartedNativeGesture(childView, ev) }
       return
     }
     eventDispatcher?.let { dispatcher ->
@@ -422,6 +424,7 @@ private class TouchDispatchingRootViewGroup(
 
   override fun onChildEndedNativeGesture(childView: View, ev: MotionEvent) {
     if (!dispatchesTouchesToJS) {
+      notifyAncestorRootViews { it.onChildEndedNativeGesture(childView, ev) }
       return
     }
     eventDispatcher?.let { jsTouchDispatcher.onChildEndedNativeGesture(ev, it) }
