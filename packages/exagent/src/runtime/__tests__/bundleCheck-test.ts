@@ -61,8 +61,7 @@ function mockFetch(answers: { [key: string]: Answer }) {
       headers: {
         get: (name: string) =>
           name.toLowerCase() === 'content-type'
-            ? (answer.contentType ??
-              (answer.text ? 'text/html; charset=utf-8' : 'application/json'))
+            ? (answer.contentType ?? (answer.text ? 'text/html; charset=utf-8' : 'application/json'))
             : null,
       },
       text: async () => body,
@@ -308,9 +307,7 @@ describe(checkEntryBundleAsync, () => {
 
     it(`should say what it could not find when the page names no bundle`, async () => {
       mockFetch({
-        'http://127.0.0.1:8123/': {
-          text: '<html><body><script src="/vendor.js"></script></body></html>',
-        },
+        'http://127.0.0.1:8123/': { text: '<html><body><script src="/vendor.js"></script></body></html>' },
       });
 
       const result = await checkEntryBundleAsync(devServerUrl, {

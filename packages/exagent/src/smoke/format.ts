@@ -79,10 +79,7 @@ function row(label: string, value: string): string {
 export function formatSmokeResult(run: SmokeRun, options: SmokeOptions): string {
   const lines = [
     row('smoke', outcomeValue(run)),
-    row(
-      'dev server',
-      `${run.devServerUrl}${SEPARATOR}${chalk.dim(`via ${run.discovery?.source ?? 'default'}${run.started ? ', started by this run' : ''}`)}`
-    ),
+    row('dev server', `${run.devServerUrl}${SEPARATOR}${chalk.dim(`via ${run.discovery?.source ?? 'default'}${run.started ? ', started by this run' : ''}`)}`),
     ...run.phases.map((phase) => row('', phaseLine(phase))),
   ];
 
@@ -109,12 +106,7 @@ export function formatSmokeResult(run: SmokeRun, options: SmokeOptions): string 
     );
   }
 
-  lines.push(
-    row(
-      'took',
-      `${formatDuration(run.durationMs)}${options.route ? `${SEPARATOR}${chalk.dim(`route ${options.route}`)}` : ''}`
-    )
-  );
+  lines.push(row('took', `${formatDuration(run.durationMs)}${options.route ? `${SEPARATOR}${chalk.dim(`route ${options.route}`)}` : ''}`));
   return lines.join('\n');
 }
 

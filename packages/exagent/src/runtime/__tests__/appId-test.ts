@@ -86,10 +86,7 @@ describe(readConfiguredAppId, () => {
   it(`should read ios.bundleIdentifier and android.package`, () => {
     vol.fromJSON({
       [`${projectRoot}/app.json`]: JSON.stringify({
-        expo: {
-          ios: { bundleIdentifier: 'com.example.ios' },
-          android: { package: 'com.example.android' },
-        },
+        expo: { ios: { bundleIdentifier: 'com.example.ios' }, android: { package: 'com.example.android' } },
       }),
     });
 

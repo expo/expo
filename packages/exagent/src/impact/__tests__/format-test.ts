@@ -1,7 +1,7 @@
 import { formatImpactReport } from '../format';
 import { buildImpactReport } from '../impactAsync';
 import { DEFAULT_PRESET } from '../resolveOptions';
-import type { ImpactOptions } from '../resolveOptions';
+import type { ImpactOptions, } from '../resolveOptions';
 import type { PlatformImpact, RuntimeVersionInfo } from '../types';
 
 function options(overrides: Partial<ImpactOptions> = {}): ImpactOptions {

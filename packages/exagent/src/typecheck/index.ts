@@ -63,7 +63,8 @@ export const exagentTypecheck: Command = async (argv) => {
   const { exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
-  const { printTypeCheckAsync } = require('./typecheckAsync') as typeof import('./typecheckAsync');
+  const { printTypeCheckAsync } =
+    require('./typecheckAsync') as typeof import('./typecheckAsync');
 
   return (async () => {
     const projectRoot = findUpProjectRootOrAssert(process.cwd());

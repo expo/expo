@@ -109,9 +109,7 @@ export class DevServerMessageSocket {
    *
    * @returns the peers, or null when the dev server did not answer in time.
    */
-  async getPeersAsync({
-    timeoutMs = 2000,
-  }: GetPeersOptions = {}): Promise<MessageSocketPeers | null> {
+  async getPeersAsync({ timeoutMs = 2000 }: GetPeersOptions = {}): Promise<MessageSocketPeers | null> {
     const id = `exagent#${this.nextRequestId++}`;
     return await new Promise<MessageSocketPeers | null>((resolve) => {
       const timer = setTimeout(() => {

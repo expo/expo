@@ -63,11 +63,7 @@ describe(buildScreenshotCommand, () => {
 
   it(`names the device it was given, on both platforms`, () => {
     for (const platform of ['ios', 'android'] as const) {
-      const command = buildScreenshotCommand({
-        platform,
-        deviceId: 'DEVICE-1',
-        filePath: '/a.png',
-      });
+      const command = buildScreenshotCommand({ platform, deviceId: 'DEVICE-1', filePath: '/a.png' });
       expect(command.args).toContain('DEVICE-1');
     }
   });

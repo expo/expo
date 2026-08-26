@@ -99,12 +99,7 @@ export async function stopAppOnDeviceAsync(params: {
   // `adb shell am force-stop` exits 0 whether or not the app was running and prints nothing
   // either way, so on Android this is only ever inferred from the iOS-shaped message above. The
   // honest reading is "not known to have been stopped already", which is what `false` says.
-  return {
-    command: display,
-    ok: true,
-    wasAlreadyStopped: exitCode !== 0 && notRunning,
-    reason: null,
-  };
+  return { command: display, ok: true, wasAlreadyStopped: exitCode !== 0 && notRunning, reason: null };
 }
 
 /** Whether the device tool refused because the app was not running to begin with. */

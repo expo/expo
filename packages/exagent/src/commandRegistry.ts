@@ -745,5 +745,7 @@ export function unknownCommandSuggestion(command: string): string {
   }
 
   const suggestions = suggestCommandNames(command);
-  return suggestions.length === 1 ? `npx exagent ${suggestions[0]} --help` : 'npx exagent --help';
+  return suggestions.length === 1
+    ? `npx exagent ${suggestions[0]} --help`
+    : 'npx exagent --help';
 }

@@ -62,8 +62,7 @@ describe('OPTION_OWNERS', () => {
   // The table is only useful while it is true, and it is hand-kept — so the one property worth
   // pinning is that every name in it resolves to a real command.
   it('names only commands the registry resolves', () => {
-    const { resolveCommand } =
-      require('../../commandRegistry') as typeof import('../../commandRegistry');
+    const { resolveCommand } = require('../../commandRegistry') as typeof import('../../commandRegistry');
     for (const owners of Object.values(OPTION_OWNERS)) {
       for (const owner of owners) {
         expect(resolveCommand(owner, []).kind).toBe('command');

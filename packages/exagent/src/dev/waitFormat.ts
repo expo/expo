@@ -216,8 +216,7 @@ export function bundleToJson(
     platform: bundle.platform,
     url: bundle.url,
     error: bundle.error,
-    reason:
-      ok == null ? (bundle.reason ?? 'the bundler gave no answer about the entry bundle') : null,
+    reason: ok == null ? (bundle.reason ?? 'the bundler gave no answer about the entry bundle') : null,
   };
 }
 

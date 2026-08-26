@@ -39,9 +39,7 @@ describe(resolveImpactOptions, () => {
   });
 
   it(`should reject a preset @expo/fingerprint does not know`, () => {
-    expect(() => resolveImpactOptions(['--preset', 'paranoid'])).toThrow(
-      /not a fingerprint preset/
-    );
+    expect(() => resolveImpactOptions(['--preset', 'paranoid'])).toThrow(/not a fingerprint preset/);
   });
 
   it.each(IMPACT_CLASS_ORDER)(`should accept --assert %s`, (impactClass) => {

@@ -3,12 +3,7 @@
 import chalk from 'chalk';
 
 import type { Command } from '../types';
-import {
-  assertWithOptionsArgs,
-  DURATION_HELP_NOTE,
-  DURATION_METAVAR,
-  printHelp,
-} from '../utils/args';
+import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR, printHelp } from '../utils/args';
 
 export const exagentDevStop: Command = async (argv) => {
   const args = assertWithOptionsArgs(

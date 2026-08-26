@@ -12,8 +12,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { NavigatePlatform } from '../navigate/device';
 import { EXPO_GO_APP_IDS } from '../navigate/target';
+import type { NavigatePlatform } from '../navigate/device';
 
 /** Expo Go's application id, per platform, for a project that has no build of its own. */
 export const EXPO_GO_APP_ID: Record<NavigatePlatform, string> = {
@@ -103,9 +103,7 @@ export function readConfiguredAppId(
       continue;
     }
     const expo = (isRecord(config.expo) ? config.expo : config) as Record<string, unknown>;
-    const platformConfig = isRecord(expo[platform])
-      ? (expo[platform] as Record<string, unknown>)
-      : null;
+    const platformConfig = isRecord(expo[platform]) ? (expo[platform] as Record<string, unknown>) : null;
     const value = platformConfig?.[platform === 'ios' ? 'bundleIdentifier' : 'package'];
     if (typeof value === 'string' && value.trim().length > 0) {
       return value.trim();

@@ -3,12 +3,7 @@
 import chalk from 'chalk';
 
 import type { Command } from '../../types';
-import {
-  assertWithOptionsArgs,
-  DURATION_HELP_NOTE,
-  DURATION_METAVAR,
-  printHelp,
-} from '../../utils/args';
+import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR, printHelp } from '../../utils/args';
 
 export const exagentReload: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -95,8 +90,7 @@ export const exagentReload: Command = async (argv) => {
     require('../../utils/findUp') as typeof import('../../utils/findUp');
   const { resolveReloadOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
   const { reloadAsync } = require('./reloadAsync') as typeof import('./reloadAsync');
-  const { EXIT_OK, exitWithCodeAsync } =
-    require('../../exitCodes') as typeof import('../../exitCodes');
+  const { EXIT_OK, exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');
 
   return (async () => {
     const options = resolveReloadOptions(argv ?? []);

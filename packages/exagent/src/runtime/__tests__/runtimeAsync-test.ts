@@ -328,9 +328,9 @@ describe(runtimeErrorsAsync, () => {
         { source: 'console', timestamp: 1700000000001, message: 'Request failed' },
       ]);
 
-      await expect(runtimeErrorsAsync({ ...errorsOptions, failOnError: true })).resolves.toBe(
-        EXIT_OUTCOME_FAILED
-      );
+      await expect(
+        runtimeErrorsAsync({ ...errorsOptions, failOnError: true })
+      ).resolves.toBe(EXIT_OUTCOME_FAILED);
     });
 
     it(`should exit 0 for an empty window even when it is a gate`, async () => {

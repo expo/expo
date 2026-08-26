@@ -211,16 +211,7 @@ describe(formatSmokeResult, () => {
   it(`names every phase and what it answered`, () => {
     const printed = formatSmokeResult(run(), options());
 
-    for (const id of [
-      'dev-server',
-      'bundler-ready',
-      'bundle',
-      'app',
-      'route',
-      'runtime',
-      'errors',
-      'screenshot',
-    ]) {
+    for (const id of ['dev-server', 'bundler-ready', 'bundle', 'app', 'route', 'runtime', 'errors', 'screenshot']) {
       expect(printed).toContain(id);
     }
     expect(printed).toContain('skipped');

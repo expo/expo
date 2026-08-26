@@ -2,9 +2,9 @@
 // Where the two fingerprints being compared come from. One function per mode, each answering the
 // same shape, so `impactAsync` orchestrates without knowing which mode ran.
 
-import { readLastBuildRecord } from '../plan/lastBuild';
 import { diffFingerprintsAsync, generateFingerprintAsync } from '../project/fingerprint';
 import type { FingerprintDiffItem } from '../project/fingerprint';
+import { readLastBuildRecord } from '../plan/lastBuild';
 import type { EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import type { ComparisonSide } from './types';
@@ -144,8 +144,7 @@ export function describeGenerateFailure(
   platform: string,
   preset: string | undefined
 ): string {
-  const reason =
-    error ?? `The fingerprint of the working tree could not be computed for ${platform}.`;
+  const reason = error ?? `The fingerprint of the working tree could not be computed for ${platform}.`;
   if (preset && /unknown or unexpected option: --preset/.test(reason)) {
     return [
       `The @expo/fingerprint CLI installed in this project does not accept --preset.`,

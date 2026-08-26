@@ -159,15 +159,7 @@ const PHASE_ORDER: SmokePhaseId[] = [
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract.
  */
 export function noScreenshot(reason: string): ScreenshotResult {
-  return {
-    path: '',
-    ok: false,
-    reason,
-    platform: null,
-    deviceId: null,
-    command: null,
-    bytes: null,
-  };
+  return { path: '', ok: false, reason, platform: null, deviceId: null, command: null, bytes: null };
 }
 
 /**
@@ -338,16 +330,11 @@ export async function runSmokePhasesAsync(
     skipRest('bundle', 'the dev server serves another project, so nothing here is about this one');
     return done('failed', {
       ...base,
-      screenshot: noScreenshot(
-        'the dev server serves another project, so nothing was photographed'
-      ),
+      screenshot: noScreenshot('the dev server serves another project, so nothing was photographed'),
     });
   }
   if (!readiness.ready) {
-    skipRest(
-      'bundle',
-      'the bundler never answered, so there was no bundle to read the app through'
-    );
+    skipRest('bundle', 'the bundler never answered, so there was no bundle to read the app through');
     return done(readiness.timedOut ? 'inconclusive' : 'failed', {
       ...base,
       screenshot: noScreenshot('the bundler was not ready, so nothing was photographed'),
@@ -406,10 +393,7 @@ export async function runSmokePhasesAsync(
   let routeOpenedWhileConnecting = false;
 
   const connection = await record('app', async () => {
-    const first = await deps.waitForAppConnection(
-      devServerUrl,
-      Math.min(remaining(), APP_PROBE_MS)
-    );
+    const first = await deps.waitForAppConnection(devServerUrl, Math.min(remaining(), APP_PROBE_MS));
     if (first.appsConnected > 0) {
       return { status: 'ok' as const, value: first };
     }

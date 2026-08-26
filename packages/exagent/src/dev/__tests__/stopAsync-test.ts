@@ -1,8 +1,8 @@
 import { readDevServerLockAsync } from '../../devLock';
 import { EXIT_OK, EXIT_OUTCOME_FAILED } from '../../exitCodes';
 import { findPortListenerAsync } from '../portListener';
-import type { DevStopOptions } from '../resolveStopOptions';
 import { devStopAsync, looksLikeDevServerProcess } from '../stopAsync';
+import type { DevStopOptions } from '../resolveStopOptions';
 
 jest.mock('../../devLock', () => ({
   readDevServerLockAsync: jest.fn(async () => null),

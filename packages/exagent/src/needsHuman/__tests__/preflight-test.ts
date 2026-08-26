@@ -101,8 +101,7 @@ describe(readAuthPreflightAsync, () => {
     withProjectEas();
     mockWhoami({
       exitCode: 101,
-      stderr:
-        'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   2: tuft::main\n',
+      stderr: 'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   2: tuft::main\n',
     });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({

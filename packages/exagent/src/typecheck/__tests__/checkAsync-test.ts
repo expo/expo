@@ -4,12 +4,7 @@
 import { vol } from 'memfs';
 
 import { spawnSubprocessAsync } from '../../utils/subprocess';
-import {
-  resolveTsConfigPath,
-  resolveTypeScriptCli,
-  runTypeCheckAsync,
-  TSC_ARGS,
-} from '../checkAsync';
+import { resolveTsConfigPath, resolveTypeScriptCli, runTypeCheckAsync, TSC_ARGS } from '../checkAsync';
 
 jest.mock('../../utils/subprocess', () => ({ spawnSubprocessAsync: jest.fn() }));
 

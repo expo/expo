@@ -17,15 +17,8 @@
 
 import chalk from 'chalk';
 
-import { bundleToJson, type DevWaitBundleJson } from '../../dev/waitFormat';
 import { event as cliEvent } from '../../events';
-import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
-import {
-  buildReloadFollowUps,
-  followUpsEnabled,
-  reportFollowUps,
-  type FollowUp,
-} from '../../followups';
+import { buildReloadFollowUps, followUpsEnabled, reportFollowUps, type FollowUp } from '../../followups';
 import * as Log from '../../log';
 import {
   isFullUrlRoute,
@@ -43,9 +36,7 @@ import {
   readProjectPackageJsonAsync,
 } from '../../project/nodeModules';
 import { readProjectRoutesAsync } from '../../project/routes';
-import { CommandError } from '../../utils/errors';
-import { readConfiguredAppId, resolveAppId } from '../appId';
-import { stopAppOnDeviceAsync } from '../appProcess';
+import { bundleToJson, type DevWaitBundleJson } from '../../dev/waitFormat';
 import { checkEntryBundleAsync, DEFAULT_BUNDLE_CHECK_PLATFORM } from '../bundleCheck';
 import {
   discoverDevServerAsync,
@@ -60,6 +51,10 @@ import {
   type MessageSocketPeers,
 } from '../messageSocket';
 import { waitForFreshAppConnectionAsync } from '../waitReady';
+import { CommandError } from '../../utils/errors';
+import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
+import { readConfiguredAppId, resolveAppId } from '../appId';
+import { stopAppOnDeviceAsync } from '../appProcess';
 import { debugEvent, event } from './events';
 import type { ReloadOptions } from './resolveOptions';
 
@@ -462,11 +457,7 @@ async function reloadOnDeviceAsync(
   });
   if (!stopped.ok) {
     return {
-      attempt: {
-        method: 'device',
-        ok: false,
-        reason: `${stopped.command} failed: ${stopped.reason}`,
-      },
+      attempt: { method: 'device', ok: false, reason: `${stopped.command} failed: ${stopped.reason}` },
       device,
     };
   }
@@ -501,12 +492,7 @@ async function openRouteAsync(
   options: ReloadOptions,
   devServerUrl: string,
   known: NavigateDevice | null
-): Promise<{
-  url: string;
-  command: string;
-  exitCode: number | null;
-  device: NavigateDevice;
-} | null> {
+): Promise<{ url: string; command: string; exitCode: number | null; device: NavigateDevice } | null> {
   const [config, nativeDirs, packageJson] = await Promise.all([
     Promise.resolve(readProjectSchemeConfig(projectRoot)),
     readProjectNativeDirsAsync(projectRoot),
@@ -607,9 +593,7 @@ function printHumanReport(report: ReloadResultJson, options: ReloadOptions): voi
     );
   }
   if (report.route != null) {
-    lines.push(
-      chalk`{bold Route} ${report.route}${report.url ? chalk`{dim  · ${report.url}}` : ''}`
-    );
+    lines.push(chalk`{bold Route} ${report.route}${report.url ? chalk`{dim  · ${report.url}}` : ''}`);
   }
   for (const attempt of report.attempts) {
     lines.push(chalk`{dim  ${attempt.method}: ${attempt.reason}}`);
@@ -634,13 +618,8 @@ function explainFailure(report: ReloadResultJson, options: ReloadOptions): strin
       ...(error?.snippet ? [error.snippet] : []),
     ].join('\n');
   }
-  if (
-    report.bundle.reason != null &&
-    report.bundle.ok == null &&
-    options.bundleCheck &&
-    report.method == null &&
-    report.attempts.length === 0
-  ) {
+  if (report.bundle.reason != null && report.bundle.ok == null && options.bundleCheck &&
+      report.method == null && report.attempts.length === 0) {
     return [
       chalk.red(
         `The bundler was still building this project's entry bundle after ${options.timeoutMs}ms, so the app was not reloaded.`

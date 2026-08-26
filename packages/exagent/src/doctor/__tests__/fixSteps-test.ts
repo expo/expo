@@ -161,9 +161,7 @@ describe('metroFileMapPrefixes', () => {
   // $TMPDIR with one project. Verified live on this machine, 2026-08-24, against four real caches.
   it('is the md5 of the project root, for both runtimes', () => {
     expect(
-      metroFileMapPrefixes(
-        '/Users/bonsai/.config/tuft/sessions/1787500752.816299/friction/run3/notesapp'
-      )
+      metroFileMapPrefixes('/Users/bonsai/.config/tuft/sessions/1787500752.816299/friction/run3/notesapp')
     ).toEqual([
       'metro-file-map-expo-282fd89ff11f8010ca125f6be1bdad16-',
       'metro-file-map-bun-expo-282fd89ff11f8010ca125f6be1bdad16-',
@@ -203,9 +201,7 @@ describe('unavailable', () => {
   });
 
   it('skips derived-data when no .xcodeproj names it', () => {
-    expect(by('derived-data').unavailable!(context({ xcodeProjectNames: [] }))).toMatch(
-      /xcodeproj/
-    );
+    expect(by('derived-data').unavailable!(context({ xcodeProjectNames: [] }))).toMatch(/xcodeproj/);
   });
 
   it('skips the watchman steps on a machine without watchman', () => {

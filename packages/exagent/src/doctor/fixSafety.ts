@@ -35,10 +35,7 @@ export interface TargetSafetyContext {
  * places one may live is small enough to write down and read. The roots themselves are never
  * targets — only paths strictly inside them.
  */
-export function machineWideRoots({
-  homeDir,
-  tmpDir,
-}: Pick<TargetSafetyContext, 'homeDir' | 'tmpDir'>): string[] {
+export function machineWideRoots({ homeDir, tmpDir }: Pick<TargetSafetyContext, 'homeDir' | 'tmpDir'>): string[] {
   return [tmpDir, path.join(homeDir, 'Library', 'Developer', 'Xcode', 'DerivedData')];
 }
 

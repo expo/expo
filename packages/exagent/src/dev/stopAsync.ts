@@ -109,7 +109,10 @@ export interface DevStopResultJson {
  *
  * @returns the exit code: `0` stopped, or nothing was running; `20` something is still there.
  */
-export async function devStopAsync(projectRoot: string, options: DevStopOptions): Promise<number> {
+export async function devStopAsync(
+  projectRoot: string,
+  options: DevStopOptions
+): Promise<number> {
   const startedAt = Date.now();
   const lock = await readDevServerLockAsync(projectRoot);
   debugEvent('stop_lock_read', { held: lock != null, pid: lock?.pid ?? null });
@@ -139,8 +142,7 @@ export async function devStopAsync(projectRoot: string, options: DevStopOptions)
     printHumanReport(report);
   }
 
-  const exitCode =
-    report.stopped || report.reason === 'not-running' ? EXIT_OK : EXIT_OUTCOME_FAILED;
+  const exitCode = report.stopped || report.reason === 'not-running' ? EXIT_OK : EXIT_OUTCOME_FAILED;
   if (exitCode !== EXIT_OK) {
     Log.error(explainFailure(report, options));
   }
@@ -268,9 +270,7 @@ async function stopUnlockedDevServerAsync(
   base.detail = [
     `port ${port} is`,
     isDevServer ? 'answering as an Expo dev server' : 'in use',
-    listener != null
-      ? `by pid ${listener.pid} (${listener.command})`
-      : 'by a process this machine would not name',
+    listener != null ? `by pid ${listener.pid} (${listener.command})` : 'by a process this machine would not name',
     'and no lock answers for it, so it was not started by this CLI',
   ].join(' ');
   base.waitedMs = Date.now() - startedAt;

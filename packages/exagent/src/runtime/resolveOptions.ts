@@ -155,11 +155,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     return {
       action: 'eval',
       expression: positional[0]!,
-      devServerUrl: resolveDevServerTarget(
-        args['--dev-server-url'],
-        args['--port'],
-        'runtime:eval'
-      ),
+      devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:eval'),
       timeoutMs: resolveDuration(args['--timeout'], '--timeout', 5000, { allowZero: false }),
       awaitPromise: !args['--no-await-promise'],
       json: !!args['--json'],
@@ -196,3 +192,4 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     ? { action: 'errors', ...shared, failOnError: !!args['--fail-on-error'] }
     : { action: 'network', ...shared };
 }
+

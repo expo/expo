@@ -148,11 +148,7 @@ function readStubInvocations(projectRoot: string): {
 }[] {
   const logPath = path.join(projectRoot, STUB_PM_LOG_NAME);
   return fs.existsSync(logPath)
-    ? fs
-        .readFileSync(logPath, 'utf8')
-        .split('\n')
-        .filter(Boolean)
-        .map((line) => JSON.parse(line))
+    ? fs.readFileSync(logPath, 'utf8').split('\n').filter(Boolean).map((line) => JSON.parse(line))
     : [];
 }
 
@@ -168,13 +164,7 @@ function git(cwd: string, ...args: string[]): void {
   execFileSync('git', args, {
     cwd,
     stdio: 'ignore',
-    env: {
-      ...process.env,
-      GIT_AUTHOR_NAME: 't',
-      GIT_AUTHOR_EMAIL: 't@t',
-      GIT_COMMITTER_NAME: 't',
-      GIT_COMMITTER_EMAIL: 't@t',
-    },
+    env: { ...process.env, GIT_AUTHOR_NAME: 't', GIT_AUTHOR_EMAIL: 't@t', GIT_COMMITTER_NAME: 't', GIT_COMMITTER_EMAIL: 't@t' },
   });
 }
 
@@ -192,12 +182,7 @@ describe('exagent doctor:fix', () => {
     expect(payload.applied).toBe(false);
     expect(payload.results).toBeNull();
     expect(payload.steps.map((step) => step.id)).toEqual(
-      expect.arrayContaining([
-        'expo-web-cache',
-        'expo-dev-logs',
-        'node-modules-cache',
-        'metro-file-map',
-      ])
+      expect.arrayContaining(['expo-web-cache', 'expo-dev-logs', 'node-modules-cache', 'metro-file-map'])
     );
     for (const target of planted.planted) {
       expect(`${target} exists: ${fs.existsSync(target)}`).toBe(`${target} exists: true`);
@@ -256,13 +241,9 @@ describe('exagent doctor:fix', () => {
 
     const without: FixPayload = JSON.parse(
       (
-        await executeExagentAsync(
-          planted.projectRoot,
-          ['doctor:fix', '--tier', 'moderate', '--json'],
-          {
-            env: planted.env,
-          }
-        )
+        await executeExagentAsync(planted.projectRoot, ['doctor:fix', '--tier', 'moderate', '--json'], {
+          env: planted.env,
+        })
       ).stdout
     );
     expect(without.steps.map((step) => step.id)).not.toContain('metro-transform-cache');

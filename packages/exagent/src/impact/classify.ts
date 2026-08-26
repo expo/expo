@@ -176,9 +176,7 @@ function describeChanges(sources: ChangedSource[]): string[] {
   }
 
   const ordered = [...byKind.entries()].sort(
-    (a, b) =>
-      IMPACT_CLASS_ORDER.indexOf(KIND_CLASSES[b[0]]) -
-      IMPACT_CLASS_ORDER.indexOf(KIND_CLASSES[a[0]])
+    (a, b) => IMPACT_CLASS_ORDER.indexOf(KIND_CLASSES[b[0]]) - IMPACT_CLASS_ORDER.indexOf(KIND_CLASSES[a[0]])
   );
   return ordered.map(([kind, entries]) => describeKind(kind, entries));
 }

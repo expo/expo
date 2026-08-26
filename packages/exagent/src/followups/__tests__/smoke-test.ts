@@ -60,9 +60,7 @@ describe(buildSmokeFollowUps, () => {
   });
 
   it(`offers --start to a run that was attach-only`, () => {
-    expect(commands({ devServerFound: false, start: false })).toContain(
-      'npx exagent smoke --start'
-    );
+    expect(commands({ devServerFound: false, start: false })).toContain('npx exagent smoke --start');
   });
 
   // Every other suggestion would be about a stranger's app, so it is alone. And it is never a
@@ -83,9 +81,7 @@ describe(buildSmokeFollowUps, () => {
   });
 
   it(`answers no connected app with the command that opens one`, () => {
-    expect(commands({ appsConnected: 0, outcome: 'inconclusive' })[0]).toBe(
-      'npx exagent navigate /'
-    );
+    expect(commands({ appsConnected: 0, outcome: 'inconclusive' })[0]).toBe('npx exagent navigate /');
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §Android pass. This never changes for this app on

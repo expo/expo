@@ -123,7 +123,8 @@ export async function runtimeStopAsync(
     appIdMismatch,
     followups: [],
   };
-  report.followups = result.ok && followUpsEnabled(options.followups) ? buildFollowUps(report) : [];
+  report.followups =
+    result.ok && followUpsEnabled(options.followups) ? buildFollowUps(report) : [];
 
   event('stop_app_done', {
     stopped: report.stopped,
@@ -164,7 +165,9 @@ export async function runtimeStopAsync(
     const connected = connectedAppIds.join(', ');
     Log.error(
       [
-        chalk.red(`Nothing was stopped: ${resolved.appId} was not running, and ${connected} is.`),
+        chalk.red(
+          `Nothing was stopped: ${resolved.appId} was not running, and ${connected} is.`
+        ),
         `Why: --app-id names the app to stop and outranks every other piece of evidence, so it was used as given — and ${result.command} found no process under it. Meanwhile the dev server at ${devServer.devServerUrl} reports ${connectedAppIds.length === 1 ? 'a debugger target' : `${connectedAppIds.length} debugger targets`} for ${connected}, which ${connectedAppIds.length === 1 ? 'is' : 'are'} still running. This is exit 20 rather than 0 because the app you can see on the device is untouched: the requested state holds only for an id nothing was using.`,
         `How: run "npx exagent runtime:stop --app-id ${connectedAppIds[0]}" to stop what is actually running, or leave --app-id out entirely — without it this command reads the id off the dev server. If you did mean ${resolved.appId}, it is already not running and there is nothing to do.`,
       ].join('\n')
@@ -220,9 +223,7 @@ function printHumanReport(report: RuntimeStopResultJson): void {
             : chalk.red('no')
       }${
         report.appIdMismatch
-          ? chalk.dim(
-              ` · ${report.bundleId} was not running, and ${report.connectedAppIds.join(', ')} is`
-            )
+          ? chalk.dim(` · ${report.bundleId} was not running, and ${report.connectedAppIds.join(', ')} is`)
           : report.stopped && !report.wasRunning
             ? chalk.dim(' · it was not running')
             : ''

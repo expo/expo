@@ -261,10 +261,7 @@ export class CdpClient {
   private async openSessionAsync(): Promise<CdpSession> {
     const ws = await this.createWebSocketAsync();
     const url = this.getWebSocketDebuggerUrl();
-    const pending = new Map<
-      number,
-      { resolve: (result: unknown) => void; reject: (e: any) => void }
-    >();
+    const pending = new Map<number, { resolve: (result: unknown) => void; reject: (e: any) => void }>();
     let nextId = 1;
     let closedWith: Error | null = null;
 

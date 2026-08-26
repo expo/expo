@@ -56,11 +56,7 @@ export function detectPackageManager(projectRoot: string): FixPackageManager & {
     }
     const parent = path.dirname(dir);
     if (parent === dir) {
-      return {
-        name: DEFAULT_PACKAGE_MANAGER,
-        lockfile: null,
-        installCwd: path.resolve(projectRoot),
-      };
+      return { name: DEFAULT_PACKAGE_MANAGER, lockfile: null, installCwd: path.resolve(projectRoot) };
     }
     dir = parent;
   }

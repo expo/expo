@@ -4,7 +4,10 @@ import { vol } from 'memfs';
 
 import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../../devLock';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../../exitCodes';
-import { connectMessageSocketAsync, type MessageSocketPeers } from '../../messageSocket';
+import {
+  connectMessageSocketAsync,
+  type MessageSocketPeers,
+} from '../../messageSocket';
 import { reloadAsync, reloadOverDevServerAsync } from '../reloadAsync';
 import type { ReloadOptions } from '../resolveOptions';
 
@@ -120,7 +123,7 @@ const TRANSFORM_ERROR = {
   lineNumber: 76,
   column: 4,
   filename: 'src/app/notes.tsx',
-  message: 'SyntaxError: /project/src/app/notes.tsx: Unexpected token (76:4)',
+  message: "SyntaxError: /project/src/app/notes.tsx: Unexpected token (76:4)",
 };
 
 /**
@@ -214,7 +217,10 @@ describe(reloadOverDevServerAsync, () => {
   // The property the whole method rests on: the dev server's socket ids come from a counter it
   // never rewinds, so an id that changed is the app's connection having been replaced.
   it(`should report a reload when the app's connection was replaced`, async () => {
-    const { socket, sent } = fakeSocket([{ 'socket#7': 'role=ios' }, { 'socket#10': 'role=ios' }]);
+    const { socket, sent } = fakeSocket([
+      { 'socket#7': 'role=ios' },
+      { 'socket#10': 'role=ios' },
+    ]);
 
     await expect(
       reloadOverDevServerAsync('http://127.0.0.1:8081', { connect: async () => socket })
@@ -592,9 +598,9 @@ describe(reloadAsync, () => {
     mockConnect(mockReloadingDevServer().socket);
     mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
 
-    await expect(reloadAsync(projectRoot, options({ route: '/notes', json: true }))).resolves.toBe(
-      EXIT_OK
-    );
+    await expect(
+      reloadAsync(projectRoot, options({ route: '/notes', json: true }))
+    ).resolves.toBe(EXIT_OK);
     expect(JSON.parse(printed())).toMatchObject({
       route: '/notes',
       url: 'exp://127.0.0.1:8081/--/notes',

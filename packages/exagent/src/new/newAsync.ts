@@ -120,7 +120,9 @@ export async function createNewProjectAsync(cwd: string, options: NewOptions): P
 }
 
 /** How the `create-expo` subprocess is wired, per the three cases above. */
-function spawnOutputFor(options: NewOptions): Pick<SubprocessOptions, 'output' | 'printFilter'> {
+function spawnOutputFor(
+  options: NewOptions
+): Pick<SubprocessOptions, 'output' | 'printFilter'> {
   if (options.json) {
     return { output: 'capture' };
   }

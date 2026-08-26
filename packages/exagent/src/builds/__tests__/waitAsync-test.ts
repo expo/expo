@@ -298,8 +298,7 @@ describe(pollBuildAsync, () => {
     // anything, and quoting its backtrace under "What the tool printed" sends the reader after a
     // missing file inside a program that was never involved.
     it(`says the binary is not the CLI instead of quoting its crash`, async () => {
-      const backtrace =
-        'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   2: tuft::main\n';
+      const backtrace = 'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   2: tuft::main\n';
       script([
         { exitCode: 1, stderr: backtrace },
         { exitCode: 1, stderr: backtrace },

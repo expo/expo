@@ -245,9 +245,7 @@ function runScreenshotAsync(
       resolve(result);
     };
 
-    child.on('error', (error: Error) =>
-      done({ exitCode: null, stderr, spawnError: error.message })
-    );
+    child.on('error', (error: Error) => done({ exitCode: null, stderr, spawnError: error.message }));
     child.on('close', (code) => done({ exitCode: code, stderr }));
   });
 }
