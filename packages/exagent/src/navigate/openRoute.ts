@@ -467,7 +467,7 @@ async function openUrlOnBackendAsync(
   if (result.spawnError || result.exitCode !== 0) {
     throw cloudVerbFailedError(result, {
       what: `${url} was not opened on the cloud simulator.`,
-      how: `Check the session is still running with "npx eas simulator:get --json" — a session that has ended keeps its id in .env.eas-simulator, so the file alone is not proof. Start a new one if it has.`,
+      how: `Check the session is still running with "npx eas simulator:list --status in-progress" — a session can end between the moment it was listed and the moment a verb reaches it. Start a new one if it has.`,
     });
   }
   return {

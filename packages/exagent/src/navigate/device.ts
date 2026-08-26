@@ -12,13 +12,11 @@
 
 import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import {
-  CLOUD_SESSION_ENV_FILE,
   cloudPlatformUnknownError,
   cloudPlatformMismatchError,
   cloudSessionUnavailableError,
   cloudSessionUnknownError,
   probeCloudSessionAsync,
-  readCloudSessionIdSync,
   type CloudSessionProbe,
 } from '../device/cloudSimulator';
 import { CommandError } from '../utils/errors';
@@ -232,33 +230,25 @@ export async function probeAndroidDeviceAsync(): Promise<DeviceProbe> {
 /**
  * Look for a cloud simulator session this project can drive. Never throws: no session is an answer.
  *
- * The subprocess is gated on a file: a project that has never started a session has no
- * `.env.eas-simulator`, and establishing that costs one `stat` rather than one `eas` start-up. That
- * matters because this runs on the *failure* path of every `navigate` on a machine with no local
- * device, which is the exact case the whole backend exists for.
+ * **The service answers this, not the filesystem.** The first cut of this rung was gated on
+ * `.env.eas-simulator` existing, which is cheaper and wrong in both directions: the file outlives
+ * the session it names, and a session started by MCP, by another terminal, or by a
+ * `simulator:start --json` never writes it. So the rung spawns one `eas simulator:list`, and the
+ * cost of that is paid here on purpose — this is about to open a link on a device, and llp/0005
+ * §Finding the session is where the split between this ladder and the instant suggestion ladders is
+ * argued.
  *
- * @see src/device/cloudSimulator.ts — where the argv lives, and why it is all [inferred].
+ * `platform` is passed through as a **preference** for picking between several live sessions, not
+ * as a filter: the caller compares afterwards, so a session on the other platform is reported as
+ * one rather than hidden behind "no session".
+ *
+ * @see src/device/cloudSimulator.ts — where the argv lives, and how much of it has been verified.
  */
 export async function probeCloudDeviceAsync(
   projectRoot: string,
-  { skipWhenNoSessionFile = true }: { skipWhenNoSessionFile?: boolean } = {}
+  { platform = null }: { platform?: NavigatePlatform | null } = {}
 ): Promise<{ device: NavigateDevice | null; probe: CloudSessionProbe }> {
-  if (skipWhenNoSessionFile && readCloudSessionIdSync(projectRoot) == null) {
-    return {
-      device: null,
-      probe: {
-        state: 'none',
-        sessionId: null,
-        platform: null,
-        status: null,
-        available: null,
-        failure: null,
-        reason: `no ${CLOUD_SESSION_ENV_FILE} names a session, so this project has not started one`,
-      },
-    };
-  }
-
-  const probe = await probeCloudSessionAsync({ projectRoot });
+  const probe = await probeCloudSessionAsync({ projectRoot, platform });
   if (probe.state !== 'active' || probe.platform == null || probe.sessionId == null) {
     // A live session whose platform could not be read is not a device this can be handed: the URL
     // shape differs per platform. The caller raises `cloudPlatformUnknownError` for it.
@@ -271,7 +261,9 @@ export async function probeCloudDeviceAsync(
       backend: 'cloud',
       platform: probe.platform,
       deviceId: probe.sessionId,
-      name: 'EAS Simulator session',
+      // The session's own `--name` when it has one, because a project with several sessions up has
+      // just had one chosen for it, and the name is what says which (llp/0005 §Which session).
+      name: probe.sessionName ?? 'EAS Simulator session',
     },
     probe,
   };
@@ -433,7 +425,7 @@ async function cloudFallbackAsync(
   if (context.cloud !== 'fallback' || context.projectRoot == null) {
     return { device: null, probe: null };
   }
-  const { device, probe } = await probeCloudDeviceAsync(context.projectRoot);
+  const { device, probe } = await probeCloudDeviceAsync(context.projectRoot, { platform });
   const usable = device != null && (platform == null || device.platform === platform);
   return { device: usable ? device : null, probe };
 }
@@ -455,12 +447,7 @@ async function resolveCloudDeviceAsync(
     );
   }
 
-  // `skipWhenNoSessionFile: false`: the caller named the backend, so it is worth asking the service
-  // even with no dotenv — that is how "this account has no EAS Simulator" gets its own answer
-  // instead of "this project has not started one".
-  const { device, probe } = await probeCloudDeviceAsync(context.projectRoot, {
-    skipWhenNoSessionFile: false,
-  });
+  const { device, probe } = await probeCloudDeviceAsync(context.projectRoot, { platform });
 
   if (device) {
     if (platform != null && device.platform !== platform) {

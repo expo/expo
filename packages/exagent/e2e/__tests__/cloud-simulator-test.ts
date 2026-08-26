@@ -29,13 +29,16 @@ const STUB_EAS_LOG_NAME = 'stub-eas-simulator-invocations.jsonl';
 /**
  * Stub `eas` bin for the simulator surface.
  *
- * It answers the three questions the cloud backend asks — `simulator:get`, `simulator:availability`
- * and `simulator:exec` — and records every argv it was given, which is the assertion this file is
- * for. Steered per test with environment variables so one script covers every path:
+ * It answers the three questions the cloud backend asks — `simulator:list`,
+ * `simulator:availability` and `simulator:exec` — and records every argv it was given, which is the
+ * assertion this file is for. Steered per test with environment variables so one script covers
+ * every path:
  *
- * - STUB_SIM_STATUS: the session status `simulator:get --json` reports (default `IN_PROGRESS`)
- * - STUB_SIM_PLATFORM: the session's platform (default `ios`)
- * - STUB_SIM_GET_EXIT: exit code of `simulator:get`, for a CLI that refuses to answer
+ * - STUB_SIM_STATUS: the status of the listed session (default `IN_PROGRESS`)
+ * - STUB_SIM_PLATFORM: the session's platform, as the raw enum (default `IOS`)
+ * - STUB_SIM_TYPE: the session's controller type (default `agent-device`)
+ * - STUB_SIM_SESSIONS: `0` for a project with nothing running
+ * - STUB_SIM_GET_EXIT: exit code of `simulator:list`, for a CLI that refuses to answer
  * - STUB_SIM_STDERR: what it prints before a non-zero exit, so a test hands the wrapper the exact
  *   wording the real CLI uses
  * - STUB_SIM_AVAILABLE: `false` for an account without the feature
@@ -67,23 +70,37 @@ if (args[0] === 'whoami') {
 }
 
 if (args[0] === 'simulator:availability') {
-  process.stdout.write(JSON.stringify({ available: process.env.STUB_SIM_AVAILABLE !== 'false' }) + '\\n');
+  const available = process.env.STUB_SIM_AVAILABLE !== 'false';
+  process.stdout.write(
+    JSON.stringify({
+      available,
+      accountName: 'e2e-account',
+      ...(available ? {} : { waitlistUrl: 'https://expo.dev/services/simulators' }),
+    }) + '\\n'
+  );
   process.exit(0);
 }
 
-if (args[0] === 'simulator:get') {
+if (args[0] === 'simulator:list') {
   const exitCode = Number(process.env.STUB_SIM_GET_EXIT || 0);
   if (exitCode !== 0) {
     process.stderr.write((process.env.STUB_SIM_STDERR || 'Session not found') + '\\n');
     process.exit(exitCode);
   }
-  process.stdout.write(
-    JSON.stringify({
-      id: 'sess-e2e',
-      status: process.env.STUB_SIM_STATUS || 'IN_PROGRESS',
-      platform: process.env.STUB_SIM_PLATFORM || 'ios',
-    }) + '\\n'
-  );
+  const sessions =
+    process.env.STUB_SIM_SESSIONS === '0'
+      ? []
+      : [
+          {
+            id: 'sess-e2e',
+            name: 'e2e session',
+            type: process.env.STUB_SIM_TYPE || 'agent-device',
+            status: process.env.STUB_SIM_STATUS || 'IN_PROGRESS',
+            platform: process.env.STUB_SIM_PLATFORM || 'IOS',
+            createdAt: '2026-08-26T10:00:00.000Z',
+          },
+        ];
+  process.stdout.write(JSON.stringify({ sessions, pageInfo: { hasNextPage: false } }) + '\\n');
   process.exit(0);
 }
 
@@ -170,10 +187,17 @@ describe('exagent navigate --cloud', () => {
 
     expect(result.exitCode).toBe(0);
 
-    // The whole point of this file: the argv a real process sent, in order. The session is asked
-    // about first — by id, because the dotenv named one — and only then is the verb run.
+    // The whole point of this file: the argv a real process sent, in order. What is running is
+    // listed first, and only then is the verb run.
     const invocations = easInvocations(projectRoot);
-    expect(invocations[0]).toEqual(['simulator:get', '--id', 'sess-e2e', '--json']);
+    expect(invocations[0]).toEqual([
+      'simulator:list',
+      '--status',
+      'in-progress',
+      '--limit',
+      '25',
+      '--json',
+    ]);
     expect(invocations[1]).toEqual([
       'simulator:exec',
       'npx',
@@ -200,7 +224,7 @@ describe('exagent navigate --cloud', () => {
     const projectRoot = await setupAsync('go-app');
     await writeSessionFileAsync(projectRoot, 'sess-e2e');
 
-    const result = await navigateCloud(projectRoot, [], { STUB_SIM_PLATFORM: 'android' });
+    const result = await navigateCloud(projectRoot, [], { STUB_SIM_PLATFORM: 'ANDROID' });
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({
@@ -214,22 +238,56 @@ describe('exagent navigate --cloud', () => {
   it(`says how to start a session when this project has none`, async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await navigateCloud(projectRoot);
+    const result = await navigateCloud(projectRoot, [], { STUB_SIM_SESSIONS: '0' });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('No EAS Simulator session is running');
+    expect(result.stderr).toContain('No EAS Simulator session this CLI can drive is running');
     expect(result.stderr).toContain('eas simulator:start --platform ios --type agent-device');
-    // The read-only question, and nothing that could start or bill anything.
-    expect(easInvocations(projectRoot)).toEqual([['simulator:availability', '--json']]);
+    // The listing, then the read-only availability question, and nothing that could start or bill
+    // anything.
+    expect(easInvocations(projectRoot)).toEqual([
+      ['simulator:list', '--status', 'in-progress', '--limit', '25', '--json'],
+      ['simulator:availability', '--json'],
+    ]);
+  });
+
+  // The dotenv is no longer the gate: a session somebody else started — by MCP, or in another
+  // terminal — is this project's session, and the service is what says so.
+  it(`finds a session the service lists even with no dotenv on disk`, async () => {
+    const projectRoot = await setupAsync('go-app');
+
+    const result = await navigateCloud(projectRoot);
+
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      deviceBackend: 'cloud',
+      deviceId: 'sess-e2e',
+    });
+  });
+
+  // A running `serve-sim` session has no agent-device daemon in it. Saying "no session" would send
+  // a reader to start a second billed one next to the one they are already paying for.
+  it(`names the type when the only live session is one it cannot drive`, async () => {
+    const projectRoot = await setupAsync('go-app');
+
+    const result = await navigateCloud(projectRoot, [], { STUB_SIM_TYPE: 'serve-sim' });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('serve-sim');
+    expect(result.stderr).toContain('agent-device');
   });
 
   it(`does not offer to start one on an account that cannot have it`, async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await navigateCloud(projectRoot, [], { STUB_SIM_AVAILABLE: 'false' });
+    const result = await navigateCloud(projectRoot, [], {
+      STUB_SIM_SESSIONS: '0',
+      STUB_SIM_AVAILABLE: 'false',
+    });
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('not enabled on this account');
+    expect(result.stderr).toContain('https://expo.dev/services/simulators');
     expect(result.stderr).not.toContain('simulator:start');
   });
 
@@ -270,10 +328,11 @@ describe('exagent navigate --cloud', () => {
     const projectRoot = await setupAsync('go-app');
     await writeSessionFileAsync(projectRoot, 'sess-e2e');
 
-    const result = await navigateCloud(projectRoot, [], { STUB_SIM_STATUS: 'FINISHED' });
+    const result = await navigateCloud(projectRoot, [], { STUB_SIM_STATUS: 'STOPPED' });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('FINISHED');
+    expect(result.stderr).toContain('sess-e2e');
+    expect(result.stderr).toContain('has ended');
     expect(result.stderr).toContain('eas simulator:start');
   });
 
@@ -285,7 +344,7 @@ describe('exagent navigate --cloud', () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('Remote daemon is unavailable');
-    expect(result.stderr).toContain('npx eas simulator:get --json');
+    expect(result.stderr).toContain('npx eas simulator:list --status in-progress');
   });
 
   // A cloud simulator is on EAS's network, so a loopback host in the link resolves to a machine in

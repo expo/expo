@@ -264,7 +264,21 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
     });
   }
 
-  const liveSession = JSON.stringify({ id: 'sess-1', status: 'IN_PROGRESS', platform: 'ios' });
+  /** One live `agent-device` session, in the shape `simulator:list --json` prints. */
+  function listing(...rows: Record<string, string>[]): string {
+    return JSON.stringify({ sessions: rows, pageInfo: { hasNextPage: false } });
+  }
+
+  const liveSession = listing({
+    id: 'sess-1',
+    status: 'IN_PROGRESS',
+    platform: 'IOS',
+    type: 'agent-device',
+    createdAt: '2026-08-26T10:00:00.000Z',
+  });
+
+  /** Nothing running, and an account that does have the feature. */
+  const noSessions = [{ stdout: listing() }, { stdout: '{"available": true}' }];
 
   afterEach(() => vol.reset());
 
@@ -295,11 +309,22 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
     expect(spawn).toHaveBeenCalledTimes(1);
   });
 
-  // The gate that keeps the fallback off the hot path: no dotenv, no `eas` subprocess.
-  it(`spawns no eas when the project has never started a session`, async () => {
+  // The rung asks the service rather than the filesystem now, so a project with no dotenv still
+  // finds a session somebody else started — and a project with nothing running still says so.
+  it(`asks the service even when the project has no dotenv`, async () => {
     mockPlatform('linux');
     cloudProject(null);
-    mockSpawnQueue([{ stdout: 'List of devices attached\n' }]);
+    mockSpawnQueue([{ stdout: 'List of devices attached\n' }, { stdout: liveSession }]);
+
+    await expect(
+      resolveDeviceAsync(undefined, { cloud: 'fallback', projectRoot: '/project' })
+    ).resolves.toMatchObject({ backend: 'cloud', deviceId: 'sess-1' });
+  });
+
+  it(`still reports no device when the service lists nothing`, async () => {
+    mockPlatform('linux');
+    cloudProject(null);
+    mockSpawnQueue([{ stdout: 'List of devices attached\n' }, ...noSessions]);
 
     const error = await resolveDeviceAsync(undefined, {
       cloud: 'fallback',
@@ -307,16 +332,12 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
     }).catch((e) => e);
 
     expect(error.code).toBe('NO_DEVICE');
-    expect(spawn).toHaveBeenCalledTimes(1);
   });
 
   it(`names a session that is on record and not running, in the failure`, async () => {
     mockPlatform('linux');
     cloudProject('sess-1');
-    mockSpawnQueue([
-      { stdout: 'List of devices attached\n' },
-      { stdout: JSON.stringify({ id: 'sess-1', status: 'FINISHED', platform: 'ios' }) },
-    ]);
+    mockSpawnQueue([{ stdout: 'List of devices attached\n' }, ...noSessions]);
 
     const error = await resolveDeviceAsync(undefined, {
       cloud: 'fallback',
@@ -354,7 +375,7 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
 
   it(`names how to start a session when --cloud finds none`, async () => {
     cloudProject(null);
-    mockSpawnQueue([{ stdout: '{"available": true}' }]);
+    mockSpawnQueue(noSessions);
 
     const error = await resolveDeviceAsync(undefined, {
       cloud: 'required',
