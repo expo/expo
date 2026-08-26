@@ -45,6 +45,38 @@ const HEADER_DECORATION = [
   /[\s=*#<«\-–—|]+$/,
 ];
 
+/**
+ * The step names EAS Build writes into its log, and the phases they are.
+ *
+ * This is the real format, read off a real log at last [observed — 2026-08-26, staging build
+ * `77e676e2…`]: every boundary is a record whose message is `Start phase: <NAME>` or
+ * `End phase: <NAME>`, and the names are SCREAMING_SNAKE rather than the prose titles
+ * {@link EAS_PHASE_LABELS} guesses at. The eighteen seen in one iOS build were `SPIN_UP_BUILDER`,
+ * `INSTALL_CUSTOM_TOOLS`, `PREPARE_PROJECT`, `PRE_INSTALL_HOOK`, `READ_EAS_JSON`,
+ * `READ_PACKAGE_JSON`, `INSTALL_DEPENDENCIES`, `READ_APP_CONFIG`, `RUN_EXPO_DOCTOR`,
+ * `PREPARE_CREDENTIALS`, `PREBUILD`, `RESTORE_CACHE`, `INSTALL_PODS`, `CLEAN_UP_CREDENTIALS`,
+ * `ON_BUILD_ERROR_HOOK`, `ON_BUILD_COMPLETE_HOOK`, `UPLOAD_BUILD_ARTIFACTS` and `FAIL_BUILD`.
+ *
+ * Only the ones this module has a `PhaseName` for are mapped. A step with no name here opens no
+ * phase, which is the safe direction: an unmapped step left unclaimed keeps the previous phase's
+ * span honest, whereas inventing a boundary would move a failure into a phase it did not happen
+ * in. `End phase:` is deliberately not matched — a phase is opened by its start and closed by the
+ * next start, which is how the rest of this file already works.
+ */
+const EAS_PHASE_STEPS: Record<string, PhaseName> = {
+  INSTALL_DEPENDENCIES: 'install-dependencies',
+  PREBUILD: 'prebuild',
+  INSTALL_PODS: 'pod-install',
+  BUNDLE_JAVASCRIPT: 'bundle-js',
+  RUN_GRADLEW: 'gradle',
+  RUN_FASTLANE: 'fastlane',
+  UPLOAD_BUILD_ARTIFACTS: 'upload',
+  UPLOAD_APPLICATION_ARCHIVE: 'upload',
+};
+
+/** The `Start phase: <NAME>` marker that opens every step of an EAS Build log. */
+const EAS_PHASE_MARKER = /^Start phase:\s*([A-Z0-9_]+)$/;
+
 /** The words EAS names its steps with, from the two build-process pages of the docs. */
 const EAS_PHASE_LABELS: { label: RegExp; phase: PhaseName }[] = [
   { label: /^install\s+dependencies$/i, phase: 'install-dependencies' },
@@ -189,6 +221,14 @@ export function phaseAnchorFor(
 ): { phase: PhaseName; layer: 1 | 2 } | null {
   const header = stripHeaderDecoration(line);
   if (header) {
+    // The marker EAS actually writes, before the titles this file used to guess at.
+    const marker = EAS_PHASE_MARKER.exec(header);
+    if (marker) {
+      const phase = EAS_PHASE_STEPS[marker[1]!];
+      // A step with no `PhaseName` claims nothing, and neither does the content of the line: a
+      // `Start phase:` marker is a boundary or it is nothing.
+      return phase && phaseAllowedOnPlatform(phase, platform) ? { phase, layer: 1 } : null;
+    }
     for (const { label, phase } of EAS_PHASE_LABELS) {
       if (label.test(header) && phaseAllowedOnPlatform(phase, platform)) {
         return { phase, layer: 1 };

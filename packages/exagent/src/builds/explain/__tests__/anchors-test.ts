@@ -84,6 +84,31 @@ describe('anchorFor', () => {
     expect(found?.anchor.suggestedCommand?.(found.match)).toBeNull();
   });
 
+  // A real EAS build failure, verbatim [observed — 2026-08-26, staging build 77e676e2…]. What
+  // `Cannot find module` names is a *specifier*, and a specifier is very often a deep import: the
+  // suggestion has to install the package, because `npx expo install <pkg>/package.json` is not a
+  // package name and the command fails on the reader's machine.
+  it('installs the package, not the deep import path that named it', () => {
+    const found = anchorFor(
+      "RuntimeError - [Expo] Could not resolve `@expo/expo-modules-macros-plugin` from /app/packages/expo-modules-core. (Error: Cannot find module '@expo/expo-modules-macros-plugin/package.json') Reinstall your JavaScript dependencies and rerun `pod install`."
+    );
+
+    expect(found?.anchor.signature).toBe('deps.module-not-found');
+    expect(found?.anchor.suggestedCommand?.(found.match)).toBe(
+      'npx expo install @expo/expo-modules-macros-plugin'
+    );
+  });
+
+  it('keeps the scope on a scoped package, and stops at the first segment otherwise', () => {
+    const scoped = anchorFor("Error: Cannot find module '@react-native/babel-preset'");
+    expect(scoped?.anchor.suggestedCommand?.(scoped.match)).toBe(
+      'npx expo install @react-native/babel-preset'
+    );
+
+    const deep = anchorFor("Error: Cannot find module 'expo-router/entry/index.js'");
+    expect(deep?.anchor.suggestedCommand?.(deep.match)).toBe('npx expo install expo-router');
+  });
+
   it('reads both npm error prefixes, because both are still in logs', () => {
     expect(anchorFor('npm ERR! code E404')?.anchor.signature).toBe('deps.install-failed');
     expect(anchorFor('npm error code E404')?.anchor.signature).toBe('deps.install-failed');

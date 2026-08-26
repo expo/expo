@@ -46,6 +46,37 @@ export const LINE_TRUNCATION_MARKER = '… [line truncated by exagent]';
  */
 const TRIM_CHUNK = 10_000;
 
+/**
+ * The message of an EAS Build log record, or the line unchanged when it is not one.
+ *
+ * **An EAS Build log is JSONL**, one bunyan record per line — `{name, pid, phase, buildId, source,
+ * level, msg, time, v, logId}` [observed — 2026-08-26, staging build `77e676e2…`, 644 records].
+ * That is not what the rest of this module was built for, and leaving it wrapped costs three
+ * things at once: the rule table matches inside a JSON blob rather than against the sentence a
+ * tool printed, the `Start phase:` markers never reach `phases.ts`, and every context line a
+ * reader is shown is four hundred characters of metadata around the eighty they wanted.
+ *
+ * Unwrapping here rather than in a reader of its own is deliberate: the whole pipeline downstream
+ * is `string[]` in, and one line in is still one line out, so line numbers keep meaning what they
+ * meant and nothing else has to learn about the format.
+ *
+ * Only an object with a **string** `msg` is a record. An EAS log also prints the app config as
+ * JSON, and that is content rather than transport — unwrapping it would eat a line the reader
+ * needs.
+ */
+function unwrapEasRecord(line: string): string {
+  // Cheap rejections first: this runs on every line of a log that may have a hundred thousand.
+  if (line.charCodeAt(0) !== 0x7b /* { */ || !line.includes('"msg"')) {
+    return line;
+  }
+  try {
+    const parsed = JSON.parse(line) as Record<string, unknown>;
+    return typeof parsed?.msg === 'string' ? parsed.msg : line;
+  } catch {
+    return line;
+  }
+}
+
 export interface ReadLogResult {
   /** The lines kept, ANSI stripped, newest last. */
   lines: string[];
@@ -74,7 +105,7 @@ export async function readLogStreamAsync(stream: NodeJS.ReadableStream): Promise
   let carry = '';
 
   const push = (raw: string) => {
-    const stripped = stripVTControlCharacters(raw);
+    const stripped = stripVTControlCharacters(unwrapEasRecord(raw));
     const line =
       stripped.length > MAX_LINE_LENGTH
         ? stripped.slice(0, MAX_LINE_LENGTH) + LINE_TRUNCATION_MARKER
