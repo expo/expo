@@ -8,6 +8,7 @@
 # shadow parity is approved. The dry_run input runs the full investigation
 # but posts nothing — artifacts only.
 name: verify
+run-name: "verify #${{ inputs.target }}${{ inputs.dry_run == true && ' (dry run)' || '' }} — ${{ github.actor }}"
 
 on:
   workflow_dispatch:
