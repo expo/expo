@@ -436,7 +436,7 @@ async function runStepAsync(
 /**
  * Run one `eas` step of a plan.
  *
- * @ref llp/0015-backend-selection-and-config.rfc.md §Running the EAS route
+ * @ref llp/0015-backend-selection-and-config.rfc.md §Running an `eas` step
  * The EAS CLI is reached as a subprocess like every other member of the family (llp/0001
  * constraint 5), and it is resolved with the *throwing* resolver: a plan that chose the cloud
  * cannot do its job without it, so "no eas binary" is an error with an install line rather than a

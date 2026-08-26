@@ -1,4 +1,4 @@
-// @ref llp/0015-backend-selection-and-config.rfc.md §The config
+// @ref llp/0015-backend-selection-and-config.rfc.md §The schema
 // What a developer may tell this CLI about their own preferences, as pure data.
 //
 // Named `settings` rather than `config` because `src/config/` is already taken by

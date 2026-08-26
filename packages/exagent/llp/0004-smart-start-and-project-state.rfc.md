@@ -5,7 +5,7 @@
 **Systems:** project-state probe (new); smart `dev` command (new, `start` until 2026-08-22); dev-server lock (new); `@expo/fingerprint`; `expo-mcp` tools
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
-**Related:** [[0001-agentic-cli-on-expo-cli]], [[0002-testing-and-evals]]
+**Related:** [[0001-agentic-cli-on-expo-cli]], [[0002-testing-and-evals]], [[0015-backend-selection-and-config]]
 
 ## Summary
 
@@ -269,7 +269,19 @@ toolchain the probe merely could not reach would be worse than the silence it re
 process; a probe that throws is caught, because a plan that could not be made because a probe failed
 is worse than a plan that says it does not know.
 
-**The plan says it, and does not act on it.** A missing toolchain adds two sentences to the plan's
+**The plan says it, and does not act on it** — **superseded for detection, 2026-08-26**. The
+paragraph below describes the first shipped version, where a machine with no toolchain got a local
+plan and a warning above it. [[0015-backend-selection-and-config]] takes the step it stopped short
+of: the backend is now chosen **while the plan is decided**, so a machine that cannot build gets
+`eas build` in the plan's *steps*. The constraint this paragraph was protecting is unchanged — no
+plan's steps ever change between being printed and being run — because the selection happens
+strictly before the plan exists. What is left of the version below is `applyToolchainProbe`, which
+still folds a probe into a plan without touching its steps and carries the probe's caveats, and the
+`eas-build-instead` follow-up, which now fires only for a *local* plan somebody asked for by name on
+a machine that cannot perform it. The `unknown` rule survives intact and is now load-bearing: a
+probe that established nothing leaves the build here.
+
+A missing toolchain adds two sentences to the plan's
 reasons, a `Not found: … Instead: npx eas build --platform ios --profile development` line above the
 `Why` list, one `Log.warn` before the confirmation, and an `eas-build-instead` follow-up at the
 *head* of the ladder — the plan's steps are never rewritten. The caller may have an answer this CLI
