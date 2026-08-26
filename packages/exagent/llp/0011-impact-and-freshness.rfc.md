@@ -241,6 +241,43 @@ into an error. `resolveEasCli` (nullable) exists for exactly this, beside the th
 `--status finished` is load-bearing: a queued or errored build with the same fingerprint is not a
 build anyone can install.
 
+## Two commands, one classifier
+
+Decision [confirmed — Kudo, 2026-08-26]. The classification this RFC designed is now read from two
+places, and the split between them is the one `git` makes: `exagent status` is the **reflex** and
+`exagent impact` is the **gate**.
+
+`status` grew an always-on `impact` line — the class and the sentence that says what carried it —
+because it was reporting `stale` and making the reader run a second command to learn what to do about
+it. [[0004-smart-start-and-project-state]] §The impact headline is free, the explanation is not has
+the cost argument and the measurements; what belongs here is what it means for *this* command.
+
+**`impact` is not diminished, it is scoped.** What only it does:
+
+- **`--assert <class>`**, which is the whole of CI gating and cannot move: it exists to exit
+  non-zero, and `status` exits 0 by contract.
+- **`--build <id>` and `--base/--head`**, the comparisons against something other than the local
+  record — a cloud build, two git revisions. `status` compares the working tree against
+  `.expo/exagent-last-build.json` and nothing else, because that is the only base it has for free.
+- **Per-platform fingerprints.** `impact` runs `fingerprint:generate --platform <p>`; the `status`
+  probe runs it with no platform, so its headline cannot separate an `ios/` change from an `android/`
+  one.
+- **The tool's own diff.** `impact` spawns `fingerprint:diff`; `status` reproduces it in process
+  (`src/project/localDiff.ts`), pinned against a recorded real diff.
+
+**Where the two disagree on purpose.** For a project with nothing recorded — or a v1 record holding
+only a hash — `impact` answers `needs-native-build` and `status` answers `class: null`. Both are
+right for what they are. A gate has to name a class because `--assert` compares against one and
+"unknown" cannot be gated on, so `impact` takes the conservative reading and over-plans at worst
+(§The three comparisons). A report must not, because its `unknown`s are load-bearing everywhere else
+in it. `src/impact/fromRecord.ts` is where that difference is written down, and it is the only
+classification path that returns a nullable class.
+
+**The everyday pointer to `impact` is gone, and one deliberate pointer replaces it.** `status` names
+`npx exagent impact --assert js-only` in its `--help` and nowhere else — not in the report, not in a
+follow-up. A report that ended by suggesting another command for the question it had just answered
+would be admitting it had not answered it.
+
 ### The build-cache lookup answers in three states
 
 Added 2026-08-26, when [[0004-smart-start-and-project-state]] §The EAS build lookup, and why it is

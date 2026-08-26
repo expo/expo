@@ -94,8 +94,8 @@ persists.
 
 - **Project**: name/slug, SDK version, CNG vs bare, dev-client/web deps.
 - **Expo Go**: compatible or not, with reason count (the reasons themselves in the `probe` key of `--json`).
-- **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool).
-- **EAS build**: whether EAS already has a *finished* build made from this exact fingerprint, per platform — `found` / `none` / `unknown` [added — 2026-08-26]. The other half of the freshness question: `freshness` asks whether the app **this machine** built still matches, and a `stale` there used to mean a rebuild; this asks whether anybody has already built exactly this, where the answer is a download. Cached answer always, network call only under `--builds`; see §The EAS build lookup, and why it is opt-in for the measurements that decided that and for why the cache key is exact.
+- **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool). **And what that costs** [added — 2026-08-26]: the impact class of everything that changed since that build, on its own `impact` line, computed in process from two fingerprints already in hand so it costs no subprocess. `stale` is a fact; this is what to do about it. See §The impact headline is free, the explanation is not.
+- **EAS build**: whether EAS already has a *finished* build made from this exact fingerprint, per platform — `found` / `none` / `unknown` [added — 2026-08-26]. The other half of the freshness question: `freshness` asks whether the app **this machine** built still matches, and a `stale` there used to mean a rebuild; this asks whether anybody has already built exactly this, where the answer is a download. Cached answer always, network call only under `--explain`; see §The EAS build lookup, and why it is opt-in for the measurements that decided that and for why the cache key is exact.
 - **Dev server**: running or not, and how many CDP targets are connected (app open?). Discovery order [observed — 2026-08-22]: explicit `--dev-server-url` → the project's **dev-server lock** (below) → the port the project's own `.expo/dev/logs/start.log` names (`metro:instantiate` event; project-scoped but carries no liveness/PID, so it is probed, never trusted) → 8081 → a short scan of the ports `expo start` falls back to.
 - **Skills**: agent selection cached? linked skill count vs discovered count (out-of-sync hint). **Left out of the text report entirely** when no agent is selected *and* nothing was discovered [revised — 2026-08-25]: `no agent selected · no skills discovered` is a line about two things that are not there, on a report whose every other line is a fact about the project [observed — dogfood, 2026-08-24]. The section stays in `--json` and in the `cli:status` event, where a key that is always present is the contract (llp/0006 §Output contract), and it stays in the text report the moment either half has something to say — including when the section could not be read at all, because the reason is worth printing.
 - **Device**: does this machine have a booted simulator or an attached device to open the app on — `present`, `absent`, or `unknown` [added — 2026-08-25]. Its own line because it changes what every other suggestion is worth; see llp/0009 §Device-aware ladders for the probe and for why `unknown` is never rounded down to "none".
@@ -134,7 +134,7 @@ Rename implemented [observed — 2026-08-22]: the engine is `src/dev/` (`devAsyn
 Decision [confirmed — Kudo, 2026-08-26]. `exagent status` reports whether **EAS already has a
 finished build made from this project's current fingerprint**, per platform, in three states —
 `found` / `none` / `unknown` with a reason. The **cached** answer is read on every run because it
-costs nothing and is exact; the **network** call that produces it happens only under `--builds`.
+costs nothing and is exact; the **network** call that produces it happens only under `--explain`.
 
 The ask was "`status` could find available build on eas? using fingerprint", and the lookup already
 existed — [[0011-impact-and-freshness]] §The build-cache lookup has run
@@ -182,8 +182,8 @@ tolerated because it is cheap; this one is kept because it is right.
   serves: you start a build, it finishes fifteen minutes later, and a cached "there is no build"
   would then be wrong exactly when it mattered. A hit only goes stale when somebody deletes a build,
   which is rare and which the download command reports for itself. The asymmetry is the policy.
-- Consequently a `--builds` run that finds a build makes every later `status` free until the project
-  changes, and a `--builds` run that finds none leaves the next run saying "not asked". Both are
+- Consequently an `--explain` run that finds a build makes every later `status` free until the
+  project changes, and one that finds none leaves the next run saying "not asked". Both are
   honest.
 
 **Section isolation, and where the reasons come from.** No EAS CLI, no `@expo/fingerprint`, a
@@ -201,12 +201,15 @@ line of the report is affected. Two of those are worth writing down:
   `src/__fixtures__/eas/build-list-unconfigured.json`]. Reading stderr first would have reported the
   one sentence with nothing in it.
 
-**Why `--builds` and not `--eas`.** `dev --eas` and `dev --local` already name a build *backend*,
-and a `status --eas` meaning "you may call EAS" would be a second sense of the same word one command
-apart. `--builds` names the section it fills and cannot be confused with either.
+**The flag it hides behind is `--explain`, and it was `--builds` for about an hour.** The first
+version of this shipped its own flag; the section below folded it into `--explain` before either was
+released, because two flags that both mean "you may pay for a subprocess" is not one story, and a
+reader deciding what a run will cost should have one thing to decide. `--eas` was rejected outright
+on the way past: `dev --eas` and `dev --local` already name a build *backend*, and a `status --eas`
+meaning "you may call EAS" would be a second sense of the same word one command apart.
 
 **The line is printed only when it says something**, the same rule the `skills` line follows: a
-build was found, or the caller passed `--builds` and is owed the answer whatever it is, or the
+build was found, or the caller passed `--explain` and is owed the answer whatever it is, or the
 section could not be read at all. A default run with an empty cache prints nothing, because "nobody
 asked" is not a fact about the project. The key is always present in `--json` (llp/0006 §Output
 contract), and the `cli:status` event gains `easBuilds` and `easBuildsAsked`.
@@ -222,9 +225,95 @@ whole build-cache lookup exists and two copies of it would drift.
 it — item 2 of §Implemented in v1 as still has that half open. `exagent dev` continues to plan a
 build for a project whose fingerprint EAS already has a build for.
 
-Shipped as `exagent status [--builds]`, `src/status/easBuilds.ts`, `BuildLookupOutcome` in
+Shipped as `src/status/easBuilds.ts`, `BuildLookupOutcome` in
 `src/impact/buildCache.ts` (the three-state form; `findCachedBuildAsync` is now the two-state
 wrapper `impact` reads), and `src/followups/cachedBuild.ts`.
+
+## The impact headline is free, the explanation is not
+
+Decision [confirmed — Kudo, 2026-08-26]. `exagent status` reports **what a change costs** on every
+run — `js-only`, `dev-client-compatible`, `needs-native-build`, with the one sentence that says what
+carried it — and `status --explain` adds the three things that cost a subprocess or a round trip.
+`exagent impact` stays, and stays a *gate*.
+
+**The git analogy is the whole design.** `status` is the **reflex**: you run it constantly, so it has
+to be instant and it has to answer, not judge. `impact` is the **gate**: you run it when a decision
+turns on the answer, so it may take its time and it must exit non-zero when the answer is not the one
+you asserted. The mistake this closes is that `status` was reporting `stale` — a fact — and leaving
+the reader to run a second command for what to *do* about it, which is the same shape as a `git
+status` that told you a file had changed and made you run a second tool to see the diff.
+
+**Why the headline can be free, which is the part that had to be checked rather than assumed.** Two
+inputs are already in memory by the time the freshness line is built:
+
+- the working tree's fingerprint **with its sources** — the probe computed them to get its hash, and
+  `statusAsync` was already throwing them away before writing `report.probe`;
+- the sources of the last build this CLI ran — `.expo/exagent-last-build.json` has held the whole
+  fingerprint since the v2 record ([[0011-impact-and-freshness]] §The record has to hold the
+  sources), and reading it was already one file read.
+
+What was missing was the diff. `impact` gets it from `fingerprint:diff`, which is a **subprocess over
+two temporary files** — the right price for a command somebody ran to ask this question, and the
+wrong one for a line on a report that promises to be instant. So the diff is done in process
+(`src/project/localDiff.ts`) and the classifier is reused unchanged. Measured live on
+`apps/observe-tester`, a real 210-source project: `status` took **1.58 s** before the headline
+existed and **1.57 s** after, on the same tree, with the headline naming the exact module that
+differed [observed — 2026-08-26]. Free is a measurement here, not a claim.
+
+**The port is a port, and llp/0001's constraint is intact.** Nothing is imported from
+`@expo/fingerprint`. What is reproduced is a set difference over two lists of `{identity, hash}`,
+and the only thing borrowed is the *identity* rule that `Sort.ts` `compareSource` spells out. Two
+things keep it honest:
+
+- **A keyed join, not a merge over sorted lists.** Upstream walks two lists in `compareSource` order,
+  which is correct and depends on both sides still being sorted that way. A map keyed on the same
+  identity gets the same answer and cannot be broken by a re-ordering, so the one way the port could
+  silently disagree is closed by construction rather than by vigilance.
+- **A recorded pair of real fingerprints and the real CLI's answer for them**
+  (`src/__fixtures__/fingerprint/`). Twelve real sources spanning all four types, diffed by the
+  actual `fingerprint:diff`, asserted item for item. It caught the rule a reimplementation would most
+  plausibly get wrong: a `package` is identified by `name@version`, so a **version bump is a removal
+  and an addition, never a change**.
+
+**What the free tier cannot resolve, said plainly.** The probe fingerprints with no `--platform`, so
+one hash covers both platforms — which is right for freshness and is why a change under `ios/` moves
+the android answer too. The headline inherits that: `ios` and `android` differ here only when their
+recorded builds were made at different moments, and the report prints one line for both when they
+agree rather than padding itself with the same sentence twice. `exagent impact` fingerprints per
+platform and is the command to run when that distinction matters.
+
+**`--explain` adds three things and pays for two of them.** The per-source change list is free — the
+headline diffed locally, so the list is a by-product — and is withheld by default because a headline
+with fifty rows attached is not a headline, and because `status --json` is deliberately small (it
+drops the fingerprint's own `sources` for exactly this reason). The two that cost: the OTA verdict
+spawns `expo config --json --type public` to resolve the `runtimeVersion` policy, and the EAS build
+lookup makes its network call. Measured live on the same project: **1.57 s** → **3.29 s**.
+
+The name is Kudo's and it harmonises with `build:explain`: both mean "give me the why". It also
+absorbed the `--builds` flag of the section above before either shipped — one flag for "you may pay",
+not two.
+
+**`--assert` deliberately does not come along.** `status` exits 0 always, by a contract older than
+this section, and a flag whose entire purpose is a non-zero exit cannot live on a command that has
+none. That is not a limitation to work around; it is the line between the two commands. So `status`
+mentions `impact` in exactly one place — its `--help`, naming `npx exagent impact --assert js-only`
+as the way to *gate* — and nowhere in its everyday output, because a report that ended by suggesting
+another command to answer the question it just answered would be admitting it had not.
+
+**The one place the two commands answer differently, and why that is correct.** Where nothing could
+be classified — no recorded build, a v1 record holding only a hash, no fingerprint tool — `status`
+answers `class: null` and `impact` answers `needs-native-build`. `impact` has to name a class because
+`--assert` compares against one and "unknown" cannot be gated on, so its rule is the conservative one
+and over-plans at worst. `status` must not, because every other line of it treats `unknown` as its
+own answer that is never rounded down (`auth`, `device`, the bundler's readiness), and a class it did
+not establish has no business sitting beside ones it did. The text report prints no `impact` line at
+all in that case: the `freshness` line above it has already said why. See
+[[0011-impact-and-freshness]] §Two commands, one classifier.
+
+Shipped in `src/project/localDiff.ts`, `src/impact/fromRecord.ts`,
+`FreshnessImpact` on `PlatformFreshness` and `ota` on `FreshnessStatus`
+(`src/status/types.ts`), the `impact`/`ota`/per-source lines in `src/status/format.ts`, and
+`exagent status [--explain]`.
 
 ## Daemonization
 
