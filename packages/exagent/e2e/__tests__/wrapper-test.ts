@@ -108,6 +108,29 @@ describe('exagent install', () => {
     expect(invocations[0]?.args).not.toContain('--no-agent-skills');
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
+  //
+  // The command the dogfood session actually ran, end to end [observed — 2026-08-24]. Pinned as its
+  // own case because two things have to hold at once: the flag reaches `expo start` unchanged, and
+  // the ladder printed above it stops naming a LAN URL that a device off this network cannot load.
+  it('forwards --tunnel --go, and names no LAN URL above it', async () => {
+    const child = spawnExagent(projectRoot, ['start', '--tunnel', '--go'], {
+      env: { STUB_EXPO_DELAY_MS: '15000' },
+    });
+    const output = collectOutput(child);
+    try {
+      expect(
+        await waitForAsync(() => readStubExpoInvocations(projectRoot).length > 0, 30_000)
+      ).toBe(true);
+      expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['start', '--tunnel', '--go']);
+      expect(output.all).toContain('Suggested next:');
+      expect(output.all).toContain('npx exagent navigate / --print-url');
+      expect(output.all).not.toMatch(/exp:\/\/\d+\.\d+\.\d+\.\d+/);
+    } finally {
+      await killAsync(child);
+    }
+  });
+
   it('skips the skill sync with `--no-agent-skills`', async () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 

@@ -4,22 +4,32 @@
 
 import chalk from 'chalk';
 
+import { renderForInvoker } from '../utils/invoker';
 import type { FollowUp } from './types';
 
-/** Render the trailing `Suggested next:` section: one line per follow-up, commands in one column. */
+/**
+ * Render the trailing `Suggested next:` section: one line per follow-up, commands in one column.
+ *
+ * The commands are rewritten for the runner in use as they go out (`src/utils/invoker.ts`), which
+ * is why every builder can go on writing `npx exagent …` and a Bun project still gets a line it can
+ * paste. The `--json` payload and the `cli:followups` event carry the written form unchanged — see
+ * that file for why the machine contract does not move with the shell.
+ */
 export function formatFollowUps(followups: FollowUp[]): string {
   if (!followups.length) {
     return '';
   }
 
-  const width = Math.max(...followups.map((followup) => followup.command.length));
+  const commands = followups.map((followup) => renderForInvoker(followup.command));
+  const width = Math.max(...commands.map((command) => command.length));
   return [
     // A leading blank line: the section trails whatever the command printed, and every command
     // prints something, so it needs the separation to read as its own block.
     '',
     chalk.bold('Suggested next:'),
     ...followups.map(
-      (followup) => `  ${chalk.cyan(followup.command.padEnd(width))}  — ${chalk.dim(followup.why)}`
+      (followup, index) =>
+        `  ${chalk.cyan(commands[index]!.padEnd(width))}  — ${chalk.dim(renderForInvoker(followup.why))}`
     ),
   ].join('\n');
 }

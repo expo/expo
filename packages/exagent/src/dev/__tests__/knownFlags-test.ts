@@ -87,3 +87,21 @@ describe('resolveDevOptions checks the flags first', () => {
     expect(options.expoArgs).toEqual(['--go', '--port', '8195']);
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
+//
+// The whole cloud-simulator loop runs through these two spellings [observed — dogfood,
+// 2026-08-24], and `EXPO_START_FLAGS` is a list a flag has to be *on*: dropped from it, a working
+// command becomes `unknown or unexpected option: --tunnel`.
+describe('the tunnel flags', () => {
+  it.each([
+    [['--tunnel']],
+    [['--tunnel', '--go']],
+    [['--host', 'tunnel']],
+    [['--host=tunnel']],
+    [['--lan']],
+    [['--localhost']],
+  ])(`accepts %s`, (argv) => {
+    expect(() => assertKnownDevFlags(argv)).not.toThrow();
+  });
+});

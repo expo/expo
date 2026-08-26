@@ -1,5 +1,6 @@
 import { event } from '../../events';
 import * as Log from '../../log';
+import { resetInvokerCache } from '../../utils/invoker';
 import { formatFollowUps } from '../format';
 import { followUpsEnabled, reportFollowUps } from '../report';
 import type { FollowUp } from '../types';
@@ -101,5 +102,43 @@ describe(formatFollowUps, () => {
 
   it(`should render nothing for an empty list`, () => {
     expect(formatFollowUps([])).toBe('');
+  });
+});
+
+// @ref llp/0010-agent-conventions.rfc.md §Suggestions are pasted, so they have to be runnable
+describe(`${formatFollowUps.name} — the runner in use`, () => {
+  afterEach(() => {
+    delete process.env.npm_config_user_agent;
+    resetInvokerCache();
+  });
+
+  it(`spells this CLI the way a Bun project runs it, and leaves other CLIs alone`, () => {
+    process.env.npm_config_user_agent = 'bun/1.3.14 npm/? node/v24.3.0 darwin arm64';
+    resetInvokerCache();
+
+    const printed = formatFollowUps(followups);
+
+    expect(printed).toContain('bunx exagent runtime:errors');
+    expect(printed).not.toContain('npx exagent');
+    // `npx eas` names a different package under Bun, so it is not this substitution's to change.
+    expect(printed).toContain('npx eas build');
+  });
+
+  // The machine channel does not move with the shell: `npx exagent` runs in a Bun project too, and
+  // the `--json` payload is a contract rather than a line somebody pastes.
+  it(`leaves the follow-up objects themselves unchanged`, () => {
+    process.env.npm_config_user_agent = 'bun/1.3.14 npm/? node/v24.3.0 darwin arm64';
+    resetInvokerCache();
+
+    formatFollowUps(followups);
+
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors');
+  });
+
+  it(`prints the written form under npx`, () => {
+    process.env.npm_config_user_agent = 'npm/11.17.0 node/v26.5.0 darwin arm64';
+    resetInvokerCache();
+
+    expect(formatFollowUps(followups)).toContain('npx exagent runtime:errors');
   });
 });

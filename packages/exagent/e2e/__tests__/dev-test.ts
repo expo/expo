@@ -374,6 +374,52 @@ describe('exagent dev', () => {
     });
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
+  //
+  // `--tunnel` belongs to `expo start`, and this wrapper's job is to hand it over unchanged. Pinned
+  // because a dogfood session ran the whole loop through `start --tunnel --go` [observed —
+  // 2026-08-24], and because `assertKnownDevFlags` is a list a flag has to be *on* — a `--tunnel`
+  // dropped from it would turn a working command into `unknown or unexpected option`.
+  describe('--tunnel', () => {
+    it('forwards --tunnel to the expo start step', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--tunnel', '--go'], {
+        env: { STUB_EXPO_DEV_SERVER_PORT: '8081' },
+      });
+
+      expect(result.exitCode).toBe(0);
+      // `--go` appears once: the plan's own step already carries it, and the wrapper does not
+      // repeat a flag the caller passed as well.
+      expect(invocationArgs(projectRoot)).toEqual([['start', '--go', '--tunnel']]);
+    });
+
+    it('forwards --host tunnel too, which is the option --tunnel sets', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--host', 'tunnel'], {
+        env: { STUB_EXPO_DEV_SERVER_PORT: '8081' },
+      });
+
+      expect(result.exitCode).toBe(0);
+      expect(invocationArgs(projectRoot)).toEqual([['start', '--go', '--host', 'tunnel']]);
+    });
+
+    // A tunnelled run has no LAN URL worth naming: the point of the flag is a device that is not
+    // on this network, and `exp://192.168.x.x:8081` is unreachable from one.
+    it('never names the LAN URL in the follow-ups of a tunnelled run', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--tunnel'], {
+        env: { STUB_EXPO_DEV_SERVER_PORT: '8081' },
+      });
+
+      const followups = JSON.parse(result.stdout).followups as { id: string; command: string }[];
+      expect(followups.some((followup) => followup.command.startsWith('exp://'))).toBe(false);
+      expect(followups.map((followup) => followup.id)).toContain('real-device-tunnel');
+    });
+  });
+
   describe('--port', () => {
     it('forwards the port to the dev server and names it in the follow-ups', async () => {
       const projectRoot = await setupAsync('go-app');

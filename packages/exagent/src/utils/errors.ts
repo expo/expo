@@ -5,6 +5,7 @@ import { execSync } from 'child_process';
 import { event as cliEvent } from '../events';
 import { EXIT_ERROR, EXIT_NEEDS_HUMAN, exitWithCodeAsync } from '../exitCodes';
 import { exit, exception, log, warn } from '../log';
+import { renderForInvoker } from './invoker';
 import { isJsonRequested } from './jsonMode';
 
 const ERROR_PREFIX = 'Error: ';
@@ -236,15 +237,19 @@ export function logCmdError(error: any): never {
     }
     // Print the error first, the recovery command last — the last line is what an
     // agent acts on.
-    exception(error);
+    //
+    // Every printed line goes through `renderForInvoker`, so a `How:` that names `npx exagent …`
+    // is pasteable in a Bun project. The event above and the envelope below keep the written form:
+    // the machine contract does not move with the shell (`src/utils/invoker.ts`).
+    exception(renderedError(error));
     if (needsHuman) {
       // Instead of `Try:`, not after it: the block's second line already names the command, and
       // the third says how to make a person unnecessary on the next machine.
       for (const line of formatNeedsHumanBlock(needsHuman)) {
-        warn(line);
+        warn(renderForInvoker(line));
       }
     } else if (suggestedCommand) {
-      warn(`Try: ${suggestedCommand}`);
+      warn(`Try: ${renderForInvoker(suggestedCommand)}`);
     }
     // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — a run asked for
     // machine-readable output gets one, whether it succeeded or not. The prose above stays on
@@ -270,6 +275,25 @@ export function logCmdError(error: any): never {
   const errorDetails = error.stack ? '\n' + chalk.gray(error.stack) : '';
 
   exit(chalk.red(error.toString()) + errorDetails);
+}
+
+/**
+ * The same failure with its suggested commands spelled for the runner in use.
+ *
+ * A copy rather than a mutation, and only when the spelling actually changes: the error object may
+ * be caught and inspected further up, and `logCmdError` is the last thing that touches it — the one
+ * place where "what gets printed" and "what the error *is*" are allowed to differ. `exception`
+ * prints `name: message` and, under `EXPO_DEBUG`, the stack, so both are carried over.
+ */
+function renderedError(error: Error): Error {
+  const message = renderForInvoker(error.message);
+  if (message === error.message) {
+    return error;
+  }
+  const rendered = new Error(message);
+  rendered.name = error.name;
+  rendered.stack = error.stack;
+  return rendered;
 }
 
 /** This should never be thrown in production. */
