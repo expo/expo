@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable (e.g. during a configuration change or right after backgrounding) — the constructor only needs the application context, which doesn't depend on the `Activity`. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
+- [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fixed a data race on the video cache's open-file registry, which could crash the app while the cache was being trimmed. ([#49286](https://github.com/expo/expo/pull/49286) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fixed a crash when the device runs out of storage while writing to the video cache. `FileHandle.writeData:` raises an uncatchable Objective-C `NSFileHandleOperationException` on `ENOSPC`; the throwing Swift APIs are now used so the error is caught and logged instead. ([#49284](https://github.com/expo/expo/pull/49284) by [@huextrat](https://github.com/huextrat))
 - [Android] Guard `PictureInPictureParams.Builder.setAutoEnterEnabled` against `NoSuchMethodError` on stock OEM firmwares that report API 31+ without shipping the method, which crashed the app from `VideoView.onLayout` even when Picture in Picture was disabled. ([#48957](https://github.com/expo/expo/pull/48957) by [@onlyshyun](https://github.com/onlyshyun))
