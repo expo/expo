@@ -43,13 +43,21 @@ Create a project with the following command or ensure your existing project has 
 
 <Step label="3">
 
-### Set up Expo Skills and the Expo MCP Server
+### Install the Expo plugin
 
-Install Expo Skills and connect the Expo MCP Server so Codex knows Expo conventions and can reach your EAS.
+Install the official Expo plugin so Codex knows Expo conventions and can reach your EAS. One command installs Expo Skills and registers the Expo MCP Server:
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+Then sign in to your Expo account:
+
+<Terminal cmd={['$ codex mcp login expo']} />
+
+The guides below cover the skills the plugin provides and the rest of what the MCP Server can do:
 
 <BoxLink
   title="Expo Skills"
-  description="Install the plugin that teaches agents known-good Expo patterns, and browse the full list of available skills."
+  description="Browse the full list of skills the plugin provides, and see install options for other agents."
   href="/skills/#install-expo-skills"
   Icon={BookOpen02Icon}
 />
