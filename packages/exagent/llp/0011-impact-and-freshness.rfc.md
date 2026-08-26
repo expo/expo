@@ -311,6 +311,36 @@ order and is what the CLI does: an unlinked project gets the whole explanation o
 `Error: build:list command failed.` on stderr [observed — live, 2026-08-26; recorded as
 `src/__fixtures__/eas/build-list-unconfigured.json`].
 
+### The `found` state, end to end against the service
+
+The lookup had been tested against recorded payloads; it has now been run against a build that a
+build server actually produced [observed — 2026-08-26, staging, `@kudo1/DailyWords-Grok`]. Every
+link of the chain held:
+
+- **The premise.** The whole feature rests on the EAS build's `fingerprint.hash` being the same
+  string as this machine computes with `--platform ios`, and it is, exactly:
+  `665388c1ea97138f9c977fcd58e4c648195a6e94` from both `fingerprint:generate --platform ios` and the
+  build's own payload.
+- **The two hashes really are different**, which is why §The EAS build lookup runs a second
+  fingerprint rather than reusing the one `status` has: the same tree hashed `9f19027…` whole,
+  `665388c1…` for iOS and `e27bc931…` for Android.
+- **A fresh `status --explain`** found the finished build and printed
+  `eas build  ios: finished build (development-simulator, 2026-08-26) · android: none · npx eas build:download --build-id a8df367c…` — including the `none` for the platform that genuinely had no
+  build at that hash, which is the state the three-state split exists to keep separate from
+  `unknown`.
+- **The cache did its job.** The record was written keyed on the whole-project hash, and the next
+  run *without* `--explain` answered `source: "cache"` from it with no network call at all.
+- **The costs are about as measured.** 5.4 s for the two-platform fresh lookup, 2.5 s for the
+  cached run.
+
+One caveat the same session turned up, which bears on the dominance argument above:
+`--platform ios` does **not** isolate the iOS app config. Adding `android.package` to `app.json`
+moved the iOS hash (`665388c1…` → `d24f1e75…`) even though nothing iOS touched it. That does not
+break the claim the cache relies on — the whole-project hash still dominates, so an unchanged
+project hash still implies unchanged per-platform hashes — but it does mean the per-platform hashes
+are less independent of each other than their names suggest, and an Android-only edit will miss the
+iOS cache.
+
 ## A fingerprint change is not "OTA-unsafe"
 
 **This section is the normative one.** `ota.safe` comes from the resolved `runtimeVersion` policy,
