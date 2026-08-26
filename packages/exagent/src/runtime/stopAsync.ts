@@ -35,9 +35,22 @@ export interface RuntimeStopResultJson {
    * Kept apart from {@link stopped} because they answer different questions: `stopped` is the
    * state the caller wanted, `wasRunning` is whether this command is what produced it. An agent
    * that stops an app twice must not read the second run as a failure.
+   *
+   * **Null on a cloud simulator**, where it cannot be established: `agent-device close` answers
+   * about the controller's session whatever application id it is given, so its success says the
+   * app in front was closed and says nothing about *this* id [observed — live, 2026-08-26]. A
+   * `true` there would be this command inventing the one fact it exists to report, which is worse
+   * than a null a caller can branch on (llp/0005 §What `close` will not tell you).
    */
-  wasRunning: boolean;
+  wasRunning: boolean | null;
   platform: string;
+  /**
+   * Which device layer acted: `local-ios`, `local-android`, or `cloud`.
+   *
+   * Reported for the reason `navigate` reports it — `ios` no longer says *where* the device is, and
+   * the difference decides which command a reader can run by hand (llp/0005 §Three backends).
+   */
+  deviceBackend: string;
   deviceId: string;
   /** Application id that was stopped. */
   bundleId: string;
@@ -75,7 +88,14 @@ export async function runtimeStopAsync(
   projectRoot: string,
   options: RuntimeStopOptions
 ): Promise<number> {
-  const device = await resolveDeviceAsync(options.platform);
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do.
+  // `required` and never `fallback`: a session bills by the minute, so `--cloud` is the only way a
+  // stop reaches one, and a machine with no local device is told it has none rather than quietly
+  // handed a paid device it did not ask for.
+  const device = await resolveDeviceAsync(options.platform, {
+    cloud: options.cloud ? 'required' : 'off',
+    projectRoot,
+  });
 
   // The dev server is consulted but never required: it is the strongest evidence for *which* app
   // is running, and an app can be running with no dev server behind it at all.
@@ -97,6 +117,8 @@ export async function runtimeStopAsync(
     appId: resolved.appId,
     // The same `adb` the device probe found, so this never falls back to a bare name (F49).
     adb: device.adb,
+    backend: device.backend,
+    projectRoot,
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §An `--app-id` nobody is running — friction run 4, F42.
@@ -104,7 +126,11 @@ export async function runtimeStopAsync(
   // is not a guess of ours to defend), the device found nothing under it, and the dev server is
   // reporting some other app that is running right now. Each on its own is ordinary — a device
   // runs more than one app, and stopping an app twice must stay a success.
+  // `result.verified` leads: the mismatch is "the device found no process under this id", and a
+  // backend whose answer is not about the id has not found that. On a cloud session the check is
+  // simply never reached, which is the honest answer rather than a quiet false.
   const appIdMismatch =
+    result.verified &&
     resolved.source === 'flag' &&
     result.ok &&
     result.wasAlreadyStopped &&
@@ -113,8 +139,9 @@ export async function runtimeStopAsync(
 
   const report: RuntimeStopResultJson = {
     stopped: result.ok,
-    wasRunning: result.ok && !result.wasAlreadyStopped,
+    wasRunning: result.verified ? result.ok && !result.wasAlreadyStopped : null,
     platform: device.platform,
+    deviceBackend: device.backend,
     deviceId: device.deviceId,
     bundleId: resolved.appId,
     bundleIdSource: resolved.source,
@@ -130,13 +157,14 @@ export async function runtimeStopAsync(
 
   event('stop_app_done', {
     stopped: report.stopped,
-    wasRunning: report.wasRunning,
+    wasRunning: report.wasRunning ?? null,
     appIdMismatch: report.appIdMismatch,
   });
   cliEvent('runtime_stop', {
     stopped: report.stopped,
     wasRunning: report.wasRunning,
     platform: report.platform,
+    deviceBackend: report.deviceBackend,
     deviceId: report.deviceId,
     bundleId: report.bundleId,
     appIdMismatch: report.appIdMismatch,
@@ -153,10 +181,14 @@ export async function runtimeStopAsync(
       [
         chalk.red(`The device did not stop ${resolved.appId} (${result.command}).`),
         `Why: ${result.reason}.`,
+        // `simctl` and `adb` are commands about *this machine*, and the device may not be on it.
+        // A cloud session is checked with the CLI that owns it (llp/0005 §Where it composes).
         `How: check that ${resolved.appId} is the app you meant — ${resolved.reason} — and pass --app-id to name another. ${
-          device.platform === 'ios'
-            ? 'Check that the simulator is booted with "xcrun simctl list devices booted".'
-            : 'Check that the device is attached with "adb devices".'
+          device.backend === 'cloud'
+            ? 'Check that the session is still running with "npx eas simulator:list --status in-progress".'
+            : device.platform === 'ios'
+              ? 'Check that the simulator is booted with "xcrun simctl list devices booted".'
+              : 'Check that the device is attached with "adb devices".'
         }`,
       ].join('\n')
     );
@@ -201,13 +233,16 @@ function buildFollowUps(report: RuntimeStopResultJson): FollowUp[] {
       },
     ];
   }
+  // `--cloud` is carried through: the app was stopped on the session, and `navigate /` without the
+  // flag would look for a device on this machine — which is the machine that has none.
+  const onCloud = report.deviceBackend === 'cloud';
   return [
     {
       id: 'navigate',
-      command: 'npx exagent navigate /',
+      command: `npx exagent navigate /${onCloud ? ' --cloud' : ''}`,
       why: report.wasRunning
-        ? 'The app is stopped, so this starts it again on the root route with a clean JavaScript runtime.'
-        : 'The app was not running, so this is what starts it on the root route.',
+        ? `The app is stopped, so this starts it again on the root route with a clean JavaScript runtime${onCloud ? ', on the same cloud simulator session' : ''}.`
+        : `The app was not running, so this is what starts it on the root route${onCloud ? ', on the same cloud simulator session' : ''}.`,
     },
   ];
 }
@@ -226,15 +261,20 @@ function printHumanReport(report: RuntimeStopResultJson): void {
       }${
         report.appIdMismatch
           ? chalk.dim(` · ${report.bundleId} was not running, and ${report.connectedAppIds.join(', ')} is`)
-          : report.stopped && !report.wasRunning
-            ? chalk.dim(' · it was not running')
-            : ''
+          : // Null rather than false: the cloud verb reported success and said nothing about which
+            // app, so the line says that instead of "it was not running" — which would be a claim
+            // about the id that nothing established.
+            report.stopped && report.wasRunning == null
+            ? chalk.dim(' · the session closed the app in front; whether it was this one is not something the controller reports')
+            : report.stopped && !report.wasRunning
+              ? chalk.dim(' · it was not running')
+              : ''
       }`,
       chalk`{bold App} ${report.bundleId}${chalk.dim(` · ${report.bundleIdReason}`)}`,
       ...(report.connectedAppIds.length > 0
         ? [chalk`{bold Connected} ${report.connectedAppIds.join(', ')}`]
         : []),
-      chalk`{bold Device} ${report.platform} ${report.deviceId}`,
+      chalk`{bold Device} ${report.platform} ${report.deviceId}${chalk.dim(` · ${report.deviceBackend}`)}`,
       chalk.dim(` ${report.command}`),
     ].join('\n')
   );

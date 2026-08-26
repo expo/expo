@@ -9,6 +9,7 @@
 // server to wait on at all. Only the last is a failure of the *tool*; the others are outcomes, so
 // they are reported and exited with rather than thrown.
 
+import { readCloudSessionIdSync } from '../device/cloudSimulator';
 import { event } from '../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import { buildDevWaitFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
@@ -18,6 +19,7 @@ import {
   resolveBundleCheckPlatformsAsync,
   type BundleCheckResult,
 } from '../runtime/bundleCheck';
+import { probeLocalDeviceAsync } from '../device/localDevice';
 import { discoverDevServerAsync, howToNameTheDevServer } from '../runtime/devServer';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { CommandError } from '../utils/errors';
@@ -164,6 +166,7 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
         bundle: result.bundle,
         platform: options.platform,
         devServerUrl: result.devServerUrl,
+        openOn: await resolveOpenOnAsync(projectRoot, result),
       })
     : [];
 
@@ -236,4 +239,27 @@ function noDevServerError(
   );
   error.suggestedCommand = 'npx exagent dev';
   return error;
+}
+
+/**
+ * Where the "open the app" rung should point.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Where it composes. Only asked when that rung is the one
+ * that will be shown — the bundler is ready and nothing is attached — so a run that finishes green
+ * pays for no device probe at all. The session comes from `.env.eas-simulator` rather than from the
+ * service: a suggestion may not spawn a subprocess (llp/0005 §Finding the session).
+ */
+async function resolveOpenOnAsync(
+  projectRoot: string,
+  result: DevWaitResult
+): Promise<'local' | 'cloud'> {
+  if (!result.ready || result.appsConnected !== 0) {
+    return 'local';
+  }
+  const local = await probeLocalDeviceAsync();
+  // `absent` and not `unknown`: a tool that could not be started has said nothing about this
+  // machine's devices, and re-aiming a suggestion on that would be the F49 mistake again.
+  return local.state === 'absent' && readCloudSessionIdSync(projectRoot) != null
+    ? 'cloud'
+    : 'local';
 }

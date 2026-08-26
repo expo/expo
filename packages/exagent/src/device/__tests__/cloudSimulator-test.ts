@@ -1,28 +1,37 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+// @ref llp/0005-runtime-loop-tools.rfc.md §Finding the session
 //
-// The whole point of this file. Every `eas simulator:*` invocation this CLI makes is [inferred] —
-// built from documented syntax, never run against a live session, because the account on the
-// machine it was written on is signed out. So the argv is pinned here as a table: when somebody
-// signs in and one of these turns out to be wrong, the diff that fixes it is one line of one
-// module and one line of one test, and nothing else in the package has to be searched.
+// The whole point of this file. No `eas simulator:*` invocation this CLI makes has been run against
+// a live session — the account on the machine it was written on is signed out — so the argv is
+// pinned here as a table: when somebody signs in and one of these turns out to be wrong, the diff
+// that fixes it is one line of one module and one line of one test, and nothing else in the package
+// has to be searched. The syntax comes from the published packages, read rather than guessed
+// (llp/0005 §The argv, read off the packages).
 //
 // What is pinned: the exact argv of each verb, the parsing of the session dotenv and of the
-// service's JSON, and the three state transitions of the probe — a project with no session, a
-// session that has ended, and a binary that is not the EAS CLI. What is deliberately *not* pinned
-// is that the service accepts any of it, which no test on a signed-out machine can claim.
+// service's JSON, the deterministic rule that picks one session out of several, and the state
+// transitions of the probe — nothing running, a session of a type this CLI cannot drive, a stale
+// dotenv, and a binary that is not the EAS CLI. What is deliberately *not* pinned is that the
+// service accepts any of it, which no test on a signed-out machine can claim.
 
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import fs from 'fs';
 import { vol } from 'memfs';
+import path from 'path';
 
 import { isNeedsHumanError } from '../../utils/errors';
 import {
   ACTIVE_SESSION_STATUS,
   AGENT_DEVICE_SPEC,
+  CLOUD_SESSION_LIST_LIMIT,
+  CLOUD_SIMULATOR_WAITLIST_URL,
+  DRIVABLE_SESSION_TYPE,
   buildAvailabilityArgs,
   buildCloudOpenUrlArgs,
   buildCloudScreenshotArgs,
-  buildSessionGetArgs,
+  buildCloudStopAppArgs,
+  buildSessionListArgs,
   captureCloudScreenshotAsync,
   cloudNeedsTunnelError,
   cloudSessionUnavailableError,
@@ -33,10 +42,14 @@ import {
   openUrlOnCloudSimulatorAsync,
   parseAvailabilityJson,
   parseSessionIdFromEnvFile,
-  parseSessionJson,
+  parseSessionListJson,
   probeCloudSessionAsync,
   readCloudSessionIdSync,
+  readControllerError,
+  selectCloudSession,
   type CloudRunResult,
+  type CloudSessionInfo,
+  type CloudSessionProbe,
 } from '../cloudSimulator';
 import recordedAvailability from '../../__fixtures__/eas/simulator-availability.json';
 
@@ -87,10 +100,89 @@ function mockEas({
   }) as any);
 }
 
-/** A session answer in the shape the CLI is documented to give. */
-function sessionJson(status: string, platform = 'ios'): string {
-  return JSON.stringify({ id: 'sess-1', status, platform, remoteConfig: { url: 'https://x' } });
+/** One session row, in the shape `simulator:list --json` prints [observed — eas-cli@22.2.0]. */
+function sessionRow({
+  id = 'sess-1',
+  status = ACTIVE_SESSION_STATUS,
+  platform = 'IOS',
+  type = DRIVABLE_SESSION_TYPE,
+  name = 'Checkout flow screenshots',
+  createdAt = '2026-08-26T10:00:00.000Z',
+}: Partial<Record<string, string>> = {}): Record<string, string> {
+  return { id, status, platform, type, name, createdAt };
 }
+
+/** The listing envelope, with whatever rows a test wants in it. */
+function listJson(...sessions: Record<string, string>[]): string {
+  return JSON.stringify({ sessions, pageInfo: { hasNextPage: false, endCursor: null } });
+}
+
+/**
+ * A payload the real service actually sent, read off disk.
+ *
+ * `jest.requireActual` because this suite mocks `fs` with `memfs`, and these are the one thing in
+ * it that must come from the real filesystem: a recorded answer that memfs could shadow would stop
+ * being a recording.
+ */
+function recorded(name: string): string {
+  const real = jest.requireActual('fs') as typeof fs;
+  return real.readFileSync(path.join(__dirname, '..', '..', '__fixtures__', 'eas', name), 'utf8');
+}
+
+// ---- What the service actually answered --------------------------------------------------------
+//
+// @ref src/__fixtures__/eas/README.md. Everything in this block is [observed — live, 2026-08-26]:
+// the payloads are verbatim, so a parser that drifts from the service fails here rather than on
+// somebody's paid session.
+
+describe('the payloads the service really sent', () => {
+  it(`reads the live listing of a running session`, () => {
+    const sessions = parseSessionListJson(recorded('simulator-list-in-progress.json'));
+
+    expect(sessions).toEqual([
+      {
+        id: '01a03d80-0556-7d22-98df-f415d9392b98',
+        name: 'exagent wave11 discovery check',
+        // The flag spelling, unlike `status` and `platform` next to it.
+        type: 'agent-device',
+        status: 'IN_PROGRESS',
+        platform: 'ios',
+        createdAt: '2026-08-26T09:56:35.286Z',
+      },
+    ]);
+    expect(selectCloudSession(sessions!).selected?.id).toBe(
+      '01a03d80-0556-7d22-98df-f415d9392b98'
+    );
+  });
+
+  // `[]` and not null: the service answered, and what it answered is "nothing is running". The two
+  // must stay apart, because only one of them is an instruction to start a billed session.
+  it(`reads the live listing of a project with nothing running`, () => {
+    const sessions = parseSessionListJson(recorded('simulator-list-empty.json'));
+
+    expect(sessions).toEqual([]);
+    expect(selectCloudSession(sessions!).selected).toBeNull();
+  });
+
+  // The same session after `simulator:stop`. `STOPPED` is a real terminal status the service uses,
+  // and it is what a stale dotenv points at.
+  it(`never offers a session the service has stopped`, () => {
+    const sessions = parseSessionListJson(recorded('simulator-list-stopped.json'));
+
+    expect(sessions![0]!.status).toBe('STOPPED');
+    expect(isActiveSessionStatus(sessions![0]!.status)).toBe(false);
+    expect(selectCloudSession(sessions!).selected).toBeNull();
+  });
+
+  // `createdAt` is ISO 8601 with a fixed-width fractional part, which is what makes the ordering
+  // rule a plain string comparison rather than a date parse.
+  it(`orders by createdAt as strings, because the service sends ISO 8601`, () => {
+    const [live] = parseSessionListJson(recorded('simulator-list-in-progress.json'))!;
+    const older = { ...live!, id: 'older', createdAt: '2026-08-26T08:00:00.000Z' };
+
+    expect(selectCloudSession([older, live!]).selected?.id).toBe(live!.id);
+  });
+});
 
 // ---- The argv ---------------------------------------------------------------------------------
 
@@ -134,10 +226,39 @@ describe('the argv of every eas simulator invocation', () => {
     expect(args.join(' ')).not.toContain('>');
   });
 
-  it(`asks for a session as JSON, and names the id only when there is one`, () => {
-    expect(buildSessionGetArgs('sess-1')).toEqual(['simulator:get', '--id', 'sess-1', '--json']);
-    // Without `--id` the CLI targets the session the dotenv names, which is this project's.
-    expect(buildSessionGetArgs(null)).toEqual(['simulator:get', '--json']);
+  // Ending one app, not the session. The id is the whole safety of this verb: `close` with no
+  // argument closes whatever the controller session is on, and `--shutdown` would stop the billed
+  // machine as well.
+  it(`closes the named app, and never the simulator`, () => {
+    const args = buildCloudStopAppArgs({ appId: 'host.exp.Exponent' });
+
+    expect(args).toEqual([
+      'simulator:exec',
+      'npx',
+      AGENT_DEVICE_SPEC,
+      'close',
+      'host.exp.Exponent',
+    ]);
+    expect(args).not.toContain('--shutdown');
+    expect(args).not.toContain('simulator:stop');
+  });
+
+  // Discovery asks the service, and asks it only about what is running. The **type** filter is
+  // deliberately absent: a project whose only live session is a `serve-sim` is told that, which
+  // "no session" would have hidden.
+  it(`lists the running sessions as JSON, without filtering by type`, () => {
+    const args = buildSessionListArgs();
+
+    expect(args).toEqual([
+      'simulator:list',
+      '--status',
+      'in-progress',
+      '--limit',
+      String(CLOUD_SESSION_LIST_LIMIT),
+      '--json',
+    ]);
+    expect(args).not.toContain('--type');
+    expect(buildSessionListArgs({ limit: 3 })).toEqual(expect.arrayContaining(['--limit', '3']));
   });
 
   it(`checks availability read-only, so nothing is billed to find out`, () => {
@@ -172,29 +293,138 @@ describe(parseSessionIdFromEnvFile, () => {
   });
 });
 
-describe(parseSessionJson, () => {
-  it(`reads the status and platform of a live session`, () => {
-    expect(parseSessionJson(sessionJson(ACTIVE_SESSION_STATUS))).toEqual({
-      id: 'sess-1',
-      status: ACTIVE_SESSION_STATUS,
-      platform: 'ios',
+describe(parseSessionListJson, () => {
+  it(`reads a session row out of the documented envelope`, () => {
+    expect(parseSessionListJson(listJson(sessionRow()))).toEqual([
+      {
+        id: 'sess-1',
+        status: ACTIVE_SESSION_STATUS,
+        platform: 'ios',
+        type: DRIVABLE_SESSION_TYPE,
+        name: 'Checkout flow screenshots',
+        createdAt: '2026-08-26T10:00:00.000Z',
+      },
+    ]);
+  });
+
+  // `IOS` and `ANDROID` are the raw GraphQL enums the CLI prints, not the flag spellings.
+  it(`normalizes the platform enum the service prints`, () => {
+    expect(parseSessionListJson(listJson(sessionRow({ platform: 'ANDROID' })))![0]!.platform).toBe(
+      'android'
+    );
+  });
+
+  it(`reads a bare array too, for a shape that moved`, () => {
+    expect(parseSessionListJson(JSON.stringify([sessionRow()]))).toHaveLength(1);
+  });
+
+  it(`drops a row that names no session, because there is nothing to drive`, () => {
+    expect(parseSessionListJson(listJson({ status: ACTIVE_SESSION_STATUS }))).toEqual([]);
+  });
+
+  // A shape this cannot read must not become "there are no sessions": that would send a caller to
+  // start a second billed session next to the one it failed to see. Null, not `[]`.
+  it(`answers null rather than guessing, for anything it cannot read`, () => {
+    expect(parseSessionListJson('not json')).toBeNull();
+    expect(parseSessionListJson('{"unrelated": 1}')).toBeNull();
+    expect(parseSessionListJson('<html>login</html>')).toBeNull();
+  });
+
+  it(`answers an empty list for a listing that really is empty`, () => {
+    expect(parseSessionListJson(listJson())).toEqual([]);
+  });
+});
+
+describe(selectCloudSession, () => {
+  const ios = parseSessionListJson(
+    listJson(sessionRow({ id: 'ios-1', createdAt: '2026-08-26T09:00:00.000Z' }))
+  )![0]!;
+  const android = parseSessionListJson(
+    listJson(
+      sessionRow({ id: 'and-1', platform: 'ANDROID', createdAt: '2026-08-26T11:00:00.000Z' })
+    )
+  )![0]!;
+
+  it(`picks the only live session there is`, () => {
+    expect(selectCloudSession([ios]).selected?.id).toBe('ios-1');
+  });
+
+  // Only `agent-device` answers `simulator:exec npx agent-device`. A `serve-sim` session is a
+  // browser preview, and driving it is not a thing that would work.
+  it(`never picks a session whose controller this CLI does not speak to`, () => {
+    const serveSim: CloudSessionInfo = { ...ios, id: 'srv-1', type: 'serve-sim' };
+    const selection = selectCloudSession([serveSim]);
+
+    expect(selection.selected).toBeNull();
+    expect(selection.wrongType.map((session) => session.id)).toEqual(['srv-1']);
+  });
+
+  it(`never picks a session the service does not report as running`, () => {
+    expect(selectCloudSession([{ ...ios, status: 'STOPPED' }]).selected).toBeNull();
+  });
+
+  // The dotenv is a bad existence proof and a good preference: it names the session this project
+  // started, so it wins over one that is newer and somebody else's.
+  it(`prefers the session the dotenv names, over a newer one`, () => {
+    expect(
+      selectCloudSession([ios, android], { preferredId: 'ios-1' }).selected?.id
+    ).toBe('ios-1');
+  });
+
+  it(`prefers the platform the caller asked for, when the dotenv names neither`, () => {
+    expect(selectCloudSession([ios, android], { platform: 'ios' }).selected?.id).toBe('ios-1');
+    expect(selectCloudSession([ios, android], { platform: 'android' }).selected?.id).toBe('and-1');
+  });
+
+  // A session on the other platform still comes back: the caller raises the mismatch, which says a
+  // session exists and is not the one asked for. "No session" would have hidden it.
+  it(`still answers with the other platform's session when it is all there is`, () => {
+    expect(selectCloudSession([android], { platform: 'ios' }).selected?.id).toBe('and-1');
+  });
+
+  it(`falls back to the most recently created`, () => {
+    expect(selectCloudSession([ios, android]).selected?.id).toBe('and-1');
+  });
+
+  // Determinism is the point: the same listing in any order must pick the same session, or "which
+  // device did it use" becomes a thing a reader has to guess at.
+  it(`picks the same session whatever order the service returned`, () => {
+    const same = { ...ios, id: 'ios-2' };
+    expect(selectCloudSession([ios, same]).selected?.id).toBe('ios-1');
+    expect(selectCloudSession([same, ios]).selected?.id).toBe('ios-1');
+  });
+});
+
+// @ref llp/0005 §A non-zero exit means different things per backend. The controller's own refusal
+// has to be told apart from a verb this CLI got wrong, or a reader is sent to `--help` for a
+// command that was already correct.
+describe(readControllerError, () => {
+  it.each([
+    ['Error (COMMAND_FAILED): Simulator device failed to open myapp://.', 'COMMAND_FAILED'],
+    ['Error (SESSION_NOT_FOUND): No active session. Run open first.', 'SESSION_NOT_FOUND'],
+  ])(`reads %s`, (line, code) => {
+    expect(readControllerError(line)?.code).toBe(code);
+  });
+
+  // The real output has npm noise and a diagnostics block around it.
+  it(`finds it among everything else the controller printed`, () => {
+    const output = [
+      'npm warn exec The following package was not found and will be installed: agent-device@0.20.10',
+      'Building Apple runner...',
+      'Error (COMMAND_FAILED): Simulator device failed to open myapp://.',
+      'Hint: Retry with --debug and inspect diagnostics log for details.',
+      'Diagnostic ID: mt9x7nns-fbd904d9',
+    ].join('\n');
+
+    expect(readControllerError(output)).toEqual({
+      code: 'COMMAND_FAILED',
+      message: 'Simulator device failed to open myapp://.',
     });
   });
 
-  it(`reads the same fields out of an envelope`, () => {
-    expect(
-      parseSessionJson(
-        JSON.stringify({ session: { id: 's', status: 'FINISHED', platform: 'ANDROID' } })
-      )
-    ).toEqual({ id: 's', status: 'FINISHED', platform: 'android' });
-  });
-
-  // A shape this cannot read must not become "there is no session": that would send a caller to
-  // start a second billed session next to the one it failed to see.
-  it(`answers null rather than guessing, for anything it cannot read`, () => {
-    expect(parseSessionJson('not json')).toBeNull();
-    expect(parseSessionJson('[]')).toBeNull();
-    expect(parseSessionJson('{"unrelated": 1}')).toBeNull();
+  it(`answers null for output that is not the controller refusing`, () => {
+    expect(readControllerError('Remote daemon is unavailable')).toBeNull();
+    expect(readControllerError('')).toBeNull();
   });
 });
 
@@ -216,13 +446,24 @@ describe(parseAvailabilityJson, () => {
   });
 
   it(`reads the flag both ways`, () => {
-    expect(parseAvailabilityJson('{"available": true}')).toBe(true);
-    expect(parseAvailabilityJson('{"available": false}')).toBe(false);
+    expect(parseAvailabilityJson('{"available": true}').available).toBe(true);
+    expect(parseAvailabilityJson('{"available": false}').available).toBe(false);
+  });
+
+  // The service sends the waitlist URL only for a gated account, and reading it is what lets the
+  // refusal end in where access comes from rather than only in "no".
+  it(`reads the waitlist URL the service sends to a gated account`, () => {
+    expect(
+      parseAvailabilityJson(
+        `{"available": false, "accountName": "acme", "waitlistUrl": "${CLOUD_SIMULATOR_WAITLIST_URL}"}`
+      )
+    ).toEqual({ available: false, waitlistUrl: CLOUD_SIMULATOR_WAITLIST_URL });
+    expect(parseAvailabilityJson('{"available": true}').waitlistUrl).toBeNull();
   });
 
   it(`answers null for an answer it cannot read`, () => {
-    expect(parseAvailabilityJson('nope')).toBeNull();
-    expect(parseAvailabilityJson('{}')).toBeNull();
+    expect(parseAvailabilityJson('nope').available).toBeNull();
+    expect(parseAvailabilityJson('{}').available).toBeNull();
   });
 });
 
@@ -245,9 +486,11 @@ describe(readCloudSessionIdSync, () => {
 describe(probeCloudSessionAsync, () => {
   afterEach(() => vol.reset());
 
-  it(`is active for a session the service reports as ${ACTIVE_SESSION_STATUS}`, async () => {
-    project({ '/project/.env.eas-simulator': 'EAS_SIMULATOR_SESSION_ID=sess-1\n' });
-    mockEas({ stdout: sessionJson(ACTIVE_SESSION_STATUS) });
+  // Discovery is the listing, and the dotenv is not a gate: a project with no file at all still
+  // finds a session started by MCP or by another terminal.
+  it(`is active for a session the service lists, with no dotenv at all`, async () => {
+    project();
+    mockEas({ stdout: listJson(sessionRow()) });
 
     const probe = await probeCloudSessionAsync({ projectRoot: '/project' });
 
@@ -255,47 +498,126 @@ describe(probeCloudSessionAsync, () => {
       state: 'active',
       sessionId: 'sess-1',
       platform: 'ios',
+      sessionName: 'Checkout flow screenshots',
+      candidateCount: 1,
       reason: null,
     });
-    expect(spawned[0]!.args).toEqual(buildSessionGetArgs('sess-1'));
+    expect(spawned).toHaveLength(1);
+    expect(spawned[0]!.args).toEqual(buildSessionListArgs());
   });
 
-  // The dotenv keeps the id of a session that has ended, so the file alone is never proof.
-  it(`is inactive for an id whose session is over`, async () => {
+  it(`picks the session the dotenv names when the service lists several`, async () => {
+    project({ '/project/.env.eas-simulator': 'EAS_SIMULATOR_SESSION_ID=sess-2\n' });
+    mockEas({
+      stdout: listJson(
+        sessionRow({ id: 'sess-1', createdAt: '2026-08-26T12:00:00.000Z' }),
+        sessionRow({ id: 'sess-2', createdAt: '2026-08-26T09:00:00.000Z' })
+      ),
+    });
+
+    const probe = await probeCloudSessionAsync({ projectRoot: '/project' });
+
+    expect(probe).toMatchObject({ state: 'active', sessionId: 'sess-2', candidateCount: 2 });
+  });
+
+  it(`prefers a session on the platform the caller asked for`, async () => {
+    project();
+    mockEas({
+      stdout: listJson(
+        sessionRow({ id: 'ios-1' }),
+        sessionRow({ id: 'and-1', platform: 'ANDROID' })
+      ),
+    });
+
+    const probe = await probeCloudSessionAsync({ projectRoot: '/project', platform: 'android' });
+
+    expect(probe).toMatchObject({ state: 'active', sessionId: 'and-1', platform: 'android' });
+  });
+
+  // The file outlives the session it names, so a stale one has to be called stale rather than
+  // reported as an answer.
+  it(`is inactive when the dotenv names a session the service does not list`, async () => {
     project({ '/project/.env.eas-simulator': 'EAS_SIMULATOR_SESSION_ID=sess-1\n' });
-    mockEas({ stdout: sessionJson('FINISHED') });
+    mockEas({ stdout: listJson() });
 
     const probe = await probeCloudSessionAsync({ projectRoot: '/project' });
 
     expect(probe.state).toBe('inactive');
-    expect(probe.reason).toContain('FINISHED');
+    expect(probe.sessionId).toBe('sess-1');
+    expect(probe.reason).toContain('has ended');
   });
 
-  // The gate that keeps this off the hot path: no file, no session-status subprocess.
-  it(`is none with no dotenv, and asks only the read-only availability question`, async () => {
+  // "No session" for a running `serve-sim` would send a reader to start a second billed one next
+  // to the one they are already paying for.
+  it(`names the type when the only live session is one it cannot drive`, async () => {
     project();
-    mockEas({ stdout: '{"available": true}' });
+    mockEas({ stdout: listJson(sessionRow({ type: 'serve-sim' })) });
+
+    const probe = await probeCloudSessionAsync({ projectRoot: '/project' });
+
+    expect(probe.state).toBe('none');
+    expect(probe.reason).toContain('serve-sim');
+    expect(probe.reason).toContain(DRIVABLE_SESSION_TYPE);
+  });
+
+  it(`is none with nothing running, and only then asks the read-only availability question`, async () => {
+    project();
+    let call = 0;
+    spawned = [];
+    jest.mocked(spawn).mockImplementation(((command: string, args: string[]) => {
+      spawned.push({ command, args });
+      const answer = call++ === 0 ? listJson() : '{"available": true}';
+      const child = Object.assign(new EventEmitter(), {
+        stdout: new EventEmitter(),
+        stderr: new EventEmitter(),
+      });
+      process.nextTick(() => {
+        child.stdout.emit('data', answer);
+        child.emit('close', 0, null);
+      });
+      return child as any;
+    }) as any);
 
     const probe = await probeCloudSessionAsync({ projectRoot: '/project' });
 
     expect(probe).toMatchObject({ state: 'none', sessionId: null, available: true });
-    expect(spawned).toHaveLength(1);
-    expect(spawned[0]!.args).toEqual(buildAvailabilityArgs());
+    expect(spawned.map((run) => run.args)).toEqual([
+      buildSessionListArgs(),
+      buildAvailabilityArgs(),
+    ]);
   });
 
   it(`says so when the account does not have the feature at all`, async () => {
     project();
-    mockEas({ stdout: '{"available": false}' });
+    let call = 0;
+    spawned = [];
+    jest.mocked(spawn).mockImplementation(((command: string, args: string[]) => {
+      spawned.push({ command, args });
+      const answer =
+        call++ === 0
+          ? listJson()
+          : `{"available": false, "waitlistUrl": "${CLOUD_SIMULATOR_WAITLIST_URL}"}`;
+      const child = Object.assign(new EventEmitter(), {
+        stdout: new EventEmitter(),
+        stderr: new EventEmitter(),
+      });
+      process.nextTick(() => {
+        child.stdout.emit('data', answer);
+        child.emit('close', 0, null);
+      });
+      return child as any;
+    }) as any);
 
     const probe = await probeCloudSessionAsync({ projectRoot: '/project' });
 
     expect(probe.state).toBe('none');
     expect(probe.available).toBe(false);
+    expect(probe.waitlistUrl).toBe(CLOUD_SIMULATOR_WAITLIST_URL);
     expect(probe.reason).toContain('not enabled on this account');
   });
 
-  // A binary that is not the EAS CLI has said nothing about the session (`wrapperCrash.ts`), and
-  // reading its exit code as "the session is over" is how a caller ends up starting a second one.
+  // A binary that is not the EAS CLI has said nothing about the sessions (`wrapperCrash.ts`), and
+  // reading its exit code as "there are none" is how a caller ends up starting a second one.
   it(`is unknown when the binary under that name is not the EAS CLI`, async () => {
     project({ '/project/.env.eas-simulator': 'EAS_SIMULATOR_SESSION_ID=sess-1\n' });
     mockEas({ exitCode: 101, stderr: 'thread panicked at src/main.rs\nStack backtrace:' });
@@ -390,14 +712,18 @@ describe(captureCloudScreenshotAsync, () => {
 // ---- The failures ------------------------------------------------------------------------------
 
 describe(cloudSessionUnavailableError, () => {
-  const probe = {
-    state: 'none' as const,
+  const probe: CloudSessionProbe = {
+    state: 'none',
     sessionId: null,
     platform: null,
     status: null,
+    sessionName: null,
+    candidateCount: 0,
+    otherSessionCount: 0,
     available: null,
+    waitlistUrl: null,
     failure: null,
-    reason: 'no .env.eas-simulator names a session',
+    reason: 'the service lists no running EAS Simulator session for this project',
   };
 
   it(`names the command that starts a session, and says it bills until stopped`, () => {
@@ -513,7 +839,11 @@ describe(`${cloudSessionUnknownError.name} and the signed-out account`, () => {
     sessionId: 'sess-1',
     platform: null,
     status: null,
+    sessionName: null,
+    candidateCount: 0,
+    otherSessionCount: 0,
     available: null,
+    waitlistUrl: null,
     reason: 'the EAS CLI would not answer',
   };
 
@@ -531,7 +861,7 @@ describe(`${cloudSessionUnknownError.name} and the signed-out account`, () => {
     const error = cloudSessionUnknownError({
       ...probe,
       failure: {
-        command: 'eas simulator:get --id sess-1 --json',
+        command: 'eas simulator:list --status in-progress --limit 25 --json',
         stdout: '',
         stderr:
           'An Expo user account is required. Either log in with "eas login" or set the EXPO_TOKEN environment variable.',

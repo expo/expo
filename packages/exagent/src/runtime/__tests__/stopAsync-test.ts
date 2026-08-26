@@ -62,6 +62,7 @@ function mockDevServer(targets: unknown[] | null) {
 function options(overrides: Partial<RuntimeStopOptions> = {}): RuntimeStopOptions {
   return {
     devServerUrl: 'http://127.0.0.1:8081',
+    cloud: false,
     json: true,
     followups: false,
     ...overrides,
@@ -124,6 +125,7 @@ describe(runtimeStopAsync, () => {
       'bundleIdSource',
       'command',
       'connectedAppIds',
+      'deviceBackend',
       'deviceId',
       'followups',
       'platform',

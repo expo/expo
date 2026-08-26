@@ -328,6 +328,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
           // The session's platform when no device was resolved: the dev-server method never looks
           // for one, and a run told `--android` still has to hand back Android commands (F54).
           platform: device?.platform ?? options.platform ?? null,
+          backend: device?.backend,
           deviceId: device?.deviceId ?? null,
           route,
           adbPath: device?.adb?.bin,
@@ -475,7 +476,13 @@ async function reloadOnDeviceAsync(
 ): Promise<{ attempt: ReloadAttempt; device: NavigateDevice | null }> {
   let device: NavigateDevice;
   try {
-    device = await resolveDeviceAsync(options.platform);
+    // @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do.
+    // `required` and never `fallback`: only `--cloud` sends this to a device that bills by the
+    // minute, and a machine with nothing booted is told it has nothing.
+    device = await resolveDeviceAsync(options.platform, {
+      cloud: options.cloud ? 'required' : 'off',
+      projectRoot,
+    });
   } catch (error: unknown) {
     return {
       attempt: {
@@ -493,6 +500,8 @@ async function reloadOnDeviceAsync(
     deviceId: device.deviceId,
     appId,
     adb: device.adb,
+    backend: device.backend,
+    projectRoot,
   });
   if (!stopped.ok) {
     return {
@@ -560,12 +569,20 @@ async function openRouteAsync(
     return null;
   }
 
-  const device = known ?? (await resolveDeviceAsync(options.platform));
+  const device =
+    known ??
+    (await resolveDeviceAsync(options.platform, {
+      cloud: options.cloud ? 'required' : 'off',
+      projectRoot,
+    }));
   const result = await openUrlOnDeviceAsync({
     platform: device.platform,
     deviceId: device.deviceId,
     url: resolved.url,
     appId: options.appId,
+    adb: device.adb,
+    backend: device.backend,
+    projectRoot,
   });
   return { url: resolved.url, command: result.command, exitCode: result.exitCode, device };
 }

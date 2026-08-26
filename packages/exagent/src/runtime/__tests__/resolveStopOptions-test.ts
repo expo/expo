@@ -4,6 +4,7 @@ describe(resolveRuntimeStopOptions, () => {
   it(`should leave the device and the app to be worked out`, () => {
     expect(resolveRuntimeStopOptions([])).toEqual({
       platform: undefined,
+      cloud: false,
       appId: undefined,
       devServerUrl: null,
       json: false,
@@ -24,6 +25,7 @@ describe(resolveRuntimeStopOptions, () => {
       ])
     ).toEqual({
       platform: 'android',
+      cloud: false,
       appId: 'com.example.demo',
       devServerUrl: 'http://192.168.1.10:8081',
       json: true,
@@ -60,22 +62,20 @@ function expectThrow(run: () => unknown): any {
   throw new Error('Expected the call to throw, but it returned');
 }
 
-// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+// @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do
 describe('resolveRuntimeStopOptions and the cloud backend', () => {
-  // The flag exists to be refused by name: `navigate --cloud` works, so an agent will type this,
-  // and the truth — there is no controller verb that ends one app — is a next action.
-  it(`refuses --cloud and names the two acts it is not`, () => {
-    const error = (() => {
-      try {
-        resolveRuntimeStopOptions(['--cloud']);
-        return null;
-      } catch (thrown: unknown) {
-        return thrown as { code?: string; message: string };
-      }
-    })();
+  // The flag used to be accepted only so it could be refused: the first cut believed the session
+  // controller had no verb that ends one app. `agent-device close <appId>` is that verb, so the
+  // flag now names the backend the way it does on `navigate`.
+  it(`names the cloud backend rather than refusing it`, () => {
+    expect(resolveRuntimeStopOptions(['--cloud']).cloud).toBe(true);
+    expect(resolveRuntimeStopOptions([]).cloud).toBe(false);
+  });
 
-    expect(error?.code).toBe('CLOUD_SIMULATOR_UNSUPPORTED');
-    expect(error?.message).toContain('eas simulator:stop');
-    expect(error?.message).toContain('npx exagent navigate / --cloud');
+  it(`still takes a platform alongside it, because a session is iOS or Android too`, () => {
+    expect(resolveRuntimeStopOptions(['--cloud', '--android'])).toMatchObject({
+      cloud: true,
+      platform: 'android',
+    });
   });
 });

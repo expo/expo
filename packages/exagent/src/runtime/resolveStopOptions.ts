@@ -2,7 +2,6 @@
 // Argument resolution for `exagent runtime:stop`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
-import { cloudVerbNotSupportedError } from '../device/cloudSimulator';
 import type { NavigatePlatform } from '../navigate/device';
 import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
 import { resolveDevServerTarget } from './devServer';
@@ -11,6 +10,14 @@ import { resolveDevicePlatform } from './devicePlatform';
 export interface RuntimeStopOptions {
   /** Platform to stop the app on. Undefined means "whichever device is booted". */
   platform?: NavigatePlatform;
+  /**
+   * `--cloud`: stop the app on this project's EAS Simulator session rather than on a local device.
+   *
+   * Named rather than fallen back to. A session bills by the minute, so a run that a local device
+   * would have served must never quietly become a cloud one — which is why this is `required` on
+   * the ladder and not `fallback` (llp/0005 §Three backends, one ladder).
+   */
+  cloud: boolean;
   /** Application id to stop, which wins over everything this command could work out itself. */
   appId?: string;
   /** The `--dev-server-url` the caller named, or null when the dev server is still to be found. */
@@ -24,9 +31,10 @@ export interface RuntimeStopOptions {
 const RUNTIME_STOP_ARGS = {
   '--ios': Boolean,
   '--android': Boolean,
-  // Accepted so it can be **refused by name**. `navigate` has this flag, so an agent that learned
-  // it there will type it here, and "unknown option --cloud" is a dead end where the truth — the
-  // session controller has no verb that ends one app — is a next action. See below.
+  // @ref llp/0005 §What the cloud backend can and cannot do. This used to be accepted only so it
+  // could be refused by name: the first cut believed the controller had no verb that ends one app.
+  // Reading `agent-device@0.20.10` found `close <appId>`, so the flag now does what an agent that
+  // learned it from `navigate` expects it to do.
   '--cloud': Boolean,
   '--app-id': String,
   '--dev-server-url': String,
@@ -55,18 +63,11 @@ export function resolveRuntimeStopOptions(argv: string[]): RuntimeStopOptions {
     });
   }
 
-  // @ref src/device/cloudSimulator.ts §cloudVerbNotSupportedError — llp/0005 §The cloud simulator
-  // backend. `eas simulator:stop` ends the whole remote machine, which is a larger act than this
-  // command's, and performing it under this name would report a session teardown as one app having
-  // been stopped. So the flag is answered rather than silently doing something else.
-  if (args['--cloud']) {
-    throw cloudVerbNotSupportedError('Stopping the app');
-  }
-
   return {
     platform: resolveDevicePlatform(args, 'runtime:stop', {
       bothHint: 'run the command twice, once per device.',
     }),
+    cloud: !!args['--cloud'],
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
     devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:stop'),
     json: !!args['--json'],

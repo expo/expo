@@ -511,14 +511,15 @@ The order, in `resolveDeviceAsync`:
    that happens to be up must never quietly take a run away from the simulator on the desk.
 3. **The session** (`cloud: 'fallback'`) — only when the local probes found nothing.
 
-Rung 3 is gated on a **file**, not a subprocess: no `.env.eas-simulator` in the project, no `eas` is
-started. That matters because the rung runs on the *failure* path of every `navigate` on a machine
-with no device, which is the case the whole backend exists for — and it keeps the cost of "this
-machine has nothing" at one `stat`.
+Rung 3 asks the **service**, not the filesystem: `eas simulator:list --status in-progress` is what
+makes it a rung at all, because a session started by MCP, by another terminal, or by a
+`simulator:start --json` that wrote no dotenv is still this project's session. The first cut gated it
+on `.env.eas-simulator` existing; §Finding the session is why that changed and what it costs.
 
-**Opt-in per caller, defaulting to `off`.** `navigate` and `smoke` put the cloud on their ladder;
-every `runtime:*` action keeps the two local backends exactly as they were. That is not a pending
-item — see §What the cloud backend cannot do.
+**Opt-in per caller, defaulting to `off`.** `navigate` and `smoke` put the cloud on their ladder as
+a *fallback*; `runtime:stop` and `runtime:reload` take `--cloud` and reach for it only when named,
+so a session that happens to be up never quietly bills a run that a local device would have served.
+See §What the cloud backend can and cannot do.
 
 `--cloud` is a **backend** flag, not a third platform, so it does not join the `--ios`/`--android`
 pair: a session is iOS or Android too, and `--cloud --ios` is a meaningful line to type. It names
@@ -537,50 +538,166 @@ the session's connection environment and **spawns the command it is given**, and
 family binary; what it asks that binary to run is a second process this CLI never resolves itself.
 `AGENT_DEVICE_SPEC` is the whole of that decision, in one constant.
 
-### The argv is confirmed; the payloads mostly are not
+### The argv, validated against a live session
 
-The table below was written from the syntax the `eas-simulator` skill documents, read and not run,
-because the account on the machine it was written on was signed out and the `eas` on its `PATH` is
-a shim that fails before it reaches the CLI [observed — 2026-08-26: `eas --version` answers
-`Error: Apple Developer setup is incomplete`].
+Two rounds, and the second one is the one that counts.
 
-A signed-in pass on 2026-08-26 checked it against **eas-cli 22.4.0**, read-only. Every command and
-every flag in the table exists and is spelled as written [observed — `eas <cmd> --help`, and
-`eas help sim`, which names `simulator:start` / `sim` / `sim:start` as aliases of one command and
-documents `--out-config-type dotenv` writing `.env.eas-simulator`]. **What is still `[inferred]` is
-the JSON**, not the invocation: reading a session's payload needs a live session, and starting one
-is a mutating, billable call the pass was not allowed to make.
+**Round one read the packages.** The account was signed out, so wave 11 read the published source of
+the CLIs it spawns instead of the skill that describes them: `eas-cli` (`oclif.manifest.json` for
+every flag, `build/commands/simulator/*.js` for the exact JSON each one prints) and
+`agent-device@0.20.10` (`agent-device help <verb>`, which runs offline).
 
-`simulator:availability` is the exception, and it is the exception by design — it exists to be
-asked without spending anything, so it could be run.
+**Round two ran them.** Kudo signed in on 2026-08-26, and one bounded session —
+`01a03d80-0556-7d22-98df-f415d9392b98` on `expo-ci`/`expo-workflow-testing`, created 09:56:35Z,
+stopped 09:58:58Z, about two and a half billed minutes — was started for the express purpose of
+turning this table from *accepted* into *answered*. The payloads are recorded verbatim in
+`src/__fixtures__/eas/` and parsed by the test suite, so a drift in the service fails here rather
+than on somebody's paid session.
 
-One command was added upstream that this document did not know about: **`eas simulator:list
-[--status …] [--platform …] --json --non-interactive`**, which answers
-`{ "sessions": [...], "pageInfo": {...} }` [observed — 2026-08-26, empty for a project with no
-sessions]. It is a per-project list, so it is a cheaper answer to "does this project have a session
-up" than `simulator:get` against a remembered id — worth considering if the `.env.eas-simulator`
-round trip ever becomes a problem.
-
-| Invocation | What this CLI believes it does | Status |
+| Invocation | What the service did with it | Status |
 | --- | --- | --- |
-| `eas simulator:get [--id <id>] --json` | Answers the session's `status` and `platform`; `IN_PROGRESS` is live | argv [observed — 22.4.0]; payload [inferred] |
-| `eas simulator:availability --json` | Read-only, starts and bills nothing | [observed — 22.4.0: `{"available": true, "accountName": "expo"}`, recorded in `src/__fixtures__/eas/simulator-availability.json`]. The extra `accountName` is ignored |
-| `eas simulator:exec npx agent-device@latest open <url> --platform <ios\|android>` | Opens a deep link on the session's device | argv [observed — 22.4.0]; behaviour [inferred] |
-| `eas simulator:exec npx agent-device@latest screenshot <path>` | Downloads a PNG of the screen to a local path. No `--platform`: the documented verb table carries it on `open`/`install`/`apps` and not on this one | argv [observed — 22.4.0]; behaviour [inferred] |
-| `eas simulator:stop` | Ends the session. **Never spawned by this CLI** — it appears only inside error text, as the command a person runs to end their own session. See §What the cloud backend cannot do | argv [observed — 22.4.0] |
-| `EAS_SIMULATOR_SESSION_ID` in `.env.eas-simulator` | Names the session `eas-cli` last started for this project | [inferred] |
+| `eas simulator:list --status in-progress --limit 25 --json` | Exit 0 and `{"sessions":[…],"pageInfo":{…}}` for **this project's** sessions — the exact argv this CLI builds, accepted as sent | [observed — live, `eas-cli/22.4.0`] |
+| `eas simulator:availability --json` | `{"available":true,"accountName":"expo-ci"}`. **No `waitlistUrl` when available** — the key appears only for a gated account | [observed — live; gated branch still [inferred] from `build/commands/simulator/availability.js`] |
+| `eas simulator:exec npx agent-device@latest open <url> --platform ios` | Accepted and executed: `npx` fetched the controller, the controller built the Apple runner and reached the device | [observed — live] |
+| `eas simulator:exec npx agent-device@latest close <appId>` | Exit 0 and `{"success":true,"data":{"session":"default","message":"Closed: default"}}` — **for any id at all.** See §What `close` will not tell you | [observed — live] |
+| `eas simulator:exec npx agent-device@latest screenshot <path>` | Refused with `Error (SESSION_NOT_FOUND): No active session. Run open first.` and wrote no file, on a simulator with nothing open. The precondition the verb table documents, in the service's own words | [observed — live] |
+| `eas simulator:start --platform ios --type agent-device --non-interactive --name …` | Created the session, waited for the daemon, wrote the dotenv, printed a `webPreviewUrl` and a job URL. ~69 s to ready | [observed — live] |
+| `eas simulator:stop` | Stopped the dotenv's session; the listing then reported it `STOPPED` with `finishedAt` set | [observed — live] |
+| `eas simulator:get [--id <id>] --json` | Fields at the **top level** (no envelope), plus `remoteConfig` and `artifacts`. Not spawned by this CLI any more | [observed — package source; not exercised live] |
+| `.env.eas-simulator` | `EAS_SIMULATOR_SESSION_ID` plus the daemon URL and token, `KEY='value'` under a "Do not commit this file" header. **Not written** by `simulator:start --json` or `--out-config-type env` | [observed — `build/simulator/env.js`; the write itself seen live] |
 
-Two things follow from that, and they are the design rather than a caveat:
+Enum values, which is where a string comparison goes wrong quietly: `status` and `platform` come
+back as the **raw GraphQL enums** (`IN_PROGRESS`, `STOPPED`, `IOS`) while `type` is the lower-case
+**flag spelling** (`agent-device`) — so a comparison that lower-cases all three, or none, is wrong
+either way [observed — live]. `startedAt` and `finishedAt` are **absent** rather than null when they
+do not apply, and `pageInfo` grows `startCursor`/`endCursor` only on a non-empty page.
+
+What running it **corrected**, rather than confirmed:
+
+- `close <appId>` does not answer about the app id. That is §What `close` will not tell you, and it
+  was a false green shipped in this wave and caught by the live run.
+- A non-zero exit from a device verb is **not** evidence the argv was wrong. The controller prints
+  its own refusals as `Error (CODE): <sentence>`, and the first live `open` produced
+  `Error (COMMAND_FAILED): Simulator device failed to open myapp://.` under a "Why" that blamed the
+  syntax. `readControllerError` splits the two, and `CLOUD_SIMULATOR_DEVICE_REFUSED` is the failure
+  for a command that was accepted and a device that said no.
+- `simulator:availability` omits `waitlistUrl` entirely when the account has access, so a parser
+  that expected it always to be present would have read a gated account out of a healthy one.
+
+Still standing, and still the design:
 
 - **The argv is pure and pinned by a test table** (`src/device/__tests__/cloudSimulator-test.ts`),
   for the reason `buildOpenUrlCommand` and `buildScreenshotCommand` are — except more so. A wrong
   `simctl` flag fails on a machine with a simulator; a wrong `simulator:exec` flag fails on a
-  machine with an account, a session, and a bill. When one of these turns out to be wrong, the fix
-  is one line of one module and one line of one test.
-- **A signed-in validation pass is pending.** Nothing in this section may be read as verified until
-  somebody runs it. The e2e suite (`e2e/__tests__/cloud-simulator-test.ts`) proves that the argv the
-  module builds is the argv a whole `exagent` process spawns, against a stub `eas` — which is a fact
-  about this CLI and says nothing about what EAS accepts.
+  machine with an account, a session, and a bill.
+- **What is still [inferred]** is what one short session on a *blank* simulator could not reach: the
+  gated-account branch of `availability`, `open` and `screenshot` against an app that is actually
+  installed, an Android session, and `close` on a foregrounded app. Those are the next validation
+  pass, and until then nothing here may be read as saying `runtime:stop --cloud` was seen to stop a
+  running app — because it was not.
+
+### What `close` will not tell you
+
+The controller's `close` verb ends the app and reports success **whatever id it is given**:
+
+```
+$ eas simulator:exec npx agent-device@latest close com.nonexistent.zzz.qqq --json
+{"success":true,"data":{"session":"default","message":"Closed: default"}}
+```
+
+Byte for byte the answer `close host.exp.Exponent` gave on the same blank simulator [observed —
+live, 2026-08-26]. The help says "close the named app, or the active session app when app is
+omitted"; what the service does is answer about the **session**, and the argument does not make the
+answer specific.
+
+That matters because `runtime:stop`'s whole contract is *which app*. §Stopping the app is built on
+the observation that the command is the easy half and the **id** is the hard half — `simctl
+terminate` and `am force-stop` name a process and fail when there is none, which is exactly what
+makes `wasRunning` knowable. A backend whose verb succeeds unconditionally has no such fact, and
+reporting `wasRunning: true` from it would be this command inventing the one thing it exists to
+report. This wave shipped that bug for four commits; the live run is what found it.
+
+So the honest shape, rather than the convenient one:
+
+- `StopAppResult.verified` is **false** for the cloud backend and true for both local ones. It says
+  whether the tool's answer is about this application id at all.
+- `runtime:stop --json` reports **`wasRunning: null`** on a cloud session — a fact the run does not
+  have, which is what llp/0006 §Output contract says null is for. The human line says *"the session
+  closed the app in front; whether it was this one is not something the controller reports"*.
+- The `--app-id` mismatch check (§An `--app-id` nobody is running, exit 20) is gated on `verified`,
+  so it never fires on a backend that cannot establish its premise. Exit 20 there would be a
+  fabricated diagnosis.
+- The verb is **kept**, because closing the foreground app is a real act and is what "put the app
+  into a known state" means. What is removed is the claim about which app.
+
+`runtime:reload --cloud` and the Android attach recovery are unaffected, and the reason is worth
+naming: neither trusts the stop. A reload is reported only when peer churn **and** a new debugger
+target prove it (§What proves a reload, without CDP), and the recovery re-checks `/json/list`. They
+consume `close` as a nudge and verify the outcome independently, which is why an unreliable verb is
+sound there and not here.
+
+**Upstream ask:** a `close` that fails, or at least reports the app it acted on, when the named
+application is not the session's. Until then this CLI cannot offer a verified per-app stop on a
+cloud session, and says so rather than pretending.
+
+### Finding the session
+
+Decision [confirmed — Kudo, 2026-08-26]. **A cloud device is a session the service says is
+running, not a file on disk.** The first cut gated the whole backend on `.env.eas-simulator`
+existing, and the file is the wrong contract for three reasons that are all about *other people's*
+sessions: MCP is growing its own simulator support and need not write it, `simulator:start --json`
+and `--out-config-type env` do not write it either [observed — `build/simulator/env.js`], and the
+file outlives the session it names, so its presence was never proof and its absence never was.
+
+Three ways to answer "is there a session", and what each one costs:
+
+| Option | What it is | Cost |
+| --- | --- | --- |
+| **1. `eas simulator:list`** | One more subprocess in the family this CLI already spawns | One `eas` start-up plus one GraphQL round trip; needs a login and a linked `projectId`; the command is hidden and experimental, so its flags can move |
+| 2. Direct GraphQL to `api.expo.dev` | One HTTP call, using the session token in `~/.expo/state.json` | Breaks llp/0001 constraint 5; **reads another CLI's credential store**; reimplements project resolution, `EXPO_TOKEN` precedence and the auth header; pins a schema this package does not generate from |
+| 3. Keep the file as the gate | One `stat` | Answers a question nobody asked: whether this project *once started* a session |
+
+**Option 1, with option 3 kept for what it is actually true about.**
+
+Option 2 is the one worth arguing with, because this CLI does already make direct HTTP calls — it
+talks to the dev server's `/json/list` and its message socket without going through `expo`. The
+difference is what is on the other end. The dev server is **this machine's own process**, started
+by this CLI, reached over loopback, with no credential involved: a direct call there is a local IPC
+that happens to speak HTTP. `api.expo.dev` is somebody's **account**, on a **paid** product, reached
+with a **secret** this package neither issued nor owns. Lifting a token out of `~/.expo/state.json`
+makes an undocumented file into an API — it moves whenever eas-cli wants it to, and the failure mode
+is not a broken command but a credential this CLI mishandled. `eas` is the program that owns that
+token, so `eas` is the program that spends it. Rejected, and worth writing down so it is not
+re-argued.
+
+**Where the cost lands is the real design.** The gate used to be one `stat` on the failure path of
+every `navigate` with no local device, and it is now a subprocess. That is paid on purpose, and only
+on one of the two ladders:
+
+- **The device ladder** (`navigate`/`smoke`, `cloud: 'fallback'` or `'required'`) asks the service.
+  It is about to open a link on a device; being *right* is worth ~1 s, and being wrong costs a
+  reader a false "no device" on a machine that has one.
+- **The suggestion ladders** (`status.next`, the `start`/`dev` banner) keep the `stat`, unchanged.
+  They promise to be instant, they are not acting on anything, and a suggestion that names a dead
+  session costs one command that says so — a much cheaper wrong answer than a held-up banner
+  (§Where it composes).
+
+#### Which session, when there is more than one
+
+Deterministic, pure, and total — two runs a second apart must pick the same session, and the
+answer must not depend on the order the service happened to return:
+
+1. **Only `type: agent-device` is a candidate.** The bridge is `simulator:exec npx agent-device`,
+   and an `argent`, `appium` or `serve-sim` session has no agent-device daemon inside it to answer.
+   A project whose only live session is one of those is told *that*, rather than "no session".
+2. **The session `.env.eas-simulator` names**, when it is among the candidates. The file is a poor
+   existence proof and a good **preference**: it is the session this project started, so it is the
+   one the person at the keyboard means.
+3. **The platform the caller asked for**, when `--ios`/`--android` named one.
+4. **The most recently created**, `createdAt` descending, with `id` ascending as the tiebreaker.
+
+The chosen id is reported — the `Device` line, `deviceId` in `--json`, and the `cli:navigate` event
+— so "which one did it pick" is never a thing a reader has to work out.
 
 ### A cloud simulator requires a tunnel
 
@@ -606,11 +723,25 @@ thing it proves locally.
 
 `xcrun simctl openurl` exiting non-zero is **the device refusing the link** — a fact about the app
 on it, which `navigate` reports and exits `1` for. `eas simulator:exec` exiting non-zero is any of:
-a session that ended mid-run, a signed-out account, a controller flag this CLI got wrong, or a
-binary that was never the EAS CLI. None of those is "the device refused", and reporting them as that
-would send a reader to reinstall Expo Go.
+a session that ended mid-run, a signed-out account, a controller flag this CLI got wrong, a binary
+that was never the EAS CLI, **or the device refusing after everything worked**. None of the first
+four is "the device refused", and reporting them as that would send a reader to reinstall Expo Go.
 
-So the cloud path raises a **tool failure** instead, and folds three things into it:
+The last one is a live correction. The first real `open` this CLI ever sent came back as:
+
+```
+Error (COMMAND_FAILED): Simulator device failed to open myapp://.
+```
+
+— the controller's own words, for a scheme no app on the blank simulator had registered [observed —
+2026-08-26]. The argv was right and the bridge worked; the message printed above it said "a verb or
+a flag this CLI sends may not be the one the installed eas-cli has", which would have sent that
+reader to check a command that was already correct. `agent-device` prints every refusal as
+`Error (CODE): <sentence>` and `simulator:exec` propagates the exit status, so `readControllerError`
+recognises the shape and `CLOUD_SIMULATOR_DEVICE_REFUSED` says the true thing: the command reached
+the device and the device is what said no.
+
+So the cloud path raises a **tool failure** for the rest, and folds three things into it:
 
 - `looksLikeWrapperCrash` — the `eas` under that name is named rather than quoted. A Rust backtrace
   printed under "What the tool printed" claims the EAS CLI reported it.
@@ -623,7 +754,7 @@ that stopped because nobody is signed in carries the failed run, and `cloudSessi
 raises the same handoff. Signing in is the next step whether the login was found while driving a
 session or while asking about one.
 
-### The four ways there is no session, and why they are four errors
+### The ways there is no session, and why they are separate errors
 
 `unknown` is the one that matters, and it is the same distinction `DeviceProbe.toolError` draws for
 `adb` (F49): **a tool that did not answer has said nothing about the world.**
@@ -631,26 +762,43 @@ session or while asking about one.
 | State | Error | Why it is its own |
 | --- | --- | --- |
 | `active` | — | The device |
-| `inactive` | `NO_CLOUD_SIMULATOR_SESSION`, naming the id and its status | The dotenv keeps the id of a session that has ended, so the file alone is never proof |
+| `inactive` | `NO_CLOUD_SIMULATOR_SESSION`, saying the dotenv's id is not among the live sessions | The file outlives the session it names, so a stale one reads as an answer unless it is called stale |
+| `none`, live sessions of the wrong **type** | `NO_CLOUD_SIMULATOR_SESSION`, naming the types that are up | "No session" for a running `serve-sim` sends a reader to start a second one next to it |
 | `none`, feature available | `NO_CLOUD_SIMULATOR_SESSION`, naming `simulator:start` and that it bills until stopped | Nothing to find: a cloud simulator is started, not left booted by somebody else |
-| `none`, feature off | `CLOUD_SIMULATOR_UNAVAILABLE`, offering the local device and `--print-url` | An account that cannot have the feature must never be told to start a session |
-| `unknown` | `CLOUD_SIMULATOR_SESSION_UNKNOWN`, naming `simulator:get` and **never** `simulator:start` | "Start one" for a session that could not be ruled out starts a **second billed session** next to one that may be running |
+| `none`, feature off | `CLOUD_SIMULATOR_UNAVAILABLE`, with the **waitlist URL** the service returns, plus the local device and `--print-url` | An account that cannot have the feature must never be told to start a session — and "no" without "here is where access comes from" is a dead end |
+| `unknown` | `CLOUD_SIMULATOR_SESSION_UNKNOWN`, naming `simulator:list` and **never** `simulator:start` | "Start one" for a session that could not be ruled out starts a **second billed session** next to one that may be running |
 
-### What the cloud backend cannot do
+Availability is asked **only** when the listing came back empty of usable sessions — one read-only
+request, on the one path where the answer changes the instruction from "start a session" to "this
+account cannot have one".
 
-`runtime:stop` has **no cloud form**, and that is a decision rather than a gap. The controller's
-documented verbs open a link, drive the UI and take a picture; none of them ends a single
-application. `eas simulator:stop` ends the whole **session** — the remote machine and everything on
-it — which is a far larger act, and performing it under `runtime:stop` would report a session
-teardown as one app having been stopped.
+### What the cloud backend can and cannot do
 
-`--cloud` is nevertheless **accepted** by `runtime:stop`, so it can be refused by name: an agent
-that learned the flag from `navigate` will type it here, and `unknown option --cloud` is a dead end
-where the truth is a next action (`npx exagent navigate / --cloud` to put the app back into a known
-state, `npx eas simulator:stop` to end the session).
+The first cut said `runtime:stop` had no cloud form. **That was wrong**, and reading the controller
+is what corrected it: `agent-device close <appId>` closes the **named app** and leaves the device up
+[observed — `agent-device help close`, 0.20.10]. That is the same act as `simctl terminate` and
+`am force-stop`, so `runtime:stop --cloud` is now a command that runs rather than one that explains
+itself. `--shutdown`, which would also stop the simulator, is never passed: the distinction the
+first cut was protecting — one app versus the whole remote machine — is a **flag**, not the absence
+of a verb.
 
-The same absence removes the Android attach recovery for a cloud session: that recovery is a
-force-stop and a second link, so it is gated on `local-android` rather than on `android`.
+With one app-ending verb in hand, the rest of the loop follows:
+
+| Command | Cloud form | How |
+| --- | --- | --- |
+| `navigate` | yes | `open <url> --platform <p>` |
+| `smoke` | yes | `navigate`'s device, then `screenshot <path>` |
+| `runtime:stop --cloud` | yes, with a caveat | `close <appId>` — which ends the app but does **not** report which one, so `wasRunning` is null. See §What `close` will not tell you |
+| `runtime:reload --cloud --method device` | yes | `close <appId>`, then the same `open` `navigate` runs — and unlike `runtime:stop` it *verifies*, so the unreliable verb is sound here |
+| the Android attach recovery | yes | the same pair, so it is gated on "the platform is Android" rather than on "the device is local" |
+| ending the **session** | no, and deliberately | `eas simulator:stop` is the person's command. This CLI never spawns it; it only names it |
+
+`runtime:reload`'s **primary** path never needed a cloud form: it broadcasts over the dev server's
+own client command socket, and a cloud session reaches that dev server through the tunnel it is
+required to have (§A cloud simulator requires a tunnel). So the cloud only changes the **fallback**,
+which is exactly the force-stop-and-relaunch pair above. (`agent-device metro reload` exists and is
+*not* used: it would ask the controller to reach a dev server this CLI is already connected to, and
+two ways to send one reload is one more than the report can explain.)
 
 ### Where it composes
 
@@ -665,11 +813,17 @@ force-stop and a second link, so it is gated on `local-android` rather than on `
   ran" and "there is a screenshot" are two facts over a network too.
 - **The no-local-device suggestions** of wave 9 name the session when the project has one. The
   `open-app` rung of `start`/`dev` is no longer *dropped* on a machine with no device, it is aimed
-  at `navigate / --cloud`; and `status.next` names that command instead of a URL for somebody else
-  to open — a session is the one rung that is a command **this CLI can run**. Both read the dotenv
-  and not the service: `status` promises to be instant, and a start banner must never be held up by
-  a ladder. A file naming a dead session costs one `navigate --cloud` that says so, which is a much
-  cheaper wrong answer than a slow report.
+  at `navigate / --cloud`; `status.next` names that command instead of a URL for somebody else to
+  open; and `dev:wait`'s "the bundle is built and nothing is running it" rung says the same, because
+  "open it on the booted simulator or the attached device" is an instruction that cannot work on the
+  machine this backend exists for. All three read the **dotenv** and not the service: `status`
+  promises to be instant, and a start banner must never be held up by a ladder. A file naming a dead
+  session costs one `navigate --cloud` that says so, which is a much cheaper wrong answer than a
+  slow report — this is the split §Finding the session draws between the two ladders.
+- **Nothing suggests a platform tool for a cloud device.** `simctl` and `adb` are commands about
+  *this machine*, and a run whose backend is `cloud` never names them: the follow-ups branch on
+  `deviceBackend`, and the errors a cloud verb raises point at `simulator:exec --help` and
+  `simulator:list` instead.
 
 ## Stopping the app
 

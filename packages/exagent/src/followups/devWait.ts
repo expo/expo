@@ -29,6 +29,20 @@ export interface DevWaitFollowUpInput {
   platform?: BundleCheckPlatform;
   /** Dev server that answered, for the web page a reader opens. */
   devServerUrl?: string | null;
+  /**
+   * Where the app would be opened: on a device this machine has, or on a cloud session.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Where it composes. "Open it on the booted simulator or
+   * the attached device" is an instruction that cannot work on a machine with neither — which is
+   * exactly the machine an EAS Simulator session exists for, and the machine the dogfood run of
+   * 2026-08-24 was on. `start` and `status` already aim this rung at the session; this is the third
+   * ladder that named a device the caller does not have.
+   *
+   * Read from `.env.eas-simulator` and not from the service, for the reason the other two are: a
+   * suggestion may not spawn a subprocess, and a line naming a dead session costs one command that
+   * says so.
+   */
+  openOn?: 'local' | 'cloud';
 }
 
 export function buildDevWaitFollowUps({
@@ -40,6 +54,7 @@ export function buildDevWaitFollowUps({
   bundle = null,
   platform = 'ios',
   devServerUrl = null,
+  openOn = 'local',
 }: DevWaitFollowUpInput): FollowUp[] {
   // Carried onto every `dev:wait` this suggests re-running. The default platform is `ios`, so a
   // command without the flag is a command about a different platform than the one that just ran.
@@ -115,8 +130,11 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-open-app',
-        command: 'npx exagent navigate /',
-        why: 'The bundle is built but no app is attached, so open it on the booted simulator or the attached device — this is the step nothing else does for you.',
+        command: `npx exagent navigate /${openOn === 'cloud' ? ' --cloud' : ''}`,
+        why:
+          openOn === 'cloud'
+            ? 'The bundle is built but no app is attached. This machine has no booted simulator and no attached device, and this project has an EAS Simulator session on record — so this opens the app on that. It needs a tunnelled dev server, and the session bills until "npx eas simulator:stop".'
+            : 'The bundle is built but no app is attached, so open it on the booted simulator or the attached device — this is the step nothing else does for you.',
       },
       {
         id: 'dev-wait-require-app',

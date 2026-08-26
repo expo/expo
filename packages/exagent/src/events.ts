@@ -399,9 +399,16 @@ declare module '2g' {
     'cli:runtime_stop': {
       /** The app is not running on the device now. */
       stopped: boolean;
-      /** It was running when the command started, so this is what stopped it. */
-      wasRunning: boolean;
+      /**
+       * It was running when the command started, so this is what stopped it.
+       *
+       * Null on a cloud session, where the controller's answer is not about the application id
+       * (llp/0005 §What `close` will not tell you).
+       */
+      wasRunning: boolean | null;
       platform: string;
+      /** Which device layer acted: `local-ios`, `local-android`, or `cloud`. */
+      deviceBackend: string;
       deviceId: string;
       bundleId: string;
       /**

@@ -8,15 +8,17 @@
 // stopped at "no booted device was found". Wave 9 gave that machine the URL (`--print-url`). This
 // gives it the act.
 //
-// **Every invocation in this file is gated here, and every one of them is [inferred].** The
-// `eas simulator:*` surface is experimental and hidden, this machine's account is signed out, and
-// the `eas` on its PATH is a shim that exits before it reaches the CLI — so nothing below has been
-// run against a live session. The argv is built by pure functions and pinned by unit tests for that
-// reason: when somebody signs in, one test file says what this CLI believes the API is, and one
-// module is where a correction goes. The table of unverified invocations is in llp/0005.
+// **Every invocation in this file is gated here, and none of them has been run against a live
+// session.** The `eas simulator:*` surface is experimental and hidden, this machine's account is
+// signed out, and the `eas` on its PATH is a shim that exits before it reaches the CLI. So the argv
+// is built by pure functions and pinned by unit tests: when somebody signs in, one test file says
+// what this CLI believes the API is, and one module is where a correction goes.
 //
-// Source of the syntax: the `eas-simulator` skill (session lifecycle, `simulator:exec` as the
-// bridge, `agent-device` as the controller) [inferred — read, not run].
+// Source of the syntax: the **published packages**, read rather than guessed — `eas-cli@22.2.0`
+// (`oclif.manifest.json` for every flag, `build/commands/simulator/*.js` for the exact JSON each
+// command prints) and `agent-device@0.20.10` (`agent-device help <verb>`, which runs offline)
+// [observed — 2026-08-26]. That is one rung short of a live run: a manifest says what the CLI
+// accepts, not what the service answers. The table is in llp/0005 §The argv, read off the packages.
 //
 // One deviation from llp/0001 constraint 5 worth naming: the device verbs are **not** an `eas`
 // subcommand. `eas simulator:exec` loads the session's connection environment and spawns the
@@ -46,9 +48,14 @@ export type CloudPlatform = 'ios' | 'android';
  * The dotenv file `eas-cli` writes when a session starts, and reads when one is driven.
  *
  * Managed by the EAS CLI and not by this one: it holds the session id and the daemon's URL and
- * token, which is why nothing here ever writes it. Its **presence** is the cheap question this
- * module asks first — a project that has never started a session has no file, and then no
- * subprocess is spawned to find that out.
+ * token, which is why nothing here ever writes it.
+ *
+ * It is **not** the gate any more (llp/0005 §Finding the session). The file outlives the session it
+ * names, `simulator:start --json` and `--out-config-type env` do not write it at all [observed —
+ * `eas-cli@22.2.0` `build/simulator/env.js`], and a session started by MCP or by another terminal
+ * need never touch it. So its presence proves nothing about what is running — what it is genuinely
+ * true about is *which* session this project last started, and that makes it a **preference** when
+ * the service reports more than one.
  */
 export const CLOUD_SESSION_ENV_FILE = '.env.eas-simulator';
 
@@ -63,8 +70,38 @@ export const CLOUD_SESSION_ID_VAR = 'EAS_SIMULATOR_SESSION_ID';
  */
 export const AGENT_DEVICE_SPEC = 'agent-device@latest';
 
-/** The session status the EAS CLI reports for a session that is up. */
+/**
+ * The session status the EAS CLI reports for a session that is up.
+ *
+ * The raw GraphQL enum rather than the lower-case flag spelling: `simulator:list --json` prints
+ * `status` and `platform` verbatim from the API (`NEW | IN_PROGRESS | STOPPED | ERRORED`,
+ * `IOS | ANDROID`) while printing `type` in its flag spelling [observed — `eas-cli@22.2.0`
+ * `build/commands/simulator/list.js` and `build/graphql/generated.js`].
+ */
 export const ACTIVE_SESSION_STATUS = 'IN_PROGRESS';
+
+/**
+ * The only session type this CLI can drive.
+ *
+ * The bridge to a device verb is `simulator:exec npx agent-device`, and only an `agent-device`
+ * session has that daemon inside it — an `argent`, `appium` or `serve-sim` session answers a
+ * different client or none at all. So a session of another type is not a device, and saying "no
+ * session" for one would send a reader to start a second one next to it.
+ */
+export const DRIVABLE_SESSION_TYPE = 'agent-device';
+
+/**
+ * How many live sessions one listing asks for.
+ *
+ * `simulator:list` defaults to 10 and caps at 100 [observed — `build/commands/simulator/list.js`].
+ * The listing is already filtered to the running ones, and a project with more than this many at
+ * once is a billing problem rather than a selection problem — so one page, no pagination, and a
+ * number with room above what anybody runs.
+ */
+export const CLOUD_SESSION_LIST_LIMIT = 25;
+
+/** Where an account without EAS Simulator asks for it, when the service names one. [observed] */
+export const CLOUD_SIMULATOR_WAITLIST_URL = 'https://expo.dev/services/simulators';
 
 // ---- The argv, as pure functions -------------------------------------------------------------
 //
@@ -74,23 +111,35 @@ export const ACTIVE_SESSION_STATUS = 'IN_PROGRESS';
 // in this package has ever seen the right answer.
 
 /**
- * `eas simulator:get`, which answers a session's status and connection details. [inferred]
+ * `eas simulator:list`, which answers what this project has running right now.
  *
- * `--json` so the answer is parsed rather than scraped. The id is omitted whenever the caller has
- * none: with no `--id` the CLI targets the session named by the dotenv, which is the session this
- * project last started.
+ * The whole of session discovery, and the reason the dotenv is no longer the gate: this asks the
+ * service rather than the filesystem, so a session started by MCP, by another terminal, or by a
+ * `simulator:start --json` that wrote no dotenv is still found (llp/0005 §Finding the session).
+ *
+ * `--status in-progress` server-side, because a stopped session is never an answer and there is no
+ * reason to carry one across a process boundary. The **type** filter is deliberately *not* sent:
+ * the flag exists, but a project whose only live session is a `serve-sim` deserves to be told that
+ * rather than told there is nothing — so every live session comes back and the filtering that
+ * decides drivability happens here, where it can be explained.
+ *
+ * [observed — `eas-cli@22.2.0` `build/commands/simulator/list.js`; not yet run against the service.]
  */
-export function buildSessionGetArgs(sessionId?: string | null): string[] {
-  return ['simulator:get', ...(sessionId ? ['--id', sessionId] : []), '--json'];
+export function buildSessionListArgs({
+  limit = CLOUD_SESSION_LIST_LIMIT,
+}: { limit?: number } = {}): string[] {
+  return ['simulator:list', '--status', 'in-progress', '--limit', String(limit), '--json'];
 }
 
 /**
  * `eas simulator:availability`, the read-only check for whether the account has the feature.
- * [inferred]
  *
- * Read-only: no session is started, so nothing is billed. Asked only when there is no session, to
- * tell "this account cannot start one" apart from "this project has not started one yet" — two
- * facts with two different next actions.
+ * Read-only: no session is started, so nothing is billed. Asked only when the listing came back
+ * with no usable session, to tell "this account cannot start one" apart from "this project has none
+ * running" — two facts with two different next actions.
+ *
+ * [observed — `build/commands/simulator/availability.js`: `{available, accountName}`, plus
+ * `waitlistUrl` only when the account is gated.]
  */
 export function buildAvailabilityArgs(): string[] {
   return ['simulator:availability', '--json'];
@@ -129,6 +178,52 @@ export function buildCloudScreenshotArgs({ filePath }: { filePath: string }): st
   return ['simulator:exec', 'npx', AGENT_DEVICE_SPEC, 'screenshot', filePath];
 }
 
+/**
+ * Ending the app on the session's device, and not the session.
+ *
+ * `--shutdown` is never passed, and that is the safety of this function: it would stop the
+ * simulator itself, which is a machine billed by the minute and may belong to a session this CLI
+ * did not start [observed — `agent-device@0.20.10`, `agent-device help close`].
+ *
+ * **What `close` does not do is tell you whether it stopped the app you named.** The help says
+ * "close the named app, or the active session app when app is omitted", and the live run says
+ * something narrower: `close com.nonexistent.zzz.qqq` on a blank simulator exits **0** with
+ * `{"success":true,"data":{"session":"default","message":"Closed: default"}}` — the same answer as
+ * `close host.exp.Exponent` on a simulator that had never had Expo Go on it [observed — live
+ * session `01a03d80`, 2026-08-26]. So the argument does not make the answer specific: a success
+ * here is evidence that the **controller closed its session's app**, and no evidence at all about
+ * the id. `stopAppOnCloudAsync` is where that is turned into a report that does not overclaim, and
+ * llp/0005 §What `close` will not tell you is why it is not simply approximated.
+ *
+ * The id is still passed, because it is the documented way to name a target and a later controller
+ * may honour it; nothing downstream is allowed to read the exit code as being about that id.
+ *
+ * No `--platform`: a session has one device, and the documented flag table carries the platform
+ * binding on `open`/`install`/`apps` rather than on this verb.
+ */
+export function buildCloudStopAppArgs({ appId }: { appId: string }): string[] {
+  return ['simulator:exec', 'npx', AGENT_DEVICE_SPEC, 'close', appId];
+}
+
+/**
+ * Whether the controller — rather than the EAS CLI — is what refused.
+ *
+ * `agent-device` prints its own failures as `Error (CODE): <sentence>` and exits non-zero, and
+ * `simulator:exec` propagates that exit code as its own [observed — live, 2026-08-26:
+ * `Error (COMMAND_FAILED): Simulator device failed to open myapp://.` for a scheme no app on the
+ * simulator had registered, and `Error (SESSION_NOT_FOUND): No active session. Run open first.` for
+ * a screenshot with nothing open].
+ *
+ * It matters because the two failures need opposite headlines. A non-zero exit from `eas` may be a
+ * verb this CLI got wrong — but when the controller printed one of these, the argv was right, the
+ * bridge worked, and the **device** is what said no. Blaming the syntax there sends a reader to
+ * `--help` for a command that is already correct.
+ */
+export function readControllerError(output: string): { code: string; message: string } | null {
+  const match = /^\s*Error \(([A-Z_]+)\):\s*(.+)$/m.exec(output);
+  return match ? { code: match[1]!, message: match[2]!.trim() } : null;
+}
+
 // ---- Reading a session -----------------------------------------------------------------------
 
 /** One session, as much of it as this CLI reads. */
@@ -137,6 +232,17 @@ export interface CloudSessionInfo {
   /** The status verbatim, so a report can print what the service said rather than a translation. */
   status: string | null;
   platform: CloudPlatform | null;
+  /**
+   * The controller behind the session — `agent-device`, `argent`, `appium` or `serve-sim`.
+   *
+   * Read because it decides whether the session is a device at all: only `agent-device` answers the
+   * verbs `simulator:exec` bridges to. Kept verbatim so a refusal can name the type that is up.
+   */
+  type: string | null;
+  /** The `--name` the session was started with, for a report that says which one was picked. */
+  name: string | null;
+  /** When the service says it was created, used as the last tiebreaker between live sessions. */
+  createdAt: string | null;
 }
 
 /**
@@ -163,34 +269,50 @@ export function parseSessionIdFromEnvFile(text: string): string | null {
 }
 
 /**
- * What `eas simulator:get --json` said about the session. [inferred]
+ * What `eas simulator:list --json` said this project has running.
  *
- * Written to survive a shape that is not what this expects: the fields are looked for at the top
- * level and one level down under the keys an envelope would use, and anything missing is null.
- * A session whose JSON this cannot read is reported as `unknown` by the probe rather than as
- * absent — a parser that guessed "no session" from an unfamiliar envelope would send a caller to
- * start a second billed session next to the one it failed to see.
+ * `{"sessions":[…],"pageInfo":{…}}` is the documented shape [observed —
+ * `build/commands/simulator/list.js`], and this reads the array from there or from the top level,
+ * because a shape that moved is worth surviving. Null — rather than an empty list — for anything
+ * unreadable: "no sessions" and "the answer could not be read" are the two states this whole module
+ * is careful to keep apart, since the first is an instruction to start a billed session.
  */
-export function parseSessionJson(stdout: string): CloudSessionInfo | null {
+export function parseSessionListJson(stdout: string): CloudSessionInfo[] | null {
   let parsed: unknown;
   try {
     parsed = JSON.parse(stdout.trim());
   } catch {
     return null;
   }
-  const envelope = isRecord(parsed) ? parsed : null;
-  if (!envelope) {
+  const list = Array.isArray(parsed)
+    ? parsed
+    : isRecord(parsed) && Array.isArray(parsed.sessions)
+      ? parsed.sessions
+      : null;
+  if (!list) {
     return null;
   }
-  const session =
-    (isRecord(envelope.session) ? envelope.session : null) ??
-    (isRecord(envelope.data) ? envelope.data : null) ??
-    envelope;
 
-  const status = stringOf(session.status);
-  const platform = normalizePlatform(stringOf(session.platform));
-  const id = stringOf(session.id) ?? stringOf(session.sessionId);
-  return status == null && platform == null && id == null ? null : { id, status, platform };
+  const sessions: CloudSessionInfo[] = [];
+  for (const entry of list) {
+    if (!isRecord(entry)) {
+      continue;
+    }
+    const id = stringOf(entry.id) ?? stringOf(entry.sessionId);
+    if (id == null) {
+      // An entry with no id names no session, and there is nothing to drive or to report.
+      continue;
+    }
+    sessions.push({
+      id,
+      status: stringOf(entry.status),
+      platform: normalizePlatform(stringOf(entry.platform)),
+      type: stringOf(entry.type),
+      name: stringOf(entry.name),
+      createdAt: stringOf(entry.createdAt),
+    });
+  }
+  return sessions;
 }
 
 /** Whether a status names a session that is up and can be driven. */
@@ -199,32 +321,110 @@ export function isActiveSessionStatus(status: string | null): boolean {
 }
 
 /**
- * Whether `simulator:availability --json` said the account has the feature.
+ * Whether a session is one this CLI can send a device verb to.
  *
- * [observed — 2026-08-26, eas-cli 22.4.0, recorded in
- * `src/__fixtures__/eas/simulator-availability.json`]. The payload carries an `accountName`
- * alongside `available`, which this deliberately ignores: the question is whether the feature is
- * there, and *whose* account answered is not this function's to report.
+ * Two facts, both from the service: it is running, and its controller is `agent-device`. A session
+ * that answers a different client is not a device here however healthy it is.
  */
-export function parseAvailabilityJson(stdout: string): boolean | null {
+export function isDrivableSession(session: CloudSessionInfo): boolean {
+  return (
+    isActiveSessionStatus(session.status) &&
+    session.type?.trim().toLowerCase() === DRIVABLE_SESSION_TYPE
+  );
+}
+
+/** What a listing of live sessions amounts to for one run. */
+export interface CloudSessionSelection {
+  /** The session to drive, or null when none of them is one this CLI can use. */
+  selected: CloudSessionInfo | null;
+  /** The live sessions this CLI could drive, in the order the rule ranked them. */
+  candidates: CloudSessionInfo[];
+  /** Live sessions dropped for having a controller this CLI does not speak to. */
+  wrongType: CloudSessionInfo[];
+}
+
+/**
+ * Pick the session to drive, deterministically.
+ *
+ * Pure and total, because "which session did it use" must not depend on the order the service
+ * returned or on the second the command was run (llp/0005 §Which session, when there is more than
+ * one). The rule, in order:
+ *
+ * 1. only `agent-device` sessions are candidates at all;
+ * 2. the one `.env.eas-simulator` names, when it is among them — the file is a bad existence proof
+ *    and a good preference, because it is the session this project started;
+ * 3. the platform the caller asked for;
+ * 4. the most recently created, `id` ascending as the final tiebreaker so two sessions created in
+ *    the same millisecond still order the same way on every run.
+ *
+ * A session on the *other* platform is still returned when it is all there is: the caller compares
+ * and raises `cloudPlatformMismatchError`, which says a session exists and is not the one asked
+ * for — an answer that "no session" would have hidden.
+ */
+export function selectCloudSession(
+  sessions: CloudSessionInfo[],
+  { preferredId = null, platform = null }: { preferredId?: string | null; platform?: CloudPlatform | null } = {}
+): CloudSessionSelection {
+  const live = sessions.filter((session) => isActiveSessionStatus(session.status));
+  const candidates = live.filter(isDrivableSession);
+  const wrongType = live.filter((session) => !isDrivableSession(session));
+
+  const ranked = [...candidates].sort((a, b) => {
+    const preferred = rank(b.id === preferredId) - rank(a.id === preferredId);
+    if (preferred !== 0) {
+      return preferred;
+    }
+    const wanted = rank(b.platform === platform) - rank(a.platform === platform);
+    if (wanted !== 0) {
+      return wanted;
+    }
+    const newest = (b.createdAt ?? '').localeCompare(a.createdAt ?? '');
+    return newest !== 0 ? newest : (a.id ?? '').localeCompare(b.id ?? '');
+  });
+
+  return { selected: ranked[0] ?? null, candidates: ranked, wrongType };
+}
+
+function rank(value: boolean): number {
+  return value ? 1 : 0;
+}
+
+/** What `simulator:availability --json` said about the account. */
+export interface CloudAvailability {
+  /** Whether the feature is on. Null when the answer could not be read. */
+  available: boolean | null;
+  /** Where access comes from, which the service returns only for a gated account. */
+  waitlistUrl: string | null;
+}
+
+/**
+ * Read `simulator:availability --json`.
+ *
+ * `{available, accountName}` [observed — 2026-08-26, eas-cli 22.4.0, recorded in
+ * `src/__fixtures__/eas/simulator-availability.json`], plus `waitlistUrl` when and only when the account is gated [observed
+ * — `build/commands/simulator/availability.js`]. The URL is read rather than hard-coded here so a
+ * refusal quotes the service; {@link CLOUD_SIMULATOR_WAITLIST_URL} is the fallback for an older CLI
+ * that answers without one.
+ */
+export function parseAvailabilityJson(stdout: string): CloudAvailability {
   try {
     const parsed: unknown = JSON.parse(stdout.trim());
     if (isRecord(parsed) && typeof parsed.available === 'boolean') {
-      return parsed.available;
+      return { available: parsed.available, waitlistUrl: stringOf(parsed.waitlistUrl) };
     }
   } catch {
     // An answer this cannot read establishes nothing, which is what null says.
   }
-  return null;
+  return { available: null, waitlistUrl: null };
 }
 
 /** What this project has, or has not, on EAS Simulator right now. */
 export type CloudSessionState =
   /** A session is up and can be driven. */
   | 'active'
-  /** A session id is on disk and the service says that session is over. */
+  /** The dotenv names a session, and the service does not list it among the running ones. */
   | 'inactive'
-  /** This project has never started one, so there is no id to ask about. */
+  /** The service lists nothing this CLI can drive. */
   | 'none'
   /** Nothing could be established: no EAS CLI, an unreadable answer, or a binary that is not it. */
   | 'unknown';
@@ -235,10 +435,24 @@ export interface CloudSessionProbe {
   platform: CloudPlatform | null;
   /** The status the service reported, verbatim. Null when nothing answered. */
   status: string | null;
+  /** The `--name` of the session that was picked, when it has one. */
+  sessionName: string | null;
+  /** How many drivable sessions the listing held, so a report can say a choice was made. */
+  candidateCount: number;
+  /**
+   * How many live sessions were dropped for having a controller this CLI cannot speak to.
+   *
+   * Carried so a failure that is *not* about the cloud — a `navigate` with no device at all — can
+   * still name the session that is up. "No device found" next to a running `serve-sim` is true and
+   * unhelpful, and the reader is one `simulator:start` away from a device this CLI can drive.
+   */
+  otherSessionCount: number;
   /** Why the state is what it is, for a failure that has to explain itself. Null when `active`. */
   reason: string | null;
   /** Whether the account has EAS Simulator at all, when it was worth asking. Null when it was not. */
   available: boolean | null;
+  /** Where a gated account asks for access, when the service named it. */
+  waitlistUrl: string | null;
   /**
    * The EAS CLI run that failed, when one did.
    *
@@ -258,9 +472,13 @@ export function cloudSessionEnvPath(projectRoot: string): string {
 /**
  * The session id this project last started, read off disk. Never throws.
  *
- * One `readFileSync`, and the gate in front of every subprocess this module would otherwise spawn:
- * a machine with no session file is a machine with no cloud simulator, established for the cost of
- * a `stat`, on the failure path of every `navigate` that found no local device.
+ * Two callers, and neither of them treats it as proof of anything running (llp/0005 §Finding the
+ * session):
+ *
+ * - the **preference** in {@link selectCloudSession}, when the service lists more than one session;
+ * - the **suggestion ladders** — `status.next`, the `start`/`dev` banner, `dev:wait`'s open-app rung
+ *   — which promise to be instant and so may not spawn an `eas`. A suggestion naming a dead session
+ *   costs one command that says so; a banner held up by a network call costs every run.
  */
 export function readCloudSessionIdSync(projectRoot: string): string | null {
   try {
@@ -303,81 +521,54 @@ export interface CloudRunResult {
 }
 
 /**
- * Ask the service about this project's session. Never throws: no session is an answer.
+ * Ask the service what this project has running. Never throws: no session is an answer.
  *
- * Three cheap questions in order, and each one is skipped when the one before it settled the
- * matter: is there an `eas` at all, is there a session id on disk, and — only then — what does the
- * service say about it. The availability check is last and only for the `none` case, because it is
- * the one question that turns "start a session" into "this account cannot".
+ * One listing, and a second read-only request only when the listing held nothing usable. The
+ * dotenv is read too, but not as a gate — it is the preference {@link selectCloudSession} applies
+ * when the service reports more than one live session (llp/0005 §Finding the session).
+ *
+ * `platform` says which platform the caller would rather have. It is a **preference, not a
+ * filter**: a session on the other platform still comes back, because "there is a session and it is
+ * an Android one" is an answer and "there is no session" would not be.
  */
 export async function probeCloudSessionAsync({
   projectRoot,
   easCli,
+  platform = null,
   timeoutMs = CLOUD_SESSION_TIMEOUT_MS,
-}: CloudRunOptions): Promise<CloudSessionProbe> {
+}: CloudRunOptions & { platform?: CloudPlatform | null }): Promise<CloudSessionProbe> {
   const cli = easCli ?? resolveEasCli(projectRoot);
   if (!cli) {
-    return {
-      state: 'unknown',
-      sessionId: null,
-      platform: null,
-      status: null,
-      available: null,
-      failure: null,
-      reason:
-        'no "eas" binary was found in node_modules/.bin or on PATH, so nothing could be asked about a cloud simulator session',
-    };
+    return unknownSession(
+      null,
+      'no "eas" binary was found in node_modules/.bin or on PATH, so nothing could be asked about a cloud simulator session'
+    );
   }
 
-  const sessionId = readCloudSessionIdSync(projectRoot);
-  if (sessionId == null) {
-    // No id on disk. Whether that is "start one" or "this account has none" is worth one read-only
-    // request, and only this branch pays for it.
-    const availability = await runEasAsync(cli, buildAvailabilityArgs(), {
-      projectRoot,
-      timeoutMs,
-    });
-    // A check that stopped because nobody is signed in has established nothing about the account's
-    // access — and the next step for it is a person, not a session. Answered as `unknown` with the
-    // run attached, so the caller raises the handoff rather than "this project has no session".
-    if (needsHumanFor(availability)) {
-      return {
-        ...unknownSession('', 'no Expo account is signed in'),
-        sessionId: null,
-        failure: availability,
-      };
-    }
-    const available = availability.spawnError ? null : parseAvailabilityJson(availability.stdout);
-    return {
-      state: 'none',
-      sessionId: null,
-      platform: null,
-      status: null,
-      available,
-      failure: null,
-      reason:
-        available === false
-          ? 'EAS Simulator is not enabled on this account, so no session can be started for this project'
-          : `no ${CLOUD_SESSION_ENV_FILE} names a session, so this project has not started one`,
-    };
-  }
+  // The file is read before the listing and used after it: it names the session this project
+  // started, which is the tiebreaker when the account has several up at once.
+  const preferredId = readCloudSessionIdSync(projectRoot);
 
-  const result = await runEasAsync(cli, buildSessionGetArgs(sessionId), { projectRoot, timeoutMs });
+  const result = await runEasAsync(cli, buildSessionListArgs(), { projectRoot, timeoutMs });
   if (result.spawnError) {
-    return unknownSession(sessionId, `"${result.command}" could not be run (${result.spawnError})`);
+    return unknownSession(
+      preferredId,
+      `"${result.command}" could not be run (${result.spawnError})`
+    );
   }
-  // A binary that is not the EAS CLI has said nothing about the session, and reading its exit code
-  // as "the session is over" would send a caller to start a second billed one (`wrapperCrash.ts`).
+  // A binary that is not the EAS CLI has said nothing about this project's sessions, and reading its
+  // exit code as "there are none" would send a caller to start a second billed one
+  // (`wrapperCrash.ts`).
   if (looksLikeWrapperCrash({ tool: 'eas', ...result })) {
     return unknownSession(
-      sessionId,
+      preferredId,
       `the "eas" at ${result.binPath} exited ${result.exitCode} and printed nothing an eas run would print, so it may not be the EAS CLI`
     );
   }
   if (result.exitCode !== 0) {
     return {
       ...unknownSession(
-        sessionId,
+        preferredId,
         `"${result.command}" exited ${result.exitCode ?? 'on a signal'}${
           firstLine(result.stderr) ? `: ${firstLine(result.stderr)}` : ''
         }`
@@ -386,30 +577,129 @@ export async function probeCloudSessionAsync({
     };
   }
 
-  const session = parseSessionJson(result.stdout);
-  if (!session) {
-    return unknownSession(sessionId, `"${result.command}" answered with JSON this CLI cannot read`);
+  const sessions = parseSessionListJson(result.stdout);
+  if (!sessions) {
+    return unknownSession(
+      preferredId,
+      `"${result.command}" answered with JSON this CLI cannot read`
+    );
   }
-  if (!isActiveSessionStatus(session.status)) {
+
+  const { selected, candidates, wrongType } = selectCloudSession(sessions, {
+    preferredId,
+    platform,
+  });
+  if (selected?.id != null) {
     return {
-      state: 'inactive',
-      sessionId: session.id ?? sessionId,
-      platform: session.platform,
-      status: session.status,
+      state: 'active',
+      sessionId: selected.id,
+      platform: selected.platform,
+      status: selected.status,
+      sessionName: selected.name,
+      candidateCount: candidates.length,
+      otherSessionCount: wrongType.length,
       available: true,
+      waitlistUrl: null,
       failure: null,
-      reason: `session ${session.id ?? sessionId} is ${session.status ?? 'in an unreported state'}, not ${ACTIVE_SESSION_STATUS}`,
+      reason: null,
     };
   }
 
-  return {
-    state: 'active',
-    sessionId: session.id ?? sessionId,
-    platform: session.platform,
-    status: session.status,
-    available: true,
+  return await noUsableSessionAsync({
+    cli,
+    projectRoot,
+    timeoutMs,
+    preferredId,
+    wrongType,
+  });
+}
+
+/**
+ * The listing came back with nothing this CLI can drive. Work out which kind of nothing it is.
+ *
+ * This is the one branch that pays for the availability check, and it pays for it because it is the
+ * one branch whose instruction changes: "start a session" is wrong for an account that cannot have
+ * one, and telling somebody to run a command that will refuse them is a dead end where a waitlist
+ * link is a next step.
+ */
+async function noUsableSessionAsync({
+  cli,
+  projectRoot,
+  timeoutMs,
+  preferredId,
+  wrongType,
+}: {
+  cli: EasCli;
+  projectRoot: string;
+  timeoutMs: number;
+  preferredId: string | null;
+  wrongType: CloudSessionInfo[];
+}): Promise<CloudSessionProbe> {
+  const availability = await runEasAsync(cli, buildAvailabilityArgs(), { projectRoot, timeoutMs });
+  // A check that stopped because nobody is signed in has established nothing about the account's
+  // access — and the next step for it is a person, not a session. Answered as `unknown` with the
+  // run attached, so the caller raises the handoff rather than "this project has no session".
+  if (needsHumanFor(availability)) {
+    return {
+      ...unknownSession(preferredId, 'no Expo account is signed in'),
+      failure: availability,
+    };
+  }
+  const { available, waitlistUrl } = availability.spawnError
+    ? { available: null, waitlistUrl: null }
+    : parseAvailabilityJson(availability.stdout);
+
+  const base = {
+    platform: null,
+    status: null,
+    sessionName: null,
+    candidateCount: 0,
+    otherSessionCount: wrongType.length,
+    available,
+    waitlistUrl: waitlistUrl ?? (available === false ? CLOUD_SIMULATOR_WAITLIST_URL : null),
     failure: null,
-    reason: null,
+  };
+
+  if (available === false) {
+    return {
+      ...base,
+      state: 'none',
+      sessionId: null,
+      reason:
+        'EAS Simulator is not enabled on this account, so no session can be started for this project',
+    };
+  }
+  // A live session of a type this CLI cannot drive is not "no session". Naming the types is what
+  // stops a reader from starting a second billed session next to the one they are already paying
+  // for, and it is the only way "there is nothing running" and "the thing running answers a
+  // different client" can be told apart.
+  if (wrongType.length > 0) {
+    const types = [...new Set(wrongType.map((session) => session.type ?? 'an unreported type'))];
+    return {
+      ...base,
+      state: 'none',
+      sessionId: null,
+      reason: `this project has ${wrongType.length} running EAS Simulator session${
+        wrongType.length === 1 ? '' : 's'
+      } (${types.join(', ')}) and none of them is a "${DRIVABLE_SESSION_TYPE}" session, which is the only kind this CLI can send a device verb to`,
+    };
+  }
+  // The dotenv names a session the service did not list as running. The file outlives the session,
+  // so this is the common shape of a stale one — and saying so is what stops the id in it from
+  // reading as an answer.
+  if (preferredId != null) {
+    return {
+      ...base,
+      state: 'inactive',
+      sessionId: preferredId,
+      reason: `${CLOUD_SESSION_ENV_FILE} names session ${preferredId}, and the service does not list it among this project's running sessions, so that session has ended`,
+    };
+  }
+  return {
+    ...base,
+    state: 'none',
+    sessionId: null,
+    reason: 'the service lists no running EAS Simulator session for this project',
   };
 }
 
@@ -420,6 +710,20 @@ export function openUrlOnCloudSimulatorAsync({
   ...options
 }: CloudRunOptions & { url: string; platform: CloudPlatform }): Promise<CloudRunResult> {
   return runCloudVerbAsync(buildCloudOpenUrlArgs({ url, platform }), options);
+}
+
+/**
+ * End one app on the cloud simulator, leaving the session up.
+ *
+ * The cloud form of `simctl terminate` and `am force-stop`. Never throws for a verb that ran and
+ * refused — the caller weighs "it was not running" against what it is trying to do, exactly as it
+ * does for the local backends.
+ */
+export function stopAppOnCloudSimulatorAsync({
+  appId,
+  ...options
+}: CloudRunOptions & { appId: string }): Promise<CloudRunResult> {
+  return runCloudVerbAsync(buildCloudStopAppArgs({ appId }), options);
 }
 
 /** Take a screenshot of the cloud simulator into a local file. */
@@ -479,7 +783,9 @@ export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandE
       [
         'EAS Simulator is not enabled on this account, so there is no cloud simulator to open the link on.',
         `Why: ${probe.reason ?? 'the availability check answered that the feature is off for this account'}. It is a limited-access EAS feature that is still rolling out, so it is not a thing this command can turn on.`,
-        `How: open the link on a local device instead — boot a simulator or attach a device and run this command again — or hand the URL to whatever can open it with "npx exagent navigate <route> --print-url".`,
+        // The URL comes from the service when it sends one, so a refusal ends in where access comes
+        // from rather than only in "no".
+        `How: ask for access at ${probe.waitlistUrl ?? CLOUD_SIMULATOR_WAITLIST_URL}. Until then, open the link on a local device — boot a simulator or attach a device and run this command again — or hand the URL to whatever can open it with "npx exagent navigate <route> --print-url".`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent navigate / --print-url';
@@ -489,9 +795,9 @@ export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandE
   const error = new CommandError(
     'NO_CLOUD_SIMULATOR_SESSION',
     [
-      'No EAS Simulator session is running for this project, so there is no cloud simulator to open the link on.',
-      `Why: ${probe.reason ?? 'nothing named a live session'}. A cloud simulator is a session that is started, driven and stopped — unlike a local simulator, there is nothing to find that somebody else left booted.`,
-      `How: start one with "${start}", then run this command again. The session bills until it is stopped, so end it with "npx eas simulator:stop" when the run is done. To open the link somewhere this CLI does not drive, "npx exagent navigate <route> --print-url" prints the URL and asks for no device.`,
+      'No EAS Simulator session this CLI can drive is running for this project, so there is no cloud simulator to open the link on.',
+      `Why: ${probe.reason ?? 'the service listed no running session'}. A cloud simulator is a session that is started, driven and stopped — unlike a local simulator, there is nothing to find that somebody else left booted.`,
+      `How: start one with "${start}", then run this command again. The session bills until it is stopped, so end it with "npx eas simulator:stop" when the run is done. To see what this project has running, "npx eas simulator:list --status in-progress" lists it. To open the link somewhere this CLI does not drive, "npx exagent navigate <route> --print-url" prints the URL and asks for no device.`,
     ].join('\n')
   );
   error.suggestedCommand = start;
@@ -515,12 +821,12 @@ export function cloudSessionUnknownError(probe: CloudSessionProbe): CommandError
       `Why: ${probe.reason ?? 'the EAS CLI gave no answer this command could read'}. ${
         probe.sessionId
           ? `${CLOUD_SESSION_ENV_FILE} names session ${probe.sessionId}, and whether that session is still up is exactly what could not be read — so this is not being reported as "no session", which would be an instruction to start a second billed one.`
-          : 'Nothing on this machine could be asked.'
+          : 'What this project has running could not be listed, so "no session" would be a guess, and acting on it would start a second billed one next to any that is up.'
       }`,
-      `How: run "npx eas simulator:get --json" to see what the CLI says, and check that the "eas" being run is the EAS CLI. Then run this command again, or open the URL elsewhere with "npx exagent navigate <route> --print-url".`,
+      `How: run "npx eas simulator:list --status in-progress" to see what the CLI says, and check that the "eas" being run is the EAS CLI. Then run this command again, or open the URL elsewhere with "npx exagent navigate <route> --print-url".`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx eas simulator:get --json';
+  error.suggestedCommand = 'npx eas simulator:list --status in-progress';
 
   // The same layer-3 hand-off a device verb does. A signed-out account stops the *question* about
   // the session exactly as it stops the answer, and both are a login rather than a broken CLI.
@@ -595,10 +901,18 @@ export function cloudNeedsTunnelError(url: string, hostType: string | null): Com
 /**
  * The failure for a device verb that ran and did not work.
  *
- * Three things folded into one place, because all three are about a subprocess this CLI cannot
+ * Four things folded into one place, because all of them are about a subprocess this CLI cannot
  * verify: a binary that was never the EAS CLI is named as such rather than quoted (`wrapperCrash`),
  * a signed-out account becomes the needs-human handoff and exit `7` rather than a plain failure,
- * and anything else quotes what the tool printed.
+ * **the controller refusing is separated from the syntax being wrong**, and anything else quotes
+ * what the tool printed.
+ *
+ * That third one was a live finding. The first cut had one "Why" for every non-zero exit — "a verb
+ * or a flag this CLI sends may not be the one the installed eas-cli has" — and the first real
+ * session printed `Error (COMMAND_FAILED): Simulator device failed to open myapp://.` under it
+ * [observed — 2026-08-26]. The argv was right, the bridge worked, and the **device** had refused a
+ * scheme no app on it had registered; sending that reader to `--help` would have had them checking
+ * a command that was already correct.
  */
 export function cloudVerbFailedError(
   result: CloudRunResult,
@@ -613,6 +927,21 @@ export function cloudVerbFailedError(
         `How: install the EAS CLI with "npm install -g eas-cli", or add it to the project with "npm install --save-dev eas-cli", then run this command again.`,
       ].join('\n')
     );
+  }
+
+  // The controller's own refusal, which is a fact about the **device** rather than about the argv.
+  const controller = readControllerError(`${result.stderr}\n${result.stdout}`);
+  if (controller) {
+    const error = new CommandError(
+      'CLOUD_SIMULATOR_DEVICE_REFUSED',
+      [
+        `The cloud simulator refused the command, so ${what}`,
+        `Why: the session's controller ran and answered ${controller.code} — "${controller.message}" — so the command reached the device and the device is what said no. This is not a syntax problem: "${result.command}" was accepted and executed.`,
+        `How: ${how}`,
+      ].join('\n')
+    );
+    error.suggestedCommand = 'npx eas simulator:list --status in-progress';
+    return error;
   }
 
   const wrapperCrash = looksLikeWrapperCrash({ tool: 'eas', ...result });
@@ -651,16 +980,18 @@ export function cloudVerbFailedError(
 /**
  * The failure for an act the cloud backend has no verb for.
  *
- * Named rather than approximated. `eas simulator:stop` ends the **session** — the whole remote
- * machine — and running it for `runtime:stop`, which stops one app and leaves the device up, would
- * perform a much larger act than the one that was asked for and report it as that one.
+ * Kept for the acts that genuinely have none, and no longer used for `runtime:stop`: reading the
+ * controller found `close <appId>`, which ends the named app and leaves the device up (llp/0005
+ * §What the cloud backend can and cannot do). The distinction this text was protecting is real and
+ * is now a **flag** — `close --shutdown` would stop the billed machine, and this CLI never passes
+ * it — rather than a missing verb.
  */
 export function cloudVerbNotSupportedError(action: string): CommandError {
   const error = new CommandError(
     'CLOUD_SIMULATOR_UNSUPPORTED',
     [
       `${action} is not something this CLI can do on a cloud simulator, so nothing ran.`,
-      `Why: the controller that drives an EAS Simulator session has verbs for opening a link and taking a picture, and none for ending one app on the device. "eas simulator:stop" ends the whole session — the remote machine and everything on it — which is a larger act than the one asked for here, and doing it under this name would report a session teardown as an app that was stopped.`,
+      `Why: the controller that drives an EAS Simulator session has no verb for it. "eas simulator:stop" ends the whole session — the remote machine and everything on it — which is a larger act than the one asked for here, and doing it under this name would report a session teardown as the act that was requested.`,
       `How: to put the app back into a known state, open a route on it again with "npx exagent navigate / --cloud". To end the session itself, and its billing, run "npx eas simulator:stop".`,
     ].join('\n')
   );
@@ -682,13 +1013,17 @@ export function easCliMissingError(): CommandError {
   return error;
 }
 
-function unknownSession(sessionId: string, reason: string): CloudSessionProbe {
+function unknownSession(sessionId: string | null, reason: string): CloudSessionProbe {
   return {
     state: 'unknown',
     sessionId: sessionId || null,
     platform: null,
     status: null,
+    sessionName: null,
+    candidateCount: 0,
+    otherSessionCount: 0,
     available: null,
+    waitlistUrl: null,
     failure: null,
     reason,
   };

@@ -467,7 +467,7 @@ async function openUrlOnBackendAsync(
   if (result.spawnError || result.exitCode !== 0) {
     throw cloudVerbFailedError(result, {
       what: `${url} was not opened on the cloud simulator.`,
-      how: `Check the session is still running with "npx eas simulator:get --json" — a session that has ended keeps its id in .env.eas-simulator, so the file alone is not proof. Start a new one if it has.`,
+      how: `Check the session is still running with "npx eas simulator:list --status in-progress" — a session can end between the moment it was listed and the moment a verb reaches it. Start a new one if it has.`,
     });
   }
   return {
@@ -606,16 +606,22 @@ async function confirmAttachAsync({
   let targets = await waitAsync(startedAt + budgetMs);
   let recovered = false;
 
-  // `local-android` and not `android`: the recovery is a force-stop, and the cloud controller has
-  // no verb for one (`cloudVerbNotSupportedError`). Running `adb` against a session id would aim
-  // the SDK at a device that is not on this machine.
-  if (targets === 0 && device.backend === 'local-android' && options.recoverStuckApp !== false) {
+  // The gate is the **platform**, not the machine. It used to be `local-android`, because the
+  // recovery is a force-stop and the first cut of the cloud backend believed the controller had no
+  // verb for one. `agent-device close <app-id>` is that verb, so an Android session recovers
+  // exactly as an Android emulator does (llp/0005 §What the cloud backend can and cannot do). It
+  // stays Android-only: this is the Android-specific stuck-app shape of llp/0005 §Android, and
+  // running it on iOS would restart an app that is merely slow.
+  const canRecover = device.platform === 'android' && device.backend !== 'local-ios';
+  if (targets === 0 && canRecover && options.recoverStuckApp !== false) {
     const appId = await resolveStuckAppIdAsync(projectRoot, devServerUrl, device, options.appId);
     const stopped = await stopAppOnDeviceAsync({
       platform: device.platform,
       deviceId: device.deviceId,
       appId,
       adb: device.adb,
+      backend: device.backend,
+      projectRoot,
     });
     debugEvent('attach_recovery', { appId, stopped: stopped.ok });
     if (stopped.ok) {
@@ -626,6 +632,8 @@ async function confirmAttachAsync({
         url,
         appId: options.appId,
         adb: device.adb,
+        backend: device.backend,
+        projectRoot,
       });
       if (again.exitCode === 0) {
         targets = await waitAsync(Date.now() + budgetMs);
