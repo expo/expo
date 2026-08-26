@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a crash when a focused `TextField` or `SecureField` is unmounted inside a list row that is being removed, for example closing a modal with the keyboard up on a field nested in `SwipeActions`. Hosted text inputs now blur before React removes their native views. ([#49348](https://github.com/expo/expo/issues/49348) by [@nishan](https://github.com/intergalacticspacehighway)) ([#49357](https://github.com/expo/expo/pull/49357) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
 - Fixed the keyboard staying open when tapping outside a text field hosted by `<Host>`. A parent `ScrollView`'s tap-to-dismiss, its `keyboardShouldPersistTaps` setting, and `Keyboard.dismiss()` now reach hosted text fields. React Native treats the whole `<Host>` as the input, so a tap on other content inside the same host still keeps the keyboard open. ([#48788](https://github.com/expo/expo/pull/48788) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix a hosted `Pressable` dropping its press when the finger moves, by measuring hosted React Native views where SwiftUI placed them. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix hosted React Native views receiving no touches inside a `BottomSheet` or `Popover`. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))

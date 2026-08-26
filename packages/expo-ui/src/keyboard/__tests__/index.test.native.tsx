@@ -57,14 +57,16 @@ function FakeTextField({
   field,
   autoFocus,
   onFocusChange,
+  options,
   ref,
 }: {
   field: FakeField;
   autoFocus?: boolean;
   onFocusChange?: (focused: boolean) => void;
+  options?: { blurOnUnmount?: boolean };
   ref?: Ref<FakeField>;
 }) {
-  const hosted = useHostedTextInput<FakeField>(ref, onFocusChange);
+  const hosted = useHostedTextInput<FakeField>(ref, onFocusChange, options);
   const attach = hosted.ref;
   const reportFocus = hosted.onFocusChange;
 
@@ -325,5 +327,52 @@ describe('React Native asking a host to focus', () => {
 
     expect(TextInputState.currentlyFocusedInput()).toBeNull();
     expect(passedThroughFocusTextInput).not.toHaveBeenCalled();
+  });
+});
+
+describe('blurring a field when it unmounts', () => {
+  it('blurs a field that holds focus', () => {
+    const field = createField();
+    const view = render(
+      <FakeHost hostView={createHostView()}>
+        <FakeTextField field={field} options={{ blurOnUnmount: true }} />
+      </FakeHost>
+    );
+
+    act(() => field.reportFocus(true));
+    view.unmount();
+
+    // The native views are still attached while a layout-effect cleanup runs, so the
+    // field can be blurred before the row holding it goes away.
+    expect(field.blur).toHaveBeenCalled();
+  });
+
+  it('leaves a field that does not hold focus alone', () => {
+    const field = createField();
+    const view = render(
+      <FakeHost hostView={createHostView()}>
+        <FakeTextField field={field} options={{ blurOnUnmount: true }} />
+      </FakeHost>
+    );
+
+    view.unmount();
+
+    expect(field.blur).not.toHaveBeenCalled();
+  });
+
+  it('leaves a focused field alone without the option', () => {
+    const field = createField();
+    const view = render(
+      <FakeHost hostView={createHostView()}>
+        <FakeTextField field={field} />
+      </FakeHost>
+    );
+
+    act(() => field.reportFocus(true));
+    view.unmount();
+
+    // Compose binds `blur` to the host's focus manager, which clears focus for whichever
+    // component holds it, so the behaviour stays opt-in.
+    expect(field.blur).not.toHaveBeenCalled();
   });
 });

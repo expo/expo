@@ -29,7 +29,13 @@ export declare function TextInputHostProvider({ hostRef, children, }: {
  * the focus handler to wire to its focus event. The app's own ref and callback
  * keep working.
  */
-export declare function useHostedTextInput<T extends TextInputHandle>(ref: Ref<T> | undefined, onFocusChange: ((focused: boolean) => void) | undefined): {
+export declare function useHostedTextInput<T extends TextInputHandle>(ref: Ref<T> | undefined, onFocusChange: ((focused: boolean) => void) | undefined, options?: {
+    /**
+     * Blur the field when it unmounts. SwiftUI only: `blur` there affects just this field, while
+     * the Compose handler clears focus for whichever component currently holds it in the host.
+     */
+    blurOnUnmount?: boolean;
+}): {
     ref: (instance: T | null) => void;
     onFocusChange: (focused: boolean) => void;
 };
