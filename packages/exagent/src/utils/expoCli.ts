@@ -1,11 +1,10 @@
-import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
 import { debugEvent } from '../events';
 import { CommandError } from './errors';
+import { runInheritedAsync } from './inheritedRun';
 import { spawnSubprocessAsync, type CapturedOutput, type SubprocessResult } from './subprocess';
-import { resolveSpawnTarget } from './windowsShim';
 
 /** The `expo` CLI invocation to spawn. */
 export interface ExpoCliCommand {
@@ -35,9 +34,6 @@ export function resolveExpoCli(projectRoot: string, args: string[]): ExpoCliComm
   const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   return { command: npx, args: ['expo', ...args] };
 }
-
-/** Signals the terminal delivers to the whole process group, so the child gets them too. */
-const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
 
 export interface SpawnExpoOptions {
   /** Defaults to `capture`. `inherit` is {@link runExpoAsync}'s mode, and only its. */
@@ -114,48 +110,18 @@ export function runExpoAsync(projectRoot: string, args: string[]): Promise<numbe
   const { command, args: commandArgs } = resolveExpoCli(projectRoot, args);
   debugEvent('expo_resolved', { command, args: commandArgs });
 
-  return new Promise<number>((resolve, reject) => {
-    // On Windows the resolved bin is a batch shim, which only `cmd.exe` can run.
-    const target = resolveSpawnTarget(command, commandArgs);
-    const child = spawn(target.command, target.args, {
-      cwd: projectRoot,
-      stdio: 'inherit',
-      shell: target.shell,
-    });
-
-    const listeners = TERMINAL_SIGNALS.map((signal) => {
-      const forward = () => {
-        child.kill(signal);
-      };
-      process.on(signal, forward);
-      return { signal, forward } as const;
-    });
-    const stopForwardingSignals = () => {
-      for (const { signal, forward } of listeners) {
-        process.off(signal, forward);
-      }
-    };
-
-    child.on('error', (error: NodeJS.ErrnoException) => {
-      stopForwardingSignals();
-      debugEvent('expo_spawn_failed', { command, error: debugEvent.error(error) });
-      if (error.code === 'ENOENT') {
-        reject(
-          new CommandError(
-            'EXPO_CLI_NOT_FOUND',
-            `Could not run the Expo CLI (${command}). The project has no expo dependency and "npx expo" is not available, so there is no CLI to drive. Install Expo in the project with "npm install expo", then run this command again.`
-          )
-        );
-        return;
-      }
-      reject(error);
-    });
-
-    child.on('close', (code, signal) => {
-      stopForwardingSignals();
-      const exitCode = code ?? (signal === 'SIGINT' || signal === 'SIGTERM' ? 0 : 1);
-      debugEvent('expo_exit', { code: exitCode, signal: signal ?? undefined });
-      resolve(exitCode);
-    });
+  return runInheritedAsync(command, commandArgs, {
+    cwd: projectRoot,
+    onExit: (code, signal) => debugEvent('expo_exit', { code, signal: signal ?? undefined }),
+    onSpawnError: (error) =>
+      debugEvent('expo_spawn_failed', { command, error: debugEvent.error(error) }),
+  }).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === 'ENOENT') {
+      throw new CommandError(
+        'EXPO_CLI_NOT_FOUND',
+        `Could not run the Expo CLI (${command}). The project has no expo dependency and "npx expo" is not available, so there is no CLI to drive. Install Expo in the project with "npm install expo", then run this command again.`
+      );
+    }
+    throw error;
   });
 }

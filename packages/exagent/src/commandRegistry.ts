@@ -257,6 +257,16 @@ export const commandAliases: { [alias: string]: string } = {
  * Source of truth: the `commands` map of `packages/@expo/cli/src/index.ts` [observed —
  * 2026-08-22], in its own order, minus `start` and `install`, which this CLI wraps.
  */
+/**
+ * The forwarded commands that act on the machine's session rather than on the project.
+ *
+ * A partition of {@link forwardedCommands}, not a separate surface. They read and write
+ * `~/.expo/state.json`, which exists whether or not the current directory has an Expo app in it —
+ * so unlike `prebuild` or `export`, "there is no project CLI here" is not a reason for them to
+ * fail. `src/passthrough/auth.ts` is what they do instead.
+ */
+export const authCommands: string[] = ['login', 'logout', 'register', 'whoami'];
+
 export const forwardedCommands: string[] = [
   // Project commands
   'run',
@@ -272,11 +282,9 @@ export const forwardedCommands: string[] = [
   // it is an alias of this CLI's `install` wrapper (see `commandAliases`).
   'customize',
   'lint',
-  // Auth
-  'login',
-  'logout',
-  'register',
-  'whoami',
+  // Auth. Forwarded like the rest, but what they act on is the machine rather than the project,
+  // so they have a second CLI to fall back to — see `authCommands`.
+  ...authCommands,
 ];
 
 /** What one argv resolved to. Every case is something `cli.ts` can act on without deciding again. */
@@ -456,8 +464,13 @@ export const helpSections: HelpSection[] = [
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
   { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
   {
+    title: 'Account',
+    commands: authCommands,
+    note: 'No project needed: these act on the ~/.expo session, which the expo and eas CLIs share. In an Expo project they run the project\'s expo; anywhere else they run the EAS CLI.',
+  },
+  {
     title: 'Expo CLI (fallback to npx expo <command>)',
-    commands: forwardedCommands,
+    commands: forwardedCommands.filter((command) => !authCommands.includes(command)),
   },
 ];
 

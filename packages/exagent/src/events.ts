@@ -15,6 +15,24 @@ declare module '2g' {
      * @see llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
      */
     'cli:expo_passthrough': { command: string; args: string[] };
+    /**
+     * An auth command was answered, and by which CLI.
+     *
+     * `login`, `logout`, `register` and `whoami` act on the machine's `~/.expo` session rather than
+     * on the project, so they fall back to the EAS CLI where there is no `expo` to forward to.
+     * `source` is which of the four candidates ran, so a caller reading only the stream can tell a
+     * forward from a fallback.
+     *
+     * @see src/passthrough/auth.ts
+     */
+    'cli:auth_passthrough': {
+      command: string;
+      args: string[];
+      tool: 'expo' | 'eas';
+      source: string;
+      /** The invocation, as it would be written. */
+      cli: string;
+    };
     'cli:skills_sync_failed': { error: SerializedError };
     /**
      * A command failed with a known error. `suggestedCommand` is the machine-readable next

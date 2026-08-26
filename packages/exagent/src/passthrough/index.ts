@@ -7,6 +7,23 @@
 
 import { event } from '../events';
 import type { Command } from '../types';
+import { authCommands } from '../commandRegistry';
+import { exagentAuthPassthrough } from './auth';
+
+/**
+ * The command that answers a forwarded name, whichever CLI ends up answering it.
+ *
+ * One split, and it is about *what the command acts on* rather than about which CLI owns the name.
+ * `prebuild`, `export` and the rest act on the project, so there is exactly one right CLI for them
+ * and it is the project's. The four auth commands act on the machine's `~/.expo` session, which a
+ * directory with no Expo app in it still has — so they get the fallback chain in `./auth`, and
+ * every other forwarded command keeps failing honestly when there is no project CLI to run it.
+ */
+export function exagentPassthrough(command: string): Command {
+  return authCommands.includes(command)
+    ? exagentAuthPassthrough(command)
+    : exagentExpoPassthrough(command);
+}
 
 /**
  * The command that forwards `<command> <args...>` to the project's `expo` CLI.
