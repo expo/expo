@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [inline modules] Resolve the `mainTarget` in Podfile.properties.json from the Xcode project (application product type) instead of the app name, falling back to the folder-derived name when no iOS project exists. This keeps autolinking's target matching in sync with the pbxproj. Projects without inline modules skip the pbxproj parse. ([#49413](https://github.com/expo/expo/pull/49413) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

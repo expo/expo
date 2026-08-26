@@ -8,8 +8,11 @@ export interface InlineModulesXcodeParams {
    * List of targets to which inline modules files are added. If undefined defaults to the main target only.
    */
   xcodeProjectTargets?: string[];
-  /** app config name */
-  name: string;
+  /**
+   * The app name from the Expo config. Used as the tiebreak fallback when the
+   * project has several application targets and no source folder is on disk.
+   */
+  appName?: string;
 }
 
 type UUID = string;
@@ -24,20 +27,62 @@ type NativeTarget = NonNullable<
   fileSystemSynchronizedGroups?: { value: string; comment?: string }[];
 };
 
-function escapeXMLCharacters(original: string): string {
-  const noAmps = original.replace('&', '&amp;');
-  const noLt = noAmps.replace('<', '&lt;');
-  const noGt = noLt.replace('>', '&gt;');
-  const noApos = noGt.replace('"', '\\"');
-  return noApos.replace("'", "\\'");
-}
+const APPLICATION_PRODUCT_TYPE = 'com.apple.product-type.application';
 
-// Note that this main target name is based on how `@expo/cli/src/prebuild/renameTemplateAppNameAsync.ts` preprocesses the ios project template.
-// It is necessary to match the target name in the path to ExpoModulesProvider.swift for the main target as is used when generating it.
-function getMainTargetName(config: InlineModulesXcodeParams): string {
-  const name = config.name;
-  const safeName = escapeXMLCharacters(name);
-  return IOSConfig.XcodeUtils.sanitizedName(safeName);
+const unquote = (value: string) => value.replace(/^"(.*)"$/, '$1');
+
+// The pbxproj is the source of truth for the main target: names derived from the
+// app config can drift from it (older sanitizer output, or a manual rename).
+// Iterated by hand because `pbxProject.getTarget` crashes on aggregate and legacy
+// targets, which are absent from the PBXNativeTarget section.
+// Keep in sync with `resolveMainTargetName` in `@expo/prebuild-config`.
+function getMainApplicationTargetUuid(
+  pbxProject: XcodeProject,
+  projectRoot: string,
+  appName: string | undefined
+): UUID {
+  // The section is absent when the project holds only aggregate/legacy targets.
+  const nativeTargets = pbxProject.hash.project.objects.PBXNativeTarget ?? {};
+  const applicationTargetUuids = pbxProject
+    .getFirstProject()
+    .firstProject.targets.map((target: { value: UUID }) => target.value)
+    .filter((uuid: UUID) => {
+      const productType = (nativeTargets[uuid] as NativeTarget | undefined)?.productType;
+      return typeof productType === 'string' && unquote(productType) === APPLICATION_PRODUCT_TYPE;
+    });
+
+  if (applicationTargetUuids.length === 0) {
+    throw new Error(
+      'Inline modules could not find an application target (product type "com.apple.product-type.application") in your iOS Xcode project. ' +
+        'Inline module directories are attached to the main application target by default. ' +
+        'Check that the project builds in Xcode, or list the targets explicitly in `expo.experiments.inlineModules.xcodeProjectTargets` in your app config.'
+    );
+  }
+  if (applicationTargetUuids.length > 1) {
+    // A paired watchOS app also uses the application product type; prefer the
+    // target named after the on-disk project.
+    const targetName = (uuid: UUID) => unquote(String((nativeTargets[uuid] as NativeTarget).name));
+    let projectName: string | null;
+    try {
+      projectName = IOSConfig.XcodeUtils.getProjectName(projectRoot);
+    } catch {
+      // No source folder on disk; fall back to the config-derived name, the
+      // same tiebreak `resolveMainTargetName` in @expo/prebuild-config uses.
+      projectName = appName ? IOSConfig.XcodeUtils.sanitizedName(appName) : null;
+    }
+    const named = applicationTargetUuids.find((uuid: UUID) => targetName(uuid) === projectName);
+    if (named) {
+      return named;
+    }
+    console.warn(
+      `Inline modules found multiple application targets (${applicationTargetUuids
+        .map(targetName)
+        .join(', ')}) and none matches the project name. ` +
+        `Using the first one, "${targetName(applicationTargetUuids[0]!)}". ` +
+        'Set `expo.experiments.inlineModules.xcodeProjectTargets` in your app config to pick the targets explicitly.'
+    );
+  }
+  return applicationTargetUuids[0]!;
 }
 
 function getNativeTargetSynchronizedGroupsMap(pbxProject: XcodeProject) {
@@ -45,7 +90,9 @@ function getNativeTargetSynchronizedGroupsMap(pbxProject: XcodeProject) {
   const nativeTargetSynchronizedGroups = new Map<UUID, Set<UUID>>();
 
   for (const target of pbxProject.getFirstProject().firstProject.targets) {
-    const nativeTargetGroup = objects.PBXNativeTarget[target.value] as NativeTarget | undefined;
+    const nativeTargetGroup = (objects.PBXNativeTarget ?? {})[target.value] as
+      | NativeTarget
+      | undefined;
     const synchronizedGroups = new Set<UUID>();
 
     if (nativeTargetGroup?.fileSystemSynchronizedGroups) {
@@ -98,7 +145,7 @@ export async function updateXcodeProject(
   const mainGroupUUID = pbxProject.getFirstProject().firstProject.mainGroup;
   const objects = pbxProject.hash.project.objects;
   const projectRootRelativeToIos = '..';
-  const pbxNativeTarget = pbxProject.hash.project.objects.PBXNativeTarget;
+  const pbxNativeTarget = pbxProject.hash.project.objects.PBXNativeTarget ?? {};
 
   const nativeTargetSynchronizedGroups = getNativeTargetSynchronizedGroupsMap(pbxProject);
   const addWatchedDirectoryToTarget = (
@@ -148,6 +195,10 @@ export async function updateXcodeProject(
     return newUUID;
   };
 
+  // If the xcodeProjectTargets are not provided, default to the main target
+  const mainTargetUuid = xcodeProjectTargets
+    ? null
+    : getMainApplicationTargetUuid(pbxProject, projectRoot, inlineModulesXcodeParams.appName);
   const targetsToUpdate = pbxProject
     .getFirstProject()
     .firstProject.targets.filter((target: { value: UUID; comment: string }) => {
@@ -157,10 +208,10 @@ export async function updateXcodeProject(
         return false;
       }
       if (!xcodeProjectTargets) {
-        // If the xcodeProjectTargets are not provided, default to the main target
-        return targetName === getMainTargetName(inlineModulesXcodeParams);
+        return targetUuid === mainTargetUuid;
       }
-      return xcodeProjectTargets.has(targetName);
+      // pbxproj quotes names containing spaces; the user config value is unquoted.
+      return xcodeProjectTargets.has(unquote(targetName));
     });
 
   for (const watchedDirectory of swiftWatchedDirectories) {

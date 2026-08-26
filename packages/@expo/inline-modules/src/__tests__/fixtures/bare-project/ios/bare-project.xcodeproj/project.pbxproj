@@ -35,9 +35,26 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				F43ABE372F2366380051AD1C /* HelloWorld */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXNativeTarget section */
+		F43ABE372F2366380051AD1C /* HelloWorld */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F43ABE392F2366380051AD1C /* Build configuration list for PBXNativeTarget "bare-project" */;
+			buildPhases = (
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HelloWorld;
+			productName = HelloWorld;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
 
 /* Begin XCBuildConfiguration section */
 		F43ABE352F2366380051AD1C /* Debug */ = {
@@ -56,6 +73,15 @@
 
 /* Begin XCConfigurationList section */
 		F43ABE342F2366380051AD1C /* Build configuration list for PBXProject "bare-project" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F43ABE352F2366380051AD1C /* Debug */,
+				F43ABE362F2366380051AD1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F43ABE392F2366380051AD1C /* Build configuration list for PBXNativeTarget "bare-project" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F43ABE352F2366380051AD1C /* Debug */,
