@@ -940,13 +940,21 @@ function contextHelp(argv: string[]): string {
 // subcommands exec the engine with the repo's .verify/ profile. roundup
 // stays native here — it is expo policy (emoji conventions, branch scoping,
 // cost tables) the engine has not absorbed yet.
-const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.6.3';
+const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.6.4';
 
 async function delegateToEngine(engineArgs: string[]): Promise<never> {
   const configDir = join(getExpoRepositoryRootDir(), '.verify');
   const result = await spawnAsync(
     'npx',
-    ['--yes', '-p', `@expo/verify@${ENGINE_VERSION}`, 'verify', ...engineArgs, '--config-dir', configDir],
+    [
+      '--yes',
+      '-p',
+      `@expo/verify@${ENGINE_VERSION}`,
+      'verify',
+      ...engineArgs,
+      '--config-dir',
+      configDir,
+    ],
     { stdio: 'inherit' }
   ).catch((error: { status?: number }) => ({ status: error.status ?? 1 }));
   process.exit(result.status ?? 0);
@@ -1006,4 +1014,3 @@ async function main(args: string[]): Promise<void> {
 function paint(code: string, s: string): string {
   return USE_COLOR ? `\x1b[${code}m${s}\x1b[0m` : s;
 }
-
