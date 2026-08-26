@@ -188,10 +188,6 @@ export const commandGroups: { [group: string]: CommandGroup } = {
         summary: 'Collect runtime errors over a time window',
         load: withAction('errors', () => import('./runtime').then((i) => i.exagentRuntime)),
       },
-      network: {
-        summary: `Collect the app's HTTP requests over a time window`,
-        load: withAction('network', () => import('./runtime').then((i) => i.exagentRuntime)),
-      },
       // Two actions with modules of their own, like `dev:wait`: they drive the app rather than
       // read it, so they take different options and print different reports, and folding them
       // into the shared `runtime` module would give one `--help` block three subjects.

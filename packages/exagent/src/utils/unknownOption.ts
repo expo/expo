@@ -37,7 +37,6 @@ export const OPTION_OWNERS: { [option: string]: string[] } = {
     'dev:wait',
     'runtime:eval',
     'runtime:errors',
-    'runtime:network',
     'runtime:reload',
     'runtime:stop',
     'navigate',

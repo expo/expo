@@ -112,6 +112,14 @@ declare module '2g' {
       /** How many of the collected errors got a stack mapped onto project files. */
       symbolicated: number;
     };
+    /**
+     * Deferred from v1 (2026-08-26): `runtime:network` is on the reference shelf
+     * (`src/deferred/runtime-network/`), so nothing emits this now.
+     *
+     * The declaration stays because it is the schema a consumer wrote against, and a deferral is
+     * not a schema change — the command comes back emitting these fields or it comes back as
+     * something else. See llp/0016 and llp/0005 §Network inspection.
+     */
     'cli:runtime_network': {
       devServerUrl: string;
       durationMs: number;

@@ -273,9 +273,11 @@ window. The flag exists because the asymmetry was itself the friction: an agent 
 `dev:wait` and not on `runtime:errors`, and had to parse `count` out of `--json` to close the loop
 that the exit code closes everywhere else.
 
-Only `errors` has it. `runtime:network`'s failed requests are something it reports _about_ the app —
-a 404 the app handles is not the command's operation failing — and there is no equivalent question
-for its exit code to answer.
+Only `errors` has it. The rule was written against `runtime:network`, which had no equivalent
+question for its exit code to answer: its failed requests are something it reports _about_ the app —
+a 404 the app handles is not the command's operation failing. That command was deferred out of v1 on
+2026-08-26 ([[0016-v1-scope]]), and the rule it established stands: a command that reports on the app
+does not gate on what it reported.
 
 **Amendment — a runtime that cannot answer is `22`, not `0`** [observed — friction run 6 (Android),
 2026-08-24; settled in [[0005-runtime-loop-tools]] §Android]. "The default stays `0` whatever it

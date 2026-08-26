@@ -21,12 +21,7 @@ export { resolveExpoGoLanUrl, resolveLanHost } from './network';
 export { dependsOnDevClientSync, easJsonExistsSync } from './projectFiles';
 export { buildReloadFollowUps, type ReloadFollowUpInput } from './reload';
 export { followUpsEnabled, reportFollowUps, type ReportFollowUpsOptions } from './report';
-export {
-  buildRuntimeErrorsFollowUps,
-  buildRuntimeNetworkFollowUps,
-  type RuntimeErrorsFollowUpInput,
-  type RuntimeNetworkFollowUpInput,
-} from './runtime';
+export { buildRuntimeErrorsFollowUps, type RuntimeErrorsFollowUpInput } from './runtime';
 export { buildSkillsSyncFollowUps, type SkillsSyncFollowUpInput } from './skills';
 export { buildSmokeFollowUps, type SmokeFollowUpInput } from './smoke';
 export {

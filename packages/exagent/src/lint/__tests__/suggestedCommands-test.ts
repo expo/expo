@@ -101,7 +101,6 @@ describe("the option lists the sweep checks against", () => {
         "runtime",
         "runtime:errors",
         "runtime:eval",
-        "runtime:network",
         "runtime:reload",
         "runtime:stop",
         "skills",

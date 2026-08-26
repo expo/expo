@@ -312,7 +312,6 @@ describe('exagent', () => {
     for (const command of [
       'runtime:eval',
       'runtime:errors',
-      'runtime:network',
       'runtime:reload',
       'runtime:stop',
       'navigate',

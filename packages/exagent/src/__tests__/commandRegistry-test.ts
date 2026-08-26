@@ -509,7 +509,7 @@ describe(formatGroupHelp, () => {
 
     expect(help).toContain('runtime:eval');
     expect(help).toContain('runtime:errors');
-    expect(help).toContain('runtime:network');
+    expect(help).toContain('runtime:reload');
     expect(help).toContain('Evaluate JavaScript in the running app');
   });
 
@@ -567,7 +567,7 @@ describe(flagsWithoutActionMessage, () => {
     expect(message).toContain('"exagent runtime --json"');
     expect(message).toContain('no default action');
     expect(message).toContain('runtime:eval');
-    expect(message).toContain('runtime:network');
+    expect(message).toContain('runtime:reload');
     expect(message).toContain('npx exagent runtime --help');
   });
 

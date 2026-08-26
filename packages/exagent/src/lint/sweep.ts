@@ -29,8 +29,20 @@ import { extractForeignFlags, type ForeignFlagUse } from './foreignFlags';
  * `lint` is this directory. Nothing in it is printed by the CLI — the commands it names are the
  * allowlist and the examples in these comments — so linting it would only ever be the lint
  * agreeing with itself.
+ *
+ * `deferred` is the v1 narrowing's reference shelf (llp/0016, `src/deferred/README.md`): code no
+ * registry entry loads, kept verbatim so a command that returns is restored rather than rewritten.
+ * Every file in it names a command the registry no longer resolves, which is the very thing this
+ * lint fails on — and the point of the exclusion is that it keeps failing on it everywhere else.
  */
-const SKIPPED_DIRECTORIES = new Set(['__tests__', '__mocks__', 'node_modules', 'build', 'lint']);
+const SKIPPED_DIRECTORIES = new Set([
+  '__tests__',
+  '__mocks__',
+  'node_modules',
+  'build',
+  'lint',
+  'deferred',
+]);
 
 /**
  * Every `.ts` file under a root, excluding the tests, relative to that root and sorted.

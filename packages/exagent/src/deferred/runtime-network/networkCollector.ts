@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0005
+//
 // @ref llp/0005-runtime-loop-tools.rfc.md §Candidates — "Network inspection".
 // Collects the HTTP requests the app makes over the debugger protocol during a time window, so a
 // failing API call is readable instead of guessed at.
@@ -33,9 +35,9 @@ import {
   RPC_METHOD_NOT_FOUND,
   type CdpClientOptions,
   type CdpTarget,
-} from './cdpClient';
-import { debugEvent } from './events';
-import { readNoCdpAnnouncement, type RuntimeDebuggerCapability } from './runtimeErrorCollector';
+} from '../../runtime/cdpClient';
+import { debugEvent } from '../../runtime/events';
+import { readNoCdpAnnouncement, type RuntimeDebuggerCapability } from '../../runtime/runtimeErrorCollector';
 
 /** A single HTTP request the running app made, with the answer it got. */
 export interface NetworkRequestRecord {

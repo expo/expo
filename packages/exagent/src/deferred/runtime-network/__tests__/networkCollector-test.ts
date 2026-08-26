@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0005
+//
 import { EventEmitter } from 'events';
 import type WebSocketImpl from 'ws';
 
@@ -8,7 +10,7 @@ import {
   parseNetworkMessage,
   targetAdvertisesNetworkPanel,
 } from '../networkCollector';
-import { MockWebSocket } from './MockWebSocket';
+import { MockWebSocket } from '../../../runtime/__tests__/MockWebSocket';
 
 const TARGET = {
   id: '1',
