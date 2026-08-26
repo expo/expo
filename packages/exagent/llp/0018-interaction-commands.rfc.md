@@ -201,6 +201,8 @@ What held, exactly as recorded:
 | `runtime:tree --testID add-note` | `matched: 1` from a 3-fiber group, `handlerOn: "Pressable"`, `handlerOutsideMatch: false` — the same numbers `out-04-match-groups.json` recorded |
 | `runtime:type` then `runtime:tap --verify` | the typed string reached the app's state, the tap consumed it, and the second walk saw the input clear and the new row appear |
 | the three refusals | `no-match` on a testID nothing carries, `no-handler` on `note-list` (the element `out-04` recorded with `handlerFound: null`), `no-handler` for a `runtime:type` aimed at the `add-note` button |
+| `--all-screens` | 11 nodes on the focused screen, 29 across all three, and the extra ones include `home-notes-link` on the **unfocused** `index` screen — which is the finding [[0014-interaction-spike]] §What the walk sees is about, seen from the other side |
+| the non-contiguous group | `runtime:tree --testID home-notes-link --all-screens` reported `groupSize: 6` and `handlerOn: "Text"`, over a subtree of `Link → ExpoLink → ExpoLinkImpl → BaseExpoRouterLink → Text → RCTText` — the two-level gap and the same numbers `out-04` recorded, this time from the shipped expression |
 
 Two things it changed, both invisible to every test that existed at the time:
 
@@ -214,8 +216,11 @@ Two things it changed, both invisible to every test that existed at the time:
 ## What is still unverified
 
 - **Any app but this one.** One app, one runtime, one navigator (native tabs), on one day. The
-  gesture-handler and `expo-router` `Link` families were exercised by the *spike's* expressions and
-  are covered here only by fibers rebuilt from its recordings.
+  `expo-router` `Link` group was read live and matched its recording; the gesture-handler families
+  were exercised by the *spike's* expressions only, and are covered here by fibers rebuilt from
+  those recordings.
+- **A tap whose handler is on an ancestor.** `handlerOutsideMatch` was reported `false` every time
+  live, because every element on this app has its own handler — the same thing the spike found.
 - **`--index`.** No screen in the run had two elements sharing a testID, so the ambiguous path and
   the index that resolves it are unit-tested and never live.
 - **The disabled refusal.** Same: the spike added a `disabled` button temporarily and reverted it,
