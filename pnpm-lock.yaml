@@ -487,6 +487,12 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-age-range:
+        specifier: workspace:*
+        version: link:../../packages/expo-age-range
+      expo-apple-authentication:
+        specifier: workspace:*
+        version: link:../../packages/expo-apple-authentication
       expo-application:
         specifier: workspace:*
         version: link:../../packages/expo-application
@@ -574,6 +580,9 @@ importers:
       expo-linking:
         specifier: workspace:*
         version: link:../../packages/expo-linking
+      expo-live-photo:
+        specifier: workspace:*
+        version: link:../../packages/expo-live-photo
       expo-local-authentication:
         specifier: workspace:*
         version: link:../../packages/expo-local-authentication
@@ -589,6 +598,9 @@ importers:
       expo-media-library:
         specifier: workspace:*
         version: link:../../packages/expo-media-library
+      expo-mesh-gradient:
+        specifier: workspace:*
+        version: link:../../packages/expo-mesh-gradient
       expo-navigation-bar:
         specifier: workspace:*
         version: link:../../packages/expo-navigation-bar
@@ -18026,9 +18038,7 @@ snapshots:
       metro-runtime: 0.84.5
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
