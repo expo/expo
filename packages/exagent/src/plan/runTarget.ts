@@ -44,8 +44,9 @@ export function selectRunTarget({
 }
 
 function whyOf(target: RunTarget, source: RunTargetSource): string {
-  const said = source === 'flag' ? 'asked for on the command line' : 'per exagent config';
-  return target === 'dev-build'
-    ? `A development build was ${said}.`
-    : `Expo Go was ${said}.`;
+  const app = target === 'dev-build' ? 'a development build' : 'Expo Go';
+  const flag = target === 'dev-build' ? '--dev-client' : '--go';
+  return source === 'flag'
+    ? `${flag} asked for ${app}.`
+    : `The exagent config asks for ${app}.`;
 }

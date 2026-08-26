@@ -86,6 +86,10 @@ export function decideStartPlan(
   const facts = factsWhen(openTargetOf(options) != null);
   /** The extra sentences a plan that *builds* gains from the backend it was given. */
   const buildFacts = backendReasons(backend, platform, options.easJson);
+  // Said on **every** native row, not only the one a preference moved. "Did my config do
+  // anything?" is a question the plan has to answer either way, and a plan that mentions the
+  // preference only when it changed something leaves the reader unable to tell the two apart.
+  const targetFacts = runTargetReasons(runTarget, state);
   /** The steps that make and install the app, per the backend that was chosen. */
   const buildSteps = (reason: string, prebuild: boolean): PlanStep[] =>
     backend?.runsOn === 'eas'
@@ -105,13 +109,13 @@ export function decideStartPlan(
           'bare-fresh',
           'bare',
           [startDevClientStep(build.summary, options)],
-          [...facts, ...build.reasons]
+          [...facts, ...build.reasons, ...targetFacts]
         )
       : plan(
           'bare-stale',
           'bare',
           buildSteps(build.summary, false),
-          [...factsWhen(true), ...build.reasons, ...buildFacts],
+          [...factsWhen(true), ...build.reasons, ...targetFacts, ...buildFacts],
           location()
         );
   }
@@ -124,13 +128,13 @@ export function decideStartPlan(
           'dev-client-fresh',
           'dev-client',
           [startDevClientStep(build.summary, options)],
-          [...facts, ...build.reasons]
+          [...facts, ...build.reasons, ...targetFacts]
         )
       : plan(
           'dev-client-stale',
           'dev-client',
           buildSteps(build.summary, true),
-          [...factsWhen(true), ...build.reasons, ...buildFacts],
+          [...factsWhen(true), ...build.reasons, ...targetFacts, ...buildFacts],
           location()
         );
   }
@@ -144,7 +148,7 @@ export function decideStartPlan(
       'expo-go',
       'expo-go',
       [startExpoGoStep(options)],
-      [...facts, ...runTargetReasons(runTarget, state)]
+      [...facts, ...targetFacts]
     );
   }
 
@@ -163,7 +167,7 @@ export function decideStartPlan(
       ),
       ...buildSteps('The first development build of this project has to be made.', true),
     ],
-    [...factsWhen(true), ...runTargetReasons(runTarget, state), ...buildFacts],
+    [...factsWhen(true), ...targetFacts, ...buildFacts],
     location()
   );
 }
