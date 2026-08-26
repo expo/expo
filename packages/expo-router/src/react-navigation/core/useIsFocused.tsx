@@ -2,8 +2,6 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { useNavigation } from './useNavigation';
-
 export const FocusedRouteKeyContext = React.createContext<string | undefined>(undefined);
 
 export const IsFocusedContext = React.createContext<boolean | undefined>(undefined);
@@ -14,32 +12,12 @@ export const IsFocusedContext = React.createContext<boolean | undefined>(undefin
  */
 export function useIsFocused(): boolean {
   const isFocused = use(IsFocusedContext);
-  const navigation = useNavigation();
 
-  const isFocusedAvailable = isFocused !== undefined;
+  if (isFocused === undefined) {
+    throw new Error(
+      "Couldn't find a navigation object. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
+    );
+  }
 
-  const subscribe = React.useCallback(
-    (callback: () => void) => {
-      if (isFocusedAvailable) {
-        // If `isFocused` is available in context
-        // We don't need to subscribe to focus and blur events
-        return () => {};
-      }
-
-      const unsubscribeFocus = navigation.addListener('focus', callback);
-      const unsubscribeBlur = navigation.addListener('blur', callback);
-
-      return () => {
-        unsubscribeFocus();
-        unsubscribeBlur();
-      };
-    },
-    [isFocusedAvailable, navigation]
-  );
-
-  // isFocused from context only works with NavigationProvider
-  // So this is kept for backward compatibility
-  const value = React.useSyncExternalStore(subscribe, navigation.isFocused, navigation.isFocused);
-
-  return isFocused ?? value;
+  return isFocused;
 }
