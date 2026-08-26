@@ -111,6 +111,13 @@ type StatusReport = {
     };
     fingerprint: { hash: string | null; error?: string };
   } | null;
+  assertion: {
+    asserted: string;
+    actual: string | null;
+    ok: boolean;
+    exitCode: number;
+    reason: string;
+  } | null;
   errors: Record<string, string>;
   followups: { id: string; command: string; why: string }[];
 };
@@ -296,6 +303,7 @@ describe('exagent status', () => {
         'skills',
         'auth',
         'next',
+        'assertion',
         'probe',
         'errors',
         'followups',
@@ -760,6 +768,174 @@ process.stdout.write(JSON.stringify({
     });
   });
 
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+  //
+  // The one path out of this command that is not 0, and the reason it does not break the exit-0
+  // contract: nothing changes unless the caller types the flag. These run the published bin, so
+  // they assert the exit code a CI line would actually read.
+  describe('status --assert', () => {
+    const NATIVE_MODULE = {
+      type: 'dir',
+      filePath: 'node_modules/react-native-mmkv',
+      reasons: ['rncoreAutolinkingIos'],
+      hash: 'aabb',
+    };
+    const APP_CONFIG = { type: 'file', filePath: 'app.json', reasons: ['expoConfig'], hash: 'cc' };
+
+    const STUB_FINGERPRINT = `#!/usr/bin/env node
+'use strict';
+process.stdout.write(JSON.stringify({
+  hash: process.env.STUB_FINGERPRINT_HASH || ${JSON.stringify(FIXTURE_FINGERPRINT_HASH)},
+  sources: JSON.parse(process.env.STUB_FP_SOURCES || '[]'),
+}) + '\\n');
+`;
+
+    async function setupAssertAsync(recorded: unknown): Promise<string> {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      const binDir = path.join(projectRoot, '.stub-bin');
+      await fs.promises.mkdir(binDir, { recursive: true });
+      const stub = path.join(binDir, 'fingerprint-assert-stub.js');
+      await fs.promises.writeFile(stub, STUB_FINGERPRINT);
+      for (const dir of [binDir, path.join(projectRoot, 'node_modules', '.bin')]) {
+        await installStubBinAsync(dir, 'fingerprint', stub);
+      }
+      await fs.promises.writeFile(
+        path.join(projectRoot, '.expo', 'exagent-last-build.json'),
+        JSON.stringify(recorded)
+      );
+      return projectRoot;
+    }
+
+    /** Both platforms recorded from the same fingerprint, so the gate has something to measure. */
+    function recordedWith(sources: unknown[]) {
+      return {
+        ios: { hash: FIXTURE_FINGERPRINT_HASH, sources },
+        android: { hash: FIXTURE_FINGERPRINT_HASH, sources },
+      };
+    }
+
+    async function runAssertAsync(
+      projectRoot: string,
+      args: string[],
+      env: Record<string, string> = {}
+    ) {
+      return executeExagentAsync(
+        projectRoot,
+        ['status', ...args, '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env, reject: false }
+      );
+    }
+
+    it('exits 0 when the change costs at most the asserted class', async () => {
+      const projectRoot = await setupAssertAsync(recordedWith([APP_CONFIG]));
+
+      const result = await runAssertAsync(projectRoot, ['--assert', 'needs-native-build'], {
+        STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+        STUB_FP_SOURCES: JSON.stringify([APP_CONFIG, NATIVE_MODULE]),
+      });
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('assert');
+      expect(result.stdout).toContain('the change costs at most that');
+    });
+
+    it('exits 20 when the change costs more than the asserted class', async () => {
+      const projectRoot = await setupAssertAsync(recordedWith([APP_CONFIG]));
+
+      const result = await runAssertAsync(projectRoot, ['--assert', 'js-only'], {
+        STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+        STUB_FP_SOURCES: JSON.stringify([APP_CONFIG, NATIVE_MODULE]),
+      });
+
+      expect(result.exitCode).toBe(20);
+      // The report is printed either way: a gate that failed is still a report, and the reasons
+      // above it are what an agent reads next.
+      expect(result.stdout).toContain('project');
+      expect(result.stdout).toContain('the change costs needs-native-build');
+    });
+
+    // llp/0010's code for "nothing was shown to be wrong and nothing was proved right", which is
+    // the third outcome and the one that keeps the gate honest.
+    it('exits 22 when nothing could be measured', async () => {
+      const projectRoot = await setupAssertAsync({});
+
+      const result = await runAssertAsync(projectRoot, ['--assert', 'js-only']);
+
+      expect(result.exitCode).toBe(22);
+      expect(result.stdout).toContain('not verified');
+    });
+
+    it('composes with --explain', async () => {
+      const projectRoot = await setupAssertAsync(recordedWith([APP_CONFIG]));
+      const payload = path.join(projectRoot, 'stub-expo-config.json');
+      await fs.promises.writeFile(
+        payload,
+        JSON.stringify({ name: 'fresh', slug: 'fresh', runtimeVersion: { policy: 'appVersion' } })
+      );
+
+      const result = await runAssertAsync(projectRoot, ['--assert', 'js-only', '--explain'], {
+        STUB_EXPO_CONFIG_JSON: payload,
+        STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+        STUB_FP_SOURCES: JSON.stringify([APP_CONFIG, NATIVE_MODULE]),
+      });
+
+      expect(result.exitCode).toBe(20);
+      // Both halves ran: the deep dive printed, and the gate judged what it found.
+      expect(result.stdout).toContain('ota');
+      expect(result.stdout).toContain('the change costs needs-native-build');
+    });
+
+    it('carries the verdict in --json, which exits with the same code', async () => {
+      const projectRoot = await setupAssertAsync(recordedWith([APP_CONFIG]));
+
+      const result = await runAssertAsync(projectRoot, ['--assert', 'js-only', '--json'], {
+        STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+        STUB_FP_SOURCES: JSON.stringify([APP_CONFIG, NATIVE_MODULE]),
+      });
+
+      expect(result.exitCode).toBe(20);
+      const report: StatusReport = JSON.parse(result.stdout);
+      expect(report.assertion).toMatchObject({
+        asserted: 'js-only',
+        actual: 'needs-native-build',
+        ok: false,
+        exitCode: 20,
+      });
+    });
+
+    it('reports no assertion, and exits 0, when the flag is absent', async () => {
+      const projectRoot = await setupAssertAsync(recordedWith([APP_CONFIG]));
+
+      const result = await runAssertAsync(projectRoot, ['--json'], {
+        STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+        STUB_FP_SOURCES: JSON.stringify([APP_CONFIG, NATIVE_MODULE]),
+      });
+
+      expect(result.exitCode).toBe(0);
+      expect((JSON.parse(result.stdout) as StatusReport).assertion).toBeNull();
+    });
+
+    it('rejects a class it does not report, with exit 1', async () => {
+      const projectRoot = await setupAssertAsync(recordedWith([APP_CONFIG]));
+
+      const result = await runAssertAsync(projectRoot, ['--assert', 'native']);
+
+      // A usage error is the tool not working, which is 1 — never the outcome band.
+      expect(result.exitCode).toBe(1);
+      expect(result.all).toContain('not one of the classes');
+    });
+
+    it('refuses --build without --explain, naming the line that works', async () => {
+      const projectRoot = await setupAssertAsync(recordedWith([APP_CONFIG]));
+
+      const result = await runAssertAsync(projectRoot, ['--build', 'build-1']);
+
+      expect(result.exitCode).toBe(1);
+      expect(result.all).toContain('--build needs --explain');
+      expect(result.all).toContain('npx exagent status --explain --build build-1');
+    });
+  });
+
   // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
   //
   // Three states, and one cost. The cost is the design: a default run must not spawn `eas
@@ -1058,7 +1234,7 @@ process.exit(1);
       expect(result.stdout).toContain(`npx eas build:download --build-id ${BUILD_ID}`);
 
       const report = await reportInAsync(projectRoot, ['--explain'], env);
-      expect(report.followups.map((followup) => followup.id)).toContain('status-cached-build');
+      expect(report.followups.map((followup) => followup.id)).toContain('cached-build');
     });
   });
 
