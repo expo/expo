@@ -407,8 +407,9 @@ describe(`${buildStartFollowUps.name} — a tunnelled run, and a machine with no
   });
 
   it(`drops the rung entirely when there is no device anywhere`, () => {
-    expect(ids(buildStartFollowUps({ ...base, localDevice: 'absent', cloudSession: false })))
-      .not.toContain('open-app-cloud');
+    expect(
+      ids(buildStartFollowUps({ ...base, localDevice: 'absent', cloudSession: false }))
+    ).not.toContain('open-app-cloud');
   });
 
   it.each(['unknown', 'present'] as const)(`keeps the deep-link rung for %s`, (localDevice) => {

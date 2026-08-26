@@ -23,7 +23,6 @@ import {
   buildCloudOpenUrlArgs,
   buildCloudScreenshotArgs,
   buildSessionGetArgs,
-  buildSessionStopArgs,
   captureCloudScreenshotAsync,
   cloudNeedsTunnelError,
   cloudSessionUnavailableError,
@@ -99,23 +98,23 @@ describe('the argv of every eas simulator invocation', () => {
   // `simulator:open-url`: getting this wrong is a command the CLI answers with "unknown command"
   // after a session has already been paid for.
   it(`opens a URL through simulator:exec and the controller's open verb`, () => {
-    expect(buildCloudOpenUrlArgs({ url: 'exp://tunnel.example/--/notes', platform: 'ios' })).toEqual(
-      [
-        'simulator:exec',
-        'npx',
-        AGENT_DEVICE_SPEC,
-        'open',
-        'exp://tunnel.example/--/notes',
-        '--platform',
-        'ios',
-      ]
-    );
+    expect(
+      buildCloudOpenUrlArgs({ url: 'exp://tunnel.example/--/notes', platform: 'ios' })
+    ).toEqual([
+      'simulator:exec',
+      'npx',
+      AGENT_DEVICE_SPEC,
+      'open',
+      'exp://tunnel.example/--/notes',
+      '--platform',
+      'ios',
+    ]);
   });
 
   it(`carries the session's own platform on the open verb`, () => {
-    expect(
-      buildCloudOpenUrlArgs({ url: 'exp+app://x', platform: 'android' })
-    ).toEqual(expect.arrayContaining(['--platform', 'android']));
+    expect(buildCloudOpenUrlArgs({ url: 'exp+app://x', platform: 'android' })).toEqual(
+      expect.arrayContaining(['--platform', 'android'])
+    );
   });
 
   // The controller downloads the image to a local path, so there is nothing to redirect — and no
@@ -144,11 +143,6 @@ describe('the argv of every eas simulator invocation', () => {
     expect(buildAvailabilityArgs()).toEqual(['simulator:availability', '--json']);
     expect(buildAvailabilityArgs()).not.toContain('simulator:start');
   });
-
-  it(`stops a session by id, or the dotenv's when none is named`, () => {
-    expect(buildSessionStopArgs('sess-1')).toEqual(['simulator:stop', '--id', 'sess-1']);
-    expect(buildSessionStopArgs(null)).toEqual(['simulator:stop']);
-  });
 });
 
 // ---- Reading the dotenv and the service's answer -----------------------------------------------
@@ -157,7 +151,11 @@ describe(parseSessionIdFromEnvFile, () => {
   it(`reads the session id out of the file eas-cli manages`, () => {
     expect(
       parseSessionIdFromEnvFile(
-        ['# managed by eas-cli', 'EAS_SIMULATOR_SESSION_ID=abc-123', 'EAS_SIMULATOR_TOKEN=secret'].join('\n')
+        [
+          '# managed by eas-cli',
+          'EAS_SIMULATOR_SESSION_ID=abc-123',
+          'EAS_SIMULATOR_TOKEN=secret',
+        ].join('\n')
       )
     ).toBe('abc-123');
   });
@@ -184,7 +182,9 @@ describe(parseSessionJson, () => {
 
   it(`reads the same fields out of an envelope`, () => {
     expect(
-      parseSessionJson(JSON.stringify({ session: { id: 's', status: 'FINISHED', platform: 'ANDROID' } }))
+      parseSessionJson(
+        JSON.stringify({ session: { id: 's', status: 'FINISHED', platform: 'ANDROID' } })
+      )
     ).toEqual({ id: 's', status: 'FINISHED', platform: 'android' });
   });
 

@@ -529,7 +529,6 @@ describe(buildLocalDeviceStatus, () => {
   });
 });
 
-
 // @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
 describe('buildNextActionStatus with a cloud session on record', () => {
   const devServer = {
@@ -542,7 +541,13 @@ describe('buildNextActionStatus with a cloud session on record', () => {
     reason: null,
   } as never;
 
-  const absentDevice = { state: 'absent', platform: null, deviceId: null, name: null, reason: 'none' } as never;
+  const absentDevice = {
+    state: 'absent',
+    platform: null,
+    deviceId: null,
+    name: null,
+    reason: 'none',
+  } as never;
 
   /** The project shape the next-action rules read, from this file's own builder. */
   const state = mockState();

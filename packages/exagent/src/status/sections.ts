@@ -279,7 +279,7 @@ function verifyAction(
     if (cloudSession) {
       return {
         command: `${OPEN_APP_COMMAND} --cloud`,
-        why: "no app is connected and this machine has no booted simulator or attached device, so this opens the app on this project's EAS Simulator session instead — it needs a tunnelled dev server, and the session bills until \"npx eas simulator:stop\"",
+        why: 'no app is connected and this machine has no booted simulator or attached device, so this opens the app on this project\'s EAS Simulator session instead — it needs a tunnelled dev server, and the session bills until "npx eas simulator:stop"',
       };
     }
     return noLocalDeviceAction(devServer, state, scheme);

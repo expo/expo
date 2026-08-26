@@ -10,6 +10,7 @@
 // this package has never verified against a live service. `navigate` and `smoke` opt in; every
 // `runtime:*` action that force-stops an app does not, because the controller has no verb for it.
 
+import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import {
   cloudPlatformUnknownError,
   cloudPlatformMismatchError,
@@ -19,7 +20,6 @@ import {
   readCloudSessionIdSync,
   type CloudSessionProbe,
 } from '../device/cloudSimulator';
-import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import { debugEvent } from './events';

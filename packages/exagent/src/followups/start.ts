@@ -114,7 +114,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
             {
               id: 'open-app-cloud',
               command: 'npx exagent navigate / --cloud',
-              why: "This machine has no booted simulator and no attached device, and this project has an EAS Simulator session on record — so this deep-links the app onto that instead. It needs a tunnelled dev server, and the session bills until \"npx eas simulator:stop\".",
+              why: 'This machine has no booted simulator and no attached device, and this project has an EAS Simulator session on record — so this deep-links the app onto that instead. It needs a tunnelled dev server, and the session bills until "npx eas simulator:stop".',
             },
           ]
         : [];

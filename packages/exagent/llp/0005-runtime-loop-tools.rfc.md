@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
+**Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
 **Related:** [[0001-agentic-cli-on-expo-cli]]
@@ -483,6 +483,177 @@ anywhere but here — and the four device keys as `null`, so a parser reads one 
 And `navigate` **without** the flag, on a machine with no device, now names that URL in its failure
 and names the flag: the resolution had already happened, and "no device found" was the whole truth
 and less than half the answer.
+
+## The cloud simulator backend
+
+Decision [confirmed — Kudo, 2026-08-26]. Device resolution grows a **third backend**: a simulator
+that runs on EAS rather than on this machine. `exagent navigate --cloud` drives it, and a machine
+with no local device reaches for it on its own.
+
+This is the other half of §Resolving a URL without a device. That section's dogfood session drove
+Expo Go on a **cloud** simulator through a tunnel, from a laptop with neither a booted simulator nor
+an attached device, and every `navigate` it ran stopped at "no booted device was found" [observed —
+2026-08-24]. Wave 9 gave that machine the **URL**. This gives it the **act**: the same session the
+agent was driving by hand is a device this CLI can open a link on.
+
+### Three backends, one ladder
+
+`NavigateDevice` gains `backend: 'local-ios' | 'local-android' | 'cloud'`, and it is reported rather
+than inferred from `platform` — an EAS session runs iOS too, so `ios` no longer says where the
+device is. It rides in `--json` as `deviceBackend` on `navigate` and on `smoke`, on the `Device`
+line of the human summary, and on the `cli:navigate` event.
+
+The order, in `resolveDeviceAsync`:
+
+1. **`--cloud`** (`cloud: 'required'`) — the session is the device and no platform tool is asked at
+   all. A caller that named a device meant that device.
+2. **A local device** — free, instant, and what a developer at a keyboard is looking at. A session
+   that happens to be up must never quietly take a run away from the simulator on the desk.
+3. **The session** (`cloud: 'fallback'`) — only when the local probes found nothing.
+
+Rung 3 is gated on a **file**, not a subprocess: no `.env.eas-simulator` in the project, no `eas` is
+started. That matters because the rung runs on the *failure* path of every `navigate` on a machine
+with no device, which is the case the whole backend exists for — and it keeps the cost of "this
+machine has nothing" at one `stat`.
+
+**Opt-in per caller, defaulting to `off`.** `navigate` and `smoke` put the cloud on their ladder;
+every `runtime:*` action keeps the two local backends exactly as they were. That is not a pending
+item — see §What the cloud backend cannot do.
+
+`--cloud` is a **backend** flag, not a third platform, so it does not join the `--ios`/`--android`
+pair: a session is iOS or Android too, and `--cloud --ios` is a meaningful line to type. It names
+the platform the session must be, and a session that is the other one is refused rather than
+driven. `--cloud --print-url` is refused as well: one asks for a device and the other asks for none.
+
+### The mechanism: `eas simulator:*` subprocesses
+
+Per llp/0001 constraint 5, `eas-cli` is reached across a process boundary like the rest of the
+family. So the backend is `eas simulator:<verb>` subprocesses, and **every one of them is built by
+one module**, `src/device/cloudSimulator.ts`.
+
+One deviation worth naming. The device verbs are not an `eas` subcommand: `eas simulator:exec` loads
+the session's connection environment and **spawns the command it is given**, and the verbs come from
+`agent-device`, a controller run on demand through `npx`. The process this CLI starts is still the
+family binary; what it asks that binary to run is a second process this CLI never resolves itself.
+`AGENT_DEVICE_SPEC` is the whole of that decision, in one constant.
+
+### Everything below is [inferred]
+
+**The account on the machine this was written on is signed out, and the `eas` on its `PATH` is a
+shim that fails before it reaches the CLI** [observed — 2026-08-26: `eas --version` answers `Error:
+Apple Developer setup is incomplete`]. So **no invocation in this table has ever been run against a
+live session.** They are built from the syntax the `eas-simulator` skill documents, which was read
+and not run.
+
+| Invocation | What this CLI believes it does | Status |
+| --- | --- | --- |
+| `eas simulator:get [--id <id>] --json` | Answers the session's `status` and `platform`; `IN_PROGRESS` is live | [inferred] |
+| `eas simulator:availability --json` | `{"available": bool}` — read-only, starts and bills nothing | [inferred] |
+| `eas simulator:exec npx agent-device@latest open <url> --platform <ios\|android>` | Opens a deep link on the session's device | [inferred] |
+| `eas simulator:exec npx agent-device@latest screenshot <path>` | Downloads a PNG of the screen to a local path. No `--platform`: the documented verb table carries it on `open`/`install`/`apps` and not on this one | [inferred] |
+| `eas simulator:stop` | Ends the session. **Never spawned by this CLI** — it appears only inside error text, as the command a person runs to end their own session. See §What the cloud backend cannot do | [inferred] |
+| `EAS_SIMULATOR_SESSION_ID` in `.env.eas-simulator` | Names the session `eas-cli` last started for this project | [inferred] |
+
+Two things follow from that, and they are the design rather than a caveat:
+
+- **The argv is pure and pinned by a test table** (`src/device/__tests__/cloudSimulator-test.ts`),
+  for the reason `buildOpenUrlCommand` and `buildScreenshotCommand` are — except more so. A wrong
+  `simctl` flag fails on a machine with a simulator; a wrong `simulator:exec` flag fails on a
+  machine with an account, a session, and a bill. When one of these turns out to be wrong, the fix
+  is one line of one module and one line of one test.
+- **A signed-in validation pass is pending.** Nothing in this section may be read as verified until
+  somebody runs it. The e2e suite (`e2e/__tests__/cloud-simulator-test.ts`) proves that the argv the
+  module builds is the argv a whole `exagent` process spawns, against a stub `eas` — which is a fact
+  about this CLI and says nothing about what EAS accepts.
+
+### A cloud simulator requires a tunnel
+
+`exp://127.0.0.1:<port>` names the loopback of **whatever resolves it**, and for a cloud session
+that is a machine in a datacenter. This is the same shape as the Android emulator finding in
+§The device's loopback is not this machine's — and unlike the emulator, there is no `adb reverse`
+that can fix it. A LAN address is no better: the session is not on this network.
+
+So a cloud run against a `localhost` or `lan` URL is **refused before anything opens**, naming
+`dev --detach --tunnel`. Opening it would land the app on an error screen with the device tool
+reporting success, which is exactly the false green F50 was.
+
+The check lives in `openRouteAsync`, next to the device, not in the URL resolver: it is a fact about
+the *device*, and the identical URL is perfectly good for the simulator on this desk. A development
+build's `<scheme>://<route>` carries no host at all (`hostType: null`) and is allowed — it reaches
+whatever dev server the app was launched against, which this command has no say in.
+
+The attach confirmation is unchanged: the same `/json/list` wait, scoped to the session's platform.
+The app connects back through the tunnel, so "a debugger target on this platform" proves the same
+thing it proves locally.
+
+### A non-zero exit means different things per backend
+
+`xcrun simctl openurl` exiting non-zero is **the device refusing the link** — a fact about the app
+on it, which `navigate` reports and exits `1` for. `eas simulator:exec` exiting non-zero is any of:
+a session that ended mid-run, a signed-out account, a controller flag this CLI got wrong, or a
+binary that was never the EAS CLI. None of those is "the device refused", and reporting them as that
+would send a reader to reinstall Expo Go.
+
+So the cloud path raises a **tool failure** instead, and folds three things into it:
+
+- `looksLikeWrapperCrash` — the `eas` under that name is named rather than quoted. A Rust backtrace
+  printed under "What the tool printed" claims the EAS CLI reported it.
+- The needs-human classifier — a signed-out account becomes the `eas-login` handoff and **exit 7**,
+  which is the band an agent reads before it reads a word (llp/0010 §Exit codes).
+- Otherwise, what the tool printed, plus the `--help` that is authoritative for an experimental CLI.
+
+The same classification runs on the *question* about the session, not only on the answer: a probe
+that stopped because nobody is signed in carries the failed run, and `cloudSessionUnknownError`
+raises the same handoff. Signing in is the next step whether the login was found while driving a
+session or while asking about one.
+
+### The four ways there is no session, and why they are four errors
+
+`unknown` is the one that matters, and it is the same distinction `DeviceProbe.toolError` draws for
+`adb` (F49): **a tool that did not answer has said nothing about the world.**
+
+| State | Error | Why it is its own |
+| --- | --- | --- |
+| `active` | — | The device |
+| `inactive` | `NO_CLOUD_SIMULATOR_SESSION`, naming the id and its status | The dotenv keeps the id of a session that has ended, so the file alone is never proof |
+| `none`, feature available | `NO_CLOUD_SIMULATOR_SESSION`, naming `simulator:start` and that it bills until stopped | Nothing to find: a cloud simulator is started, not left booted by somebody else |
+| `none`, feature off | `CLOUD_SIMULATOR_UNAVAILABLE`, offering the local device and `--print-url` | An account that cannot have the feature must never be told to start a session |
+| `unknown` | `CLOUD_SIMULATOR_SESSION_UNKNOWN`, naming `simulator:get` and **never** `simulator:start` | "Start one" for a session that could not be ruled out starts a **second billed session** next to one that may be running |
+
+### What the cloud backend cannot do
+
+`runtime:stop` has **no cloud form**, and that is a decision rather than a gap. The controller's
+documented verbs open a link, drive the UI and take a picture; none of them ends a single
+application. `eas simulator:stop` ends the whole **session** — the remote machine and everything on
+it — which is a far larger act, and performing it under `runtime:stop` would report a session
+teardown as one app having been stopped.
+
+`--cloud` is nevertheless **accepted** by `runtime:stop`, so it can be refused by name: an agent
+that learned the flag from `navigate` will type it here, and `unknown option --cloud` is a dead end
+where the truth is a next action (`npx exagent navigate / --cloud` to put the app back into a known
+state, `npx eas simulator:stop` to end the session).
+
+The same absence removes the Android attach recovery for a cloud session: that recovery is a
+force-stop and a second link, so it is gated on `local-android` rather than on `android`.
+
+### Where it composes
+
+- **`smoke`** takes `--cloud` and resolves its device through `resolveDeviceAsync`, which is the
+  function `navigate` uses. One answer, threaded from the `route` phase into the `screenshot` phase
+  — a gate whose two device phases resolved separately could photograph one device to answer for
+  another. `deviceBackend` rides in its `--json`.
+- **The screenshot primitive** grows the third backend. `simctl` is given a path and writes it,
+  `adb exec-out` writes to stdout and is redirected, and the controller **downloads** to the path —
+  so it reuses the `simctl` shape with a much longer budget (`npx`, then a network, then an image
+  coming back). Everything after that is identical, including the PNG-signature check: "the command
+  ran" and "there is a screenshot" are two facts over a network too.
+- **The no-local-device suggestions** of wave 9 name the session when the project has one. The
+  `open-app` rung of `start`/`dev` is no longer *dropped* on a machine with no device, it is aimed
+  at `navigate / --cloud`; and `status.next` names that command instead of a URL for somebody else
+  to open — a session is the one rung that is a command **this CLI can run**. Both read the dotenv
+  and not the service: `status` promises to be instant, and a start banner must never be held up by
+  a ladder. A file naming a dead session costs one `navigate --cloud` that says so, which is a much
+  cheaper wrong answer than a slow report.
 
 ## Stopping the app
 

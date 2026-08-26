@@ -12,17 +12,17 @@
 // event, the follow-ups and the two output channels; `smoke` is this function inside a phase.
 
 import {
-  cloudNeedsTunnelError,
-  cloudVerbFailedError,
-  openUrlOnCloudSimulatorAsync,
-} from '../device/cloudSimulator';
-import {
   classifyDevServerHost,
   isTunnelCurrent,
   resolveDevServerReachAsync,
   type DevServerHostType,
   type DevServerReach,
 } from '../dev/advertisedUrl';
+import {
+  cloudNeedsTunnelError,
+  cloudVerbFailedError,
+  openUrlOnCloudSimulatorAsync,
+} from '../device/cloudSimulator';
 import { event as cliEvent } from '../events';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
 import {
@@ -366,7 +366,10 @@ export async function openRouteAsync(
   // unlike the emulator there is no `adb reverse` to fix it. Checked here rather than inside the
   // URL resolver, because it is a fact about the *device*, and the same URL is perfectly good for
   // the simulator on this desk.
-  if (device.backend === 'cloud' && (resolved.hostType === 'localhost' || resolved.hostType === 'lan')) {
+  if (
+    device.backend === 'cloud' &&
+    (resolved.hostType === 'localhost' || resolved.hostType === 'lan')
+  ) {
     throw cloudNeedsTunnelError(resolved.url, resolved.hostType);
   }
 
@@ -606,11 +609,7 @@ async function confirmAttachAsync({
   // `local-android` and not `android`: the recovery is a force-stop, and the cloud controller has
   // no verb for one (`cloudVerbNotSupportedError`). Running `adb` against a session id would aim
   // the SDK at a device that is not on this machine.
-  if (
-    targets === 0 &&
-    device.backend === 'local-android' &&
-    options.recoverStuckApp !== false
-  ) {
+  if (targets === 0 && device.backend === 'local-android' && options.recoverStuckApp !== false) {
     const appId = await resolveStuckAppIdAsync(projectRoot, devServerUrl, device, options.appId);
     const stopped = await stopAppOnDeviceAsync({
       platform: device.platform,

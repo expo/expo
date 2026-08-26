@@ -33,7 +33,11 @@ import { needsHumanErrorFrom } from '../needsHuman/error';
 import { resolveEasCli, type EasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
-import { checkBinaryCommand, looksLikeWrapperCrash, wrapperCrashDetail } from '../utils/wrapperCrash';
+import {
+  checkBinaryCommand,
+  looksLikeWrapperCrash,
+  wrapperCrashDetail,
+} from '../utils/wrapperCrash';
 
 /** Platforms an EAS Simulator session can run. The same two the local backends drive. */
 export type CloudPlatform = 'ios' | 'android';
@@ -90,11 +94,6 @@ export function buildSessionGetArgs(sessionId?: string | null): string[] {
  */
 export function buildAvailabilityArgs(): string[] {
   return ['simulator:availability', '--json'];
-}
-
-/** `eas simulator:stop`, which ends the **session** — not the app inside it. [inferred] */
-export function buildSessionStopArgs(sessionId?: string | null): string[] {
-  return ['simulator:stop', ...(sessionId ? ['--id', sessionId] : [])];
 }
 
 /**
@@ -327,12 +326,19 @@ export async function probeCloudSessionAsync({
   if (sessionId == null) {
     // No id on disk. Whether that is "start one" or "this account has none" is worth one read-only
     // request, and only this branch pays for it.
-    const availability = await runEasAsync(cli, buildAvailabilityArgs(), { projectRoot, timeoutMs });
+    const availability = await runEasAsync(cli, buildAvailabilityArgs(), {
+      projectRoot,
+      timeoutMs,
+    });
     // A check that stopped because nobody is signed in has established nothing about the account's
     // access — and the next step for it is a person, not a session. Answered as `unknown` with the
     // run attached, so the caller raises the handoff rather than "this project has no session".
     if (needsHumanFor(availability)) {
-      return { ...unknownSession('', 'no Expo account is signed in'), sessionId: null, failure: availability };
+      return {
+        ...unknownSession('', 'no Expo account is signed in'),
+        sessionId: null,
+        failure: availability,
+      };
     }
     const available = availability.spawnError ? null : parseAvailabilityJson(availability.stdout);
     return {

@@ -258,7 +258,9 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
     vol.fromJSON({
       '/project/package.json': '{}',
       '/project/node_modules/.bin/eas': '#!/bin/sh\n',
-      ...(sessionId ? { '/project/.env.eas-simulator': `EAS_SIMULATOR_SESSION_ID=${sessionId}\n` } : {}),
+      ...(sessionId
+        ? { '/project/.env.eas-simulator': `EAS_SIMULATOR_SESSION_ID=${sessionId}\n` }
+        : {}),
     });
   }
 
