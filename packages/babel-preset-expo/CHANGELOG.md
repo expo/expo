@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Disable `@babel/plugin-transform-object-rest-spread` in Hermes v1 and Modern Web sub-presets. The ordering dependence on `@babel/plugin-transform-destructuring` could cause computed exclusion to be missed ([#49278](https://github.com/expo/expo/pull/49278) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.19 — 2026-08-06
