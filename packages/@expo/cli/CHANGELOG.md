@@ -11,6 +11,7 @@
 
 ### 🎉 New features
 
+- Add an `--expo-only` option to `expo install --check` and `expo install --fix` to only check or fix packages maintained by Expo. ([#49397](https://github.com/expo/expo/pull/49397) by [@matinzd](https://github.com/matinzd))
 - Add `pageHeaders` to exported routes manifests ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Apply `pageHeaders` when serving static exports with `expo serve` ([#47781](https://github.com/expo/expo/pull/47781) by [@hassankhan](https://github.com/hassankhan))
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))
