@@ -20,8 +20,26 @@ import expo.modules.image.records.ContentPosition
 class ExpoImageView(
   context: Context
 ) : AppCompatImageView(context) {
+  internal var targetBindingId = 0L
+    private set
+
   var currentTarget: ImageViewWrapperTarget? = null
+    set(value) {
+      field = value
+      targetBindingId += 1
+    }
+
   var isPlaceholder: Boolean = false
+
+  internal fun recycleViewIfBindingMatches(
+    target: ImageViewWrapperTarget?,
+    bindingId: Long
+  ): ImageViewWrapperTarget? {
+    if (currentTarget !== target || targetBindingId != bindingId) {
+      return null
+    }
+    return recycleView()
+  }
 
   fun recycleView(): ImageViewWrapperTarget? {
     val target = currentTarget?.apply {
@@ -36,6 +54,9 @@ class ExpoImageView(
     // an alpha it no longer wants, and can be left partially or fully transparent once it is bound
     // to its next image.
     animate().cancel()
+    // ViewPropertyAnimator keeps its listener across animations, so leaving it attached can run
+    // cleanup from the previous image after this view has been rebound to a new one.
+    animate().setListener(null)
     alpha = 1f
     setImageDrawable(null)
 

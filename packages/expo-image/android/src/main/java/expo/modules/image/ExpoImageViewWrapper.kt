@@ -292,16 +292,14 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             ?.toLong()
             ?: 0L
 
-          val clearPreviousView = {
-            previousView
-              .recycleView()
-              ?.apply {
-                // When the placeholder is loaded, one target is displayed in both views.
-                // So we just have to move the reference to a new view instead of clearing the target.
-                if (this != target) {
-                  clear(requestManager)
-                }
+          val clearRecycledTarget = { recycledTarget: ImageViewWrapperTarget? ->
+            recycledTarget?.apply {
+              // When the placeholder is loaded, one target is displayed in both views.
+              // So we just have to move the reference to a new view instead of clearing the target.
+              if (this != target) {
+                clear(requestManager)
               }
+            }
           }
 
           configureView(newView, target, resource, isPlaceholder)
@@ -312,7 +310,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
 
           if (transitionDuration <= 0) {
-            clearPreviousView()
+            clearRecycledTarget(previousView.recycleView())
             newView.alpha = 1f
             newView.bringToFront()
           } else {
@@ -320,9 +318,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             previousView.alpha = 1f
             newView.alpha = 0f
             // A newer source can reuse this view as its `newView` before the fade-out ends, so the
-            // cleanup is guarded on the view still holding the target it was scheduled for.
+            // cleanup is guarded on the view still holding the exact binding it was scheduled for.
+            // The same target object can be recycled for a newer source, so target identity alone
+            // is not sufficient.
             // See issue #46703.
             val previousTarget = previousView.currentTarget
+            val previousTargetBindingId = previousView.targetBindingId
             previousView.animate().apply {
               duration = transitionDuration
               alpha(0f)
@@ -340,9 +341,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
                     return
                   }
                   handled = true
-                  if (previousView.currentTarget === previousTarget) {
-                    clearPreviousView()
-                  }
+                  clearRecycledTarget(
+                    previousView.recycleViewIfBindingMatches(
+                      previousTarget,
+                      previousTargetBindingId
+                    )
+                  )
                 }
               })
             }
