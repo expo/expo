@@ -62,6 +62,10 @@ jobs:
       VERIFY_RETRY: ${{ inputs.retry && 'true' || 'false' }}
       VERIFY_ACTOR: ${{ inputs.actor }}
       VERIFY_DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+      # workflow.id is the RUN id and workflow.url the run page (universe
+      # WorkflowRunUtils: getWorkflowRunUrl) — so comments link the EAS run.
+      VERIFY_RUN_ID: ${{ workflow.id }}
+      VERIFY_RUN_URL: ${{ workflow.url }}
     steps:
       - uses: eas/checkout # the uploaded profile dir; the engine clones the
                            # target, and target code executes only in sandboxes
