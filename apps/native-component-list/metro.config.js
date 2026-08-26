@@ -22,7 +22,8 @@ config.watchFolders = [
 ];
 
 config.resolver.assetExts.push(
-  'kml' // See: ../native-component-list/assets/expo-maps/sample_kml.kml
+  'kml', // See: ../native-component-list/assets/expo-maps/sample_kml.kml
+  'pdf' // See: ../native-component-list/assets/sharing/document.pdf
 );
 
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations

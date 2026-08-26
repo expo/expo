@@ -76,6 +76,7 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
   return (
     <ConfirmationDialogNativeView
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      modifiers={modifiers}
       {...restProps}
       onIsPresentedChange={handleIsPresentedChange}>
       {children}

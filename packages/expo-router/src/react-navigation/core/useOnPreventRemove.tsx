@@ -59,6 +59,8 @@ export const shouldPreventRemove = (
     }
 
     if (isRoutePrevented(route.key)) {
+      // TODO: Queued redispatch runs after this callback and bypasses this re-entrancy guard.
+      // Check whether the guard is still needed now that only `dispatchSync` can re-enter it.
       if (emittingRemovePreventedKeys.has(route.key)) {
         if (__DEV__) {
           console.warn(

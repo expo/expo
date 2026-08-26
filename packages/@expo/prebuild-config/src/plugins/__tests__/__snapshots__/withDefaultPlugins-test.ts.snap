@@ -445,7 +445,15 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable GIF support in React Native images (~200 B increase)",
+            "value": "Enable GIF support in React Native's <Image> component.",
+          },
+          {
+            "type": "comment",
+            "value": "Disable to reduce app size if you only render GIFs via expo-image.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://docs.expo.dev/distribution/app-size/",
           },
           {
             "key": "expo.gif.enabled",
@@ -454,7 +462,15 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable webp support in React Native images (~85 KB increase)",
+            "value": "Enable WebP support in React Native's <Image> component.",
+          },
+          {
+            "type": "comment",
+            "value": "Disable to reduce app size if you only render WebP via expo-image.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://docs.expo.dev/distribution/app-size/",
           },
           {
             "key": "expo.webp.enabled",
@@ -463,11 +479,11 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable animated webp support (~3.4 MB increase)",
+            "value": "Enable animated WebP support in React Native's <Image> component.",
           },
           {
             "type": "comment",
-            "value": "Disabled by default because iOS doesn't support animated webp",
+            "value": "Disabled by default because iOS doesn't support animated WebP.",
           },
           {
             "key": "expo.webp.animated",

@@ -80,6 +80,11 @@ def exUpdatesCopyEmbeddedAssets = getBoolStringFromPropOrEnv("EX_UPDATES_COPY_EM
 
 def useDevClient = findProject(":expo-dev-client") != null
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
   buildFeatures {
     buildConfig true
@@ -101,6 +106,7 @@ android {
 
     externalNativeBuild {
       cmake {
+        abiFilters(*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
           "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
       }

@@ -12,7 +12,16 @@ struct AudioMode: Record {
 enum InterruptionMode: String, Enumerable {
   case mixWithOthers
   case doNotMix
+  case doNotMixPersistent
   case duckOthers
+
+  var preventsMixing: Bool {
+    self == .doNotMix || self == .doNotMixPersistent
+  }
+
+  var shouldNotifyOthersOnDeactivation: Bool {
+    self != .doNotMixPersistent
+  }
 }
 
 enum LoopMode: String, Enumerable {

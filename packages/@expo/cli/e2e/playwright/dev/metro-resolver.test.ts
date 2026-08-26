@@ -13,7 +13,6 @@ test.describe(inputDir, () => {
     cwd: projectRoot,
     env: {
       EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
       E2E_ROUTER_ASYNC: 'development',
       // Ensure CI is disabled otherwise the file watcher won't run.

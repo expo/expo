@@ -46,7 +46,7 @@ it('loads development env files before prebuild', async () => {
   );
 });
 
-it('uses the production mode from EXPO_CONFIG_MODE', async () => {
+it('uses the production mode from __EXPO_CONFIG_MODE', async () => {
   getConfigEnvMode.mockReturnValue('production');
 
   await expoPrebuild([]);

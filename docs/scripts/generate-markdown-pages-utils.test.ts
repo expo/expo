@@ -967,6 +967,12 @@ describe('checkPage (check-markdown-pages)', () => {
     const errors = checkPage(md);
     expect(errors.some(error => error.includes('Unbalanced code fences'))).toBe(true);
   });
+
+  it('detects doubled periods', () => {
+    expect(
+      checkPage('# Title\n\n| Parameter | Type |\n| --- | --- |\n| `. .uris` | `string[]` |\n')
+    ).toEqual(['Contains ". ." (corrupted ellipsis or doubled period)']);
+  });
 });
 
 describe('collapsible/details', () => {
@@ -1192,6 +1198,18 @@ describe('blockquote in table cells', () => {
     expect(md).not.toContain('> Allows');
     expect(md).toContain('Allows read only access to phone state');
   });
+
+  it('preserves ... in table cells and does not emit doubled periods', () => {
+    const html = `<main><table><thead><tr><th>Name</th><th>Description</th></tr></thead>
+      <tbody><tr>
+        <td><code>...uris</code></td>
+        <td><div><p>Deprecated: use X instead.</p></div><div><p>More.</p></div></td>
+      </tr></tbody></table></main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('...uris');
+    expect(md).not.toContain('. .');
+    expect(md).not.toContain('instead..');
+  });
 });
 
 describe('font-semibold to bold', () => {
@@ -1232,6 +1250,26 @@ describe('API returns section', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('Returns:');
     expect(md).toMatch(/Returns: .?Promise.?/);
+  });
+
+  it('preserves the casing of generic type arguments', () => {
+    const html = [
+      '<main><h3>getPermissionsAsync()</h3>',
+      '<div data-md="api-returns" class="flex flex-row items-start gap-2">',
+      '<div class="flex flex-row items-center gap-2">',
+      '<span class="text-sm">Returns:</span>',
+      '</div>',
+      '<code>',
+      '<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>',
+      '<span class="text-quaternary">&lt;</span>',
+      '<span>PermissionResponse</span>',
+      '<span class="text-quaternary">&gt;</span>',
+      '</code>',
+      '</div></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Promise<PermissionResponse>');
+    expect(md).not.toContain('permissionresponse');
   });
 });
 
