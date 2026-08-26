@@ -69,6 +69,7 @@ describe(setSplashImageDrawablesAsync, () => {
     for (const image of images) {
       expect(results[image]).toBe('...');
     }
+    expect(results['/android/app/src/main/res/drawable/splashscreen_logo.xml']).not.toBeDefined();
   });
   it(`sets minimal images`, async () => {
     await setSplashImageDrawablesAsync(
