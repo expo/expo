@@ -41,10 +41,13 @@ struct MapMarker: Identifiable, Record {
 struct CameraPosition: Record, Equatable {
   @Field var coordinates: Coordinate
   @Field var zoom: Double = 1
+  @Field var tilt: Double?
+  @Field var bearing: Double?
 
   static func == (lhs: CameraPosition, rhs: CameraPosition) -> Bool {
     return lhs.coordinates.latitude == rhs.coordinates.latitude
       && lhs.coordinates.longitude == rhs.coordinates.longitude && lhs.zoom == rhs.zoom
+      && lhs.tilt == rhs.tilt && lhs.bearing == rhs.bearing
   }
 }
 

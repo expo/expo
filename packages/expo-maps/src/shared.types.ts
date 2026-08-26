@@ -23,6 +23,16 @@ export type CameraPosition = {
    * For some view sizes, lower zoom levels might not be available.
    */
   zoom?: number;
+
+  /**
+   * The tilt of the camera in degrees.
+   */
+  tilt?: number;
+
+  /**
+   * The bearing of the camera in degrees.
+   */
+  bearing?: number;
 };
 
 /**

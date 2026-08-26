@@ -228,10 +228,12 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
     val cameraPosition = props.cameraPosition.value
     cameraState = remember(cameraPosition) {
       CameraPositionState(
-        position = CameraPosition.fromLatLngZoom(
-          cameraPosition.coordinates.toLatLng(),
-          cameraPosition.zoom
-        )
+        position = CameraPosition.Builder()
+          .target(cameraPosition.coordinates.toLatLng())
+          .zoom(cameraPosition.zoom)
+          .tilt(cameraPosition.tilt)
+          .bearing(cameraPosition.bearing)
+          .build()
       )
     }
 
@@ -369,8 +371,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       ?: props.userLocation.value.coordinates?.toLatLng()
       ?: return
 
-    val cameraUpdate = config?.zoom?.let { CameraUpdateFactory.newLatLngZoom(coordinates, it) }
-      ?: CameraUpdateFactory.newLatLng(coordinates)
+    val cameraUpdate = CameraUpdateFactory.newCameraPosition(
+      CameraPosition.Builder(cameraState.position)
+        .target(coordinates)
+        .apply {
+          config?.zoom?.let { zoom(it) }
+          config?.tilt?.let { tilt(it) }
+          config?.bearing?.let { bearing(it) }
+        }
+        .build()
+    )
 
     // When Int.MAX_VALUE is provided as durationMs, the default animation duration will be used.
     cameraState.animate(cameraUpdate, config?.duration ?: Int.MAX_VALUE)
