@@ -42,7 +42,7 @@
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react": "19.2.3",
-    "react-native": "0.86.2"
+    "react-native": "0.86.3"
   },
   "peerDependencies": {
     "expo": "*",
