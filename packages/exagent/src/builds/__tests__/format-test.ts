@@ -78,7 +78,10 @@ describe(formatBuildWaitReport, () => {
             xcodeBuildLogsUrl: 'https://expo.dev/artifacts/logs.txt',
           },
           fingerprint: { hash: 'a1b2c3' },
-          metrics: { buildWaitTime: 32, buildQueueTime: 118, buildDuration: 604 },
+          // The metrics of a real build, verbatim [observed — 2026-08-26, staging build
+          // 77e676e2…]. They are **milliseconds**, which the three add up to prove: 5464 + 611690
+          // + 120280 = 737434 ms, and that build ran 12m 17s by its own createdAt/completedAt.
+          metrics: { buildWaitTime: 5464, buildQueueTime: 611690, buildDuration: 120280 },
         },
       })
     );
@@ -86,7 +89,7 @@ describe(formatBuildWaitReport, () => {
     expect(output).toContain('artifact    https://expo.dev/artifacts/1.ipa');
     expect(output).toContain('xcode logs  https://expo.dev/artifacts/logs.txt');
     expect(output).toContain('fingerprint a1b2c3');
-    expect(output).toContain('timings     queued 1m 58s · waited 32s · built 10m 4s');
+    expect(output).toContain('timings     queued 10m 12s · waited 5s · built 2m');
   });
 
   it(`falls back to the build page when there is no archive`, () => {

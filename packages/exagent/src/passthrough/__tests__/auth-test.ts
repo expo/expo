@@ -2,15 +2,12 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { exagentPassthrough } from '..';
-import {
-  AUTH_COMMANDS,
-  authCliLabel,
-  easArgsForAuthCommand,
-  resolveAuthCliAsync,
-} from '../auth';
+import { AUTH_COMMANDS, authCliLabel, resolveAuthCliAsync, resolveRegisterCli } from '../auth';
+import * as Log from '../../log';
 import * as subprocess from '../../utils/subprocess';
 import { runExpoAsync } from '../../utils/expoCli';
 import { runInheritedAsync } from '../../utils/inheritedRun';
+import { resetPackageRunnerCache } from '../../utils/packageRunner';
 
 jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
@@ -32,6 +29,9 @@ function mockProbe(result: Partial<subprocess.SubprocessResult>) {
 
 beforeEach(() => {
   vol.reset();
+  // The runner is resolved once per process, so a test that resolved it must not decide for the
+  // next one.
+  resetPackageRunnerCache();
 });
 
 afterEach(() => {
@@ -129,15 +129,66 @@ describe(resolveAuthCliAsync, () => {
   });
 });
 
-describe(easArgsForAuthCommand, () => {
-  it.each(['login', 'logout', 'whoami'])(`should map %s to the eas command of the same name`, (name) => {
-    expect(easArgsForAuthCommand(name)).toEqual([name]);
+describe(resolveRegisterCli, () => {
+  it(`should use the project's own expo CLI when it has one`, () => {
+    vol.fromJSON({ [expoBin]: '#!/bin/sh' });
+
+    expect(resolveRegisterCli(projectRoot, { pathEnv: '' })).toEqual({
+      tool: 'expo',
+      source: 'project-expo',
+      command: expoBin,
+      prefixArgs: [],
+    });
   });
 
-  // `eas register` does not exist [observed — eas-cli 22.4.0]. Answering it with a command that is
-  // not there would print the EAS CLI's "command not found" for a command the user did not type.
-  it(`should have no eas equivalent for register`, () => {
-    expect(easArgsForAuthCommand('register')).toBeNull();
+  // `eas register` does not exist [observed — eas-cli 22.5.0], so the chain the other three fall
+  // down does not exist for this one. `npx expo register` is the only thing that can create an
+  // account, and the SDK download it costs is paid once per person rather than once per run.
+  it(`should fall back to the expo package runner, not to any eas`, () => {
+    vol.fromJSON({ [easBin]: '#!/bin/sh', [pathEas]: '#!/bin/sh' });
+
+    expect(resolveRegisterCli(projectRoot, { pathEnv: pathDir })).toEqual({
+      tool: 'expo',
+      source: 'runner-expo',
+      command: 'npx',
+      prefixArgs: ['expo'],
+      runner: 'npx',
+    });
+  });
+
+  // The other three would have taken the project's eas here. register does not, because it cannot.
+  it(`should ignore an eas the other auth commands would have used`, async () => {
+    vol.fromJSON({ [easBin]: '#!/bin/sh' });
+
+    await expect(resolveAuthCliAsync(projectRoot, { pathEnv: '' })).resolves.toMatchObject({
+      source: 'project-eas',
+    });
+    expect(resolveRegisterCli(projectRoot, { pathEnv: '' })).toMatchObject({
+      source: 'runner-expo',
+    });
+  });
+});
+
+describe(`register passthrough`, () => {
+  // Never a real signup: the stub records the invocation and exits.
+  it(`should spawn the expo CLI with register, and say so on stderr`, async () => {
+    jest.spyOn(process, 'cwd').mockReturnValue(path.resolve('/elsewhere'));
+    jest.mocked(runInheritedAsync).mockResolvedValue(0);
+
+    await exagentPassthrough('register')([]);
+
+    expect(runInheritedAsync).toHaveBeenCalledWith('npx', ['expo', 'register'], expect.anything());
+    expect(jest.mocked(Log.error).mock.calls.join('\n')).toContain('npx expo');
+  });
+
+  it(`should keep stdio inherited, because signup is interactive`, async () => {
+    jest.spyOn(process, 'cwd').mockReturnValue(path.resolve('/elsewhere'));
+    jest.mocked(runInheritedAsync).mockResolvedValue(0);
+
+    await exagentPassthrough('register')([]);
+
+    // `runInheritedAsync` is the inherited-stdio spawn: using it at all is the assertion.
+    expect(runExpoAsync).not.toHaveBeenCalled();
   });
 });
 

@@ -51,11 +51,22 @@ export type CloudPlatform = 'ios' | 'android';
  * token, which is why nothing here ever writes it.
  *
  * It is **not** the gate any more (llp/0005 §Finding the session). The file outlives the session it
- * names, `simulator:start --json` and `--out-config-type env` do not write it at all [observed —
- * `eas-cli@22.2.0` `build/simulator/env.js`], and a session started by MCP or by another terminal
- * need never touch it. So its presence proves nothing about what is running — what it is genuinely
- * true about is *which* session this project last started, and that makes it a **preference** when
- * the service reports more than one.
+ * names, and a session started by MCP or by another terminal need never touch it. So its presence
+ * proves nothing about what is running — what it is genuinely true about is *which* session this
+ * project last started, and that makes it a **preference** when the service reports more than one.
+ *
+ * A live run made that case stronger and one of its facts wrong [observed — 2026-08-26, staging,
+ * `eas-cli` 22.5.0, `eas simulator --platform android --build-id … --type agent-device --json`].
+ * The claim used to be that a `--json` start does not write the file at all [read from
+ * `eas-cli@22.2.0` `build/simulator/env.js`]. It **does** write it — and writes it **empty**: three
+ * comment lines saying not to commit or edit it, and no session id, no daemon URL, no token. So the
+ * file can be present, freshly written, and still name nothing, which is a worse failure than an
+ * absent file for anything that treats presence as evidence. Reading the service is the only sound
+ * way to find a session, which is what this module does.
+ *
+ * One consequence for advice rather than for code: `eas simulator:stop` with no `--id` defaults to
+ * this file, so after a `--json` start it has nothing to read and the session must be stopped with
+ * `--id <session-id>` explicitly.
  */
 export const CLOUD_SESSION_ENV_FILE = '.env.eas-simulator';
 
@@ -164,12 +175,19 @@ export function buildCloudOpenUrlArgs({
 }
 
 /**
- * The screenshot, as the cloud backend takes it. [inferred]
+ * The screenshot, as the cloud backend takes it.
  *
  * The controller writes the PNG to a **local** path — it downloads the image from the daemon — so
  * unlike `adb exec-out` there is nothing to redirect, and unlike `simctl` the file arrives over a
- * network. No `--platform`: the skill's verb table carries it on `open`/`install`/`apps` and not on
- * `screenshot`, and inventing a flag is how an experimental CLI answers "unknown option".
+ * network.
+ *
+ * Both halves of the argv are the controller's own account of itself [observed — 2026-08-26,
+ * `agent-device@latest help screenshot`, which runs offline]: the usage line is
+ * `agent-device screenshot [path] …`, so the path is **positional**; and the flag list holds
+ * `--out`, `--overlay-refs`, `--pixel-density`, `--fullscreen`, `--scale`, `--no-stabilize` and
+ * `--normalize-status-bar` — and **no `--platform`**, which the `open` verb's help does document
+ * ("Use --platform to bind URL/deep-link opens to the target platform"). Sending one here is how an
+ * experimental CLI answers "unknown option", so none is sent.
  *
  * The controller requires an app to be open first, which is a property of the *verb* and is said
  * out loud in the caller's reason string rather than worked around here.
@@ -797,7 +815,10 @@ export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandE
     [
       'No EAS Simulator session this CLI can drive is running for this project, so there is no cloud simulator to open the link on.',
       `Why: ${probe.reason ?? 'the service listed no running session'}. A cloud simulator is a session that is started, driven and stopped — unlike a local simulator, there is nothing to find that somebody else left booted.`,
-      `How: start one with "${start}", then run this command again. The session bills until it is stopped, so end it with "npx eas simulator:stop" when the run is done. To see what this project has running, "npx eas simulator:list --status in-progress" lists it. To open the link somewhere this CLI does not drive, "npx exagent navigate <route> --print-url" prints the URL and asks for no device.`,
+      // `--id` is named rather than left out: `simulator:stop` defaults to `.env.eas-simulator`,
+      // and a session started with `--json` writes that file empty, so the bare form has nothing to
+      // read [observed — 2026-08-26, live]. Advice that bills by the minute has to work first time.
+      `How: start one with "${start}", then run this command again. The session bills until it is stopped, so end it with "npx eas simulator:stop --id <session-id>" when the run is done. To see what this project has running, "npx eas simulator:list --status in-progress" lists it, with the id. To open the link somewhere this CLI does not drive, "npx exagent navigate <route> --print-url" prints the URL and asks for no device.`,
     ].join('\n')
   );
   error.suggestedCommand = start;

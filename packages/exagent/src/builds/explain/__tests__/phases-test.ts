@@ -27,6 +27,29 @@ describe('layer 1 — the EAS phase header', () => {
     expect(phaseAnchorFor(line)).toEqual({ phase, layer: 1 });
   });
 
+  // What EAS Build actually writes, now that a log has been read. Not a decorated title: a
+  // `Start phase:` marker naming a SCREAMING_SNAKE step [observed — 2026-08-26, staging build
+  // 77e676e2…, every phase boundary in the log]. The guessed titles above are kept because they
+  // cost nothing and a local log may still use them; this is what the real thing looks like.
+  it.each([
+    ['Start phase: INSTALL_DEPENDENCIES', 'install-dependencies'],
+    ['Start phase: PREBUILD', 'prebuild'],
+    ['Start phase: INSTALL_PODS', 'pod-install'],
+    ['Start phase: RUN_GRADLEW', 'gradle'],
+    ['Start phase: RUN_FASTLANE', 'fastlane'],
+    ['Start phase: UPLOAD_BUILD_ARTIFACTS', 'upload'],
+  ])('reads the EAS start-of-phase marker %p as %p', (line, phase) => {
+    expect(phaseAnchorFor(line)).toEqual({ phase, layer: 1 });
+  });
+
+  // A phase this table has no name for must not be claimed by the one before it, and an `End
+  // phase` marker must not open a phase that just closed.
+  it('claims nothing for a phase it has no name for, or for an end marker', () => {
+    expect(phaseAnchorFor('Start phase: SPIN_UP_BUILDER')).toBeNull();
+    expect(phaseAnchorFor('Start phase: PREPARE_CREDENTIALS')).toBeNull();
+    expect(phaseAnchorFor('End phase: INSTALL_PODS')).toBeNull();
+  });
+
   it.each([
     '[2026-08-23T10:00:00.000Z] Install pods',
     '2026-08-23 10:00:00 Install pods',

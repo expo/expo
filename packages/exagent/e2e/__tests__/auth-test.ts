@@ -61,6 +61,30 @@ async function setupBareDirAsync(bins: ('expo' | 'eas')[]): Promise<string> {
   return dir;
 }
 
+/**
+ * An `npx` on `PATH` that records what it was asked and downloads nothing.
+ *
+ * Only `register` reaches a package runner, and what the test needs to know is the argv it was
+ * handed. Letting the real `npx` run would fetch the `expo` package and then hand an interactive
+ * signup a terminal, which is two things a test must not do.
+ */
+async function installStubNpxAsync(dir: string): Promise<void> {
+  const script = path.join(dir, 'npx-stub.js');
+  await fs.promises.writeFile(
+    script,
+    `#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+fs.appendFileSync(
+  path.join(process.env.AUTH_LOG_DIR, ${JSON.stringify(LOG_NAME)}),
+  JSON.stringify({ bin: 'npx', args: process.argv.slice(2), cwd: process.cwd() }) + '\\n'
+);
+process.exit(0);
+`
+  );
+  await installStubBinAsync(path.join(dir, 'path-bin'), 'npx', script);
+}
+
 function readInvocations(dir: string): StubInvocation[] {
   const file = path.join(dir, LOG_NAME);
   if (!fs.existsSync(file)) {
@@ -103,22 +127,53 @@ describe('auth commands outside an Expo project', () => {
     expect(readInvocations(dir)[0]?.args).toEqual(['login', '--help']);
   });
 
-  it(`should say so rather than run a command the EAS CLI does not have`, async () => {
+  // `register` is the one command that does not take the EAS fallback, because there is no
+  // `eas register` to take. It reaches for `npx expo` instead — the download the other three were
+  // changed to avoid, accepted here because creating an account happens once.
+  //
+  // The `npx` on `PATH` is a stub: a test that ran the real one would download an SDK, and a test
+  // that ran the real `expo register` would try to create an account.
+  it(`should run expo register through the package runner, not any eas`, async () => {
     const dir = await setupBareDirAsync(['eas']);
+    await installStubNpxAsync(dir);
 
     const eventsFile = path.join(dir, 'events.jsonl');
     const result = await executeExagentAsync(dir, ['register'], {
-      env: { ...isolatedEnv(dir), LOG_EVENTS: eventsFile },
-      reject: false,
+      env: { ...isolatedEnv(dir), PATH: `${path.join(dir, 'path-bin')}:${isolatedEnv(dir).PATH}`, LOG_EVENTS: eventsFile },
     });
 
-    expect(result.exitCode).not.toBe(0);
-    expect(result.all).toContain('There is no CLI here that can run "register"');
-    expect(result.all).toContain('https://expo.dev/signup');
-    // The code is the machine half of the contract, and it rides the event stream.
-    expect(fs.readFileSync(eventsFile, 'utf8')).toContain('AUTH_COMMAND_UNAVAILABLE');
-    // Nothing was spawned: the dead end is reported before anything runs.
-    expect(readInvocations(dir)).toEqual([]);
+    expect(result.exitCode).toBe(0);
+    // The expo package and the verb, in that order — and the project's `eas` was left alone.
+    expect(readInvocations(dir)).toEqual([
+      { bin: 'npx', args: ['expo', 'register'], cwd: expect.any(String) },
+    ]);
+    expect(fs.readFileSync(eventsFile, 'utf8')).toContain('runner-expo');
+  });
+
+  it(`should say which CLI runs register, on stderr, and warn about the download`, async () => {
+    const dir = await setupBareDirAsync(['eas']);
+    await installStubNpxAsync(dir);
+
+    const result = await executeExagentAsync(dir, ['register'], {
+      env: { ...isolatedEnv(dir), PATH: `${path.join(dir, 'path-bin')}:${isolatedEnv(dir).PATH}` },
+    });
+
+    expect(result.stderr).toContain('npx expo');
+    expect(result.stderr).toContain('download');
+    // The same discipline the other three keep: notes go on stderr, never into stdout.
+    expect(result.stdout).not.toContain('Using the Expo CLI');
+  });
+
+  it(`should use the project's own expo for register when there is one`, async () => {
+    const dir = await setupBareDirAsync(['expo', 'eas']);
+
+    const result = await executeExagentAsync(dir, ['register'], { env: isolatedEnv(dir) });
+
+    expect(readInvocations(dir)).toEqual([
+      { bin: 'expo', args: ['register'], cwd: expect.any(String) },
+    ]);
+    // Nothing to announce: the project's own CLI is what a reader already assumes ran.
+    expect(result.stderr).not.toContain('Using the');
   });
 
   it(`should use an eas found on PATH when the directory has none of its own`, async () => {

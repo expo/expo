@@ -49,6 +49,40 @@ describe('readLogStreamAsync', () => {
     expect(read.lines).toEqual(['first line', 'second line', 'third']);
   });
 
+  // An EAS Build log is JSONL, one bunyan record per line — not the plain text every other log
+  // this reads is [observed — 2026-08-26, staging build 77e676e2…, 644 records]. Left wrapped, the
+  // rule table matches inside a JSON blob, the phase markers are invisible, and every context line
+  // a reader is shown is 400 characters of metadata around the sentence they wanted.
+  it('unwraps an EAS Build JSONL record to the message it carries', async () => {
+    const record = JSON.stringify({
+      name: 'worker',
+      pid: 805,
+      phase: 'INSTALL_PODS',
+      buildId: '77e676e2',
+      source: 'stdout',
+      level: 30,
+      msg: '[!] Oh no, an error occurred.',
+      time: '2026-08-26T15:29:37.543Z',
+    });
+
+    const read = await readLogStreamAsync(streamOf([`${record}\n`]));
+    expect(read.lines).toEqual(['[!] Oh no, an error occurred.']);
+  });
+
+  it('leaves alone any line that is not one of those records', async () => {
+    // JSON that is not a log record is still log content — a printed app config, say, which the
+    // same EAS log contains. Only an object carrying a string `msg` is a record.
+    const read = await readLogStreamAsync(
+      streamOf(['{"expo":{"name":"DailyWords"}}\n[1, 2, 3]\nnot json at all\n{"msg":42}\n'])
+    );
+    expect(read.lines).toEqual([
+      '{"expo":{"name":"DailyWords"}}',
+      '[1, 2, 3]',
+      'not json at all',
+      '{"msg":42}',
+    ]);
+  });
+
   it('keeps a last line that has no newline after it', async () => {
     // A stream cut off mid-write ends this way, and that partial line is often the interesting one.
     const read = await readLogStreamAsync(streamOf(['** BUILD FAILED **']));

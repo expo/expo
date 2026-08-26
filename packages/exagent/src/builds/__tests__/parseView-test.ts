@@ -1,5 +1,8 @@
+import recordedInProgress from '../../__fixtures__/eas/build-view-in-progress.staging.json';
+import recordedInQueue from '../../__fixtures__/eas/build-view-in-queue.staging.json';
 import recordedView from '../../__fixtures__/eas/build-view.json';
 import { parseLastJsonObject, readBuildDetails, readProgress } from '../parseView';
+import { resolveTerminalStatus } from '../status';
 
 describe(parseLastJsonObject, () => {
   it(`reads the object a clean --json run prints`, () => {
@@ -84,6 +87,54 @@ describe(`the recorded build:view payload`, () => {
       estimatedWaitTimeLeftSeconds: null,
       elapsedMs: 1000,
     });
+  });
+});
+
+// The two statuses a wait actually spends its time in, recorded live on staging rather than
+// guessed — see `src/__fixtures__/eas/README.md` §The non-terminal statuses.
+describe(`the recorded non-terminal payloads`, () => {
+  it(`pins the spelling of the two statuses a wait polls through`, () => {
+    expect(recordedInQueue.status).toBe('IN_QUEUE');
+    expect(recordedInProgress.status).toBe('IN_PROGRESS');
+    // Neither may end a wait. Getting this wrong reports an outcome nobody observed.
+    expect(resolveTerminalStatus(recordedInQueue.status)).toBeNull();
+    expect(resolveTerminalStatus(recordedInProgress.status)).toBeNull();
+  });
+
+  // The field a reader most wants while waiting is the field that is never there. It is requested
+  // on every query and dropped from the payload whenever the service leaves it null, so `null` is
+  // the answer the parser must produce — not a throw, and not a missing key it trips over.
+  it(`answers null for the queue fields that never arrive`, () => {
+    expect(readProgress(recordedInQueue, 500)).toEqual({
+      status: 'IN_QUEUE',
+      queuePosition: null,
+      estimatedWaitTimeLeftSeconds: null,
+      elapsedMs: 500,
+    });
+    expect(readProgress(recordedInProgress, 500)).toEqual({
+      status: 'IN_PROGRESS',
+      queuePosition: null,
+      estimatedWaitTimeLeftSeconds: null,
+      elapsedMs: 500,
+    });
+  });
+
+  // No `eas --json` payload contains a literal null: the CLI's sanitizer deletes those keys before
+  // printing. A fixture that had one would mean the recording was edited.
+  it(`carries no null anywhere, because the EAS CLI strips them`, () => {
+    for (const payload of [recordedInQueue, recordedInProgress]) {
+      expect(JSON.stringify(payload)).not.toContain('null');
+    }
+  });
+
+  it(`has a fetchable log while the build is still running`, () => {
+    // Empty before the build starts, populated once it does — so `build:explain` has something to
+    // read from a build that has not finished and may never finish.
+    expect(recordedInQueue.logFiles).toEqual([]);
+    expect(recordedInProgress.logFiles.length).toBeGreaterThan(0);
+    // Neither has produced an artifact yet.
+    expect(recordedInQueue.artifacts).toEqual({});
+    expect(recordedInProgress.artifacts).toEqual({});
   });
 });
 

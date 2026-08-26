@@ -19,6 +19,17 @@ Native rail design [confirmed — Kudo chose user-auth ("A"), 2026-08-22; ground
 
 Shipped [observed — 2026-08-22, revised same day]: `exagent deploy --native` **delegates to `create-launch` as a subprocess** [confirmed — Kudo, 2026-08-22] — truer to constraint 5 than the first cut, which ported the tarball/auth/upload internals (since deleted). Resolution: project bin → PATH → `npx create-launch@latest`; always `--json`; `--upload-root <dir>` keeps exagent's meaning by running the subprocess from that directory with `--project <app>`. Its auth failure maps to `Try: npx expo login`; a machine-readable error object from `create-launch --json` is the recorded upstream ask (today the auth case is scraped from stderr). Browser handoff + 8 h expiry as designed (expiry hardcoded — service returns no `expiresAt`, recorded ask). `--platform`/`--profile` are typed errors (a launch covers both platforms). Web rail unchanged. Hermetic e2e via a stub `create-launch` bin; the cli-missing path is an eval scenario grading exit code + the `cli:error` event.
 
+### The web rail, run end to end
+
+Until now the web rail had only ever been tested to the preflight: `deploy --web` is two subprocesses (`expo export --platform web`, then `eas deploy`), and neither had been allowed to reach the service. **It has now been run to a live deployment** [observed — 2026-08-26, staging, `@kudo1/DailyWords-Grok`]: exit **0**, and `https://dailywords-grok--pblz5fv6dc.staging.expo.app` answers `200 text/html`. The report prints the project, the targets, the export directory and the web URL, and follows up with the URL itself and `npx eas deploy --prod` — a preview deployment is what `eas deploy` makes without `--prod`, which the follow-up says rather than assumes.
+
+The failure half was exercised first, and by accident, which made it the better test. The project's export stopped on a bundler error (`Unable to resolve module ./wa-sqlite/wa-sqlite.wasm`), and `deploy` reported it as `The web bundle could not be exported, so there was nothing to deploy (expo export exited with code 1)` with a why, a how, and `Try: npx expo export --platform web`, exiting **1**. That is the right code: llp/0010 reserves **7** for a step only a person can complete, and a bundler that cannot resolve an import is a project defect its owner fixes, not a login they must perform. The two `deploy` failures that *do* exit 7 are unchanged.
+
+Two findings from that bundler error, neither of them this CLI's:
+
+- **Bun does not extract every file of a package.** `expo-sqlite@57.0.1` ships `web/wa-sqlite/wa-sqlite.js` and `web/wa-sqlite/wa-sqlite.wasm` in its npm tarball [observed — `npm view … dist.tarball`, both present]; after `bun install` 1.3.14 **both are missing** from `node_modules`, while `npm install` of the same version keeps them. A Bun project therefore cannot export `expo-sqlite` for web at all, and the error names a missing file rather than a missing install.
+- **Metro does not treat `.wasm` as an asset by default**, so even with the file present the import fails. The export needs `config.resolver.assetExts.push('wasm')` in `metro.config.js`. Both are upstream asks rather than anything `deploy` can fix; what `deploy` owes is the accurate report it gave.
+
 ## Headless project creation
 
 [confirmed — Kudo seed, 2026-08-18] `exagent new "<one-line app description>"`: template choice, `create-expo`, git init, EAS init, first boot check — every step flag- or JSON-driven, zero TTY. Depends on non-interactive parity ([[0006-agent-native-cli-surface]]).
