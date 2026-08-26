@@ -292,11 +292,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    // TODO(@ubax): rework the ROUTE_NAMES_CHANGED and change this back to 4
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    // TODO(@ubax): when ROUTE_NAMES_CHANGED is reworked check if this can be reduced
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(3);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
   });
 
@@ -322,10 +322,10 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(3);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
   });
 
