@@ -25,7 +25,7 @@ import { readDevServerLockAsync, type DevServerLockInfo } from '../devLock';
 import { event as cliEvent } from '../events';
 import { followUpsEnabled, reportFollowUps, type FollowUp } from '../followups';
 import * as Log from '../log';
-import { waitForBundlerReadyAsync } from '../runtime/waitReady';
+import { waitForBundlerReadyAsync, type BundlerReadyResult } from '../runtime/waitReady';
 import { CommandError } from '../utils/errors';
 import { event } from './events';
 import { openDetachedLogSync, readDetachedLogSync } from './logFile';
@@ -198,7 +198,7 @@ export async function devDetachAsync(
     ready = result.ready;
     projectRootMatched = result.projectRootMatched;
     if (!result.ready) {
-      throw notReadyError(lock, logFile, result.reason);
+      throw notReadyError(lock, logFile, result);
     }
   }
 
@@ -399,17 +399,37 @@ function notStartedError(
   return error;
 }
 
-/** The error for a detached dev server that came up but whose bundler never answered. */
-function notReadyError(
+/**
+ * The error for a detached dev server that came up but whose bundler never answered.
+ *
+ * Two failures wear this name, and the difference is whether anything answered at all. A wait that
+ * ran out on a bundler that is still working is about time; a wait that got an answer from a dev
+ * server serving *another project* is not about time at all, and telling that caller to wait longer
+ * is a next action that cannot work.
+ *
+ * Exported for the test table: the whole value of this error is in its wording, and the only way to
+ * check wording is to read it.
+ */
+export function notReadyError(
   lock: DevServerLockInfo,
   logFile: string,
-  reason: string | undefined
+  result: BundlerReadyResult
 ): CommandError {
+  const strangerAnswered = result.projectRootMatched === false;
   const error = new CommandError(
     'DEV_DETACH_NOT_READY',
     [
       `The dev server started on ${lock.url} (pid ${lock.pid}), but --wait-ready gave up before its bundler answered.`,
-      `Why: ${reason ?? 'GET /status did not answer'}. The dev server is still running — this is about the wait, not about the server.`,
+      `Why: ${result.reason ?? 'GET /status did not answer'}. ${
+        strangerAnswered
+          ? `That answer came from a dev server serving ${result.reportedProjectRoot}, which is not this project — so the wait was watching somebody else's bundler and this project's may well be ready.`
+          : 'The dev server is still running — this is about the wait, not about the server.'
+      }`,
+      // @ref llp/0005-runtime-loop-tools.rfc.md §A port number is not one listener — friction run
+      // 5, F48-10. Named on both paths, because the reader cannot tell the cases apart and this is
+      // the one they will not think of: a port number is not a listener, and this CLI only ever
+      // looks at one of the two a machine can have.
+      `Note: this CLI reaches the dev server at ${lock.url}, over IPv4. A port number is not one listener — 127.0.0.1:${lock.port} and [::1]:${lock.port} are different sockets, so another process can be answering this port on the other stack while this project's dev server is fine, and neither will have reported a collision. "lsof -nP -iTCP:${lock.port} -sTCP:LISTEN" lists both.`,
       `How: wait for it with "npx exagent dev:wait", which reports what the bundler is doing and whether this project compiles, or read ${logFile} with "npx exagent dev:logs". Stop it with "npx exagent dev:stop".`,
     ].join('\n')
   );

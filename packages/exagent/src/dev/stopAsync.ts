@@ -16,6 +16,16 @@
 //
 // The lock is also what makes the *negative* answer honest: a port that answers with no lock
 // behind it is a dev server this CLI did not start, and the report says so instead of killing it.
+//
+// **The pid is the primary evidence that the stop worked; the port is secondary.** These answer two
+// different questions — "is the process I signalled alive?" and "does something answer 8081?" — and
+// this command used to require both before it would say the dev server had stopped. That is wrong
+// whenever anything else is on the port, and the case that forces it is a split IPv4/IPv6 stack
+// (llp/0005 §A port number is not one listener): the lock publishes `http://127.0.0.1:<port>`, so
+// every check here is over IPv4, while a dev server that bound `::1` is a different listener on the
+// same port number. A stranger on `127.0.0.1:8081` therefore kept `dev:stop` reporting
+// `still-running` — exit 20 — about a process that was already gone, with a `How:` line offering
+// `--signal SIGKILL` for a pid nothing could signal.
 
 import chalk from 'chalk';
 
@@ -28,6 +38,7 @@ import { PACKAGER_STATUS_READY } from '../runtime/waitReady';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import { debugEvent, event } from './events';
 import { findPortListenerAsync, type PortListener } from './portListener';
+import { isProcessAlive } from './processLiveness';
 import type { DevStopOptions } from './resolveStopOptions';
 
 /** How often to re-check whether the dev server has gone. */
@@ -95,6 +106,25 @@ export interface DevStopResultJson {
    * missing proof instead of reading the sentence that names it.
    */
   forceRefusedBy: DevStopForceRefusal | null;
+  /**
+   * The process this command signalled was still alive when it finished.
+   *
+   * The **primary** evidence about the stop, and the one an agent should branch on: it is the only
+   * fact that is about the thing the signal was sent to. False beside `stopped: false` means the
+   * signal worked and something else — the lock, below — is what did not go away, so
+   * `--signal SIGKILL` is not the recovery.
+   */
+  processStillRunning: boolean;
+  /**
+   * Something was still answering the port when this command finished.
+   *
+   * Secondary evidence, reported rather than acted on. True beside `stopped: true` is the split
+   * IPv4/IPv6 stack of llp/0005 §A port number is not one listener, or simply a second project's
+   * dev server that was there all along: the process this command signalled is gone, and the port
+   * number it was using is in use by something else. A caller that cares which reads it here
+   * instead of inferring it from an exit code that has nothing to say about it.
+   */
+  portStillAnswering: boolean;
   /** Why nothing was stopped. Null exactly when {@link stopped} is true. */
   reason: DevStopSkipReason | null;
   /** One sentence of detail for {@link reason}. Null exactly when {@link stopped} is true. */
@@ -166,6 +196,8 @@ async function stopLockedDevServerAsync(
     signal: null,
     forced: false,
     forceRefusedBy: null,
+    processStillRunning: false,
+    portStillAnswering: false,
     reason: null,
     detail: null,
     waitedMs: 0,
@@ -179,18 +211,26 @@ async function stopLockedDevServerAsync(
   base.signal = sent.delivered ? options.signal : null;
   debugEvent('stop_signalled', { pid: lock.pid, signal: options.signal, ok: sent.delivered });
 
-  const gone = await waitForStopAsync(lock, options.timeoutMs);
+  const outcome = await waitForStopAsync(lock, options.timeoutMs);
   base.waitedMs = Date.now() - startedAt;
+  base.processStillRunning = !outcome.processGone;
+  base.portStillAnswering = !outcome.portFree;
+  debugEvent('stop_outcome', outcome);
 
-  if (gone) {
+  // The two facts that are about the thing this command signalled. The port is not one of them.
+  if (outcome.processGone && outcome.lockGone) {
     base.stopped = true;
     return base;
   }
 
   base.reason = 'still-running';
-  base.detail = sent.delivered
-    ? `${options.signal} was sent to ${lock.pid}, and its dev server was still answering ${options.timeoutMs}ms later`
-    : `${options.signal} could not be delivered to ${lock.pid} (${sent.error ?? 'no reason given'}), and its dev server is still answering`;
+  base.detail = !outcome.processGone
+    ? sent.delivered
+      ? `${options.signal} was sent to ${lock.pid}, and that process was still running ${options.timeoutMs}ms later`
+      : `${options.signal} could not be delivered to ${lock.pid} (${sent.error ?? 'no reason given'}), and that process is still running`
+    : // The pid went and the lock did not. The socket is held by something, so the dev server this
+      // project would be found at is not this command's to have stopped.
+      `pid ${lock.pid} is gone, but this project's dev-server lock is still answering, so something else is holding it`;
   return base;
 }
 
@@ -215,6 +255,8 @@ async function stopUnlockedDevServerAsync(
     signal: null,
     forced: false,
     forceRefusedBy: null,
+    processStillRunning: false,
+    portStillAnswering: false,
     reason: 'not-running',
     detail: 'no dev-server lock answered for this project, and nothing was listening for it',
     waitedMs: Date.now() - startedAt,
@@ -242,9 +284,15 @@ async function stopUnlockedDevServerAsync(
   if (options.force && isDevServer && listener != null && looksLikeDevServerProcess(listener)) {
     const sent = await signalProcessAsync(listener.pid, options.signal);
     base.signal = sent.delivered ? options.signal : null;
-    const gone = await waitForPortFreeAsync(port, options.timeoutMs);
+    // The pid, again, rather than the port. `--force` proved *this process* was the dev server on
+    // the port, so this process going away is what "forced" means; a port that keeps answering
+    // afterwards is a second listener, and reporting a failed kill for it would be a lie about the
+    // one thing this command did do.
+    const outcome = await waitForForcedStopAsync(listener.pid, port, options.timeoutMs);
     base.waitedMs = Date.now() - startedAt;
-    if (gone) {
+    base.processStillRunning = !outcome.processGone;
+    base.portStillAnswering = !outcome.portFree;
+    if (outcome.processGone) {
       base.stopped = true;
       base.forced = true;
       base.reason = null;
@@ -252,7 +300,7 @@ async function stopUnlockedDevServerAsync(
       return base;
     }
     base.reason = 'still-running';
-    base.detail = `${options.signal} was sent to ${listener.pid}, and port ${port} was still answering ${options.timeoutMs}ms later`;
+    base.detail = `${options.signal} was sent to ${listener.pid}, and that process was still running ${options.timeoutMs}ms later`;
     return base;
   }
 
@@ -306,36 +354,60 @@ export async function signalProcessAsync(
   }
 }
 
-/** Poll until the lock stops answering and the port stops answering, or the budget runs out. */
-async function waitForStopAsync(lock: DevServerLockInfo, timeoutMs: number): Promise<boolean> {
+/** What the three checks said the last time they were asked. */
+interface StopOutcome {
+  /** The pid the lock named no longer exists. The primary evidence that the signal worked. */
+  processGone: boolean;
+  /** The project's dev-server lock no longer answers, so nothing holds it. */
+  lockGone: boolean;
+  /** Nothing answered `/status` on the port. Secondary: the port is not the process. */
+  portFree: boolean;
+}
+
+/**
+ * Poll until the signalled process and the lock have both gone, or the budget runs out.
+ *
+ * The port is read every round and never gates the answer. It used to: "stopped" meant the lock and
+ * the port had both gone quiet, which reads as caution and is a wrong answer whenever anything else
+ * is on the port — including this CLI's own IPv4-only check meeting a listener the dev server never
+ * knew about (llp/0005 §A port number is not one listener). The pid is what the signal was sent to,
+ * so the pid is what says whether it worked.
+ *
+ * The lock stays in the condition because it is about this project rather than about the port
+ * number: while it answers, another command would still be pointed at a dev server here.
+ */
+async function waitForStopAsync(lock: DevServerLockInfo, timeoutMs: number): Promise<StopOutcome> {
   const deadline = Date.now() + timeoutMs;
   for (;;) {
-    // Both, because they fail independently: the lock can be released while Metro is still
-    // shutting its listener down, and a lock holder that dies without releasing leaves a socket
-    // file that nothing answers on. "Stopped" is when neither answers.
     const [lockGone, portFree] = await Promise.all([
       readDevServerLockAsync(lock.projectRoot).then((info) => info == null),
       isPortFreeAsync(lock.port),
     ]);
-    if (lockGone && portFree) {
-      return true;
+    const outcome = { processGone: !isProcessAlive(lock.pid), lockGone, portFree };
+    if (outcome.processGone && outcome.lockGone) {
+      return outcome;
     }
     if (Date.now() + POLL_INTERVAL_MS >= deadline) {
-      return false;
+      return outcome;
     }
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
 }
 
-/** Poll until nothing answers on a port. */
-async function waitForPortFreeAsync(port: number, timeoutMs: number): Promise<boolean> {
+/** Poll until the pid `--force` signalled has gone, or the budget runs out. */
+async function waitForForcedStopAsync(
+  pid: number,
+  port: number,
+  timeoutMs: number
+): Promise<{ processGone: boolean; portFree: boolean }> {
   const deadline = Date.now() + timeoutMs;
   for (;;) {
-    if (await isPortFreeAsync(port)) {
-      return true;
+    const processGone = !isProcessAlive(pid);
+    if (processGone) {
+      return { processGone, portFree: await isPortFreeAsync(port) };
     }
     if (Date.now() + POLL_INTERVAL_MS >= deadline) {
-      return false;
+      return { processGone, portFree: await isPortFreeAsync(port) };
     }
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
@@ -384,13 +456,24 @@ export function looksLikeDevServerProcess(listener: PortListener): boolean {
 
 function buildFollowUps(report: DevStopResultJson): FollowUp[] {
   if (report.stopped) {
-    return [
-      {
-        id: 'dev',
-        command: 'npx exagent dev --yes',
-        why: 'The dev server is stopped, so this is what starts one again when the app is needed.',
-      },
-    ];
+    const followups: FollowUp[] = [];
+    // First, because it contradicts the line above it: the dev server stopped and the port is
+    // still busy, and an agent that reads only "Stopped yes" will start the next one into a
+    // collision. This command run again against the port is what names whose listener it is —
+    // the unlocked path reports its pid and its command line.
+    if (report.portStillAnswering && report.port != null) {
+      followups.push({
+        id: 'dev-stop-port',
+        command: `npx exagent dev:stop --port ${report.port}`,
+        why: `Port ${report.port} still answers, and it is not the process that was just stopped. This asks what is on it and names the pid.`,
+      });
+    }
+    followups.push({
+      id: 'dev',
+      command: 'npx exagent dev --yes',
+      why: 'The dev server is stopped, so this is what starts one again when the app is needed.',
+    });
+    return followups;
   }
   if (report.reason === 'foreign-dev-server') {
     return [
@@ -422,6 +505,18 @@ function printHumanReport(report: DevStopResultJson): void {
       )}`
     );
   }
+  // Said out loud on the success path too, because "Stopped yes" and a port that still answers is
+  // the one combination a reader would otherwise take for a contradiction.
+  if (report.stopped && report.portStillAnswering && report.port != null) {
+    lines.push(
+      chalk`{bold Port} ${report.port}${chalk.dim(' · still answering, by something else')}`
+    );
+    lines.push(
+      chalk.dim(
+        ` The process this command signalled is gone. Another listener has that port number — a second project's dev server, or one on the other IP stack, since this check is over 127.0.0.1 and a listener on ::1 is a different socket.`
+      )
+    );
+  }
   if (report.detail != null) {
     lines.push(chalk.dim(` ${report.detail}`));
   }
@@ -438,6 +533,16 @@ function explainFailure(report: DevStopResultJson, options: DevStopOptions): str
       report.forceRefusedBy
         ? forceRefusedHow(report, report.forceRefusedBy)
         : `How: stop it where it was started, or run this command again with --force, which stops it only when the port answers as an Expo dev server ${report.pid != null ? `and pid ${report.pid} looks like one` : 'and its process can be identified'}.`,
+    ].join('\n');
+  }
+  // Two failures wear this reason, and only one of them is answered by a bigger hammer. Sending
+  // SIGKILL to a pid that is already gone is a next action that cannot work, which is the same
+  // mistake the `--force` refusal used to make [friction run 5, F48-1].
+  if (!report.processStillRunning) {
+    return [
+      chalk.red(`This project's dev-server lock is still answering.`),
+      `Why: ${report.detail}. The signal did its job — pid ${report.pid} is gone — so what is left is a second holder of the lock, which is what happens when this project has two dev servers running and only one of them was this one.`,
+      `How: run "npx exagent status --json" to see which dev server this project would now talk to, and stop that one where it was started. Nothing here is waiting on a longer --timeout, and --signal SIGKILL has nothing left to signal.`,
     ].join('\n');
   }
   return [

@@ -416,9 +416,52 @@ spawn paths install forwarders for `SIGINT`/`SIGTERM` and pass them to the `expo
 [observed — `src/utils/subprocess.ts`, `src/utils/expoCli.ts` `runExpoAsync`]. Live it takes about
 **170 ms**, and the wrapper, Metro and the lock all go [observed — 2026-08-23, port 8171].
 
-**The wait is on both the lock and the port.** They fail independently: the lock is released before
-Metro finishes closing its listener, and a holder that dies without releasing leaves a socket file
-nothing answers on. "Stopped" is when neither answers.
+**The wait is on the PID and the lock; the port is read and reported, never waited on.** Revised
+[confirmed — friction run 5, F48-10, 2026-08-25]; it was all three, and see §A port number is not one
+listener for why that was wrong. The two that stayed fail independently — the lock is released
+before Metro finishes closing its listener, and a holder that dies without releasing leaves a socket
+file nothing answers on — and both are about *this project*: the PID is what the signal was sent to,
+and the lock is what another command would still be pointed at.
+
+### A port number is not one listener
+
+Amendment [confirmed — friction run 5, F48-10, 2026-08-25]. `127.0.0.1:8081` and `[::1]:8081` are
+**different sockets**. A machine with a split IPv4/IPv6 stack can have one process on each without
+either one seeing a collision, and everything this CLI checks is over IPv4: the lock publishes
+`http://127.0.0.1:<port>` [observed — `src/devLock/holdLock.ts`], and every `/status` request follows
+it. So "the port answers" and "this project's dev server is running" are two claims, and the second
+does not follow from the first.
+
+Two commands were reading the first as the second.
+
+- **`dev:stop` waited on the port before it would say a dev server had stopped.** With a stranger on
+  `127.0.0.1:8081` and this project's dev server on `[::1]:8081`, the signalled process died on
+  schedule and the port went on answering, so the command reported `reason: "still-running"` and
+  exit `20` about a process that was already gone — and its `How:` line offered `--signal SIGKILL`,
+  a next action with nothing left to signal. The conclusion is now drawn from **PID liveness**
+  (`process.kill(pid, 0)`, with `EPERM` read as alive because a process this user may not signal is
+  a process that is there), and the port is reported rather than acted on: `--json` carries
+  `processStillRunning` (primary) beside `portStillAnswering` (secondary), and a stop whose port is
+  still busy prints that fact and a `dev:stop --port <n>` rung to find out whose it is. `--force`
+  changed the same way: it proved *that process* was the dev server on the port, so that process
+  going away is what "forced" means.
+
+  This also split the `still-running` failure in two, which is the useful part. The PID alive is the
+  old failure and keeps the old recovery; the PID gone with the lock still answering is a *second*
+  holder of the lock — two dev servers for this project, only one of them stopped — and its recovery
+  is `status --json` and stopping the other one where it was started, never a bigger signal.
+- **`dev --detach --wait-ready` could not say why it gave up.** The readiness wait is one long-lived
+  `GET /status` against the lock's URL, so on a split stack it can be answered by whatever is on
+  IPv4 while this project's bundler finishes untroubled on IPv6. The failure now says so on every
+  path — the two sockets, and `lsof -nP -iTCP:<port> -sTCP:LISTEN` to list both — because it is the
+  cause a reader will not think of and the log the error already quotes will not show it. When
+  `X-React-Native-Project-Root` decides it (`projectRootMatched === false`), the message stops
+  hedging and names the project root that answered: a wait that was watching somebody else's
+  bundler is not a wait that needed longer.
+
+The general rule this leaves: **a port check is corroboration, never a conclusion.** Where this CLI
+has a handle on the thing itself — a PID, a lock, a project root header — that handle is the
+evidence, and the port is what gets reported next to it.
 
 ### A port with no lock behind it is not this command's to kill
 

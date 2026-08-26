@@ -6,7 +6,8 @@
 
 import { vol } from 'memfs';
 
-import { buildDetachSpawn } from '../detachAsync';
+import type { BundlerReadyResult } from '../../runtime/waitReady';
+import { buildDetachSpawn, notReadyError } from '../detachAsync';
 import { detachedLogPath, openDetachedLogSync, readDetachedLogSync } from '../logFile';
 import { resolveDevLogsOptions, DEFAULT_LOG_TAIL_LINES } from '../resolveLogsOptions';
 import { resolveDevOptions } from '../resolveOptions';
@@ -168,5 +169,65 @@ describe(resolveDevLogsOptions, () => {
 
   it(`rejects a bare number, and names the flag that takes one`, () => {
     expect(() => resolveDevLogsOptions(['30'])).toThrow(/--tail 30/);
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §A port number is not one listener — friction run 5,
+// F48-10. `--wait-ready` gives up for two different reasons, and the reader cannot tell them apart
+// from the outside: a bundler that is still working, and another process answering this port.
+describe(notReadyError, () => {
+  const lock = {
+    url: 'http://127.0.0.1:8081',
+    port: 8081,
+    pid: 4242,
+    startedAt: '2026-08-25T00:00:00.000Z',
+    projectRoot,
+  };
+
+  function readyResult(overrides: Partial<BundlerReadyResult> = {}): BundlerReadyResult {
+    return {
+      ready: false,
+      projectRootMatched: null,
+      reportedProjectRoot: null,
+      timedOut: true,
+      waitedMs: 120_000,
+      reason: 'http://127.0.0.1:8081/status did not answer within 120000ms',
+      ...overrides,
+    };
+  }
+
+  it(`names the split stack, which is the cause a reader will not think of`, () => {
+    const message = notReadyError(lock, '/project/.expo/dev.log', readyResult()).message;
+
+    expect(message).toContain('[::1]:8081');
+    expect(message).toContain('127.0.0.1:8081');
+    expect(message).toContain('lsof -nP -iTCP:8081 -sTCP:LISTEN');
+  });
+
+  it(`keeps the wait's own reason, and says the dev server is still running`, () => {
+    const message = notReadyError(lock, '/project/.expo/dev.log', readyResult()).message;
+
+    expect(message).toContain('did not answer within 120000ms');
+    expect(message).toContain('this is about the wait, not about the server');
+  });
+
+  // Decisive evidence, when there is any: the dev server that answered named a project root, and
+  // it is not this one. Telling that caller to wait longer is a next action that cannot work.
+  it(`says so when the answer came from another project's dev server`, () => {
+    const message = notReadyError(
+      lock,
+      '/project/.expo/dev.log',
+      readyResult({ projectRootMatched: false, reportedProjectRoot: '/other-project' })
+    ).message;
+
+    expect(message).toContain('/other-project');
+    expect(message).toContain('which is not this project');
+    expect(message).not.toContain('this is about the wait, not about the server');
+  });
+
+  it(`recovers into the command that reports what the bundler is doing`, () => {
+    expect(notReadyError(lock, '/project/.expo/dev.log', readyResult()).suggestedCommand).toBe(
+      'npx exagent dev:wait'
+    );
   });
 });
