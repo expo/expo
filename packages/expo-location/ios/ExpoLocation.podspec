@@ -1,6 +1,7 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoLocation'
@@ -19,9 +20,13 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
 
   # Swift/Objective-C compatibility
-  s.pod_target_xcconfig = {
+  pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
   }
+  if podfile_properties['expo.location.motionActivityEnabled'] == 'false'
+    pod_target_xcconfig['OTHER_SWIFT_FLAGS'] = '$(inherited) -DEXPO_LOCATION_DISABLE_MOTION'
+  end
+  s.pod_target_xcconfig = pod_target_xcconfig
 
   s.source_files = "**/*.{h,m,swift}"
 end
