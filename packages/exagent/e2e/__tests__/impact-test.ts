@@ -34,7 +34,14 @@ type ImpactReport = {
     fingerprintChanged: boolean | null;
     baseHash: string | null;
     headHash: string | null;
-    changedSources: { op: string; type: string | null; path: string | null; reasons: string[]; kind: string; class: string }[];
+    changedSources: {
+      op: string;
+      type: string | null;
+      path: string | null;
+      reasons: string[];
+      kind: string;
+      class: string;
+    }[];
     reasons: string[];
     cachedBuild: { id: string | null; status: string | null } | null;
     caveats: string[];
@@ -589,7 +596,10 @@ describe('exagent impact', () => {
       });
 
       const report: ImpactReport = JSON.parse(result.stdout);
-      expect(report.platforms[0]!.cachedBuild).toMatchObject({ id: 'cached-1', status: 'FINISHED' });
+      expect(report.platforms[0]!.cachedBuild).toMatchObject({
+        id: 'cached-1',
+        status: 'FINISHED',
+      });
       expect(report.followups[0]).toMatchObject({ id: 'impact-cached-build' });
       expect(report.followups[0]!.command).toContain('cached-1');
     });

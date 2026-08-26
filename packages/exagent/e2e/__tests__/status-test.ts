@@ -477,7 +477,6 @@ describe('exagent status', () => {
         projectRootMatched: null,
         hostType: null,
         tunnelUrl: null,
-        tunnelExpired: null,
       });
     });
 
@@ -504,7 +503,6 @@ describe('exagent status', () => {
           projectRootMatched: true,
           hostType: null,
           tunnelUrl: null,
-          tunnelExpired: null,
         });
       } finally {
         await stub.close();
@@ -665,7 +663,6 @@ describe('exagent status', () => {
           projectRootMatched: null,
           hostType: null,
           tunnelUrl: null,
-          tunnelExpired: null,
         });
       } finally {
         releaseLock();

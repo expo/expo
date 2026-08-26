@@ -86,19 +86,11 @@ export interface ResolvedRoute {
    * What kind of host **the URL above carries**: `tunnel`, `lan`, `localhost`, or null.
    *
    * Classified from the URL itself rather than from what the dev server advertised, so the two can
-   * never disagree. They did: a run whose tunnel had died fell back to `exp://127.0.0.1:8081` and
-   * still reported `tunnel`, which reads as "open this anywhere" under an address only this machine
-   * can use [observed — live, 2026-08-25]. Null for a development build, whose `<scheme>://<route>`
-   * carries no host at all — it reaches whatever dev server the app was launched against.
+   * never disagree — a report that says `tunnel` over a `127.0.0.1` link reads as "open this
+   * anywhere" [observed — live, 2026-08-25]. Null for a development build's `<scheme>://<route>`,
+   * which carries no host at all: it reaches whatever dev server the app was launched against.
    */
   hostType: DevServerHostType | null;
-  /**
-   * The tunnel this run had is gone, so the URL above is the fallback rather than the address a
-   * device should have been given.
-   *
-   * @see src/dev/advertisedUrl.ts §the `Waiting on` line is written once and never revised
-   */
-  tunnelExpired: boolean;
   /** Whether the route was checked against the project's routes, and what the check said. */
   routeCheck: RouteCheckJson;
 }
@@ -225,9 +217,6 @@ export async function resolveRouteUrlAsync(
     target: target.reason,
     isExpoGo: target.isExpoGo,
     hostType: resolved.host ? classifyDevServerHost(hostnameOf(resolved.host)) : null,
-    // Only when the run *had* a tunnel: a project that never asked for one has no tunnel to have
-    // lost, and saying so would be an alarm about something that was never there.
-    tunnelExpired: reach.advertised?.hostType === 'tunnel' && reach.tunnelFailure != null,
     routeCheck,
   };
 }
@@ -292,7 +281,6 @@ export async function openRouteAsync(
 async function namedDevServerReach(): Promise<DevServerReach> {
   return {
     advertised: null,
-    tunnelFailure: null,
     running: false,
     reason: '--dev-server-url named the dev server, so its host is the one that was used',
   };

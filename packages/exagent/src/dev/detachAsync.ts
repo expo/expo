@@ -254,9 +254,7 @@ const TUNNEL_URL_POLL_MS = 250;
 /** The tunnel this project's dev server currently advertises, or null. */
 function currentTunnelUrlSync(projectRoot: string): string | null {
   const captured = readDevServerLogSync(projectRoot);
-  return captured?.tunnelFailure == null && captured?.advertised?.hostType === 'tunnel'
-    ? captured.advertised.url
-    : null;
+  return captured?.advertised?.hostType === 'tunnel' ? captured.advertised.url : null;
 }
 
 /**

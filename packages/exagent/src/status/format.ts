@@ -107,12 +107,7 @@ function freshnessLine(freshness: FreshnessStatus): string {
 
 function devServerLine(devServer: DevServerStatus): string {
   if (!devServer.running) {
-    const stopped = [`${chalk.dim('not running')} (${devServer.url})`];
-    // The tunnel note survives the dev server, because it is the answer to why nothing works.
-    if (devServer.tunnelExpired) {
-      stopped.push(chalk.yellow('tunnel expired'));
-    }
-    return stopped.join(SEPARATOR);
+    return `${chalk.dim('not running')} (${devServer.url})`;
   }
   const apps = pluralize(devServer.appsConnected, 'app', 'apps');
   const facts = [
@@ -137,17 +132,12 @@ function devServerLine(devServer: DevServerStatus): string {
  * Where a device off this machine reaches the dev server, when that is not the `url` above.
  *
  * A word only when it adds one. `http://127.0.0.1:8081` already says "this machine", and a LAN
- * address already says "this network", so the two cases worth a fact are a tunnel — an address the
- * line above does not contain at all — and a tunnel that is gone. Reporting only the listen address
- * of a tunnelled run is what left a dogfood session pointing a cloud simulator at `127.0.0.1`
- * [observed — 2026-08-24]; `hostType` rides along in `--json` for a reader that wants all three.
+ * address already says "this network", so the one case worth a fact is a tunnel — an address the
+ * line above does not contain at all. Reporting only the listen address of a tunnelled run is what
+ * left a dogfood session pointing a cloud simulator at `127.0.0.1` [observed — 2026-08-24];
+ * `hostType` rides along in `--json` for a reader that wants all three.
  */
 function reachFact(devServer: DevServerStatus): string | null {
-  if (devServer.tunnelExpired) {
-    return chalk.yellow(
-      `tunnel expired — restart with "npx exagent dev --detach --tunnel" (${devServer.tunnelExpired.line})`
-    );
-  }
   return devServer.tunnelUrl ? `${chalk.green('tunnel')} ${devServer.tunnelUrl}` : null;
 }
 

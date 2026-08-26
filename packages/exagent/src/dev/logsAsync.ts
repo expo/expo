@@ -25,9 +25,7 @@ import { CommandError } from '../utils/errors';
 import {
   readDevServerLogSync,
   resolveDevServerReach,
-  TUNNEL_RESTART_COMMAND,
   type DevServerHostType,
-  type TunnelFailure,
 } from './advertisedUrl';
 import { detachedLogPath, readDetachedLogSync } from './logFile';
 import type { DevLogsOptions } from './resolveLogsOptions';
@@ -55,14 +53,6 @@ export interface DevLogsResultJson {
    * phone or a cloud simulator uses, and it appears nowhere in `devServer.url`.
    */
   advertised: { url: string; hostType: DevServerHostType } | null;
-  /**
-   * The line in this log that says the tunnel behind {@link advertised} is gone, or null.
-   *
-   * This is the fact the log itself hides. `Waiting on <url>` is printed once and never revised, so
-   * a tunnel that dies two hours later leaves its own address at the top of the file looking
-   * current — which is what a dogfood session followed for its last hour [observed — 2026-08-24].
-   */
-  tunnelExpired: TunnelFailure | null;
   followups: FollowUp[];
 }
 
@@ -80,10 +70,9 @@ export async function devLogsAsync(projectRoot: string, options: DevLogsOptions)
     throw noLogError(projectRoot, lock != null);
   }
 
-  // Read over the **whole** log rather than the tail this command was asked for: the URL is near
-  // the top of a file whose tail is what a caller usually wants, and the failure that retires it
-  // can be thousands of lines below it. A `--tail 20` that hid the tunnel's death would be this
-  // command reproducing the problem it exists to report.
+  // Read over the **whole** log rather than the tail this command was asked for: the `Waiting on`
+  // line is near the top of a file whose tail is what a caller usually wants, so a `--tail 20`
+  // would hide the one address a device off this machine can use.
   const reach = resolveDevServerReach(readDevServerLogSync(projectRoot), lock);
 
   const report: DevLogsResultJson = {
@@ -95,7 +84,6 @@ export async function devLogsAsync(projectRoot: string, options: DevLogsOptions)
     advertised: reach.advertised
       ? { url: reach.advertised.url, hostType: reach.advertised.hostType }
       : null,
-    tunnelExpired: reach.tunnelFailure,
     followups: [],
   };
   report.followups = followUpsEnabled(options.followups) ? buildFollowUps(report) : [];
@@ -104,7 +92,6 @@ export async function devLogsAsync(projectRoot: string, options: DevLogsOptions)
     logFile: report.logFile,
     lines: report.lines.length,
     totalLines: report.totalLines,
-    tunnelExpired: report.tunnelExpired != null,
   });
 
   if (options.json) {
@@ -139,33 +126,12 @@ function printHumanReport(report: DevLogsResultJson): void {
   }
   Log.log(header.join('\n'));
 
-  // Above the log rather than below it. The evidence is one line somewhere in thousands, and the
-  // conclusion is the reason the caller is reading at all: a log whose `Waiting on <url>` is no
-  // longer true reads as healthy right up to the moment somebody tries the URL.
-  if (report.tunnelExpired) {
-    Log.log('');
-    Log.log(
-      chalk.yellow('The tunnel expired, so nothing off this machine can reach this dev server.')
-    );
-    Log.log(chalk.dim(`Why: ${report.tunnelExpired.line}`));
-    Log.log(
-      chalk.dim(
-        `How: restart it with "${TUNNEL_RESTART_COMMAND}". The "Waiting on" line in the log is from when the tunnel came up and is never revised, so it still names a host that is gone.`
-      )
-    );
-  }
-
   Log.log('');
   Log.log(wrapUntrustedAppOutput(report.lines.join('\n')));
 }
 
 /** Where a device off this machine reached this dev server, when the log said. */
 function reachLine(report: DevLogsResultJson): string | null {
-  if (report.tunnelExpired) {
-    return chalk.yellow(
-      `tunnel expired${report.advertised ? ` (was ${report.advertised.url})` : ''}`
-    );
-  }
   if (report.advertised?.hostType === 'tunnel') {
     return `${chalk.green('tunnel')} ${report.advertised.url}`;
   }
@@ -176,17 +142,6 @@ function reachLine(report: DevLogsResultJson): string | null {
 
 /** @ref llp/0009-smart-followups.rfc.md §Examples per command */
 function buildFollowUps(report: DevLogsResultJson): FollowUp[] {
-  // First, whatever else is true: a dev server nothing can reach is the problem, and every other
-  // rung is a way of looking at a project that is working locally.
-  if (report.tunnelExpired) {
-    return [
-      {
-        id: 'tunnel-restart',
-        command: TUNNEL_RESTART_COMMAND,
-        why: `The tunnel this run was reached through is gone (${report.tunnelExpired.line}), so the URL in the log no longer resolves; a restart takes a new one.`,
-      },
-    ];
-  }
   if (!report.devServer) {
     return [
       {

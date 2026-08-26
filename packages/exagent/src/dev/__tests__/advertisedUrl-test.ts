@@ -9,7 +9,6 @@ import {
   isTunnelCurrent,
   readDevServerLog,
   resolveDevServerReach,
-  TUNNEL_RESTART_COMMAND,
   type CapturedDevServerLog,
 } from '../advertisedUrl';
 
@@ -83,7 +82,6 @@ describe(readDevServerLog, () => {
         host: 'znakdiwe5j2n5o0.boltexpo.dev',
         hostType: 'tunnel',
       },
-      tunnelFailure: null,
     });
   });
 
@@ -102,75 +100,13 @@ describe(readDevServerLog, () => {
   });
 
   it(`answers null for a log that never named a dev server`, () => {
-    expect(readDevServerLog(['Starting Metro Bundler'])).toEqual({
-      advertised: null,
-      tunnelFailure: null,
-    });
+    expect(readDevServerLog(['Starting Metro Bundler'])).toEqual({ advertised: null });
   });
 
   it(`strips the underline escape the CLI wraps the URL in`, () => {
     const lines = ['Waiting on [4mhttp://localhost:8081[24m'];
 
     expect(readDevServerLog(lines).advertised?.host).toBe('localhost:8081');
-  });
-});
-
-describe(`${readDevServerLog.name} — a tunnel that died`, () => {
-  // The handshake failure of the dogfood run: `ws` reports a non-101 response verbatim
-  // [observed — `ws/lib/websocket.js`, and live in a cloud-simulator session, 2026-08-24].
-  it(`reads the websocket handshake refusal that ends a tunnel`, () => {
-    const lines = [...TUNNELLED_LOG, 'Error: Unexpected server response: 409'];
-
-    expect(readDevServerLog(lines).tunnelFailure).toEqual({
-      signature: 'handshake',
-      line: 'Error: Unexpected server response: 409',
-    });
-  });
-
-  it(`reads the name lookup that fails once the tunnel host is gone`, () => {
-    const lines = [...TUNNELLED_LOG, 'Error: getaddrinfo ENOTFOUND znakdiwe5j2n5o0.boltexpo.dev'];
-
-    expect(readDevServerLog(lines).tunnelFailure?.signature).toBe('dns');
-  });
-
-  // @ref packages/@expo/cli/src/start/server/AsyncWsTunnel.ts — the `disconnected` handler.
-  it(`reads the CLI's own closed-tunnel line`, () => {
-    const lines = [
-      ...TUNNELLED_LOG,
-      'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.',
-    ];
-
-    expect(readDevServerLog(lines).tunnelFailure?.signature).toBe('closed');
-  });
-
-  // The whole point of the ordering: a tunnel that failed and then came up is not a dead tunnel,
-  // and the URL below the failure is the one a device should be given.
-  it(`ignores a failure printed before the URL that is current`, () => {
-    const lines = ['Error: Unexpected server response: 409', ...TUNNELLED_LOG];
-
-    expect(readDevServerLog(lines).tunnelFailure).toBeNull();
-  });
-
-  it(`ignores a name lookup for a host that is not the tunnel`, () => {
-    const lines = [...TUNNELLED_LOG, 'Error: getaddrinfo ENOTFOUND api.example.com'];
-
-    expect(readDevServerLog(lines).tunnelFailure).toBeNull();
-  });
-
-  it(`reads a name lookup for another host of the tunnel's own domain`, () => {
-    const lines = [...TUNNELLED_LOG, 'Error: getaddrinfo ENOTFOUND ws.boltexpo.dev'];
-
-    expect(readDevServerLog(lines).tunnelFailure?.signature).toBe('dns');
-  });
-
-  it(`says nothing about a tunnel for a run that never had one`, () => {
-    const lines = [...LOCAL_LOG, 'Error: Unexpected server response: 409'];
-
-    expect(readDevServerLog(lines).tunnelFailure).toBeNull();
-  });
-
-  it(`names one command to bring a tunnel back`, () => {
-    expect(TUNNEL_RESTART_COMMAND).toBe('npx exagent dev --detach --tunnel');
   });
 });
 
@@ -211,22 +147,11 @@ describe(resolveDevServerReach, () => {
     expect(isTunnelCurrent(reach)).toBe(false);
   });
 
-  it(`calls no tunnel current once the log says the tunnel died`, () => {
-    const reach = resolveDevServerReach(
-      captured([...TUNNELLED_LOG, 'Error: Unexpected server response: 409']),
-      lock
-    );
-
-    expect(reach.tunnelFailure?.signature).toBe('handshake');
-    expect(isTunnelCurrent(reach)).toBe(false);
-  });
-
   it(`says why an attached dev server has nothing to read`, () => {
     const reach = resolveDevServerReach(null, lock);
 
     expect(reach).toEqual({
       advertised: null,
-      tunnelFailure: null,
       running: true,
       reason: 'this dev server was started attached, so nothing captured the URL it printed',
     });

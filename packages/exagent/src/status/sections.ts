@@ -162,9 +162,6 @@ export function buildDevServerStatus(
     ...readiness,
     hostType: reach?.advertised?.hostType ?? null,
     tunnelUrl,
-    // Kept even when the dev server is down: "the tunnel expired" is the answer to why nothing
-    // works, and it does not stop being the answer when the process it took down is gone too.
-    tunnelExpired: reach?.tunnelFailure ?? null,
   };
   return running || !probe.reason ? status : { ...status, reason: probe.reason };
 }

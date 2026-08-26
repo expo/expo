@@ -358,30 +358,19 @@ So `src/dev/advertisedUrl.ts` reads the printed line, classifies the host (`loca
 server started **attached** writes that line to somebody's terminal, so it is honestly reported as
 unknown rather than guessed at.
 
-### A `Waiting on` line is written once and never revised
+One guard, because the line outlives the run that printed it: the log has to belong to the dev
+server that is up. `dev --detach` truncates the log per run and refuses a second detached server
+while the lock is held, so a live detached run always has a log written after its lock was taken; a
+dev server started attached leaves the previous detached log untouched, and that is exactly where a
+tunnel host from days ago would come from. The comparison is the log's mtime against the lock's
+`startedAt`.
 
-This is the half that makes the reading trustworthy rather than merely available. The dogfood
-tunnel died after about two hours — `Unexpected server response: 409` from `@expo/ws-tunnel`, and
-`getaddrinfo ENOTFOUND` on the tunnel host before that — the process exited, and the line at the top
-of the log went on naming a host that no longer resolved. Anything reading only that line would
-hand a cloud simulator a dead address that *looks* live.
-
-Two guards, and each answers a different way of being wrong:
-
-- **Order.** A failure only counts if it was printed **after** the URL. A tunnel that failed once
-  and then connected is a working tunnel, and the URL below the failure is the current one.
-- **The log has to belong to the run that is up.** `dev --detach` truncates the log per run and
-  refuses a second detached server while the lock is held, so a live detached run always has a log
-  written after its lock was taken. A dev server started attached leaves the previous detached log
-  untouched — and that is exactly where a tunnel host from days ago would come from. The comparison
-  is the log's mtime against the lock's `startedAt`.
-
-A tunnel is reported as current only when all of: the run had one, the dev server answers now, and
-nothing below the URL says it died. `status` therefore reports no tunnel URL for a stopped dev
-server even though the log still shows one [verified live — 2026-08-25].
-
-Deliberately **not** built: reconnection. That is `@expo/ws-tunnel`'s, and it is recorded as an
-upstream ask in llp/0010 §Upstream asks along with the reason its own retry did not fire.
+**Deliberately not asked: whether the tunnel is healthy.** A tunnel's lifetime belongs to
+`@expo/ws-tunnel` and its reporting to the Expo CLI [decided — Kudo, 2026-08-26]. This document owns
+*which URL exagent prints*, and nothing more: a wrapper that also read the transport's prose for
+failure signatures would be diagnosing a system it does not manage. The consequence is stated
+plainly rather than hidden — a dev server whose tunnel has died still advertises the tunnel host,
+because from here that is indistinguishable from one that is fine.
 
 ### The tunnel comes up after the bundler does
 
@@ -400,12 +389,10 @@ because a tunnel that never comes up must not hold up a dev server that did — 
 ### `hostType` describes the URL, not the log
 
 `navigate --print-url` reports the kind of host **the URL it printed carries**, classified from that
-URL. Reporting what the *log* advertised instead is a subtly different thing, and the difference
-showed up the first time a tunnel died: the URL fell back to `exp://127.0.0.1:8081` and the reach
-line still said `tunnel · reachable from any network` [observed — live, 2026-08-25], which is an
-instruction to open a local address on a device somewhere else. The two facts are now reported
-separately — `hostType` for the URL, `tunnelExpired` for what happened to the address it should have
-carried — and the reach line leads with the expiry, because it explains the host below it.
+URL rather than from what the log advertised. The two can differ whenever the tunnel host is not the
+one that ended up in the link — a `127.0.0.1` URL under `tunnel · reachable from any network` is an
+instruction to open a local address on a device somewhere else [observed — live, 2026-08-25]. One
+fact, read off the thing it describes.
 
 ## Resolving a URL without a device
 

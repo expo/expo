@@ -168,7 +168,6 @@ describe(buildDevServerStatus, () => {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
-      tunnelExpired: null,
     });
   });
 
@@ -184,7 +183,6 @@ describe(buildDevServerStatus, () => {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
-      tunnelExpired: null,
     });
   });
 
@@ -202,7 +200,6 @@ describe(buildDevServerStatus, () => {
       projectRootMatched: null,
       hostType: null,
       tunnelUrl: null,
-      tunnelExpired: null,
       reason: 'fetch failed',
     });
   });
@@ -273,7 +270,6 @@ describe(buildNextActionStatus, () => {
         projectRootMatched: true,
         hostType: null,
         tunnelUrl: null,
-        tunnelExpired: null,
         ...overrides,
       };
     }

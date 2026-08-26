@@ -314,7 +314,9 @@ describe('exagent smoke', () => {
       expect(result.exitCode).toBe(20);
       const report = JSON.parse(result.stdout);
       expect(report.projectRootMatched).toBe(false);
-      expect(report.phases.find((phase: any) => phase.id === 'bundler-ready').status).toBe('failed');
+      expect(report.phases.find((phase: any) => phase.id === 'bundler-ready').status).toBe(
+        'failed'
+      );
     } finally {
       await stub.close();
     }

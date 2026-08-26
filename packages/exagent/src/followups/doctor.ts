@@ -101,7 +101,8 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
     }
     // A caller who found nothing at this tier has one more tier to try, and naming it beats
     // leaving them to discover that tiers are cumulative.
-    const next = payload.tier === 'safe' ? 'moderate' : payload.tier === 'moderate' ? 'aggressive' : null;
+    const next =
+      payload.tier === 'safe' ? 'moderate' : payload.tier === 'moderate' ? 'aggressive' : null;
     if (next && !payload.steps.length) {
       followups.push({
         id: 'doctor-fix-next-tier',

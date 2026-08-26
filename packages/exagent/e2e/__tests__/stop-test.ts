@@ -199,7 +199,11 @@ describe('exagent dev:stop', () => {
 
       expect(result.exitCode).toBe(20);
       const report = JSON.parse(result.stdout);
-      expect(report).toMatchObject({ stopped: false, lockHeld: false, reason: 'foreign-dev-server' });
+      expect(report).toMatchObject({
+        stopped: false,
+        lockHeld: false,
+        reason: 'foreign-dev-server',
+      });
       expect(report.detail).toContain('no lock answers for it');
       // Still up, which is the assertion the whole case is about.
       expect((await fetch(`${stub.url}/status`)).ok).toBe(true);

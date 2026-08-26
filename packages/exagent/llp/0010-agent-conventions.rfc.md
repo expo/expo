@@ -820,39 +820,12 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   than `${projectRoot}/${error.filename}` — would retire the other half.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.
-- Emit `devserver:url` in a **released** SDK, and revise it when the tunnel changes. The event
-  already exists on `main` with exactly the right fields — `url`, `runtimeUrl`, `hostType`, `port`
-  [observed — `BundlerDevServer.startAsync`, 2026-08-25] — and expo 57.0.17 does not emit it
-  [observed — live: `start.log` carries `metro:instantiate` and `devserver:start` and nothing else].
-  Until then the only way to learn a tunnel host is to parse `Waiting on <url>` out of captured
-  stdout (llp/0005 §Where a device reaches the dev server), which works and is prose. The second
-  half matters more than the first: the printed line is written once and never revised, so a tunnel
-  that dies leaves a dead address advertised. A `devserver:url` re-emitted on reconnect, or a
-  `tunnel:lost` event, would make "is this address still good?" answerable instead of inferred.
-- Do not let a failed tunnel reconnect take the dev server process down. `@expo/ws-tunnel`'s
-  `createTunnel` retries on close by calling `this.start(c)` inside a `setTimeout` and never
-  handling its rejection; `start` ends in `catch (e) { this.stop(); throw e }` [observed —
-  `@expo/ws-tunnel@2.0.0` `build/index.js`, 2026-08-25]. So a reconnect whose handshake is refused
-  — `Unexpected server response: 409` from `ws`, which is what the dogfood run got after about two
-  hours — is an unhandled rejection rather than an `onStatusChange('disconnected')`, and it ends the
-  whole `expo start`. The status handler that would have printed "Tunnel connection has been closed"
-  never runs. Awaiting the retry, or attaching a rejection handler that calls the existing
-  `disconnected` path, would turn a crash into the message that is already written for it.
-
-`@expo/ws-tunnel`:
-
-- Retry once before advising the user to change their environment. The signed-tunnel path fails
-  closed on its first bad answer: `getExpoAccountTunnelUrlAsync` swallows every error and returns
-  `null`, and `AsyncWsTunnel` turns that into `WS_TUNNEL_SIGNED_URL` — "Unset `EXPO_UNSTABLE_TUNNEL_V2`
-  to use an ngrok tunnel instead" [observed — `@expo/cli/src/start/server/AsyncWsTunnel.ts`]. That is
-  a permanent instruction for what is usually a transient GraphQL failure, and it moves the user to
-  a different tunnel implementation with different failure modes. One retry, with the environment
-  advice kept for the second failure, would leave the escape hatch where it belongs.
-
-Libraries:
-
-- `@expo/fingerprint --git-ref` — fingerprint a revision without checking it out, which is what makes "did the native layer change since the last build?" answerable cheaply.
-- `@expo/config-plugins` `_internal.modProvenance` — which plugin wrote a given native change, so an explanation can name the cause rather than the symptom.
+- Emit `devserver:url` in a **released** SDK. The event already exists on `main` with exactly the
+  right fields — `url`, `runtimeUrl`, `hostType`, `port` [observed — `BundlerDevServer.startAsync`,
+  2026-08-25] — and expo 57.0.17 does not emit it [observed — live: `start.log` carries
+  `metro:instantiate` and `devserver:start` and nothing else]. Until then the only way to learn a
+  tunnel host is to parse `Waiting on <url>` out of captured stdout (llp/0005 §Where a device
+  reaches the dev server), which works and is prose.
 
 ## Testing
 

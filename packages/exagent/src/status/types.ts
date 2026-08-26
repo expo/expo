@@ -2,7 +2,7 @@
 // The shape of the status report: one object with a section per question the command answers.
 // Pure data, so the human formatter and the `--json` output describe exactly the same facts.
 
-import type { DevServerHostType, TunnelFailure } from '../dev/advertisedUrl';
+import type { DevServerHostType } from '../dev/advertisedUrl';
 import type { LocalDeviceState } from '../device/localDevice';
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
@@ -95,16 +95,13 @@ export interface DevServerStatus {
    */
   hostType: DevServerHostType | null;
   /**
-   * The tunnel origin, and only while it is still current.
+   * The tunnel origin, when this project's dev server is running with one.
    *
-   * Null the moment any of three things is false: the run had no tunnel, the dev server is not
-   * running, or the captured log says the tunnel died after the URL was printed. Reporting a dead
-   * tunnel's URL as this project's address is the failure this field exists to avoid — a dogfood
-   * session followed one for an hour [observed — 2026-08-24].
+   * Null when the run had no tunnel or the dev server is not running. Whether the tunnel itself is
+   * healthy is not asked here: that is the transport's business, and a wrapper that diagnosed it
+   * would be reading somebody else's prose [decided — Kudo, 2026-08-26].
    */
   tunnelUrl: string | null;
-  /** The line that says the tunnel is gone, quoted, or null while it is up. */
-  tunnelExpired: TunnelFailure | null;
   /** Why the dev server did not answer. */
   reason?: string;
 }

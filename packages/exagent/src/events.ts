@@ -121,8 +121,6 @@ declare module '2g' {
       devServerHostType: string | null;
       /** The tunnel origin while it is current, null otherwise. */
       tunnelUrl: string | null;
-      /** Whether the captured log says the tunnel died after its URL was printed. */
-      tunnelExpired: boolean;
       /** Whether this machine has a device to open the app on: `present`, `absent`, `unknown`. */
       localDevice: string;
       freshness: { ios: string | null; android: string | null };
@@ -372,13 +370,6 @@ declare module '2g' {
       lines: number;
       /** How many lines the file has. */
       totalLines: number;
-      /**
-       * Whether the log says the tunnel this dev server was reached through has died.
-       *
-       * On the stream because it is the one thing a caller polling this command has to act on
-       * rather than read: nothing off the machine can reach the dev server until it is restarted.
-       */
-      tunnelExpired: boolean;
     };
     'cli:dev_stop': {
       /** A dev server was running and is not running now. */

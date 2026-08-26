@@ -54,12 +54,9 @@ describe(resolveDevStopOptions, () => {
     expect(DEV_STOP_SIGNALS).toEqual(['SIGTERM', 'SIGINT', 'SIGKILL']);
   });
 
-  it.each([['0'], ['-1'], ['70000'], ['eight-thousand']])(
-    `should refuse the port %s`,
-    (value) => {
-      expect(() => resolveDevStopOptions(['--port', value])).toThrow(/--port/);
-    }
-  );
+  it.each([['0'], ['-1'], ['70000'], ['eight-thousand']])(`should refuse the port %s`, (value) => {
+    expect(() => resolveDevStopOptions(['--port', value])).toThrow(/--port/);
+  });
 
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d).
   it(`should refuse a bare port and name the flag that takes one`, () => {

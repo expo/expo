@@ -441,9 +441,9 @@ describe('exagent deploy', () => {
           'Ask the user    npx eas login',
           'Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)',
         ]);
-        expect(readEvents(eventsFile).find((entry) => entry._e === 'cli:needs_human')).toMatchObject(
-          { scenario: 'eas-login', detectedBy: 'preflight' }
-        );
+        expect(
+          readEvents(eventsFile).find((entry) => entry._e === 'cli:needs_human')
+        ).toMatchObject({ scenario: 'eas-login', detectedBy: 'preflight' });
         // And as data, for the agent that asked for JSON.
         expect(JSON.parse(result.stdout).error).toMatchObject({
           code: 'EAS_LOGIN_REQUIRED',

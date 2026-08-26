@@ -32,7 +32,6 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       projectRootMatched: null,
       hostType: null,
       tunnelUrl: null,
-      tunnelExpired: null,
     },
     device: {
       state: 'present',
@@ -67,7 +66,6 @@ describe(buildStatusFollowUps, () => {
           projectRootMatched: true,
           hostType: null,
           tunnelUrl: null,
-          tunnelExpired: null,
         },
       })
     );
@@ -88,7 +86,6 @@ describe(buildStatusFollowUps, () => {
           projectRootMatched: true,
           hostType: null,
           tunnelUrl: null,
-          tunnelExpired: null,
         },
       })
     );
@@ -156,7 +153,6 @@ describe(buildStatusFollowUps, () => {
           projectRootMatched: true,
           hostType: null,
           tunnelUrl: null,
-          tunnelExpired: null,
         },
         skills: { agentIds: ['claude-code'], discovered: 3, linked: 0 },
         expoGo: { compatible: false, reasonCount: 1 },

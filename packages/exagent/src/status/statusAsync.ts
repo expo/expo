@@ -108,7 +108,6 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     appsConnected: report.devServer?.appsConnected ?? 0,
     devServerHostType: report.devServer?.hostType ?? null,
     tunnelUrl: report.devServer?.tunnelUrl ?? null,
-    tunnelExpired: report.devServer?.tunnelExpired != null,
     localDevice: report.device?.state ?? 'unknown',
     freshness: { ios: freshnessOf(report, 'ios'), android: freshnessOf(report, 'android') },
     skillsDiscovered: report.skills?.discovered ?? 0,

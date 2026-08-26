@@ -41,7 +41,6 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
-      tunnelExpired: null,
     },
     device: {
       state: 'present',
@@ -240,7 +239,6 @@ describe(formatStatusReport, () => {
         projectRootMatched: null,
         hostType: null,
         tunnelUrl: null,
-        tunnelExpired: null,
       },
     });
 
@@ -259,7 +257,6 @@ describe(formatStatusReport, () => {
         projectRootMatched: true,
         hostType: null,
         tunnelUrl: null,
-        tunnelExpired: null,
       },
     });
 
@@ -278,7 +275,6 @@ describe(formatStatusReport, () => {
         projectRootMatched: false,
         hostType: null,
         tunnelUrl: null,
-        tunnelExpired: null,
       },
     });
 
@@ -297,7 +293,6 @@ describe(formatStatusReport, () => {
         projectRootMatched: null,
         hostType: null,
         tunnelUrl: null,
-        tunnelExpired: null,
         reason: 'fetch failed',
       },
     });
@@ -484,52 +479,10 @@ describe(formatStatusReport, () => {
           projectRootMatched: true,
           hostType: 'tunnel',
           tunnelUrl: 'http://abc.boltexpo.dev',
-          tunnelExpired: null,
         },
       });
 
       expect(line(value, 'dev server')).toContain('tunnel http://abc.boltexpo.dev');
-    });
-
-    // The failure the whole tunnel reading exists for: a stale `Waiting on` line kept a dogfood
-    // session pointing a cloud simulator at a host that had stopped resolving.
-    it(`says the tunnel expired, and how to bring one back`, () => {
-      const value = mockReport({
-        devServer: {
-          url: 'http://127.0.0.1:8081',
-          running: true,
-          appsConnected: 0,
-          source: 'lock',
-          ready: true,
-          projectRootMatched: true,
-          hostType: 'tunnel',
-          tunnelUrl: null,
-          tunnelExpired: { signature: 'handshake', line: 'Unexpected server response: 409' },
-        },
-      });
-
-      expect(line(value, 'dev server')).toContain('tunnel expired');
-      expect(line(value, 'dev server')).toContain('npx exagent dev --detach --tunnel');
-      expect(line(value, 'dev server')).not.toContain('boltexpo.dev');
-    });
-
-    it(`keeps the expired note on a dev server that is down too`, () => {
-      const value = mockReport({
-        devServer: {
-          url: 'http://127.0.0.1:8081',
-          running: false,
-          appsConnected: 0,
-          source: 'lock',
-          ready: null,
-          projectRootMatched: null,
-          hostType: 'tunnel',
-          tunnelUrl: null,
-          tunnelExpired: { signature: 'dns', line: 'getaddrinfo ENOTFOUND abc.boltexpo.dev' },
-        },
-      });
-
-      expect(line(value, 'dev server')).toContain('not running');
-      expect(line(value, 'dev server')).toContain('tunnel expired');
     });
 
     it(`says nothing extra for a plain local run`, () => {

@@ -330,64 +330,9 @@ describe('exagent dev:logs', () => {
   // @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
   //
   // The lines are the real ones: `Waiting on <tunnel>` is what `expo start` prints for a tunnelled
-  // run [observed — live, 2026-08-25], and `Unexpected server response: 409` is how `ws` reports a
-  // handshake the tunnel service refused [observed — dogfood, 2026-08-24].
-  // @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
-  //
-  // The tunnel is established **after** the bundler answers, so a run that returned the moment the
-  // dev server was up reported the address of *this machine* with no note that a tunnel was on its
-  // way [observed — live, 2026-08-25]. A `--tunnel` run therefore waits for the host and reports it.
-  describe('--tunnel', () => {
-    it('waits for the tunnel host and reports it next to the listen address', async () => {
-      const projectRoot = await setupFixtureAsync('go-app');
-
-      try {
-        const result = await executeExagentAsync(
-          projectRoot,
-          ['dev', '--detach', '--yes', '--json', '--tunnel'],
-          {
-            env: {
-              ...detachEnv(projectRoot, 8391),
-              STUB_EXPO_TUNNEL_HOST: 'znakdiwe5j2n5o0.boltexpo.dev',
-            },
-          }
-        );
-
-        expect(JSON.parse(result.stdout)).toMatchObject({
-          url: 'http://127.0.0.1:8391',
-          tunnelUrl: 'http://znakdiwe5j2n5o0.boltexpo.dev',
-        });
-      } finally {
-        await cleanUpAsync(projectRoot);
-      }
-    });
-
-    // A run with no tunnel has nothing to wait for, and pays nothing for this.
-    it('reports no tunnel for a run that asked for none', async () => {
-      const projectRoot = await setupFixtureAsync('go-app');
-
-      try {
-        const result = await executeExagentAsync(
-          projectRoot,
-          ['dev', '--detach', '--yes', '--json'],
-          { env: { ...detachEnv(projectRoot, 8392), STUB_EXPO_TUNNEL_HOST: 'ignored.example.com' } }
-        );
-
-        expect(JSON.parse(result.stdout).tunnelUrl).toBeNull();
-      } finally {
-        await cleanUpAsync(projectRoot);
-      }
-    });
-  });
-
-  describe('a tunnel that died', () => {
-    const TUNNELLED_LOG = [
-      'Using src/app as the root directory for Expo Router.',
-      'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev',
-      '',
-      'Logs for your project will appear below.',
-    ];
-
+  // run [observed — live, 2026-08-25], and that URL is the only address a device off this machine
+  // can use — `devServer.url` is where it listens here.
+  describe('the address a device reaches', () => {
     async function writeLogAsync(projectRoot: string, lines: string[]): Promise<void> {
       const logPath = path.join(projectRoot, LOG_PATH);
       await fs.promises.mkdir(path.dirname(logPath), { recursive: true });
@@ -396,61 +341,25 @@ describe('exagent dev:logs', () => {
 
     it('names the tunnel a device would use', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
-      await writeLogAsync(projectRoot, TUNNELLED_LOG);
-
-      const result = await executeExagentAsync(projectRoot, ['dev:logs', '--json']);
-
-      expect(JSON.parse(result.stdout)).toMatchObject({
-        advertised: { url: 'http://znakdiwe5j2n5o0.boltexpo.dev', hostType: 'tunnel' },
-        tunnelExpired: null,
-      });
-    });
-
-    it('says the tunnel expired, above the log rather than inside it', async () => {
-      const projectRoot = await setupFixtureAsync('go-app');
       await writeLogAsync(projectRoot, [
-        ...TUNNELLED_LOG,
-        'Error: Unexpected server response: 409',
-      ]);
-
-      const result = await executeExagentAsync(projectRoot, ['dev:logs']);
-
-      expect(result.stdout).toContain('The tunnel expired');
-      expect(result.stdout).toContain('npx exagent dev --detach --tunnel');
-      // Before the fenced log, so it is read rather than scrolled past.
-      expect(result.stdout.indexOf('The tunnel expired')).toBeLessThan(
-        result.stdout.indexOf('BEGIN UNTRUSTED APP OUTPUT')
-      );
-    });
-
-    it('leads the follow-ups with the restart, and carries the evidence in --json', async () => {
-      const projectRoot = await setupFixtureAsync('go-app');
-      await writeLogAsync(projectRoot, [
-        ...TUNNELLED_LOG,
-        'Error: Unexpected server response: 409',
+        'Using src/app as the root directory for Expo Router.',
+        'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev',
       ]);
 
       const result = await executeExagentAsync(projectRoot, ['dev:logs', '--json']);
 
-      const report = JSON.parse(result.stdout);
-      expect(report.tunnelExpired).toEqual({
-        signature: 'handshake',
-        line: 'Error: Unexpected server response: 409',
-      });
-      expect(report.followups[0]).toMatchObject({
-        id: 'tunnel-restart',
-        command: 'npx exagent dev --detach --tunnel',
+      expect(JSON.parse(result.stdout).advertised).toEqual({
+        url: 'http://znakdiwe5j2n5o0.boltexpo.dev',
+        hostType: 'tunnel',
       });
     });
 
-    // The reason the reading is over the whole file and not the tail that was asked for: the URL is
-    // near the top and the failure can be thousands of lines below it, and a `--tail` that hid
-    // either would be this command reproducing the problem it exists to report.
-    it('reports a failure the requested tail does not include', async () => {
+    // The reason the reading is over the whole file and not the tail that was asked for: the line
+    // is near the top, and a `--tail` that hid it would hide the one address that is useful.
+    it('finds the URL even when the requested tail does not include it', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
       await writeLogAsync(projectRoot, [
-        ...TUNNELLED_LOG,
-        'Error: Unexpected server response: 409',
+        'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev',
         ...Array.from({ length: 30 }, (_, index) => `line ${index + 1}`),
       ]);
 
@@ -458,23 +367,19 @@ describe('exagent dev:logs', () => {
 
       const report = JSON.parse(result.stdout);
       expect(report.lines).toEqual(['line 28', 'line 29', 'line 30']);
-      expect(report.tunnelExpired?.signature).toBe('handshake');
       expect(report.advertised?.hostType).toBe('tunnel');
     });
 
-    it('says nothing about a tunnel for a run that never had one', async () => {
+    it('reports a local run as local, so nothing claims a tunnel that is not there', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
-      await writeLogAsync(projectRoot, [
-        'Waiting on http://localhost:8081',
-        'Error: Unexpected server response: 409',
-      ]);
+      await writeLogAsync(projectRoot, ['Waiting on http://localhost:8081']);
 
       const result = await executeExagentAsync(projectRoot, ['dev:logs', '--json']);
 
-      const report = JSON.parse(result.stdout);
-      expect(report.tunnelExpired).toBeNull();
-      expect(report.advertised).toEqual({ url: 'http://localhost:8081', hostType: 'localhost' });
-      expect(result.stdout).not.toContain('The tunnel expired');
+      expect(JSON.parse(result.stdout).advertised).toEqual({
+        url: 'http://localhost:8081',
+        hostType: 'localhost',
+      });
     });
   });
 
