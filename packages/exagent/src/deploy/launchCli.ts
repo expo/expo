@@ -12,6 +12,7 @@
 // answers its own confirmation, and fails before uploading anything when nobody is signed in.
 
 import path from 'path';
+import { resolvePackageRunner } from '../utils/packageRunner';
 
 import { needsHumanError } from '../needsHuman/error';
 import { fileExistsSync } from '../utils/dir';
@@ -51,8 +52,8 @@ export function resolveCreateLaunchCli(
     return { command: pathBin, args: [] };
   }
 
-  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  return { command: npx, args: ['create-launch@latest'] };
+  const { command } = resolvePackageRunner({ pathEnv });
+  return { command, args: ['create-launch@latest'] };
 }
 
 /**

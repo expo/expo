@@ -4,6 +4,7 @@ import path from 'path';
 import { debugEvent } from '../events';
 import { CommandError } from './errors';
 import { runInheritedAsync } from './inheritedRun';
+import { resolvePackageRunner } from './packageRunner';
 import { spawnSubprocessAsync, type CapturedOutput, type SubprocessResult } from './subprocess';
 
 /** The `expo` CLI invocation to spawn. */
@@ -28,11 +29,12 @@ export function resolveExpoCli(projectRoot: string, args: string[]): ExpoCliComm
   if (fs.existsSync(localBin)) {
     return { command: localBin, args };
   }
-  // Projects that have not installed their dependencies yet still get a working command. On
-  // Windows npm ships `npx` as a batch file, and a bare `npx` would be looked up as an image that
-  // does not exist, so the shim is named here and started through a shell by `resolveSpawnTarget`.
-  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  return { command: npx, args: ['expo', ...args] };
+  // Projects that have not installed their dependencies yet still get a working command, through
+  // the runner the caller reached this CLI through (`./packageRunner`). On Windows npm ships `npx`
+  // as a batch file, and a bare `npx` would be looked up as an image that does not exist, so the
+  // shim is named there and started through a shell by `resolveSpawnTarget`.
+  const { command } = resolvePackageRunner();
+  return { command, args: ['expo', ...args] };
 }
 
 export interface SpawnExpoOptions {

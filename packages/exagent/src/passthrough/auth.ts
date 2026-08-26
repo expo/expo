@@ -21,6 +21,8 @@ import type { Command } from '../types';
 import { fileExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findExecutableOnPath, spawnSubprocessAsync } from '../utils/subprocess';
+import { type Invoker } from '../utils/invoker';
+import { resolvePackageRunner } from '../utils/packageRunner';
 import { looksLikeWrapperCrash } from '../utils/wrapperCrash';
 
 /**
@@ -34,8 +36,13 @@ export { authCommands as AUTH_COMMANDS } from '../commandRegistry';
 /** Which CLI is going to answer. */
 export type AuthTool = 'expo' | 'eas';
 
-/** Where the CLI that is going to answer came from. */
-export type AuthCliSource = 'project-expo' | 'project-eas' | 'path-eas' | 'npx-eas';
+/**
+ * Where the CLI that is going to answer came from.
+ *
+ * `runner-eas` rather than `npx-eas`: which runner downloads the package is the caller's, not this
+ * CLI's, so naming npm in the contract would be wrong under Bun (`src/utils/packageRunner.ts`).
+ */
+export type AuthCliSource = 'project-expo' | 'project-eas' | 'path-eas' | 'runner-eas';
 
 /** The invocation one auth command resolves to. */
 export interface AuthCli {
@@ -43,8 +50,15 @@ export interface AuthCli {
   source: AuthCliSource;
   /** The executable to spawn. */
   command: string;
-  /** What goes before the auth command, which is the package name in the `npx` form. */
+  /** What goes before the auth command, which is the package name in the runner form. */
   prefixArgs: string[];
+  /**
+   * The package runner, when the CLI is one this machine does not have installed.
+   *
+   * Set only for `runner-eas`. It is what {@link authCliLabel} names, because a reader wants to
+   * see `bunx eas-cli@latest` rather than the absolute path the runner was found at.
+   */
+  runner?: Invoker;
 }
 
 /** The package the `npx` fallback runs, pinned to a name rather than to a version. */
@@ -92,8 +106,14 @@ export async function resolveAuthCliAsync(
     return { tool: 'eas', source: 'path-eas', command: pathEas, prefixArgs: [] };
   }
 
-  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  return { tool: 'eas', source: 'npx-eas', command: npx, prefixArgs: [EAS_CLI_PACKAGE] };
+  const resolved = resolvePackageRunner({ pathEnv });
+  return {
+    tool: 'eas',
+    source: 'runner-eas',
+    command: resolved.command,
+    prefixArgs: [EAS_CLI_PACKAGE],
+    runner: resolved.runner,
+  };
 }
 
 /** A `node_modules/.bin` entry of this project, or null when it has none. */
@@ -135,9 +155,15 @@ export function easArgsForAuthCommand(command: string): string[] | null {
   return command === 'register' ? null : [command];
 }
 
-/** How an invocation is written when it has to be named in output. */
-export function authCliLabel({ command, prefixArgs }: AuthCli): string {
-  return [command, ...prefixArgs].join(' ');
+/**
+ * How an invocation is written when it has to be named in output.
+ *
+ * A resolved binary is named by its path, because *which* `eas` ran is the fact a reader needs. A
+ * package runner is named by its name, because the path it was found at says nothing the name does
+ * not, and `bunx eas-cli@latest` is a line that can be pasted.
+ */
+export function authCliLabel({ command, prefixArgs, runner }: AuthCli): string {
+  return [runner ?? command, ...prefixArgs].join(' ');
 }
 
 /**

@@ -169,3 +169,52 @@ describe('auth commands inside an Expo project', () => {
     expect(readInvocations(projectRoot).map((run) => run.bin)).toEqual(['expo']);
   });
 });
+
+// @ref src/utils/packageRunner.ts
+// The last rung of the chain, which downloads the CLI. Which runner does that downloading is the
+// caller's choice, and it used to be npm's regardless: `bunx exagent whoami` spawned `npm exec
+// eas-cli` [observed — 2026-08-26]. The stub is a `bunx` rather than the real one, so the
+// assertion is about the argv this CLI builds and no package is fetched.
+describe('the runner that downloads a CLI this machine does not have', () => {
+  /** The environment `bunx` gives a bin with a Node shebang [observed — bun 1.3.14, live]. */
+  const BUN_AGENT = {
+    npm_config_user_agent: 'bun/1.3.14 npm/? node/v24.3.0 darwin arm64',
+    npm_execpath: '/opt/homebrew/Cellar/bun/1.3.14/bin/bun',
+  };
+
+  /** A directory with no CLI of its own, and a recording `bunx` on `PATH`. */
+  async function setupWithStubBunxAsync(): Promise<{ dir: string; pathEnv: string }> {
+    const dir = await setupBareDirAsync([]);
+    const pathDir = path.join(dir, 'runner-bin');
+    const script = path.join(dir, 'bunx-stub.js');
+    await fs.promises.writeFile(script, stubScriptFor('eas'));
+    await installStubBinAsync(pathDir, 'bunx', script);
+    return { dir, pathEnv: `${pathDir}:${isolatedEnv(dir).PATH}` };
+  }
+
+  it(`should hand the package to bunx when bun started this CLI`, async () => {
+    const { dir, pathEnv } = await setupWithStubBunxAsync();
+
+    const result = await executeExagentAsync(dir, ['whoami'], {
+      env: { ...isolatedEnv(dir), ...BUN_AGENT, PATH: pathEnv },
+    });
+
+    // The package spec and the command, in that order, on bun's runner rather than npm's.
+    expect(readInvocations(dir).map((run) => run.args)).toEqual([['eas-cli@latest', 'whoami']]);
+    // Named by the runner, not by the path it was found at.
+    expect(result.stderr).toContain('Using the EAS CLI (bunx eas-cli@latest)');
+  });
+
+  it(`should leave an npm-started CLI on npx, even with bunx sitting on PATH`, async () => {
+    const { dir, pathEnv } = await setupWithStubBunxAsync();
+
+    const result = await executeExagentAsync(dir, ['whoami'], {
+      // No bun user agent: this is the npm case, and the stub bunx must not be reached for it.
+      env: { ...isolatedEnv(dir), PATH: pathEnv },
+      reject: false,
+    });
+
+    expect(readInvocations(dir)).toEqual([]);
+    expect(result.stderr).toContain('Using the EAS CLI (npx eas-cli@latest)');
+  });
+});

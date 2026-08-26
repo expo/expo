@@ -3,6 +3,7 @@
 // constraint 5), and with the arguments that make it answer its own prompts.
 
 import { findExecutableOnPath } from '../utils/subprocess';
+import { resolvePackageRunner } from '../utils/packageRunner';
 
 /** The `create-expo` invocation to spawn. */
 export interface CreateExpoCli {
@@ -26,8 +27,8 @@ export function resolveCreateExpoCli({ pathEnv }: { pathEnv?: string } = {}): Cr
   if (localBin) {
     return { command: localBin, args: [] };
   }
-  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  return { command: npx, args: ['create-expo@latest'] };
+  const { command } = resolvePackageRunner({ pathEnv });
+  return { command, args: ['create-expo@latest'] };
 }
 
 /**
