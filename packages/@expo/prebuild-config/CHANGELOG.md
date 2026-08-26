@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the prebuild testing-library test failing when jest runs with colors enabled (interactive terminals): assert on the matcher failure message with ANSI escape codes stripped. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-21
