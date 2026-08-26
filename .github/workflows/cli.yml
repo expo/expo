@@ -56,9 +56,7 @@ env:
   SKIP_SKIA_DOWNLOAD: '1'
 
 jobs:
-  # Issue environment of expo/expo#48950. Blocking: FallbackWatcher is the
-  # production backend on Linux. The suite asserts `Using watcher: fallback`
-  # and skips on Darwin (NativeWatcher is a separate follow-up).
+  # Issue environment of expo/expo#48950 (FallbackWatcher on Linux).
   install-e2e-debian:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
@@ -102,9 +100,7 @@ jobs:
         env:
           E2E_INSTALL_PM: ${{ matrix.pm }}
 
-  # Deterministic Windows gate for FallbackWatcher (the production backend
-  # there). Linux already runs this file via check-packages. The e2e is not
-  # a Windows merge blocker: it was fully green in 1/5 runs with the defect.
+  # Windows FallbackWatcher unit tests (Linux runs them in check-packages).
   fallback-watcher-windows:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: windows-2022

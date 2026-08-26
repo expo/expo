@@ -45,8 +45,6 @@ export type BackgroundServerOptions = ExpoSpawnOptions & {
    * When passing a URL, the port will be overridden using the configured port.
    */
   host(chunk: any): URL | string | null;
-  /** Called with each stdout/stderr chunk from the child, starting at spawn. */
-  onOutput?(chunk: string): void;
   /** Fully show the child process output, enabled when re-running GitHub Actions with debug mode */
   verbose?: boolean;
 };
@@ -72,7 +70,6 @@ export function createBackgroundServer({
   host: resolveHost,
   port: resolvePort = findFreePortAsync,
   verbose,
-  onOutput,
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;
@@ -135,11 +132,6 @@ export function createBackgroundServer({
       log = createVerboseLogger({ verbose, prefix: 'server' });
       log('startAsync()', bin, ...commandOrFlags, this.options);
       processCollectOutput(child, log.tag);
-      if (onOutput) {
-        const tap = (chunk: Buffer | string) => onOutput(String(chunk));
-        child.stdout?.on('data', tap);
-        child.stderr?.on('data', tap);
-      }
 
       try {
         // Wait until the host is resolved based on the process output
