@@ -46,12 +46,15 @@ export const exagentAgentsSetup: Command = async (argv) => {
 
   // Load modules after the help prompt so `npx exagent agents:setup -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
-  const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+  // @ref llp/0020-not-an-expo-app.rfc.md — this command reads the skills the installed Expo
+  // packages ship and writes links into the project, so it acts on the app. Without `expo` it used
+  // to fail on the module resolution itself and print a raw Node stack trace.
+  const { findUpExpoAppRootOrAssert } =
+    require('../project/expoApp') as typeof import('../project/expoApp');
   const { printSetupAsync } = require('./setupAsync') as typeof import('./setupAsync');
 
   return (async () => {
-    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const projectRoot = findUpExpoAppRootOrAssert(process.cwd());
     await printSetupAsync(projectRoot, {
       agents: args['--agent'] ?? [],
       agentsMd: !args['--no-agents-md'],

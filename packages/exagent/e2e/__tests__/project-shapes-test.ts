@@ -322,6 +322,38 @@ describe('a package.json that is not an Expo app', () => {
     }
   });
 
+  // The agent-setup commands read the skills the installed Expo packages ship and write links into
+  // this directory, so they act on the app too — and without `expo` they used to fail on the module
+  // resolution itself and print a raw Node stack trace with a `Require stack:` in it.
+  it('answers with the guard rather than a stack trace for the agent-setup commands', async () => {
+    const directory = await plainPackageAsync();
+
+    for (const argv of [
+      ['agents:setup', '--json'],
+      ['skills:sync', '--json'],
+      ['skills:list', '--json'],
+    ]) {
+      const result = await executeExagentAsync(directory, argv, { reject: false });
+      expect({ argv, exitCode: result.exitCode }).toEqual({ argv, exitCode: 1 });
+      expect({ argv, code: JSON.parse(result.stdout).error.code }).toEqual({
+        argv,
+        code: 'NOT_EXPO_APP',
+      });
+      expect(result.all).not.toContain('Require stack:');
+    }
+  });
+
+  // `skills:clean` removes what an earlier run linked here, which is cleanup rather than action on
+  // an app — the same reason `dev:stop` stays open.
+  it('does not refuse skills:clean, which removes what an earlier run left', async () => {
+    const directory = await plainPackageAsync();
+
+    const result = await executeExagentAsync(directory, ['skills:clean', '--json']);
+
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout).removed).toEqual([]);
+  });
+
   // The dev-server commands act on this project's lock file rather than on the app, so they answer
   // for the same reason the auth commands do: what they read exists whether or not there is an app.
   it('does not refuse the dev-server commands, which act on the lock rather than the app', async () => {

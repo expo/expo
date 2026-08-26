@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft — implemented
-**Systems:** `src/project/expoApp.ts`; the `isExpoApp` field of `src/project/types.ts` and `src/project/probe.ts`; the `not-expo-app` row of `src/plan/decide.ts`; the guarded command entries (`src/dev/index.ts`, `src/start/index.ts`, `src/smoke/index.ts`, `src/navigate/index.ts`, `src/deploy/index.ts`, `src/doctor/index.ts`); `buildProjectStatus` / `buildNextActionStatus` in `src/status/sections.ts`, `projectLine` in `src/status/format.ts`, `buildStatusFollowUps` in `src/followups/status.ts`; `e2e/__tests__/project-shapes-test.ts`
+**Systems:** `src/project/expoApp.ts`; the `isExpoApp` field of `src/project/types.ts` and `src/project/probe.ts`; the `not-expo-app` row of `src/plan/decide.ts`; the guarded command entries (`src/dev/index.ts`, `src/start/index.ts`, `src/smoke/index.ts`, `src/navigate/index.ts`, `src/deploy/index.ts`, `src/doctor/index.ts`, `src/agents/index.ts`, `src/skills/index.ts`); `buildProjectStatus` / `buildNextActionStatus` in `src/status/sections.ts`, `projectLine` in `src/status/format.ts`, `buildStatusFollowUps` in `src/followups/status.ts`; `e2e/__tests__/project-shapes-test.ts`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-26
 **Related:** [[0004-smart-start-and-project-state]], [[0006-agent-native-cli-surface]], [[0010-agent-conventions]], [[0016-v1-scope]], [[0019-backend-parity-audit]]
@@ -47,13 +47,15 @@ The line is **what the command is for**, not whether it happens to write to disk
 | Command                                                      | In a directory that is not an Expo app                            |
 | ------------------------------------------------------------ | ----------------------------------------------------------------- |
 | `dev`, `start`, `smoke`, `navigate`, `deploy`, `doctor`        | stop with `NOT_EXPO_APP`, exit `1`, before planning or spawning     |
+| `agents:setup`, `skills:sync` / `:list` / `:show`              | stop the same way — they read what the installed Expo packages ship |
 | `status`                                                       | report, with `project.isExpoApp: false` and a `next` that says so   |
 | `typecheck`                                                    | unchanged — `checked: false`, "no TypeScript", exit `0`             |
 | `install`, `new`                                               | unchanged — these are the two ways *out* of this state              |
-| `dev:stop`, `dev:logs`                                         | unchanged — they act on the lock file, not on the app               |
+| `dev:stop`, `dev:logs`, `skills:clean`                         | unchanged — they clean up what is here, they do not act on an app   |
+| `runtime:*`                                                    | unchanged — they need a live dev server, which the rows above deny  |
 | `login` / `logout` / `whoami` / `register`                     | unchanged — they act on `~/.expo` ([[0006-agent-native-cli-surface]]) |
 
-Three of those rows are the ones worth arguing about.
+Four of those rows are the ones worth arguing about.
 
 **`status` answers rather than refusing**, and it is the only command that does. It is how a caller
 *finds out* it is in the wrong place: refusing it would take away the report that diagnoses the
@@ -69,6 +71,15 @@ and the fix is the same stop.
 
 **`install` and `new` are never gated.** Adding Expo to this package is exactly the thing that makes
 it an Expo app; a guard that refused it would leave the state it reports with no way out.
+
+**`agents:setup` and three of the four `skills` actions were found by the sweep**, not predicted.
+They discover skills through `expo/internal/unstable-autolinking-exports`, so without the `expo`
+package they failed on the module resolution itself and printed a raw Node stack trace with a
+`Require stack:` naming a `noop.js` in the caller's directory [observed — 2026-08-26]. They write
+links and an `AGENTS.md` block into the project, so they belong on the stopping side by the rule
+above; the guard also replaces the stack trace with a sentence. `skills:clean` is the exception, for
+the reason `dev:stop` is: it removes what an earlier run left here, and taking away the cleanup would
+be the one refusal a caller cannot work around.
 
 ## The plan engine says so too
 
@@ -121,9 +132,10 @@ is already here untouched, so that is what the machine-readable field says.
 
 `e2e/__tests__/project-shapes-test.ts` is where this is pinned, because every part of it is a fact
 about a real filesystem and a real `cwd`: the `find-up` walk, the `package.json` read, and the
-subprocess that inherits the directory. Seven rows — the `dev` plan, the one answer for all six
-acting commands, the two `status` surfaces, the escape hatches, the dev-server commands, and an app
-whose dependencies are not installed being planned for normally.
+subprocess that inherits the directory. Nine rows — the `dev` plan, the one answer for all six
+acting commands, the agent-setup commands and the raw stack trace they used to print, the two
+`status` surfaces, the escape hatches, `skills:clean` and the dev-server commands, and an app whose
+dependencies are not installed being planned for normally.
 
 The last of those is the row that would catch the worst possible regression of this rule: a guard
 that read `node_modules` instead of `package.json` would refuse every freshly cloned Expo app in the

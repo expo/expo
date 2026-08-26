@@ -43,6 +43,10 @@ export const exagentSkills: Command = async (argv) => {
     require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
+  // @ref llp/0020-not-an-expo-app.rfc.md — three of the four actions discover the skills the
+  // *installed Expo packages* ship, so they act on the app; without `expo` they used to fail on
+  // the module resolution itself and print a raw Node stack trace. `clean` is the exception below.
+  const { assertExpoAppSync } = require('../project/expoApp') as typeof import('../project/expoApp');
   const skillsAsync = require('./skillsAsync') as typeof import('./skillsAsync');
 
   try {
@@ -67,6 +71,13 @@ export const exagentSkills: Command = async (argv) => {
         });
       }
     };
+
+    // `clean` removes what an earlier run linked here, which is cleanup rather than action on an
+    // app — the same reason `dev:stop` answers in a directory that holds none. Everything else
+    // needs the installed `expo` package to discover anything at all.
+    if (action !== 'clean') {
+      assertExpoAppSync(projectRoot);
+    }
 
     switch (action) {
       case 'sync':
