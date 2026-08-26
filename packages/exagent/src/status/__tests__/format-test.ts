@@ -33,6 +33,8 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
         },
       ],
     },
+    // The default run: nothing cached and EAS not asked, which prints no line at all.
+    builds: { askedEas: false, platforms: [] },
     devServer: {
       url: 'http://127.0.0.1:8081',
       running: true,
@@ -510,6 +512,91 @@ describe(formatStatusReport, () => {
 });
 
 // @ref llp/0015-backend-selection-and-config.rfc.md §What `status` reports
+// @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+describe('the eas build line', () => {
+  const foundIos = {
+    platform: 'ios' as const,
+    state: 'found' as const,
+    fingerprintHash: '8ce1acfbc22138726c1525aeb99d577a812de3cf',
+    buildId: '21d7d434-6495-4e74-b8c7-68ecd0dff489',
+    createdAt: '2026-08-19T17:37:12.674Z',
+    buildProfile: 'simulator',
+    buildUrl: 'https://expo.dev/artifacts/eas/abc.tar.gz',
+    source: 'cache' as const,
+    reason: null,
+  };
+  const notAskedAndroid = {
+    platform: 'android' as const,
+    state: 'unknown' as const,
+    fingerprintHash: null,
+    buildId: null,
+    createdAt: null,
+    buildProfile: null,
+    buildUrl: null,
+    source: null,
+    reason: 'EAS was not asked — pass --builds',
+  };
+
+  it(`is left out entirely on a default run with nothing cached`, () => {
+    const rendered = report(
+      mockReport({ builds: { askedEas: false, platforms: [notAskedAndroid] } })
+    );
+
+    expect(rendered).not.toContain('eas build');
+  });
+
+  it(`names the build and the command that installs it when one was found`, () => {
+    const rendered = line(
+      mockReport({ builds: { askedEas: false, platforms: [foundIos, notAskedAndroid] } }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('ios: finished build');
+    expect(rendered).toContain('simulator');
+    expect(rendered).toContain('npx eas build:download --build-id 21d7d434-6495-4e74-b8c7-68ecd0dff489');
+  });
+
+  it(`prints the answer a caller asked for outright, even when it is none`, () => {
+    const rendered = line(
+      mockReport({
+        builds: {
+          askedEas: true,
+          platforms: [{ ...notAskedAndroid, platform: 'ios', state: 'none', reason: null }],
+        },
+      }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('ios: none');
+  });
+
+  it(`prints the reason of an unknown, and never rounds it down to none`, () => {
+    const rendered = line(
+      mockReport({
+        builds: {
+          askedEas: true,
+          platforms: [
+            { ...notAskedAndroid, platform: 'ios', reason: 'EAS project not configured.' },
+          ],
+        },
+      }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('ios: unknown');
+    expect(rendered).toContain('EAS project not configured.');
+  });
+
+  it(`prints the section note when the section could not be read at all`, () => {
+    const rendered = line(
+      mockReport({ builds: null, errors: { builds: 'the record is unreadable' } }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('unavailable: the record is unreadable');
+  });
+});
+
 describe('the build line', () => {
   /** A build location, as the resolved plan attaches one to `next`. */
   function buildLocation(overrides: Partial<PlanBuildLocation> = {}): PlanBuildLocation {

@@ -396,6 +396,7 @@ describe(printStatusAsync, () => {
       'project',
       'expoGo',
       'freshness',
+      'builds',
       'devServer',
       'device',
       'skills',
@@ -414,6 +415,7 @@ describe(printStatusAsync, () => {
 
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
       'auth',
+      'builds',
       'devServer',
       'device',
       'errors',
@@ -436,6 +438,7 @@ describe(printStatusAsync, () => {
     expect(Log.log).toHaveBeenCalledTimes(1);
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
       'auth',
+      'builds',
       'devServer',
       'device',
       'errors',
@@ -475,6 +478,8 @@ describe(printStatusAsync, () => {
       tunnelUrl: null,
       localDevice: 'unknown',
       freshness: { ios: 'stale', android: 'stale' },
+      easBuilds: { ios: 'unknown', android: 'unknown' },
+      easBuildsAsked: false,
       skillsDiscovered: 0,
       skillsLinked: 0,
       sectionErrors: [],

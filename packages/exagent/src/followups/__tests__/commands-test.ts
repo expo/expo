@@ -23,6 +23,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: null,
+    builds: null,
     devServer: {
       url: 'http://127.0.0.1:8081',
       running: false,
@@ -104,6 +105,56 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual([]);
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+  // The rung that removes a fifteen-minute step, so it leads whatever else the report found.
+  describe('the cached EAS build', () => {
+    const BUILD_ID = '21d7d434-6495-4e74-b8c7-68ecd0dff489';
+
+    function withBuild(freshness: 'fresh' | 'stale' | 'unknown'): StatusReport {
+      return mockReport({
+        freshness: {
+          hash: 'project-hash',
+          platforms: [
+            { platform: 'ios', state: freshness, detail: '', recordedHash: null },
+            { platform: 'android', state: 'unknown', detail: '', recordedHash: null },
+          ],
+        },
+        builds: {
+          askedEas: true,
+          platforms: [
+            {
+              platform: 'ios',
+              state: 'found',
+              fingerprintHash: 'ios-hash',
+              buildId: BUILD_ID,
+              createdAt: '2026-08-19T17:37:12.674Z',
+              buildProfile: 'simulator',
+              buildUrl: 'https://expo.dev/artifacts/eas/abc.tar.gz',
+              source: 'cache',
+              reason: null,
+            },
+          ],
+        },
+      });
+    }
+
+    it(`should offer the download when this project's own build is stale`, () => {
+      const followups = buildStatusFollowUps(withBuild('stale'));
+
+      expect(ids(followups)).toEqual(['status-cached-build']);
+      expect(followups[0]!.command).toBe(`npx eas build:download --build-id ${BUILD_ID}`);
+    });
+
+    it(`should offer nothing when the installed build already matches`, () => {
+      expect(ids(buildStatusFollowUps(withBuild('fresh')))).toEqual([]);
+    });
+
+    // Nothing established which app is installed, so a download would be a guess.
+    it(`should offer nothing when freshness could not be decided`, () => {
+      expect(ids(buildStatusFollowUps(withBuild('unknown')))).toEqual([]);
+    });
   });
 
   it(`should offer a sync for the skills that are discovered but not linked`, () => {

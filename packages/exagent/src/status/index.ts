@@ -9,6 +9,7 @@ export const exagentStatus: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--json': Boolean,
+      '--builds': Boolean,
       '--dev-server-url': String,
       '--no-followups': Boolean,
       // Aliases
@@ -23,6 +24,9 @@ export const exagentStatus: Command = async (argv) => {
       chalk`npx exagent status`,
       [
         `--json                    Print the whole report as JSON, raw project probe included`,
+        `--builds                  Ask EAS whether it already has a finished build for this`,
+        `                          fingerprint (adds a few seconds; the cached answer is free`,
+        `                          and is reported without it)`,
         `--dev-server-url <url>    Dev server to probe (default: the project's own, then 8081-8085)`,
         `--no-followups            Leave the suggested follow-up commands out of the report`,
         `-h, --help                Usage info`,
@@ -36,6 +40,12 @@ export const exagentStatus: Command = async (argv) => {
         '',
         chalk`  Nothing is started, built, or written. The command always exits 0, so a script can`,
         chalk`  read the report without branching on the exit code.`,
+        '',
+        chalk`  {bold --builds} answers "has anybody already built exactly this?". A finished EAS build made`,
+        chalk`  from the current fingerprint can be installed with {bold eas build:download} instead of`,
+        chalk`  rebuilt, which is minutes rather than a quarter of an hour. It costs one fingerprint`,
+        chalk`  run and one call to EAS, so it is opt-in; the answer is then cached against the`,
+        chalk`  project fingerprint and reported for free until the project changes.`,
         '',
         chalk`  {bold --json} carries the raw project probe too, under {bold probe}: the SDK version, the`,
         chalk`  native state, the fingerprint, and every reason Expo Go cannot run the project, exactly`,
@@ -60,6 +70,7 @@ export const exagentStatus: Command = async (argv) => {
     await printStatusAsync(projectRoot, {
       devServerUrl: explicitDevServerUrl,
       json: !!args['--json'],
+      builds: !!args['--builds'],
       followups: !args['--no-followups'],
     });
   })().catch(logCmdError);

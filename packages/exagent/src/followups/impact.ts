@@ -12,6 +12,7 @@ import {
   LOCAL_WHERE,
 } from '../toolchain/runsOn';
 import type { BuildBackendChoice } from '../toolchain/selectBackend';
+import { cachedBuildFollowUp } from './cachedBuild';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ImpactFollowUpInput {
@@ -46,12 +47,9 @@ export function buildImpactFollowUps({
   if (impactClass === 'needs-native-build') {
     if (cachedBuild?.id) {
       // The materially better answer, and the reason the build-cache lookup exists at all: a
-      // build that already exists is minutes saved over one that has to be started.
-      followups.push({
-        id: 'impact-cached-build',
-        command: `npx eas build:download --build-id ${cachedBuild.id}`,
-        why: `EAS already has a finished build made from this exact fingerprint (${cachedBuild.id}), so installing it is the same app a new build would produce, without the wait.`,
-      });
+      // build that already exists is minutes saved over one that has to be started. `status`
+      // offers the same rung from its own starting point, so the builder is shared.
+      followups.push(cachedBuildFollowUp('impact', cachedBuild.id));
     } else {
       // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
       // Both routes, because "you need a native build" is not one instruction: one of them runs on

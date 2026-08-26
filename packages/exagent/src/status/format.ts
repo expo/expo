@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import type { PlanBuildLocation } from '../toolchain/types';
 import type {
   AuthStatus,
+  BuildsStatus,
   DevServerStatus,
   ExpoGoStatus,
   FreshnessStatus,
@@ -33,6 +34,14 @@ export function formatStatusReport(report: StatusReport): string {
     row('project', report.project, projectLine, report, 'project'),
     row('expo go', report.expoGo, expoGoLine, report, 'expoGo'),
     row('freshness', report.freshness, freshnessLine, report, 'freshness'),
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+    // Printed only when it says something, for the reason the skills line is: a default run has
+    // nothing cached and asked nobody, and `ios: unknown · android: unknown (EAS was not asked)` is
+    // two non-facts on a report of facts. The key is always in `--json`, where a key that is always
+    // present is the contract (llp/0006 §Output contract).
+    ...(hasBuildsToReport(report)
+      ? [row('eas build', report.builds, buildsLine, report, 'builds')]
+      : []),
     row('dev server', report.devServer, devServerLine, report, 'devServer'),
     row('device', report.device, deviceLine, report, 'device'),
     // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
@@ -67,6 +76,49 @@ function buildLine(location: PlanBuildLocation): string {
       : chalk.dim(location.selection.because)
     : chalk.dim(`needs ${location.requirement}; nothing chose this`);
   return [where, because].join(SEPARATOR);
+}
+
+/**
+ * Whether the EAS-build line would say anything.
+ *
+ * Three cases, and they are the three that carry information: a build was found (which changes what
+ * to do next), the caller asked outright with `--builds` (they are owed the answer whatever it is),
+ * or the section could not be read at all (the reason is worth printing). A default run with an
+ * empty cache is silent here, because "nobody asked" is not a fact about the project.
+ */
+function hasBuildsToReport(report: StatusReport): boolean {
+  if (report.builds == null) {
+    return true;
+  }
+  return report.builds.askedEas || report.builds.platforms.some((p) => p.state === 'found');
+}
+
+/**
+ * What EAS already has, per platform, and the command that installs it.
+ *
+ * A `found` is the only state that names a command, and it names it on the line rather than leaving
+ * it to a follow-up: this is the line that turns a `stale` two rows above from "rebuild, fifteen
+ * minutes" into "download, one minute", and the reader has to be able to act on it where they read
+ * it.
+ */
+function buildsLine(builds: BuildsStatus): string {
+  const found = builds.platforms.filter((platform) => platform.state === 'found');
+  const facts = builds.platforms.map((platform) => {
+    if (platform.state === 'found') {
+      const details = [platform.buildProfile, platform.createdAt].filter(Boolean).join(', ');
+      return `${platform.platform}: ${chalk.green('finished build')}${details ? ` (${details})` : ''}`;
+    }
+    const state = platform.state === 'none' ? chalk.dim('none') : chalk.yellow('unknown');
+    return `${platform.platform}: ${state}${platform.reason ? chalk.dim(` (${summarize(platform.reason)})`) : ''}`;
+  });
+
+  // One command, for the first platform that has one: a line cannot carry two, and the `--json`
+  // report and the follow-ups carry the rest.
+  const first = found[0];
+  if (first?.buildId) {
+    facts.push(chalk.cyan(`npx eas build:download --build-id ${first.buildId}`));
+  }
+  return facts.join(SEPARATOR);
 }
 
 /** Whether the skills line would say anything: an agent is selected, or a skill was found. */

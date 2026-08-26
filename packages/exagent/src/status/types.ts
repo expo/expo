@@ -61,6 +61,48 @@ export interface FreshnessStatus {
   platforms: PlatformFreshness[];
 }
 
+/** Whether EAS has a finished build made from the project's current fingerprint. */
+export type BuildLookupState =
+  /** A finished build exists for this exact fingerprint, and can be downloaded instead of built. */
+  | 'found'
+  /** EAS was asked and has none. */
+  | 'none'
+  /** Nobody could ask, or nobody was allowed to. Never rounded down to `none`. */
+  | 'unknown';
+
+export interface PlatformBuild {
+  platform: NativePlatform;
+  state: BuildLookupState;
+  /**
+   * The **per-platform** fingerprint the question was about, which is the one an EAS build carries.
+   *
+   * Not {@link FreshnessStatus.hash}, which covers both platforms at once and is therefore a hash
+   * no build has. Null when the answer came from nothing that computed one.
+   */
+  fingerprintHash: string | null;
+  /** The build EAS has, when one was found. */
+  buildId: string | null;
+  createdAt: string | null;
+  buildProfile: string | null;
+  /** The artifact URL, when the payload carried one. */
+  buildUrl: string | null;
+  /** `cache` for the project's own record, `eas` for a lookup. Null when nothing answered. */
+  source: 'cache' | 'eas' | null;
+  /** Why the state is not `found`. Null when it is. */
+  reason: string | null;
+}
+
+/**
+ * What EAS already has for this project, per platform.
+ *
+ * @see llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+ */
+export interface BuildsStatus {
+  /** Whether this run was allowed to call EAS. False on every run without `--builds`. */
+  askedEas: boolean;
+  platforms: PlatformBuild[];
+}
+
 export interface DevServerStatus {
   /** The dev server that was probed, default or `--dev-server-url`. */
   url: string;
@@ -197,6 +239,7 @@ export type StatusSectionName =
   | 'project'
   | 'expoGo'
   | 'freshness'
+  | 'builds'
   | 'devServer'
   | 'device'
   | 'skills'
@@ -213,6 +256,14 @@ export interface StatusReport {
   project: ProjectStatus | null;
   expoGo: ExpoGoStatus | null;
   freshness: FreshnessStatus | null;
+  /**
+   * Whether EAS already has a finished build of what is on disk right now.
+   *
+   * The other half of the freshness question. `freshness` answers "does the app **this machine**
+   * built still match", and a `stale` there used to mean a rebuild; this answers "has anybody
+   * already built exactly this", where the answer is a download instead.
+   */
+  builds: BuildsStatus | null;
   devServer: DevServerStatus | null;
   /**
    * Whether this machine has a device to open the app on.

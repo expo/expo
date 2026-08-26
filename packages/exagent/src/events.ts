@@ -151,6 +151,15 @@ declare module '2g' {
       /** Whether this machine has a device to open the app on: `present`, `absent`, `unknown`. */
       localDevice: string;
       freshness: { ios: string | null; android: string | null };
+      /**
+       * Whether EAS has a finished build for this fingerprint: `found`, `none` or `unknown`.
+       *
+       * `unknown` on every run without `--builds` that had nothing cached, which is the common
+       * case and is deliberately not rounded down to `none`.
+       */
+      easBuilds: { ios: string | null; android: string | null };
+      /** Whether this run was allowed to call EAS, i.e. `--builds` was passed. */
+      easBuildsAsked: boolean;
       skillsDiscovered: number;
       skillsLinked: number;
       /** Sections that could not be read, e.g. `["project"]`. */

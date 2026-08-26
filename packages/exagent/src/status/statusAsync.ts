@@ -32,6 +32,7 @@ import { waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { getAllAgents, getPersistedAgentIdsAsync } from '../skills/agents';
 import { discoverSkillsAsync } from '../skills/discovery';
 import type { DiscoveredSkill } from '../skills/types';
+import { readEasBuildsStatusAsync } from './easBuilds';
 import { formatStatusReport } from './format';
 import {
   buildDevServerStatus,
@@ -45,6 +46,7 @@ import {
 } from './sections';
 import type {
   AuthStatus,
+  BuildLookupState,
   DevServerStatus,
   FreshnessState,
   LocalDeviceStatus,
@@ -91,6 +93,18 @@ export interface StatusOptions {
   devServerReadyTimeoutMs?: number;
   /** Overrides {@link DEVICE_PROBE_TIMEOUT_MS}, for tests. */
   deviceProbeTimeoutMs?: number;
+  /**
+   * Ask EAS whether it has a finished build for this project's current fingerprint (`--builds`).
+   *
+   * Off by default, and that is the whole of the design decision: the cached answer is read on
+   * every run because it costs one file read and is exact, and the two subprocesses that refresh
+   * it — a per-platform `fingerprint` and one `eas build:list` — are spent only when asked for.
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+   */
+  builds?: boolean;
+  /** Overrides {@link EAS_BUILD_LOOKUP_TIMEOUT_MS}, for tests. */
+  buildLookupTimeoutMs?: number;
   /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
   followups?: boolean;
 }
@@ -115,6 +129,8 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     tunnelUrl: report.devServer?.tunnelUrl ?? null,
     localDevice: report.device?.state ?? 'unknown',
     freshness: { ios: freshnessOf(report, 'ios'), android: freshnessOf(report, 'android') },
+    easBuilds: { ios: easBuildOf(report, 'ios'), android: easBuildOf(report, 'android') },
+    easBuildsAsked: report.builds?.askedEas ?? false,
     skillsDiscovered: report.skills?.discovered ?? 0,
     skillsLinked: report.skills?.linked ?? 0,
     sectionErrors: Object.keys(report.errors),
@@ -152,6 +168,7 @@ export async function collectStatusReportAsync(
     project: null,
     expoGo: null,
     freshness: null,
+    builds: null,
     devServer: null,
     device: null,
     skills: null,
@@ -233,6 +250,25 @@ export async function collectStatusReportAsync(
     report.auth = auth.value;
   } else {
     errors.auth = auth.error;
+  }
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+  // Last, and after the parallel block rather than in it, because it consumes two of its answers:
+  // the project's fingerprint is the cache key, and the auth answer is what keeps a signed-out
+  // machine from being asked the same question twice. On a run without `--builds` this is one
+  // `readFileSync`, so the report is as instant as it was before the section existed.
+  const builds = await attemptAsync(() =>
+    readEasBuildsStatusAsync(projectRoot, {
+      lookUp: !!options.builds,
+      auth: report.auth,
+      projectHash: report.freshness?.hash ?? null,
+      timeoutMs: options.buildLookupTimeoutMs,
+    })
+  );
+  if ('value' in builds) {
+    report.builds = builds.value;
+  } else {
+    errors.builds = builds.error;
   }
 
   return report;
@@ -424,6 +460,10 @@ function countLinkedSkills(
 
 function freshnessOf(report: StatusReport, platform: NativePlatform): FreshnessState | null {
   return report.freshness?.platforms.find((entry) => entry.platform === platform)?.state ?? null;
+}
+
+function easBuildOf(report: StatusReport, platform: NativePlatform): BuildLookupState | null {
+  return report.builds?.platforms.find((entry) => entry.platform === platform)?.state ?? null;
 }
 
 type Attempt<T> = { value: T } | { error: string };
