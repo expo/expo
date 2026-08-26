@@ -5,9 +5,10 @@
   "repo": "expo/expo",
   "runner": "gha", // default; `et verify <n> --runner eas` overrides per run
   // Where each runner's thin workflow lives. EAS runs live in the companion
-  // project (github.com/expo/verify-workflows); the dir is that checkout —
+  // project (github.com/expo/verify-workflows); the dir is that checkout,
+  // relative to THIS directory (.verify/), i.e. a sibling of the expo repo.
   // VERIFY_HOST_DIR overrides for a machine where it lives elsewhere.
-  "hosts": { "gha": { "repo": "expo/expo" }, "eas": { "dir": "../verify-workflows" } },
+  "hosts": { "gha": { "repo": "expo/expo" }, "eas": { "dir": "../../verify-workflows" } },
   "fix": "pr",
   "ghaSandbox": true,
   "bot": { "login": "expo-bot" },
