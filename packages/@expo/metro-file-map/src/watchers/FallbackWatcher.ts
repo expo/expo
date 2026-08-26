@@ -171,7 +171,6 @@ export default class FallbackWatcher extends AbstractWatcher {
         this.#normalizeChange(dir, event, filename as string)
       );
     } catch (error: any) {
-      // Now called from filterDir, which must not throw.
       this.#checkedEmitError(error);
       return false;
     }
@@ -419,10 +418,6 @@ function isIgnorableFileError(error: Error & { code?: string }) {
 
 /**
  * Traverse a directory recursively calling `callback` on every directory.
- *
- * `dirCallback` runs from `filterDir` (before readdir) rather than the `dir`
- * event (after readdir), so `#watchdir` is already listening when entries
- * appear. See https://github.com/expo/expo/issues/48950.
  */
 function recReaddir(
   dir: string,

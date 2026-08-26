@@ -56,7 +56,6 @@ env:
   SKIP_SKIA_DOWNLOAD: '1'
 
 jobs:
-  # Issue environment of expo/expo#48950 (FallbackWatcher on Linux).
   install-e2e-debian:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
@@ -100,7 +99,6 @@ jobs:
         env:
           E2E_INSTALL_PM: ${{ matrix.pm }}
 
-  # Windows FallbackWatcher unit tests (Linux runs them in check-packages).
   fallback-watcher-windows:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: windows-2022

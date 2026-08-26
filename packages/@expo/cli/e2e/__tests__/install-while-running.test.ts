@@ -1,12 +1,7 @@
 /**
  * Copyright (c) 650 Industries, Inc. (Expo).
  *
- * End-to-end coverage for https://github.com/expo/expo/issues/48950:
- * packages installed while the dev server runs must reach Metro's file map
- * without a restart. Covers `FallbackWatcher` (Linux and Windows). Skips on
- * Darwin (`NativeWatcher` is a separate follow-up).
- *
- * `E2E_INSTALL_PM` selects the toolchain (default bun, like the issue).
+ * #48950: install while the dev server runs. Skips Darwin (NativeWatcher).
  */
 import fs from 'fs/promises';
 import path from 'path';

@@ -9,9 +9,7 @@ import path from 'path';
 import type { WatcherBackendChangeEvent } from '../../types';
 import FallbackWatcher from '../FallbackWatcher';
 
-// This suite drives a real `fs.watch`, so it opts out of the memfs mock from
-// `jest.setup.ts`. The `jest.spyOn(fs, 'watch')` mock relies on the watcher
-// calling `fs.watch` as a property of the `fs` module object.
+// Real fs.watch; jest.setup.ts mocks fs.
 jest.unmock('fs');
 jest.unmock('fs/promises');
 
@@ -35,9 +33,7 @@ async function waitFor(predicate: () => boolean, description: string): Promise<v
   }
 }
 
-// `realpathSync.native` expands Windows 8.3 short names: a watch root with a
-// short-name component crashes Node on libuv 1.52.x
-// (https://github.com/libuv/libuv/issues/5010).
+// Native realpath: 8.3 temp paths crash libuv 1.52 (libuv#5010).
 const TMP_DIR = fs.realpathSync.native(os.tmpdir());
 
 describe('FallbackWatcher', () => {
@@ -69,8 +65,7 @@ describe('FallbackWatcher', () => {
     });
     await watcher.startWatching();
 
-    // `fs.watch` on macOS can miss changes soon after the watch starts, so
-    // write a probe file until its event proves that the pipeline is live.
+    // Darwin fs.watch can miss events right after start.
     const probeRelativePath = path.join('node_modules', '.watch-probe');
     const probePath = path.join(root, probeRelativePath);
     const start = Date.now();
