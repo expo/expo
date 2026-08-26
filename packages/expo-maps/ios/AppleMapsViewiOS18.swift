@@ -35,12 +35,13 @@ private let annotationHitSize = CGSize(width: 50, height: 50)
 
 /// The rect a feature of `size` covers when its coordinate projects to `origin`.
 ///
-/// `verticalAnchor` says where along the rect the coordinate itself sits: `1` puts it on the bottom
-/// edge, the way a balloon hangs above its tip, and `0.5` centres the rect on it.
-func featureHitRect(at origin: CGPoint, size: CGSize, verticalAnchor: CGFloat) -> CGRect {
+/// `anchor` says where in the rect the coordinate itself sits, in the same normalized space the
+/// feature is drawn with: `.bottom` puts it on the bottom edge, the way a balloon hangs above its
+/// tip, and `.center` centres the rect on it.
+func featureHitRect(at origin: CGPoint, size: CGSize, anchor: UnitPoint) -> CGRect {
   CGRect(
-    x: origin.x - size.width / 2,
-    y: origin.y - size.height * verticalAnchor,
+    x: origin.x - size.width * anchor.x,
+    y: origin.y - size.height * anchor.y,
     width: size.width,
     height: size.height
   )
@@ -48,12 +49,13 @@ func featureHitRect(at origin: CGPoint, size: CGSize, verticalAnchor: CGFloat) -
 
 /// A marker balloon hangs above the coordinate, which sits at its tip.
 func markerHitRect(at origin: CGPoint) -> CGRect {
-  featureHitRect(at: origin, size: markerHitSize, verticalAnchor: 1)
+  featureHitRect(at: origin, size: markerHitSize, anchor: .bottom)
 }
 
-/// An annotation is centred on its coordinate.
-func annotationHitRect(at origin: CGPoint) -> CGRect {
-  featureHitRect(at: origin, size: annotationHitSize, verticalAnchor: 0.5)
+/// An annotation is drawn around its coordinate according to its own `anchor`, so the rect has to
+/// be placed with that same anchor to keep covering where the annotation actually ends up.
+func annotationHitRect(at origin: CGPoint, anchor: UnitPoint = .center) -> CGRect {
+  featureHitRect(at: origin, size: annotationHitSize, anchor: anchor)
 }
 
 @available(iOS 18.0, *)
@@ -390,7 +392,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       guard let origin = reader.convert(annotation.clLocationCoordinate2D, to: .local) else {
         return false
       }
-      return annotationHitRect(at: origin).contains(location)
+      return annotationHitRect(at: origin, anchor: annotation.unitPoint).contains(location)
     }
   }
 
