@@ -38,7 +38,7 @@
 
 ### 💡 Others
 
-- [iOS] Remove availability check for iOS 16.
+- [iOS] Remove availability check for iOS 16. ([#48651](https://github.com/expo/expo/pull/48651) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.7 - 2026-07-29
 
