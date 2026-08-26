@@ -171,21 +171,13 @@ export default class FallbackWatcher extends AbstractWatcher {
         this.#normalizeChange(dir, event, filename as string)
       );
     } catch (error: any) {
-      // The directory can disappear between the walk's lstat and this call.
+      // Now called from filterDir, which must not throw.
       this.#checkedEmitError(error);
       return false;
     }
     this.#watched[dir] = watcher;
 
-    watcher.on('error', (error) => {
-      // An errored watcher never emits `close`, so drop it here to let the
-      // path be watched again and to keep shutdown from waiting forever.
-      if (this.#watched[dir] === watcher) {
-        delete this.#watched[dir];
-      }
-      watcher.close();
-      this.#checkedEmitError(error);
-    });
+    watcher.on('error', this.#checkedEmitError);
 
     if (this.root !== dir) {
       this.#register(dir, 'd');
@@ -194,20 +186,17 @@ export default class FallbackWatcher extends AbstractWatcher {
   };
 
   /**
-   * Stop watching a directory. Idempotent. Resolves on `close` or `error`
-   * because an errored watcher never emits `close`.
+   * Stop watching a directory.
    */
   async #stopWatching(dir: string): Promise<void> {
     const watcher = this.#watched[dir];
-    if (!watcher) {
-      return;
+    if (watcher) {
+      await new Promise<void>((resolve) => {
+        watcher.once('close', () => process.nextTick(resolve));
+        watcher.close();
+        delete this.#watched[dir];
+      });
     }
-    delete this.#watched[dir];
-    await new Promise<void>((resolve) => {
-      watcher.once('close', () => process.nextTick(resolve));
-      watcher.once('error', () => process.nextTick(resolve));
-      watcher.close();
-    });
   }
 
   /**
@@ -329,7 +318,7 @@ export default class FallbackWatcher extends AbstractWatcher {
           },
           (symlink, stats) => {
             if (this.#register(symlink, 'l')) {
-              this.#emitEvent({
+              this.emitFileEvent({
                 event: TOUCH_EVENT,
                 relativePath: path.relative(this.root, symlink),
                 metadata: {
@@ -429,9 +418,11 @@ function isIgnorableFileError(error: Error & { code?: string }) {
 }
 
 /**
- * Traverse a directory recursively. `dirCallback` runs from `filterDir`,
- * before the walker reads entries, so a watch started there cannot miss a
- * file written between readdir and fs.watch (expo/expo#48950).
+ * Traverse a directory recursively calling `callback` on every directory.
+ *
+ * `dirCallback` runs from `filterDir` (before readdir) rather than the `dir`
+ * event (after readdir), so `#watchdir` is already listening when entries
+ * appear. See https://github.com/expo/expo/issues/48950.
  */
 function recReaddir(
   dir: string,
@@ -447,7 +438,7 @@ function recReaddir(
     if (ignored && common.posixPathMatchesPattern(ignored, currentDir)) {
       return false;
     }
-    dirCallback(path.normalize(currentDir), stats);
+    normalizeProxy(dirCallback)(currentDir, stats);
     return true;
   });
   walk

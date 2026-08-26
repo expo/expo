@@ -2,7 +2,6 @@
  * Copyright (c) 650 Industries, Inc. (Expo).
  */
 
-import EventEmitter from 'events';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -34,21 +33,6 @@ async function waitFor(predicate: () => boolean, description: string): Promise<v
     }
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
-}
-
-function makeFsError(code: string, syscall: string, target: string): NodeJS.ErrnoException {
-  const error: NodeJS.ErrnoException = new Error(
-    `${code}: simulated ${syscall} error, '${target}'`
-  );
-  error.code = code;
-  error.syscall = syscall;
-  error.path = target;
-  return error;
-}
-
-/** Models an errored `FSWatcher`: Node has closed the handle and emits no `close`. */
-class DeadWatcher extends EventEmitter {
-  close(): void {}
 }
 
 // `realpathSync.native` expands Windows 8.3 short names: a watch root with a
@@ -150,29 +134,5 @@ describe('FallbackWatcher', () => {
       () => hasTouchEvent('node_modules/late-pkg/package.json'),
       'a touch event for node_modules/late-pkg/package.json'
     );
-  });
-
-  test('stopWatching resolves when Node already closed an errored watcher', async () => {
-    await startWatcher();
-
-    const packageDir = path.join(root, 'node_modules', 'dead-pkg');
-    const realWatch = fs.watch;
-    const deadWatcher = new DeadWatcher();
-    let watchedPackageDir = false;
-    jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
-      if (dir === packageDir && !watchedPackageDir) {
-        watchedPackageDir = true;
-        return deadWatcher as unknown as fs.FSWatcher;
-      }
-      return (realWatch as any)(dir, ...rest);
-    }) as typeof fs.watch);
-
-    fs.mkdirSync(packageDir);
-    await waitFor(() => watchedPackageDir, 'the watcher to watch the new directory');
-
-    deadWatcher.emit('error', makeFsError('ENOENT', 'watch', packageDir));
-
-    await watcher!.stopWatching();
-    await watcher!.stopWatching();
   });
 });
