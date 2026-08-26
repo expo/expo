@@ -2,7 +2,12 @@ import { diffFingerprintsAsync, generateFingerprintAsync } from '../../project/f
 import type { FingerprintDiffItem } from '../../project/fingerprint';
 import { readLastBuildRecord } from '../../plan/lastBuild';
 import { spawnSubprocessAsync } from '../../utils/subprocess';
-import { buildCacheArgs, findCachedBuildAsync, parseCachedBuild } from '../buildCache';
+import {
+  buildCacheArgs,
+  findCachedBuildAsync,
+  lookUpCachedBuildAsync,
+  parseCachedBuild,
+} from '../buildCache';
 import {
   buildEasCompareArgs,
   compareWithEasBuildAsync,
@@ -11,6 +16,7 @@ import {
   parseEasCompare,
 } from '../compare';
 import recordedList from '../../__fixtures__/eas/build-list.json';
+import recordedUnconfigured from '../../__fixtures__/eas/build-list-unconfigured.json';
 import recordedCompare from '../../__fixtures__/eas/fingerprint-compare.json';
 import realDiff from './fixtures/notesapp-ios-diff.json';
 
@@ -366,6 +372,104 @@ describe(findCachedBuildAsync, () => {
       buildProfile: 'development',
       createdAt: '2026-08-24T00:00:00Z',
       buildUrl: 'https://expo.dev/builds/build-1',
+    });
+  });
+});
+
+// @ref llp/0011-impact-and-freshness.rfc.md §The build-cache lookup answers in three states
+// The distinction `impact` folds away and `status` reports: "EAS has no build for this
+// fingerprint" and "nobody could ask" are different facts, and only one of them is an answer.
+describe(lookUpCachedBuildAsync, () => {
+  it(`should answer none for an empty list, which is the service saying there is no build`, async () => {
+    mockSpawn({ stdout: '[]' });
+
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toEqual({
+      state: 'none',
+    });
+  });
+
+  it(`should answer found with the build of a hit`, async () => {
+    mockSpawn({ stdout: JSON.stringify(recordedList) });
+
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toMatchObject({
+      state: 'found',
+      build: { id: '21d7d434-6495-4e74-b8c7-68ecd0dff489', status: 'FINISHED' },
+    });
+  });
+
+  it(`should answer unknown without spawning anything when there is no EAS CLI`, async () => {
+    await expect(lookUpCachedBuildAsync(null, projectRoot, 'ios', 'abc')).resolves.toMatchObject({
+      state: 'unknown',
+      reason: expect.stringContaining('EAS CLI'),
+    });
+    expect(spawnSubprocessAsync).not.toHaveBeenCalled();
+  });
+
+  it(`should answer unknown without spawning anything when there is no hash to ask about`, async () => {
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', null)).resolves.toMatchObject({
+      state: 'unknown',
+      reason: expect.stringContaining('fingerprint'),
+    });
+    expect(spawnSubprocessAsync).not.toHaveBeenCalled();
+  });
+
+  // The recorded payload of an unlinked project, 2026-08-26: the EAS CLI exits 1, puts the whole
+  // explanation on **stdout**, and leaves `Error: build:list command failed.` on stderr. Reading
+  // stderr alone would report the one sentence with nothing in it.
+  it(`should read the reason of a failed lookup off stdout, where the EAS CLI puts it`, async () => {
+    mockSpawn({
+      exitCode: 1,
+      stdout: recordedUnconfigured.stdout,
+      stderr: recordedUnconfigured.stderr,
+    });
+
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toEqual({
+      state: 'unknown',
+      reason:
+        'EAS project not configured. This command cannot configure it in non-interactive mode. Run one of the following, then re-run this command:',
+    });
+  });
+
+  it(`should fall back to stderr when a failed lookup printed nothing on stdout`, async () => {
+    mockSpawn({ exitCode: 1, stdout: '', stderr: 'Error: request failed\n' });
+
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toEqual({
+      state: 'unknown',
+      reason: 'Error: request failed',
+    });
+  });
+
+  it(`should answer unknown for a timeout, naming the deadline it was given`, async () => {
+    mockSpawn({ exitCode: null, timedOut: true });
+
+    await expect(
+      lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc', { timeoutMs: 1234 })
+    ).resolves.toEqual({ state: 'unknown', reason: 'the lookup did not answer within 1234ms' });
+    expect(spawnSubprocessAsync).toHaveBeenCalledWith(
+      easCli.command,
+      buildCacheArgs('ios', 'abc'),
+      expect.objectContaining({ timeoutMs: 1234 })
+    );
+  });
+
+  it(`should answer unknown when the EAS CLI could not be spawned`, async () => {
+    mockSpawn({ exitCode: null, spawnError: new Error('ENOENT') as NodeJS.ErrnoException });
+
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toMatchObject({
+      state: 'unknown',
+      reason: expect.stringContaining('ENOENT'),
+    });
+  });
+
+  it.each([
+    ['output with no JSON in it', 'not json'],
+    ['unparsable JSON', '[{'],
+    ['a payload that is not a list', '[1]'],
+  ])(`should answer unknown for %s, never none`, async (_name, stdout) => {
+    mockSpawn({ stdout });
+
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toMatchObject({
+      state: 'unknown',
     });
   });
 });
