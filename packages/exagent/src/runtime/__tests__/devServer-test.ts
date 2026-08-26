@@ -174,3 +174,54 @@ describe(requireConnectedAppAsync, () => {
     expect(reads).toBe(1);
   });
 });
+
+// @ref ../targetPlatform — friction run 6, F51. With an iOS simulator and an Android emulator on
+// one dev server, a command told `--android` used to be handed whichever target came first, and
+// went on to report the simulator's answer as Android's.
+describe(`${requireConnectedAppAsync.name} scoped to a platform`, () => {
+  const ANDROID_TARGET = {
+    ...TARGET,
+    id: '2',
+    appId: 'host.exp.exponent',
+    deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+    webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=2&page=1',
+  };
+
+  it(`hands back only the targets of the platform that was asked for`, async () => {
+    mockFetch(async () => ({ ok: true, json: async () => [TARGET, ANDROID_TARGET] }));
+
+    await expect(
+      requireConnectedAppAsync('http://127.0.0.1:8081', { platform: 'android' })
+    ).resolves.toEqual([ANDROID_TARGET]);
+  });
+
+  it(`names the platform the connected app is actually on`, async () => {
+    mockFetch(async () => ({ ok: true, json: async () => [TARGET] }));
+
+    const error = await requireConnectedAppAsync('http://127.0.0.1:8081', {
+      platform: 'android',
+    }).catch((e) => e);
+
+    expect(error.code).toBe('NO_APP_CONNECTED');
+    expect(error.message).toContain('No android app is connected');
+    expect(error.message).toContain('it is on ios');
+    expect(error.suggestedCommand).toBe('npx exagent navigate / --android');
+  });
+
+  it(`says so plainly when nothing about the connected app names a platform`, async () => {
+    mockFetch(async () => ({
+      ok: true,
+      json: async () => [{ ...TARGET, appId: 'com.example.app', deviceName: 'Ada’s phone' }],
+    }));
+
+    const error = await requireConnectedAppAsync('http://127.0.0.1:8081', {
+      platform: 'android',
+      // Empty on purpose: the device tools have nothing to say about this device either.
+      deviceIndex: { iosNames: [], androidModels: [] },
+    }).catch((e) => e);
+
+    expect(error.message).toContain('could be shown to be running on android');
+    // Never a guess in either direction.
+    expect(error.message).not.toContain('is connected to the Expo dev server at');
+  });
+});

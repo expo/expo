@@ -8,7 +8,9 @@ import {
   resolveDuration,
   strayArgumentError,
 } from '../utils/args';
+import type { NavigatePlatform } from '../navigate/device';
 import { CommandError } from '../utils/errors';
+import { resolveDevicePlatform } from './devicePlatform';
 import { resolveDevServerTarget } from './devServer';
 
 /** Actions of the `runtime` group, in the order the help prints them. */
@@ -26,6 +28,15 @@ interface RuntimeSharedOptions {
    * (`discoverDevServerAsync`). An explicit URL is used as given, and never scanned around.
    */
   devServerUrl: string | null;
+  /**
+   * The platform whose app to read, or undefined for whichever app is connected.
+   *
+   * @ref ./targetPlatform — friction run 6's F51. With an iOS simulator and an Android emulator on
+   * one dev server, these commands took the first target the selector accepted, so which runtime
+   * answered was an accident of ordering. Naming the platform is what makes the answer about the
+   * app the caller means.
+   */
+  platform?: NavigatePlatform;
 }
 
 export interface RuntimeEvalOptions extends RuntimeSharedOptions {
@@ -72,6 +83,10 @@ const SHARED_ARGS = {
   '--dev-server-url': String,
   // Sugar for the URL above (llp/0005 §The dev server a caller names).
   '--port': String,
+  // The three spellings of one fact, as everywhere else in this CLI (`./devicePlatform.ts`).
+  '--ios': Boolean,
+  '--android': Boolean,
+  '--platform': String,
   '--json': Boolean,
 };
 
@@ -156,6 +171,9 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
       action: 'eval',
       expression: positional[0]!,
       devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:eval'),
+      platform: resolveDevicePlatform(args, 'runtime:eval', {
+        bothHint: `pass one, or leave both out to read whichever app is connected.`,
+      }),
       timeoutMs: resolveDuration(args['--timeout'], '--timeout', 5000, { allowZero: false }),
       awaitPromise: !args['--no-await-promise'],
       json: !!args['--json'],
@@ -183,6 +201,9 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     ),
     durationMs: resolveDuration(args['--duration'], '--duration', DEFAULT_WINDOW_MS[windowAction], {
       allowZero: true,
+    }),
+    platform: resolveDevicePlatform(args, `runtime:${windowAction}`, {
+      bothHint: `pass one, or leave both out to read whichever app is connected.`,
     }),
     json: !!args['--json'],
     followups: !args['--no-followups'],

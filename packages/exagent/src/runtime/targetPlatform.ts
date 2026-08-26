@@ -178,6 +178,21 @@ export function platformsOfTargets(
 }
 
 /**
+ * The device index, but only when the index-free rules cannot place every target.
+ *
+ * Two subprocesses are cheap and not free, and Expo Go — the case nearly every one of these
+ * commands runs against — is placed by its app id alone. So the tools are spawned exactly when
+ * their answer could change the outcome: a development build whose device name and app id say
+ * nothing this module recognises.
+ */
+export async function buildDeviceNameIndexIfNeededAsync(
+  targets: readonly Pick<CdpTarget, 'appId' | 'deviceName'>[]
+): Promise<DeviceNameIndex> {
+  const undetermined = targets.some((target) => platformOfTarget(target).platform == null);
+  return undetermined ? await buildDeviceNameIndexAsync() : EMPTY_DEVICE_INDEX;
+}
+
+/**
  * Ask this machine's device tools what is attached.
  *
  * Never throws and never fails a command: a missing `xcrun` or `adb` only costs the strongest of

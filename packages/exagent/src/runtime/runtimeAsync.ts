@@ -23,6 +23,7 @@ import {
 import {
   APP_RECONNECT_GRACE_MS,
   discoverDevServerAsync,
+  probeDevServerAsync,
   requireConnectedAppAsync,
 } from './devServer';
 import {
@@ -54,6 +55,7 @@ import {
   relativizeFrame,
   symbolicateFramesAsync,
 } from './symbolicate';
+import { buildDeviceNameIndexIfNeededAsync } from './targetPlatform';
 
 export interface RuntimeContext {
   /**
@@ -99,11 +101,27 @@ export async function runtimeEvalAsync(
 ): Promise<number> {
   const { expression, timeoutMs, awaitPromise, json } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  await requireConnectedAppAsync(devServerUrl, { explicit: options.devServerUrl != null });
+  // Read once and passed to both, so the platform this command was told about is the platform of
+  // the app it reads — and the two steps cannot disagree about which app that is (F51).
+  const deviceIndex =
+    options.platform == null
+      ? undefined
+      : await buildDeviceNameIndexIfNeededAsync(
+          (await probeDevServerAsync(devServerUrl)).targets
+        );
+  await requireConnectedAppAsync(devServerUrl, {
+    explicit: options.devServerUrl != null,
+    platform: options.platform,
+    deviceIndex,
+  });
 
   let result: CdpEvaluateResult;
   try {
-    result = await new CdpClient({ metroUrl: devServerUrl }).evaluateAsync(expression, {
+    result = await new CdpClient({
+      metroUrl: devServerUrl,
+      platform: options.platform,
+      deviceIndex,
+    }).evaluateAsync(expression, {
       awaitPromise,
       timeoutMs,
     });
@@ -214,9 +232,17 @@ export async function runtimeErrorsAsync(
   // between. Both were reported as "there is no app", one run in three. The grace period is what
   // makes the printed chain deterministic — including for a reload nothing here performed, such as
   // pressing "r" in the dev server's terminal.
+  const deviceIndex =
+    options.platform == null
+      ? undefined
+      : await buildDeviceNameIndexIfNeededAsync(
+          (await probeDevServerAsync(devServerUrl)).targets
+        );
   await requireConnectedAppAsync(devServerUrl, {
     retryMs: APP_RECONNECT_GRACE_MS,
     explicit: options.devServerUrl != null,
+    platform: options.platform,
+    deviceIndex,
   });
 
   let errors: RuntimeErrorRecord[];
@@ -225,6 +251,8 @@ export async function runtimeErrorsAsync(
       metroUrl: devServerUrl,
       durationMs,
       targetRetryMs: APP_RECONNECT_GRACE_MS,
+      platform: options.platform,
+      deviceIndex,
     }).collectAsync();
   } catch (error: unknown) {
     throw new CommandError(
@@ -314,8 +342,16 @@ export async function runtimeNetworkAsync(
 ): Promise<number> {
   const { durationMs, json } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
+  const deviceIndex =
+    options.platform == null
+      ? undefined
+      : await buildDeviceNameIndexIfNeededAsync(
+          (await probeDevServerAsync(devServerUrl)).targets
+        );
   const targets = await requireConnectedAppAsync(devServerUrl, {
     explicit: options.devServerUrl != null,
+    platform: options.platform,
+    deviceIndex,
   });
 
   let requests: NetworkRequestRecord[];
@@ -323,6 +359,8 @@ export async function runtimeNetworkAsync(
     requests = await new CdpNetworkCollector({
       metroUrl: devServerUrl,
       durationMs,
+      platform: options.platform,
+      deviceIndex,
     }).collectAsync();
   } catch (error: unknown) {
     if (error instanceof NetworkDomainUnavailableError) {

@@ -5,8 +5,15 @@
 import type CdpMessageType from 'devtools-protocol';
 import { WebSocket } from 'ws';
 
+import type { NavigatePlatform } from '../navigate/device';
 import { formatCdpExceptionDetails, stringifyCdpValue } from './cdpFormat';
 import { debugEvent } from './events';
+import {
+  buildDeviceNameIndexIfNeededAsync,
+  scopeTargets,
+  type DeviceNameIndex,
+  type ScopedTargets,
+} from './targetPlatform';
 import {
   buildPromisePollExpression,
   buildPromiseReleaseExpression,
@@ -183,6 +190,36 @@ export interface CdpClientOptions {
    * as F39, and re-reading the list is what resolves it.
    */
   targetRetryMs?: number;
+  /**
+   * Talk only to an app on this platform.
+   *
+   * @ref ./targetPlatform — friction run 6's F51. Every reading command took the first target the
+   * selector accepted, so a run told `--android` on a dev server that also had an iOS simulator
+   * attached evaluated its expression, and earned its verdict, in the **simulator**. The list is
+   * narrowed before the selector rather than inside it, so "which target answers the debugger" and
+   * "which platform is this run about" stay two separate questions.
+   */
+  platform?: NavigatePlatform;
+  /** What this machine's device tools reported, for {@link platform}. */
+  deviceIndex?: DeviceNameIndex;
+}
+
+/** The failure for a platform-scoped client that found no target of its platform. */
+export class NoTargetOnPlatformError extends Error {
+  readonly isNoTargetOnPlatform = true;
+
+  constructor(
+    readonly platform: NavigatePlatform,
+    readonly otherPlatforms: NavigatePlatform[],
+    readonly undetermined: number
+  ) {
+    super(
+      otherPlatforms.length > 0
+        ? `No ${platform} app is connected to the dev server; the ${otherPlatforms.join(' and ')} app that is connected is a different runtime.`
+        : `No app connected to the dev server could be shown to be running on ${platform}${undetermined > 0 ? `, and ${undetermined} could not be placed at all` : ''}.`
+    );
+    this.name = 'NoTargetOnPlatformError';
+  }
 }
 
 /** How often the target list is re-read while {@link CdpClientOptions.targetRetryMs} runs. */
@@ -218,18 +255,38 @@ export class CdpClient {
       this.options.targetSelector ??
       createDefaultTargetSelector({ createWebSocket: this.options.createWebSocket });
 
+    // Read once: what this machine has attached does not change while a reconnect runs, and asking
+    // the device tools on every poll would be a subprocess every 250 ms.
+    const index =
+      this.options.platform == null
+        ? null
+        : (this.options.deviceIndex ??
+          (await buildDeviceNameIndexIfNeededAsync(await this.listTargetsAsync())));
+
     // Re-read the list rather than re-run the selector over the same array: what changes during a
     // reconnect is which targets the dev server lists, not what this can make of a given one.
     const deadline = Date.now() + (this.options.targetRetryMs ?? 0);
     let target: CdpTarget | null = null;
+    let scope: ScopedTargets | null = null;
     for (;;) {
-      target = await selector(await this.listTargetsAsync());
+      const listed = await this.listTargetsAsync();
+      scope = index == null ? null : scopeTargets(listed, this.options.platform!, index);
+      target = await selector(scope ? scope.matched : listed);
       if (target || Date.now() >= deadline) {
         break;
       }
       await new Promise((resolve) => setTimeout(resolve, TARGET_RETRY_POLL_MS));
     }
     if (!target) {
+      // Two different failures, and only one of them is "the app is not there". A scoped run that
+      // found apps on the other platform has to say so, or the reader debugs a healthy app (F51).
+      if (scope && scope.matched.length === 0) {
+        throw new NoTargetOnPlatformError(
+          this.options.platform!,
+          [...new Set(scope.otherPlatform.map((entry) => entry.platform))],
+          scope.undetermined.length
+        );
+      }
       throw new Error('No target found.');
     }
     this.resolvedWebSocketDebuggerUrl = target.webSocketDebuggerUrl;

@@ -11,6 +11,8 @@ describe(resolveDevWaitOptions, () => {
       // about the dev server.
       bundleCheck: true,
       platform: 'ios',
+      // False: nothing named it, so the connected app gets to (llp/0005 §Android, F53).
+      platformExplicit: false,
       json: false,
       followups: true,
     });

@@ -39,6 +39,8 @@ function options(overrides: Partial<DevWaitOptions> = {}): DevWaitOptions {
     // below are about the readiness gate.
     bundleCheck: false,
     platform: 'ios',
+    // Named, unless a case is about the platform being derived from the connected app (F53).
+    platformExplicit: true,
     json: false,
     followups: true,
     ...overrides,
@@ -405,6 +407,8 @@ describe(devWaitAsync, () => {
         'appsConnected',
         'appsReason',
         'bundle',
+        'bundlePlatformSource',
+        'bundlePlatforms',
         'devServerUrl',
         'followups',
         'ok',
@@ -483,5 +487,86 @@ describe(devWaitAsync, () => {
     await devWaitAsync(projectRoot, options({ json: true, followups: false }));
 
     expect(printedJson().followups).toEqual([]);
+  });
+});
+
+// @ref ../../runtime/bundleCheck — friction run 6, F53. With an Android-only break and both apps
+// attached, a run with no --platform built the fixed iOS default and printed "compiles for ios"
+// while the Android app was on a red screen.
+describe(`${devWaitAsync.name} and the platform it builds for`, () => {
+  const IOS_TARGET = { id: '1', appId: 'host.exp.Exponent', deviceName: 'iPhone 17 Pro' } as any;
+  const ANDROID_TARGET = {
+    id: '2',
+    appId: 'host.exp.exponent',
+    deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+  } as any;
+
+  it(`builds for the platform the connected app is on, not for the default`, async () => {
+    mockDiscovery(0, { targets: [ANDROID_TARGET] });
+    mockReady();
+    mockBundle({ platform: 'android' });
+
+    await devWaitAsync(
+      projectRoot,
+      options({ bundleCheck: true, platformExplicit: false, json: true })
+    );
+
+    expect(checkEntryBundleAsync).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(checkEntryBundleAsync).mock.calls[0]![1]).toMatchObject({
+      platform: 'android',
+    });
+    expect(printedJson().bundlePlatformSource).toBe('connected-app');
+  });
+
+  it(`builds for both when apps on both platforms are connected`, async () => {
+    mockDiscovery(0, { targets: [IOS_TARGET, ANDROID_TARGET] });
+    mockReady();
+    jest
+      .mocked(checkEntryBundleAsync)
+      .mockResolvedValueOnce({
+        outcome: 'ok',
+        platform: 'ios',
+        url: 'u',
+        error: null,
+        waitedMs: 1,
+      })
+      .mockResolvedValueOnce({
+        outcome: 'broken',
+        platform: 'android',
+        url: 'u',
+        error: {
+          type: 'TransformError',
+          filename: 'src/lib/probe.android.ts',
+          lineNumber: 1,
+          column: 1,
+          message: 'Unexpected token',
+          snippet: null,
+        },
+        waitedMs: 1,
+      });
+
+    const exitCode = await devWaitAsync(
+      projectRoot,
+      options({ bundleCheck: true, platformExplicit: false, json: true })
+    );
+
+    // The broken one decides the run, whichever platform it was found on.
+    expect(exitCode).toBe(20);
+    expect(printedJson().bundlePlatforms).toEqual(['ios', 'android']);
+    expect(printedJson().bundle.platform).toBe('android');
+  });
+
+  it(`still builds for exactly the platform a --platform flag named`, async () => {
+    mockDiscovery(0, { targets: [ANDROID_TARGET] });
+    mockReady();
+    mockBundle();
+
+    await devWaitAsync(
+      projectRoot,
+      options({ bundleCheck: true, platform: 'web', platformExplicit: true, json: true })
+    );
+
+    expect(jest.mocked(checkEntryBundleAsync).mock.calls[0]![1]).toMatchObject({ platform: 'web' });
+    expect(printedJson().bundlePlatformSource).toBe('flag');
   });
 });
