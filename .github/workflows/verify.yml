@@ -74,7 +74,7 @@ jobs:
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
 
       - name: Run verify
-        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify ci ${{ inputs.dry_run == true && '--dry-run' || '' }}
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify run ${{ inputs.dry_run == true && '--dry-run' || '' }}
         env:
           # Inputs cross as env only — never ${{ }} inside run: lines.
           VERIFY_TARGET: ${{ inputs.target }}

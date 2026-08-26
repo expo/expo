@@ -1,7 +1,7 @@
 # The comment path for the @expo/verify engine: `/verify …` or
 # `@expo-bot …` typed on an issue or pull request. Thin adapter only — the
 # gate, parse, ack/announce, the run, and the failure report all live in
-# `verify gate` (engine LLP 0001; expo-sandbox-mcp LLP 0020).
+# `verify run` (engine LLP 0001; expo-sandbox-mcp LLP 0020).
 #
 # STAGED: lives beside agent-commands.yml, which still owns the comment
 # path until this one is proven live; both are gated on the same comment
@@ -27,8 +27,8 @@ jobs:
   verify:
     # The LOOSE shape gate: command-shaped, from a maintainer-association
     # author, not the bot itself. Exact shapes, the authoritative
-    # write-access check, and thread replies are the engine's (`verify
-    # gate`). Mirrors agent-commands.yml's gate; reserved verbs stay
+    # write-access check, and thread replies are the engine's comment
+    # path. Mirrors agent-commands.yml's gate; reserved verbs stay
     # excluded because other workflows own them.
     if: >-
       github.event.comment.user.login != 'expo-bot' &&
@@ -68,8 +68,8 @@ jobs:
       - name: Guard profile and credential env
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
 
-      - name: Gate, then run
-        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify gate
+      - name: Run verify (comment path)
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify run
         env:
           # Comment text and identity cross as env only — never ${{ }} inside
           # run: lines (the same rule agent-commands.yml follows).

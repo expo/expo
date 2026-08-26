@@ -39,4 +39,4 @@ Dispatch, dashboard, and `ls` delegate to the `@expo/verify` engine
 (`npx @expo/verify@<pin>` with this repo's `.verify/` profile); see the
 header of `src/commands/VerifyCommand.ts`. Bump the pin there when the
 engine releases; keep it in step with the repo variable `VERIFY_VERSION`
-that `.github/workflows/verify.yml` reads. `roundup` is still native.
+that `.github/workflows/verify.yml` reads. `roundup` is still native. (Engine naming: `verify run` executes here, `verify dispatch` starts a run remotely.)
