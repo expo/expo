@@ -1,5 +1,7 @@
-import { CommandError } from '../../utils/errors';
-import { spawnSubprocessAsync, type SubprocessResult } from '../../utils/subprocess';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
+import { CommandError } from '../../../utils/errors';
+import { spawnSubprocessAsync, type SubprocessResult } from '../../../utils/subprocess';
 import type { BuildWaitOptions } from '../resolveOptions';
 import { intervalAt, MAX_CONSECUTIVE_FAILURES, pollBuildAsync, viewCommand } from '../waitAsync';
 

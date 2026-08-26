@@ -435,15 +435,12 @@ describe('exagent dev --plan', () => {
       expect(readStubExpoInvocations(projectRoot)).toEqual([]);
     });
 
-    it('says in the help which of the two routes each command is', async () => {
+    it('says in the help which of the two routes a build takes', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const dev = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
-      const wait = await executeExagentAsync(projectRoot, ['build:wait', '--help']);
 
       expect(dev.all).toContain('A local');
       expect(dev.all).toContain('A cloud build (eas build) happens');
-      expect(wait.all).toContain('runs in the cloud');
-      expect(wait.all).toContain('Expo account');
     });
   });
 

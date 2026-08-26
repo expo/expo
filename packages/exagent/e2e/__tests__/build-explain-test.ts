@@ -342,7 +342,6 @@ describe('the registry', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('build:explain');
-    expect(result.stdout).toContain('build:wait');
   });
 
   it('prints usage for --help without reading anything', async () => {

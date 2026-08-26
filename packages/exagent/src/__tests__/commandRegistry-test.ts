@@ -537,15 +537,15 @@ describe('a group whose name is another CLI’s verb', () => {
   });
 
   it('resolves its actions in both spellings', () => {
-    expect(resolveCommand('build:wait', ['abc', '--json'])).toMatchObject({
+    expect(resolveCommand('build:explain', ['--file', 'x.log'])).toMatchObject({
       kind: 'command',
-      name: 'build:wait',
-      argv: ['abc', '--json'],
+      name: 'build:explain',
+      argv: ['--file', 'x.log'],
     });
-    expect(resolveCommand('build', ['wait', 'abc'])).toMatchObject({
+    expect(resolveCommand('build', ['explain', '--stdin'])).toMatchObject({
       kind: 'command',
-      name: 'build:wait',
-      argv: ['abc'],
+      name: 'build:explain',
+      argv: ['--stdin'],
     });
   });
 
@@ -662,7 +662,7 @@ describe('helpSections', () => {
 describe(suggestCommandNames, () => {
   it.each([
     // The action name on its own: not a typo, a caller that does not know which group owns it.
-    ['wait', ['build:wait', 'dev:wait']],
+    ['wait', ['dev:wait']],
     ['sync', ['skills:sync']],
     ['setup', ['agents:setup']],
     ['effective', ['config:effective']],
@@ -697,7 +697,6 @@ describe(unknownCommandMessage, () => {
     const message = unknownCommandMessage('wait');
 
     expect(message).toContain('"exagent wait" is not a command');
-    expect(message).toContain('npx exagent build:wait');
     expect(message).toContain('npx exagent dev:wait');
   });
 
@@ -725,7 +724,7 @@ describe(unknownCommandSuggestion, () => {
   });
 
   it('falls back to the listing when the answer is a choice', () => {
-    expect(unknownCommandSuggestion('wait')).toBe('npx exagent --help');
+    expect(unknownCommandSuggestion('dew')).toBe('npx exagent --help');
     expect(unknownCommandSuggestion('zzzzzzzz')).toBe('npx exagent --help');
   });
 

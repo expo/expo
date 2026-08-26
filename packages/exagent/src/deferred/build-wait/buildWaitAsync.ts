@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 // `exagent build:wait <id>`: attach to a build that already exists, and turn it into an exit code.
 //
@@ -6,12 +8,12 @@
 // pasted into a shell script: `0` finished, `20` errored, `21` canceled, `22` timed out, `1` the
 // tool could not do its job.
 
-import { event } from '../events';
-import { exitWithCodeAsync } from '../exitCodes';
-import { buildBuildWaitFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
-import * as Log from '../log';
-import { assertSignedInAsync } from '../needsHuman/assertAuth';
-import { resolveEasCliOrThrow } from '../utils/easCli';
+import { event } from '../../events';
+import { exitWithCodeAsync } from '../../exitCodes';
+import { buildBuildWaitFollowUps, followUpsEnabled, reportFollowUps } from '../../followups';
+import * as Log from '../../log';
+import { assertSignedInAsync } from '../../needsHuman/assertAuth';
+import { resolveEasCliOrThrow } from '../../utils/easCli';
 import { formatBuildWaitReport } from './format';
 import { readBuildDetails, readString } from './parseView';
 import type { BuildWaitOptions } from './resolveOptions';

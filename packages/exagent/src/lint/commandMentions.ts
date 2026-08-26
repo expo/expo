@@ -146,7 +146,7 @@ export function extractCommandMentions(file: string, source: string): CommandMen
  *
  * The commands are not all this CLI's: a `Try:` line is `npx eas login` as often as it is
  * `npx exagent status`, and `npx eas build --profile <profile>` is exactly as unrunnable as
- * `npx exagent build:wait <id>` would be. So the placeholder rule is checked over these — every
+ * `npx exagent navigate <route>` would be. So the placeholder rule is checked over these — every
  * suggestion, whatever CLI it names — while the registry rules are checked over the
  * {@link CommandMention}s, which are only the ones this CLI can resolve.
  */

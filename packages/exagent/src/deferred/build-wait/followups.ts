@@ -1,8 +1,10 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0009-smart-followups.rfc.md §Examples per command — a wait that ended is never the last
 // rung: every outcome has a different next command, and the outcome is exactly what this command
 // spent its time learning.
 
-import { capFollowUps, type FollowUp } from './types';
+import { capFollowUps, type FollowUp } from '../../followups/types';
 
 export interface BuildWaitFollowUpInput {
   kind: 'build' | 'submission';

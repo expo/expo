@@ -197,6 +197,10 @@ declare module '2g' {
     /**
      * One poll of `exagent build:wait`, while the wait is still running.
      *
+     * Deferred from v1 (2026-08-26) with the two events below: the command is on the reference shelf
+     * (`src/deferred/build-wait/`), so nothing emits these now. The declarations stay as the schema
+     * a consumer wrote against. See llp/0016 and llp/0010 §The first command in the outcome band.
+     *
      * Progress belongs here and not on stdout: `--json` prints exactly one object (llp/0006
      * §Output contract), so a wait that printed its polls would break the contract for the sake of
      * output nobody parses. `queuePosition` and `estimatedWaitTimeLeftSeconds` are what would turn

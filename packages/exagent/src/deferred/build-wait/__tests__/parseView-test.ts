@@ -1,6 +1,8 @@
-import recordedInProgress from '../../__fixtures__/eas/build-view-in-progress.staging.json';
-import recordedInQueue from '../../__fixtures__/eas/build-view-in-queue.staging.json';
-import recordedView from '../../__fixtures__/eas/build-view.json';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
+import recordedInProgress from '../../../__fixtures__/eas/build-view-in-progress.staging.json';
+import recordedInQueue from '../../../__fixtures__/eas/build-view-in-queue.staging.json';
+import recordedView from '../../../__fixtures__/eas/build-view.json';
 import { parseLastJsonObject, readBuildDetails, readProgress } from '../parseView';
 import { resolveTerminalStatus } from '../status';
 

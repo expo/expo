@@ -42,10 +42,10 @@ export const OPTION_OWNERS: { [option: string]: string[] } = {
     'navigate',
     'status',
   ],
-  '--platform': ['dev:wait', 'build:wait'],
+  '--platform': ['dev:wait'],
   '--route': ['runtime:reload'],
   '--app-id': ['runtime:stop'],
-  '--timeout': ['dev:wait', 'dev:stop', 'build:wait', 'runtime:reload'],
+  '--timeout': ['dev:wait', 'dev:stop', 'runtime:reload'],
   '--json': ['dev', 'dev:wait', 'dev:stop', 'status', 'typecheck', 'install', 'navigate'],
   // Four more from friction run 5 (F48-2). Each is an option a caller reached for on the
   // *neighbour* of the command that has it, which is the only thing that earns a row here:

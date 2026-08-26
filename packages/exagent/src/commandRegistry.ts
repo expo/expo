@@ -103,10 +103,6 @@ export const commandGroups: { [group: string]: CommandGroup } = {
         summary: 'Read a build log and say what failed in it',
         load: () => import('./builds').then((i) => i.exagentBuildExplain),
       },
-      wait: {
-        summary: 'Wait for a build to finish, and exit with what it did',
-        load: () => import('./builds').then((i) => i.exagentBuildWait),
-      },
     },
   },
   checkpoint: {
@@ -437,7 +433,7 @@ export const helpSections: HelpSection[] = [
   {
     title: 'Deployment',
     commands: ['deploy', ...actionNames('build')],
-    note: 'Builds are started with npx eas build; build:wait attaches to one that exists.',
+    note: 'Builds are started with npx eas build; build:explain reads the log one left behind.'
   },
   {
     title: 'Debug a running app',
@@ -620,9 +616,9 @@ function maxEditsFor(name: string): number {
  *
  * Two rules, in order, because they answer two different mistakes:
  *
- * 1. **The action name on its own.** `exagent wait` is not a typo — it is a caller that knows what
+ * 1. **The action name on its own.** `exagent sync` is not a typo — it is a caller that knows what
  *    it wants and does not know which group owns it, and the answer is every group that has an
- *    action by that name: `dev:wait`, `build:wait`. Exact, so it never guesses.
+ *    action by that name: `skills:sync`. Exact, so it never guesses.
  * 2. **A small number of edits.** `exagent stauts` is the other mistake, and Levenshtein is what
  *    recognises it. Ordered by distance, then by the registry's own order, so the answer is stable.
  *

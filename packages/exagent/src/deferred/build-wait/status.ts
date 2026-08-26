@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes — the outcome band this table maps into.
 // The whole of what `build:wait` decides: is this status the end of the wait, and if it is, what
 // did the build do. Pure, and deliberately the only place either question is answered — a poll
@@ -8,7 +10,7 @@ import {
   EXIT_OUTCOME_CANCELED,
   EXIT_OUTCOME_FAILED,
   EXIT_OUTCOME_TIMEOUT,
-} from '../exitCodes';
+} from '../../exitCodes';
 
 /** What one wait ended as. Everything but `timeout` comes from the build's own status. */
 export type BuildWaitOutcome = 'finished' | 'errored' | 'canceled' | 'timeout';

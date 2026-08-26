@@ -1,5 +1,7 @@
-import { buildBuildWaitFollowUps, type BuildWaitFollowUpInput } from '../builds';
-import { MAX_FOLLOWUPS } from '../types';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
+import { buildBuildWaitFollowUps, type BuildWaitFollowUpInput } from '../followups';
+import { MAX_FOLLOWUPS } from '../../../followups/types';
 
 const ID = 'build-1';
 

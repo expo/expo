@@ -1,4 +1,6 @@
-import { CommandError } from '../../utils/errors';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
+import { CommandError } from '../../../utils/errors';
 import {
   BACKOFF_AFTER_MS,
   BACKOFF_INTERVAL_MS,

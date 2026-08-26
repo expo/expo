@@ -36,14 +36,28 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 
 ### The first command in the outcome band: `build:wait`
 
+> **Status:** Deferred — reference (2026-08-26). The command is out of the v1 surface and its code
+> is on the reference shelf at `src/deferred/build-wait/`; the exit-code band it established is
+> unchanged and every command that stayed still uses it.
+>
+> **Why:** the shape is wrong rather than the work. A caller who wants to wait on a build has
+> already run a build command, and `exagent build:wait <id>` asks them to carry an id from one
+> command to another — while `npx eas build --wait` does the whole thing in one. The answer is a
+> **`--wait` flag on a build verb this CLI owns**, not a command of its own.
+>
+> **Re-entry criteria:** `exagent build` exists as a verb with local and EAS parity — the same flag
+> waiting on a local `expo run:ios` and on an EAS build — so that `exagent build --wait` is one
+> answer rather than two commands wearing one name. The table below is what it returns as. See
+> [[0016-v1-scope]].
+
 [observed — 2026-08-23, `src/builds/`] `exagent build:wait <id>` is the first command whose whole answer is its exit code, and it is what the `20`–`29` band was reserved for. It attaches to an EAS build that already exists — one started by CI, by the dashboard, or by another agent — polls `eas build:view <id> --json`, and leaves with what the build did:
 
 | Code | The build                                          | Where it is decided            |
 | ---- | -------------------------------------------------- | ------------------------------ |
-| `0`  | `FINISHED`                                         | `src/builds/status.ts`         |
-| `20` | `ERRORED`                                          | `src/builds/status.ts`         |
-| `21` | `CANCELED`, **or this wait was interrupted**       | `src/builds/status.ts`         |
-| `22` | still running when `--timeout` elapsed             | `src/builds/waitAsync.ts`      |
+| `0`  | `FINISHED`                                         | `src/deferred/build-wait/status.ts` |
+| `20` | `ERRORED`                                          | `src/deferred/build-wait/status.ts` |
+| `21` | `CANCELED`, **or this wait was interrupted**       | `src/deferred/build-wait/status.ts` |
+| `22` | still running when `--timeout` elapsed             | `src/deferred/build-wait/waitAsync.ts` |
 | `7`  | nobody is signed in, so no build is visible        | `src/needsHuman/assertAuth.ts` |
 | `1`  | not readable: bad id, no `eas`, three failed polls | `CommandError`                 |
 

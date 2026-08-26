@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — "one fact per line, label value
 // style". The same facts as `--json`, in the shape a terminal and a model reading a terminal both
 // get through in one pass.

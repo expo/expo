@@ -17,7 +17,7 @@ describe(unknownOptionError, () => {
   });
 
   it('names the sibling command that does take the option', () => {
-    const error = unknownOptionError('build:wait', '--route');
+    const error = unknownOptionError('dev:wait', '--route');
 
     expect(error.message).toContain('"npx exagent runtime:reload"');
   });

@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — eas-cli is reached as a subprocess,
 // so its answer arrives as text on a pipe and has to be read back defensively. Nothing here throws:
 // a payload whose shape moved degrades to nulls in the report, because a wait that has been running

@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 /* eslint-env jest */
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 //
@@ -16,7 +18,7 @@ import {
   getTemporaryPath,
   installStubBinAsync,
   setupFixtureAsync,
-} from '../utils';
+} from '../../../../e2e/utils';
 
 /** The shape `build:wait --json` prints, per `src/builds/types.ts`. */
 type BuildWaitReport = {

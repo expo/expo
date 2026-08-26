@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 import { stripVTControlCharacters } from 'node:util';
 
 import { formatBuildWaitReport, formatDuration } from '../format';

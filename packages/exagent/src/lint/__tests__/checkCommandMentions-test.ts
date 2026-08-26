@@ -156,7 +156,7 @@ describe('rule 3 — the arguments have somewhere to go', () => {
 
 describe('rule 4 — a suggestion is runnable as printed', () => {
   it(`catches a placeholder in a "Try:" line`, () => {
-    const [problem] = check(`error.suggestedCommand = 'npx exagent build:wait <build-id>';`);
+    const [problem] = check(`error.suggestedCommand = 'npx exagent navigate <route>';`);
     expect(problem?.rule).toBe('placeholder');
     expect(problem?.subject.role).toBe('suggested-command');
   });

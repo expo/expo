@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 // The wait loop. `eas build --wait` already exists and only helps the process that started the
 // build; this attaches to one that already exists — started by CI, by the dashboard, or by another
@@ -8,16 +10,16 @@
 // here is the sequencing, and the three things that go wrong with sequencing — a poll that fails,
 // a wait that expires, and a person pressing Ctrl-C.
 
-import { outputTail } from '../deploy/parseOutput';
-import { event } from '../events';
-import type { EasCli } from '../utils/easCli';
-import { CommandError } from '../utils/errors';
-import { spawnSubprocessAsync, type SubprocessResult } from '../utils/subprocess';
+import { outputTail } from '../../deploy/parseOutput';
+import { event } from '../../events';
+import type { EasCli } from '../../utils/easCli';
+import { CommandError } from '../../utils/errors';
+import { spawnSubprocessAsync, type SubprocessResult } from '../../utils/subprocess';
 import {
   checkBinaryCommand,
   looksLikeWrapperCrash,
   wrapperCrashDetail,
-} from '../utils/wrapperCrash';
+} from '../../utils/wrapperCrash';
 import { parseLastJsonObject, readProgress, readString } from './parseView';
 import type { BuildWaitOptions } from './resolveOptions';
 import { resolveTerminalStatus, type BuildWaitOutcome } from './status';

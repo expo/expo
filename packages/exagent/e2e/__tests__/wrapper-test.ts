@@ -373,10 +373,7 @@ describe('expo passthrough', () => {
     const result = await executeExagentAsync(projectRoot, ['wait'], { reject: false });
 
     expect(result.exitCode).toBe(1);
-    expect(result.all).toContain('npx exagent build:wait');
     expect(result.all).toContain('npx exagent dev:wait');
-    // Two candidates are a choice, so the last line stays the full listing.
-    expect(result.all).toContain('Try: npx exagent --help');
   });
 
   it('recovers into the one close command for a mistyped name', async () => {
@@ -451,7 +448,7 @@ describe('expo passthrough', () => {
   // option line itself, not only in the message it prints when a value is rejected.
   // The action, not the group: `<group> --help` is the listing (llp/0010 §Registry rules), and the
   // option block of the `runtime:*` actions lives one hop down.
-  it.each([['dev:wait'], ['build:wait'], ['runtime:eval'], ['runtime:errors']])(
+  it.each([['dev:wait'], ['runtime:eval'], ['runtime:errors']])(
     'documents that %s durations take units, not only milliseconds',
     async (command) => {
       const result = await executeExagentAsync(projectRoot, [command, '--help']);

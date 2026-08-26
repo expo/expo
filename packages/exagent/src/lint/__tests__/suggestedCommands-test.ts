@@ -54,7 +54,6 @@ describe("the suggested-command sweep", () => {
       "skills:list",
       "checkpoint:list",
       "build:explain",
-      "build:wait",
       "config:effective",
       "agents:setup",
       "deploy",
@@ -81,7 +80,6 @@ describe("the option lists the sweep checks against", () => {
       [
         "agents:setup",
         "build:explain",
-        "build:wait",
         "checkpoint",
         "checkpoint:create",
         "checkpoint:list",
