@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Report a stale `@expo/dom-webview` left over from an older SDK in the overridden dependency check. ([#49345](https://github.com/expo/expo/pull/49345) by [@expo-bot](https://github.com/expo-bot))
-
 ### 💡 Others
+
+## 1.20.4 — 2026-08-26
+
+### 🐛 Bug fixes
+
+- Report a stale `@expo/dom-webview` left over from an older SDK in the overridden dependency check. ([#49345](https://github.com/expo/expo/pull/49345) by [@expo-bot](https://github.com/expo-bot))
 
 ## 1.20.3 — 2026-08-24
 

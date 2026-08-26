@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
-
 ### 💡 Others
+
+## 57.0.3 — 2026-08-26
+
+### 🐛 Bug fixes
+
+- [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
 
 ## 57.0.2 — 2026-07-22
 

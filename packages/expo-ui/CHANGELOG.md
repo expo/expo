@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.14 — 2026-08-26
+
+### 🛠 Breaking changes
+
 - [Android] Removed the `style` prop from `RNHostView`. It set a React Native style on a view that Jetpack Compose positions and sizes; use `modifiers` instead. Hosted views are now measured where Compose drew them, so a style is no longer needed to keep `measure()` and the drawn position in agreement. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
@@ -20,8 +30,6 @@
 - [Android] Fix touch handling for hosted React Native views: a `Pressable` dropped its press when the finger moved, hosted content stole gestures from enclosing scrollables, a back gesture was reported as a long press, a press fired after a Jetpack Compose pager or scrollable had already claimed the gesture, and content inside `AlertDialog`, `DropdownMenu`, `ExposedDropdownMenu` and `TooltipBox` received no touches at all. Hosted views are now measured where Jetpack Compose placed them, and dispatch their own touches only when presented in their own window. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix a hosted `Pressable` in a `PagerView` ignoring presses on pages after the first, where a re-parented host kept the bounds of the holder it left and answered for a screen area it no longer occupied. ([#46386](https://github.com/expo/expo/issues/46386) by [@TomCorvus](https://github.com/TomCorvus)) ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `ColorPicker` reporting every color one value too low, because `colorToHex` truncated instead of rounding. Apps feed the reported value back into `selection`, so the error compounded and each interaction moved all three channels down by one. ([#49356](https://github.com/expo/expo/pull/49356) by [@batuhandemir98](https://github.com/batuhandemir98))
-
-### 💡 Others
 
 ## 57.0.13 — 2026-08-24
 

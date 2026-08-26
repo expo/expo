@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `deterministicUniformValue` to return a uniformly distributed value over `[0, 1)`. ([#49182](https://github.com/expo/expo/pull/49182) by [@bjjeong](https://github.com/bjjeong))
-
 ### 💡 Others
+
+## 57.0.2 — 2026-08-26
+
+### 🐛 Bug fixes
+
+- Fix `deterministicUniformValue` to return a uniformly distributed value over `[0, 1)`. ([#49182](https://github.com/expo/expo/pull/49182) by [@bjjeong](https://github.com/bjjeong))
 
 ## 57.0.1 — 2026-07-15
 

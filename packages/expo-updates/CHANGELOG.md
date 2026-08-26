@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 57.0.18 — 2026-08-26
+
+### 🐛 Bug fixes
+
+- [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.17 — 2026-08-24
 
