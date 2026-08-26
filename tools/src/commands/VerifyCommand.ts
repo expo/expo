@@ -11,6 +11,7 @@
  *   et verify 48780 --no-fix   force report-only
  *   et verify 48780 --retry    update the thread's previous findings comment in place
  *   et verify 48780 --watch    dispatch, then follow it until it finishes
+ *   et verify 48780 --runner eas   run on EAS Workflows instead of GHA
  *
  * Why this exists rather than commenting `/verify` on the thread: the comment
  * path posts an eyes reaction and a "started" comment, and on a failure a
@@ -57,6 +58,8 @@ const HELP = `verify — dispatch expo/expo's /verify workflow without commentin
                             (falls back to a new comment if none exists;
                             same flag works in comments: "/verify --retry")
   et verify <n> --watch        follow the run until it finishes
+  et verify <n> --runner eas   run on EAS Workflows instead of GitHub Actions
+                            (the engine's --runner; also --dry-run for a shadow run)
   et verify <n> --model fable  override the agent model for this run
                             (fable/opus/sonnet/haiku, or a full claude-* id;
                             default: the workflow's VERIFY_MODEL var, else opus)

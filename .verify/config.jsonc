@@ -3,7 +3,11 @@
   // Capability fields are enforcement inputs: the agent tool allowlist,
   // the scoped-token mint body, and which publish steps run.
   "repo": "expo/expo",
-  "runner": "gha",
+  "runner": "gha", // default; `et verify <n> --runner eas` overrides per run
+  // Where each runner's thin workflow lives. EAS runs live in the companion
+  // project (github.com/expo/verify-workflows); the dir is that checkout —
+  // VERIFY_HOST_DIR overrides for a machine where it lives elsewhere.
+  "hosts": { "gha": { "repo": "expo/expo" }, "eas": { "dir": "../verify-workflows" } },
   "fix": "pr",
   "ghaSandbox": true,
   "bot": { "login": "expo-bot" },
