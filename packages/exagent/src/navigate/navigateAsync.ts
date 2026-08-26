@@ -48,13 +48,21 @@ export interface NavigateResultJson {
   /** Why the target app was decided to be Expo Go or a development build. */
   target: string;
   /**
-   * How a device off this machine reaches that dev server: `tunnel`, `lan`, `localhost`, or null.
+   * What kind of host {@link url} carries: `tunnel`, `lan`, `localhost`, or null.
    *
-   * The one fact that decides whether {@link url} is usable anywhere but here. `localhost` means
-   * only a process on this machine can open it, and `tunnel` means anything on the internet can —
-   * which is what a cloud simulator needs.
+   * The one fact that decides whether the URL is usable anywhere but here. `localhost` means only a
+   * process on this machine can open it, and `tunnel` means anything on the internet can — which is
+   * what a cloud simulator needs. Null for a development build's `<scheme>://<route>`, which
+   * carries no host at all.
    */
   hostType: string | null;
+  /**
+   * The tunnel this project's dev server had is gone, so {@link url} is the fallback.
+   *
+   * `false` for a run that never had one. When true, the URL is an address only this machine or
+   * this network can use, and the tunnel has to be restarted before a device elsewhere can load it.
+   */
+  tunnelExpired: boolean;
   /**
    * Whether the run only resolved the URL (`--print-url`), so no device was asked for.
    *
@@ -134,6 +142,7 @@ export async function navigateAsync(
       resolution: opened.resolution,
       target: opened.target,
       hostType: opened.hostType,
+      tunnelExpired: opened.tunnelExpired,
       printUrl: false,
       platform: opened.platform,
       deviceId: opened.deviceId,
@@ -222,7 +231,11 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
   });
 
   const followups = followUpsEnabled(wantFollowUps)
-    ? buildPrintUrlFollowUps({ url: resolved.url, hostType: resolved.hostType })
+    ? buildPrintUrlFollowUps({
+        url: resolved.url,
+        hostType: resolved.hostType,
+        tunnelExpired: resolved.tunnelExpired,
+      })
     : [];
 
   cliEvent('navigate_url', {
@@ -242,6 +255,7 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
       resolution: resolved.resolution,
       target: resolved.target,
       hostType: resolved.hostType,
+      tunnelExpired: resolved.tunnelExpired,
       printUrl: true,
       // Every key of the shape is present, and the four a device would have filled in are null:
       // a parser reads the same object whether or not anything was opened (llp/0006 §Output
@@ -263,7 +277,7 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
         chalk`{dim  ${resolved.resolution}}`,
         chalk`{dim  target: ${resolved.target}}`,
         chalk`{bold Dev server} ${resolved.devServerUrl}{dim  · via ${resolved.devServerSource}}`,
-        chalk`{bold Reach} ${reachLine(resolved.hostType)}`,
+        chalk`{bold Reach} ${reachLine(resolved.hostType, resolved.tunnelExpired)}`,
         chalk`{bold Device} {dim nothing was opened — --print-url resolves the URL only}`,
       ].join('\n')
     );
@@ -274,7 +288,13 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
 }
 
 /** What the host in the URL means for anything that is not this machine. */
-function reachLine(hostType: string | null): string {
+function reachLine(hostType: string | null, tunnelExpired: boolean): string {
+  // First, because it explains why the host below is not the one this run started with.
+  if (tunnelExpired) {
+    return chalk.yellow(
+      'the tunnel expired, so this URL is the fallback — restart it with "npx exagent dev --detach --tunnel"'
+    );
+  }
   if (hostType === 'tunnel') {
     return chalk.green('tunnel · reachable from any network, including a cloud simulator');
   }

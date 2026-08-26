@@ -26,7 +26,9 @@ import { event as cliEvent } from '../events';
 import { followUpsEnabled, reportFollowUps, type FollowUp } from '../followups';
 import * as Log from '../log';
 import { waitForBundlerReadyAsync } from '../runtime/waitReady';
+import { requestsTunnel } from '../start/followUps';
 import { CommandError } from '../utils/errors';
+import { readDevServerLogSync } from './advertisedUrl';
 import { event } from './events';
 import { openDetachedLogSync, readDetachedLogSync } from './logFile';
 import { parsePortMove, type PortMove } from './portCollision';
@@ -74,6 +76,18 @@ export interface DevDetachResultJson {
    * port, which it does not always.
    */
   portMoved: PortMove | null;
+  /**
+   * The tunnel origin this run is reachable at, or null.
+   *
+   * Non-null only for a run started with `--tunnel` whose dev server has advertised a host. It is
+   * the address a device off this machine uses, and {@link url} — where it listens here — is not:
+   * a phone cannot open `http://127.0.0.1:8081`, and neither can a cloud simulator. The tunnel
+   * comes up **after** the bundler answers, so this run waits for it rather than reporting the
+   * local address as though it were the answer.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
+   */
+  tunnelUrl: string | null;
   /** How long the whole thing took, in milliseconds. */
   waitedMs: number;
   followups: FollowUp[];
@@ -149,6 +163,9 @@ export async function devDetachAsync(
       projectRootMatched: null,
       startedAt,
       print,
+      // Whatever the dev server that is already up advertised. Nothing is waited for here: this
+      // run started nothing, so there is no tunnel of its own on its way.
+      tunnelUrl: currentTunnelUrlSync(projectRoot),
     });
   }
 
@@ -215,7 +232,54 @@ export async function devDetachAsync(
     projectRootMatched,
     startedAt,
     print,
+    tunnelUrl: await waitForTunnelUrlAsync(projectRoot, options),
   });
+}
+
+/**
+ * How long a `--tunnel` run waits for its dev server to say where the tunnel is.
+ *
+ * The tunnel is established after the bundler answers `/status`, so `--wait-ready` returning is not
+ * the same as the tunnel being up — a scripted `dev --detach --tunnel --wait-ready` followed by
+ * `navigate --print-url` used to land in that gap and get the address of *this machine* with no
+ * note that a tunnel was on its way [observed — live, 2026-08-25]. Bounded, because a tunnel that
+ * does not come up must not hold a dev server that did: the run reports `tunnelUrl: null` and the
+ * log says why.
+ */
+export const TUNNEL_URL_WAIT_MS = 20_000;
+
+/** How often the log is re-read while that wait runs. */
+const TUNNEL_URL_POLL_MS = 250;
+
+/** The tunnel this project's dev server currently advertises, or null. */
+function currentTunnelUrlSync(projectRoot: string): string | null {
+  const captured = readDevServerLogSync(projectRoot);
+  return captured?.tunnelFailure == null && captured?.advertised?.hostType === 'tunnel'
+    ? captured.advertised.url
+    : null;
+}
+
+/**
+ * Wait for the tunnel URL, but only for a run that asked for one.
+ *
+ * A run with no `--tunnel` has nothing to wait for and pays nothing: the whole cost of this is
+ * paid by the runs it is for.
+ */
+async function waitForTunnelUrlAsync(
+  projectRoot: string,
+  options: DevOptions
+): Promise<string | null> {
+  if (!requestsTunnel(options.expoArgs)) {
+    return null;
+  }
+  const deadline = Date.now() + TUNNEL_URL_WAIT_MS;
+  for (;;) {
+    const url = currentTunnelUrlSync(projectRoot);
+    if (url != null || Date.now() >= deadline) {
+      return url;
+    }
+    await new Promise((resolve) => setTimeout(resolve, TUNNEL_URL_POLL_MS));
+  }
 }
 
 /** Print the report of a detached run, in whichever form was asked for. */
@@ -229,6 +293,7 @@ function reportDetached(
     projectRootMatched,
     startedAt,
     print,
+    tunnelUrl,
   }: {
     lock: DevServerLockInfo;
     alreadyRunning: boolean;
@@ -236,6 +301,7 @@ function reportDetached(
     projectRootMatched: boolean | null;
     startedAt: number;
     print: boolean;
+    tunnelUrl: string | null;
   }
 ): number {
   const report: DevDetachResultJson = {
@@ -251,6 +317,7 @@ function reportDetached(
     // Read from the child's own log, which is the only channel it has to this process. A run that
     // started nothing has no log of its own to read a move out of.
     portMoved: alreadyRunning ? null : readPortMoveSync(projectRoot),
+    tunnelUrl,
     waitedMs: Date.now() - startedAt,
     followups: [],
   };
@@ -265,6 +332,7 @@ function reportDetached(
     // The port that was asked for, so an agent reading only the stream sees the same fact the
     // report carries rather than a port it has no way to question.
     portMovedFrom: report.portMoved?.from ?? null,
+    tunnelUrl: report.tunnelUrl,
   });
 
   // The event above is emitted whatever happens: a caller that suppresses the report is still
@@ -317,6 +385,11 @@ function printHumanReport(report: DevDetachResultJson): void {
   }
   if (report.ready != null) {
     lines.push(`${label('Bundler')}${report.ready ? 'ready' : 'not ready'}`);
+  }
+  // Under the listen address it is not: this is the one a device uses, and the difference between
+  // the two is what a whole dogfood session was lost to [observed — 2026-08-24].
+  if (report.tunnelUrl) {
+    lines.push(`${label('Tunnel')}${report.tunnelUrl}`);
   }
   lines.push(`${label('Took')}${report.waitedMs}ms`);
   if (report.alreadyRunning) {

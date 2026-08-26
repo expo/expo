@@ -65,6 +65,7 @@ function opened(overrides: Partial<OpenRouteResult> = {}): OpenRouteResult {
     devServerSource: 'lock',
     devServerReachable: true,
     hostType: 'localhost',
+    tunnelExpired: false,
     resolution: 'target app is Expo Go',
     target: 'expo go',
     platform: 'ios',

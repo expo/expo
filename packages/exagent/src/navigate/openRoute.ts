@@ -12,6 +12,7 @@
 // event, the follow-ups and the two output channels; `smoke` is this function inside a phase.
 
 import {
+  classifyDevServerHost,
   isTunnelCurrent,
   resolveDevServerReachAsync,
   type DevServerHostType,
@@ -82,12 +83,22 @@ export interface ResolvedRoute {
   /** Whether the target app was decided to be Expo Go. */
   isExpoGo: boolean;
   /**
-   * How a device off this machine reaches the dev server the URL names, or null when nothing said.
+   * What kind of host **the URL above carries**: `tunnel`, `lan`, `localhost`, or null.
    *
-   * `tunnel` is the one that changes the URL; the others are reported so a caller can see that the
-   * host in the URL is one only this machine or this network can use.
+   * Classified from the URL itself rather than from what the dev server advertised, so the two can
+   * never disagree. They did: a run whose tunnel had died fell back to `exp://127.0.0.1:8081` and
+   * still reported `tunnel`, which reads as "open this anywhere" under an address only this machine
+   * can use [observed — live, 2026-08-25]. Null for a development build, whose `<scheme>://<route>`
+   * carries no host at all — it reaches whatever dev server the app was launched against.
    */
   hostType: DevServerHostType | null;
+  /**
+   * The tunnel this run had is gone, so the URL above is the fallback rather than the address a
+   * device should have been given.
+   *
+   * @see src/dev/advertisedUrl.ts §the `Waiting on` line is written once and never revised
+   */
+  tunnelExpired: boolean;
   /** Whether the route was checked against the project's routes, and what the check said. */
   routeCheck: RouteCheckJson;
 }
@@ -213,9 +224,19 @@ export async function resolveRouteUrlAsync(
     resolution: resolved.resolution,
     target: target.reason,
     isExpoGo: target.isExpoGo,
-    hostType: reach.advertised?.hostType ?? null,
+    hostType: resolved.host ? classifyDevServerHost(hostnameOf(resolved.host)) : null,
+    // Only when the run *had* a tunnel: a project that never asked for one has no tunnel to have
+    // lost, and saying so would be an alarm about something that was never there.
+    tunnelExpired: reach.advertised?.hostType === 'tunnel' && reach.tunnelFailure != null,
     routeCheck,
   };
+}
+
+/** The name part of a `host[:port]`, which is what a host classification is about. */
+function hostnameOf(host: string): string {
+  const lastColon = host.lastIndexOf(':');
+  // An IPv6 literal is bracketed, so its colons are inside the brackets and never the port's.
+  return lastColon > 0 && !host.includes(']') ? host.slice(0, lastColon) : host;
 }
 
 /**

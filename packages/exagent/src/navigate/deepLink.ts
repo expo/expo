@@ -124,7 +124,21 @@ export interface ResolveDeepLinkUrlParams {
 }
 
 export type ResolveDeepLinkUrlResult =
-  | { ok: true; url: string; resolution: string }
+  | {
+      ok: true;
+      url: string;
+      resolution: string;
+      /**
+       * Host the URL carries, when it carries one at all.
+       *
+       * Only the Expo Go shape has one: a development build's `<scheme>://<route>` reaches whatever
+       * dev server the app was launched against, and this command has no say in it. Reported so a
+       * caller can say what the URL is reachable *from* without parsing it back — and so it cannot
+       * say something different from what the URL contains, which is how a run whose tunnel had
+       * died came to print `exp://127.0.0.1:8081` under "reachable from any network".
+       */
+      host: string | null;
+    }
   | {
       ok: false;
       error: string;
@@ -174,6 +188,7 @@ export function resolveDeepLinkUrl({
       ok: true,
       url: trimmedRoute,
       resolution: 'the route was already a full URL, so it was used unchanged',
+      host: null,
     };
   }
 
@@ -185,6 +200,7 @@ export function resolveDeepLinkUrl({
       ok: true,
       url: `${stripSchemeSuffix(overrideScheme)}://${routePath}`,
       resolution: 'used the --scheme flag',
+      host: null,
     };
   }
 
@@ -214,12 +230,14 @@ export function resolveDeepLinkUrl({
         ok: true,
         url: `exp://${host}${EXPO_GO_ROOT_PATH}`,
         resolution: `target app is Expo Go and the route is the root route, so the exp:// shape was used with a query marker that survives the Expo Go link handler, with ${where}`,
+        host,
       };
     }
     return {
       ok: true,
       url: `exp://${host}/--/${routePath}`,
       resolution: `target app is Expo Go, so the exp:// shape was used with ${where}`,
+      host,
     };
   }
 
@@ -228,6 +246,7 @@ export function resolveDeepLinkUrl({
       ok: true,
       url: `${config.scheme}://${routePath}`,
       resolution: `read the "scheme" field from ${config.configFile}`,
+      host: null,
     };
   }
 
@@ -236,6 +255,7 @@ export function resolveDeepLinkUrl({
       ok: true,
       url: `exp+${config.slug}://${routePath}`,
       resolution: `no "scheme" field was found, so the development build default exp+<slug>:// was used with slug "${config.slug}"`,
+      host: null,
     };
   }
 

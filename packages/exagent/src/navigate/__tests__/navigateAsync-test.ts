@@ -342,7 +342,8 @@ describe(navigateAsync, () => {
       devServerSource: 'flag',
       resolution: expect.stringContaining('Expo Go'),
       target: expect.stringContaining('Expo Go'),
-      hostType: null,
+      hostType: 'localhost',
+      tunnelExpired: false,
       printUrl: false,
       platform: 'ios',
       deviceId: 'IOS-1',
@@ -398,6 +399,7 @@ describe(navigateAsync, () => {
       'route',
       'routeCheck',
       'target',
+      'tunnelExpired',
       'url',
     ]);
   });
@@ -699,7 +701,51 @@ describe(navigateAsync, () => {
 
       await navigateAsync(projectRoot, options({ devServerUrl: null, printUrl: true, json: true }));
 
-      expect(JSON.parse(printed()).url).toBe('exp://127.0.0.1:8081/--/profile/42');
+      const report = JSON.parse(printed());
+      expect(report.url).toBe('exp://127.0.0.1:8081/--/profile/42');
+      // `hostType` describes the host in the URL, not the one the log advertised: reporting
+      // `tunnel` over a `127.0.0.1` link reads as "open this anywhere" [observed — live,
+      // 2026-08-25].
+      expect(report.hostType).toBe('localhost');
+      expect(report.tunnelExpired).toBe(true);
+    });
+
+    it(`says the tunnel expired rather than only handing back a local URL`, async () => {
+      mockExpoGoProject();
+      mockTunnelledRun('znakdiwe5j2n5o0.boltexpo.dev');
+      vol.fromJSON({
+        [`${projectRoot}/.expo/dev/logs/dev-detached.log`]:
+          'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev\nError: Unexpected server response: 409\n',
+      });
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await navigateAsync(projectRoot, options({ devServerUrl: null, printUrl: true }));
+
+      expect(printed()).toContain('the tunnel expired');
+      expect(printed()).toContain('npx exagent dev --detach --tunnel');
+    });
+
+    it(`reports the tunnel as the host when the tunnel is up`, async () => {
+      mockExpoGoProject();
+      mockTunnelledRun('znakdiwe5j2n5o0.boltexpo.dev');
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await navigateAsync(projectRoot, options({ devServerUrl: null, printUrl: true, json: true }));
+
+      expect(JSON.parse(printed())).toMatchObject({ hostType: 'tunnel', tunnelExpired: false });
+    });
+
+    // A development build's URL carries no dev server host at all: it reaches whatever the app was
+    // launched against, and claiming a reach for it would be a claim this command cannot make.
+    it(`reports no host type for a development build's scheme URL`, async () => {
+      mockExpoGoProject();
+      mockDevServer([{ id: '1', appId: 'com.example.demo' }]);
+
+      await navigateAsync(projectRoot, options({ printUrl: true, json: true }));
+
+      const report = JSON.parse(printed());
+      expect(report.url).toBe('demoapp://profile/42');
+      expect(report.hostType).toBeNull();
     });
 
     it(`keeps the four device keys and fills them with null`, async () => {
@@ -731,6 +777,7 @@ describe(navigateAsync, () => {
         'route',
         'routeCheck',
         'target',
+        'tunnelExpired',
         'url',
       ]);
     });

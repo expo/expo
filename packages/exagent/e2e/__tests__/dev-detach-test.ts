@@ -104,6 +104,7 @@ describe('exagent dev --detach', () => {
         'portMoved',
         'projectRootMatched',
         'ready',
+        'tunnelUrl',
         'url',
         'waitedMs',
       ]);
@@ -331,6 +332,54 @@ describe('exagent dev:logs', () => {
   // The lines are the real ones: `Waiting on <tunnel>` is what `expo start` prints for a tunnelled
   // run [observed — live, 2026-08-25], and `Unexpected server response: 409` is how `ws` reports a
   // handshake the tunnel service refused [observed — dogfood, 2026-08-24].
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
+  //
+  // The tunnel is established **after** the bundler answers, so a run that returned the moment the
+  // dev server was up reported the address of *this machine* with no note that a tunnel was on its
+  // way [observed — live, 2026-08-25]. A `--tunnel` run therefore waits for the host and reports it.
+  describe('--tunnel', () => {
+    it('waits for the tunnel host and reports it next to the listen address', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['dev', '--detach', '--yes', '--json', '--tunnel'],
+          {
+            env: {
+              ...detachEnv(projectRoot, 8391),
+              STUB_EXPO_TUNNEL_HOST: 'znakdiwe5j2n5o0.boltexpo.dev',
+            },
+          }
+        );
+
+        expect(JSON.parse(result.stdout)).toMatchObject({
+          url: 'http://127.0.0.1:8391',
+          tunnelUrl: 'http://znakdiwe5j2n5o0.boltexpo.dev',
+        });
+      } finally {
+        await cleanUpAsync(projectRoot);
+      }
+    });
+
+    // A run with no tunnel has nothing to wait for, and pays nothing for this.
+    it('reports no tunnel for a run that asked for none', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['dev', '--detach', '--yes', '--json'],
+          { env: { ...detachEnv(projectRoot, 8392), STUB_EXPO_TUNNEL_HOST: 'ignored.example.com' } }
+        );
+
+        expect(JSON.parse(result.stdout).tunnelUrl).toBeNull();
+      } finally {
+        await cleanUpAsync(projectRoot);
+      }
+    });
+  });
+
   describe('a tunnel that died', () => {
     const TUNNELLED_LOG = [
       'Using src/app as the root directory for Expo Router.',

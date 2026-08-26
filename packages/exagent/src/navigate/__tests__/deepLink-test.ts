@@ -173,6 +173,7 @@ describe(resolveDeepLinkUrl, () => {
 
     expect(result).toEqual({
       ok: true,
+      host: null,
       url: 'myapp://profile/42',
       resolution: 'the route was already a full URL, so it was used unchanged',
     });
@@ -188,6 +189,7 @@ describe(resolveDeepLinkUrl, () => {
 
     expect(result).toEqual({
       ok: true,
+      host: null,
       url: 'https://example.com/profile/42',
       resolution: 'the route was already a full URL, so it was used unchanged',
     });
@@ -204,6 +206,7 @@ describe(resolveDeepLinkUrl, () => {
 
     expect(result).toEqual({
       ok: true,
+      host: null,
       url: 'override://profile/42',
       resolution: 'used the --scheme flag',
     });
@@ -230,6 +233,7 @@ describe(resolveDeepLinkUrl, () => {
 
     expect(result).toEqual({
       ok: true,
+      host: 'localhost:8081',
       url: 'exp://localhost:8081/--/profile/42',
       resolution:
         'target app is Expo Go, so the exp:// shape was used with dev server host localhost:8081',
@@ -294,6 +298,7 @@ describe(resolveDeepLinkUrl, () => {
 
     expect(result).toEqual({
       ok: true,
+      host: null,
       url: 'demoapp://profile/42',
       resolution: 'read the "scheme" field from app.json',
     });
@@ -338,6 +343,7 @@ describe(resolveDeepLinkUrl, () => {
 
     expect(result).toEqual({
       ok: true,
+      host: null,
       url: 'exp+demo://profile/42',
       resolution:
         'no "scheme" field was found, so the development build default exp+<slug>:// was used with slug "demo"',

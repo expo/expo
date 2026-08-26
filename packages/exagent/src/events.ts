@@ -356,6 +356,13 @@ declare module '2g' {
        * it moved off a port the Expo CLI declined to name. `port` above is where it landed.
        */
       portMovedFrom: number | null;
+      /**
+       * The tunnel origin this run is reachable at, or null.
+       *
+       * The address a device off this machine uses, which `url` — where the dev server listens
+       * here — never is for a tunnelled run.
+       */
+      tunnelUrl: string | null;
     };
     // @ref llp/0005-runtime-loop-tools.rfc.md §Reading the detached dev server's output
     'cli:dev_logs': {

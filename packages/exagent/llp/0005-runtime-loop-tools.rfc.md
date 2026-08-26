@@ -383,6 +383,30 @@ server even though the log still shows one [verified live — 2026-08-25].
 Deliberately **not** built: reconnection. That is `@expo/ws-tunnel`'s, and it is recorded as an
 upstream ask in llp/0010 §Upstream asks along with the reason its own retry did not fire.
 
+### The tunnel comes up after the bundler does
+
+`--wait-ready` returning is not the same as the tunnel being up: the bundler answers `/status`
+first, and the tunnel is established after it. So a scripted `dev --detach --tunnel --wait-ready`
+followed immediately by `navigate --print-url` landed in that gap and got `exp://127.0.0.1:8081`
+with nothing saying a tunnel was on its way [observed — live, 2026-08-25] — the same wrong answer
+this section exists to prevent, arrived at a different way.
+
+`dev --detach` therefore **waits for the host** when, and only when, the run asked for a tunnel
+(`requestsTunnel` over the forwarded arguments), for up to 20 s, and reports it: a `Tunnel` line
+under the listen address it is not, and `tunnelUrl` in `--json` and on `cli:dev_detach`. Bounded,
+because a tunnel that never comes up must not hold up a dev server that did — the run reports
+`tunnelUrl: null` and the log says why. A run with no `--tunnel` waits for nothing and pays nothing.
+
+### `hostType` describes the URL, not the log
+
+`navigate --print-url` reports the kind of host **the URL it printed carries**, classified from that
+URL. Reporting what the *log* advertised instead is a subtly different thing, and the difference
+showed up the first time a tunnel died: the URL fell back to `exp://127.0.0.1:8081` and the reach
+line still said `tunnel · reachable from any network` [observed — live, 2026-08-25], which is an
+instruction to open a local address on a device somewhere else. The two facts are now reported
+separately — `hostType` for the URL, `tunnelExpired` for what happened to the address it should have
+carried — and the reach line leads with the expiry, because it explains the host below it.
+
 ## Resolving a URL without a device
 
 Decision [confirmed — Kudo, 2026-08-25]. `exagent navigate <route> --print-url` resolves everything
