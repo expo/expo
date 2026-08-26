@@ -64,7 +64,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
           <Dialog.Content
             className={mergeClasses(
               'dialog-content',
-              'top-0 left-0 max-h-[90vh] w-[90vw] max-w-125 overflow-hidden rounded-lg border border-default bg-default wrap-break-word shadow-md outline-0 backface-hidden',
+              'top-0 left-0 max-h-[90vh] w-[90vw] max-w-125 overflow-hidden rounded-[40px] border border-default bg-default wrap-break-word shadow-md outline-0 backface-hidden',
               'data-[state=open]:animate-slideUpAndFadeIn',
               'data-[state=closed]:animate-fadeOut'
             )}>
