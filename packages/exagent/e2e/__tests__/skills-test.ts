@@ -321,8 +321,6 @@ describe('exagent', () => {
     expect(result.all).toContain('Agent setup');
     expect(result.all).toContain('agents:setup');
     expect(result.all).toContain('skills:sync');
-    expect(result.all).toContain('Checkpoints');
-    expect(result.all).toContain('checkpoint, checkpoint:list, checkpoint:undo');
     expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
     expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
   });

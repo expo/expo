@@ -17,7 +17,6 @@ describe(assertKnownDevFlags, () => {
     ['--wait-ready'],
     ['--no-agent-skills'],
     ['--no-followups'],
-    ['--no-checkpoint'],
     ['--help'],
     ['-h'],
   ])(`accepts %s, which this command acts on itself`, (flag) => {

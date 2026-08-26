@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 /* eslint-env jest */
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 //
@@ -9,7 +11,7 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, readProjectFile, setupFixtureAsync } from '../utils';
+import { executeExagentAsync, readProjectFile, setupFixtureAsync } from '../../../../e2e/utils';
 
 /** Relative path of the store `exagent checkpoint` writes. */
 const STORE_FILE = path.join('.expo', 'exagent-checkpoints.json');

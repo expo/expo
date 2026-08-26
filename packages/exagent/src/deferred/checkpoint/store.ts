@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 // The list of snapshots a project has, in `.expo/exagent-checkpoints.json`.
 //
@@ -84,7 +86,7 @@ export function recordCheckpoint(projectRoot: string, record: CheckpointRecord):
     const checkpoints = [record, ...readCheckpoints(projectRoot)].slice(0, MAX_CHECKPOINTS);
     // Imported lazily: reading the store must not create the directory it lives in.
     const { ensureDotExpoProjectDirectoryInitialized } =
-      require('../utils/dotExpo') as typeof import('../utils/dotExpo');
+      require('../../utils/dotExpo') as typeof import('../../utils/dotExpo');
     ensureDotExpoProjectDirectoryInitialized(projectRoot);
     fs.writeFileSync(
       getStoreFilePath(projectRoot),

@@ -80,10 +80,10 @@ export const exagentDoctorFix: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx exagent doctor:fix -h` shows as fast as possible.
-  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
-  const { exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
+  const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
+  const { exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');
   const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+    require('../../utils/findUp') as typeof import('../../utils/findUp');
   const { printDoctorFixAsync } = require('./fixAsync') as typeof import('./fixAsync');
   const { resolvePlatforms, resolveTier } =
     require('./resolveFixOptions') as typeof import('./resolveFixOptions');

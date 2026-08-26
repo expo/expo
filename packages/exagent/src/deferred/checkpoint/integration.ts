@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 // The one call a mutating command makes before it changes anything.
 //
@@ -7,8 +9,8 @@
 
 import chalk from 'chalk';
 
-import * as Log from '../log';
-import { env } from '../utils/env';
+import * as Log from '../../log';
+import { env } from '../../utils/env';
 import { createCheckpointAsync, shortId } from './create';
 import { event } from './events';
 import type { CheckpointResult } from './types';

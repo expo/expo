@@ -16,7 +16,6 @@ const EXAGENT_ONLY_FLAGS = [
   '--local',
   '--no-agent-skills',
   '--no-followups',
-  '--no-checkpoint',
   '--plan',
   '--yes',
   '--json',
@@ -61,8 +60,6 @@ export interface DevOptions {
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
   followups: boolean;
-  /** Snapshot the project before a plan that prebuilds runs, cleared by `--no-checkpoint`. */
-  checkpoint: boolean;
   /** Approve a plan with build-class steps up front (`--yes`), so no confirmation is asked for. */
   yes: boolean;
   /**
@@ -134,7 +131,6 @@ export function resolveDevOptions(argv: string[]): DevOptions {
     runTarget: resolveRunTarget(argv),
     json: argv.includes('--json'),
     followups: !argv.includes('--no-followups'),
-    checkpoint: !argv.includes('--no-checkpoint'),
     yes: argv.includes('--yes'),
     port: resolvePort(argv),
     detach,

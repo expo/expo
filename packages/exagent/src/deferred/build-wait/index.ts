@@ -81,9 +81,9 @@ export const exagentBuildWait: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx exagent build:wait -h` shows as fast as possible.
-  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+    require('../../utils/findUp') as typeof import('../../utils/findUp');
   const { resolveBuildWaitOptions } =
     require('./resolveOptions') as typeof import('./resolveOptions');
   const { buildWaitAsync } = require('./buildWaitAsync') as typeof import('./buildWaitAsync');

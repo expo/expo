@@ -1,11 +1,13 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 // The three commands of the checkpoint guardrail: take a snapshot, list them, and put one back.
 // `create.ts` makes them, `restore.ts` restores them, and `git.ts` documents the mechanism.
 
 import chalk from 'chalk';
 
-import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import type { Command } from '../../types';
+import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
 export const exagentCheckpointCreate: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -47,9 +49,9 @@ export const exagentCheckpointCreate: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx exagent checkpoint -h` shows as fast as possible.
-  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+    require('../../utils/findUp') as typeof import('../../utils/findUp');
   const { printCheckpointAsync } = require('./create') as typeof import('./create');
 
   return (async () => {
@@ -89,9 +91,9 @@ export const exagentCheckpointList: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx exagent checkpoint:list -h` shows as fast as possible.
-  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+    require('../../utils/findUp') as typeof import('../../utils/findUp');
   const restore = require('./restore') as typeof import('./restore');
 
   return (async () => {
@@ -151,9 +153,9 @@ export const exagentCheckpointUndo: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx exagent checkpoint:undo -h` shows as fast as possible.
-  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+    require('../../utils/findUp') as typeof import('../../utils/findUp');
   const restore = require('./restore') as typeof import('./restore');
 
   return (async () => {

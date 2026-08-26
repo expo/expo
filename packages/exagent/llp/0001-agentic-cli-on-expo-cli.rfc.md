@@ -48,7 +48,7 @@ New workspace package `packages/exagent/`:
 
 ```
 packages/exagent/       # model-free CLI (Shape 1) — no agent loop
-├── bin/cli.ts          # flat commands + colon groups (runtime:*, skills:*, checkpoint:*, agents:*)
+├── bin/cli.ts          # flat commands + colon groups (runtime:*, skills:*, inspect:*, agents:*)
 ├── src/
 │   ├── agents/         # agents:setup — sync module skills + write the AGENTS.md managed block
 │   ├── skills/         # skills sync/list/show/clean (code from PoC PRs, [[0003-knowledge-tools-and-skills]])
@@ -94,12 +94,12 @@ Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries 
 - [[0005-runtime-loop-tools]] — seeing and driving the running app: runtime eval (CDP), red-screen feed, network inspection, deep-link navigation, performance probe, cross-platform sweep; log-triage and verified-UI loops.
 - [[0006-agent-native-cli-surface]] — the process boundary, JSONL events as the contract, agent-mode dev server output, non-interactive parity, headless CI mode, the `exagent` launcher.
 - [[0007-deploy-and-headless]] — cross-platform `deploy` (EAS Hosting + launch.expo.dev), headless project creation, Cloudflare Workers compatibility, chat-driven development (the phone as the only device), EAS auth for headless agents.
-- [[0008-guardrails]] — checkpoints/undo, plan-with-cost dry runs, tool impact metadata.
+- [[0008-guardrails]] — plan-with-cost dry runs, untrusted-content marking, tool impact metadata; the checkpoint half is deferred ([[0016-v1-scope]]).
 - [[0009-smart-followups]] — every command output carries state-aware next actions for the driving agent.
 - [[0010-agent-conventions]] — the conventions every command shares: the exit-code table, the two command-resolution rules, and the list of upstream asks the tool layer is working around.
 - [[0011-impact-and-freshness]] — `exagent impact`: what a change costs (reload, Metro restart, native build) from the fingerprint diff, and — separately, from the `runtimeVersion` policy — whether it can ship over the air.
 - [[0012-build-explain]] — deterministic triage of a native build log: the two-layer phase detector, the capped in-repo rule table, and the captured-log fixture corpus that pins it.
-- [[0013-doctor-fix]] — the deterministic cache and build-state reset: the tier table, the path-safety predicate, and the one command checkpoints do not protect.
+- [[0013-doctor-fix]] — the deterministic cache and build-state reset: the tier table, the path-safety predicate, and the one command checkpoints do not protect. Deferred ([[0016-v1-scope]]).
 - [[0015-backend-selection-and-config]] — which of the two build backends a plan uses, decided at planning time from the host and the toolchain; and the developer config (`package.json` › `expo.exagent`) that overrides it.
 
 **Scoped out** [confirmed — Kudo, 2026-08-19]: ambient/long-running modes (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work; a separate `exagent mcp` feature (subsumed by Shape 1); **the build-failure signature DB** — a hosted, growing, community-fed corpus with its own service and submission path. The capped, in-repo, ~40-entry rule table `build:explain` matches against is deliberately not that; [[0010-agent-conventions]] §`build:explain` records the decision and [[0012-build-explain]] §The rule table implements the cap.

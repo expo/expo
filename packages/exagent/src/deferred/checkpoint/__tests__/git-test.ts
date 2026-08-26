@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 
@@ -47,57 +49,6 @@ function gitCalls(): { args: string[]; cwd: string; indexFile?: string }[] {
 
 const worktree: GitWorkTree = { toplevel: '/repo', prefix: 'apps/app' };
 const projectRoot = '/repo/apps/app';
-
-describe(resolveWorkTreeAsync, () => {
-  it(`should report the work tree root and the project's prefix`, async () => {
-    mockGit(() => ({ stdout: 'true\n/repo\napps/app/\n' }));
-
-    await expect(resolveWorkTreeAsync(projectRoot)).resolves.toEqual({
-      toplevel: '/repo',
-      prefix: 'apps/app',
-    });
-    expect(gitCalls()[0]!.args).toEqual([
-      'rev-parse',
-      '--is-inside-work-tree',
-      '--show-toplevel',
-      '--show-prefix',
-    ]);
-  });
-
-  it(`should report an empty prefix for a project at the work tree root`, async () => {
-    mockGit(() => ({ stdout: 'true\n/repo\n\n' }));
-
-    await expect(resolveWorkTreeAsync('/repo')).resolves.toEqual({
-      toplevel: '/repo',
-      prefix: '',
-    });
-  });
-
-  it(`should return null outside a git work tree`, async () => {
-    mockGit(() => ({ stderr: 'fatal: not a git repository', code: 128 }));
-
-    await expect(resolveWorkTreeAsync(projectRoot)).resolves.toBeNull();
-  });
-
-  it(`should return null when git is not installed`, async () => {
-    jest.mocked(spawn).mockImplementation(((): any => {
-      const child = Object.assign(new EventEmitter(), {
-        stdout: new EventEmitter(),
-        stderr: new EventEmitter(),
-      });
-      process.nextTick(() => child.emit('error', new Error('spawn git ENOENT')));
-      return child;
-    }) as any);
-
-    await expect(resolveWorkTreeAsync(projectRoot)).resolves.toBeNull();
-  });
-
-  it(`should return null inside a bare repository`, async () => {
-    mockGit(() => ({ stdout: 'false\n\n\n' }));
-
-    await expect(resolveWorkTreeAsync(projectRoot)).resolves.toBeNull();
-  });
-});
 
 describe(writeSnapshotTreeAsync, () => {
   it(`should keep the checkpoint store itself out of the snapshot`, async () => {

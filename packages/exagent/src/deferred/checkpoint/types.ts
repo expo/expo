@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 // The shared contract of `exagent checkpoint` and `exagent checkpoint:undo`: what one snapshot is, and what
 // creating or restoring one reports.

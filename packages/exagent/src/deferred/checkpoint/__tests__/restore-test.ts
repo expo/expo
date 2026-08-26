@@ -1,6 +1,8 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 import { vol } from 'memfs';
 
-import * as Log from '../../log';
+import * as Log from '../../../log';
 import { event } from '../events';
 import {
   GitError,

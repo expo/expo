@@ -1,11 +1,13 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 // Making a checkpoint: one git snapshot of the project, taken without touching anything the user
 // can see in git. See `git.ts` for the plumbing and its limits.
 
 import chalk from 'chalk';
 
-import * as Log from '../log';
-import { CommandError } from '../utils/errors';
+import * as Log from '../../log';
+import { CommandError } from '../../utils/errors';
 import { debugEvent, event } from './events';
 import { commitSnapshotTreeAsync, resolveWorkTreeAsync, writeSnapshotTreeAsync } from './git';
 import { recordCheckpoint, resolveCommandArgv } from './store';

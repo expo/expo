@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 // Undoing: put the files of a checkpoint back, and say what that changed.
 //
@@ -20,9 +22,10 @@
 
 import chalk from 'chalk';
 
-import { buildUndoFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
-import * as Log from '../log';
-import { CommandError } from '../utils/errors';
+import { followUpsEnabled, reportFollowUps } from '../../followups';
+import { buildUndoFollowUps } from './followups';
+import * as Log from '../../log';
+import { CommandError } from '../../utils/errors';
 import { shortId } from './create';
 import { debugEvent, event } from './events';
 import {

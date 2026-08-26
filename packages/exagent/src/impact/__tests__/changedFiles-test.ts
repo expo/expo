@@ -1,7 +1,7 @@
-import { resolveWorkTreeAsync, runGitAsync } from '../../checkpoint/git';
+import { resolveWorkTreeAsync, runGitAsync } from '../../utils/git';
 import { listChangedFilesAsync, parseStatusZ } from '../changedFiles';
 
-jest.mock('../../checkpoint/git', () => ({
+jest.mock('../../utils/git', () => ({
   resolveWorkTreeAsync: jest.fn(),
   runGitAsync: jest.fn(),
 }));
@@ -49,8 +49,8 @@ describe(parseStatusZ, () => {
 });
 
 // @ref ../changedFiles — friction run 6, F60. `impact` printed "This project is not in a git work
-// tree" for a project `checkpoint` had just snapshotted from the same directory. Both resolve the
-// work tree the same way; the difference was that a failed `git status` borrowed the sentence
+// tree" for a project another command had just read git from in the same directory. Both resolve
+// the work tree the same way; the difference was that a failed `git status` borrowed the sentence
 // written for a project with no repository at all.
 describe(`${listChangedFilesAsync.name} and the two ways it has no answer`, () => {
   it(`says the project has no work tree when git says so`, async () => {

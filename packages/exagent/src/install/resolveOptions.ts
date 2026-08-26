@@ -6,7 +6,6 @@ const EXAGENT_ONLY_FLAGS = [
   '--no-skill-context',
   '--no-impact',
   '--no-followups',
-  '--no-checkpoint',
   '--json',
 ];
 
@@ -15,8 +14,8 @@ const EXAGENT_ONLY_FLAGS = [
  *
  * Source of truth: `packages/@expo/cli/src/install/resolveOptions.ts` [observed — 2026-08-23]. A
  * hand-kept list, like `forwardedCommands` in `src/commandRegistry.ts`, and for the same reason:
- * the alternative is finding out that an argument was wrong *after* this command has taken a
- * checkpoint and started rewriting the manifest.
+ * the alternative is finding out that an argument was wrong *after* this command has started
+ * rewriting the manifest.
  */
 const EXPO_INSTALL_FLAGS = [
   '--check',
@@ -54,8 +53,6 @@ export interface InstallPlan {
   impact: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
   followups: boolean;
-  /** Snapshot the project before `expo install` runs, cleared by `--no-checkpoint`. */
-  checkpoint: boolean;
   /** Print one JSON object instead of the human output (`--json`). */
   json: boolean;
   /** `--check` was passed, so nothing is installed and nothing changes. */
@@ -69,10 +66,9 @@ export interface InstallPlan {
  * `expo install` takes no flags with a separate value, so every argument that does not
  * start with `-` (before a `--` separator) is a package spec.
  *
- * Everything a caller can get wrong is decided **here**, before anything is spawned and before the
- * checkpoint is taken. A rejected invocation used to reach `expo install` and be rejected there,
- * by which time this command had already written a snapshot for an install that never happened
- * [observed — friction run, 2026-08-23].
+ * Everything a caller can get wrong is decided **here**, before anything is spawned. A rejected
+ * invocation used to reach `expo install` and be rejected there, by which time this command had
+ * already acted on it [observed — friction run, 2026-08-23].
  *
  * @see llp/0003-knowledge-tools-and-skills.rfc.md §Migration
  * @throws {CommandError} `BAD_ARGS` for a flag neither CLI has, or a pair that cannot both apply.
@@ -121,8 +117,6 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
     // runs for named packages. It is independent of the skill flags.
     impact: !own.includes('--no-impact') && !check && positional.length > 0,
     followups: !own.includes('--no-followups'),
-    // `--check` changes nothing, so there is nothing to snapshot for.
-    checkpoint: !own.includes('--no-checkpoint') && !check,
     json,
     check,
   };

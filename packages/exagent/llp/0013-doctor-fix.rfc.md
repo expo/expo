@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Deferred — reference (2026-08-26)
-**Systems:** `exagent doctor:fix` (`src/doctor/fix.ts`, `fixAsync.ts`, `fixPlan.ts`, `fixApply.ts`, `fixSteps.ts`, `fixSafety.ts`, `fixFormat.ts`, `fixTypes.ts`, `packageManager.ts`, `resolveFixOptions.ts`); `src/checkpoint/git.ts`; `src/followups/doctor.ts`; the JSONL event registry
+**Systems:** `exagent doctor:fix` (`src/deferred/doctor-fix/`: `fix.ts`, `fixAsync.ts`, `fixPlan.ts`, `fixApply.ts`, `fixSteps.ts`, `fixSafety.ts`, `fixFormat.ts`, `fixTypes.ts`, `packageManager.ts`, `resolveFixOptions.ts`, `followups.ts`); `src/deferred/checkpoint/git.ts`; the JSONL event registry
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-24
 **Related:** [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0004-smart-start-and-project-state]], [[0009-smart-followups]], [[0016-v1-scope]]

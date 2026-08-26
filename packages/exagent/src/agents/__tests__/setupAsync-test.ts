@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import { checkpointBeforeAsync } from '../../checkpoint/integration';
 import * as Log from '../../log';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
@@ -14,7 +13,6 @@ import type { SetupOptions } from '../types';
 
 jest.mock('../../log');
 jest.mock('../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
-jest.mock('../../checkpoint/integration', () => ({ checkpointBeforeAsync: jest.fn() }));
 jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({ syncSkillsAsync: jest.fn() }));
 jest.mock('../../skills/discovery', () => ({ discoverSkillsAsync: jest.fn(async () => []) }));
@@ -130,32 +128,6 @@ describe(runSetupAsync, () => {
     expect(report.agentsMd).toBeNull();
     expect(vol.existsSync('/project/AGENTS.md')).toBe(false);
     expect(syncSkillsAsync).toHaveBeenCalled();
-  });
-
-  it('should snapshot the project before it writes AGENTS.md', async () => {
-    await runSetupAsync(projectRoot, options());
-
-    expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
-      label: 'exagent agents:setup',
-      enabled: undefined,
-      silent: undefined,
-    });
-  });
-
-  it('should not snapshot a run that only syncs skills', async () => {
-    // The skill links live in gitignored directories, so there is nothing to snapshot.
-    await runSetupAsync(projectRoot, options({ agentsMd: false }));
-
-    expect(checkpointBeforeAsync).not.toHaveBeenCalled();
-  });
-
-  it('should skip the snapshot with checkpoint disabled', async () => {
-    await runSetupAsync(projectRoot, options({ checkpoint: false }));
-
-    expect(checkpointBeforeAsync).toHaveBeenCalledWith(
-      projectRoot,
-      expect.objectContaining({ enabled: false })
-    );
   });
 
   it('should never write CLAUDE.md, and note one that does not reference AGENTS.md', async () => {

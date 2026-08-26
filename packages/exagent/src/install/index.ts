@@ -34,7 +34,6 @@ export const exagentInstall: Command = async (argv) => {
         `--no-skill-context  Skip printing installed skills for a detected coding agent`,
         `--no-impact         Skip the report of what must rerun after the install`,
         `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
-        `--no-checkpoint     Skip the git snapshot taken before the install`,
         `-h, --help          Usage info`,
       ].join('\n'),
       [
@@ -48,7 +47,7 @@ export const exagentInstall: Command = async (argv) => {
         chalk`    {dim $} npx exagent install react {bold --} --verbose`,
         '',
         chalk`  {bold --json} prints one object: the packages, whether they were installed, the`,
-        chalk`  impact classification, the checkpoint that was taken, which packages ship agent`,
+        chalk`  impact classification, which packages ship agent`,
         chalk`  skills, and the follow-ups. Nothing else is written to stdout in that mode.`,
         '',
         chalk`  With {bold --check}, the {bold check} key carries the verdict: {bold ok}, the Expo CLI's own`,

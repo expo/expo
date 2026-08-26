@@ -6,15 +6,15 @@
 // normal case (a fresh `create-expo-app` is not a repository), so this answers `null` rather than
 // failing — the report then says the class came from the fingerprint alone.
 
-import { resolveWorkTreeAsync, runGitAsync } from '../checkpoint/git';
+import { resolveWorkTreeAsync, runGitAsync } from '../utils/git';
 
 /**
  * Why the file-level view has no answer.
  *
  * Two causes, and telling them apart is the whole of friction run 6's F60: `impact` printed
- * "This project is not in a git work tree" for a project `checkpoint` had just snapshotted from the
- * same directory. Both commands resolve the work tree the same way ({@link resolveWorkTreeAsync});
- * what differed was that a `git status` that *failed* was reported with the sentence written for a
+ * "This project is not in a git work tree" for a project another command had just read git from in
+ * the same directory. Both resolved the work tree the same way ({@link resolveWorkTreeAsync}); what
+ * differed was that a `git status` that *failed* was reported with the sentence written for a
  * project that has no repository at all.
  */
 export type ChangedFilesGap =

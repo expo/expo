@@ -8,7 +8,7 @@ import { intervalAt, MAX_CONSECUTIVE_FAILURES, pollBuildAsync, viewCommand } fro
 jest.mock('../../utils/subprocess', () => ({ spawnSubprocessAsync: jest.fn() }));
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 
-const { event } = require('../../events') as { event: jest.Mock };
+const { event } = require('../../../events') as { event: jest.Mock };
 const spawn = spawnSubprocessAsync as jest.MockedFunction<typeof spawnSubprocessAsync>;
 
 const ID = 'build-1';

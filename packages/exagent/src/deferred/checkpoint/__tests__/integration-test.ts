@@ -1,4 +1,6 @@
-import * as Log from '../../log';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
+import * as Log from '../../../log';
 import { createCheckpointAsync } from '../create';
 import { event } from '../events';
 import { checkpointBeforeAsync, checkpointsEnabled } from '../integration';

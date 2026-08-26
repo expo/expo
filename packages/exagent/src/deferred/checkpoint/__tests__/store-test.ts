@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
 import fs from 'fs';
 import { vol } from 'memfs';
 

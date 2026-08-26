@@ -34,16 +34,6 @@ class Env {
   }
 
   /**
-   * Do not snapshot the project before a command changes it. `--no-checkpoint` does the same for
-   * one run. `exagent checkpoint` always snapshots: it was asked for explicitly.
-   *
-   * @see llp/0008-guardrails.rfc.md §Summary — Checkpoints
-   */
-  get EXAGENT_NO_CHECKPOINT() {
-    return boolish('EXAGENT_NO_CHECKPOINT', false);
-  }
-
-  /**
    * How long a guarded subprocess may stay silent before its last line is checked for a question
    * it is waiting on. Widen it for a tool that is legitimately quiet for minutes at a time.
    *

@@ -37,7 +37,7 @@ export interface CommandGroup {
   /** What the group is for, printed as the `Info` line of the group help. */
   summary: string;
   /**
-   * Action the bare group name runs, e.g. `exagent checkpoint` runs `checkpoint:create`.
+   * Action the bare group name runs, e.g. `exagent doctor` runs `doctor:check`.
    * A group without one prints its help instead, because there is nothing obvious to do.
    */
   defaultAction?: string;
@@ -102,24 +102,6 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       explain: {
         summary: 'Read a build log and say what failed in it',
         load: () => import('./builds').then((i) => i.exagentBuildExplain),
-      },
-    },
-  },
-  checkpoint: {
-    summary: 'Snapshot the project, so a later change can be undone',
-    defaultAction: 'create',
-    actions: {
-      create: {
-        summary: 'Snapshot the files git tracks in this project',
-        load: () => import('./checkpoint').then((i) => i.exagentCheckpointCreate),
-      },
-      list: {
-        summary: 'List the checkpoints recorded for this project',
-        load: () => import('./checkpoint').then((i) => i.exagentCheckpointList),
-      },
-      undo: {
-        summary: 'Restore the project to a checkpoint',
-        load: () => import('./checkpoint').then((i) => i.exagentCheckpointUndo),
       },
     },
   },
@@ -441,7 +423,6 @@ export const helpSections: HelpSection[] = [
     note: 'smoke is the whole gate in one command; runtime:reload first after fixing a crash, because an app whose render threw keeps running the old code.',
   },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
-  { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
   {
     title: 'Account',
     commands: authCommands,

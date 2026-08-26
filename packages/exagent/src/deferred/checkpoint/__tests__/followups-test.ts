@@ -1,4 +1,6 @@
-import { buildUndoFollowUps } from '../checkpoint';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
+//
+import { buildUndoFollowUps } from '../followups';
 
 describe(buildUndoFollowUps, () => {
   it(`should suggest nothing when only source files were restored`, () => {

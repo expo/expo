@@ -55,7 +55,6 @@ describe('exagent install', () => {
       const report = JSON.parse(result.stdout);
       expect(Object.keys(report).sort()).toEqual([
         'check',
-        'checkpoint',
         'exitCode',
         'followups',
         'impact',
@@ -484,7 +483,7 @@ describe('command registry', () => {
   });
 
   // The other half of the rule — a group *with* a default action still gets its options — is
-  // `exagent checkpoint --label ...` in `checkpoint-test.ts`, which needs a git repository.
+  // `exagent doctor --json`, which `doctor-test.ts` covers.
   it('still lists the actions of a bare group, and exits 0', async () => {
     const result = await executeExagentAsync(projectRoot, ['runtime']);
 

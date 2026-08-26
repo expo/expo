@@ -129,9 +129,9 @@ describe(resolveCommand, () => {
       kind: 'group-help',
       group: 'skills',
     });
-    expect(resolveCommand('checkpoint', ['-h'])).toEqual({
+    expect(resolveCommand('doctor', ['-h'])).toEqual({
       kind: 'group-help',
-      group: 'checkpoint',
+      group: 'doctor',
     });
   });
 
@@ -141,10 +141,10 @@ describe(resolveCommand, () => {
       name: 'skills:sync',
       argv: ['--agent', 'claude-code'],
     });
-    expect(resolveCommand('checkpoint', ['--label', 'before the edit'])).toMatchObject({
+    expect(resolveCommand('doctor', ['--json'])).toMatchObject({
       kind: 'command',
-      name: 'checkpoint:create',
-      argv: ['--label', 'before the edit'],
+      name: 'doctor:check',
+      argv: ['--json'],
     });
   });
 
@@ -170,10 +170,10 @@ describe(resolveCommand, () => {
       name: 'skills:sync',
       argv: ['--json'],
     });
-    expect(resolveCommand('checkpoint', ['--json', '--label', 'x'])).toMatchObject({
+    expect(resolveCommand('doctor', ['--json', '--no-followups'])).toMatchObject({
       kind: 'command',
-      name: 'checkpoint:create',
-      argv: ['--json', '--label', 'x'],
+      name: 'doctor:check',
+      argv: ['--json', '--no-followups'],
     });
   });
 
@@ -608,7 +608,6 @@ describe(formatTopLevelHelp, () => {
     expect(help).toContain('Deployment');
     expect(help).toContain('Debug a running app');
     expect(help).toContain('Agent setup');
-    expect(help).toContain('Checkpoints');
   });
 });
 
@@ -647,7 +646,7 @@ describe('helpSections', () => {
     }
     for (const [group, { actions, defaultAction }] of Object.entries(commandGroups)) {
       for (const action of Object.keys(actions)) {
-        // A default action may be advertised as the bare group name instead, e.g. `checkpoint`.
+        // A default action may be advertised as the bare group name instead, e.g. `doctor`.
         const names =
           action === defaultAction ? [`${group}:${action}`, group] : [`${group}:${action}`];
         expect(names.some((name) => advertised.includes(name))).toBe(true);

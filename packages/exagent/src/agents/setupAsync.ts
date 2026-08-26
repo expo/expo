@@ -4,7 +4,6 @@
 // every agent — including the ones that never call a tool.
 import chalk from 'chalk';
 
-import { checkpointBeforeAsync } from '../checkpoint/integration';
 import * as Log from '../log';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
 import { probeProjectStateAsync } from '../project/probe';
@@ -91,15 +90,6 @@ export async function runSetupAsync(
 
   let agentsMd: SetupReport['agentsMd'] = null;
   if (options.agentsMd) {
-    // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints: only this half of setup writes a
-    // file git tracks. The skill links live in directories a project gitignores, so a run that
-    // only syncs skills has nothing to snapshot.
-    await checkpointBeforeAsync(projectRoot, {
-      label: 'exagent agents:setup',
-      enabled: options.checkpoint,
-      silent: options.json,
-    });
-
     const [state, packageJson] = await Promise.all([
       probeProjectStateAsync(projectRoot),
       readProjectPackageJsonAsync(projectRoot),

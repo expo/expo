@@ -30,7 +30,8 @@ export function getProjectRoot(args: arg.Result<arg.Spec>) {
  * Stated per command rather than inferred, and with no default, so the type checker asks the
  * question of every command that parses arguments — including the next one somebody writes.
  * `exagent checkpoint:undo <id>` accepted an argument it had no place for, dropped it, and
- * restored the newest checkpoint over the working tree while reporting success.
+ * restored the newest checkpoint over the working tree while reporting success. That command was
+ * deferred out of v1 (llp/0016); the rule it forced applies to every command with no positional.
  *
  * @ref llp/0010-agent-conventions.rfc.md §Registry rules
  */

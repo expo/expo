@@ -58,7 +58,6 @@ describe('exagent install --check', () => {
       notes: [],
     });
     expect(payload.installed).toBe(false);
-    expect(payload.checkpoint).toBeNull();
   });
 
   it(`should report the outdated dependencies the Expo CLI named`, async () => {
