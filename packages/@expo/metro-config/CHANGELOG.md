@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- Source platform identity data (out-of-tree platform names, react-native host packages, Metro extension fallback chains) from `@expo/platforms` instead of local copies. No behavior change. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - Add `woff` and `woff2` to default list of `assetExts` ([#47565](https://github.com/expo/expo/pull/47565) by [@kitten](https://github.com/kitten))
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))

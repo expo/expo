@@ -28,6 +28,7 @@
 
 ### 💡 Others
 
+- Source platform identity data (react-native host package names, Apple-family membership) from `@expo/platforms` instead of local switches. No behavior change. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
 - [iOS] Read the XCFramework `Info.plist` files out of a prebuilt tarball in a single `tar` pass instead of a listing pass plus one extract per plist, roughly halving the per-pod archive work during `pod install`. ([#49580](https://github.com/expo/expo/pull/49580) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add a `prebuilt-metadata` command emitting the prebuilt-modules identity document (npm package ↔ pod ↔ product), verified field-by-field against the Ruby derivations fixture (ENG-25370 phase 1). ([#49335](https://github.com/expo/expo/pull/49335) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add a derivations snapshot dump for precompiled modules (`EXPO_PRECOMPILED_DUMP` / `dump_precompiled_derivations.rb`) with a committed bare-expo fixture enforced by an e2e test, guarding the migration of these derivations to autolinking metadata. ([#49150](https://github.com/expo/expo/pull/49150) by [@chrfalch](https://github.com/chrfalch))
