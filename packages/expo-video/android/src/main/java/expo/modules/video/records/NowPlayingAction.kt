@@ -8,5 +8,5 @@ data class NowPlayingAction(
   @Field var iconName: String,
   @Field var displayName: String,
   @Field var action: String,
-  @Field var slots: List<Int>? = null
+  @Field var slots: List<NowPlayingActionSlot>? = null
 ) : Record, Serializable

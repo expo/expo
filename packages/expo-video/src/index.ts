@@ -17,7 +17,6 @@ export type { VideoThumbnail } from './VideoThumbnail';
 
 export { createVideoPlayer } from './VideoPlayer';
 export { default as VideoAirPlayButton } from './VideoAirPlayButton';
-export { NowPlayingActionSlot } from './NowPlayingActionSlot';
 
 export type * from './VideoPlayer.types';
 

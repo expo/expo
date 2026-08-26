@@ -114,7 +114,7 @@ export default function VideoNowPlayingScreen() {
                 action: 'FAVORITE_ACTION',
                 iconName: 'heart',
                 displayName: 'Favorite',
-                slots: [NowPlayingActionSlot.SLOT_BACK],
+                slots: ['SLOT_BACK'],
               },
             ];
           }}
@@ -128,7 +128,7 @@ export default function VideoNowPlayingScreen() {
                 action: 'FAVORITE_ACTION',
                 iconName: 'heart',
                 displayName: 'Favorite',
-                slots: [NowPlayingActionSlot.SLOT_BACK_SECONDARY],
+                slots: ['SLOT_BACK_SECONDARY'],
               },
             ];
           }}
@@ -142,7 +142,7 @@ export default function VideoNowPlayingScreen() {
                 action: 'FAVORITE_ACTION',
                 iconName: 'heart',
                 displayName: 'Favorite',
-                slots: [NowPlayingActionSlot.SLOT_CENTRAL],
+                slots: ['SLOT_CENTRAL'],
               },
             ];
           }}
@@ -156,7 +156,7 @@ export default function VideoNowPlayingScreen() {
                 action: 'FAVORITE_ACTION',
                 iconName: 'heart',
                 displayName: 'Favorite',
-                slots: [NowPlayingActionSlot.SLOT_FORWARD],
+                slots: ['SLOT_FORWARD'],
               },
             ];
           }}
@@ -170,7 +170,7 @@ export default function VideoNowPlayingScreen() {
                 action: 'FAVORITE_ACTION',
                 iconName: 'heart',
                 displayName: 'Favorite',
-                slots: [NowPlayingActionSlot.SLOT_FORWARD_SECONDARY],
+                slots: ['SLOT_FORWARD_SECONDARY'],
               },
             ];
           }}
@@ -184,7 +184,7 @@ export default function VideoNowPlayingScreen() {
                 action: 'FAVORITE_ACTION',
                 iconName: 'heart',
                 displayName: 'Favorite',
-                slots: [NowPlayingActionSlot.SLOT_OVERFLOW],
+                slots: ['SLOT_OVERFLOW'],
               },
             ];
           }}

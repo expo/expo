@@ -112,20 +112,18 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
     mainActivity.get()?.let {
       applyRectHint(it, calculateRectHint(view.playerView))
       applyPiPParams(it, autoEnterPiP, view.pipParams.aspectRatio)
-
     }
 
     applyPiPActionsForView(view)
   }
 
-  private fun applyPiPActionsForView(videoView: VideoView){
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+  private fun applyPiPActionsForView(videoView: VideoView) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return
     }
 
     val context = appContext.get()?.reactContext ?: return
     val currentActivity = mainActivity.get() ?: return
-
     val remoteActions = buildPiPRemoteActions(context, videoView)
 
     applyPiPActions(currentActivity, remoteActions)

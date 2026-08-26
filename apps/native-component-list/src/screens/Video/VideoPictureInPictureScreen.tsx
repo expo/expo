@@ -123,41 +123,6 @@ export default function VideoPictureInPictureScreen() {
           startsPictureInPictureAutomatically={autoEnterPiP}
           style={styles.video}
         />
-        <ScrollView style={styles.controlsContainer}>
-          <Button style={styles.button} title="Enter Picture In Picture" onPress={togglePiP} />
-          <View style={styles.row}>
-            <TitledSwitch
-              title="Allow Picture In Picture"
-              value={allowPiP}
-              setValue={setAllowPiP}
-              style={styles.switch}
-              titleStyle={styles.switchTitle}
-            />
-            <TitledSwitch
-              title="Enter Picture In Picture Automatically"
-              value={autoEnterPiP}
-              setValue={setAutoEnterPiP}
-              style={styles.switch}
-              titleStyle={styles.switchTitle}
-            />
-            <TitledSwitch
-              title="Use custom Picture In Picture actions"
-              value={customPiPActions}
-              setValue={toggleCustomPiPActions}
-              style={styles.switch}
-              titleStyle={styles.switchTitle}
-            />
-          </View>
-          <Button
-            title="e2e pause"
-            onPress={() => {
-              player.pause();
-              player.currentTime = 10;
-              player.pictureInPictureActions = null;
-              setCustomPiPActions(false);
-            }}
-          />
-        </ScrollView>
       </E2EViewShotContainer>
       <ScrollView style={styles.controlsContainer}>
         <Button style={styles.button} title="Enter Picture In Picture" onPress={togglePiP} />
@@ -176,12 +141,21 @@ export default function VideoPictureInPictureScreen() {
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />
+          <TitledSwitch
+            title="Use custom Picture In Picture actions"
+            value={customPiPActions}
+            setValue={toggleCustomPiPActions}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
         </View>
         <Button
           title="e2e pause"
           onPress={() => {
             player.pause();
             player.currentTime = 10;
+            player.pictureInPictureActions = null;
+            setCustomPiPActions(false);
           }}
         />
       </ScrollView>

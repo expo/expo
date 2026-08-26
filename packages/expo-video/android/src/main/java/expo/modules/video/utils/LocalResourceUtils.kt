@@ -6,11 +6,8 @@ const val EXPO_VIDEO_ICON_PREFIX = "expo_video_icon_"
 
 fun getIconNameResId(context: Context, iconName: String): Int? {
   var resId: Int
-
   val packageName = context.packageName
-
   val baseResourceName = filenameToBasename(iconName)
-
   val resourceNameWithExpoVideoPlugin = "${EXPO_VIDEO_ICON_PREFIX}${baseResourceName}"
 
   resId = context.resources.getIdentifier(

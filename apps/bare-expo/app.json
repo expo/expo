@@ -55,7 +55,12 @@
         {
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true,
-          "icons": ["./assets/heart.png"]
+          "icons": [
+            "./assets/heart.png",
+            "./assets/play.png",
+            "./assets/pause.png",
+            "./assets/heart_full.png"
+          ]
         }
       ],
       "expo-background-fetch",
