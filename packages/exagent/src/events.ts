@@ -117,6 +117,79 @@ declare module '2g' {
       symbolicated: number;
     };
     /**
+     * One `exagent runtime:tree` run: what the walk was scoped to, and how much it kept.
+     *
+     * `focusedScreen` is null when focus could not be established, which is not a failure — it is
+     * the honest answer for an app whose navigator does not expose it, and the run reports the
+     * whole tree instead (llp/0014 §What the walk sees that the user cannot).
+     *
+     * @see llp/0014-interaction-spike.notes.md, llp/0018-interaction-commands.rfc.md
+     */
+    'cli:runtime_tree': {
+      devServerUrl: string;
+      /** The `--testID` the caller named, or null for the whole screen. */
+      testID: string | null;
+      focusedScreen: string | null;
+      /** How many React Navigation screens the walk met, focused or not. */
+      screensSeen: number;
+      /** `interactive` (the default) or `full`. */
+      projection: string;
+      allScreens: boolean;
+      /** How many nodes the projection kept, before any truncation. */
+      nodeCount: number;
+      truncated: boolean;
+      /** How many **elements** carry the named testID. Zero without a `--testID`. */
+      matched: number;
+    };
+    /**
+     * One `exagent runtime:tap` run: which element, whose handler, and whether it was called.
+     *
+     * `handlerOutsideMatch` is the field to watch: true means the handler came from an ancestor of
+     * the element that was named, which is what a real touch would reach and not what was asked
+     * for. `called` with a `threw` is a tap that landed on a handler that raised.
+     *
+     * @see llp/0014-interaction-spike.notes.md §Verdict 3
+     */
+    'cli:runtime_tap': {
+      devServerUrl: string;
+      testID: string;
+      /** How many elements carry the testID inside the scope that was searched. */
+      matched: number;
+      index: number | null;
+      handlerOn: string | null;
+      handlerOutsideMatch: boolean | null;
+      disabled: boolean | null;
+      /** Whether `--force` overrode a disabled element. */
+      forced: boolean;
+      called: boolean;
+      threw: boolean;
+      /** Why nothing was called, or null when something was. */
+      reason: string | null;
+      /** Whether `--verify` walked the tree again afterwards. */
+      verified: boolean;
+      /** What that second walk saw, or null when there was none. */
+      changed: boolean | null;
+    };
+    /**
+     * One `exagent runtime:type` run: which input, and whether the submit was made.
+     *
+     * The text itself is not on the event: it is the caller's own, and a value typed into an app is
+     * as likely to be a credential as it is to be a note.
+     *
+     * @see llp/0014-interaction-spike.notes.md §Verdict 4
+     */
+    'cli:runtime_type': {
+      devServerUrl: string;
+      testID: string;
+      matched: number;
+      index: number | null;
+      handlerOn: string | null;
+      called: boolean;
+      submitted: boolean;
+      threw: boolean;
+      reason: string | null;
+    };
+    /**
      * Deferred from v1 (2026-08-26): `runtime:network` is on the reference shelf
      * (`src/deferred/runtime-network/`), so nothing emits this now.
      *

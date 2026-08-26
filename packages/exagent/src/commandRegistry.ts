@@ -186,6 +186,29 @@ export const commandGroups: { [group: string]: CommandGroup } = {
         summary: 'Collect runtime errors over a time window',
         load: withAction('errors', () => import('./runtime').then((i) => i.exagentRuntime)),
       },
+      // The interaction commands, from the spike of llp/0014. Modules of their own, like
+      // `dev:stop`: each takes different options and has honest limits that belong in its own
+      // `--help` rather than in a shared block.
+      //
+      // Unstable, on the rule the spike itself states: the mechanism was proved against one app,
+      // on one runtime, on one day. Every claim it makes about React's internals held there and is
+      // recorded with the payload that showed it — and a `RectButton` in a library nobody tried is
+      // the case that moves these command shapes.
+      tree: {
+        summary: 'List what is on the screen, and what a tap on it would find',
+        load: () => import('./runtime/interact/tree').then((i) => i.exagentRuntimeTree),
+        unstable: true,
+      },
+      tap: {
+        summary: 'Tap the element carrying a testID',
+        load: () => import('./runtime/interact/tap').then((i) => i.exagentRuntimeTap),
+        unstable: true,
+      },
+      type: {
+        summary: 'Type text into the input carrying a testID',
+        load: () => import('./runtime/interact/type').then((i) => i.exagentRuntimeType),
+        unstable: true,
+      },
       // Two actions with modules of their own, like `dev:stop`: they drive the app rather than
       // read it, so they take different options and print different reports, and folding them
       // into the shared `runtime` module would give one `--help` block three subjects.

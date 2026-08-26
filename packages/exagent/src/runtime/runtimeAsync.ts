@@ -58,7 +58,7 @@ export interface RuntimeContext {
  *
  * @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
  */
-async function resolveDevServerUrlAsync(
+export async function resolveDevServerUrlAsync(
   options: { devServerUrl: string | null },
   { projectRoot }: RuntimeContext
 ): Promise<string> {
@@ -185,8 +185,11 @@ function promisePendingError(
  * is what Expo Go for Android ships [observed — Expo Go 57.0.9, 2026-08-22]. On that runtime the
  * reading commands connect and report an empty window rather than failing, so the message says so
  * instead of promising that they work.
+ *
+ * Shared with `runtime:tree`, `runtime:tap` and `runtime:type` (`./interact/`), which meet the same
+ * runtime and must not describe it in a second set of words.
  */
-function evaluateUnsupportedError(devServerUrl: string): CommandError {
+export function evaluateUnsupportedError(devServerUrl: string): CommandError {
   const error = new CommandError(
     'RUNTIME_EVALUATE_UNSUPPORTED',
     [
