@@ -14,10 +14,11 @@ import { readCloudSessionIdSync } from '../device/cloudSimulator';
 import { probeLocalDeviceAsync } from '../device/localDevice';
 import { event } from '../events';
 import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
+import type { OtaSafety } from '../impact/types';
 import * as Log from '../log';
 import { readProjectSchemeConfig } from '../navigate/deepLink';
 import { readAuthPreflightAsync } from '../needsHuman/preflight';
-import { readLastBuildFingerprints } from '../plan/lastBuild';
+import { readLastBuildRecord, type LastBuildRecord } from '../plan/lastBuild';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
 import { probeProjectStateAsync } from '../project/probe';
@@ -49,6 +50,7 @@ import type {
   BuildLookupState,
   DevServerStatus,
   FreshnessState,
+  FreshnessStatus,
   LocalDeviceStatus,
   SkillsStatus,
   StatusReport,
@@ -94,15 +96,17 @@ export interface StatusOptions {
   /** Overrides {@link DEVICE_PROBE_TIMEOUT_MS}, for tests. */
   deviceProbeTimeoutMs?: number;
   /**
-   * Ask EAS whether it has a finished build for this project's current fingerprint (`--builds`).
+   * The deep dive: `--explain`.
    *
-   * Off by default, and that is the whole of the design decision: the cached answer is read on
-   * every run because it costs one file read and is exact, and the two subprocesses that refresh
-   * it — a per-platform `fingerprint` and one `eas build:list` — are spent only when asked for.
+   * Three things join the report, and only two of them cost anything — which is the whole design.
+   * The per-source change list is free (the headline diffs locally, so the list is a by-product)
+   * and is left out by default because a headline with fifty rows attached is not a headline. The
+   * OTA verdict spawns `expo config --json --type public`, and the EAS build lookup makes a
+   * network call; both are what a reader who typed `--explain` asked to pay for.
    *
-   * @see llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+   * @see llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
    */
-  builds?: boolean;
+  explain?: boolean;
   /** Overrides {@link EAS_BUILD_LOOKUP_TIMEOUT_MS}, for tests. */
   buildLookupTimeoutMs?: number;
   /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
@@ -199,7 +203,12 @@ export async function collectStatusReportAsync(
     const { state, packageName } = project.value;
     // Advisory by contract, and read after the probe, so the fingerprint it is compared against
     // and the record it is compared to describe the same moment.
-    const lastBuild = readLastBuildFingerprints(projectRoot);
+    //
+    // The whole record, not only the hashes: its `sources` are the base of the impact headline
+    // (llp/0004 §The impact headline is free, the explanation is not), and `readLastBuildRecord`
+    // is one file read whichever of the two shapes the caller wants out of it.
+    const record = readLastBuildRecord(projectRoot);
+    const lastBuild = fingerprintsOf(record);
     // The probe rides along whole, so `--json` is also the project brief: the sections round its
     // facts off for a terminal, and a caller that wants them exactly reads `probe`.
     //
@@ -212,7 +221,9 @@ export async function collectStatusReportAsync(
     report.probe = { ...state, fingerprint: { ...state.fingerprint, sources: undefined } };
     report.project = buildProjectStatus(state, packageName);
     report.expoGo = buildExpoGoStatus(state);
-    report.freshness = buildFreshnessStatus(state, lastBuild);
+    report.freshness = buildFreshnessStatus(state, lastBuild, record, {
+      explain: !!options.explain,
+    });
     report.next = buildNextActionStatus(
       state,
       lastBuild,
@@ -255,23 +266,82 @@ export async function collectStatusReportAsync(
   // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
   // Last, and after the parallel block rather than in it, because it consumes two of its answers:
   // the project's fingerprint is the cache key, and the auth answer is what keeps a signed-out
-  // machine from being asked the same question twice. On a run without `--builds` this is one
+  // machine from being asked the same question twice. On a run without `--explain` this is one
   // `readFileSync`, so the report is as instant as it was before the section existed.
-  const builds = await attemptAsync(() =>
-    readEasBuildsStatusAsync(projectRoot, {
-      lookUp: !!options.builds,
-      auth: report.auth,
-      projectHash: report.freshness?.hash ?? null,
-      timeoutMs: options.buildLookupTimeoutMs,
-    })
-  );
+  //
+  // These two are independent of each other and both are the expensive half of `--explain`, so
+  // they run together rather than one after the other.
+  const [builds, ota] = await Promise.all([
+    attemptAsync(() =>
+      readEasBuildsStatusAsync(projectRoot, {
+        lookUp: !!options.explain,
+        auth: report.auth,
+        projectHash: report.freshness?.hash ?? null,
+        timeoutMs: options.buildLookupTimeoutMs,
+      })
+    ),
+    options.explain && report.freshness
+      ? attemptAsync(() => resolveOtaSafetyAsync(projectRoot, report.freshness!))
+      : Promise.resolve(null),
+  ]);
+
   if ('value' in builds) {
     report.builds = builds.value;
   } else {
     errors.builds = builds.error;
   }
 
+  // Its own section note under `freshness`, because that is the section it belongs to: a failed
+  // OTA read costs the verdict and leaves every freshness fact beside it standing.
+  if (ota && 'value' in ota && report.freshness) {
+    report.freshness.ota = ota.value;
+  } else if (ota && 'error' in ota) {
+    errors.freshness = ota.error;
+  }
+
   return report;
+}
+
+/**
+ * Whether an update published now would reach installed builds that can run it.
+ *
+ * @ref llp/0011-impact-and-freshness.rfc.md §A fingerprint change is not "OTA-unsafe"
+ * Deliberately not derived from the impact class: a fingerprint change answers "does the native
+ * binary differ", and OTA safety is a `runtimeVersion` question. The two coincide only under
+ * `policy: "fingerprint"`. Resolving the policy spawns `expo config --json --type public`, which
+ * is why this is on the `--explain` side of the line.
+ */
+async function resolveOtaSafetyAsync(
+  projectRoot: string,
+  freshness: FreshnessStatus
+): Promise<OtaSafety> {
+  const { resolveRuntimeVersionAsync, resolveOtaSafety } =
+    require('../impact/runtimeVersion') as typeof import('../impact/runtimeVersion');
+  const runtimeVersion = await resolveRuntimeVersionAsync(projectRoot);
+  // The strongest answer across the platforms, the way `impact` folds them: one platform whose
+  // native surface moved is enough to decide the question for an update published now.
+  const changed = freshness.platforms.reduce<boolean | null>(
+    (strongest, platform) =>
+      platform.impact?.fingerprintChanged === true
+        ? true
+        : strongest === null && platform.impact?.fingerprintChanged === false
+          ? false
+          : strongest,
+    null
+  );
+  return resolveOtaSafety(runtimeVersion, changed);
+}
+
+/** The hashes alone, out of a record that was read once for both of its shapes. */
+function fingerprintsOf(record: LastBuildRecord): LastBuildFingerprints {
+  const fingerprints: LastBuildFingerprints = {};
+  for (const platform of ['ios', 'android'] as NativePlatform[]) {
+    const entry = record[platform];
+    if (entry) {
+      fingerprints[platform] = entry.hash;
+    }
+  }
+  return fingerprints;
 }
 
 /**

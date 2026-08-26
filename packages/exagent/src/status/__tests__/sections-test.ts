@@ -113,10 +113,15 @@ describe(buildFreshnessStatus, () => {
   it(`should report a platform without a recorded build as stale`, () => {
     const status = buildFreshnessStatus(mockState(), {});
 
-    expect(status.platforms).toEqual([
+    expect(status.platforms).toMatchObject([
       { platform: 'ios', state: 'stale', detail: 'no recorded build', recordedHash: null },
       { platform: 'android', state: 'stale', detail: 'no recorded build', recordedHash: null },
     ]);
+    // Nothing to compare against is not a class. See llp/0011 §Two commands, one classifier.
+    expect(status.platforms[0]!.impact).toMatchObject({
+      class: null,
+      reason: expect.stringContaining('no build is recorded for ios'),
+    });
   });
 
   it(`should report a platform whose recorded build matches as fresh`, () => {
@@ -124,7 +129,7 @@ describe(buildFreshnessStatus, () => {
 
     const status = buildFreshnessStatus(mockState(), lastBuild);
 
-    expect(status.platforms[0]).toEqual({
+    expect(status.platforms[0]).toMatchObject({
       platform: 'ios',
       state: 'fresh',
       detail: 'matches abcdef01',

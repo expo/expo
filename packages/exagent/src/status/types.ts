@@ -4,10 +4,11 @@
 
 import type { DevServerHostType } from '../dev/advertisedUrl';
 import type { LocalDeviceState } from '../device/localDevice';
+import type { ChangedSource, ImpactClass, OtaSafety } from '../impact/types';
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
-import type { PlanBuildLocation } from '../toolchain/types';
 import type { DevServerSource } from '../runtime/devServer';
+import type { PlanBuildLocation } from '../toolchain/types';
 
 /** Whether the installed development build can be proven to match the project. */
 export type FreshnessState =
@@ -44,6 +45,31 @@ export interface ExpoGoStatus {
   reasonCount: number;
 }
 
+/**
+ * What the change since the recorded build costs, as `status` can establish it for free.
+ *
+ * @see llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+ */
+export interface FreshnessImpact {
+  /**
+   * `js-only`, `dev-client-compatible`, `needs-native-build` — or **null**, when nothing was
+   * established.
+   *
+   * Deliberately nullable, where `exagent impact` is not. That command is a gate and has to name a
+   * class because `--assert` compares against one; this is a report, and its `unknown`s are never
+   * rounded down. See llp/0011 §Two commands, one classifier.
+   */
+  class: ImpactClass | null;
+  /** Whether the native fingerprint moved. Null when it could not be decided. */
+  fingerprintChanged: boolean | null;
+  /** One sentence: the strongest finding, or why nothing could be decided. */
+  reason: string;
+  /** How many fingerprint sources moved. Null when no diff was possible. */
+  changedCount: number | null;
+  /** The per-source list. Present only under `--explain`; null otherwise. */
+  changedSources: ChangedSource[] | null;
+}
+
 export interface PlatformFreshness {
   platform: NativePlatform;
   state: FreshnessState;
@@ -51,6 +77,14 @@ export interface PlatformFreshness {
   detail: string;
   /** Fingerprint of the last build `exagent` recorded for the platform. */
   recordedHash: string | null;
+  /**
+   * What has changed since that build, and what it costs.
+   *
+   * Null when there is no fingerprint at all — the `state` above already says so, and repeating it
+   * as a second unknown would be one non-fact printed twice. Computed from the probe's own sources
+   * and the recorded ones, so it costs no subprocess.
+   */
+  impact: FreshnessImpact | null;
 }
 
 export interface FreshnessStatus {
@@ -59,6 +93,16 @@ export interface FreshnessStatus {
   /** Why the fingerprint is unavailable. */
   error?: string;
   platforms: PlatformFreshness[];
+  /**
+   * Whether an update published now would reach installed builds that can run it.
+   *
+   * Present only under `--explain`: the `runtimeVersion` policy is resolved with an
+   * `expo config --json --type public` subprocess, which is the kind of cost the default report
+   * does not pay. Null on every other run — "not asked", not "not safe".
+   *
+   * @see llp/0011-impact-and-freshness.rfc.md §A fingerprint change is not "OTA-unsafe"
+   */
+  ota: OtaSafety | null;
 }
 
 /** Whether EAS has a finished build made from the project's current fingerprint. */

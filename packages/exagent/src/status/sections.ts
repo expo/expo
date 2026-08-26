@@ -7,9 +7,11 @@ import path from 'path';
 import { isTunnelCurrent, type DevServerReach } from '../dev/advertisedUrl';
 import type { LocalDeviceProbe } from '../device/localDevice';
 import { resolveLanHost } from '../followups/network';
+import { classifyAgainstRecordedBuild, type RecordedImpact } from '../impact/fromRecord';
 import { buildConnectUrls, openInPhrase } from '../navigate/connectUrl';
 import { decideExpoGoTarget } from '../navigate/target';
 import { decideStartPlan } from '../plan/decide';
+import type { LastBuildRecord } from '../plan/lastBuild';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
 import type { ProjectState, StartPlan } from '../project/types';
 import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
@@ -92,25 +94,70 @@ export function buildExpoGoStatus(state: ProjectState): ExpoGoStatus {
  */
 export function buildFreshnessStatus(
   state: ProjectState,
-  lastBuild: LastBuildFingerprints
+  lastBuild: LastBuildFingerprints,
+  /**
+   * The whole record, which carries the sources a hash alone cannot.
+   *
+   * @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+   * This is what turns `stale` from a fact into an answer: the probe already computed the working
+   * tree's sources to get its hash, the record already holds the ones the last build was made
+   * from, and the diff between two lists in memory costs nothing. Optional so the section stays
+   * testable from hashes alone; a caller that passes nothing gets freshness with no headline.
+   */
+  record: LastBuildRecord = {},
+  /** Whether the caller asked for the per-source list (`--explain`). */
+  { explain = false }: { explain?: boolean } = {}
 ): FreshnessStatus {
   const { hash, error } = state.fingerprint;
   const platforms = PLATFORMS.map((platform) =>
-    platformFreshness(platform, hash, lastBuild[platform] ?? null)
+    platformFreshness(
+      platform,
+      hash,
+      lastBuild[platform] ?? null,
+      hash == null
+        ? null
+        : classifyAgainstRecordedBuild(platform, record[platform] ?? null, state.fingerprint),
+      explain
+    )
   );
-  return error ? { hash, error, platforms } : { hash, platforms };
+  // `ota` is filled in by the caller under `--explain`, because resolving it costs a subprocess.
+  return error ? { hash, error, platforms, ota: null } : { hash, platforms, ota: null };
 }
 
 function platformFreshness(
   platform: NativePlatform,
   hash: string | null,
-  recordedHash: string | null
+  recordedHash: string | null,
+  impact: RecordedImpact | null,
+  explain: boolean
 ): PlatformFreshness {
+  const headline = impact
+    ? {
+        class: impact.class,
+        fingerprintChanged: impact.fingerprintChanged,
+        reason: impact.reason,
+        changedCount: impact.changedCount,
+        changedSources: explain ? impact.changedSources : null,
+      }
+    : null;
+
   if (hash == null) {
-    return { platform, state: 'unknown', detail: 'no fingerprint tool', recordedHash };
+    return {
+      platform,
+      state: 'unknown',
+      detail: 'no fingerprint tool',
+      recordedHash,
+      impact: headline,
+    };
   }
   if (recordedHash == null) {
-    return { platform, state: 'stale', detail: 'no recorded build', recordedHash };
+    return {
+      platform,
+      state: 'stale',
+      detail: 'no recorded build',
+      recordedHash,
+      impact: headline,
+    };
   }
   if (recordedHash !== hash) {
     return {
@@ -118,9 +165,16 @@ function platformFreshness(
       state: 'stale',
       detail: `changed since ${shortHash(recordedHash)}`,
       recordedHash,
+      impact: headline,
     };
   }
-  return { platform, state: 'fresh', detail: `matches ${shortHash(hash)}`, recordedHash };
+  return {
+    platform,
+    state: 'fresh',
+    detail: `matches ${shortHash(hash)}`,
+    recordedHash,
+    impact: headline,
+  };
 }
 
 /** What the dev-server section reports beyond reachability, gathered by the caller. */

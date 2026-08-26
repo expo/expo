@@ -2,9 +2,10 @@ import fs from 'fs';
 import { vol } from 'memfs';
 
 import { event } from '../../events';
+import { resolveRuntimeVersionAsync } from '../../impact/runtimeVersion';
 import * as Log from '../../log';
 import { readAuthPreflightAsync } from '../../needsHuman/preflight';
-import { readLastBuildFingerprints } from '../../plan/lastBuild';
+import { readLastBuildRecord } from '../../plan/lastBuild';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
 import { discoverDevServerAsync } from '../../runtime/devServer';
@@ -13,6 +14,7 @@ import { waitForBundlerReadyAsync } from '../../runtime/waitReady';
 import { getPersistedAgentIdsAsync } from '../../skills/agents';
 import { discoverSkillsAsync } from '../../skills/discovery';
 import type { DiscoveredSkill } from '../../skills/types';
+import { readEasBuildsStatusAsync } from '../easBuilds';
 import { formatStatusReport } from '../format';
 import { collectStatusReportAsync, printStatusAsync } from '../statusAsync';
 import type { StatusReport } from '../types';
@@ -20,7 +22,7 @@ import type { StatusReport } from '../types';
 jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
-jest.mock('../../plan/lastBuild', () => ({ readLastBuildFingerprints: jest.fn(() => ({})) }));
+jest.mock('../../plan/lastBuild', () => ({ readLastBuildRecord: jest.fn(() => ({})) }));
 jest.mock('../../runtime/devServer', () => ({ discoverDevServerAsync: jest.fn() }));
 jest.mock('../../runtime/waitReady', () => ({ waitForBundlerReadyAsync: jest.fn() }));
 // The liveness probe opens one debugger socket per listed target (F56). These tests are about the
@@ -36,6 +38,23 @@ jest.mock('../../runtime/targetLiveness', () => ({
 // suite happens to run on.
 jest.mock('../../needsHuman/preflight', () => ({ readAuthPreflightAsync: jest.fn() }));
 jest.mock('../../skills/discovery', () => ({ discoverSkillsAsync: jest.fn(async () => []) }));
+// The two halves of `--explain` that cost something: one network call and one `expo config`. Both
+// are mocked here so these tests can assert *whether they were asked*, which is the design.
+jest.mock('../easBuilds', () => ({
+  readEasBuildsStatusAsync: jest.fn(async () => ({ askedEas: false, platforms: [] })),
+}));
+jest.mock('../../impact/runtimeVersion', () => ({
+  resolveRuntimeVersionAsync: jest.fn(async () => ({
+    policy: 'appVersion',
+    literal: null,
+    source: 'app.json',
+  })),
+  resolveOtaSafety: jest.fn(() => ({
+    safe: true,
+    runtimeVersion: { policy: 'appVersion', literal: null, source: 'app.json' },
+    why: 'The runtimeVersion policy is "appVersion".',
+  })),
+}));
 jest.mock('../../skills/agents', () => ({
   ...jest.requireActual('../../skills/agents'),
   getPersistedAgentIdsAsync: jest.fn(async () => null),
@@ -71,7 +90,7 @@ beforeEach(() => {
   vol.reset();
   vol.fromJSON({ '/project/package.json': JSON.stringify({ name: 'my-app' }) });
   mockState();
-  jest.mocked(readLastBuildFingerprints).mockReturnValue({});
+  jest.mocked(readLastBuildRecord).mockReturnValue({});
   jest
     .mocked(readAuthPreflightAsync)
     .mockResolvedValue({ loggedIn: true, user: 'kudo', source: 'eas whoami' });
@@ -95,7 +114,9 @@ beforeEach(() => {
 
 describe(collectStatusReportAsync, () => {
   it(`should report every section of a running project`, async () => {
-    jest.mocked(readLastBuildFingerprints).mockReturnValue({ ios: 'abcdef0123456789' });
+    jest.mocked(readLastBuildRecord).mockReturnValue({
+      ios: { hash: 'abcdef0123456789', sources: null },
+    });
     jest.mocked(getPersistedAgentIdsAsync).mockResolvedValue(['claude-code']);
     jest.mocked(discoverSkillsAsync).mockResolvedValue([uiSkill]);
     await fs.promises.mkdir(uiSkill.path, { recursive: true });
@@ -344,6 +365,82 @@ describe(collectStatusReportAsync, () => {
     expect(report.skills).not.toBeNull();
   });
 
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+  //
+  // The design is a cost split, so these are tests about *what was spawned*. A default run must
+  // reach neither `expo config` nor the network; `--explain` reaches both.
+  describe('the cost split of --explain', () => {
+    it(`should classify the change without asking EAS or expo config`, async () => {
+      // Both sides carry their sources, which is what makes the classification possible at all —
+      // the probe computed the head's to get its hash, and the record holds the base's.
+      mockState({ fingerprint: { hash: 'abcdef0123456789', sources: [] } });
+      jest.mocked(readLastBuildRecord).mockReturnValue({ ios: { hash: 'older', sources: [] } });
+
+      const report = await collectStatusReportAsync(projectRoot, options);
+
+      expect(report.freshness?.platforms[0]!.impact).toMatchObject({
+        class: 'js-only',
+        fingerprintChanged: true,
+      });
+      expect(resolveRuntimeVersionAsync).not.toHaveBeenCalled();
+      expect(readEasBuildsStatusAsync).toHaveBeenCalledWith(
+        projectRoot,
+        expect.objectContaining({ lookUp: false })
+      );
+    });
+
+    it(`should leave the per-source list out of the default report`, async () => {
+      mockState({ fingerprint: { hash: 'abcdef0123456789', sources: [] } });
+      jest.mocked(readLastBuildRecord).mockReturnValue({ ios: { hash: 'older', sources: [] } });
+
+      const report = await collectStatusReportAsync(projectRoot, options);
+
+      expect(report.freshness?.platforms[0]!.impact?.changedSources).toBeNull();
+      expect(report.freshness?.ota).toBeNull();
+    });
+
+    it(`should resolve the OTA verdict and refresh the EAS answer with --explain`, async () => {
+      const report = await collectStatusReportAsync(projectRoot, { ...options, explain: true });
+
+      expect(resolveRuntimeVersionAsync).toHaveBeenCalledWith(projectRoot);
+      expect(report.freshness?.ota).toMatchObject({ safe: true });
+      expect(readEasBuildsStatusAsync).toHaveBeenCalledWith(
+        projectRoot,
+        expect.objectContaining({ lookUp: true })
+      );
+    });
+
+    it(`should carry the per-source list with --explain`, async () => {
+      mockState({ fingerprint: { hash: 'abcdef0123456789', sources: [] } });
+      jest.mocked(readLastBuildRecord).mockReturnValue({ ios: { hash: 'older', sources: [] } });
+
+      const report = await collectStatusReportAsync(projectRoot, { ...options, explain: true });
+
+      expect(report.freshness?.platforms[0]!.impact?.changedSources).toEqual([]);
+    });
+
+    // Section isolation: `--explain` is three answers, and one of them failing costs one of them.
+    it(`should note an OTA read it could not make, and keep every other fact`, async () => {
+      jest.mocked(resolveRuntimeVersionAsync).mockRejectedValue(new Error('expo config failed'));
+
+      const report = await collectStatusReportAsync(projectRoot, { ...options, explain: true });
+
+      expect(report.errors.freshness).toBe('expo config failed');
+      expect(report.freshness?.ota).toBeNull();
+      expect(report.freshness?.hash).toBe('abcdef0123456789');
+      expect(report.project).not.toBeNull();
+    });
+
+    it(`should not resolve an OTA verdict for a project it could not probe`, async () => {
+      jest.mocked(probeProjectStateAsync).mockRejectedValue(new Error('project is unreadable'));
+
+      const report = await collectStatusReportAsync(projectRoot, { ...options, explain: true });
+
+      expect(resolveRuntimeVersionAsync).not.toHaveBeenCalled();
+      expect(report.freshness).toBeNull();
+    });
+  });
+
   // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — what an agent reads before it
   // starts a command that would stop on a login.
   it(`should report who the CLI family acts as`, async () => {
@@ -478,7 +575,8 @@ describe(printStatusAsync, () => {
       tunnelUrl: null,
       localDevice: 'unknown',
       freshness: { ios: 'stale', android: 'stale' },
-      easBuilds: { ios: 'unknown', android: 'unknown' },
+      // The section builder is mocked out here; its own suite covers what it answers.
+      easBuilds: { ios: null, android: null },
       easBuildsAsked: false,
       skillsDiscovered: 0,
       skillsLinked: 0,

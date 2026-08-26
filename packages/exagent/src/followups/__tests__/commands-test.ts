@@ -117,9 +117,10 @@ describe(buildStatusFollowUps, () => {
         freshness: {
           hash: 'project-hash',
           platforms: [
-            { platform: 'ios', state: freshness, detail: '', recordedHash: null },
-            { platform: 'android', state: 'unknown', detail: '', recordedHash: null },
+            { platform: 'ios', state: freshness, detail: '', recordedHash: null, impact: null },
+            { platform: 'android', state: 'unknown', detail: '', recordedHash: null, impact: null },
           ],
+          ota: null,
         },
         builds: {
           askedEas: true,
