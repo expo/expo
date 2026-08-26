@@ -298,7 +298,8 @@ async function executePlanAsync(
         exitCode,
         stdout: result.stdout,
         stderr: result.stderr,
-        binPath: (result as StepResult).binPath ?? null,
+        // A dev-server step answers with a `DevServerRun`, which resolved no binary of its own.
+        binPath: 'binPath' in result ? (result.binPath ?? null) : null,
       };
       // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 3 — a step that
       // stopped because the Expo CLI needed an answer, or because macOS refused it a permission,
@@ -435,7 +436,9 @@ async function runStepAsync(
     return await runEasStepAsync(projectRoot, args, output);
   }
   if (output === 'inherit') {
-    return { exitCode: await runExpoAsync(projectRoot, args), stdout: '', stderr: '', binPath: null };
+    // Nothing is captured, so there is nothing for the wrapper-crash guard to read either.
+    const exitCode = await runExpoAsync(projectRoot, args);
+    return { exitCode, stdout: '', stderr: '', binPath: null };
   }
   const { cli, result } = await spawnExpoAsync(projectRoot, args, { output });
   return {
