@@ -1,0 +1,606 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, 
+  Modal, ActivityIndicator, Alert, Image, SafeAreaView, KeyboardAvoidingView, Platform, StatusBar
+} from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+
+// --- INITIAL STATE & CONSTANTS ---
+const CATEGORIAS = ['Alimentación', 'Peajes', 'Bencina', 'Materiales', 'Transfer', 'Otros'];
+
+const ICONOS = {
+  Alimentación: 'utensils',
+  Peajes: 'road',
+  Bencina: 'gas-pump',
+  Materiales: 'tools',
+  Transfer: 'bus',
+  Otros: 'ellipsis-h'
+};
+
+const INITIAL_BUDGET = {
+  Alimentación: '', Peajes: '', Bencina: '', Materiales: '', Transfer: '', Otros: ''
+};
+
+export default function App() {
+  const [currentScreen, setCurrentScreen] = useState('setup'); // 'setup' | 'dashboard'
+  
+  // Project Setup State
+  const [proyecto, setProyecto] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+  const [presupuesto, setPresupuesto] = useState(INITIAL_BUDGET);
+  
+  // Dashboard State
+  const [gastos, setGastos] = useState([]);
+  
+  // Queue & Processing State
+  const [colaDocumentos, setColaDocumentos] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('');
+  
+  // Modal State
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentGasto, setCurrentGasto] = useState(null);
+  const [aiFields, setAiFields] = useState({}); // To highlight AI extracted fields
+
+  const getPresupuestoNum = (cat) => parseFloat(presupuesto[cat]) || 0;
+  
+  const totalPresupuesto = CATEGORIAS.reduce((sum, cat) => sum + getPresupuestoNum(cat), 0);
+  const totalGastado = gastos.reduce((sum, g) => sum + g.monto, 0);
+  
+  const gastadoPorCategoria = (cat) => gastos.filter(g => g.categoria === cat).reduce((sum, g) => sum + g.monto, 0);
+  const saldoPorCategoria = (cat) => getPresupuestoNum(cat) - gastadoPorCategoria(cat);
+
+  const formatMoney = (amount) => {
+    return '$' + Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const isSetupValid = () => {
+    return proyecto.trim() !== '' && fechaInicio !== '' && fechaFin !== '' && totalPresupuesto > 0;
+  };
+
+  const handleStart = () => {
+    if (isSetupValid()) setCurrentScreen('dashboard');
+  };
+
+  const requestPermissions = async () => {
+    const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+    const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (cameraStatus.status !== 'granted' || libraryStatus.status !== 'granted') {
+      Alert.alert('Permisos requeridos', 'Se necesitan permisos para usar la cámara y galería.');
+      return false;
+    }
+    return true;
+  };
+
+  const openCamera = async () => {
+    if (!(await requestPermissions())) return;
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      iniciarProcesamientoCola([result.assets[0].uri]);
+    }
+  };
+
+  const openGallery = async () => {
+    if (!(await requestPermissions())) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const uris = result.assets.map(asset => asset.uri);
+      iniciarProcesamientoCola(uris);
+    }
+  };
+
+  const handlePDFPlaceholder = () => {
+    Alert.alert(
+      "Limitación Expo Go", 
+      "En la versión web procesamos PDFs nativamente usando PDF.js. En React Native (Expo Go), separar páginas de un PDF localmente requiere módulos nativos. Para probar la cola de procesamiento, por favor selecciona múltiples imágenes desde la galería."
+    );
+  };
+
+  const iniciarProcesamientoCola = (uris) => {
+    setColaDocumentos(uris);
+    procesarSiguienteEnCola(uris);
+  };
+
+  const procesarSiguienteEnCola = async (colaActual) => {
+    const cola = colaActual || colaDocumentos;
+    if (cola.length === 0) {
+      setIsProcessing(false);
+      return;
+    }
+
+    const currentUri = cola[0];
+    const restantes = cola.length - 1;
+    
+    setIsProcessing(true);
+    setLoadingMsg(`Analizando documento...\n${restantes > 0 ? `(Quedan ${restantes} más por procesar)` : ''}`);
+
+    // SIMULACIÓN DE OCR PARA EXPO GO
+    // En un app real, aquí enviaríamos currentUri a una API como Google Vision.
+    setTimeout(() => {
+      setIsProcessing(false);
+      
+      // Mock de datos extraídos
+      const mockData = {
+        id: Date.now().toString(),
+        categoria: CATEGORIAS[Math.floor(Math.random() * CATEGORIAS.length)],
+        monto: (Math.floor(Math.random() * 50) + 5) * 1000, // Monto aleatorio entre 5k y 50k
+        fecha: new Date().toISOString().split('T')[0],
+        detalle: 'Comercio Extraído IA C.A.',
+        doc: Math.floor(Math.random() * 100000).toString(),
+        imagenUri: currentUri,
+      };
+
+      setCurrentGasto(mockData);
+      setAiFields({ categoria: true, monto: true, detalle: true, doc: true }); // Marcar como extraído por IA
+      setModalVisible(true);
+      
+      // Removemos el primero de la cola localmente (el state se actualizará tras guardar)
+    }, 2000);
+  };
+
+  const openManualExpense = () => {
+    setCurrentGasto({
+      id: Date.now().toString(),
+      categoria: 'Otros',
+      monto: '',
+      fecha: new Date().toISOString().split('T')[0],
+      detalle: '',
+      doc: '',
+      imagenUri: null
+    });
+    setAiFields({});
+    setModalVisible(true);
+  };
+
+  const saveExpense = () => {
+    if (!currentGasto.monto || isNaN(currentGasto.monto) || currentGasto.monto <= 0) {
+      Alert.alert('Error', 'Debes ingresar un monto válido.');
+      return;
+    }
+
+    setGastos(prev => [currentGasto, ...prev.filter(g => g.id !== currentGasto.id)]);
+    setModalVisible(false);
+
+    // Revisar si hay más elementos en la cola
+    if (colaDocumentos.length > 1) {
+      const nuevaCola = [...colaDocumentos];
+      nuevaCola.shift(); // Quitar el recién procesado
+      setColaDocumentos(nuevaCola);
+      
+      setTimeout(() => {
+        Alert.alert(
+          'Guardado', 
+          `Gasto registrado. Quedan ${nuevaCola.length} documentos en cola.`,
+          [{ text: "Continuar", onPress: () => procesarSiguienteEnCola(nuevaCola) }]
+        );
+      }, 500);
+    } else {
+      setColaDocumentos([]);
+    }
+  };
+
+  const cancelExpense = () => {
+    setModalVisible(false);
+    if (colaDocumentos.length > 1) {
+      setTimeout(() => {
+        Alert.alert(
+          'Documento Omitido',
+          `Has omitido este gasto. Quedan ${colaDocumentos.length - 1} en cola. ¿Continuar?`,
+          [
+            { text: "Cancelar Lote", style: "cancel", onPress: () => setColaDocumentos([]) },
+            { text: "Siguiente", onPress: () => {
+                const nuevaCola = [...colaDocumentos];
+                nuevaCola.shift();
+                setColaDocumentos(nuevaCola);
+                procesarSiguienteEnCola(nuevaCola);
+              } 
+            }
+          ]
+        );
+      }, 500);
+    } else {
+      setColaDocumentos([]);
+    }
+  };
+
+  const deleteExpense = (id) => {
+    Alert.alert('Confirmar', '¿Eliminar este gasto?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Eliminar', style: 'destructive', onPress: () => {
+          setGastos(prev => prev.filter(g => g.id !== id));
+          setModalVisible(false);
+        }
+      }
+    ]);
+  };
+
+  if (currentScreen === 'setup') {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" backgroundColor="#1e40af" />
+        <View style={styles.header}>
+          <FontAwesome5 name="leaf" size={20} color="white" />
+          <Text style={styles.headerTitle}>AMS - Nueva Rendición</Text>
+        </View>
+
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+          <ScrollView style={styles.container}>
+            <Text style={styles.subtitle}>Configura los fondos asignados a tu proyecto.</Text>
+
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>1. Datos Generales</Text>
+              <Text style={styles.label}>Código de Proyecto</Text>
+              <TextInput style={styles.input} placeholder="Ej. ARI001" value={proyecto} onChangeText={setProyecto} />
+              
+              <View style={styles.row}>
+                <View style={{flex: 1, marginRight: 8}}>
+                  <Text style={styles.label}>Fecha Inicio (DD-MM-YYYY)</Text>
+                  <TextInput style={styles.input} placeholder="01-01-2024" value={fechaInicio} onChangeText={setFechaInicio} />
+                </View>
+                <View style={{flex: 1, marginLeft: 8}}>
+                  <Text style={styles.label}>Fecha Fin (DD-MM-YYYY)</Text>
+                  <TextInput style={styles.input} placeholder="31-01-2024" value={fechaFin} onChangeText={setFechaFin} />
+                </View>
+              </View>
+            </View>
+
+            <View style={[styles.card, { backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }]}>
+              <View style={styles.budgetHeader}>
+                <Text style={[styles.cardTitle, { color: '#1e40af', marginBottom: 0 }]}>2. Presupuesto ($)</Text>
+                <View style={styles.totalBadge}>
+                  <Text style={styles.totalBadgeText}>Total: {formatMoney(totalPresupuesto)}</Text>
+                </View>
+              </View>
+
+              {CATEGORIAS.map(cat => (
+                <View key={cat} style={styles.budgetRow}>
+                  <View style={styles.budgetLabelContainer}>
+                    <FontAwesome5 name={ICONOS[cat]} size={14} color="#9ca3af" style={{width: 20}} />
+                    <Text style={styles.budgetLabel}>{cat}</Text>
+                  </View>
+                  <TextInput 
+                    style={styles.budgetInput} 
+                    keyboardType="numeric" 
+                    placeholder="0"
+                    value={presupuesto[cat]}
+                    onChangeText={(val) => setPresupuesto(prev => ({...prev, [cat]: val}))}
+                  />
+                </View>
+              ))}
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.primaryBtn, !isSetupValid() && styles.disabledBtn]} 
+              disabled={!isSetupValid()}
+              onPress={handleStart}
+            >
+              <Text style={styles.primaryBtnText}>Iniciar Terreno</Text>
+              <FontAwesome5 name="arrow-right" size={16} color="white" style={{marginLeft: 10}} />
+            </TouchableOpacity>
+            <View style={{height: 40}} />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  }
+
+  const progressPercent = totalPresupuesto > 0 ? Math.min(100, Math.round((totalGastado / totalPresupuesto) * 100)) : 0;
+  let progressColor = '#4ade80'; // green
+  if (progressPercent > 50) progressColor = '#facc15'; // yellow
+  if (progressPercent > 85) progressColor = '#ef4444'; // red
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#1e40af" />
+      
+      {/* Header Presupuesto */}
+      <View style={styles.dashHeader}>
+        <View style={styles.rowBetween}>
+          <View>
+            <Text style={styles.dashLabel}>SALDO DISPONIBLE</Text>
+            <Text style={styles.dashAmount}>{formatMoney(totalPresupuesto - totalGastado)}</Text>
+          </View>
+          <View style={{alignItems: 'flex-end'}}>
+            <Text style={styles.dashLabelSmall}>Fondo Asignado</Text>
+            <Text style={styles.dashAmountSmall}>{formatMoney(totalPresupuesto)}</Text>
+          </View>
+        </View>
+
+        <View style={styles.progressBarBg}>
+          <View style={[styles.progressBarFill, { width: `${progressPercent}%`, backgroundColor: progressColor }]} />
+        </View>
+        <View style={styles.rowBetween}>
+          <Text style={styles.dashLabelSmall}>Gastado: {formatMoney(totalGastado)}</Text>
+          <Text style={styles.dashLabelSmall}>{progressPercent}%</Text>
+        </View>
+      </View>
+
+      {/* Categorias Horizontales */}
+      <View style={styles.categoriesContainer}>
+        <Text style={styles.sectionTitle}>DESGLOSE DE SALDOS</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+          {CATEGORIAS.filter(cat => getPresupuestoNum(cat) > 0).map(cat => {
+            const saldo = saldoPorCategoria(cat);
+            const isNegative = saldo < 0;
+            return (
+              <View key={cat} style={[styles.categoryCard, isNegative && styles.categoryCardNegative]}>
+                <View style={styles.row}>
+                  <FontAwesome5 name={ICONOS[cat]} size={12} color={isNegative ? '#ef4444' : '#3b82f6'} />
+                  <Text style={styles.catCardTitle} numberOfLines={1}>{cat}</Text>
+                </View>
+                <Text style={[styles.catCardAmount, isNegative && {color: '#991b1b'}]}>{formatMoney(saldo)}</Text>
+                <Text style={styles.catCardSubtitle}>de {formatMoney(getPresupuestoNum(cat))}</Text>
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      {/* Lista de Gastos */}
+      <View style={styles.listContainer}>
+        <View style={styles.rowBetween}>
+          <Text style={[styles.sectionTitle, {marginBottom: 0}]}>HISTORIAL DE GASTOS</Text>
+          <TouchableOpacity onPress={openManualExpense} style={styles.manualBtn}>
+            <FontAwesome5 name="plus" size={10} color="#2563eb" />
+            <Text style={styles.manualBtnText}> Manual</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <ScrollView style={{marginTop: 10, flex: 1}} contentContainerStyle={{paddingBottom: 100}}>
+          {gastos.length === 0 ? (
+            <View style={styles.emptyState}>
+              <FontAwesome5 name="receipt" size={32} color="#d1d5db" />
+              <Text style={styles.emptyStateText}>Sin movimientos aún.</Text>
+            </View>
+          ) : (
+            gastos.map(g => (
+              <TouchableOpacity key={g.id} style={styles.expenseItem} onPress={() => {
+                setCurrentGasto(g);
+                setAiFields({}); // Reset AI highlights when manually editing
+                setModalVisible(true);
+              }}>
+                <View style={styles.expenseIconWrapper}>
+                  <FontAwesome5 name={ICONOS[g.categoria]} size={16} color="#2563eb" />
+                </View>
+                <View style={{flex: 1}}>
+                  <View style={styles.rowBetween}>
+                    <Text style={styles.expenseTitle} numberOfLines={1}>{g.detalle || 'Sin detalle'}</Text>
+                    <Text style={styles.expenseAmount}>{formatMoney(g.monto)}</Text>
+                  </View>
+                  <View style={styles.rowBetween}>
+                    <Text style={styles.expenseSubtitle}>{g.fecha} {g.doc ? `| Doc: ${g.doc}` : ''}</Text>
+                    {g.imagenUri && <FontAwesome5 name="image" size={12} color="#9ca3af" />}
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
+        </ScrollView>
+      </View>
+
+      {/* Floating Action Buttons */}
+      <View style={styles.fabContainer}>
+        <TouchableOpacity style={styles.fabSecondary} onPress={handlePDFPlaceholder}>
+          <FontAwesome5 name="file-pdf" size={20} color="#4b5563" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.fabSecondary} onPress={openGallery}>
+          <FontAwesome5 name="images" size={20} color="#4b5563" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.fabPrimary} onPress={openCamera}>
+          <FontAwesome5 name="camera" size={24} color="white" />
+          <Text style={styles.fabPrimaryText}>Escanear</Text>
+        </TouchableOpacity>
+      </View>
+
+      {}
+      {isProcessing && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#3b82f6" />
+          <Text style={styles.loadingText}>{loadingMsg}</Text>
+        </View>
+      )}
+
+      {/* Expense Modal */}
+      <Modal visible={modalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{width: '100%', flex: 1, justifyContent: 'flex-end'}}>
+            <View style={styles.modalContent}>
+              
+              <View style={styles.rowBetween}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={styles.modalTitle}>{gastos.some(g => g.id === currentGasto?.id) ? 'Editar Gasto' : 'Confirmar Gasto'}</Text>
+                  {Object.keys(aiFields).length > 0 && (
+                    <View style={styles.aiBadge}>
+                      <FontAwesome5 name="magic" size={10} color="#166534" />
+                      <Text style={styles.aiBadgeText}> Extraído IA</Text>
+                    </View>
+                  )}
+                </View>
+                <TouchableOpacity onPress={cancelExpense}>
+                  <FontAwesome5 name="times" size={20} color="#9ca3af" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView>
+                {currentGasto?.imagenUri && (
+                  <Image source={{uri: currentGasto.imagenUri}} style={styles.modalImage} resizeMode="contain" />
+                )}
+
+                <Text style={styles.label}>Categoría</Text>
+                {/* Expo Go doesn't have a built-in clean Picker without extra libraries. Using a simple text input or custom UI is better for single-file. 
+                    For simplicity in this port, we map categories to a horizontal list. */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: 15}}>
+                  {CATEGORIAS.map(cat => (
+                    <TouchableOpacity 
+                      key={cat} 
+                      onPress={() => setCurrentGasto({...currentGasto, categoria: cat})}
+                      style={[
+                        styles.catPill, 
+                        currentGasto?.categoria === cat && styles.catPillActive,
+                        aiFields.categoria && currentGasto?.categoria === cat && styles.aiHighlight
+                      ]}
+                    >
+                      <Text style={[styles.catPillText, currentGasto?.categoria === cat && styles.catPillTextActive]}>{cat}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+
+                <View style={styles.row}>
+                  <View style={{flex: 1, marginRight: 8}}>
+                    <Text style={styles.label}>Monto Total</Text>
+                    <TextInput 
+                      style={[styles.input, {fontWeight: 'bold', fontSize: 18, color: '#1d4ed8', backgroundColor: '#eff6ff'}, aiFields.monto && styles.aiHighlight]} 
+                      keyboardType="numeric" 
+                      value={currentGasto?.monto?.toString()} 
+                      onChangeText={(val) => setCurrentGasto({...currentGasto, monto: parseFloat(val) || 0})}
+                    />
+                  </View>
+                  <View style={{flex: 1, marginLeft: 8}}>
+                    <Text style={styles.label}>Fecha</Text>
+                    <TextInput 
+                      style={[styles.input, aiFields.fecha && styles.aiHighlight]} 
+                      value={currentGasto?.fecha} 
+                      onChangeText={(val) => setCurrentGasto({...currentGasto, fecha: val})}
+                    />
+                  </View>
+                </View>
+
+                <Text style={styles.label}>Detalle / Proveedor</Text>
+                <TextInput 
+                  style={[styles.input, aiFields.detalle && styles.aiHighlight]} 
+                  value={currentGasto?.detalle} 
+                  onChangeText={(val) => setCurrentGasto({...currentGasto, detalle: val})}
+                />
+
+                <Text style={styles.label}>N° Documento</Text>
+                <TextInput 
+                  style={[styles.input, aiFields.doc && styles.aiHighlight]} 
+                  keyboardType="numeric"
+                  value={currentGasto?.doc} 
+                  onChangeText={(val) => setCurrentGasto({...currentGasto, doc: val})}
+                />
+
+                {/* Delete button only if editing existing */}
+                {gastos.some(g => g.id === currentGasto?.id) && (
+                  <TouchableOpacity style={styles.deleteBtn} onPress={() => deleteExpense(currentGasto.id)}>
+                    <Text style={styles.deleteBtnText}>Eliminar Gasto</Text>
+                  </TouchableOpacity>
+                )}
+
+                <View style={[styles.row, {marginTop: 20}]}>
+                  <TouchableOpacity style={styles.btnSecondary} onPress={cancelExpense}>
+                    <Text style={styles.btnSecondaryText}>Cancelar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.btnPrimary} onPress={saveExpense}>
+                    <Text style={styles.btnPrimaryText}>Guardar Gasto</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={{height: 40}} />
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#f3f4f6' },
+  header: { backgroundColor: '#1e40af', padding: 16, flexDirection: 'row', alignItems: 'center', elevation: 4 },
+  headerTitle: { color: 'white', fontSize: 18, fontWeight: 'bold', marginLeft: 10 },
+  container: { padding: 16 },
+  subtitle: { color: '#6b7280', marginBottom: 16, fontSize: 14 },
+  
+  card: { backgroundColor: 'white', padding: 16, borderRadius: 12, marginBottom: 16, borderWidth: 1, borderColor: '#e5e7eb' },
+  cardTitle: { fontSize: 14, fontWeight: 'bold', color: '#374151', marginBottom: 12 },
+  label: { fontSize: 12, fontWeight: '600', color: '#6b7280', marginBottom: 6, textTransform: 'uppercase' },
+  input: { backgroundColor: 'white', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 10, marginBottom: 12, fontSize: 14 },
+  
+  row: { flexDirection: 'row', alignItems: 'center' },
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  
+  budgetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#bfdbfe', paddingBottom: 10, marginBottom: 10 },
+  totalBadge: { backgroundColor: '#dbeafe', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  totalBadgeText: { color: '#2563eb', fontWeight: 'bold', fontSize: 12 },
+  budgetRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  budgetLabelContainer: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  budgetLabel: { fontSize: 13, color: '#4b5563', marginLeft: 8 },
+  budgetInput: { backgroundColor: 'white', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, padding: 6, width: 100, textAlign: 'right' },
+  
+  primaryBtn: { backgroundColor: '#2563eb', padding: 16, borderRadius: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10, shadowColor: '#2563eb', shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 4, elevation: 5 },
+  primaryBtnText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  disabledBtn: { backgroundColor: '#9ca3af', shadowOpacity: 0, elevation: 0 },
+
+  // Dashboard Styles
+  dashHeader: { backgroundColor: '#1e40af', padding: 20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, elevation: 5 },
+  dashLabel: { color: '#bfdbfe', fontSize: 10, fontWeight: 'bold' },
+  dashAmount: { color: 'white', fontSize: 32, fontWeight: 'bold' },
+  dashLabelSmall: { color: '#93c5fd', fontSize: 10 },
+  dashAmountSmall: { color: 'white', fontSize: 14, fontWeight: 'bold' },
+  progressBarBg: { backgroundColor: '#1e3a8a', height: 8, borderRadius: 4, marginVertical: 8 },
+  progressBarFill: { height: 8, borderRadius: 4 },
+
+  categoriesContainer: { padding: 16, paddingBottom: 0 },
+  sectionTitle: { fontSize: 11, fontWeight: 'bold', color: '#9ca3af', marginBottom: 8 },
+  horizontalScroll: { paddingBottom: 10 },
+  categoryCard: { backgroundColor: 'white', width: 120, padding: 12, borderRadius: 12, marginRight: 10, borderWidth: 1, borderColor: '#e5e7eb', elevation: 1 },
+  categoryCardNegative: { backgroundColor: '#fef2f2', borderColor: '#fecaca' },
+  catCardTitle: { fontSize: 11, fontWeight: '600', color: '#4b5563', marginLeft: 6, flex: 1 },
+  catCardAmount: { fontSize: 16, fontWeight: 'bold', color: '#1f2937', marginTop: 8 },
+  catCardSubtitle: { fontSize: 9, color: '#9ca3af' },
+
+  listContainer: { flex: 1, paddingHorizontal: 16, paddingTop: 10 },
+  manualBtn: { backgroundColor: '#eff6ff', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  manualBtnText: { color: '#2563eb', fontSize: 11, fontWeight: 'bold' },
+  
+  emptyState: { alignItems: 'center', justifyContent: 'center', backgroundColor: 'white', padding: 30, borderRadius: 16, borderStyle: 'dashed', borderWidth: 1, borderColor: '#d1d5db', marginTop: 20 },
+  emptyStateText: { color: '#9ca3af', marginTop: 10, fontSize: 13 },
+  
+  expenseItem: { backgroundColor: 'white', padding: 12, borderRadius: 12, flexDirection: 'row', alignItems: 'center', marginBottom: 8, borderWidth: 1, borderColor: '#f3f4f6' },
+  expenseIconWrapper: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  expenseTitle: { fontSize: 13, fontWeight: 'bold', color: '#374151', flex: 1 },
+  expenseAmount: { fontSize: 13, fontWeight: 'bold', color: '#1f2937' },
+  expenseSubtitle: { fontSize: 11, color: '#9ca3af' },
+
+  fabContainer: { position: 'absolute', bottom: 20, left: 16, right: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
+  fabSecondary: { backgroundColor: 'white', width: 50, height: 50, borderRadius: 25, justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.2, shadowRadius: 3 },
+  fabPrimary: { backgroundColor: '#2563eb', flex: 1, height: 56, borderRadius: 28, marginLeft: 15, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', elevation: 6, shadowColor: '#2563eb', shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 4 },
+  fabPrimaryText: { color: 'white', fontWeight: 'bold', fontSize: 16, marginLeft: 10 },
+
+  loadingOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', zIndex: 10 },
+  loadingText: { color: 'white', marginTop: 15, fontSize: 14, textAlign: 'center', fontWeight: '600' },
+
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: { backgroundColor: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: '90%' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#1f2937' },
+  aiBadge: { backgroundColor: '#dcfce7', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 10, marginLeft: 10 },
+  aiBadgeText: { fontSize: 9, color: '#166534', fontWeight: 'bold' },
+  modalImage: { width: '100%', height: 150, backgroundColor: '#f3f4f6', borderRadius: 8, marginBottom: 15, borderWidth: 1, borderColor: '#e5e7eb' },
+  
+  catPill: { backgroundColor: '#f3f4f6', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 8, borderWidth: 1, borderColor: '#e5e7eb' },
+  catPillActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+  catPillText: { fontSize: 12, color: '#4b5563', fontWeight: '600' },
+  catPillTextActive: { color: 'white' },
+  
+  aiHighlight: { borderColor: '#4ade80', borderWidth: 2, backgroundColor: '#f0fdf4' },
+
+  btnSecondary: { flex: 1, backgroundColor: '#f3f4f6', padding: 14, borderRadius: 12, alignItems: 'center', marginRight: 10 },
+  btnSecondaryText: { color: '#4b5563', fontWeight: 'bold', fontSize: 14 },
+  btnPrimary: { flex: 2, backgroundColor: '#22c55e', padding: 14, borderRadius: 12, alignItems: 'center', elevation: 2 },
+  btnPrimaryText: { color: 'white', fontWeight: 'bold', fontSize: 14 },
+  
+  deleteBtn: { backgroundColor: '#fee2e2', padding: 12, borderRadius: 10, alignItems: 'center', marginTop: 10 },
+  deleteBtnText: { color: '#b91c1c', fontWeight: 'bold', fontSize: 13 }
+});
