@@ -528,3 +528,53 @@ describe(buildLocalDeviceStatus, () => {
     });
   });
 });
+
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+describe('buildNextActionStatus with a cloud session on record', () => {
+  const devServer = {
+    running: true,
+    url: 'http://127.0.0.1:8081',
+    source: 'lock',
+    projectRootMatched: true,
+    appsConnected: 0,
+    tunnelUrl: 'https://abc.ngrok.app',
+    reason: null,
+  } as never;
+
+  const absentDevice = { state: 'absent', platform: null, deviceId: null, name: null, reason: 'none' } as never;
+
+  /** The project shape the next-action rules read, from this file's own builder. */
+  const state = mockState();
+
+  // A session is a device this CLI can drive, so it outranks every URL below it: those are things
+  // a person has to open somewhere else.
+  it(`names the command that acts, rather than a URL for somebody to open`, () => {
+    const next = buildNextActionStatus(
+      state,
+      {} as never,
+      'ios',
+      devServer,
+      absentDevice,
+      null,
+      true
+    );
+
+    expect(next.command).toBe('exagent navigate / --cloud');
+    expect(next.why).toContain('EAS Simulator session');
+  });
+
+  it(`falls back to the URL to open elsewhere when there is no session`, () => {
+    const next = buildNextActionStatus(
+      state,
+      {} as never,
+      'ios',
+      devServer,
+      absentDevice,
+      null,
+      false
+    );
+
+    expect(next.command).not.toContain('--cloud');
+  });
+});

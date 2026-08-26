@@ -49,6 +49,17 @@ export interface StartFollowUpInput {
    * @see src/device/localDevice.ts
    */
   localDevice?: LocalDeviceState;
+  /**
+   * Whether this project has an EAS Simulator session on record (a `.env.eas-simulator`).
+   *
+   * The one thing that turns "this machine has no device" back into a command: a session is a
+   * device this CLI can drive. Read from a file rather than from the service, because these lines
+   * are printed on the last line before a dev server takes over the terminal and a ladder must
+   * never be what holds a start up (llp/0009 §Device-aware ladders).
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   */
+  cloudSession?: boolean;
   /** `http://localhost:<port>`, the page a browser opens. Null when no port can be vouched for. */
   webUrl?: string | null;
   /**
@@ -88,15 +99,25 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
   // something that cannot work — `simctl` and `adb` drive a *local* simulator or an attached
   // device, and the run that found this had neither [observed — dogfood, 2026-08-24].
   const openApp: FollowUp[] =
-    input.localDevice === 'absent'
-      ? []
-      : [
+    input.localDevice !== 'absent'
+      ? [
           {
             id: 'open-app',
             command: 'npx exagent navigate /',
             why: 'The dev server is up but opens nothing, so this deep-links the app onto the booted simulator or the attached device.',
           },
-        ];
+        ]
+      : input.cloudSession
+        ? // The rung is not dropped, it is aimed elsewhere: this machine has no device and this
+          // project has a cloud one on record, which is a device this CLI can drive.
+          [
+            {
+              id: 'open-app-cloud',
+              command: 'npx exagent navigate / --cloud',
+              why: "This machine has no booted simulator and no attached device, and this project has an EAS Simulator session on record — so this deep-links the app onto that instead. It needs a tunnelled dev server, and the session bills until \"npx eas simulator:stop\".",
+            },
+          ]
+        : [];
 
   return capFollowUps([
     ...openApp,
@@ -156,12 +177,15 @@ function realDeviceFollowUp({
   portKnown = true,
   tunnel = false,
   localDevice = 'unknown',
+  cloudSession = false,
 }: StartFollowUpInput): FollowUp {
   const label = lanUrlLabel;
   const noLocalDevice =
-    localDevice === 'absent'
-      ? 'This machine has no booted simulator and no attached device, so nothing here can open the app. '
-      : '';
+    localDevice !== 'absent'
+      ? ''
+      : cloudSession
+        ? 'This machine has no booted simulator and no attached device; the EAS Simulator session above is what can open the app here. '
+        : 'This machine has no booted simulator and no attached device, so nothing here can open the app. ';
 
   // A tunnelled run first, because it is the case where the LAN URL below would be *wrong* rather
   // than merely one option: the tunnel host is not known until the dev server comes up, seconds

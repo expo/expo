@@ -391,6 +391,26 @@ describe(`${buildStartFollowUps.name} — a tunnelled run, and a machine with no
   });
 
   // The rule that keeps a working machine working: a probe that could not run establishes nothing.
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend — the rung is not
+  // dropped on a machine with no device, it is aimed at the device this project does have.
+  it(`aims the deep-link rung at the cloud session when this machine has no device`, () => {
+    const followups = buildStartFollowUps({
+      ...base,
+      localDevice: 'absent',
+      cloudSession: true,
+    });
+    const open = followups.find((followup) => followup.id === 'open-app-cloud');
+
+    expect(ids(followups)).not.toContain('open-app');
+    expect(open?.command).toBe('npx exagent navigate / --cloud');
+    expect(open?.why).toContain('bills until');
+  });
+
+  it(`drops the rung entirely when there is no device anywhere`, () => {
+    expect(ids(buildStartFollowUps({ ...base, localDevice: 'absent', cloudSession: false })))
+      .not.toContain('open-app-cloud');
+  });
+
   it.each(['unknown', 'present'] as const)(`keeps the deep-link rung for %s`, (localDevice) => {
     expect(ids(buildStartFollowUps({ ...base, localDevice }))).toContain('open-app');
   });

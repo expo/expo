@@ -219,10 +219,21 @@ export function buildNextActionStatus(
   platform: PlanPlatform,
   devServer: DevServerStatus | null,
   device: LocalDeviceStatus | null = null,
-  scheme: string | null = null
+  scheme: string | null = null,
+  /**
+   * Whether this project has an EAS Simulator session on record.
+   *
+   * One `stat` of `.env.eas-simulator`, taken by the caller: `status` promises to be instant, so
+   * whether the session is still *running* — which costs an `eas` start-up — is not asked here. A
+   * file that names a dead session costs one `navigate --cloud` that says so, which is a far
+   * cheaper wrong answer than a slow report.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   */
+  cloudSession: boolean = false
 ): NextActionStatus {
   const plan = decideStartPlan(state, { platform, lastBuild });
-  const verify = verifyAction(devServer, device, state, scheme);
+  const verify = verifyAction(devServer, device, state, scheme, cloudSession);
   if (verify) {
     return { ...verify, rule: plan.rule, target: plan.target, steps: [] };
   }
@@ -240,7 +251,9 @@ function verifyAction(
   devServer: DevServerStatus | null,
   device: LocalDeviceStatus | null,
   state: ProjectState,
-  scheme: string | null
+  scheme: string | null,
+  /** Whether this project has an EAS Simulator session on record. See the caller's parameter. */
+  cloudSession: boolean
 ): { command: string; why: string } | null {
   if (!devServer?.running || devServer.projectRootMatched === false) {
     return null;
@@ -261,6 +274,14 @@ function verifyAction(
   // `absent` only, never `unknown`: a probe that could not run establishes nothing, and turning a
   // working suggestion off on the strength of a missing `adb` would be the same mistake backwards.
   if (device?.state === 'absent') {
+    // A session on record beats every address below it, because it is the one rung that is a
+    // **command this CLI can run**: the URLs are things a person has to open somewhere else.
+    if (cloudSession) {
+      return {
+        command: `${OPEN_APP_COMMAND} --cloud`,
+        why: "no app is connected and this machine has no booted simulator or attached device, so this opens the app on this project's EAS Simulator session instead — it needs a tunnelled dev server, and the session bills until \"npx eas simulator:stop\"",
+      };
+    }
     return noLocalDeviceAction(devServer, state, scheme);
   }
 

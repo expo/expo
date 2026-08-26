@@ -10,6 +10,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { resolveDevServerReachAsync } from '../dev/advertisedUrl';
+import { readCloudSessionIdSync } from '../device/cloudSimulator';
 import { probeLocalDeviceAsync } from '../device/localDevice';
 import { event } from '../events';
 import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
@@ -204,7 +205,10 @@ export async function collectStatusReportAsync(
       // The scheme a development build of this project registers, read the same way the deep link
       // reads it: `exp://` is the Expo Go form only, and a development build's connect URL takes
       // the app's own scheme (`src/navigate/connectUrl.ts`).
-      devBuildSchemeSync(projectRoot)
+      devBuildSchemeSync(projectRoot),
+      // A file read, not a service call: `status` promises to be instant (`src/device/
+      // cloudSimulator.ts` §readCloudSessionIdSync).
+      readCloudSessionIdSync(projectRoot) != null
     );
   } else {
     // One cause, one note. The other three sections are left null, and the project line says why.
