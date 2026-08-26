@@ -12,6 +12,7 @@
 
 import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import {
+  CLOUD_SESSION_ENV_FILE,
   cloudPlatformUnknownError,
   cloudPlatformMismatchError,
   cloudSessionUnavailableError,
@@ -252,7 +253,7 @@ export async function probeCloudDeviceAsync(
         status: null,
         available: null,
         failure: null,
-        reason: `no ${'.env.eas-simulator'} names a session, so this project has not started one`,
+        reason: `no ${CLOUD_SESSION_ENV_FILE} names a session, so this project has not started one`,
       },
     };
   }
