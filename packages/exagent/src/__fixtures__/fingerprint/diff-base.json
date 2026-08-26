@@ -1,0 +1,113 @@
+{
+  "hash": "basehash",
+  "sources": [
+    {
+      "type": "file",
+      "filePath": "../../packages/@expo/config-plugins/build/android/AllowBackup.js",
+      "reasons": [
+        "expoConfigPlugins"
+      ],
+      "hash": "079398dd802c2554a0ec63b70b765dd1fe673024"
+    },
+    {
+      "type": "file",
+      "filePath": "../../packages/@expo/config-plugins/build/android/BuildProperties.js",
+      "reasons": [
+        "expoConfigPlugins"
+      ],
+      "hash": "16c1174987724898c55cc16f974e325461edc273"
+    },
+    {
+      "type": "file",
+      "filePath": "../../packages/@expo/config-plugins/build/android/codeMod.js",
+      "reasons": [
+        "expoConfigPlugins"
+      ],
+      "hash": "a02df5fac65e7b03cbc27c36d149894bbc51c900"
+    },
+    {
+      "type": "file",
+      "filePath": "../../packages/@expo/config-plugins/build/android/Colors.js",
+      "reasons": [
+        "expoConfigPlugins"
+      ],
+      "hash": "0ec50895799e494a45c27ae09eea587369a19502"
+    },
+    {
+      "type": "dir",
+      "filePath": "../../packages/@expo/dom-webview/android",
+      "reasons": [
+        "expoAutolinkingAndroid"
+      ],
+      "hash": "38e957ad9b760a51648441652f554ddd49ce2889"
+    },
+    {
+      "type": "dir",
+      "filePath": "../../packages/@expo/dom-webview/ios",
+      "reasons": [
+        "expoAutolinkingIos"
+      ],
+      "hash": "075ded4b6bb4d704d0eb6065c1c5c6e9769d9812"
+    },
+    {
+      "type": "dir",
+      "filePath": "../../packages/@expo/log-box",
+      "reasons": [
+        "expoAutolinkingIos",
+        "expoAutolinkingAndroid"
+      ],
+      "hash": "a42a4a939d0e932bbe334f327a6e6bf77439a448"
+    },
+    {
+      "type": "contents",
+      "id": "expoAutolinkingConfig:android",
+      "contents": "{\"extraDependencies\":[],\"coreFeatures\":[\"swiftui\",\"compose\"]…",
+      "reasons": [
+        "expoAutolinkingAndroid"
+      ],
+      "hash": "f94772f1683db231cda16ced082d28cd2352b993"
+    },
+    {
+      "type": "contents",
+      "id": "expoAutolinkingConfig:ios",
+      "contents": "{\"extraDependencies\":[],\"coreFeatures\":[\"swiftui\",\"compose\"]…",
+      "reasons": [
+        "expoAutolinkingIos"
+      ],
+      "hash": "12c0e1790cef77e245b5fefdc716411fdb653d22"
+    },
+    {
+      "type": "package",
+      "name": "@react-native-masked-view/masked-view",
+      "version": "0.3.2",
+      "filePath": "../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0_@babel+core@7.29.7_@rea_0b1cb48f64769e8cdee0e87c7385a41f/node_modules/@react-native-masked-view/masked-view/package.json",
+      "reasons": [
+        "rncoreAutolinkingAndroid",
+        "rncoreAutolinkingIos"
+      ],
+      "hash": null
+    },
+    {
+      "type": "package",
+      "name": "react-native-gesture-handler",
+      "version": "3.1.0",
+      "filePath": "../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.86.0_@babel+core@7.29.7_@react-native_4aa76a0e73afa3150b371a7bceafc5bf/node_modules/react-native-gesture-handler/package.json",
+      "reasons": [
+        "rncoreAutolinkingAndroid",
+        "rncoreAutolinkingIos"
+      ],
+      "hash": null
+    },
+    {
+      "type": "package",
+      "name": "react-native-reanimated",
+      "version": "4.5.1",
+      "filePath": "../../node_modules/.pnpm/react-native-drawer-layout@4.2.2_fe048f68a60a5b35919ae811510cf1ab/node_modules/react-native-reanimated/package.json",
+      "reasons": [
+        "rncoreAutolinkingAndroid",
+        "rncoreAutolinkingIos"
+      ],
+      "hash": null
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+[
+  {
+    "op": "removed",
+    "removedSource": {
+      "type": "file",
+      "filePath": "../../packages/@expo/config-plugins/build/android/BuildProperties.js",
+      "reasons": [
+        "expoConfigPlugins"
+      ],
+      "hash": "16c1174987724898c55cc16f974e325461edc273"
+    }
+  },
+  {
+    "op": "changed",
+    "beforeSource": {
+      "type": "dir",
+      "filePath": "../../packages/@expo/dom-webview/android",
+      "reasons": [
+        "expoAutolinkingAndroid"
+      ],
+      "hash": "38e957ad9b760a51648441652f554ddd49ce2889"
+    },
+    "afterSource": {
+      "type": "dir",
+      "filePath": "../../packages/@expo/dom-webview/android",
+      "reasons": [
+        "expoAutolinkingAndroid"
+      ],
+      "hash": "0000000000000000000000000000000000000000"
+    }
+  },
+  {
+    "op": "added",
+    "addedSource": {
+      "type": "dir",
+      "filePath": "../../packages/expo-constants/android",
+      "reasons": [
+        "expoAutolinkingAndroid"
+      ],
+      "hash": "53d391bc671f95e9686a9a22458e7d12c416dea8"
+    }
+  },
+  {
+    "op": "removed",
+    "removedSource": {
+      "type": "package",
+      "name": "@react-native-masked-view/masked-view",
+      "version": "0.3.2",
+      "filePath": "../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0_@babel+core@7.29.7_@rea_0b1cb48f64769e8cdee0e87c7385a41f/node_modules/@react-native-masked-view/masked-view/package.json",
+      "reasons": [
+        "rncoreAutolinkingAndroid",
+        "rncoreAutolinkingIos"
+      ],
+      "hash": null
+    }
+  },
+  {
+    "op": "added",
+    "addedSource": {
+      "type": "package",
+      "name": "@react-native-masked-view/masked-view",
+      "version": "9.9.9",
+      "filePath": "../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0_@babel+core@7.29.7_@rea_0b1cb48f64769e8cdee0e87c7385a41f/node_modules/@react-native-masked-view/masked-view/package.json",
+      "reasons": [
+        "rncoreAutolinkingAndroid",
+        "rncoreAutolinkingIos"
+      ],
+      "hash": "1111111111111111111111111111111111111111"
+    }
+  }
+]
