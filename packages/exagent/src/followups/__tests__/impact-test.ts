@@ -19,6 +19,19 @@ function ids(followups: { id: string }[]): string[] {
   return followups.map((followup) => followup.id);
 }
 
+/** A resolved backend, as `impactAsync` hands one to the builder. */
+function backend(runsOn: 'local' | 'eas') {
+  const because =
+    runsOn === 'eas' ? 'this host runs linux and an ios build needs Xcode.' : 'this machine has Xcode.';
+  return {
+    runsOn,
+    source: runsOn === 'eas' ? ('host' as const) : ('default' as const),
+    because,
+    why: `Building ${runsOn === 'eas' ? 'in the cloud on EAS' : 'on this machine'}: ${because}`,
+    doomed: false,
+  };
+}
+
 describe(buildImpactFollowUps, () => {
   describe('needs-native-build', () => {
     it(`should name the local route and the cloud route, in that order`, () => {
@@ -27,6 +40,31 @@ describe(buildImpactFollowUps, () => {
       expect(ids(followups).slice(0, 2)).toEqual(['impact-native-build', 'impact-eas-build']);
       expect(followups[0]!.command).toBe('npx exagent dev --ios');
       expect(followups[1]!.command).toBe('npx eas build --platform ios --profile development');
+    });
+
+    // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
+    it(`should say the plan goes to the cloud when this host cannot build`, () => {
+      const followups = buildImpactFollowUps(input({ buildBackend: backend('eas') }));
+
+      expect(ids(followups).slice(0, 2)).toEqual(['impact-native-build', 'impact-local-build']);
+      // Still `exagent dev` first: it is the command that makes a plan, and on this host the plan
+      // it makes is the cloud one.
+      expect(followups[0]!.command).toBe('npx exagent dev --ios');
+      expect(followups[0]!.why).toContain('in the cloud on EAS');
+      expect(followups[0]!.why).toContain('this host runs linux');
+    });
+
+    it(`should offer --local as the way past a choice the caller disagrees with`, () => {
+      const [, forced] = buildImpactFollowUps(input({ buildBackend: backend('eas') }));
+
+      expect(forced!.command).toBe('npx exagent dev --ios --local');
+      expect(forced!.why).toContain('on this machine');
+    });
+
+    it(`should keep the old order when the backend was chosen as local`, () => {
+      const followups = buildImpactFollowUps(input({ buildBackend: backend('local') }));
+
+      expect(ids(followups).slice(0, 2)).toEqual(['impact-native-build', 'impact-eas-build']);
     });
 
     it(`should say what each route costs the caller`, () => {

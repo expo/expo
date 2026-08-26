@@ -267,12 +267,21 @@ export function buildEasBuildFollowUp(
 export function buildStartPlanFollowUps(plan: StartPlan, state: ProjectState): FollowUp[] {
   const followups: FollowUp[] = [];
 
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
-  // First, when it applies at all: running the plan is the wrong next command on a machine that
-  // cannot perform its build, and a ladder that led with it would be advising a failure. `unknown`
-  // is not this case — nothing was established, and the plan is still the thing to try.
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
+  // The plan already took the right route, so this ladder no longer has to offer one. What it has
+  // to offer is the thing that route needs and the caller may not have: a cloud build reaches a
+  // queue owned by an account, and "not signed in" is a failure that arrives *after* the upload.
   const location = plan.buildLocation;
-  if (location?.runsOn === 'local' && location.status === 'missing') {
+  if (location?.runsOn === 'eas') {
+    followups.push({
+      id: 'eas-account',
+      command: 'npx eas whoami',
+      why: `The plan builds ${EAS_WHERE}, which needs ${EAS_REQUIREMENT} — this says which one this machine is signed in as, before a build is queued under it. "npx eas login" if it is none.`,
+    });
+  } else if (location?.runsOn === 'local' && location.status === 'missing') {
+    // Reached only when a flag or the config asked to build here on a machine that cannot: with
+    // nobody asking, detection would have taken the plan to the cloud already. Leading with it is
+    // right, because running the plan below stops at the compiler.
     followups.push({
       id: 'eas-build-instead',
       command: location.alternativeCommand!,

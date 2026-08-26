@@ -65,6 +65,12 @@ type StatusReport = {
     target: string;
     steps: { argv: string[] }[];
     why: string | null;
+    buildLocation: {
+      runsOn: 'local' | 'eas';
+      platform: 'ios' | 'android';
+      requirement: string;
+      selection: { source: string; because: string; why: string; doomed: boolean } | null;
+    } | null;
   } | null;
   /** The raw project probe, per `src/project/types.ts`. Covered on its own in `probe-test.ts`. */
   probe: {
@@ -467,6 +473,69 @@ describe('exagent status', () => {
 
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('bare (ios, android)');
+    });
+  });
+
+  // @ref llp/0015-backend-selection-and-config.rfc.md §What `status` reports
+  describe('where the next build would run', () => {
+    it('says nothing about a build for a project whose next plan has none', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const report = await reportInAsync(projectRoot);
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(report.next?.buildLocation).toBeNull();
+      expect(result.stdout).not.toContain('build ');
+    });
+
+    it('names the place and the cause for a project that needs one', async () => {
+      const report = await reportAsync('dev-client-app');
+
+      expect(report.next?.buildLocation).not.toBeNull();
+      expect(['local', 'eas']).toContain(report.next!.buildLocation!.runsOn);
+      // Something chose it, and said so in a sentence every other surface prints too.
+      expect(report.next!.buildLocation!.selection!.because).toBeTruthy();
+    });
+
+    it('reports the backend the project config asked for, in both outputs', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const file = path.join(projectRoot, 'package.json');
+      const packageJson = JSON.parse(await fs.promises.readFile(file, 'utf8'));
+      packageJson.expo = { ...packageJson.expo, exagent: { buildBackend: 'eas' } };
+      await fs.promises.writeFile(file, JSON.stringify(packageJson, null, 2));
+
+      const report = await reportInAsync(projectRoot);
+      expect(report.next!.buildLocation).toMatchObject({
+        runsOn: 'eas',
+        selection: { source: 'config' },
+      });
+
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('build ');
+      expect(result.stdout).toContain('"expo.exagent" in package.json');
+    });
+
+    // `status` exits 0 by contract, and a preference file it cannot read must not change that:
+    // every other line of the report is still a fact worth having.
+    it('still reports everything else when the config cannot be read', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const file = path.join(projectRoot, 'package.json');
+      const packageJson = JSON.parse(await fs.promises.readFile(file, 'utf8'));
+      packageJson.expo = { ...packageJson.expo, exagent: { buildBackend: 'cloud' } };
+      await fs.promises.writeFile(file, JSON.stringify(packageJson, null, 2));
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(report.project?.name).toBeTruthy();
+      expect(report.next?.rule).toBe('dev-client-stale');
     });
   });
 

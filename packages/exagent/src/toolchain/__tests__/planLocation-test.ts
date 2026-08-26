@@ -46,6 +46,7 @@ function probe(overrides: Partial<ToolchainProbe> = {}): ToolchainProbe {
     detail: 'Xcode 16.2 at /Applications/Xcode.app/Contents/Developer.',
     requirement: 'Xcode on this machine',
     caveats: [],
+    impossible: false,
     ...overrides,
   };
 }
@@ -205,5 +206,60 @@ describe('applyToolchainProbe', () => {
     const plan = decideStartPlan(createState(), { platform: 'ios' });
 
     expect(applyToolchainProbe(plan, probe())).toBe(plan);
+  });
+});
+
+// @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+describe('folding the probe into a plan that already chose its backend', () => {
+  /** A selection, as `selectBuildBackend` hands one to the table. */
+  function chosen(source: 'flag' | 'config' | 'default') {
+    const because = 'this is a test.';
+    return {
+      runsOn: 'local' as const,
+      source,
+      because,
+      why: `Building on this machine: ${because}`,
+      doomed: false,
+    };
+  }
+
+  it(`does not repeat the sentence the selection already said`, () => {
+    const plan = decideStartPlan(createDevClientState(), {
+      platform: 'ios',
+      buildBackend: chosen('default'),
+    });
+    const applied = applyToolchainProbe(plan, probe({ status: 'present' }));
+
+    expect(applied.reasons).toContain('Building on this machine: this is a test.');
+    expect(applied.reasons.filter((reason) => reason.includes('This machine has it'))).toEqual([]);
+  });
+
+  it(`does say it for a chosen local build the machine cannot perform`, () => {
+    const plan = decideStartPlan(createDevClientState(), {
+      platform: 'ios',
+      buildBackend: chosen('flag'),
+    });
+    const applied = applyToolchainProbe(
+      plan,
+      probe({ status: 'missing', detail: 'xcode-select is not on PATH.' })
+    );
+
+    expect(applied.reasons).toContain(
+      'The build in this plan runs on this machine (local) and needs Xcode. This machine cannot run it: xcode-select is not on PATH.'
+    );
+    expect(applied.reasons.some((reason) => reason.startsWith('Build for ios'))).toBe(true);
+  });
+
+  it(`carries the caveats whatever chose the backend`, () => {
+    const plan = decideStartPlan(createDevClientState(), {
+      platform: 'android',
+      buildBackend: chosen('config'),
+    });
+    const applied = applyToolchainProbe(
+      plan,
+      probe({ platform: 'android', status: 'present', caveats: ['adb is not on PATH.'] })
+    );
+
+    expect(applied.reasons).toContain('adb is not on PATH.');
   });
 });

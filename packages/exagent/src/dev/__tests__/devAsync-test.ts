@@ -31,6 +31,25 @@ jest.mock('../../start/startAsync', () => ({ runDevServerAsync: jest.fn() }));
 // steps inherit the terminal, and nothing about their output is this command's business. The
 // runs nobody is watching get their own block at the end of the file.
 jest.mock('../../utils/interactive', () => ({ isInteractive: jest.fn(() => true) }));
+// @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+// A unit test must not depend on whether the machine running it has Xcode or an Android SDK
+// either: that fact now decides which *steps* a building plan contains, so a CI box with neither
+// would turn every local-build assertion in this file into an assertion about a cloud build. The
+// tests that care about the choice stub this themselves.
+jest.mock('../../toolchain', () => {
+  const actual = jest.requireActual('../../toolchain');
+  return {
+    ...actual,
+    detectToolchainAsync: jest.fn(async (platform: 'ios' | 'android') => ({
+      platform,
+      status: 'present',
+      detail: `The ${platform} toolchain, stubbed for this test.`,
+      requirement: `the ${platform} toolchain on this machine`,
+      caveats: [],
+      impossible: false,
+    })),
+  };
+});
 // A unit test must not depend on whether the machine running it has a simulator booted
 // (llp/0009 §Device-aware ladders); `unknown` leaves every rung of the ladder as it was.
 jest.mock('../../device/localDevice', () => ({

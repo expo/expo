@@ -1,5 +1,13 @@
+import { stripVTControlCharacters } from 'node:util';
+
 import type { StartPlan } from '../../project/types';
-import { formatStartPlan, formatTimeClass } from '../format';
+import type { PlanBuildLocation } from '../../toolchain/types';
+import { formatBuildLocation, formatStartPlan, formatTimeClass } from '../format';
+
+/** One line without color, so assertions never depend on the terminal's color support. */
+function strip(line: string): string {
+  return stripVTControlCharacters(line);
+}
 
 const plan: StartPlan = {
   target: 'dev-client',
@@ -28,6 +36,7 @@ const plan: StartPlan = {
     status: 'present',
     detail: 'Xcode 16.2 at /Applications/Xcode.app/Contents/Developer.',
     caveats: [],
+    selection: null,
     alternativeCommand: 'npx eas build --platform ios --profile development',
   },
 };
@@ -154,5 +163,78 @@ describe(formatStartPlan, () => {
         'If it is missing: npx eas build --platform ios --profile development'
       );
     });
+  });
+});
+
+// @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+describe('the Build line of a plan whose backend was chosen', () => {
+  function locationWith(overrides: Partial<PlanBuildLocation>): PlanBuildLocation {
+    return {
+      runsOn: 'local',
+      platform: 'ios',
+      requirement: 'Xcode on this machine',
+      status: null,
+      detail: null,
+      caveats: [],
+      alternativeCommand: 'npx eas build --platform ios --profile development',
+      selection: null,
+      ...overrides,
+    };
+  }
+
+  function selection(overrides: Partial<NonNullable<PlanBuildLocation['selection']>> = {}) {
+    return {
+      runsOn: 'local' as const,
+      source: 'default' as const,
+      because: 'this machine has Xcode.',
+      why: 'Building on this machine: this machine has Xcode.',
+      doomed: false,
+      ...overrides,
+    };
+  }
+
+  it(`says the cause without repeating the place`, () => {
+    const line = strip(formatBuildLocation(locationWith({ selection: selection() })));
+
+    expect(line).toContain('Build: local — runs on this machine');
+    expect(line).toContain('Chosen because this machine has Xcode.');
+    // The head already said where; the full sentence would say it a second time.
+    expect(line).not.toContain('Building on this machine');
+  });
+
+  it(`says a chosen local build cannot happen here, and what does work`, () => {
+    const line = strip(
+      formatBuildLocation(
+        locationWith({
+          status: 'missing',
+          detail: 'xcode-select is not on PATH.',
+          selection: selection({ source: 'flag', because: '--local was passed.' }),
+        })
+      )
+    );
+
+    expect(line).toContain('Chosen because --local was passed.');
+    expect(line).toContain('Not found: xcode-select is not on PATH.');
+    expect(line).toContain('Instead: npx eas build --platform ios --profile development');
+  });
+
+  it(`names the cloud and what it needs`, () => {
+    const line = strip(
+      formatBuildLocation(
+        locationWith({
+          runsOn: 'eas',
+          requirement: 'an Expo account',
+          alternativeCommand: 'npx expo run:ios',
+          selection: selection({
+            runsOn: 'eas',
+            source: 'host',
+            because: 'this host runs linux.',
+          }),
+        })
+      )
+    );
+
+    expect(line).toContain('Build: eas — runs in the cloud on EAS, needs an Expo account.');
+    expect(line).toContain('Chosen because this host runs linux.');
   });
 });

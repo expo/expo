@@ -11,6 +11,7 @@ import {
   EAS_WHERE,
   LOCAL_WHERE,
 } from '../toolchain/runsOn';
+import type { BuildBackendChoice } from '../toolchain/selectBackend';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ImpactFollowUpInput {
@@ -21,6 +22,15 @@ export interface ImpactFollowUpInput {
   cachedBuild: CachedBuild | null;
   /** The platform, when exactly one was classified, so the commands can name it. */
   platform: 'ios' | 'android' | null;
+  /**
+   * Where a build of this project would run, when something resolved it.
+   *
+   * @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
+   * "You need a native build" is two instructions, and this says which of them to read first.
+   * `null` keeps the old ladder — the local route first, the cloud second — which is the honest
+   * order when nothing has looked at the host.
+   */
+  buildBackend?: BuildBackendChoice | null;
 }
 
 export function buildImpactFollowUps({
@@ -28,6 +38,7 @@ export function buildImpactFollowUps({
   otaSafe,
   cachedBuild,
   platform,
+  buildBackend = null,
 }: ImpactFollowUpInput): FollowUp[] {
   const followups: FollowUp[] = [];
   const platformFlag = platform ? ` --platform ${platform}` : '';
@@ -47,17 +58,29 @@ export function buildImpactFollowUps({
       // this machine and needs Xcode or the Android SDK, the other runs in the cloud and needs an
       // Expo account, and which is right depends on what the caller has and what they need out of
       // it. Naming only the local one told a developer with no Xcode to do something impossible.
+      // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
+      // `exagent dev` is first whichever backend was chosen, because it is the command that
+      // *makes a plan* — and on a machine that cannot build here, the plan it makes is the cloud
+      // one. What the choice changes is the sentence, which now says which route that plan takes
+      // and why, rather than offering a local build to a host that has no toolchain for it.
+      const runsOnEas = buildBackend?.runsOn === 'eas';
       followups.push({
         id: 'impact-native-build',
         command: `npx exagent dev${platformFlag ? ` --${platform}` : ''}`,
-        why: `The native surface changed, so the installed app cannot run this code. This rebuilds it ${LOCAL_WHERE} — the fast route when this machine has ${localTool(platform)}, because the plan engine prebuilds and rebuilds only what has to be.`,
+        why: runsOnEas
+          ? `The native surface changed, so the installed app cannot run this code. This plans the rebuild ${EAS_WHERE} — ${buildBackend!.because} — and prints the plan before it starts anything.`
+          : `The native surface changed, so the installed app cannot run this code. This rebuilds it ${LOCAL_WHERE} — the fast route when this machine has ${localTool(platform)}, because the plan engine prebuilds and rebuilds only what has to be.`,
       });
       followups.push({
-        id: 'impact-eas-build',
-        command: platform
-          ? easBuildCommand(platform)
-          : `npx eas build --profile ${EAS_DEVELOPMENT_PROFILE}`,
-        why: `The same rebuild ${EAS_WHERE}: slower to start and it needs ${EAS_REQUIREMENT}, and it works without ${localTool(platform)} ${LOCAL_WHERE} and ends in an artifact with a URL somebody else can install.`,
+        id: runsOnEas ? 'impact-local-build' : 'impact-eas-build',
+        command: runsOnEas
+          ? `npx exagent dev${platformFlag ? ` --${platform}` : ''} --local`
+          : platform
+            ? easBuildCommand(platform)
+            : `npx eas build --profile ${EAS_DEVELOPMENT_PROFILE}`,
+        why: runsOnEas
+          ? `The same rebuild ${LOCAL_WHERE}, forced past the choice above: faster and free when this machine really does have ${localTool(platform)} somewhere nothing probed.`
+          : `The same rebuild ${EAS_WHERE}: slower to start and it needs ${EAS_REQUIREMENT}, and it works without ${localTool(platform)} ${LOCAL_WHERE} and ends in an artifact with a URL somebody else can install.`,
       });
     }
   } else if (impactClass === 'dev-client-compatible') {

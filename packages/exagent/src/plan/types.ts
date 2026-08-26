@@ -1,6 +1,9 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Decision table
 // Types local to the plan engine. The shared probe/plan contract lives in `src/project/types.ts`.
 
+import type { BuildBackendChoice } from '../toolchain/selectBackend';
+import type { RunTargetChoice } from './runTarget';
+
 /** A platform that needs a native app to run the project. */
 export type NativePlatform = 'ios' | 'android';
 
@@ -57,4 +60,36 @@ export interface DecideStartPlanOptions {
    * decision table stays a pure function of probed state.
    */
   lastBuild?: LastBuildFingerprints;
+  /**
+   * Where this plan's native build runs, when the caller has resolved it.
+   *
+   * The **selection happens here, at planning time**, and never mid-run: a plan whose steps say
+   * `eas build` is the plan an agent approves and the plan that runs (llp/0004 §Contract,
+   * [[0008-guardrails]]). Passed in rather than computed, because the choice depends on the host
+   * and on a config file, and this table is a pure function of probed *project* state.
+   *
+   * `undefined` keeps the pre-selection behaviour — a local build, labelled as one — which is what
+   * every caller that plans no build gets.
+   *
+   * @see llp/0015-backend-selection-and-config.rfc.md §The selection
+   */
+  buildBackend?: BuildBackendChoice | null;
+  /**
+   * Which app to aim for, when somebody asked for one.
+   *
+   * `null`/absent is the normal case: the table decides from the project's own facts. A
+   * `dev-build` choice is the one that changes a plan that would otherwise have worked — a project
+   * Expo Go can run is planned as a development build instead.
+   *
+   * @see ./runTarget.ts
+   */
+  runTarget?: RunTargetChoice | null;
+  /**
+   * Whether the project has an `eas.json`.
+   *
+   * Only read by the EAS route, which cannot start `eas build --profile development` without a
+   * file defining that profile. Absent means "nobody looked", and the plan then assumes there is
+   * one rather than adding a configure step that may be pointless.
+   */
+  easJson?: boolean;
 }

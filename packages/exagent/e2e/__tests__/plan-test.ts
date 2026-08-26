@@ -35,6 +35,13 @@ type StartPlan = {
     detail: string | null;
     caveats: string[];
     alternativeCommand: string | null;
+    selection: {
+      runsOn: 'local' | 'eas';
+      source: 'flag' | 'config' | 'host' | 'toolchain' | 'default';
+      because: string;
+      why: string;
+      doomed: boolean;
+    } | null;
   } | null;
   followups: { id: string; command: string; why: string }[];
 };
@@ -65,6 +72,20 @@ async function setupAsync(fixtureName: string): Promise<string> {
   const projectRoot = await setupFixtureAsync(fixtureName);
   await installStubFingerprintAsync(projectRoot);
   return projectRoot;
+}
+
+/**
+ * Write the developer config into a copied fixture, at the key the CLI reads it from.
+ *
+ * @ref llp/0015-backend-selection-and-config.rfc.md §Where the config lives
+ * `package.json` › `expo` › `exagent`, beside `expo.install` and `expo.doctor`. Written through
+ * the real file, so this exercises the reader rather than a switch built for the test.
+ */
+async function writeExagentConfigAsync(projectRoot: string, config: unknown): Promise<void> {
+  const file = path.join(projectRoot, 'package.json');
+  const packageJson = JSON.parse(await fs.promises.readFile(file, 'utf8'));
+  packageJson.expo = { ...packageJson.expo, exagent: config };
+  await fs.promises.writeFile(file, JSON.stringify(packageJson, null, 2));
 }
 
 /** Ask for the plan of a prepared project as text, and assert that asking executed nothing. */
@@ -261,9 +282,18 @@ describe('exagent dev --plan', () => {
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
   describe('where the build runs', () => {
+    // `--local` rather than nothing: without it this assertion depends on whether the machine
+    // running the test has Xcode, and on one that does not the plan is now the cloud one — which
+    // is the feature, and would read here as a flake.
     it('marks every building step local, and carries the requirement in the payload', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeExagentAsync(projectRoot, [
+        'dev',
+        '--plan',
+        '--json',
+        '--ios',
+        '--local',
+      ]);
 
       const plan: StartPlan = JSON.parse(result.stdout);
       expect(plan.steps.map((step) => [step.id, step.runsOn])).toEqual([
@@ -292,25 +322,47 @@ describe('exagent dev --plan', () => {
       expect(plan.buildLocation).toBeNull();
     });
 
-    // The whole point of probing before the plan is printed: the caller learns that this machine
-    // cannot do the build now, not many minutes later at a compiler that will not start.
-    it('names the EAS route up front when this machine has no Xcode', async () => {
+    // @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+    // The whole point of probing before the plan is printed, and the step past the version that
+    // only warned: on a machine that cannot do the build, the plan *is* the cloud one.
+    it('plans the EAS route when this machine has no Xcode', async () => {
       const projectRoot = await setupAsync('dev-client-app');
       await breakXcodeSelectAsync(projectRoot);
 
       const output = await planTextInAsync(projectRoot, ['--ios']);
 
-      expect(output).toContain('Build: local');
-      expect(output).toContain('Not found');
-      expect(output).toContain('npx eas build --platform ios --profile development');
+      expect(output).toContain('eas build --platform ios --profile development');
+      expect(output).toContain('Build: eas');
       expect(output).toContain('an Expo account');
-      // And the ladder leads with the command that works, not with the plan that would fail.
-      expect(output).toMatch(
-        /Suggested next:\s*\n\s*npx eas build --platform ios --profile development/
+      // The steps are the cloud route, so the local one is not in them at all.
+      expect(output).not.toContain('expo run:ios');
+      // And the ladder leads with what a cloud build needs rather than with the route it took.
+      expect(output).toMatch(/Suggested next:\s*\n\s*npx eas whoami/);
+    });
+
+    it('says which host fact chose the EAS route, before anything runs', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      await breakXcodeSelectAsync(projectRoot);
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const plan: StartPlan = JSON.parse(result.stdout);
+
+      expect(plan.buildLocation).toMatchObject({
+        runsOn: 'eas',
+        platform: 'ios',
+        requirement: 'an Expo account',
+        alternativeCommand: 'npx expo run:ios',
+      });
+      // `host` on a machine that is not macOS, `toolchain` on a Mac whose xcode-select is stubbed.
+      // Both are the answer "this machine cannot"; which of the two depends on the runner.
+      expect(['host', 'toolchain']).toContain(plan.buildLocation!.selection!.source);
+      expect(plan.reasons).toContain(plan.buildLocation!.selection!.why);
+      expect(plan.reasons).toContain(
+        'The cloud build generates the native project itself, so this plan has no prebuild step.'
       );
     });
 
-    it('reports a missing Android SDK the same way, from the directory that is not there', async () => {
+    it('takes the same route for a missing Android SDK, from the directory that is not there', async () => {
       const projectRoot = await setupAsync('dev-client-app');
       const result = await executeExagentAsync(
         projectRoot,
@@ -320,14 +372,67 @@ describe('exagent dev --plan', () => {
 
       const plan: StartPlan = JSON.parse(result.stdout);
       expect(plan.buildLocation).toMatchObject({
+        runsOn: 'eas',
         platform: 'android',
-        status: 'missing',
-        alternativeCommand: 'npx eas build --platform android --profile development',
+        selection: { source: 'toolchain' },
       });
-      expect(plan.buildLocation!.detail).toContain('ANDROID_HOME');
-      expect(plan.followups[0]!.command).toBe(
-        'npx eas build --platform android --profile development'
+      expect(plan.buildLocation!.selection!.because).toContain('ANDROID_HOME');
+      expect(plan.steps.map((step) => step.argv[0])).toContain('eas');
+      expect(plan.followups[0]!.command).toBe('npx eas whoami');
+    });
+
+    // @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+    it('honours --local on a machine that cannot build, and says the plan will fail', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      await breakXcodeSelectAsync(projectRoot);
+
+      const result = await executeExagentAsync(projectRoot, [
+        'dev',
+        '--plan',
+        '--json',
+        '--ios',
+        '--local',
+      ]);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.steps.map((step) => step.argv.join(' '))).toEqual([
+        'expo prebuild --platform ios',
+        'expo run:ios',
+      ]);
+      expect(plan.buildLocation).toMatchObject({
+        runsOn: 'local',
+        status: 'missing',
+        selection: { source: 'flag' },
+      });
+      expect(plan.followups[0]!.command).toBe('npx eas build --platform ios --profile development');
+    });
+
+    it('honours --eas on a machine that could build here', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const result = await executeExagentAsync(projectRoot, [
+        'dev',
+        '--plan',
+        '--json',
+        '--ios',
+        '--eas',
+      ]);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.buildLocation).toMatchObject({ runsOn: 'eas', selection: { source: 'flag' } });
+      expect(plan.buildLocation!.selection!.why).toContain('--eas was passed on the command line');
+    });
+
+    it('refuses --eas and --local together, which name two places for one build', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--plan', '--ios', '--eas', '--local'],
+        { reject: false }
       );
+
+      expect(result.exitCode).not.toBe(0);
+      expect(result.all).toContain('two different places for one build');
+      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
     });
 
     it('says in the help which of the two routes each command is', async () => {
@@ -335,10 +440,132 @@ describe('exagent dev --plan', () => {
       const dev = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
       const wait = await executeExagentAsync(projectRoot, ['build:wait', '--help']);
 
-      expect(dev.all).toContain('local build');
-      expect(dev.all).toContain('npx eas build --platform ios --profile development');
+      expect(dev.all).toContain('A local');
+      expect(dev.all).toContain('A cloud build (eas build) happens');
       expect(wait.all).toContain('runs in the cloud');
       expect(wait.all).toContain('Expo account');
+    });
+  });
+
+  // @ref llp/0015-backend-selection-and-config.rfc.md §Where the config lives
+  describe('the developer config', () => {
+    it('plans a development build for a project Expo Go could run', async () => {
+      const projectRoot = await setupAsync('go-app');
+      await writeExagentConfigAsync(projectRoot, { target: 'dev-build' });
+
+      const result = await executeExagentAsync(projectRoot, [
+        'dev',
+        '--plan',
+        '--json',
+        '--ios',
+        '--local',
+      ]);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.rule).toBe('needs-dev-client');
+      expect(plan.target).toBe('dev-client');
+      expect(plan.steps.map((step) => step.argv.join(' '))).toEqual([
+        'expo install expo-dev-client',
+        'expo prebuild --platform ios',
+        'expo run:ios',
+      ]);
+      // Labelled, so a reader can tell a plan the config changed from one it did not.
+      expect(plan.reasons).toContain(
+        'The exagent config asks for a development build. Expo Go could run this project, and the plan builds one anyway.'
+      );
+      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+    });
+
+    it('leaves the Expo Go plan alone when the config asks for Expo Go', async () => {
+      const projectRoot = await setupAsync('go-app');
+      await writeExagentConfigAsync(projectRoot, { target: 'expo-go' });
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const plan: StartPlan = JSON.parse(result.stdout);
+
+      expect(plan.rule).toBe('expo-go');
+      expect(plan.reasons).toContain(
+        'The exagent config asks for Expo Go. Expo Go can run this project, so that is what the plan uses.'
+      );
+    });
+
+    it('sends the build to EAS on a machine that could do it here', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      await writeExagentConfigAsync(projectRoot, { buildBackend: 'eas' });
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const plan: StartPlan = JSON.parse(result.stdout);
+
+      expect(plan.buildLocation).toMatchObject({ runsOn: 'eas', selection: { source: 'config' } });
+      expect(plan.buildLocation!.selection!.why).toContain('"expo.exagent" in package.json');
+      expect(plan.steps.map((step) => step.argv[0])).toContain('eas');
+    });
+
+    it('applies a per-platform choice to that platform only', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      await writeExagentConfigAsync(projectRoot, { ios: { buildBackend: 'eas' } });
+
+      const ios = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const android = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--plan', '--json', '--android', '--local'],
+        { env: { ANDROID_HOME: path.join(projectRoot, 'no-such-android-sdk') } }
+      );
+
+      expect((JSON.parse(ios.stdout) as StartPlan).buildLocation!.runsOn).toBe('eas');
+      expect((JSON.parse(android.stdout) as StartPlan).buildLocation!.runsOn).toBe('local');
+    });
+
+    it('lets a flag beat the config', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      await writeExagentConfigAsync(projectRoot, { buildBackend: 'eas' });
+
+      const result = await executeExagentAsync(projectRoot, [
+        'dev',
+        '--plan',
+        '--json',
+        '--ios',
+        '--local',
+      ]);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.buildLocation).toMatchObject({ runsOn: 'local', selection: { source: 'flag' } });
+    });
+
+    it('refuses a key it does not know, naming the keys it does', async () => {
+      const projectRoot = await setupAsync('go-app');
+      await writeExagentConfigAsync(projectRoot, { backend: 'eas' });
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--ios'], {
+        reject: false,
+      });
+
+      expect(result.exitCode).not.toBe(0);
+      expect(result.all).toContain('does not know: "backend"');
+      expect(result.all).toContain('"target", "buildBackend", "ios", "android"');
+      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+    });
+
+    it('refuses a value outside the set, naming the set and the location', async () => {
+      const projectRoot = await setupAsync('go-app');
+      await writeExagentConfigAsync(projectRoot, { buildBackend: 'cloud' });
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--ios'], {
+        reject: false,
+      });
+
+      expect(result.exitCode).not.toBe(0);
+      expect(result.all).toContain('"expo.exagent" in package.json');
+      expect(result.all).toContain('"local", "eas"');
+    });
+
+    it('changes nothing for a project that names no config', async () => {
+      const withoutConfig = await setupAsync('go-app');
+      const result = await executeExagentAsync(withoutConfig, ['dev', '--plan', '--json', '--ios']);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.rule).toBe('expo-go');
+      expect(plan.reasons.join(' ')).not.toContain('exagent config');
     });
   });
 

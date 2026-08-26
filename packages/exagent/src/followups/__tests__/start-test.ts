@@ -18,6 +18,7 @@ function mockBuildLocation(overrides: Partial<PlanBuildLocation> = {}): PlanBuil
     detail: null,
     caveats: [],
     alternativeCommand: 'npx eas build --platform ios --profile development',
+    selection: null,
     ...overrides,
   };
 }
@@ -259,6 +260,34 @@ describe(buildStartPlanFollowUps, () => {
       // Xcode on this machine" is what the requirement string produces when it is dropped in.
       expect(followups[0]!.why).toContain('this machine does not have Xcode');
       expect(followups[0]!.why).toContain('an Expo account');
+    });
+
+    // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
+    it(`should offer the account a cloud plan needs, rather than a route it already took`, () => {
+      const followups = buildStartPlanFollowUps(
+        mockPlan({
+          rule: 'dev-client-stale',
+          buildLocation: mockBuildLocation({
+            runsOn: 'eas',
+            requirement: 'an Expo account',
+            alternativeCommand: 'npx expo run:ios',
+            selection: {
+              runsOn: 'eas',
+              source: 'host',
+              because: 'this host runs linux.',
+              why: 'Building in the cloud on EAS: this host runs linux.',
+              doomed: false,
+            },
+          }),
+        }),
+        mockState()
+      );
+
+      expect(ids(followups)).toEqual(['eas-account', 'dev', 'build-freshness']);
+      expect(followups[0]!.command).toBe('npx eas whoami');
+      expect(followups[0]!.why).toContain('an Expo account');
+      // The plan already went to the cloud, so offering the cloud again says nothing.
+      expect(ids(followups)).not.toContain('eas-build-instead');
     });
 
     it(`should keep the plan first when the machine can build`, () => {

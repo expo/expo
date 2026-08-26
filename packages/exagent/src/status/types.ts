@@ -6,6 +6,7 @@ import type { DevServerHostType } from '../dev/advertisedUrl';
 import type { LocalDeviceState } from '../device/localDevice';
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
+import type { PlanBuildLocation } from '../toolchain/types';
 import type { DevServerSource } from '../runtime/devServer';
 
 /** Whether the installed development build can be proven to match the project. */
@@ -178,6 +179,17 @@ export interface NextActionStatus {
    * verify the server that is running rather than to start another.
    */
   why: string | null;
+  /**
+   * Where the plan's native build would run, and what chose that. Null when it builds nothing.
+   *
+   * Reported here for the same reason {@link rule} is: it is a fact about the project and this
+   * host that does not stop being true because a dev server happens to be up. On a machine that
+   * cannot build for the target platform this is the line that says the next build is a cloud one
+   * — before anybody waits many minutes to find out.
+   *
+   * @see llp/0015-backend-selection-and-config.rfc.md §What `status` reports
+   */
+  buildLocation: PlanBuildLocation | null;
 }
 
 /** Sections of the report, in the order they print. */

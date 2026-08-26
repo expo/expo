@@ -1,5 +1,6 @@
 import { resolvePlatformFlag } from '../plan/platformFlags';
 import type { PlanPlatform } from '../plan/types';
+import type { BuildBackend, RunTarget } from '../settings/types';
 import { CommandError } from '../utils/errors';
 import { DEFAULT_DETACH_TIMEOUT_MS } from './detachAsync';
 import { assertKnownDevFlags } from './knownFlags';
@@ -11,6 +12,8 @@ import { assertKnownDevFlags } from './knownFlags';
  * command module answers them and exits before it is called.
  */
 const EXAGENT_ONLY_FLAGS = [
+  '--eas',
+  '--local',
   '--no-agent-skills',
   '--no-followups',
   '--no-checkpoint',
@@ -40,6 +43,20 @@ export interface DevOptions {
   agentSkills: boolean;
   /** Platform asked for on the command line, which the plan engine targets. */
   platform?: PlanPlatform;
+  /**
+   * Where the caller asked the native build to run (`--eas`, `--local`), or null when neither.
+   *
+   * The top of the precedence ladder: a flag beats the project's `exagent` config, which beats
+   * what the toolchain probe found (llp/0015 §The selection).
+   */
+  buildBackend: BuildBackend | null;
+  /**
+   * Which app the caller asked the plan to aim at (`--go`, `--dev-client`), or null when neither.
+   *
+   * Both are `expo start` flags this command also reads, so asking for a development build on a
+   * project Expo Go could run needs no name of its own.
+   */
+  runTarget: RunTarget | null;
   /** Print the plan as JSON instead of a table (`--json`). */
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
@@ -113,6 +130,8 @@ export function resolveDevOptions(argv: string[]): DevOptions {
     expoArgs: argv.filter((arg) => !EXAGENT_ONLY_FLAGS.includes(arg)),
     agentSkills: !argv.includes('--no-agent-skills'),
     platform: resolvePlatformFlag(argv),
+    buildBackend: resolveBuildBackend(argv),
+    runTarget: resolveRunTarget(argv),
     json: argv.includes('--json'),
     followups: !argv.includes('--no-followups'),
     checkpoint: !argv.includes('--no-checkpoint'),
@@ -125,6 +144,60 @@ export function resolveDevOptions(argv: string[]): DevOptions {
     // detached run without a second place to remember.
     detachArgv: argv,
   };
+}
+
+/**
+ * Where the caller asked the build to run, or null when they did not say.
+ *
+ * @throws {CommandError} `BAD_ARGS` when both flags are passed, which asks for two places at once.
+ */
+function resolveBuildBackend(argv: readonly string[]): BuildBackend | null {
+  const eas = argv.includes('--eas');
+  const local = argv.includes('--local');
+  if (eas && local) {
+    throw opposite(
+      '--eas and --local name two different places for one build, so this run has no build to plan.',
+      'Why: --eas builds in the cloud on EAS, which needs an Expo account; --local builds on this machine, which needs Xcode or the Android SDK. A plan contains one build, and it happens in one place.',
+      'How: pass whichever you meant. Passing neither lets this command choose — the plan says which place it picked and why, before anything runs.',
+      'npx exagent dev --plan --eas'
+    );
+  }
+  return eas ? 'eas' : local ? 'local' : null;
+}
+
+/**
+ * Which app the caller asked the plan to aim at, or null when they did not say.
+ *
+ * `--go` and `--dev-client` are `expo start`'s own flags and keep being forwarded to it. What is
+ * new is that this command reads them *first*, as the run target the plan is decided against: a
+ * project Expo Go can run is planned as a development build when `--dev-client` says so.
+ *
+ * @throws {CommandError} `BAD_ARGS` when both are passed.
+ */
+function resolveRunTarget(argv: readonly string[]): RunTarget | null {
+  const go = argv.includes('--go') || argv.includes('-g');
+  const devClient = argv.includes('--dev-client') || argv.includes('-d');
+  if (go && devClient) {
+    throw opposite(
+      '--go and --dev-client name two different apps to run the project in, so this run has no target to plan for.',
+      'Why: --go runs the project inside Expo Go, which needs no native build; --dev-client runs it inside a development build of this project, which needs one. A plan aims at one of them.',
+      'How: pass whichever you meant. Passing neither lets this command choose — Expo Go when it can run the project, a development build when it cannot.',
+      'npx exagent dev --plan --dev-client'
+    );
+  }
+  return go ? 'expo-go' : devClient ? 'dev-build' : null;
+}
+
+/** Two flags that ask for opposite things, in the three sentences every error here is made of. */
+function opposite(
+  what: string,
+  why: string,
+  how: string,
+  suggestedCommand: string
+): CommandError {
+  const error = new CommandError('BAD_ARGS', [what, why, how].join('\n'));
+  error.suggestedCommand = suggestedCommand;
+  return error;
 }
 
 /** `--wait-ready` waits for a dev server this run would not have started. */

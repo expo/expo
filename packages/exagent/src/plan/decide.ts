@@ -3,9 +3,16 @@
 // happens here, so every row is exhaustively unit-testable without a project or a device.
 
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
-import { localBuildLocation } from '../toolchain/planLocation';
-import { localRequirement, LOCAL_WHERE } from '../toolchain/runsOn';
+import { easBuildLocation, localBuildLocation } from '../toolchain/planLocation';
+import {
+  localRequirement,
+  EAS_DEVELOPMENT_PROFILE,
+  EAS_REQUIREMENT,
+  EAS_WHERE,
+  LOCAL_WHERE,
+} from '../toolchain/runsOn';
 import type { RunsOn } from '../toolchain/runsOn';
+import type { BuildBackendChoice } from '../toolchain/selectBackend';
 import type {
   DecideStartPlanOptions,
   LastBuildFingerprints,
@@ -57,6 +64,13 @@ export function decideStartPlan(
 
   const platform = resolveNativePlatform(state, options);
   const build = describeFreshness(state, platform, options.lastBuild ?? {});
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+  // Resolved by the caller and folded in here, so the *steps* of a build plan are the steps of the
+  // backend that was chosen. This is the whole difference from the previous design, which decided
+  // a local plan and then warned that it could not run: the decision is made before the plan is
+  // printed, so the plan that gets approved is the plan that gets run.
+  const backend = options.buildBackend ?? null;
+  const runTarget = options.runTarget ?? null;
 
   // The reason list is written per rule, because the honest sentence about the platform depends on
   // what the plan then does with it: a plan that builds for iOS and a plan that serves a bundle and
@@ -70,6 +84,21 @@ export function decideStartPlan(
   ];
   // A `expo start` step only reaches a device when the caller typed the flag that opens one.
   const facts = factsWhen(openTargetOf(options) != null);
+  /** The extra sentences a plan that *builds* gains from the backend it was given. */
+  const buildFacts = backendReasons(backend, platform, options.easJson);
+  // Said on **every** native row, not only the one a preference moved. "Did my config do
+  // anything?" is a question the plan has to answer either way, and a plan that mentions the
+  // preference only when it changed something leaves the reader unable to tell the two apart.
+  const targetFacts = runTargetReasons(runTarget, state);
+  /** The steps that make and install the app, per the backend that was chosen. */
+  const buildSteps = (reason: string, prebuild: boolean): PlanStep[] =>
+    backend?.runsOn === 'eas'
+      ? easRouteSteps(platform, reason, options)
+      : [...(prebuild ? [prebuildStep(platform)] : []), runStep(platform, reason)];
+  const location = () =>
+    backend?.runsOn === 'eas'
+      ? easBuildLocation(platform, backend)
+      : localBuildLocation(platform, backend);
 
   // Checked-in native directories are the strongest signal: the project is bare, so the plan
   // never regenerates them with prebuild. `expo run:*` performs the pod install / gradle sync
@@ -80,14 +109,14 @@ export function decideStartPlan(
           'bare-fresh',
           'bare',
           [startDevClientStep(build.summary, options)],
-          [...facts, ...build.reasons]
+          [...facts, ...build.reasons, ...targetFacts]
         )
       : plan(
           'bare-stale',
           'bare',
-          [runStep(platform, build.summary)],
-          [...factsWhen(true), ...build.reasons],
-          localBuildLocation(platform)
+          buildSteps(build.summary, false),
+          [...factsWhen(true), ...build.reasons, ...targetFacts, ...buildFacts],
+          location()
         );
   }
 
@@ -99,24 +128,33 @@ export function decideStartPlan(
           'dev-client-fresh',
           'dev-client',
           [startDevClientStep(build.summary, options)],
-          [...facts, ...build.reasons]
+          [...facts, ...build.reasons, ...targetFacts]
         )
       : plan(
           'dev-client-stale',
           'dev-client',
-          [prebuildStep(platform), runStep(platform, build.summary)],
-          [...factsWhen(true), ...build.reasons],
-          localBuildLocation(platform)
+          buildSteps(build.summary, true),
+          [...factsWhen(true), ...build.reasons, ...targetFacts, ...buildFacts],
+          location()
         );
   }
 
-  if (state.expoGo.compatible) {
-    return plan('expo-go', 'expo-go', [startExpoGoStep(options)], facts);
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The run target
+  // The one row a run-target preference can move. Everything below it already ends in a
+  // development build, and nothing a config says can make an incompatible project run in Expo Go —
+  // so `dev-build` is the only value that changes a plan here, and it changes exactly this one.
+  if (state.expoGo.compatible && runTarget?.target !== 'dev-build') {
+    return plan(
+      'expo-go',
+      'expo-go',
+      [startExpoGoStep(options)],
+      [...facts, ...targetFacts]
+    );
   }
 
-  // Not compatible with Expo Go and no development build tooling yet: the project needs the
-  // whole dev-client path. The recorded fingerprint is irrelevant, because no build of this
-  // project can exist before `expo-dev-client` is installed.
+  // Not compatible with Expo Go — or compatible and passed over, because a development build was
+  // asked for. Either way the project needs the whole dev-client path, and the recorded
+  // fingerprint is irrelevant: no build of this project can exist before `expo-dev-client` is.
   return plan(
     'needs-dev-client',
     'dev-client',
@@ -127,11 +165,10 @@ export function decideStartPlan(
         'a-minute',
         'Adds expo-dev-client, which the development build needs to load the dev server.'
       ),
-      prebuildStep(platform),
-      runStep(platform, 'The first development build of this project has to be made.'),
+      ...buildSteps('The first development build of this project has to be made.', true),
     ],
-    factsWhen(true),
-    localBuildLocation(platform)
+    [...factsWhen(true), ...targetFacts, ...buildFacts],
+    location()
   );
 }
 
@@ -234,6 +271,116 @@ function runStep(platform: NativePlatform, reason: string): PlanStep {
     `Builds the ${platform} app ${LOCAL_WHERE} (a local build, which needs ${localRequirement(platform)}), installs it, and starts the dev server. ${reason}`,
     'local'
   );
+}
+
+/**
+ * The steps that replace `prebuild` + `run:*` when the build runs on EAS.
+ *
+ * Three differences from the local route, all of them worth the reader's attention:
+ *
+ * - **No prebuild.** EAS Build generates the native project itself for a CNG app, so a prebuild
+ *   here would only be work done twice — and it is the step that needs a toolchain this route was
+ *   chosen to avoid.
+ * - **The dev server is its own step.** `expo run:*` builds, installs and starts; `eas build`
+ *   builds and stops, so `expo start --dev-client` has to follow it.
+ * - **Installing the artifact is guidance, not a step** [decided — llp/0015 §Installing is
+ *   guidance]. Whether the finished build can be installed *here* depends on there being a
+ *   simulator or a device attached to this machine, which is exactly what the host that sent this
+ *   build to the cloud may not have. A step that cannot be run on the host it was planned for is
+ *   worse than a sentence saying what to run when there is somewhere to run it.
+ */
+function easRouteSteps(
+  platform: NativePlatform,
+  reason: string,
+  options: DecideStartPlanOptions
+): PlanStep[] {
+  const configure: PlanStep[] =
+    options.easJson === false
+      ? [
+          step(
+            'eas-configure',
+            ['eas', 'build:configure'],
+            'a-minute',
+            `Creates eas.json, which the build below reads to know what the "${EAS_DEVELOPMENT_PROFILE}" profile is. This project has none yet.`
+          ),
+        ]
+      : [];
+
+  return [
+    ...configure,
+    step(
+      'eas-build',
+      ['eas', 'build', '--platform', platform, '--profile', EAS_DEVELOPMENT_PROFILE],
+      'many-minutes',
+      `Builds the ${platform} development build ${EAS_WHERE} (a cloud build, which needs ${EAS_REQUIREMENT} rather than ${localRequirement(platform)}) and ends with a downloadable artifact. Install it on a device before the dev server can reach it — "npx eas build:run --platform ${platform} --latest" does that on a booted simulator or an attached device. ${reason}`,
+      'eas'
+    ),
+    step(
+      'start',
+      ['expo', 'start', '--dev-client'],
+      'seconds',
+      `Starts the dev server for the build above. Unlike a local build, "eas build" does not start one — and it serves nothing until the artifact is installed.`
+    ),
+  ];
+}
+
+/**
+ * The sentences a building plan gains from the backend that was chosen.
+ *
+ * The selection's own `why` first, because it is the sentence that says *what decided this* and
+ * every other surface prints the same one. What follows is only what this plan's shape adds.
+ */
+function backendReasons(
+  backend: BuildBackendChoice | null,
+  platform: NativePlatform,
+  easJson: boolean | undefined
+): string[] {
+  if (!backend) {
+    return [];
+  }
+  const reasons = [backend.why];
+
+  if (backend.doomed) {
+    reasons.push(
+      `That was asked for explicitly, so the plan above is the plan that runs — and its build step will fail, because nothing on this host can perform it. Remove the choice, or pass --eas, to build for ${platform} ${EAS_WHERE} instead.`
+    );
+  }
+
+  if (backend.runsOn === 'eas') {
+    reasons.push(
+      `The cloud build generates the native project itself, so this plan has no prebuild step.`
+    );
+    if (easJson === false) {
+      reasons.push(
+        `This project has no eas.json, so the plan configures one first; that step may ask which platforms to set up.`
+      );
+    }
+  }
+
+  return reasons;
+}
+
+/** What a run-target preference did to this plan, or nothing when nobody expressed one. */
+function runTargetReasons(
+  runTarget: { target: string; why: string } | null,
+  state: ProjectState
+): string[] {
+  if (!runTarget) {
+    return [];
+  }
+  if (runTarget.target === 'dev-build') {
+    return [
+      state.expoGo.compatible
+        ? `${runTarget.why} Expo Go could run this project, and the plan builds one anyway.`
+        : `${runTarget.why} Expo Go could not have run this project in any case.`,
+    ];
+  }
+  // `expo-go` asked for, which this CLI can honour and cannot enforce.
+  return [
+    state.expoGo.compatible
+      ? `${runTarget.why} Expo Go can run this project, so that is what the plan uses.`
+      : `${runTarget.why} Expo Go cannot run this project, so the plan is a development build regardless — the reasons are above.`,
+  ];
 }
 
 /**

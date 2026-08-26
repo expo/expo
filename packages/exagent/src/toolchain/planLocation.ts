@@ -13,6 +13,7 @@ import {
   EAS_WHERE,
   LOCAL_WHERE,
 } from './runsOn';
+import type { BuildBackendChoice } from './selectBackend';
 import type { PlanBuildLocation, ToolchainProbe } from './types';
 
 /**
@@ -21,7 +22,10 @@ import type { PlanBuildLocation, ToolchainProbe } from './types';
  * `status: null` is "nobody asked", which reads differently from the probe's own `unknown`
  * ("asked, and could not tell").
  */
-export function localBuildLocation(platform: NativePlatform): PlanBuildLocation {
+export function localBuildLocation(
+  platform: NativePlatform,
+  selection: BuildBackendChoice | null = null
+): PlanBuildLocation {
   return {
     runsOn: 'local',
     platform,
@@ -30,6 +34,31 @@ export function localBuildLocation(platform: NativePlatform): PlanBuildLocation 
     detail: null,
     caveats: [],
     alternativeCommand: easBuildCommand(platform),
+    selection,
+  };
+}
+
+/**
+ * What the cloud build of `platform` needs, and what chose it.
+ *
+ * The mirror of {@link localBuildLocation}, and `status` stays `null` on purpose: it is the answer
+ * to "does *this machine* have the toolchain", and a build that runs in a data centre does not ask
+ * that question. Why the plan is here at all is in {@link BuildBackendChoice.why}, which every
+ * surface prints. The alternative is the local build, spelled the way `dev` spells it.
+ */
+export function easBuildLocation(
+  platform: NativePlatform,
+  selection: BuildBackendChoice | null = null
+): PlanBuildLocation {
+  return {
+    runsOn: 'eas',
+    platform,
+    requirement: EAS_REQUIREMENT,
+    status: null,
+    detail: null,
+    caveats: [],
+    alternativeCommand: `npx expo run:${platform}`,
+    selection,
   };
 }
 
@@ -57,10 +86,20 @@ export function applyToolchainProbe(plan: StartPlan, probe: ToolchainProbe): Sta
     caveats: probe.caveats,
   };
 
+  // A plan that already chose its backend has said all of this once, in the selection's own
+  // sentence, which `decideStartPlan` put in the reasons — repeating it here would print the same
+  // fact twice in the same list. The one exception is a toolchain the probe found **missing**:
+  // with a selection in hand that state is only reachable because a flag or the config asked to
+  // build here anyway, and "this machine does not have it, and here is what does work" is the
+  // sentence that caller most needs. The caveats are always worth adding: they are the findings
+  // that did *not* decide anything and do change what happens next.
+  const reasons =
+    !buildLocation.selection || applied.status === 'missing' ? toolchainReasons(applied) : [];
+
   return {
     ...plan,
     buildLocation: applied,
-    reasons: [...plan.reasons, ...toolchainReasons(applied), ...probe.caveats],
+    reasons: [...plan.reasons, ...reasons, ...probe.caveats],
   };
 }
 

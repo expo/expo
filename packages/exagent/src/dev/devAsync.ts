@@ -16,17 +16,16 @@ import {
 import { Log } from '../log';
 import { classifySubprocessFailure, lastNonEmptyLine } from '../needsHuman/detect';
 import { needsHumanErrorFrom } from '../needsHuman/error';
-import { decideStartPlan } from '../plan/decide';
 import { emitStartPlan } from '../plan/emit';
 import { event as planEvent } from '../plan/events';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../plan/lastBuild';
 import { isPlatformFlag } from '../plan/platformFlags';
+import { resolveStartPlanAsync } from '../plan/resolveAsync';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { resolveStartFollowUpsAsync } from '../start/followUps';
 import { runDevServerAsync, type DevServerRun } from '../start/startAsync';
-import { probePlanBuildLocationAsync } from '../toolchain';
 import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
@@ -60,19 +59,20 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   }
 
   const state = await probeProjectStateAsync(projectRoot);
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
-  // Two calls, because the decision table is a pure function of *project* state and "can this
-  // machine build for ios?" is a fact about the host. The probe runs only for a plan that builds,
-  // and it cannot fail the run: an unanswerable probe reports `unknown` and the plan stands.
-  const plan = await probePlanBuildLocationAsync(
-    decideStartPlan(state, {
-      platform: options.platform ?? resolveDefaultPlatform(state),
-      // Only the flag the caller typed reaches `expo start`, and only that form opens the app on a
-      // device. The default above says what to *build* for and never appears on a command line.
-      requestedPlatform: options.platform,
-      lastBuild: readLastBuildFingerprints(projectRoot),
-    })
-  );
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+  // One call that folds in everything outside the project: the developer's config, the flags they
+  // typed, this host and the toolchain probe. The backend is chosen **here**, before the plan is
+  // printed, so the steps an agent approves are the steps that run — never swapped mid-run
+  // (llp/0008 §Plan-with-cost dry run).
+  const plan = await resolveStartPlanAsync(projectRoot, state, {
+    platform: options.platform ?? resolveDefaultPlatform(state),
+    // Only the flag the caller typed reaches `expo start`, and only that form opens the app on a
+    // device. The default above says what to *build* for and never appears on a command line.
+    requestedPlatform: options.platform,
+    lastBuild: readLastBuildFingerprints(projectRoot),
+    requestedBackend: options.buildBackend,
+    requestedTarget: options.runTarget,
+  });
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command
   // `--plan` stops here, so its follow-ups are about the plan itself and the plan object is the
@@ -155,6 +155,12 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
 /**
  * Warn, once, when the plan builds here and this machine cannot.
  *
+ * @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+ * This is now the *rare* case, and the change is the point of the whole feature: detection routes
+ * a build it knows cannot happen here to the cloud while the plan is being made, so a local plan
+ * on a machine with no toolchain is one somebody asked for by name. The warning says who asked, so
+ * the reader knows which line to change.
+ *
  * Only for `missing`: `unknown` has established nothing about the machine, and a warning about a
  * toolchain that is probably installed is noise on every run that follows.
  */
@@ -164,8 +170,14 @@ function warnUnbuildable(plan: StartPlan): void {
     return;
   }
   const tool = localTool(location.platform);
+  const asked =
+    location.selection?.source === 'flag'
+      ? ' --local asked for this build to run here.'
+      : location.selection?.source === 'config'
+        ? ' The exagent config asks for this build to run here.'
+        : '';
   Log.warn(
-    `This plan builds ${LOCAL_WHERE} and this machine does not have ${tool}: ${location.detail} The build step will fail once it reaches the compiler. To build for ${location.platform} without ${tool}, run "${location.alternativeCommand}", which builds ${EAS_WHERE} and needs ${EAS_REQUIREMENT}.`
+    `This plan builds ${LOCAL_WHERE} and this machine does not have ${tool}: ${location.detail}${asked} The build step will fail once it reaches the compiler. To build for ${location.platform} without ${tool}, run "${location.alternativeCommand}", which builds ${EAS_WHERE} and needs ${EAS_REQUIREMENT}.`
   );
 }
 
@@ -187,7 +199,7 @@ function stepOutputFor(options: DevOptions): SubprocessOutput {
 /** The step that ended a plan, and everything known about how it ended. */
 interface StepFailure {
   step: PlanStep;
-  /** The `expo` arguments it actually ran with, which is what a reader has to reproduce. */
+  /** The CLI arguments it actually ran with, which is what a reader has to reproduce. */
   args: string[];
   /** Whether this step is the one that starts the dev server. */
   devServerStep: boolean;
@@ -236,7 +248,7 @@ async function executePlanAsync(
             agentSkills: options.agentSkills,
             output,
           })
-        : await runStepAsync(projectRoot, stepArgs, output);
+        : await runStepAsync(projectRoot, step, stepArgs, output);
 
     let result = await runStep(args);
     let portCollided = false;
@@ -407,13 +419,41 @@ async function portDemandedError(projectRoot: string, port: number): Promise<Com
 /** Run a plan step that is not a dev server, in the output mode this run is in. */
 async function runStepAsync(
   projectRoot: string,
+  step: PlanStep,
   args: string[],
   output: SubprocessOutput
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  if (step.argv[0] === 'eas') {
+    return await runEasStepAsync(projectRoot, args, output);
+  }
   if (output === 'inherit') {
     return { exitCode: await runExpoAsync(projectRoot, args), stdout: '', stderr: '' };
   }
   const { result } = await spawnExpoAsync(projectRoot, args, { output });
+  return { exitCode: result.exitCode ?? 1, stdout: result.stdout, stderr: result.stderr };
+}
+
+/**
+ * Run one `eas` step of a plan.
+ *
+ * @ref llp/0015-backend-selection-and-config.rfc.md §Running an `eas` step
+ * The EAS CLI is reached as a subprocess like every other member of the family (llp/0001
+ * constraint 5), and it is resolved with the *throwing* resolver: a plan that chose the cloud
+ * cannot do its job without it, so "no eas binary" is an error with an install line rather than a
+ * step that quietly does nothing. The output mode is the plan's own — `inherit` is what makes the
+ * EAS CLI's own progress and its credential questions reach the person watching.
+ */
+async function runEasStepAsync(
+  projectRoot: string,
+  args: string[],
+  output: SubprocessOutput
+): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  const { resolveEasCliOrThrow } = require('../utils/easCli') as typeof import('../utils/easCli');
+  const { spawnSubprocessAsync } =
+    require('../utils/subprocess') as typeof import('../utils/subprocess');
+
+  const easCli = resolveEasCliOrThrow(projectRoot);
+  const result = await spawnSubprocessAsync(easCli.command, args, { cwd: projectRoot, output });
   return { exitCode: result.exitCode ?? 1, stdout: result.stdout, stderr: result.stderr };
 }
 
@@ -430,9 +470,11 @@ async function runStepAsync(
  * @throws {NeedsHumanError} when the registry recognises what stopped the step.
  */
 function assertNotNeedsHuman(failure: StepFailure): void {
-  const invocation = `npx expo ${failure.args.join(' ')}`;
+  const invocation = invocationOf(failure);
   const needsHuman = classifySubprocessFailure({
-    tool: 'expo',
+    // The registry is keyed by tool, and an `eas build` that stops for a login is a different
+    // scenario from an `expo start` that stops for a prompt.
+    tool: failure.step.argv[0] === 'eas' ? 'eas' : 'expo',
     invocation,
     exitCode: failure.exitCode,
     stdout: failure.stdout,
@@ -487,6 +529,16 @@ function stopPromptFor(
   };
 }
 
+/** The command a reader has to type to reproduce one step, exactly as it ran. */
+function invocationOf(failure: StepFailure): string {
+  return `npx ${failure.step.argv[0]} ${failure.args.join(' ')}`;
+}
+
+/** The CLI a step drives, as a reader would name it in a sentence. */
+function cliNameOf(step: PlanStep): string {
+  return step.argv[0] === 'eas' ? 'EAS' : 'Expo';
+}
+
 /** The first line of a captured failure that says something about the cause, or null for none. */
 function firstLineMatching(failure: StepFailure, pattern: RegExp): string | null {
   return (
@@ -511,7 +563,7 @@ function planStepFailedError(
   output: SubprocessOutput,
   exitCode: number
 ): CommandError {
-  const invocation = `npx expo ${failure.args.join(' ')}`;
+  const invocation = invocationOf(failure);
   // In `tee` and `inherit` mode the tool's own output already reached the terminal, and repeating
   // it would bury the three lines that say what to do.
   const tail = output === 'capture' ? outputTail(`${failure.stdout}${failure.stderr}`, 12) : '';
@@ -520,8 +572,8 @@ function planStepFailedError(
     [
       `The plan stopped at "${failure.step.id}": "${invocation}" exited ${exitCode}.`,
       failure.devServerStep
-        ? `Why: that step is the one that starts the dev server, and its process has exited, so no dev server is running for this project. The exit code above is the Expo CLI's own, not this command's.`
-        : `Why: every later step of the plan depends on this one, so nothing after it ran. The exit code above is the Expo CLI's own, not this command's.`,
+        ? `Why: that step is the one that starts the dev server, and its process has exited, so no dev server is running for this project. The exit code above is the ${cliNameOf(failure.step)} CLI's own, not this command's.`
+        : `Why: every later step of the plan depends on this one, so nothing after it ran. The exit code above is the ${cliNameOf(failure.step)} CLI's own, not this command's.`,
       `How: run the command above yourself to see it fail with its whole output, or run "npx exagent dev --plan" to see the steps this plan is made of.`,
       tail ? `\nWhat the tool printed:\n${tail}` : '',
     ]
@@ -574,13 +626,13 @@ async function resolveRunFollowUpsAsync(
  * `expo run:*` accept a different set of options.
  */
 function resolveStepArgs(step: PlanStep, options: DevOptions, isLast: boolean): string[] {
-  assertExpoStep(step);
+  assertRunnableStep(step);
   const args = step.argv.slice(1);
   if (!isLast || !options.expoArgs.length) {
     return args;
   }
 
-  if (step.argv[1] !== 'start') {
+  if (step.argv[0] !== 'expo' || step.argv[1] !== 'start') {
     // The platform flags were already acted on: they picked the platform this step builds for.
     const dropped = options.expoArgs.filter((arg) => !isPlatformFlag(arg));
     if (dropped.length) {
@@ -598,11 +650,16 @@ function resolveStepArgs(step: PlanStep, options: DevOptions, isLast: boolean): 
 
 /** Steps that generate the native projects, overwriting whatever is checked in. */
 function isPrebuildStep(step: PlanStep): boolean {
-  return step.argv[1] === 'prebuild';
+  return step.argv[0] === 'expo' && step.argv[1] === 'prebuild';
 }
 
 /** Steps that start a dev server, and so get the skill sync of the `exagent start` wrapper. */
 function isDevServerStep(step: PlanStep): boolean {
+  if (step.argv[0] !== 'expo') {
+    // `eas build` finishes with an artifact and starts nothing. The dev server of an EAS-backed
+    // plan is the `expo start --dev-client` step that follows it.
+    return false;
+  }
   const command = step.argv[1];
   return command === 'start' || command === 'run:ios' || command === 'run:android';
 }
@@ -629,6 +686,13 @@ function recordBuildOf(projectRoot: string, step: PlanStep, state: ProjectState)
 }
 
 function resolveBuildPlatform(step: PlanStep): NativePlatform | null {
+  if (step.argv[0] !== 'expo') {
+    // @ref llp/0015-backend-selection-and-config.rfc.md §Installing is guidance
+    // Deliberately not `eas build`. The record answers "does the app **installed on a device**
+    // match this project", and a cloud build ends in an artifact that nothing here has installed.
+    // Recording it would mark the next plan fresh against a build no device is running.
+    return null;
+  }
   if (step.argv[1] === 'run:ios') {
     return 'ios';
   }
@@ -649,15 +713,18 @@ function resolveDefaultPlatform(state: ProjectState): PlanPlatform {
   return process.platform === 'darwin' ? 'ios' : 'android';
 }
 
+/** The CLIs a plan step may invoke. Everything else is a step this version cannot run. */
+const RUNNABLE_CLIS = ['expo', 'eas'];
+
 /**
- * Every v1 step runs the `expo` CLI. This guard turns a future step for another CLI
- * (`eas-cli`, `expo-doctor`) into a clear error instead of a wrong `expo` invocation.
+ * A plan step runs the `expo` CLI or the `eas` one. This guard turns a step for any other
+ * (`expo-doctor`, `fingerprint`) into a clear error instead of a wrong invocation.
  */
-function assertExpoStep(step: PlanStep): void {
-  if (step.argv[0] !== 'expo') {
+function assertRunnableStep(step: PlanStep): void {
+  if (!RUNNABLE_CLIS.includes(step.argv[0]!)) {
     throw new CommandError(
       'UNSUPPORTED_PLAN_STEP',
-      `Cannot run the plan step "${step.id}": it invokes "${step.argv[0]}", and this version of exagent only runs the "expo" CLI. Update exagent, or run the step yourself with "npx ${step.argv.join(' ')}".`
+      `Cannot run the plan step "${step.id}": it invokes "${step.argv[0]}", and this version of exagent only runs the ${RUNNABLE_CLIS.map((cli) => `"${cli}"`).join(' and ')} CLIs. Update exagent, or run the step yourself with "npx ${step.argv.join(' ')}".`
     );
   }
 }

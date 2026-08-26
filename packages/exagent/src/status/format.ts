@@ -4,6 +4,7 @@
 
 import chalk from 'chalk';
 
+import type { PlanBuildLocation } from '../toolchain/types';
 import type {
   AuthStatus,
   DevServerStatus,
@@ -45,7 +46,27 @@ export function formatStatusReport(report: StatusReport): string {
       : []),
     row('auth', report.auth, authLine, report, 'auth'),
     row('next', report.next, nextLine, report, 'next'),
+    // @ref llp/0015-backend-selection-and-config.rfc.md §What `status` reports
+    // Only when the next plan contains a build, because only then is there a place for it to run.
+    // Its own line rather than a clause on `next`: where the build happens decides what the caller
+    // needs — a toolchain here, or an account and a queue — and that is not a detail of a command
+    // name. On a host that cannot build for the target platform, this is the line that says the
+    // next build is a cloud one, before anybody waits many minutes to find out.
+    ...(report.next?.buildLocation
+      ? [`${chalk.dim('build'.padEnd(LABEL_WIDTH))}${buildLine(report.next.buildLocation)}`]
+      : []),
   ].join('\n');
+}
+
+/** Where the next plan's build runs, and the one clause that says what chose that. */
+function buildLine(location: PlanBuildLocation): string {
+  const where = location.runsOn === 'eas' ? chalk.yellow('eas') : chalk.green('local');
+  const because = location.selection
+    ? location.selection.doomed
+      ? chalk.red(location.selection.because)
+      : chalk.dim(location.selection.because)
+    : chalk.dim(`needs ${location.requirement}; nothing chose this`);
+  return [where, because].join(SEPARATOR);
 }
 
 /** Whether the skills line would say anything: an agent is selected, or a skill was found. */

@@ -1,5 +1,7 @@
 import type { ProjectState } from '../../project/types';
+import type { BuildBackendChoice } from '../../toolchain/selectBackend';
 import { decideStartPlan } from '../decide';
+import type { RunTargetChoice } from '../runTarget';
 
 function createState(overrides: Partial<ProjectState> = {}): ProjectState {
   return {
@@ -34,6 +36,30 @@ function createDevClientState(overrides: Partial<ProjectState> = {}): ProjectSta
 
 function argvOf(steps: { argv: string[] }[]): string[][] {
   return steps.map((step) => step.argv);
+}
+
+/** A resolved backend, as `selectBuildBackend` hands one to the table. */
+function backend(
+  runsOn: 'local' | 'eas',
+  overrides: Partial<BuildBackendChoice> = {}
+): BuildBackendChoice {
+  const because = 'this is a test.';
+  return {
+    runsOn,
+    source: runsOn === 'eas' ? 'toolchain' : 'default',
+    because,
+    why: `Building ${runsOn === 'eas' ? 'in the cloud on EAS' : 'on this machine'}: ${because}`,
+    doomed: false,
+    ...overrides,
+  };
+}
+
+/** A run target somebody asked for, as `selectRunTarget` hands one to the table. */
+function runTarget(
+  target: 'expo-go' | 'dev-build',
+  source: 'flag' | 'config' = 'config'
+): RunTargetChoice {
+  return { target, source, why: `${target} was asked for, for this test.` };
 }
 
 describe(decideStartPlan, () => {
@@ -415,6 +441,227 @@ describe(decideStartPlan, () => {
       expect(plan.steps.at(-1)!.argv).toEqual(['expo', 'run:android']);
       expect(plan.reasons).toContain(
         'No platform was named; this host suggests android, and the plan builds for it.'
+      );
+    });
+  });
+
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+  describe('the EAS backend', () => {
+    it(`should replace prebuild and run:* with one cloud build and a dev server`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: backend('eas'),
+      });
+
+      expect(argvOf(plan.steps)).toEqual([
+        ['eas', 'build', '--platform', 'ios', '--profile', 'development'],
+        ['expo', 'start', '--dev-client'],
+      ]);
+      expect(plan.rule).toBe('dev-client-stale');
+      expect(plan.target).toBe('dev-client');
+    });
+
+    it(`should label the cloud build as running on eas and the dev server as running nowhere`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: backend('eas'),
+      });
+
+      expect(plan.steps.map((step) => [step.id, step.runsOn])).toEqual([
+        ['eas-build', 'eas'],
+        ['start', null],
+      ]);
+    });
+
+    it(`should point the plan's build location at the cloud, with the local build as the alternative`, () => {
+      const chosen = backend('eas');
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'android',
+        buildBackend: chosen,
+      });
+
+      expect(plan.buildLocation).toMatchObject({
+        runsOn: 'eas',
+        platform: 'android',
+        alternativeCommand: 'npx expo run:android',
+        selection: chosen,
+      });
+    });
+
+    it(`should say why the backend was chosen, in the plan's own reasons`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: backend('eas', { why: 'Building in the cloud on EAS: this host runs linux.' }),
+      });
+
+      expect(plan.reasons).toContain('Building in the cloud on EAS: this host runs linux.');
+      expect(plan.reasons).toContain(
+        'The cloud build generates the native project itself, so this plan has no prebuild step.'
+      );
+    });
+
+    it(`should tell the reader that the artifact has to be installed before the dev server helps`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: backend('eas'),
+      });
+
+      expect(plan.steps[0]!.reason).toContain('npx eas build:run --platform ios --latest');
+      expect(plan.steps[1]!.reason).toContain('serves nothing until the artifact is installed');
+    });
+
+    it(`should configure eas.json first when the project has none`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: backend('eas'),
+        easJson: false,
+      });
+
+      expect(argvOf(plan.steps)[0]).toEqual(['eas', 'build:configure']);
+      expect(plan.reasons).toContain(
+        'This project has no eas.json, so the plan configures one first; that step may ask which platforms to set up.'
+      );
+    });
+
+    it(`should not configure eas.json when the project already has one`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: backend('eas'),
+        easJson: true,
+      });
+
+      expect(argvOf(plan.steps)[0]).toEqual([
+        'eas',
+        'build',
+        '--platform',
+        'ios',
+        '--profile',
+        'development',
+      ]);
+    });
+
+    it(`should keep the install step of a project that has no expo-dev-client yet`, () => {
+      const state = createState({ expoGo: { compatible: false, reasons: [] } });
+      const plan = decideStartPlan(state, { platform: 'ios', buildBackend: backend('eas') });
+
+      expect(plan.rule).toBe('needs-dev-client');
+      expect(argvOf(plan.steps)).toEqual([
+        ['expo', 'install', 'expo-dev-client'],
+        ['eas', 'build', '--platform', 'ios', '--profile', 'development'],
+        ['expo', 'start', '--dev-client'],
+      ]);
+    });
+
+    it(`should take a bare project to the cloud without touching its native directories`, () => {
+      const state = createDevClientState({ nativeDirs: { ios: true, android: false } });
+      const plan = decideStartPlan(state, { platform: 'ios', buildBackend: backend('eas') });
+
+      expect(plan.rule).toBe('bare-stale');
+      expect(argvOf(plan.steps)).toEqual([
+        ['eas', 'build', '--platform', 'ios', '--profile', 'development'],
+        ['expo', 'start', '--dev-client'],
+      ]);
+    });
+
+    it(`should leave a plan that builds nothing alone`, () => {
+      const plan = decideStartPlan(createState(), { platform: 'ios', buildBackend: backend('eas') });
+
+      expect(plan.rule).toBe('expo-go');
+      expect(argvOf(plan.steps)).toEqual([['expo', 'start', '--go']]);
+      expect(plan.buildLocation).toBeNull();
+    });
+  });
+
+  describe('the local backend', () => {
+    it(`should keep the steps it has always had, and carry the choice on the plan`, () => {
+      const chosen = backend('local');
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: chosen,
+      });
+
+      expect(argvOf(plan.steps)).toEqual([
+        ['expo', 'prebuild', '--platform', 'ios'],
+        ['expo', 'run:ios'],
+      ]);
+      expect(plan.buildLocation).toMatchObject({ runsOn: 'local', selection: chosen });
+      expect(plan.reasons).toContain(chosen.why);
+    });
+
+    it(`should say out loud that an explicit local build cannot work on this host`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        buildBackend: backend('local', { source: 'config', doomed: true }),
+      });
+
+      expect(plan.reasons).toContain(
+        'That was asked for explicitly, so the plan above is the plan that runs — and its build step will fail, because nothing on this host can perform it. Remove the choice, or pass --eas, to build for ios in the cloud on EAS instead.'
+      );
+    });
+  });
+
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The run target
+  describe('the run target', () => {
+    it(`should plan a development build for a project Expo Go could run`, () => {
+      const plan = decideStartPlan(createState(), {
+        platform: 'ios',
+        runTarget: runTarget('dev-build'),
+      });
+
+      expect(plan.rule).toBe('needs-dev-client');
+      expect(plan.target).toBe('dev-client');
+      expect(argvOf(plan.steps)).toEqual([
+        ['expo', 'install', 'expo-dev-client'],
+        ['expo', 'prebuild', '--platform', 'ios'],
+        ['expo', 'run:ios'],
+      ]);
+    });
+
+    it(`should label the plan it changed`, () => {
+      const plan = decideStartPlan(createState(), {
+        platform: 'ios',
+        runTarget: runTarget('dev-build'),
+      });
+
+      expect(plan.reasons).toContain(
+        'dev-build was asked for, for this test. Expo Go could run this project, and the plan builds one anyway.'
+      );
+    });
+
+    it(`should change nothing for a project that already needs a development build`, () => {
+      const withTarget = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        runTarget: runTarget('dev-build'),
+      });
+      const without = decideStartPlan(createDevClientState(), { platform: 'ios' });
+
+      expect(argvOf(withTarget.steps)).toEqual(argvOf(without.steps));
+      expect(withTarget.reasons).toContain(
+        'dev-build was asked for, for this test. Expo Go could not have run this project in any case.'
+      );
+    });
+
+    it(`should keep the Expo Go plan when Expo Go was asked for and can run it`, () => {
+      const plan = decideStartPlan(createState(), {
+        platform: 'ios',
+        runTarget: runTarget('expo-go'),
+      });
+
+      expect(plan.rule).toBe('expo-go');
+      expect(plan.reasons).toContain(
+        'expo-go was asked for, for this test. Expo Go can run this project, so that is what the plan uses.'
+      );
+    });
+
+    it(`should not pretend a project Expo Go cannot run will run in it`, () => {
+      const plan = decideStartPlan(createDevClientState(), {
+        platform: 'ios',
+        runTarget: runTarget('expo-go'),
+      });
+
+      expect(plan.rule).toBe('dev-client-stale');
+      expect(plan.reasons).toContain(
+        'expo-go was asked for, for this test. Expo Go cannot run this project, so the plan is a development build regardless — the reasons are above.'
       );
     });
   });
