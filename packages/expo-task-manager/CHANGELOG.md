@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Warn when defining tasks after the JavaScript bundle has finished loading.
+
 ### 🐛 Bug fixes
 
 - [Android] Clear headless task manager on context destroy ([#47958](https://github.com/expo/expo/pull/47958) by [@Wenszel](https://github.com/Wenszel))
