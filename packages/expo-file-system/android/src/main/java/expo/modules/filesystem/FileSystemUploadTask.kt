@@ -261,8 +261,9 @@ private class CountingSink(
 
 private fun UnifiedFileInterface.asRequestBody(contentType: String?): RequestBody {
   return object : RequestBody() {
-    // length() on a SAF document is a ContentResolver query, and it can fall back to
-    // reading the whole stream; resolve it once, and not before OkHttp asks for it.
+    // length() is a ContentResolver query for content:// files, and ContentProviderFile
+    // and AssetFile can fall back to reading the whole stream; resolve it once, and
+    // not before OkHttp asks for it.
     private val resolvedLength: Long by lazy { length() }
 
     override fun contentType() = contentType?.toMediaTypeOrNull()
