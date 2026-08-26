@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add a scene URL transformation hook to `ExpoAppSceneDelegate`.
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
