@@ -799,6 +799,52 @@ lines that do not run. Only `npx exagent` is rewritten.
 `cli:error` events carry `npx exagent`, whatever shell the terminal is. That contract does not move
 with the caller's runner, and `npx exagent` runs in a Bun project exactly as it does anywhere else.
 
+### The runner this CLI *spawns* with is a different question
+
+[confirmed — Kudo, 2026-08-26, from a field report: `bunx exagent whoami` spawned `npm exec eas-cli`.]
+
+The scoping rule above is about **text a person reads**, and it is right: a suggestion naming
+another package is a line that may not run under Bun, so only this CLI's own name is rewritten. It
+was silently doing a second job it was never meant to do, though — nothing rewrote the runner this
+CLI *spawns* published packages with, and that was the literal `npx` in five places. So a caller who
+reached `exagent` through Bun was handed npm's exec for every package the CLI fetches: a different
+runner, a different cache, and a slower first run, from a CLI they had reached through Bun.
+
+`src/utils/packageRunner.ts` is the second answer, and the split is the design: **a suggestion is
+text and a spawn is a binary.** Text is rewritten conservatively, because a wrong line wastes a
+person's paste. A spawn resolves outright, because the runner is not a package name — `bunx <pkg>`
+and `npx <pkg>` fetch and run the same published package, and the only thing that differs is which
+tool does the fetching. Verified rather than assumed: `bunx eas-cli@latest whoami` answers
+`kudochien` and `bunx expo-doctor@latest --version` answers `1.20.3` [observed — live, 2026-08-26,
+bun 1.3.14], and `bunx` resolves a local `node_modules/.bin` entry before it downloads, exactly as
+`npx` does.
+
+Detection is shared with the suggestion path and needed no change — the same
+`npm_config_user_agent` / `npm_execpath` pair, re-confirmed live against `bunx`, `bun run` and
+`npx` on 2026-08-26. Worth restating why in-process detection is not enough: under `bunx`, a bin
+with a `#!/usr/bin/env node` shebang runs on **Node**, so `process.versions.bun` is unset and
+`process.execPath` is a Node. The environment is the only witness.
+
+Two conditions gate the swap, not one. Bun has to have started the process, **and** `bunx` has to
+be findable on `PATH` — "bun started this" is not the claim "bun is reachable from here", and
+spawning a name that is not there fails where `npx` would have worked. `npx` stays the default and
+stays a bare name, so a machine that never mentioned Bun is unchanged.
+
+Five call sites use it: the `eas-cli` rung of the auth fallback (llp/0006 §Auth rule),
+`expo-doctor`, `create-launch`, `create-expo`, and the `npx expo` fallback for a project with no
+`expo` installed. **The `eas simulator:exec npx <agent-device>` invocations are deliberately
+exempt** [observed — `src/device/cloudSimulator.ts`]: that `npx` is a token in an argv the *EAS
+service* executes on a machine in a datacenter, not on the caller's, and rewriting it would name a
+runner that machine may not have. The rule that separates them is whether this process is the one
+doing the spawning.
+
+The resolved runner is named where the CLI already names binaries — the `cli:auth_passthrough`
+event and the fallback notice now read `bunx eas-cli@latest`. By *name* rather than by the absolute
+path it resolved to, because the path says nothing the name does not and the name is what a reader
+would type. The `source` field of that event moved with it: `npx-eas` became `runner-eas`, since
+which runner fetches the package is the caller's choice and naming npm in the contract was wrong
+under Bun.
+
 ## Upstream asks
 
 Gaps found while building the tool layer. Per the process boundary of [[0001-agentic-cli-on-expo-cli]] constraint 5, these become upstream improvements rather than imports — but they are **recorded here, not yet filed**, and each is worked around in the meantime.
