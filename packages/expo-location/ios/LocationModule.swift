@@ -1,7 +1,9 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import CoreLocation
+#if !EXPO_LOCATION_DISABLE_MOTION
 import CoreMotion
+#endif
 import ExpoModulesCore
 
 private let EVENT_LOCATION_CHANGED = "Expo.locationChanged"
@@ -11,7 +13,9 @@ private let EVENT_MOTION_ACTIVITY_CHANGED = "Expo.motionActivityChanged"
 
 public final class LocationModule: Module {
   private lazy var locationStreamers = [Int: BaseStreamer]()
+  #if !EXPO_LOCATION_DISABLE_MOTION
   private lazy var motionActivityStreamers = [Int: MotionActivityStreamer]()
+  #endif
 
   private var taskManager: EXTaskManagerInterface {
     get throws {
@@ -29,15 +33,15 @@ public final class LocationModule: Module {
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
-      EXPermissionsMethodsDelegate.register(
-        [
-          EXLocationPermissionRequester(),
-          EXForegroundPermissionRequester(),
-          EXBackgroundLocationPermissionRequester(),
-          MotionActivityPermissionRequester()
-        ],
-        withPermissionsManager: permissionsManager
-      )
+      var requesters: [EXPermissionsRequester] = [
+        EXLocationPermissionRequester(),
+        EXForegroundPermissionRequester(),
+        EXBackgroundLocationPermissionRequester()
+      ]
+      #if !EXPO_LOCATION_DISABLE_MOTION
+      requesters.append(MotionActivityPermissionRequester())
+      #endif
+      EXPermissionsMethodsDelegate.register(requesters, withPermissionsManager: permissionsManager)
     }
 
     AsyncFunction("getProviderStatusAsync") {
@@ -122,6 +126,9 @@ public final class LocationModule: Module {
     }
 
     AsyncFunction("watchMotionActivityImplAsync") { (watchId: Int) in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      throw Exceptions.MotionActivityDisabled()
+      #else
       guard CMMotionActivityManager.isActivityAvailable() else {
         throw Exceptions.MotionActivityUnavailable()
       }
@@ -164,6 +171,7 @@ public final class LocationModule: Module {
           sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": error.localizedDescription])
         }
       }
+      #endif
     }
 
     AsyncFunction("removeWatchAsync") { (watchId: Int) in
@@ -172,10 +180,12 @@ public final class LocationModule: Module {
       }
       locationStreamers[watchId] = nil
 
+      #if !EXPO_LOCATION_DISABLE_MOTION
       if let streamer = motionActivityStreamers[watchId] {
         streamer.stopStreaming()
       }
       motionActivityStreamers[watchId] = nil
+      #endif
     }
 
     AsyncFunction("geocodeAsync") { (address: String) in
@@ -187,11 +197,29 @@ public final class LocationModule: Module {
     }
 
     AsyncFunction("getMotionActivityPermissionsAsync") { (promise: Promise) in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      promise.resolve([
+        "status": "denied",
+        "expires": "never",
+        "granted": false,
+        "canAskAgain": false
+      ])
+      #else
       try getPermissionUsingRequester(MotionActivityPermissionRequester.self, appContext: appContext, promise: promise)
+      #endif
     }
 
     AsyncFunction("requestMotionActivityPermissionsAsync") { (promise: Promise) in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      promise.resolve([
+        "status": "denied",
+        "expires": "never",
+        "granted": false,
+        "canAskAgain": false
+      ])
+      #else
       try askForPermissionUsingRequester(MotionActivityPermissionRequester.self, appContext: appContext, promise: promise)
+      #endif
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
