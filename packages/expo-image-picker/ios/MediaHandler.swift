@@ -420,11 +420,6 @@ internal struct MediaHandler {
     // asset as *adjusted* and will re-render a temporary file for us. Copying the resource bytes
     // ourselves is dramatically faster because it just streams the already-existing file.
 
-    // `PHAsset.fetchAssets` reads the photo library, so it triggers a `kTCCServicePhotos`
-    // authorization check. `PHPickerViewController` itself needs no authorization, so apps that only
-    // pick media never request it - and an app with no `NSPhotoLibraryUsageDescription` in its
-    // Info.plist is terminated by the system rather than merely denied. Only take the fast path when
-    // read access has already been granted; otherwise fall through to the picker's own item provider.
     let photoLibraryReadStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
     let hasPhotoLibraryReadAccess = photoLibraryReadStatus == .authorized || photoLibraryReadStatus == .limited
 
