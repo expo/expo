@@ -82,7 +82,11 @@ export function assertWithOptionsArgs(
     // Handle errors caused by user input.
     // Only errors from `arg`, which does not start with `ARG_CONFIG_` are user input errors.
     // See: https://github.com/vercel/arg/releases/tag/5.0.0
-    if (!('code' in error) || !error.code.startsWith('ARG_') || error.code.startsWith('ARG_CONFIG_')) {
+    if (
+      !('code' in error) ||
+      !error.code.startsWith('ARG_') ||
+      error.code.startsWith('ARG_CONFIG_')
+    ) {
       // Not the user's mistake: this CLI's own schema is wrong, and that is a crash.
       throw error;
     }

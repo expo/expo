@@ -614,7 +614,9 @@ describe(devAsync, () => {
         .mocked(runDevServerAsync)
         .mockResolvedValue(devServerRun({ exitCode: 1, stderr: NEEDS_INPUT }));
 
-      await expect(devAsync(projectRoot, resolveDevOptions(['--yes', '--json']))).rejects.toMatchObject({
+      await expect(
+        devAsync(projectRoot, resolveDevOptions(['--yes', '--json']))
+      ).rejects.toMatchObject({
         isNeedsHuman: true,
         exitCode: 7,
         needsHuman: { scenario: 'expo-prompt', detectedBy: 'exit-signature' },
@@ -637,9 +639,12 @@ describe(devAsync, () => {
       expect(retryArgs.slice(0, 2)).toEqual(['start', '--go']);
       expect(retryArgs[retryArgs.length - 2]).toBe('--port');
       // It says so, on stderr, because the dev server is not where the caller asked for it.
-      expect(jest.mocked(Log.warn).mock.calls.map(([line]) => line).join('\n')).toContain(
-        'Port 8180 was busy'
-      );
+      expect(
+        jest
+          .mocked(Log.warn)
+          .mock.calls.map(([line]) => line)
+          .join('\n')
+      ).toContain('Port 8180 was busy');
     });
 
     // A port the caller named is a requirement: moving would leave every URL they had already

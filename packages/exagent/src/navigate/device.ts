@@ -187,19 +187,23 @@ export async function probeAndroidDeviceAsync(): Promise<DeviceProbe> {
  *
  * @throws {CommandError} when the requested platform, or neither platform, has a device.
  */
-export async function resolveDeviceAsync(platform?: NavigatePlatform): Promise<NavigateDevice> {
+export async function resolveDeviceAsync(
+  platform?: NavigatePlatform,
+  context: NoDeviceContext = {}
+): Promise<NavigateDevice> {
   if (platform === 'ios') {
     const probe = await probeIosSimulatorAsync();
     if (probe.device) {
       return probe.device;
     }
-    throw new CommandError(
+    throw noDeviceError(
       'NO_IOS_DEVICE',
       [
         'No booted iOS simulator was found, so there is no device to open the deep link on.',
         `Why: ${probe.reason}.`,
         'How: boot a simulator (from Xcode, or with "xcrun simctl boot"), start the dev server with "npx exagent dev --detach", then run this command again.',
-      ].join('\n')
+      ],
+      context
     );
   }
 
@@ -208,13 +212,14 @@ export async function resolveDeviceAsync(platform?: NavigatePlatform): Promise<N
     if (probe.device) {
       return probe.device;
     }
-    throw new CommandError(
+    throw noDeviceError(
       'NO_ANDROID_DEVICE',
       [
         'No Android device or emulator was found, so there is no device to open the deep link on.',
         `Why: ${probe.reason}.`,
         'How: start an emulator or connect a device, check that "adb devices" lists it, then run this command again.',
-      ].join('\n')
+      ],
+      context
     );
   }
 
@@ -232,12 +237,46 @@ export async function resolveDeviceAsync(platform?: NavigatePlatform): Promise<N
     iosProbe ? `iOS: ${iosProbe.reason}` : 'iOS: simulators only exist on macOS',
     `Android: ${androidProbe.reason}`,
   ];
-  throw new CommandError(
+  throw noDeviceError(
     'NO_DEVICE',
     [
       'No booted device was found, so there is no device to open the deep link on.',
       `Why: ${reasons.join('; ')}.`,
       'How: open the app on a simulator or device (for example with "npx expo run:ios" or "npx expo run:android"), then run this command again. Pass --ios or --android to name the platform to look on.',
-    ].join('\n')
+    ],
+    context
   );
+}
+
+/** What the caller already worked out, for a failure that can offer more than "no device". */
+export interface NoDeviceContext {
+  /** The URL that was resolved for the route, when the caller had got that far. */
+  url?: string | null;
+  /** Whether a dev server answered, so the URL is one something could act on now. */
+  devServerRunning?: boolean;
+}
+
+/**
+ * The failure for a machine with no device, plus the URL when one was resolved.
+ *
+ * "No device found" is the whole truth and less than half the answer for the case this exists for:
+ * a dogfood session drove Expo Go on a **cloud** simulator, from a laptop with no simulator of its
+ * own, and every `navigate` it ran stopped here [observed — 2026-08-24]. The URL was resolved a
+ * step earlier and thrown away with the error, and the URL is exactly what an external opener
+ * needs. So it is named, and so is the flag that prints it without asking for a device at all.
+ */
+function noDeviceError(code: string, lines: string[], context: NoDeviceContext): CommandError {
+  const withUrl = context.url
+    ? [
+        ...lines,
+        `Or: this is the URL for that route — ${context.url}${
+          context.devServerRunning ? '' : ' (no dev server answered, so it may not load yet)'
+        }. Open it on a phone, a cloud simulator, or anywhere else that can reach the dev server; "npx exagent navigate <route> --print-url" prints it without looking for a device.`,
+      ]
+    : lines;
+  const error = new CommandError(code, withUrl.join('\n'));
+  // A caller that has no device does not get one by running the same command again, so the `Try:`
+  // is the mode that answers without one.
+  error.suggestedCommand = context.url ? 'npx exagent navigate / --print-url' : undefined;
+  return error;
 }

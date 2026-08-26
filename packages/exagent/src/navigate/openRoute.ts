@@ -11,6 +11,12 @@
 // So the composition lives here and both callers use it. `navigateAsync` is this function plus the
 // event, the follow-ups and the two output channels; `smoke` is this function inside a phase.
 
+import {
+  isTunnelCurrent,
+  resolveDevServerReachAsync,
+  type DevServerHostType,
+  type DevServerReach,
+} from '../dev/advertisedUrl';
 import { event as cliEvent } from '../events';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
 import {
@@ -29,7 +35,12 @@ import {
 } from './deepLink';
 import { resolveDeviceAsync, type NavigatePlatform } from './device';
 import { debugEvent } from './events';
-import { checkRoute, routeNotFoundError, type RouteCheckJson, type RouteCommand } from './routeCheck';
+import {
+  checkRoute,
+  routeNotFoundError,
+  type RouteCheckJson,
+  type RouteCommand,
+} from './routeCheck';
 import { decideExpoGoTarget } from './target';
 
 export interface OpenRouteOptions {
@@ -54,17 +65,35 @@ export interface OpenRouteOptions {
   command?: RouteCommand;
 }
 
-/** Everything one open amounts to, with nothing printed. */
-export interface OpenRouteResult {
+/** Everything the URL alone amounts to: the answer of a run that opens nothing. */
+export interface ResolvedRoute {
   route: string;
-  /** URL that was opened on the device. */
+  /** URL a device opens to reach this route. */
   url: string;
+  /** Where the dev server listens on this machine. */
   devServerUrl: string;
   devServerSource: DevServerSource;
+  /** Whether that dev server answered. */
+  devServerReachable: boolean;
   /** How the URL was derived. */
   resolution: string;
   /** Why the target app was decided to be Expo Go or a development build. */
   target: string;
+  /** Whether the target app was decided to be Expo Go. */
+  isExpoGo: boolean;
+  /**
+   * How a device off this machine reaches the dev server the URL names, or null when nothing said.
+   *
+   * `tunnel` is the one that changes the URL; the others are reported so a caller can see that the
+   * host in the URL is one only this machine or this network can use.
+   */
+  hostType: DevServerHostType | null;
+  /** Whether the route was checked against the project's routes, and what the check said. */
+  routeCheck: RouteCheckJson;
+}
+
+/** Everything one open amounts to, with nothing printed. */
+export interface OpenRouteResult extends ResolvedRoute {
   platform: NavigatePlatform;
   deviceId: string;
   /** Simulator name, when the platform tool reported one. */
@@ -77,32 +106,40 @@ export interface OpenRouteResult {
   /** What the device tool wrote, for a caller that reports it. */
   stdout: string;
   stderr: string;
-  /** Whether the route was checked against the project's routes, and what the check said. */
-  routeCheck: RouteCheckJson;
-  /** Whether the target app was decided to be Expo Go. */
-  isExpoGo: boolean;
 }
 
 /**
- * Resolve a deep link for a route and open it on a device.
+ * Everything a deep link needs except the device: the route check, the dev server, the Expo Go
+ * decision, and the URL itself.
  *
- * @throws {CommandError} `ROUTE_NOT_FOUND` for a route the project has not got, checked before
- * anything is opened; `DEEP_LINK_UNRESOLVED` for a named dev server that does not answer or a
- * project with no resolvable scheme; and whatever {@link resolveDeviceAsync} throws when there is
- * no device.
+ * Split out from {@link openRouteAsync} for `navigate --print-url`, whose whole point is that the
+ * device the app runs on may not be one this machine can drive — a cloud simulator, a phone, a
+ * teammate. Extracting the half that needs no device is what lets the two modes answer *the same
+ * URL*: a second composition of these steps is a second place for the findings of llp/0005 to be
+ * forgotten, which is the reason this file exists at all.
+ *
+ * @throws {CommandError} `ROUTE_NOT_FOUND` for a route the project has not got, and
+ * `DEEP_LINK_UNRESOLVED` for a named dev server that does not answer or a project with no
+ * resolvable scheme.
  */
-export async function openRouteAsync(
+export async function resolveRouteUrlAsync(
   projectRoot: string,
   options: OpenRouteOptions
-): Promise<OpenRouteResult> {
+): Promise<ResolvedRoute> {
   const { route, platform, scheme, appId } = options;
 
-  const [devServer, config, nativeDirs, packageJson, routeTable] = await Promise.all([
+  const [devServer, config, nativeDirs, packageJson, routeTable, reach] = await Promise.all([
     discoverDevServerAsync(options.devServerUrl ?? undefined, { projectRoot }),
     Promise.resolve(readProjectSchemeConfig(projectRoot)),
     readProjectNativeDirsAsync(projectRoot),
     readProjectPackageJsonAsync(projectRoot),
     readProjectRoutesAsync(projectRoot),
+    // What the dev server said about where a device reaches it (`src/dev/advertisedUrl.ts`).
+    //
+    // Not asked when `--dev-server-url` named one: the caller named the host they want reached, and
+    // substituting this project's tunnel host for it would quietly answer a different question —
+    // the flag may well name a dev server that is not this project's at all.
+    options.devServerUrl == null ? resolveDevServerReachAsync(projectRoot) : namedDevServerReach(),
   ]);
   const devServerUrl = devServer.devServerUrl;
 
@@ -145,12 +182,17 @@ export async function openRouteAsync(
   });
   debugEvent('target_decided', target);
 
+  // Only a tunnel that is *current* changes the URL: a host read out of a log whose tunnel has
+  // since died is worse than the LAN address, because it looks like it should work.
+  const tunnelHost = isTunnelCurrent(reach) ? (reach.advertised?.host ?? null) : null;
+
   const resolved = resolveDeepLinkUrl({
     route,
     schemeOverride: scheme,
     config,
     isExpoGo: target.isExpoGo,
     devServerUrl: devServer.reachable ? devServerUrl : null,
+    reachHost: tunnelHost,
   });
   if (!resolved.ok) {
     const error = new CommandError('DEEP_LINK_UNRESOLVED', resolved.error);
@@ -162,7 +204,39 @@ export async function openRouteAsync(
   }
   debugEvent('url_resolved', { url: resolved.url, resolution: resolved.resolution });
 
-  const device = await resolveDeviceAsync(platform);
+  return {
+    route,
+    url: resolved.url,
+    devServerUrl,
+    devServerSource: devServer.source,
+    devServerReachable: devServer.reachable,
+    resolution: resolved.resolution,
+    target: target.reason,
+    isExpoGo: target.isExpoGo,
+    hostType: reach.advertised?.hostType ?? null,
+    routeCheck,
+  };
+}
+
+/**
+ * Resolve a deep link for a route and open it on a device.
+ *
+ * @throws {CommandError} whatever {@link resolveRouteUrlAsync} throws, and whatever
+ * {@link resolveDeviceAsync} throws when this machine has no device to open the link on.
+ */
+export async function openRouteAsync(
+  projectRoot: string,
+  options: OpenRouteOptions
+): Promise<OpenRouteResult> {
+  const { appId, platform } = options;
+  const resolved = await resolveRouteUrlAsync(projectRoot, options);
+
+  // The URL is known by now, so a machine with no device is told what to do with it rather than
+  // only that it has none: an agent driving a cloud simulator has somewhere else to open it.
+  const device = await resolveDeviceAsync(platform, {
+    url: resolved.url,
+    devServerRunning: resolved.devServerReachable,
+  });
   const result = await openUrlOnDeviceAsync({
     platform: device.platform,
     deviceId: device.deviceId,
@@ -171,22 +245,17 @@ export async function openRouteAsync(
   });
 
   cliEvent('navigate', {
-    route,
+    route: resolved.route,
     url: resolved.url,
-    devServerUrl,
-    devServerSource: devServer.source,
+    devServerUrl: resolved.devServerUrl,
+    devServerSource: resolved.devServerSource,
     platform: device.platform,
     deviceId: device.deviceId,
     exitCode: result.exitCode,
   });
 
   return {
-    route,
-    url: resolved.url,
-    devServerUrl,
-    devServerSource: devServer.source,
-    resolution: resolved.resolution,
-    target: target.reason,
+    ...resolved,
     platform: device.platform,
     deviceId: device.deviceId,
     deviceName: device.name,
@@ -195,8 +264,16 @@ export async function openRouteAsync(
     exitCode: result.exitCode,
     stdout: result.stdout,
     stderr: result.stderr,
-    routeCheck,
-    isExpoGo: target.isExpoGo,
+  };
+}
+
+/** The reach of a dev server the caller named: their host, and nothing this project knows. */
+async function namedDevServerReach(): Promise<DevServerReach> {
+  return {
+    advertised: null,
+    tunnelFailure: null,
+    running: false,
+    reason: '--dev-server-url named the dev server, so its host is the one that was used',
   };
 }
 

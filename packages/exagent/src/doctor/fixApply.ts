@@ -13,8 +13,8 @@ import path from 'path';
 import { event } from '../events';
 import { spawnExpoAsync } from '../utils/expoCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
-import { rejectUnsafeTarget } from './fixSafety';
 import { unsafePathError, type FixPlan } from './fixPlan';
+import { rejectUnsafeTarget } from './fixSafety';
 import type { FixStep, FixStepResult } from './fixTypes';
 
 export interface ApplyFixOptions {

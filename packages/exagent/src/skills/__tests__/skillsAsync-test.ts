@@ -388,7 +388,10 @@ describe('skills --json reports', () => {
     });
     jest
       .mocked(syncSkillLinksAsync)
-      .mockResolvedValueOnce({ created: ['.claude/skills/my-skill'], pruned: ['.claude/skills/x'] });
+      .mockResolvedValueOnce({
+        created: ['.claude/skills/my-skill'],
+        pruned: ['.claude/skills/x'],
+      });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false, json: true });
 

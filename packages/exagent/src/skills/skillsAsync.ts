@@ -53,7 +53,13 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
     // Nothing to link and nobody to link it for: still a report, because a run asked for JSON gets
     // one whether or not it had work to do (llp/0006 §Output contract).
     if (options.json) {
-      logSyncJson({ dryRun: !!options.dryRun, agents: [], discovered: [], linked: [], removed: [] });
+      logSyncJson({
+        dryRun: !!options.dryRun,
+        agents: [],
+        discovered: [],
+        linked: [],
+        removed: [],
+      });
       return;
     }
     Log.log('No agent skills found in the project dependencies.');

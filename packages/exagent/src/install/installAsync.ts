@@ -174,8 +174,7 @@ async function reportAsync(
         ok: exitCode === 0,
         report: checkPayload,
         output: checkOutput,
-        notes:
-          exitCode === 0 ? [] : await diagnoseCheckedPackagesAsync(projectRoot, plan.packages),
+        notes: exitCode === 0 ? [] : await diagnoseCheckedPackagesAsync(projectRoot, plan.packages),
       }
     : null;
 

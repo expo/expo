@@ -63,6 +63,8 @@ function opened(overrides: Partial<OpenRouteResult> = {}): OpenRouteResult {
     url: 'exp://127.0.0.1:8081/--/?',
     devServerUrl: 'http://127.0.0.1:8081',
     devServerSource: 'lock',
+    devServerReachable: true,
+    hostType: 'localhost',
     resolution: 'target app is Expo Go',
     target: 'expo go',
     platform: 'ios',
@@ -180,10 +182,18 @@ describe(runSmokePhasesAsync, () => {
   it(`reports every phase exactly once, in order, whatever happened`, async () => {
     const runs = await Promise.all([
       runSmokePhasesAsync(deps(), options()),
-      runSmokePhasesAsync(deps({ discoverDevServer: async () => discovery({ reachable: false }) }), options()),
-      runSmokePhasesAsync(deps({ checkEntryBundle: async () => bundle({ outcome: 'broken' }) }), options()),
       runSmokePhasesAsync(
-        deps({ waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 1 }) }),
+        deps({ discoverDevServer: async () => discovery({ reachable: false }) }),
+        options()
+      ),
+      runSmokePhasesAsync(
+        deps({ checkEntryBundle: async () => bundle({ outcome: 'broken' }) }),
+        options()
+      ),
+      runSmokePhasesAsync(
+        deps({
+          waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 1 }),
+        }),
         options()
       ),
     ]);
@@ -206,7 +216,10 @@ describe(runSmokePhasesAsync, () => {
     it(`fails attach-only when none answers, and starts nothing`, async () => {
       const startDevServer = jest.fn();
       const run = await runSmokePhasesAsync(
-        deps({ discoverDevServer: async () => discovery({ reachable: false, reason: 'ECONNREFUSED' }), startDevServer }),
+        deps({
+          discoverDevServer: async () => discovery({ reachable: false, reason: 'ECONNREFUSED' }),
+          startDevServer,
+        }),
         options()
       );
 
@@ -238,7 +251,11 @@ describe(runSmokePhasesAsync, () => {
       const run = await runSmokePhasesAsync(
         deps({
           discoverDevServer: async () => discovery({ reachable: false }),
-          startDevServer: async () => ({ ok: false, devServerUrl: null, reason: 'port 8081 is taken' }),
+          startDevServer: async () => ({
+            ok: false,
+            devServerUrl: null,
+            reason: 'port 8081 is taken',
+          }),
         }),
         options({ start: true })
       );
@@ -424,7 +441,11 @@ describe(runSmokePhasesAsync, () => {
       });
       const run = await runSmokePhasesAsync(
         deps({
-          waitForAppConnection: async () => ({ appsConnected: connected, timedOut: false, waitedMs: 2 }),
+          waitForAppConnection: async () => ({
+            appsConnected: connected,
+            timedOut: false,
+            waitedMs: 2,
+          }),
           openRoute,
         }),
         options({ route: '/notes' })
@@ -440,7 +461,10 @@ describe(runSmokePhasesAsync, () => {
       const run = await runSmokePhasesAsync(
         deps({
           waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 2 }),
-          probeDevice: async () => ({ deviceId: null, reason: 'no booted iOS simulator was found' }),
+          probeDevice: async () => ({
+            deviceId: null,
+            reason: 'no booted iOS simulator was found',
+          }),
         }),
         options()
       );
@@ -571,9 +595,7 @@ describe(runSmokePhasesAsync, () => {
         deps({
           collectErrors: async () => ({
             ok: true,
-            records: [
-              record({ message: 'deprecated', stack: undefined, isError: false }),
-            ],
+            records: [record({ message: 'deprecated', stack: undefined, isError: false })],
             reason: null,
           }),
         }),

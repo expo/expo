@@ -325,7 +325,8 @@ describe(classifyNetworkDomainRefusal, () => {
   it(`should recognise the multiple-hosts refusal by its message`, () => {
     expect(
       classifyNetworkDomainRefusal({
-        reason: 'The Network domain is unavailable when multiple React Native hosts are registered.',
+        reason:
+          'The Network domain is unavailable when multiple React Native hosts are registered.',
         rpcCode: -32603,
       })
     ).toBe('multiple-hosts');

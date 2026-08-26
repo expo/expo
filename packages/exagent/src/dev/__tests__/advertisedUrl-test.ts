@@ -6,8 +6,11 @@
 import {
   classifyDevServerHost,
   expoGoUrlForHost,
+  isTunnelCurrent,
   readDevServerLog,
+  resolveDevServerReach,
   TUNNEL_RESTART_COMMAND,
+  type CapturedDevServerLog,
 } from '../advertisedUrl';
 
 /** The head of a real detached log of a tunnelled run [observed — 2026-08-25, live]. */
@@ -168,5 +171,74 @@ describe(`${readDevServerLog.name} — a tunnel that died`, () => {
 
   it(`names one command to bring a tunnel back`, () => {
     expect(TUNNEL_RESTART_COMMAND).toBe('npx exagent dev --detach --tunnel');
+  });
+});
+
+describe(resolveDevServerReach, () => {
+  const startedAt = '2026-08-25T10:00:00.000Z';
+  const lock = { startedAt };
+  const captured = (
+    lines: string[],
+    modifiedAt: number | null = Date.parse(startedAt) + 1000
+  ): CapturedDevServerLog => ({ ...readDevServerLog(lines), modifiedAt });
+
+  it(`passes the tunnel through for a log this run wrote`, () => {
+    const reach = resolveDevServerReach(captured(TUNNELLED_LOG), lock);
+
+    expect(reach.advertised?.host).toBe('znakdiwe5j2n5o0.boltexpo.dev');
+    expect(reach.running).toBe(true);
+    expect(isTunnelCurrent(reach)).toBe(true);
+  });
+
+  // The case a stale URL comes from: the dev server that is up was started attached, and the log
+  // on disk is a detached run that ended.
+  it(`refuses a log written before the dev server that is running started`, () => {
+    const reach = resolveDevServerReach(
+      captured(TUNNELLED_LOG, Date.parse(startedAt) - 60_000),
+      lock
+    );
+
+    expect(reach.advertised).toBeNull();
+    expect(reach.reason).toContain('earlier run');
+    expect(isTunnelCurrent(reach)).toBe(false);
+  });
+
+  it(`keeps the URL but calls no tunnel current once the dev server is gone`, () => {
+    const reach = resolveDevServerReach(captured(TUNNELLED_LOG), null);
+
+    expect(reach.advertised?.host).toBe('znakdiwe5j2n5o0.boltexpo.dev');
+    expect(reach.running).toBe(false);
+    expect(isTunnelCurrent(reach)).toBe(false);
+  });
+
+  it(`calls no tunnel current once the log says the tunnel died`, () => {
+    const reach = resolveDevServerReach(
+      captured([...TUNNELLED_LOG, 'Error: Unexpected server response: 409']),
+      lock
+    );
+
+    expect(reach.tunnelFailure?.signature).toBe('handshake');
+    expect(isTunnelCurrent(reach)).toBe(false);
+  });
+
+  it(`says why an attached dev server has nothing to read`, () => {
+    const reach = resolveDevServerReach(null, lock);
+
+    expect(reach).toEqual({
+      advertised: null,
+      tunnelFailure: null,
+      running: true,
+      reason: 'this dev server was started attached, so nothing captured the URL it printed',
+    });
+  });
+
+  it(`says why a project that never detached has nothing to read`, () => {
+    expect(resolveDevServerReach(null, null).reason).toBe(
+      'this project has no detached dev server log'
+    );
+  });
+
+  it(`never calls a localhost run a tunnel`, () => {
+    expect(isTunnelCurrent(resolveDevServerReach(captured(LOCAL_LOG), lock))).toBe(false);
   });
 });

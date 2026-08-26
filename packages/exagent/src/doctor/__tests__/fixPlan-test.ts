@@ -18,7 +18,9 @@ jest.mock('os', () => ({
   homedir: () => '/home/dev',
 }));
 jest.mock('../../checkpoint/git', () => ({ dirtyTrackedPathsAsync: jest.fn(async () => []) }));
-jest.mock('../../utils/subprocess', () => ({ findExecutableOnPath: jest.fn(() => '/bin/watchman') }));
+jest.mock('../../utils/subprocess', () => ({
+  findExecutableOnPath: jest.fn(() => '/bin/watchman'),
+}));
 
 const { dirtyTrackedPathsAsync } = jest.requireMock('../../checkpoint/git');
 const { findExecutableOnPath } = jest.requireMock('../../utils/subprocess');

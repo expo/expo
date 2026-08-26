@@ -244,10 +244,7 @@ function readEntryBundleUrlAsync(
  * attribute of one tag that this dev server writes itself, and a page with no `.bundle` script in
  * it is reported as undecidable rather than guessed at.
  */
-async function readWebBundleUrlAsync(
-  origin: string,
-  signal: AbortSignal
-): Promise<EntryBundleUrl> {
+async function readWebBundleUrlAsync(origin: string, signal: AbortSignal): Promise<EntryBundleUrl> {
   const pageUrl = `${origin}/`;
   const response = await fetch(pageUrl, { headers: { accept: 'text/html' }, signal });
   const html = await response.text();
@@ -280,13 +277,19 @@ async function readWebBundleUrlAsync(
   try {
     return { url: new URL(source, pageUrl).toString() };
   } catch {
-    return { url: null, reason: `the page at ${pageUrl} names an unusable bundle script: ${source}` };
+    return {
+      url: null,
+      reason: `the page at ${pageUrl} names an unusable bundle script: ${source}`,
+    };
   }
 }
 
 /** The three entities an attribute value can carry that change what the URL means. */
 function decodeHtmlEntities(value: string): string {
-  return value.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"');
 }
 
 /**
@@ -298,9 +301,7 @@ function decodeHtmlEntities(value: string): string {
  * a different one must read as "not an error page" rather than as a half-filled error.
  */
 function readStaticErrorPage(html: string): BundleCheckError | null {
-  const embedded = html.match(
-    /<script id="_expo-static-error"[^>]*>([\s\S]*?)<\/script>/
-  )?.[1];
+  const embedded = html.match(/<script id="_expo-static-error"[^>]*>([\s\S]*?)<\/script>/)?.[1];
   if (!embedded) {
     return null;
   }

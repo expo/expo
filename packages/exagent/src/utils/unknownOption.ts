@@ -81,7 +81,9 @@ export function unknownOptionError(command: string, option: string | null): Comm
         ? `Why: ${named} is an option of ${siblings.map((name) => `"npx exagent ${name}"`).join(', ')}, not of this command — the two are easy to mix up, and a command that accepted an option it does not act on would report success for a run that ignored it.`
         : `Why: this command acts on the options in its own --help and on nothing else, so accepting ${named} would mean reporting success for a run that ignored it.`,
       `How: run "npx exagent ${command} --help" for the options this command takes${
-        siblings.length ? `, or run ${siblings.map((name) => `"npx exagent ${name}"`).join(' or ')} if that is the command you meant` : ''
+        siblings.length
+          ? `, or run ${siblings.map((name) => `"npx exagent ${name}"`).join(' or ')} if that is the command you meant`
+          : ''
       }.`,
     ].join('\n')
   );

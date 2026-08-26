@@ -236,12 +236,10 @@ describe(runDevServerAsync, () => {
   // run 2, 2026-08-23].
   describe('the environment the dev server is spawned with', () => {
     beforeEach(() => {
-      jest
-        .mocked(spawnExpoAsync)
-        .mockResolvedValue({
-          cli: { command: 'expo', args: [] },
-          result: { exitCode: 0, stdout: '', stderr: '' },
-        });
+      jest.mocked(spawnExpoAsync).mockResolvedValue({
+        cli: { command: 'expo', args: [] },
+        result: { exitCode: 0, stdout: '', stderr: '' },
+      });
     });
 
     it.each(['tee', 'capture'] as const)(

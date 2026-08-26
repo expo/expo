@@ -109,8 +109,7 @@ export const exagentSmoke: Command = async (argv) => {
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
   const { EXIT_OK, exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
-  const { resolveSmokeOptions } =
-    require('./resolveOptions') as typeof import('./resolveOptions');
+  const { resolveSmokeOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
 
   return (async () => {
     const options = resolveSmokeOptions(argv ?? []);

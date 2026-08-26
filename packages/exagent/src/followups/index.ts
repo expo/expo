@@ -11,7 +11,12 @@ export { buildDoctorCheckFollowUps, buildDoctorFixFollowUps, extractAdviceAction
 export { buildExplainFollowUps, type ExplainFollowUpInput } from './explain';
 export { buildImpactFollowUps, type ImpactFollowUpInput } from './impact';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
-export { buildNavigateFollowUps, type NavigateFollowUpInput } from './navigate';
+export {
+  buildNavigateFollowUps,
+  buildPrintUrlFollowUps,
+  type NavigateFollowUpInput,
+  type PrintUrlFollowUpInput,
+} from './navigate';
 export { resolveExpoGoLanUrl, resolveLanHost } from './network';
 export { dependsOnDevClientSync, easJsonExistsSync } from './projectFiles';
 export { buildReloadFollowUps, type ReloadFollowUpInput } from './reload';

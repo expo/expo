@@ -2,8 +2,8 @@
 // What the command answers on each of its three channels, and which exit code each answer
 // deserves. A code is not testable by reading it, so every one of the three gets its own case.
 import * as Log from '../../log';
-import type { TypeCheckReport } from '../types';
 import { printTypeCheckAsync } from '../typecheckAsync';
+import type { TypeCheckReport } from '../types';
 
 jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
@@ -127,9 +127,7 @@ describe(printTypeCheckAsync, () => {
 
       await printTypeCheckAsync(projectRoot, { json: true });
 
-      expect(payload().followups.map((followup: any) => followup.id)).toEqual([
-        'typecheck-rerun',
-      ]);
+      expect(payload().followups.map((followup: any) => followup.id)).toEqual(['typecheck-rerun']);
     });
 
     // Consistent types are one of the three gates, and this names the other two.

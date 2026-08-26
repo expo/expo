@@ -53,7 +53,11 @@ describe(readProjectRoutesAsync, () => {
     });
     const table = await readProjectRoutesAsync(projectRoot);
     expect(table.routerRoot).toBe('routes');
-    expect(table.routes.map((route) => route.route).sort()).toEqual(['/', '/_sitemap', '/settings']);
+    expect(table.routes.map((route) => route.route).sort()).toEqual([
+      '/',
+      '/_sitemap',
+      '/settings',
+    ]);
   });
 
   it(`should read the root out of the expo-router plugin options`, async () => {
@@ -75,11 +79,7 @@ describe(readProjectRoutesAsync, () => {
       [`${projectRoot}/app/(tabs)/explore.tsx`]: '',
     });
     const table = await readProjectRoutesAsync(projectRoot);
-    expect(table.routes.map((route) => route.route).sort()).toEqual([
-      '/',
-      '/_sitemap',
-      '/explore',
-    ]);
+    expect(table.routes.map((route) => route.route).sort()).toEqual(['/', '/_sitemap', '/explore']);
     expect(table.routes.find((route) => route.route === '/explore')?.file).toBe(
       'app/(tabs)/explore.tsx'
     );
@@ -177,7 +177,10 @@ describe(matchProjectRoute, () => {
   });
 
   it(`should reject a route the project has not got`, () => {
-    expect(matchProjectRoute(table(['/', '/notes']), '/nope')).toEqual({ ok: false, matched: null });
+    expect(matchProjectRoute(table(['/', '/notes']), '/nope')).toEqual({
+      ok: false,
+      matched: null,
+    });
   });
 
   // The whole point of matching patterns rather than strings: `/users/42` is a route this project

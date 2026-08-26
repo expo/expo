@@ -59,14 +59,12 @@ describe(assertKnownDevFlags, () => {
 
   // A value, a positional and a lone dash are not options, and refusing any of them would refuse
   // a command that was right.
-  it.each([
-    [['--port', '8082']],
-    [['--host', 'tunnel']],
-    [['./some/project']],
-    [['-']],
-  ])(`does not read %s as an option`, (argv) => {
-    expect(() => assertKnownDevFlags(argv)).not.toThrow();
-  });
+  it.each([[['--port', '8082']], [['--host', 'tunnel']], [['./some/project']], [['-']]])(
+    `does not read %s as an option`,
+    (argv) => {
+      expect(() => assertKnownDevFlags(argv)).not.toThrow();
+    }
+  );
 
   // Everything after `--` belongs to another tool, so this command has no business judging it.
   it(`leaves everything after a -- separator alone`, () => {

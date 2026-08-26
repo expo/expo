@@ -1,5 +1,5 @@
-import { diffFingerprintsAsync, generateFingerprintAsync } from '../../project/fingerprint';
 import { readLastBuildRecord } from '../../plan/lastBuild';
+import { diffFingerprintsAsync, generateFingerprintAsync } from '../../project/fingerprint';
 import { spawnSubprocessAsync } from '../../utils/subprocess';
 import { buildCacheArgs, findCachedBuildAsync, parseCachedBuild } from '../buildCache';
 import {
@@ -145,11 +145,10 @@ describe(compareWithEasBuildAsync, () => {
 
     await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
 
-    expect(spawnSubprocessAsync).toHaveBeenCalledWith(
-      '/bin/eas',
-      buildEasCompareArgs('build-1'),
-      { cwd: projectRoot, output: 'capture' }
-    );
+    expect(spawnSubprocessAsync).toHaveBeenCalledWith('/bin/eas', buildEasCompareArgs('build-1'), {
+      cwd: projectRoot,
+      output: 'capture',
+    });
   });
 
   it(`should report a non-zero exit as an error naming the id`, async () => {
@@ -271,7 +270,11 @@ describe(findCachedBuildAsync, () => {
     expect(spawnSubprocessAsync).toHaveBeenCalledWith(
       '/bin/eas',
       buildCacheArgs('ios', 'abc'),
-      expect.objectContaining({ cwd: projectRoot, output: 'capture', timeoutMs: expect.any(Number) })
+      expect.objectContaining({
+        cwd: projectRoot,
+        output: 'capture',
+        timeoutMs: expect.any(Number),
+      })
     );
   });
 

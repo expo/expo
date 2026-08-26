@@ -7,9 +7,9 @@
 // tested against fakes. What is here is the real versions of those functions — every one of them
 // the same function the command that owns the question already calls.
 
-import { captureScreenshotAsync, defaultScreenshotPath } from '../device/screenshot';
 import { devDetachAsync } from '../dev/detachAsync';
 import { resolveDevOptions } from '../dev/resolveOptions';
+import { captureScreenshotAsync, defaultScreenshotPath } from '../device/screenshot';
 import { event } from '../events';
 import { buildSmokeFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
@@ -153,7 +153,9 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
  * never reached.
  */
 function explainOutcome(run: SmokeRun): string {
-  const culprit = run.phases.find((phase) => phase.status === 'failed' || phase.status === 'inconclusive');
+  const culprit = run.phases.find(
+    (phase) => phase.status === 'failed' || phase.status === 'inconclusive'
+  );
   const what =
     run.outcome === 'failed'
       ? `The smoke gate failed at "${culprit?.id ?? 'an unknown phase'}".`

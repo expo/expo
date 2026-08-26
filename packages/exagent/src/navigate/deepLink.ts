@@ -108,6 +108,19 @@ export interface ResolveDeepLinkUrlParams {
   isExpoGo: boolean;
   /** Dev server URL, required for the Expo Go URL shape. */
   devServerUrl?: string | null;
+  /**
+   * The host a device **off this machine** reaches the dev server at, which wins over the host of
+   * {@link devServerUrl}.
+   *
+   * Set for a tunnelled run, and only then. `devServerUrl` is where the dev server listens on this
+   * machine — `http://127.0.0.1:8081` — which is the right address for every command that talks to
+   * it and the wrong one for the only thing this file produces: a link a *device* opens. A phone
+   * cannot use it, and neither can a cloud simulator, which is what made an entire dogfood session
+   * unable to load the app it had a tunnel for [observed — 2026-08-24].
+   *
+   * @see src/dev/advertisedUrl.ts, which reads the host out of what the dev server printed.
+   */
+  reachHost?: string | null;
 }
 
 export type ResolveDeepLinkUrlResult =
@@ -141,6 +154,7 @@ export function resolveDeepLinkUrl({
   config,
   isExpoGo,
   devServerUrl,
+  reachHost,
 }: ResolveDeepLinkUrlParams): ResolveDeepLinkUrlResult {
   const trimmedRoute = route.trim();
   if (trimmedRoute.length === 0) {
@@ -175,7 +189,10 @@ export function resolveDeepLinkUrl({
   }
 
   if (isExpoGo) {
-    const host = devServerUrl != null ? hostFromUrl(devServerUrl) : null;
+    // The tunnel host first: it is the one address every device can use, and the only one a cloud
+    // simulator can.
+    const tunnelHost = nonEmptyString(reachHost);
+    const host = tunnelHost ?? (devServerUrl != null ? hostFromUrl(devServerUrl) : null);
     if (host == null) {
       return {
         ok: false,
@@ -189,17 +206,20 @@ export function resolveDeepLinkUrl({
         suggestedCommand: 'npx exagent dev --detach',
       };
     }
+    const where = tunnelHost
+      ? `tunnel host ${host}, which is the one address a device off this machine can reach`
+      : `dev server host ${host}`;
     if (routePath.length === 0) {
       return {
         ok: true,
         url: `exp://${host}${EXPO_GO_ROOT_PATH}`,
-        resolution: `target app is Expo Go and the route is the root route, so the exp:// shape was used with a query marker that survives the Expo Go link handler, with dev server host ${host}`,
+        resolution: `target app is Expo Go and the route is the root route, so the exp:// shape was used with a query marker that survives the Expo Go link handler, with ${where}`,
       };
     }
     return {
       ok: true,
       url: `exp://${host}/--/${routePath}`,
-      resolution: `target app is Expo Go, so the exp:// shape was used with dev server host ${host}`,
+      resolution: `target app is Expo Go, so the exp:// shape was used with ${where}`,
     };
   }
 

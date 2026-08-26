@@ -252,7 +252,8 @@ export function parseRuntimeErrorMessage(message: CdpMessage): RuntimeErrorRecor
       source: 'console',
       timestamp: params.timestamp || Date.now(),
       message: text,
-      stack: embedded.length > 0 ? formatStackFrames(embedded) : formatCdpStackTrace(params.stackTrace),
+      stack:
+        embedded.length > 0 ? formatStackFrames(embedded) : formatCdpStackTrace(params.stackTrace),
       frames: embedded.length > 0 ? embedded : framesOf(params.stackTrace, undefined),
       // The frames were inside the message, so the app reported an `Error` rather than logging a
       // line — which on this runtime is the only way an uncaught throw ever arrives. See the

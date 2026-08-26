@@ -54,10 +54,7 @@ export interface FixPlan {
  * directory holding uncommitted tracked changes, and `DOCTOR_FIX_UNSAFE_PATH` when the table named
  * a target the safety predicate refuses.
  */
-export async function planFixAsync(
-  projectRoot: string,
-  options: FixPlanOptions
-): Promise<FixPlan> {
+export async function planFixAsync(projectRoot: string, options: FixPlanOptions): Promise<FixPlan> {
   const context = probeProject(projectRoot, options.platforms);
   const safety = {
     projectRoot,

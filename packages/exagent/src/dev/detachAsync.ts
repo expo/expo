@@ -183,7 +183,13 @@ export async function devDetachAsync(
     hasExited: () => childExit != null,
   });
   if (!lock) {
-    throw notStartedError(projectRoot, logFile, childExit, child.pid ?? null, Date.now() - startedAt);
+    throw notStartedError(
+      projectRoot,
+      logFile,
+      childExit,
+      child.pid ?? null,
+      Date.now() - startedAt
+    );
   }
 
   let ready: boolean | null = null;

@@ -1,6 +1,6 @@
 import { resolveDevicePlatform } from '../devicePlatform';
-import { resolveRuntimeStopOptions } from '../resolveStopOptions';
 import { resolveReloadOptions } from '../reload/resolveOptions';
+import { resolveRuntimeStopOptions } from '../resolveStopOptions';
 
 const bothHint = { bothHint: 'run the command twice, once per device.' };
 

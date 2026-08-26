@@ -83,8 +83,7 @@ export const exagentImpact: Command = async (argv) => {
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
-  const { resolveImpactOptions } =
-    require('./resolveOptions') as typeof import('./resolveOptions');
+  const { resolveImpactOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
   const { impactAsync } = require('./impactAsync') as typeof import('./impactAsync');
 
   return (async () => {

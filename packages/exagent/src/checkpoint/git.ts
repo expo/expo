@@ -160,12 +160,14 @@ export async function dirtyTrackedPathsAsync(
       ['status', '--porcelain', '--untracked-files=no', '--', ...pathspecs],
       { cwd: projectRoot }
     );
-    return output
-      .split('\n')
-      .filter(Boolean)
-      // `XY <path>`, and a rename is `XY <old> -> <new>`. The new name is the one on disk.
-      .map((line) => line.slice(3).split(' -> ').pop()!.trim())
-      .filter(Boolean);
+    return (
+      output
+        .split('\n')
+        .filter(Boolean)
+        // `XY <path>`, and a rename is `XY <old> -> <new>`. The new name is the one on disk.
+        .map((line) => line.slice(3).split(' -> ').pop()!.trim())
+        .filter(Boolean)
+    );
   } catch {
     return [];
   }

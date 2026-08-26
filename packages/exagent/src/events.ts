@@ -431,6 +431,21 @@ declare module '2g' {
       exitCode: number | null;
     };
     /**
+     * A route resolved to a URL with nothing opened (`navigate --print-url`).
+     *
+     * Its own name rather than a flag on `cli:navigate`, because the two are different outcomes: a
+     * `cli:navigate` says a device took the link, and this says only that a URL exists for one to
+     * take. An agent watching for "the app moved" must not read this as that.
+     */
+    'cli:navigate_url': {
+      route: string;
+      url: string;
+      devServerUrl: string;
+      devServerSource: string;
+      /** `tunnel`, `lan`, `localhost`, or null when nothing captured what was advertised. */
+      hostType: string | null;
+    };
+    /**
      * The state-aware next actions of the command that just ran. Emitted whenever follow-ups are
      * computed, in text and `--json` mode alike, so an agent reading only the event stream gets
      * the same answer as one reading the terminal.

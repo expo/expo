@@ -28,9 +28,7 @@ const KNOWN_POLICIES = ['fingerprint', 'appVersion', 'sdkVersion', 'nativeVersio
  * Falls back to the static config when the subprocess fails, and reports `source: null` when
  * neither answered — which is not "no runtimeVersion", and is never read as one.
  */
-export async function resolveRuntimeVersionAsync(
-  projectRoot: string
-): Promise<RuntimeVersionInfo> {
+export async function resolveRuntimeVersionAsync(projectRoot: string): Promise<RuntimeVersionInfo> {
   const fromCli = await readFromExpoConfigAsync(projectRoot);
   if (fromCli) {
     return fromCli;

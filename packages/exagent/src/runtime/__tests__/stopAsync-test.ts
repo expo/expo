@@ -3,8 +3,8 @@ import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 
 import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../devLock';
-import { runtimeStopAsync } from '../stopAsync';
 import type { RuntimeStopOptions } from '../resolveStopOptions';
+import { runtimeStopAsync } from '../stopAsync';
 
 jest.mock('../../devLock', () => ({
   readDevServerLockAsync: jest.fn(async () => null),
@@ -165,10 +165,7 @@ describe(runtimeStopAsync, () => {
       { exitCode: 4, stderr: 'found nothing to terminate' },
     ]);
 
-    await runtimeStopAsync(
-      projectRoot,
-      options({ appId: 'host.exp.Exponent2', followups: true })
-    );
+    await runtimeStopAsync(projectRoot, options({ appId: 'host.exp.Exponent2', followups: true }));
 
     const followups = JSON.parse(printed()).followups;
     expect(followups[0].command).toBe('npx exagent runtime:stop --app-id host.exp.Exponent');

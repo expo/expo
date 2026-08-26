@@ -100,9 +100,7 @@ export interface FixStepDefinition {
  * `$TMPDIR/haste-map-*` clears nothing: no file has been called that in years.
  */
 export function metroFileMapPrefixes(projectRoot: string): string[] {
-  const rootDirHash = createHash('md5')
-    .update(projectRoot.split(path.sep).join('/'))
-    .digest('hex');
+  const rootDirHash = createHash('md5').update(projectRoot.split(path.sep).join('/')).digest('hex');
   // The Bun fork of the prefix exists because the v8 serialization formats differ, so a project
   // bundled under both runtimes has two caches [observed — `DiskCacheManager` `DEFAULT_PREFIX`].
   return [`metro-file-map-expo-${rootDirHash}-`, `metro-file-map-bun-expo-${rootDirHash}-`];
@@ -216,7 +214,8 @@ export const FIX_STEPS: FixStepDefinition[] = [
     scope: 'project',
     timeClass: 'minutes',
     onlyPlatforms: ['darwin'],
-    reason: 'Pods pinned to packages that are no longer installed fail the build with a link error.',
+    reason:
+      'Pods pinned to packages that are no longer installed fail the build with a link error.',
     recoverable: 'reinstalled by this step',
     targets: ({ projectRoot }) => [
       { kind: 'path', path: path.join(projectRoot, 'ios', 'Pods') },
@@ -380,6 +379,7 @@ export function planOrder(step: FixStepDefinition): number {
 export function stepsForTier(tier: FixTier, platform: NodeJS.Platform): FixStepDefinition[] {
   return FIX_STEPS.filter(
     (step) =>
-      tierIncludes(tier, step.tier) && (!step.onlyPlatforms || step.onlyPlatforms.includes(platform))
+      tierIncludes(tier, step.tier) &&
+      (!step.onlyPlatforms || step.onlyPlatforms.includes(platform))
   ).sort((a, b) => planOrder(a) - planOrder(b));
 }

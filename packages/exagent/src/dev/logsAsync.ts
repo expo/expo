@@ -50,10 +50,7 @@ export interface DevLogsResultJson {
  * @returns `0`. A log that exists is the answer, whatever is in it.
  * @throws {CommandError} `NO_DEV_LOG` when this project has no detached dev server log.
  */
-export async function devLogsAsync(
-  projectRoot: string,
-  options: DevLogsOptions
-): Promise<number> {
+export async function devLogsAsync(projectRoot: string, options: DevLogsOptions): Promise<number> {
   const read = readDetachedLogSync(projectRoot, options.tail);
   const lock = await readDevServerLockAsync(projectRoot);
 
@@ -95,7 +92,9 @@ function printHumanReport(report: DevLogsResultJson): void {
     }`,
   ];
   if (report.devServer) {
-    header.push(`${label('Dev server')}${report.devServer.url}${chalk.dim(` · pid ${report.devServer.pid}`)}`);
+    header.push(
+      `${label('Dev server')}${report.devServer.url}${chalk.dim(` · pid ${report.devServer.pid}`)}`
+    );
   } else {
     header.push(
       `${label('Dev server')}${chalk.dim('not running · this is what the last detached run printed')}`

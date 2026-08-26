@@ -62,7 +62,9 @@ describe('rejectUnsafeTarget', () => {
 
   it('rejects the filesystem root', () => {
     expect(rejectUnsafeTarget('/', context())).toBeTruthy();
-    expect(rejectUnsafeTarget('/', context({ scope: 'machine', allowMachineWide: true }))).toBeTruthy();
+    expect(
+      rejectUnsafeTarget('/', context({ scope: 'machine', allowMachineWide: true }))
+    ).toBeTruthy();
   });
 
   it('rejects the home directory', () => {
@@ -103,7 +105,10 @@ describe('rejectUnsafeTarget', () => {
   it('accepts the per-project DerivedData directory and rejects its root', () => {
     const derived = `${HOME}/Library/Developer/Xcode/DerivedData`;
     expect(
-      rejectUnsafeTarget(`${derived}/app-abc`, context({ scope: 'machine', allowMachineWide: true }))
+      rejectUnsafeTarget(
+        `${derived}/app-abc`,
+        context({ scope: 'machine', allowMachineWide: true })
+      )
     ).toBeNull();
     expect(
       rejectUnsafeTarget(derived, context({ scope: 'machine', allowMachineWide: true }))

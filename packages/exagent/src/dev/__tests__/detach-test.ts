@@ -32,9 +32,9 @@ describe(buildDetachSpawn, () => {
 
   // The wait is the parent's, and the child has nobody to report it to.
   it(`strips --wait-ready`, () => {
-    expect(
-      buildDetachSpawn('/bin/exagent.js', ['--detach', '--wait-ready']).args
-    ).not.toContain('--wait-ready');
+    expect(buildDetachSpawn('/bin/exagent.js', ['--detach', '--wait-ready']).args).not.toContain(
+      '--wait-ready'
+    );
   });
 
   // `--json` in the child would switch the plan's subprocess output to `capture` — which is the

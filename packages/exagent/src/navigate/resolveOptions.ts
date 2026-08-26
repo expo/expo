@@ -25,6 +25,19 @@ export interface NavigateOptions {
   scheme?: string;
   /** Application id of the target app, for the Android intent and the Expo Go check. */
   appId?: string;
+  /**
+   * Resolve the URL and print it, opening nothing and asking for no device (`--print-url`).
+   *
+   * The mode exists because the device this CLI can drive and the device the app runs on are not
+   * always the same one. A cloud simulator, a phone, and a teammate's machine all need the same
+   * thing — the URL — and none of them can be reached with `simctl` or `adb`. Everything else this
+   * command does still happens: the route is checked against the project's routes, the dev server
+   * is found, the Expo Go / development build decision is made, and a tunnelled dev server's host
+   * is preferred over the LAN one. Only the last step is left out.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §Resolving a URL without a device
+   */
+  printUrl: boolean;
   /** Print the result as one JSON object instead of the human summary (`--json`). */
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
@@ -46,6 +59,7 @@ const NAVIGATE_ARGS = {
   '--android': Boolean,
   '--dev-server-url': String,
   '--app-id': String,
+  '--print-url': Boolean,
   '--json': Boolean,
   '--no-followups': Boolean,
   '--no-route-check': Boolean,
@@ -88,6 +102,7 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
     platform: args['--ios'] ? 'ios' : args['--android'] ? 'android' : undefined,
     scheme: args['--scheme'] ? String(args['--scheme']) : undefined,
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
+    printUrl: !!args['--print-url'],
     json: !!args['--json'],
     followups: !args['--no-followups'],
     routeCheck: !args['--no-route-check'],

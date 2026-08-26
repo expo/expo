@@ -100,7 +100,11 @@ describe(classifyDiffItem, () => {
   it(`should read the reasons of an added source`, () => {
     expect(
       classifyDiffItem(
-        added({ type: 'dir', filePath: 'node_modules/react-native-mmkv', reasons: ['rncoreAutolinkingIos'] })
+        added({
+          type: 'dir',
+          filePath: 'node_modules/react-native-mmkv',
+          reasons: ['rncoreAutolinkingIos'],
+        })
       )
     ).toEqual({
       op: 'added',
@@ -141,7 +145,10 @@ describe(classifyDiffItem, () => {
   });
 
   it(`should drop a reason that is not a string`, () => {
-    const source = { type: 'file', reasons: [null, 'easBuild', ''] } as unknown as FingerprintSource;
+    const source = {
+      type: 'file',
+      reasons: [null, 'easBuild', ''],
+    } as unknown as FingerprintSource;
 
     expect(classifyDiffItem(added(source))).toMatchObject({
       reasons: ['easBuild'],
@@ -184,7 +191,11 @@ describe(classifyFingerprintDiff, () => {
   it(`should let the strongest class win over a mixed diff`, () => {
     const result = classifyFingerprintDiff([
       added({ type: 'file', filePath: 'eas.json', reasons: ['easBuild'] }),
-      added({ type: 'dir', filePath: 'node_modules/expo-camera/ios', reasons: ['expoAutolinkingIos'] }),
+      added({
+        type: 'dir',
+        filePath: 'node_modules/expo-camera/ios',
+        reasons: ['expoAutolinkingIos'],
+      }),
       added({ type: 'contents', id: 'packageJson:scripts', reasons: ['packageJson:scripts'] }),
     ]);
 
@@ -195,7 +206,11 @@ describe(classifyFingerprintDiff, () => {
   it(`should put the strongest kind's sentence first`, () => {
     const result = classifyFingerprintDiff([
       added({ type: 'contents', id: 'packageJson:scripts', reasons: ['packageJson:scripts'] }),
-      added({ type: 'dir', filePath: 'node_modules/expo-camera/ios', reasons: ['expoAutolinkingIos'] }),
+      added({
+        type: 'dir',
+        filePath: 'node_modules/expo-camera/ios',
+        reasons: ['expoAutolinkingIos'],
+      }),
     ]);
 
     // Both are `needs-native-build`, so the order is stable rather than meaningful — what the
@@ -212,7 +227,9 @@ describe(classifyFingerprintDiff, () => {
       )
     );
 
-    expect(result.reasons[0]).toContain('node_modules/a, node_modules/b, node_modules/c and 2 more');
+    expect(result.reasons[0]).toContain(
+      'node_modules/a, node_modules/b, node_modules/c and 2 more'
+    );
   });
 
   it(`should say a build-config change needs no prebuild`, () => {

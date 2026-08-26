@@ -91,10 +91,11 @@ export async function generateFingerprintAsync(
     return { hash: null, sources: null, error: FINGERPRINT_CLI_MISSING };
   }
 
-  const result = await runFingerprintAsync(command, projectRoot, buildGenerateArgs(
+  const result = await runFingerprintAsync(
+    command,
     projectRoot,
-    options
-  ));
+    buildGenerateArgs(projectRoot, options)
+  );
   if (result.error) {
     debugEvent('fingerprint_failed', { command, error: result.error });
   }
@@ -175,7 +176,10 @@ export async function diffFingerprintsAsync(
     }
     return { items };
   } catch (error) {
-    return { items: null, error: `Could not diff the two fingerprints: ${(error as Error).message}` };
+    return {
+      items: null,
+      error: `Could not diff the two fingerprints: ${(error as Error).message}`,
+    };
   } finally {
     if (directory) {
       await fs.promises.rm(directory, { recursive: true, force: true }).catch(() => {});
@@ -254,7 +258,10 @@ function runRawFingerprintAsync(
     });
 
     child.on('error', (error: NodeJS.ErrnoException) => {
-      resolve({ stdout, error: `Could not run the fingerprint CLI (${command}): ${error.message}` });
+      resolve({
+        stdout,
+        error: `Could not run the fingerprint CLI (${command}): ${error.message}`,
+      });
     });
 
     child.on('close', (code, signal) => {

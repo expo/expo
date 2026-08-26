@@ -22,8 +22,10 @@
 // simulator at a dead tunnel [observed — 2026-08-24]. A URL is only current if nothing below it
 // says the tunnel is gone, so the two facts are read in one pass and reported together.
 
+import fs from 'fs';
 import { stripVTControlCharacters } from 'util';
 
+import { readDevServerLockAsync } from '../devLock';
 import { readDetachedLogSync } from './logFile';
 
 /** How a device reaches the dev server, in the vocabulary of `expo start --host`. */
@@ -142,9 +144,112 @@ export function readDevServerLog(lines: string[]): DevServerLogReading {
 export function readDevServerLogSync(
   projectRoot: string,
   { tail = ADVERTISED_LOG_LINES }: { tail?: number } = {}
-): DevServerLogReading | null {
+): CapturedDevServerLog | null {
   const read = readDetachedLogSync(projectRoot, tail);
-  return read == null ? null : readDevServerLog(read.lines);
+  if (read == null) {
+    return null;
+  }
+  return { ...readDevServerLog(read.lines), modifiedAt: modifiedAtSync(read.logFile) };
+}
+
+/** A reading, plus when the file it came from was last written. */
+export interface CapturedDevServerLog extends DevServerLogReading {
+  /** Epoch milliseconds of the log's last write, or null when it could not be read. */
+  modifiedAt: number | null;
+}
+
+function modifiedAtSync(logFile: string): number | null {
+  try {
+    return fs.statSync(logFile).mtimeMs;
+  } catch {
+    return null;
+  }
+}
+
+/** Where a device off this machine can reach this project's dev server, right now. */
+export interface DevServerReach {
+  /**
+   * The URL the dev server advertised, when it is this project's *current* dev server that
+   * advertised it. Null when nothing captured one, or when the log belongs to an earlier run.
+   */
+  advertised: AdvertisedDevServerUrl | null;
+  /** The tunnel failure printed after that URL, or null. */
+  tunnelFailure: TunnelFailure | null;
+  /** Whether a dev server of this project is running now, per its lock. */
+  running: boolean;
+  /** Why {@link advertised} is null, for a report that has to explain itself. */
+  reason: string | null;
+}
+
+/**
+ * Whether the tunnel a reading advertised is one a device may still be given.
+ *
+ * Three things have to hold, and each has been wrong on its own: the run has to have had a tunnel
+ * at all, the dev server has to still be running, and nothing below the URL may say the tunnel is
+ * gone. A stale `Waiting on` line is what a dogfood session followed for an hour after the tunnel
+ * had died [observed — 2026-08-24].
+ */
+export function isTunnelCurrent(reach: DevServerReach): boolean {
+  return reach.running && reach.advertised?.hostType === 'tunnel' && reach.tunnelFailure == null;
+}
+
+/**
+ * Decide what a captured log is still allowed to claim, given the dev server that is running.
+ *
+ * Pure, so the one rule that is easy to get wrong is testable: a log **older than the lock** is a
+ * previous run's. `dev --detach` truncates the log on each run, and refuses to start a second dev
+ * server while a lock is held, so a live detached run always has a log written after its lock was
+ * taken. A dev server started attached writes to a terminal and leaves the previous detached log
+ * untouched — and that is the case where reading a tunnel host out of it would hand a device the
+ * address of a dev server that stopped days ago.
+ */
+export function resolveDevServerReach(
+  captured: CapturedDevServerLog | null,
+  lock: { startedAt: string } | null
+): DevServerReach {
+  const running = lock != null;
+
+  if (captured == null) {
+    return {
+      advertised: null,
+      tunnelFailure: null,
+      running,
+      reason: running
+        ? 'this dev server was started attached, so nothing captured the URL it printed'
+        : 'this project has no detached dev server log',
+    };
+  }
+
+  const lockStartedAt = lock ? Date.parse(lock.startedAt) : NaN;
+  if (
+    Number.isFinite(lockStartedAt) &&
+    captured.modifiedAt != null &&
+    captured.modifiedAt < lockStartedAt
+  ) {
+    return {
+      advertised: null,
+      tunnelFailure: null,
+      running,
+      reason:
+        'the captured log was last written before the dev server that is running started, so it belongs to an earlier run',
+    };
+  }
+
+  return {
+    advertised: captured.advertised,
+    tunnelFailure: captured.tunnelFailure,
+    running,
+    reason: captured.advertised ? null : 'the captured log never named a dev server URL',
+  };
+}
+
+/** {@link resolveDevServerReach} over this project's lock and its captured log. */
+export async function resolveDevServerReachAsync(projectRoot: string): Promise<DevServerReach> {
+  const [lock, captured] = await Promise.all([
+    readDevServerLockAsync(projectRoot),
+    Promise.resolve(readDevServerLogSync(projectRoot)),
+  ]);
+  return resolveDevServerReach(captured, lock);
 }
 
 /**

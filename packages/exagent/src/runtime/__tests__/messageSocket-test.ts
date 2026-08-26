@@ -139,14 +139,15 @@ describe(peersChanged, () => {
   // The dev server's socket ids come from a counter that never reuses a value, so a changed id is
   // proof of a new connection rather than a heuristic.
   it(`should report a change when a peer reconnected under a new id`, () => {
-    expect(
-      peersChanged({ 'socket#7': 'role=ios' }, { 'socket#10': 'role=ios' })
-    ).toBe(true);
+    expect(peersChanged({ 'socket#7': 'role=ios' }, { 'socket#10': 'role=ios' })).toBe(true);
   });
 
   it(`should report no change when the same ids are still connected`, () => {
     expect(
-      peersChanged({ 'socket#7': 'role=ios', 'socket#8': null }, { 'socket#7': 'role=ios', 'socket#8': null })
+      peersChanged(
+        { 'socket#7': 'role=ios', 'socket#8': null },
+        { 'socket#7': 'role=ios', 'socket#8': null }
+      )
     ).toBe(false);
   });
 

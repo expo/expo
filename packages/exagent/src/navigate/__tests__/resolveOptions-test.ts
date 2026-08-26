@@ -10,6 +10,7 @@ describe(resolveNavigateOptions, () => {
       platform: undefined,
       scheme: undefined,
       appId: undefined,
+      printUrl: false,
       json: false,
       followups: true,
       routeCheck: true,
@@ -27,6 +28,7 @@ describe(resolveNavigateOptions, () => {
         'http://192.168.1.10:8081/',
         '--app-id',
         'com.example.demo',
+        '--print-url',
         '--json',
         '--no-route-check',
       ])
@@ -36,6 +38,7 @@ describe(resolveNavigateOptions, () => {
       platform: 'android',
       scheme: 'demoapp',
       appId: 'com.example.demo',
+      printUrl: true,
       json: true,
       followups: true,
       routeCheck: false,

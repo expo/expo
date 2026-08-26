@@ -5,8 +5,8 @@
 // Kept apart from the phase runner so the shape of the answer can be read on its own, and so the
 // formatter and the follow-ups depend on the shape rather than on the machinery that fills it.
 
-import type { ScreenshotResult } from '../device/screenshot';
 import type { DevWaitBundleJson } from '../dev/waitFormat';
+import type { ScreenshotResult } from '../device/screenshot';
 import type { FollowUp } from '../followups';
 import type { RouteCheckJson } from '../navigate/routeCheck';
 import type { DevServerSource } from '../runtime/devServer';

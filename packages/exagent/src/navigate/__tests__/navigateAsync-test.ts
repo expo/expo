@@ -94,6 +94,7 @@ function options(overrides: Partial<NavigateOptions> = {}): NavigateOptions {
   return {
     route: '/profile/42',
     devServerUrl: 'http://127.0.0.1:8081',
+    printUrl: false,
     json: false,
     followups: true,
     routeCheck: true,
@@ -341,6 +342,8 @@ describe(navigateAsync, () => {
       devServerSource: 'flag',
       resolution: expect.stringContaining('Expo Go'),
       target: expect.stringContaining('Expo Go'),
+      hostType: null,
+      printUrl: false,
       platform: 'ios',
       deviceId: 'IOS-1',
       appId: null,
@@ -388,7 +391,9 @@ describe(navigateAsync, () => {
       'deviceId',
       'exitCode',
       'followups',
+      'hostType',
       'platform',
+      'printUrl',
       'resolution',
       'route',
       'routeCheck',
@@ -628,6 +633,141 @@ describe(navigateAsync, () => {
       expect(JSON.parse(printed()).routeCheck).toMatchObject({
         checked: false,
         reason: expect.stringContaining('full URL'),
+      });
+    });
+  });
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Resolving a URL without a device
+  describe('--print-url', () => {
+    function mockExpoGoProject() {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+    }
+
+    /** A detached log of a tunnelled run, and the lock of the run that wrote it. */
+    function mockTunnelledRun(host: string) {
+      vol.fromJSON({
+        [`${projectRoot}/.expo/dev/logs/dev-detached.log`]: `Waiting on http://${host}\n`,
+      });
+      jest.mocked(readDevServerLockAsync).mockResolvedValue({
+        url: 'http://127.0.0.1:8081',
+        port: 8081,
+        pid: 4242,
+        // Before the log memfs just wrote, which is what proves the log is this run's.
+        startedAt: '2020-01-01T00:00:00.000Z',
+        projectRoot,
+      });
+    }
+
+    // The whole point: no device is looked for, so nothing is spawned.
+    it(`resolves the URL and spawns no device tool`, async () => {
+      mockExpoGoProject();
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([]);
+
+      await expect(navigateAsync(projectRoot, options({ printUrl: true }))).resolves.toBe(0);
+
+      expect(spawn).not.toHaveBeenCalled();
+      expect(printed()).toContain('exp://127.0.0.1:8081/--/profile/42');
+      expect(printed()).toContain('nothing was opened');
+    });
+
+    it(`leads with the tunnel host rather than the address of this machine`, async () => {
+      mockExpoGoProject();
+      mockTunnelledRun('znakdiwe5j2n5o0.boltexpo.dev');
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await navigateAsync(projectRoot, options({ devServerUrl: null, printUrl: true, json: true }));
+
+      const report = JSON.parse(printed());
+      expect(report.url).toBe('exp://znakdiwe5j2n5o0.boltexpo.dev/--/profile/42');
+      expect(report.hostType).toBe('tunnel');
+      expect(report.devServerUrl).toBe('http://127.0.0.1:8081');
+    });
+
+    // A tunnel that died leaves its URL in the log, and a URL that no longer resolves is worse
+    // than the LAN one: it looks like it should work.
+    it(`falls back to the dev server's own host once the log says the tunnel died`, async () => {
+      mockExpoGoProject();
+      mockTunnelledRun('znakdiwe5j2n5o0.boltexpo.dev');
+      vol.fromJSON({
+        [`${projectRoot}/.expo/dev/logs/dev-detached.log`]:
+          'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev\nError: Unexpected server response: 409\n',
+      });
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await navigateAsync(projectRoot, options({ devServerUrl: null, printUrl: true, json: true }));
+
+      expect(JSON.parse(printed()).url).toBe('exp://127.0.0.1:8081/--/profile/42');
+    });
+
+    it(`keeps the four device keys and fills them with null`, async () => {
+      mockExpoGoProject();
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await navigateAsync(projectRoot, options({ printUrl: true, json: true }));
+
+      const report = JSON.parse(printed());
+      expect(report).toMatchObject({
+        printUrl: true,
+        platform: null,
+        deviceId: null,
+        command: null,
+        exitCode: null,
+      });
+      expect(Object.keys(report).sort()).toEqual([
+        'appId',
+        'command',
+        'devServerSource',
+        'devServerUrl',
+        'deviceId',
+        'exitCode',
+        'followups',
+        'hostType',
+        'platform',
+        'printUrl',
+        'resolution',
+        'route',
+        'routeCheck',
+        'target',
+        'url',
+      ]);
+    });
+
+    // The route check still runs: a URL for a route the project has not got is not an answer.
+    it(`still refuses a route the project has not got`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo' } }),
+        [`${projectRoot}/app/index.tsx`]: 'export default function Index() {}',
+      });
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await expect(
+        navigateAsync(projectRoot, options({ route: '/nope', printUrl: true }))
+      ).rejects.toThrow(/nope/);
+    });
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
+  describe('a machine with no device', () => {
+    it(`names the URL and the mode that needs no device`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      mockDevServer([EXPO_GO_TARGET]);
+      // No booted simulator, and no attached Android device.
+      mockSpawnQueue([
+        { stdout: JSON.stringify({ devices: {} }) },
+        { stdout: 'List of devices attached\n' },
+      ]);
+
+      await expect(navigateAsync(projectRoot, options())).rejects.toMatchObject({
+        code: 'NO_DEVICE',
+        message: expect.stringContaining('exp://127.0.0.1:8081/--/profile/42'),
+        suggestedCommand: 'npx exagent navigate / --print-url',
       });
     });
   });

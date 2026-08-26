@@ -13,8 +13,8 @@ import {
   RPC_METHOD_NOT_FOUND,
   type CdpTarget,
 } from '../cdpClient';
-import LIVE from './fixtures/live-promise-frames.json';
 import { MockWebSocket } from './MockWebSocket';
+import LIVE from './fixtures/live-promise-frames.json';
 
 const TARGET = {
   id: '1',

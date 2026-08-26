@@ -156,7 +156,9 @@ describe(resolveInstallPlan, () => {
     });
 
     it(`should never judge what comes after the separator`, () => {
-      expect(() => resolveInstallPlan(['react', '--', '--verbose', '--legacy-peer-deps'])).not.toThrow();
+      expect(() =>
+        resolveInstallPlan(['react', '--', '--verbose', '--legacy-peer-deps'])
+      ).not.toThrow();
     });
   });
 });

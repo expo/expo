@@ -96,7 +96,9 @@ async function findWindowsListenerAsync(port: number): Promise<PortListener | nu
     ['/FI', `PID eq ${pid}`, '/FO', 'CSV', '/NH'],
     { timeoutMs: LOOKUP_TIMEOUT_MS }
   );
-  const command = tasklist.spawnError ? '' : (tasklist.stdout.split(',')[0] ?? '').replace(/"/g, '');
+  const command = tasklist.spawnError
+    ? ''
+    : (tasklist.stdout.split(',')[0] ?? '').replace(/"/g, '');
   return { pid, command: command.trim() };
 }
 

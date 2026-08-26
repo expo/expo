@@ -7,15 +7,17 @@
 // code it gives a device that refused the link.
 import chalk from 'chalk';
 
+import { event as cliEvent } from '../events';
 import {
   buildNavigateFollowUps,
+  buildPrintUrlFollowUps,
   followUpsEnabled,
   reportFollowUps,
   type FollowUp,
 } from '../followups';
 import * as Log from '../log';
 import type { DevServerSource } from '../runtime/devServer';
-import { openRouteAsync } from './openRoute';
+import { openRouteAsync, resolveRouteUrlAsync } from './openRoute';
 import type { NavigateOptions } from './resolveOptions';
 import type { RouteCheckJson } from './routeCheck';
 
@@ -45,12 +47,26 @@ export interface NavigateResultJson {
   resolution: string;
   /** Why the target app was decided to be Expo Go or a development build. */
   target: string;
-  platform: string;
-  deviceId: string;
+  /**
+   * How a device off this machine reaches that dev server: `tunnel`, `lan`, `localhost`, or null.
+   *
+   * The one fact that decides whether {@link url} is usable anywhere but here. `localhost` means
+   * only a process on this machine can open it, and `tunnel` means anything on the internet can —
+   * which is what a cloud simulator needs.
+   */
+  hostType: string | null;
+  /**
+   * Whether the run only resolved the URL (`--print-url`), so no device was asked for.
+   *
+   * The four device fields below are null exactly when this is true.
+   */
+  printUrl: boolean;
+  platform: string | null;
+  deviceId: string | null;
   /** Application id from `--app-id`, or null when it was not passed. */
   appId: string | null;
   /** Device command that was run, for reproducing the step by hand. */
-  command: string;
+  command: string | null;
   /** Exit code of that command: non-zero means the device refused the deep link. */
   exitCode: number | null;
   /**
@@ -88,6 +104,10 @@ export async function navigateAsync(
 ): Promise<number> {
   const { route, platform, scheme, appId, json, followups: wantFollowUps } = options;
 
+  if (options.printUrl) {
+    return await printRouteUrlAsync(projectRoot, options);
+  }
+
   const opened = await openRouteAsync(projectRoot, {
     route,
     platform,
@@ -113,6 +133,8 @@ export async function navigateAsync(
       devServerSource: opened.devServerSource,
       resolution: opened.resolution,
       target: opened.target,
+      hostType: opened.hostType,
+      printUrl: false,
       platform: opened.platform,
       deviceId: opened.deviceId,
       appId: opened.appId,
@@ -173,4 +195,98 @@ export async function navigateAsync(
   // Last, so the `Suggested next:` section is the last thing in the terminal, after what the device said.
   reportFollowUps('navigate', followups, { json });
   return 0;
+}
+
+/**
+ * Resolve the URL for a route and print it, opening nothing.
+ *
+ * Everything `navigate` does except the last step, and the same code path for all of it: the route
+ * check, the dev-server discovery, the Expo Go decision, and the tunnel host when there is one. The
+ * device is the only thing left out, which is what makes this usable from a machine that has none.
+ *
+ * @returns `0` whenever a URL could be resolved. A URL is the whole outcome asked for, and whether
+ * anything then opens it is not this command's to know.
+ * @see llp/0005-runtime-loop-tools.rfc.md §Resolving a URL without a device
+ */
+async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions): Promise<number> {
+  const { json, followups: wantFollowUps } = options;
+
+  const resolved = await resolveRouteUrlAsync(projectRoot, {
+    route: options.route,
+    platform: options.platform,
+    scheme: options.scheme,
+    appId: options.appId,
+    devServerUrl: options.devServerUrl,
+    routeCheck: options.routeCheck,
+    command: 'navigate',
+  });
+
+  const followups = followUpsEnabled(wantFollowUps)
+    ? buildPrintUrlFollowUps({ url: resolved.url, hostType: resolved.hostType })
+    : [];
+
+  cliEvent('navigate_url', {
+    route: resolved.route,
+    url: resolved.url,
+    devServerUrl: resolved.devServerUrl,
+    devServerSource: resolved.devServerSource,
+    hostType: resolved.hostType,
+  });
+
+  if (json) {
+    const report: NavigateResultJson = {
+      route: resolved.route,
+      url: resolved.url,
+      devServerUrl: resolved.devServerUrl,
+      devServerSource: resolved.devServerSource,
+      resolution: resolved.resolution,
+      target: resolved.target,
+      hostType: resolved.hostType,
+      printUrl: true,
+      // Every key of the shape is present, and the four a device would have filled in are null:
+      // a parser reads the same object whether or not anything was opened (llp/0006 §Output
+      // contract).
+      platform: null,
+      deviceId: null,
+      appId: options.appId ?? null,
+      command: null,
+      exitCode: null,
+      routeCheck: resolved.routeCheck,
+      followups,
+    };
+    Log.log(JSON.stringify(report, null, 2));
+  } else {
+    // The URL on its own line and first, so a caller that reads one line of this reads the answer.
+    Log.log(
+      [
+        chalk`{bold URL} ${resolved.url}`,
+        chalk`{dim  ${resolved.resolution}}`,
+        chalk`{dim  target: ${resolved.target}}`,
+        chalk`{bold Dev server} ${resolved.devServerUrl}{dim  · via ${resolved.devServerSource}}`,
+        chalk`{bold Reach} ${reachLine(resolved.hostType)}`,
+        chalk`{bold Device} {dim nothing was opened — --print-url resolves the URL only}`,
+      ].join('\n')
+    );
+  }
+
+  reportFollowUps('navigate', followups, { json });
+  return 0;
+}
+
+/** What the host in the URL means for anything that is not this machine. */
+function reachLine(hostType: string | null): string {
+  if (hostType === 'tunnel') {
+    return chalk.green('tunnel · reachable from any network, including a cloud simulator');
+  }
+  if (hostType === 'lan') {
+    return chalk.yellow('lan · reachable from this network only');
+  }
+  if (hostType === 'localhost') {
+    return chalk.yellow(
+      'localhost · reachable from this machine only — start with --tunnel for a device elsewhere'
+    );
+  }
+  return chalk.dim(
+    'unknown · nothing captured what the dev server advertised, so the host above is where it listens on this machine'
+  );
 }
