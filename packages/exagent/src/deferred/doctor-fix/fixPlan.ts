@@ -1,6 +1,6 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
-// @ref llp/0013-doctor-fix.rfc.md §Planning
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — Ordering, derived rather than listed
 // Turn the tier table into the plan for one project on one machine: which steps this project has,
 // which of their targets exist, how big they are, and in what order they would run.
 //

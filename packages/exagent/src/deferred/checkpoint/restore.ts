@@ -1,6 +1,6 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
 //
-// @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
+// @ref llp/0017-deferred-commands.reference.md §The checkpoint system
 // Undoing: put the files of a checkpoint back, and say what that changed.
 //
 // The mechanism, and its limits, in one place — `git.ts` holds the calls:

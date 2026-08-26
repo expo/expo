@@ -1,4 +1,4 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
 // @ref llp/0009-smart-followups.rfc.md §Examples per command
 // The `Next:` rungs of `exagent doctor:fix`, lifted out of `src/followups/doctor.ts` when the

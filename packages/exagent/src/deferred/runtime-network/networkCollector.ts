@@ -1,6 +1,6 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0005
 //
-// @ref llp/0005-runtime-loop-tools.rfc.md §Candidates — "Network inspection".
+// @ref llp/0017-deferred-commands.reference.md §runtime:network
 // Collects the HTTP requests the app makes over the debugger protocol during a time window, so a
 // failing API call is readable instead of guessed at.
 //

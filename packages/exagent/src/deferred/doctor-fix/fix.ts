@@ -1,4 +1,4 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
 import chalk from 'chalk';
 

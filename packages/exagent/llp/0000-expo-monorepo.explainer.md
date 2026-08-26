@@ -41,5 +41,6 @@ Agentic tool layer (umbrella + feature areas):
 - [[0006-agent-native-cli-surface]] — RFC: process boundary, JSONL events, output contract, colon-group command registry.
 - [[0007-deploy-and-headless]] — RFC: cross-platform deploy, headless creation, workerd compat, chat-driven dev, EAS auth.
 - [[0008-guardrails]] — RFC: plan dry runs, untrusted-content marking, tool impact metadata (checkpoints deferred).
+- [[0017-deferred-commands]] — reference: the designs of the five areas the v1 scope narrowing left out.
 - [[0016-v1-scope]] — RFC: what the first release contains, and what waits.
 - [[0009-smart-followups]] — RFC: state-aware next actions attached to every command output.

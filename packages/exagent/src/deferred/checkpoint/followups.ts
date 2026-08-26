@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
 //
 // @ref llp/0009-smart-followups.rfc.md §Design
-// @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
+// @ref llp/0017-deferred-commands.reference.md §The checkpoint system
 // What an undo leaves to do. A checkpoint only ever restores files git tracks, so what it cannot
 // put back is everything derived from them: `node_modules` and the installed app.
 

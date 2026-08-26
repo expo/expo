@@ -324,12 +324,12 @@ declare module '2g' {
      *
      * Deferred from v1 (2026-08-26): the fix half of `doctor` is on the reference shelf
      * (`src/deferred/doctor-fix/`), so nothing emits this now. The declaration stays as the schema
-     * a consumer wrote against. See llp/0016 and llp/0013.
+     * a consumer wrote against. See llp/0016 and llp/0017 §doctor:fix.
      *
      * Ids and counts only: the targets are absolute paths on the user's machine, and the plan is
      * printed in full on the command's own output where the caller asked for it.
      *
-     * @see llp/0013-doctor-fix.rfc.md
+     * @see llp/0017-deferred-commands.reference.md §doctor:fix
      */
     'cli:doctor_fix_plan': {
       tier: 'safe' | 'moderate' | 'aggressive';
@@ -348,7 +348,7 @@ declare module '2g' {
      *
      * Deferred from v1 (2026-08-26), with `cli:doctor_fix_plan` above.
      *
-     * @see llp/0013-doctor-fix.rfc.md
+     * @see llp/0017-deferred-commands.reference.md §doctor:fix
      */
     'cli:doctor_fix_step': {
       id: string;

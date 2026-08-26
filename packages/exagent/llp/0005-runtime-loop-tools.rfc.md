@@ -5,7 +5,7 @@
 **Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
-**Related:** [[0001-agentic-cli-on-expo-cli]]
+**Related:** [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]], [[0017-deferred-commands]]
 
 ## Summary
 
@@ -27,7 +27,7 @@ Tools that let a driving agent observe and manipulate the running app, closing t
 
 ## Implemented in v1 as
 
-Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `packages/exagent`** as CLI commands — the expo-mcp implementation round was abandoned unpushed and the code ported over. Ported surface [observed — 2026-08-22]: `exagent runtime eval <expr>` (app exception ⇒ exit 1), `exagent runtime errors [--duration]`, `exagent navigate <route> [--scheme] [--ios|--android]` (renamed 2026-08-22 to the colon forms `runtime:eval`/`runtime:errors`/`runtime:network`; the space forms still resolve — `runtime:network` was deferred out of v1 on 2026-08-26, see below); 149 new jest tests (431 total). Live-verified twice — as MCP-shaped tools and again as exagent commands against a real SDK 57 app (eval value/exception, error collection with bundle-mapped stacks, deep-link navigation). Original build + live verification notes [observed — 2026-08-22]:
+Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `packages/exagent`** as CLI commands — the expo-mcp implementation round was abandoned unpushed and the code ported over. Ported surface [observed — 2026-08-22]: `exagent runtime eval <expr>` (app exception ⇒ exit 1), `exagent runtime errors [--duration]`, `exagent navigate <route> [--scheme] [--ios|--android]` (renamed 2026-08-22 to the colon forms `runtime:eval`/`runtime:errors`/`runtime:network`; the space forms still resolve — `runtime:network` was deferred out of v1 on 2026-08-26, see below and [[0017-deferred-commands]] §`runtime:network`); 149 new jest tests (431 total). Live-verified twice — as MCP-shaped tools and again as exagent commands against a real SDK 57 app (eval value/exception, error collection with bundle-mapped stacks, deep-link navigation). Original build + live verification notes [observed — 2026-08-22]:
 
 - `runtime_evaluate` — `CdpClient.evaluateAsync` (Runtime.evaluate, returnByValue + awaitPromise + exceptionDetails); app output fenced with untrusted-content markers per [[0008-guardrails]], including marker-forgery neutralization.
 
@@ -49,16 +49,14 @@ Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `pac
 
 **Verified live** [observed — 2026-08-22, SDK 57 app in Expo Go on an iOS 26.5 simulator]: `evaluateAsync` returned real values/state/exceptions from Hermes; the error collector captured an injected uncaught error (delivered via RN's console path, not `Runtime.exceptionThrown` — having both capture sources is required); deep-link navigation landed the app on the `/explore` route (screenshot-confirmed). The live round also found and fixed a blocking bug the unit tests could not see: **Metro's inspector proxy rejects CDP WebSocket handshakes without a same-origin `Origin` header (401)** — all default connection paths now send it (`createInspectorWebSocket`).
 
-**Network inspection — Deferred — reference (2026-08-26).** The command is out of the v1 surface and its code is on the reference shelf at `src/deferred/runtime-network/`; the rest of this LLP ships. **Why:** the CDP Network domain is unstable in React Native and effectively unavailable on Expo Go — the two refusals below are not edge cases but the usual answer there, so the command's most common outcome was an explanation of why it could not answer. **Re-entry criteria:** React Native ships network inspection outside `InspectorFlags::getNetworkInspectionEnabled()`, or Expo Go carries a runtime that implements the domain, so that a default `exagent runtime:network` run against a default project returns a request log rather than `NETWORK_DOMAIN_UNAVAILABLE`. See [[0016-v1-scope]]. What was built and verified is recorded below, unchanged.
-
-[observed — 2026-08-22]: `exagent runtime network` (CDP Network domain collector; request/response/failure correlated by requestId; three outcomes counted — answered / failed / never-answered, because RN never sends `Network.loadingFailed` for a refused connection [observed, SDK 57/RN 0.86]). Live-verified on iOS (200/404/refused).
-
-**Two refusals, not one** [observed — `ReactCommon/jsinspector-modern/HostAgent.cpp`, React Native 0.86, 2026-08-23]. `Network.enable` fails for two unrelated reasons, and the command must not report either as the other:
-
-- `registeredHostsCount > 1` ⇒ a JSON-RPC *internal error*, `"The Network domain is unavailable when multiple React Native hosts are registered."`. About the state of the app process — the domain attaches only while exactly one React Native host is registered — so it clears when the app is relaunched with only this project loaded, and stopping another dev server does nothing for it. Expo Go reaches it by holding a host for a project it loaded earlier.
-- `InspectorFlags::getNetworkInspectionEnabled()` off ⇒ the method is never handled, and the dispatcher answers `-32601`. About how the runtime was built, and it never clears; Expo Go for Android answers every method this way.
-
-The classification is by the runtime's own answer (`classifyNetworkDomainRefusal`: the quoted message, then the JSON-RPC code), and the why and how branch on it. The `unstable_enableNetworkPanel=true` flag on the target describes what the debugger frontend would show, so it is named only in the `-32601` case, where it genuinely contradicts the runtime. Recommending an SDK upgrade for a multiple-hosts refusal was the shipped bug this replaced [friction run 2, F24].
+**Network inspection — deferred from v1 (2026-08-26).** `exagent runtime:network` is out of the v1
+surface: the CDP Network domain is unstable in React Native and effectively unavailable on Expo Go,
+so the command's most common outcome was an explanation of why it could not answer. Everything that
+was built and verified — the request/response/failure correlation, the three outcome counts, and the
+two-refusal classification that `Network.enable` needs — is now in [[0017-deferred-commands]]
+§`runtime:network`, with the code on the reference shelf at `src/deferred/runtime-network/`. The rest
+of this LLP ships. The rule that came out of it and outlived it is in [[0010-agent-conventions]] §The
+third: a command that reports on the app does not gate on what it reported.
 
 **Android pass** [observed — 2026-08-22, headless emulator + Expo Go 57 APK]: `navigate --android` works end-to-end (adb reverse + `exp://` deep link, screenshot-confirmed). Hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]) — `Runtime.enable`/`Network.enable` merely ack; no evaluate, no console/network capture. The target selector no longer drops such targets (skip only on transport failure; -32601 targets rank behind answering ones), `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`, and errors/network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
 
@@ -1101,6 +1099,10 @@ function each phase calls — never a subprocess of this CLI, which is the desig
 | `runtime` | `runtime:eval` | `CdpClient.evaluateAsync('1')` |
 | `errors` | `runtime:errors` | `CdpRuntimeErrorCollector` |
 | `screenshot` | — | `captureScreenshotAsync` (new) |
+
+The two `dev:wait` rows name the command those questions were first asked by. It was deferred from
+v1 on 2026-08-26 ([[0017-deferred-commands]] §`dev:wait`), and `smoke` is now the only command that
+asks them; the functions are unchanged and live.
 
 **Why one process and not eight.** A `smoke` built out of `exagent` subprocesses would do dev-server
 discovery eight times, and eight discoveries on a machine running two projects can answer eight

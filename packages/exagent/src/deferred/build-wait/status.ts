@@ -1,6 +1,6 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
 //
-// @ref llp/0010-agent-conventions.rfc.md §Exit codes — the outcome band this table maps into.
+// @ref llp/0017-deferred-commands.reference.md §build:wait — The exit-code mapping. The band it maps into is llp/0010 §Exit codes.
 // The whole of what `build:wait` decides: is this status the end of the wait, and if it is, what
 // did the build do. Pure, and deliberately the only place either question is answered — a poll
 // loop that inlined the comparison would be a loop nobody can test the interesting cases of.

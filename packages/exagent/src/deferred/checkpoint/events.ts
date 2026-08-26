@@ -9,7 +9,7 @@ declare module '2g' {
      * A snapshot was written. The id is a git object id that no branch points at, so an agent
      * can hand it back to `exagent checkpoint:undo --id <id>` but never has to touch git itself.
      *
-     * @see llp/0008-guardrails.rfc.md §Summary — Checkpoints
+     * @see llp/0017-deferred-commands.reference.md §The checkpoint system
      */
     'checkpoint:created': {
       id: string;

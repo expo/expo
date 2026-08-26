@@ -1,6 +1,6 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
 //
-// @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
+// @ref llp/0017-deferred-commands.reference.md §The checkpoint system
 // The three commands of the checkpoint guardrail: take a snapshot, list them, and put one back.
 // `create.ts` makes them, `restore.ts` restores them, and `git.ts` documents the mechanism.
 

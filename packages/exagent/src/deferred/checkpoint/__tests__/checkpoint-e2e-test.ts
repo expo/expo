@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
 //
 /* eslint-env jest */
-// @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
+// @ref llp/0017-deferred-commands.reference.md §The checkpoint system
 //
 // `exagent checkpoint` snapshots the project with git plumbing, `exagent checkpoint:undo` puts a
 // snapshot back, and `exagent checkpoint:list` says which ones there are. These tests run all three

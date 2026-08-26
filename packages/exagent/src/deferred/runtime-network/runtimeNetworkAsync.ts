@@ -36,7 +36,7 @@ import type { RuntimeNetworkOptions } from './resolveOptions';
 /**
  * Listen for the HTTP requests the app makes over a window and print what it asked for and got.
  *
- * @ref llp/0005-runtime-loop-tools.rfc.md §Candidates — "Network inspection".
+ * @ref llp/0017-deferred-commands.reference.md §runtime:network
  */
 export async function runtimeNetworkAsync(
   options: RuntimeNetworkOptions,
@@ -151,7 +151,7 @@ export async function runtimeNetworkAsync(
  * runtime built without the domain and recommend an SDK upgrade — three sentences that contradicted
  * the evidence in the one above them.
  *
- * @ref llp/0005-runtime-loop-tools.rfc.md §Implemented in v1 as — Network inspection.
+ * @ref llp/0017-deferred-commands.reference.md §runtime:network
  */
 function networkDomainUnavailableError(
   devServerUrl: string,

@@ -9,7 +9,7 @@
 
 > **Renamed 2026-08-26:** this command was `build:explain` until the v1 scope narrowing
 > ([[0016-v1-scope]]). The `build` group it was in held one command that started nothing and one
-> that waited on a build somebody else started; `build:wait` was deferred and this one moved to
+> that waited on a build somebody else started; `build:wait` was deferred ([[0017-deferred-commands]] §`build:wait`) and this one moved to
 > `inspect`, the group named after what the caller is doing. It ships marked `[experimental]`.
 > Nothing about its behaviour, its flags or its rule table changed. Occurrences of the old name
 > below are the historical record and are left as written where they are quoting a decision; the

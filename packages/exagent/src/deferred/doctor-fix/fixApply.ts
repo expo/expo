@@ -1,6 +1,6 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
-// @ref llp/0013-doctor-fix.rfc.md §Applying
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — Ordering, derived rather than listed
 // Run a plan that was already printed. One event per step, one result per step, and a stop at the
 // first failure.
 //

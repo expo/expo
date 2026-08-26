@@ -1,7 +1,7 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
 /* eslint-env jest */
-// @ref llp/0013-doctor-fix.rfc.md §Follow-ups
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — Follow-ups
 import type { FixPlanPayload, FixStep, FixStepResult, FixTier } from '../fixTypes';
 import { buildDoctorFixFollowUps } from '../followups';
 

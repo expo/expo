@@ -1,4 +1,4 @@
-// @ref llp/0010-agent-conventions.rfc.md §The second: `dev:wait`
+// @ref llp/0010-agent-conventions.rfc.md §The second: the readiness gate
 // "Does this project's own code still compile?" — the question `GET /status` cannot answer.
 //
 // `/status` proves the bundler process is alive. It says nothing about the project, so an agent

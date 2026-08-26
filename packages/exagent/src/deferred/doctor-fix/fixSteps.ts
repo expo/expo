@@ -1,6 +1,6 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
-// @ref llp/0013-doctor-fix.rfc.md §The tier table
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — The tier table
 // What `doctor:fix` may reset, as data. One entry per step: which tier admits it, what it deletes,
 // what puts it back, and what it costs.
 //
@@ -69,7 +69,7 @@ export interface FixStepDefinition {
   onlyPlatforms?: NodeJS.Platform[];
   /**
    * Native directories this step deletes inside, which is what makes it subject to the
-   * dirty-tracked-native refusal of llp/0013 §Path safety.
+   * dirty-tracked-native refusal of llp/0017 §doctor:fix — Path safety.
    */
   touchesNative?: (context: FixStepContext) => NativePlatform[];
   /** Where this step's targets are, before anything checks whether they exist. */
@@ -360,7 +360,7 @@ export function tierIncludes(tier: FixTier, stepTier: FixTier): boolean {
 /**
  * When one step runs, relative to the others.
  *
- * The four ordering rules of llp/0013 are this function, derived from what a step declares it *is*
+ * The four ordering rules of llp/0017 §doctor:fix are this function, derived from what a step declares it *is*
  * rather than from a hand-kept list a new step could be left out of:
  *
  * 1. every deletion runs before any reinstall — `clean` outranks `install`;

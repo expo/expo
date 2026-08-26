@@ -111,7 +111,7 @@ Three things are wrong with that, and one of them is a contradiction rather than
   §Implemented in v1 as, item 2 already fixed the direction to err in — "Unrecorded ⇒ stale: v1
   over-plans a build at worst, never under-plans" — so `dev` plans a build for exactly the project
   `impact` was calling `dev-client-compatible`. Two commands of one CLI disagreeing about one
-  project is the failure mode [[0010-agent-conventions]] §The second: `dev:wait` was written for.
+  project is the failure mode [[0010-agent-conventions]] §The second: the readiness gate was written for.
 - **`--assert js-only` would have passed there.** A gate whose entire purpose is to be conservative
   would have been at its most permissive in the state where least is known.
 

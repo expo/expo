@@ -1,6 +1,6 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
-// @ref llp/0013-doctor-fix.rfc.md
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix
 // The whole of one `doctor:fix` run: plan, print, ask, snapshot, apply, report.
 //
 // Dry run is the default and `--apply` is what executes, which is the opposite of `exagent dev`.

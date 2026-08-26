@@ -1,6 +1,6 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
 //
-// @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
+// @ref llp/0017-deferred-commands.reference.md §The checkpoint system
 // The list of snapshots a project has, in `.expo/exagent-checkpoints.json`.
 //
 // The store holds git object ids, not contents: it is an index over objects that live in the

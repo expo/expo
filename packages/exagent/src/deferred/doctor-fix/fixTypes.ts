@@ -1,6 +1,6 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
-// @ref llp/0013-doctor-fix.rfc.md
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix
 // The shape of a `doctor:fix` plan. Pure data — no I/O here.
 //
 // The step reuses `PlanStep`'s `{ id, reason, timeClass }` triple and its `TimeClass` verbatim
@@ -44,7 +44,7 @@ export type FixStepKind =
 /**
  * When a step runs, relative to the others.
  *
- * The ordering rules of llp/0013 are derived from this and from {@link FixScope}, so a new step
+ * The ordering rules of llp/0017 §doctor:fix are derived from this and from {@link FixScope}, so a new step
  * declares what it *is* rather than where it goes in a hand-kept list.
  */
 export type FixPhase =

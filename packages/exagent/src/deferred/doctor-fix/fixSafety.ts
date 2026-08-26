@@ -1,6 +1,6 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
-// @ref llp/0013-doctor-fix.rfc.md §Path safety
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — Path safety
 // The one predicate every target of `doctor:fix` passes through, on the way into the plan and
 // again on the way into `rm`.
 //

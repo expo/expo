@@ -1,6 +1,6 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
-// @ref llp/0013-doctor-fix.rfc.md §Reinstalling
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — Package-manager detection
 // Which package manager puts `node_modules` back, read from the lockfile the project already has.
 //
 // The names, the per-directory precedence and the npm fallback mirror `@expo/package-manager`'s

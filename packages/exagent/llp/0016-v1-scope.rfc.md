@@ -5,7 +5,7 @@
 **Systems:** the command registry (`src/commandRegistry.ts`); the reference shelf (`src/deferred/`); the suggested-command lint (`src/lint/`); `--help`; `README.md`; the `AGENTS.md` managed block (`src/agents/content.ts`)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-26
-**Related:** [[0006-agent-native-cli-surface]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0012-build-explain]], [[0013-doctor-fix]]
+**Related:** [[0017-deferred-commands]], [[0006-agent-native-cli-surface]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0012-build-explain]]
 
 ## Summary
 
@@ -31,15 +31,15 @@ So: **five areas deferred, two renamed, everything else unchanged.** Nothing her
 | `login` / `logout` / `whoami` / `register` | **keep**              | forwarded, with the EAS fallback of [[0006-agent-native-cli-surface]]   |
 | `skills:*`, `agents:setup`     | **keep**                          | agent setup                                                             |
 | forwarded `expo` set           | **keep**                          | the fixed list, unchanged                                               |
-| `dev:wait`                     | **defer**                         | `smoke` asks its questions and three more                               |
-| `checkpoint` + `:list` / `:undo`, and the auto-snapshots | **defer**   | agents manage git themselves                                            |
-| `build:wait`                   | **defer**                         | wants to be `build --wait`, not a command                               |
-| `runtime:network`              | **defer**                         | the domain is unstable and absent on Expo Go                            |
-| `doctor:fix`                   | **defer**                         | the check half is the v1 answer                                         |
+| `dev:wait`                     | **defer** ([[0017-deferred-commands]] §`dev:wait`) | `smoke` asks its questions and three more               |
+| `checkpoint` + `:list` / `:undo`, and the auto-snapshots | **defer** ([[0017-deferred-commands]] §The checkpoint system) | agents manage git themselves     |
+| `build:wait`                   | **defer** ([[0017-deferred-commands]] §`build:wait`) | wants to be `build --wait`, not a command             |
+| `runtime:network`              | **defer** ([[0017-deferred-commands]] §`runtime:network`) | the domain is unstable and absent on Expo Go     |
+| `doctor:fix`                   | **defer** ([[0017-deferred-commands]] §`doctor:fix`) | the check half is the v1 answer                       |
 | `build:explain`                | **rename** → `inspect:build-log`  | its group held nothing else                                             |
 | `config:effective`             | **rename** → `inspect:config-plugins` | its group was another CLI's verb                                    |
 
-Each deferral's own reasoning is recorded where the design is, not here: [[0010-agent-conventions]] §The second (`dev:wait`) and §The first command in the outcome band (`build:wait`), [[0008-guardrails]] (checkpoints), [[0005-runtime-loop-tools]] §Network inspection, and [[0013-doctor-fix]]. Each carries a **Why** and a **re-entry criterion**, so "deferred" is a state with a way out rather than a polite deletion.
+Each deferral's own reasoning is recorded with its design, which as of 2026-08-26 is one document: [[0017-deferred-commands]], one section per area, linked per row above. Each section carries a **Why** and a **re-entry criterion**, so "deferred" is a state with a way out rather than a polite deletion. The findings a deferred area made that still govern live code did **not** go there — they stayed in the LLP that made them, and each section says which and where.
 
 ## Deferred is a place, not a deletion
 

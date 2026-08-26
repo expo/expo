@@ -1,7 +1,7 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
 /* eslint-env jest */
-// @ref llp/0013-doctor-fix.rfc.md §Planning
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — Ordering, derived rather than listed
 // The planner over memfs fixtures: a CNG project with no native directories, a bare one with both,
 // a project with no caches at all, and each of the three tiers. The ordering rules are asserted on
 // every plan rather than on one, because a rule that holds for the plan somebody wrote the test

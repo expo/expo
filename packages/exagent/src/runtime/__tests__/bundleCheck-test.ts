@@ -1,4 +1,4 @@
-// @ref llp/0010-agent-conventions.rfc.md §The second: `dev:wait`
+// @ref llp/0010-agent-conventions.rfc.md §The second: the readiness gate
 // The two requests the check makes, and the four answers it can come back with. The bodies below
 // are recorded from a live SDK 57 dev server on 2026-08-23 — including the ANSI codes Metro's
 // worker farm always emits, which is why stripping them is asserted rather than assumed.

@@ -295,7 +295,7 @@ describe('exagent smoke', () => {
     });
   });
 
-  // @ref llp/0010-agent-conventions.rfc.md §The second: `dev:wait`. A dev server that proved it
+  // @ref llp/0010-agent-conventions.rfc.md §The second: the readiness gate. A dev server that proved it
   // serves another project is `20`, never `22`, and nothing of its app is read.
   it('exits 20 for another project s dev server', async () => {
     const projectRoot = await setupFixtureAsync('go-app');

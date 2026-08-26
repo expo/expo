@@ -1,7 +1,7 @@
-// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
 /* eslint-env jest */
-// @ref llp/0013-doctor-fix.rfc.md §The tier table
+// @ref llp/0017-deferred-commands.reference.md §doctor:fix — The tier table
 import {
   EXCLUDED_STEPS,
   FIX_STEPS,
@@ -86,7 +86,7 @@ describe('tierIncludes', () => {
 });
 
 describe('planOrder', () => {
-  // The four rules of llp/0013, asserted on every tier rather than on one hand-picked plan.
+  // The four rules of llp/0017 §doctor:fix, asserted on every tier rather than on one hand-picked plan.
   it.each(FIX_TIERS)('holds the ordering rules for tier %s', (tier) => {
     const ids = stepsForTier(tier, 'darwin').map((step) => step.id);
     const at = (id: string) => ids.indexOf(id);

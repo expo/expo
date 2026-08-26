@@ -36,72 +36,31 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 
 ### The first command in the outcome band: `build:wait`
 
-> **Status:** Deferred — reference (2026-08-26). The command is out of the v1 surface and its code
-> is on the reference shelf at `src/deferred/build-wait/`; the exit-code band it established is
-> unchanged and every command that stayed still uses it.
->
-> **Why:** the shape is wrong rather than the work. A caller who wants to wait on a build has
-> already run a build command, and `exagent build:wait <id>` asks them to carry an id from one
-> command to another — while `npx eas build --wait` does the whole thing in one. The answer is a
-> **`--wait` flag on a build verb this CLI owns**, not a command of its own.
->
-> **Re-entry criteria:** `exagent build` exists as a verb with local and EAS parity — the same flag
-> waiting on a local `expo run:ios` and on an EAS build — so that `exagent build --wait` is one
-> answer rather than two commands wearing one name. The table below is what it returns as. See
-> [[0016-v1-scope]].
+Deferred from v1 — design now in [[0017-deferred-commands]] §`build:wait`. `exagent build:wait <id>`
+was the first command whose whole answer was its exit code, and it is what the `20`–`29` band was
+reserved for; its status-to-code table, the four decisions in that mapping and its live verification
+against real staging builds went to the shelf with the code (`src/deferred/build-wait/`). The band it
+established is unchanged, and every command that stayed still uses it. Two things it taught are not
+about that command, and stay here.
 
-[observed — 2026-08-23, `src/builds/`] `exagent build:wait <id>` is the first command whose whole answer is its exit code, and it is what the `20`–`29` band was reserved for. It attaches to an EAS build that already exists — one started by CI, by the dashboard, or by another agent — polls `eas build:view <id> --json`, and leaves with what the build did:
+**No `eas --json` payload can contain a `null`, so absence is the only way that wire has of saying
+one** [observed — 2026-08-26, staging]. `queuePosition` and `estimatedWaitTimeLeftSeconds` are real
+`BuildFragment` fields, they were requested on every query, and they appeared on none of 47 polls
+across a ~10-minute queue on either platform. The cause is general and worth knowing wherever this
+CLI reads EAS JSON: `printJsonOnlyOutput` sanitizes each payload by **deleting every key whose value
+is null**. No parser may try to tell "the service said null" from "the service said nothing".
 
-| Code | The build                                          | Where it is decided            |
-| ---- | -------------------------------------------------- | ------------------------------ |
-| `0`  | `FINISHED`                                         | `src/deferred/build-wait/status.ts` |
-| `20` | `ERRORED`                                          | `src/deferred/build-wait/status.ts` |
-| `21` | `CANCELED`, **or this wait was interrupted**       | `src/deferred/build-wait/status.ts` |
-| `22` | still running when `--timeout` elapsed             | `src/deferred/build-wait/waitAsync.ts` |
-| `7`  | nobody is signed in, so no build is visible        | `src/needsHuman/assertAuth.ts` |
-| `1`  | not readable: bad id, no `eas`, three failed polls | `CommandError`                 |
+Two consequences of adopting the convention are worth stating. First, adopting it changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
 
-**The table has now been run against live builds** [observed — 2026-08-26, staging, `@kudo1/DailyWords-Grok`]. `ERRORED` → **20** and `CANCELED` → **21** were both produced by real builds rather than by fixtures: an iOS build that failed in `INSTALL_PODS`, and an Android build cancelled mid-flight with `eas build:cancel`. The service spells it **`CANCELED`**, one `l` — `CANCELLED` stays in the table as a spelling that costs nothing to accept and would hang a wait if the service ever used it. The non-terminal statuses a wait polls through are `IN_QUEUE` and `IN_PROGRESS`, both now recorded as fixtures (`src/__fixtures__/eas/README.md`). `NEW` and `PENDING_CANCEL` were still not seen: `NEW` is held for less than one poll interval, and `PENDING_CANCEL` needs a cancellation to be caught in flight.
+### The second: the readiness gate, and what an outcome is an outcome _about_
 
-One assumption the same runs contradicted, though it costs nothing: **`queuePosition` and `estimatedWaitTimeLeftSeconds` do not arrive.** They are real `BuildFragment` fields and are requested on every query, and they appeared on none of 47 polls across a ~10-minute queue on either platform. The cause is general and worth knowing wherever this CLI reads EAS JSON: `printJsonOnlyOutput` sanitizes each payload by **deleting every key whose value is null**, so no `eas --json` output can contain a `null` at all, and absence is the only way the wire has of saying one. No parser may try to tell "the service said null" from "the service said nothing".
-
-Three details of the mapping are decisions rather than transcription:
-
-- **An unrecognized status is not terminal.** The status enum belongs to a service that ships without this CLI, so a status the table has never seen keeps the wait polling. Ending on it would report an outcome nobody observed; the timeout is what stops a wait that is wrong about this, and `22` says "inconclusive" rather than claiming a result. `PENDING_CANCEL` is the concrete case — a cancellation asked for and not yet happened, which still resolves to `CANCELED` or `FINISHED`.
-- **An interrupted wait exits `21`, not `130`.** The definition of `21` above is "canceled by the caller (a declined prompt, `SIGINT`) or by the service", and a Ctrl-C is the caller cancelling. `130` would have been a second convention for the same fact. The two are told apart on the event stream (`cli:build_wait.interrupted`) rather than in the `--json` payload, whose key set is fixed.
-- **Three failed polls is `1`, not an outcome.** A wait that cannot read the build has not learned anything about it, so it is a tool failure. Its _prose_ names `eas workflow:status <id> --wait --json`, because a build id and a workflow id look alike and come from the same places — but not its `Try:` line [revised — 2026-08-23]. The `How:` sentence states a condition ("_if_ it names a workflow run"), and the last line of a failure is what a driving agent acts on, so putting the workflow command there strips the condition and sends the agent to run something that fails again for the same reason [observed — friction run, 2026-08-23: signed out, and `Try:` recommended the workflow command for an id that was obviously not a build]. `Try:` is now `<the eas that ran> whoami`, which is worth running whatever the cause.
-- **Signed out is `7`, and it is asked before the first poll** [added — 2026-08-23]. The auth preflight of §Needs-human protocol runs first: a wait that nobody is signed in for cannot see any build, so its three polls are three doomed subprocesses ending in a "gave up waiting" that names the wrong cause. A preflight answering `null` — no EAS CLI, a timeout, or a binary under that name that is not the CLI — is **not** "signed out", and the wait proceeds exactly as before.
-
-Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never to stdout, so `--json` still prints exactly one object ([[0006-agent-native-cli-surface]] §Output contract).
-
-Two consequences worth stating. First, adopting the convention changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
-
-### The second: `dev:wait`, and what an outcome is an outcome _about_
-
-> **Status:** Deferred — reference (2026-08-26). The command is out of the v1 surface and its code
-> is on the reference shelf at `src/deferred/dev-wait/`. Its **library internals stayed**:
-> `src/runtime/waitReady.ts` and `src/runtime/bundleCheck.ts` are what `smoke`, `runtime:reload` and
-> `dev --detach --wait-ready` call, so every question this section settles is still asked — by
-> `smoke`, which asks all of them and three more in one command.
->
-> **Why:** two commands answered the same question with different amounts of it. `dev:wait` proved
-> the bundler was ready, the dev server was this project's, and the entry bundle compiled;
-> `smoke` proves those and then opens the app, evaluates in it and collects what it threw. An agent
-> that ran the smaller one and believed it had a verdict is the failure mode this whole document is
-> about, and the answer is one gate rather than a choice between two.
->
-> **Where each of its jobs went, in v1:**
->
-> | what it was reached for       | the v1 answer                        |
-> | ----------------------------- | ------------------------------------ |
-> | the gate before reading the app | `exagent smoke`                    |
-> | app health over a window        | `exagent runtime:errors --fail-on-error` |
-> | readiness at start             | `exagent dev --detach --wait-ready`  |
->
-> **Re-entry criteria:** `smoke` is observed being too much for a case that only needs the bundler
-> question — a CI job with no device, say — and the cheaper wait cannot be had by flags on `smoke`.
-> See [[0016-v1-scope]].
-
+Deferred from v1 — the `exagent dev:wait` **command** is out of the surface and its design is now in
+[[0017-deferred-commands]] §`dev:wait`. What follows stayed here because it still governs live code:
+`src/runtime/waitReady.ts` and `src/runtime/bundleCheck.ts` are what `smoke`, `runtime:reload` and
+`dev --detach --wait-ready` call, so every question this section and the four below it settle is
+still asked — by `smoke`, which asks all of them and three more in one command. The prose names
+`dev:wait` throughout because that is the command the findings were made against; read those
+mentions as the record of where a live rule came from.
 
 [observed — 2026-08-23, `src/dev/`] `exagent dev:wait` joined the band next, and it made the band's
 one ambiguity concrete: `20` says "the operation failed", and a readiness gate has to decide what
@@ -233,7 +192,7 @@ one:
   that. An agent passing it across platforms in a sweep would read the same `0` it reads for iOS
   and conclude the same thing.
 - `22` says "look again", and no amount of looking makes a browser register a debugger target.
-  Same reasoning as the project-root mismatch of §The second: `dev:wait`.
+  Same reasoning as the project-root mismatch of §The second: the readiness gate.
 - `1` is the band for "the tool did not work: usage error … fix the call", and this is exactly
   that: a flag combination that cannot be answered, with two spellings that can (drop the flag, or
   name a native platform), both in the `How:` line. The false red it introduces is a caller who
@@ -296,7 +255,7 @@ valid JSON`, which describes byte 0 of a body the reader never sees.
 its whole contract is that it never waits, while a cold first build is tens of seconds and nothing
 the dev server exposes says "is the last build broken" without building. The honest arrangement is
 the one now in place: `status` reports where the project is, and its `next` line points at
-`exagent dev:wait --require-app`, which is the command that pays for the answer.
+`exagent smoke`, which is the command that pays for the answer [revised — 2026-08-26; it named `exagent dev:wait --require-app` until that command was deferred, [[0017-deferred-commands]] §`dev:wait`].
 
 ### The third: a collector that can be asked to be a gate
 
@@ -315,7 +274,8 @@ that the exit code closes everywhere else.
 Only `errors` has it. The rule was written against `runtime:network`, which had no equivalent
 question for its exit code to answer: its failed requests are something it reports _about_ the app —
 a 404 the app handles is not the command's operation failing. That command was deferred out of v1 on
-2026-08-26 ([[0016-v1-scope]]), and the rule it established stands: a command that reports on the app
+2026-08-26 ([[0016-v1-scope]]; design in [[0017-deferred-commands]] §`runtime:network`), and the rule it
+established stands: a command that reports on the app
 does not gate on what it reported.
 
 **Amendment — a runtime that cannot answer is `22`, not `0`** [observed — friction run 6 (Android),
