@@ -125,6 +125,43 @@ test('gets the current navigation state with selector', () => {
   expect(callback.mock.calls[3]![0]).toBe(1);
 });
 
+test('updates a memoized consumer', () => {
+  const TestNavigator = (props: any): any => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  const callback = jest.fn();
+
+  const Test = React.memo(() => {
+    callback(useNavigationState((state) => state.index));
+
+    return null;
+  });
+
+  const navigation = React.createRef<any>();
+
+  render(
+    <BaseNavigationContainer ref={navigation}>
+      <TestNavigator>
+        <Screen name="first" component={Test} />
+        <Screen name="second">{() => null}</Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(callback).toHaveBeenLastCalledWith(0);
+
+  act(() => navigation.current.navigate('second'));
+
+  expect(callback).toHaveBeenLastCalledWith(1);
+});
+
 test('gets the correct value if selector changes', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);

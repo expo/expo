@@ -48,7 +48,7 @@ import { FocusedRouteKeyContext } from './useIsFocused';
 import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
-import { NavigationStateListenerProvider } from './useNavigationState';
+import { NavigatorStateContext } from './useNavigationState';
 import {
   emitBeforeRemove,
   getPreventableRoutes,
@@ -327,6 +327,9 @@ export function useNavigationBuilder<
     );
   }
 
+  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
+  const routeNamesKey = routeNames.join('\0');
+
   const { state: currentState } = use(NavigationStateContext);
 
   const { getStateForKey, resetNavigator, handleAction } = use(NavigationBuilderContext);
@@ -346,7 +349,10 @@ export function useNavigationBuilder<
   const committedState = (
     isForeignType ? resetNavigatorState(currentState, router.type) : currentState
   ) as State;
-  const state = router.getStateForDeclaredRoutes(committedState, routeNames);
+  const state = React.useMemo(
+    () => router.getStateForDeclaredRoutes(committedState, routeNames),
+    [committedState, routeNamesKey, router]
+  ) as State;
   // TODO(@ubax): Check whether this ref can be safely removed.
   const stateKeyRef = React.useRef(committedState.key);
 
@@ -359,8 +365,6 @@ export function useNavigationBuilder<
   React.useInsertionEffect(() => {
     registryConfigRef.current = { routeNames, routeGetIdList };
   });
-  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
-  const routeNamesKey = routeNames.join('\0');
   const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
     (registryState, action) =>
       // The registry stores states from different router types; this entry only receives its own state key.
@@ -587,7 +591,7 @@ export function useNavigationBuilder<
     return (
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
-          <NavigationStateListenerProvider state={state}>
+          <NavigatorStateContext.Provider value={state}>
             <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
               <PreventRemoveContext.Provider value={preventRemoveContextValue}>
                 <NavigatorTypeContext.Provider value={router.type}>
@@ -595,7 +599,7 @@ export function useNavigationBuilder<
                 </NavigatorTypeContext.Provider>
               </PreventRemoveContext.Provider>
             </FocusedRouteKeyContext.Provider>
-          </NavigationStateListenerProvider>
+          </NavigatorStateContext.Provider>
         </NavigationHelpersContext.Provider>
       </NavigationMetaContext.Provider>
     );

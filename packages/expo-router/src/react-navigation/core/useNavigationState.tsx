@@ -1,8 +1,6 @@
 'use client';
 import React, { use } from 'react';
 
-import useLatestCallback from '../../utils/useLatestCallback';
-import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
 import type { NavigationState, ParamListBase } from '../routers';
 
 type Selector<ParamList extends ParamListBase, T> = (state: NavigationState<ParamList>) => T;
@@ -15,67 +13,16 @@ type Selector<ParamList extends ParamListBase, T> = (state: NavigationState<Para
 export function useNavigationState<ParamList extends ParamListBase, T>(
   selector: Selector<ParamList, T>
 ): T {
-  const stateListener = use(NavigationStateListenerContext);
+  const state = use(NavigatorStateContext);
 
-  if (stateListener == null) {
+  if (state == null) {
     throw new Error("Couldn't get the navigation state. Is your component inside a navigator?");
   }
 
-  const value = useSyncExternalStoreWithSelector(
-    stateListener.subscribe,
-    // @ts-expect-error: this is unsafe, but needed to make the generic work
-    stateListener.getState,
-    stateListener.getState,
-    selector
-  );
-
-  return value;
+  // @ts-expect-error: this is unsafe, but needed to make the generic work
+  return selector(state);
 }
 
-export function NavigationStateListenerProvider({
-  state,
-  children,
-}: {
-  state: NavigationState<ParamListBase>;
-  children: React.ReactNode;
-}) {
-  const listeners = React.useRef<(() => void)[]>([]);
-  const stateRef = React.useRef(state);
-
-  const getState = useLatestCallback(() => stateRef.current);
-
-  const subscribe = useLatestCallback((callback: () => void) => {
-    listeners.current.push(callback);
-
-    return () => {
-      listeners.current = listeners.current.filter((cb) => cb !== callback);
-    };
-  });
-
-  React.useLayoutEffect(() => {
-    stateRef.current = state;
-    listeners.current.forEach((callback) => callback());
-  }, [state]);
-
-  const context = React.useMemo(
-    () => ({
-      getState,
-      subscribe,
-    }),
-    [getState, subscribe]
-  );
-
-  return (
-    <NavigationStateListenerContext.Provider value={context}>
-      {children}
-    </NavigationStateListenerContext.Provider>
-  );
-}
-
-const NavigationStateListenerContext = React.createContext<
-  | {
-      getState: () => NavigationState<ParamListBase>;
-      subscribe: (callback: () => void) => () => void;
-    }
-  | undefined
+export const NavigatorStateContext = React.createContext<
+  NavigationState<ParamListBase> | undefined
 >(undefined);
