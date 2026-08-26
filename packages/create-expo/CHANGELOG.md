@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Derive project names from the app name the same way as `@expo/config-plugins`: normalize accented and compatibility characters ('Árbók' now becomes 'Arbok', not 'rbk'; 'ﬁre' becomes 'fire'), transliterate letters that normalization cannot decompose ('Bjørn' becomes 'Bjorn'), and fall back to 'app'. Derive sanitized identifiers from the raw app name in XML and plist files too, and escape display names for Android resources and plists. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 - Print the "make sure you have modules installed" warning when the dependency install fails ([#48929](https://github.com/expo/expo/issues/48929)) ([#48946](https://github.com/expo/expo/pull/48946) by [@expo-bot](https://github.com/expo-bot))
 

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Normalize accented and compatibility characters instead of stripping them when deriving iOS project names from the app name ('Árbók' now becomes 'Arbok', not 'rbk'; 'ﬁre' becomes 'fire'), and transliterate letters that normalization cannot decompose ('Bjørn' becomes 'Bjorn'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+- Escape `?` and `\` in `XML.escapeAndroidString` so values are not compiled as attribute references or aapt2 escape sequences. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 - Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
 
 ### 💡 Others
