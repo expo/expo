@@ -132,7 +132,7 @@ if (typeof window === 'undefined') {
       await ExpoFontLoader.unloadAsync('DIN 2014');
 
       expect(sheet.cssRules).toHaveLength(1);
-      expect(sheet.cssRules[0].style.fontFamily).toBe('"Other"');
+      expect(sheet.cssRules[0]?.style.fontFamily).toBe('"Other"');
     });
   });
 }

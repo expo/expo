@@ -82,8 +82,8 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
     const sheet = getFontFaceStyleSheet();
     if (!sheet) return;
     const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
-    for (let i = items.length - 1; i >= 0; i--) {
-      sheet.deleteRule(items[i].index);
+    for (const item of items.reverse()) {
+      sheet.deleteRule(item.index);
     }
   },
 
