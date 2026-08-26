@@ -81,11 +81,33 @@ export async function setSplashImageDrawablesAsync(
   if (drawable != null) {
     await writeSplashScreenDrawablesAsync(projectRoot, drawable);
   } else {
+    if (!hasSplashImage(root)) {
+      await writeTransparentSplashScreenDrawableAsync(projectRoot);
+    }
     await Promise.all([
       setSplashImageDrawablesForThemeAsync(root, 'light', projectRoot, root.imageWidth),
       setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
     ]);
   }
+}
+
+function hasSplashImage(config: BaseAndroidSplashConfig): boolean {
+  return Boolean(config.mdpi || config.hdpi || config.xhdpi || config.xxhdpi || config.xxxhdpi);
+}
+
+async function writeTransparentSplashScreenDrawableAsync(projectRoot: string) {
+  const androidMainPath = path.join(projectRoot, 'android/app/src/main');
+  const outputPath = path.join(androidMainPath, DRAWABLES_CONFIGS.default.lightPath);
+
+  await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+  await fs.promises.writeFile(
+    outputPath,
+    `<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@android:color/transparent" />
+</layer-list>
+`
+  );
 }
 
 async function clearAllExistingSplashImagesAsync(projectRoot: string) {

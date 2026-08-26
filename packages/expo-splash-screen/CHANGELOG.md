@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Generate a transparent Android splash drawable when the config plugin has no image.
+
 ### 💡 Others
 
 ## 57.0.5 - 2026-07-22

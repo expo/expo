@@ -104,14 +104,14 @@ describe(setSplashImageDrawablesAsync, () => {
       expect(results[image]).toBe('...');
     }
   });
-  it(`sets no images`, async () => {
+  it(`sets a transparent fallback when no image is configured`, async () => {
     await setSplashImageDrawablesAsync(
       getAndroidSplashConfig({
         resizeMode: 'contain',
         backgroundColor: '#ff0000',
         imageWidth: 100,
       }),
-      './'
+      '/'
     );
 
     const images = [
@@ -131,5 +131,8 @@ describe(setSplashImageDrawablesAsync, () => {
     for (const image of images) {
       expect(results[image]).not.toBeDefined();
     }
+    expect(results['/android/app/src/main/res/drawable/splashscreen_logo.xml']).toContain(
+      '@android:color/transparent'
+    );
   });
 });
