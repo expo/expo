@@ -14,12 +14,18 @@
 // with an empty npm cache: `npm error code ENOTCACHED`].
 //
 // The EAS CLI reads the same file, so it is the better thing to ask when the project cannot answer.
+//
+// `register` is the one exception, and it is an exception in both directions: the EAS CLI has no
+// `register` at all [observed — eas-cli 22.5.0, `eas register --help` answers
+// `Error: Command register not found`], so the fallback that saves the other three cannot save it;
+// and the download it would otherwise be worth avoiding is *acceptable* here, because a person who
+// has no account yet runs this once in their life [confirmed — Kudo, 2026-08-26]. So `register`
+// keeps the `npx expo` rung the other three gave up, and says on stderr that it is paying for it.
 
 import path from 'path';
 
 import type { Command } from '../types';
 import { fileExistsSync } from '../utils/dir';
-import { CommandError } from '../utils/errors';
 import { findExecutableOnPath, spawnSubprocessAsync } from '../utils/subprocess';
 import { type Invoker } from '../utils/invoker';
 import { resolvePackageRunner } from '../utils/packageRunner';
@@ -42,7 +48,12 @@ export type AuthTool = 'expo' | 'eas';
  * `runner-eas` rather than `npx-eas`: which runner downloads the package is the caller's, not this
  * CLI's, so naming npm in the contract would be wrong under Bun (`src/utils/packageRunner.ts`).
  */
-export type AuthCliSource = 'project-expo' | 'project-eas' | 'path-eas' | 'runner-eas';
+export type AuthCliSource =
+  | 'project-expo'
+  | 'project-eas'
+  | 'path-eas'
+  | 'runner-eas'
+  | 'runner-expo';
 
 /** The invocation one auth command resolves to. */
 export interface AuthCli {
@@ -63,6 +74,15 @@ export interface AuthCli {
 
 /** The package the `npx` fallback runs, pinned to a name rather than to a version. */
 const EAS_CLI_PACKAGE = 'eas-cli@latest';
+
+/**
+ * The package `register` falls back to, for the same reason and with a different tradeoff.
+ *
+ * Unpinned, where {@link EAS_CLI_PACKAGE} carries `@latest`: `npx expo` resolves to the newest
+ * `expo` either way, and the version of an SDK downloaded to open a signup page is not a fact worth
+ * asserting in a command line a reader may see.
+ */
+const EXPO_CLI_PACKAGE = 'expo';
 
 /** How long the PATH candidate has to prove it is the EAS CLI. */
 export const AUTH_PROBE_TIMEOUT_MS = 4000;
@@ -144,15 +164,42 @@ async function isRealEasCliAsync(command: string, cwd: string): Promise<boolean>
 }
 
 /**
- * The `eas` command that does what an `expo` auth command does, or null when there is none.
+ * Which CLI should answer `register` here.
  *
- * Three of the four are the same word, because the two CLIs share the session and named the verbs
- * that manage it identically. `register` is the exception: **`eas register` does not exist**
- * [observed — eas-cli 22.4.0, `eas register --help` answers `Error: Command register not found`],
- * so it gets null and the caller says so rather than running a command that is not there.
+ * A two-rung chain where the other three have four, and the missing rungs are the EAS ones: there
+ * is no `eas register` to fall back to, so the choice is `npx expo register` or nothing. It is
+ * `npx expo register`.
+ *
+ * The download this costs is the one {@link resolveAuthCliAsync} exists to avoid, and it is
+ * accepted here rather than avoided [confirmed — Kudo, 2026-08-26]. The two commands are not
+ * comparable: `whoami` is a question an agent asks on every run and answers from a file, so paying
+ * for an SDK to read it is pure waste, while `register` creates an account — once, interactively,
+ * in a browser — and a one-time install is a fair price for the only thing that can do the job. The
+ * alternative was to keep failing with a message telling the reader to go to expo.dev/signup by
+ * hand, which spends the same minute of their time and delivers less.
+ *
+ * The runner comes from `resolvePackageRunner`, so a Bun user gets `bunx expo` rather than npm's
+ * exec (`src/utils/packageRunner.ts`).
+ *
+ * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
  */
-export function easArgsForAuthCommand(command: string): string[] | null {
-  return command === 'register' ? null : [command];
+export function resolveRegisterCli(
+  projectRoot: string,
+  { pathEnv }: { pathEnv?: string } = {}
+): AuthCli {
+  const projectExpo = projectBin(projectRoot, 'expo');
+  if (projectExpo) {
+    return { tool: 'expo', source: 'project-expo', command: projectExpo, prefixArgs: [] };
+  }
+
+  const resolved = resolvePackageRunner({ pathEnv });
+  return {
+    tool: 'expo',
+    source: 'runner-expo',
+    command: resolved.command,
+    prefixArgs: [EXPO_CLI_PACKAGE],
+    runner: resolved.runner,
+  };
 }
 
 /**
@@ -174,31 +221,21 @@ export function authCliLabel({ command, prefixArgs, runner }: AuthCli): string {
  * that reads a name out of a pipe. A note about which CLI answered belongs on the channel notes go
  * on.
  */
-export function authFallbackNotice(cli: AuthCli, command: string): string {
+export function authFallbackNotice(cli: AuthCli, command: string): string | null {
+  if (cli.source === 'project-expo') {
+    // What a reader already assumes is happening needs no announcement.
+    return null;
+  }
+  if (cli.source === 'runner-expo') {
+    return [
+      `Using the Expo CLI (${authCliLabel(cli)}) for "${command}": this directory has no expo package, and the EAS CLI has no "${command}".`,
+      `${cli.runner ?? 'npx'} will download the expo package first, which takes a minute. This is the one auth command that needs it — "login", "logout" and "whoami" answer from the EAS CLI without downloading anything.`,
+    ].join('\n');
+  }
   return [
     `Using the EAS CLI (${authCliLabel(cli)}) for "${command}": this directory has no expo package.`,
     `Both CLIs sign in to the same account — the session lives in ~/.expo/state.json and is shared between them [observed — @expo/cli "api/user/UserSettings.ts" and eas-cli "utils/paths.js" resolve the same file].`,
   ].join('\n');
-}
-
-/**
- * The failure for an auth command the EAS CLI has no equivalent of.
- *
- * Only `register` reaches this, and only outside an Expo project. It is a real dead end rather than
- * a missing feature of this CLI, so it names both ways out: the page the command would have opened,
- * and the install that would make the command itself work.
- */
-export function authCommandUnavailableError(command: string, cli: AuthCli): CommandError {
-  const error = new CommandError(
-    'AUTH_COMMAND_UNAVAILABLE',
-    [
-      `There is no CLI here that can run "${command}".`,
-      `Why: "${command}" is an Expo CLI command, this directory has no expo package, and the EAS CLI that would otherwise answer has no "${command}" of its own (${authCliLabel(cli)}).`,
-      `How: sign up in a browser at https://expo.dev/signup, then "npx exagent login" — which does work here. Inside an Expo project this command is forwarded to the project's own expo CLI and behaves as it always has.`,
-    ].join('\n')
-  );
-  error.suggestedCommand = 'npx exagent login';
-  return error;
 }
 
 /**
@@ -229,12 +266,11 @@ export function exagentAuthPassthrough(command: string): Command {
       // Not the asserting project-root lookup: these commands need no project, which is the whole
       // reason this module exists.
       const projectRoot = findUpProjectRootOrCwd(process.cwd());
-      const cli = await resolveAuthCliAsync(projectRoot);
-
-      const commandArgs = cli.tool === 'expo' ? [command] : easArgsForAuthCommand(command);
-      if (!commandArgs) {
-        throw authCommandUnavailableError(command, cli);
-      }
+      // `register` resolves down its own chain, because the EAS CLI has no `register` to offer it.
+      const cli =
+        command === 'register'
+          ? resolveRegisterCli(projectRoot)
+          : await resolveAuthCliAsync(projectRoot);
 
       event('auth_passthrough', {
         command,
@@ -243,13 +279,15 @@ export function exagentAuthPassthrough(command: string): Command {
         source: cli.source,
         cli: authCliLabel(cli),
       });
-      if (cli.tool === 'eas') {
-        Log.error(authFallbackNotice(cli, command));
+      const notice = authFallbackNotice(cli, command);
+      if (notice) {
+        Log.error(notice);
       }
 
+      // Both CLIs spell all four verbs the same way, so the command word is the command word.
       process.exitCode = await runInheritedAsync(
         cli.command,
-        [...cli.prefixArgs, ...commandArgs, ...args],
+        [...cli.prefixArgs, command, ...args],
         { cwd: projectRoot }
       );
     })().catch(logCmdError);
