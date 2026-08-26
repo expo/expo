@@ -1,5 +1,5 @@
 import { useEvent } from 'expo';
-import { NowPlayingActionSlot, useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
