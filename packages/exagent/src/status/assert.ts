@@ -39,7 +39,9 @@ import type { AssertStatus, FreshnessStatus } from './types';
 export function strongestClass(freshness: FreshnessStatus | null): ImpactClass | null {
   const platforms = (freshness?.platforms ?? []).filter((platform) => platform.impact != null);
   // A platform that was built here and could not be measured makes the whole answer unknown.
-  if (platforms.some((platform) => platform.impact!.class == null && platform.recordedHash != null)) {
+  if (
+    platforms.some((platform) => platform.impact!.class == null && platform.recordedHash != null)
+  ) {
     return null;
   }
 
@@ -87,7 +89,7 @@ export function buildAssertStatus(
       actual: null,
       ok: false,
       exitCode: EXIT_OUTCOME_TIMEOUT,
-      reason: `No class could be established, so "${asserted}" was not verified. ${undecidedCause(freshness)} A gate that passed on an answer nothing measured would not be a gate; run "npx exagent status --explain" to see what is missing, or "npx exagent dev" once to record a build to compare against.`,
+      reason: `No class could be established, so "${asserted}" was not verified — ${undecidedCause(freshness)}. A gate that passed on an answer nothing measured would not be a gate; run "npx exagent status --explain" to see what is missing, or "npx exagent dev" once to record a build to compare against.`,
     };
   }
 
@@ -97,7 +99,7 @@ export function buildAssertStatus(
       actual,
       ok: false,
       exitCode: EXIT_OUTCOME_FAILED,
-      reason: `The change costs "${actual}", which is more than the asserted "${asserted}". ${firstReason(freshness) ?? ''}`.trim(),
+      reason: `The change costs "${actual}", which is more than the asserted "${asserted}"${firstReason(freshness)}.`,
     };
   }
 
@@ -110,10 +112,17 @@ export function buildAssertStatus(
   };
 }
 
-/** Why nothing was established, in the words the freshness section already used. */
+/**
+ * Why nothing was established, in the words the freshness section already used.
+ *
+ * Verbatim, and never capitalized: these sentences begin with whatever carried the finding, which
+ * is often a path. `Apps/observe-tester/tsconfig.json` is what capitalizing them produced
+ * [observed — live, 2026-08-26], so the surrounding sentence is written to take a lower-case clause
+ * instead.
+ */
 function undecidedCause(freshness: FreshnessStatus | null): string {
   if (!freshness) {
-    return 'The project could not be probed.';
+    return 'the project could not be probed';
   }
   // The platform that was built here and could not be measured, if there is one; otherwise the
   // first platform with nothing to compare against. The first is the more surprising cause, so it
@@ -123,15 +132,11 @@ function undecidedCause(freshness: FreshnessStatus | null): string {
   );
   const reason = (inPlay ?? freshness.platforms.find((platform) => platform.impact?.class == null))
     ?.impact?.reason;
-  return reason ? `${capitalize(reason)}.` : 'Nothing was compared.';
+  return reason ?? 'nothing was compared';
 }
 
 /** The sentence that carried the class, so a failing gate says what tripped it. */
-function firstReason(freshness: FreshnessStatus | null): string | null {
+function firstReason(freshness: FreshnessStatus | null): string {
   const impact = freshness?.platforms.find((platform) => platform.impact?.class != null)?.impact;
-  return impact ? `${capitalize(impact.reason)}.` : null;
-}
-
-function capitalize(sentence: string): string {
-  return sentence.charAt(0).toUpperCase() + sentence.slice(1);
+  return impact ? `: ${impact.reason}` : '';
 }

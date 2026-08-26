@@ -419,15 +419,31 @@ One consequence worth recording: `appsConnected` on a run that refuses is the co
 gave, not `0`. A flat zero there would be this command inventing "no app is connected" out of a
 step it deliberately skipped, which is the same class of unverified claim the whole round removes.
 
-### The sixth: `impact --assert`, and a gate that is not about a process
+### The sixth: `status --assert`, and a gate that is not about a process
 
-[observed — 2026-08-24, `src/impact/`] `exagent impact` is the first command in the band whose
-subject is neither a process nor a service but a **classification** of the working tree, and it
-joins the band the way `runtime:errors` did: opt-in.
+[observed — 2026-08-24 as `impact --assert`; moved onto `status` 2026-08-26 when `exagent impact`
+was folded in, see [[0011-impact-and-freshness]] §Two commands, one classifier — and then one
+command] This is the first command in the band whose subject is neither a process nor a service but
+a **classification** of the working tree, and it joins the band the way `runtime:errors` did:
+opt-in.
 
-The default is `0` always, because `impact` is information and not judgment — the same contract
-[[0004-smart-start-and-project-state]] §`exagent status` gives `status`. `--assert <class>` is the
-gate, and it exits `20` when the real class is stronger than the one named.
+The default is `0` always, because `status` is information and not judgment — the contract
+[[0004-smart-start-and-project-state]] §`exagent status` gives it. `--assert <class>` is the gate,
+and it exits `20` when the real class is stronger than the one named.
+
+**A command whose default is `0` by contract can still carry a gate, and this is the rule for when.**
+The objection is real — a command documented as always exiting 0 growing a non-zero path looks like
+the contract breaking — and the answer is that the contract is about what a *report* does. Three
+conditions make it safe, and all three hold for `runtime:errors --fail-on-error` and for
+`status --assert`:
+
+1. **The caller opts in by name.** A run without the flag is byte for byte the run it was before the
+   flag existed, so nothing that reads the command as a report can be surprised by it.
+2. **The report still prints in full.** The gate adds a verdict; it does not replace the output.
+3. **The verdict is in the payload too**, so an agent that captured stdout and lost the exit code can
+   still read what happened.
+
+A flag that failed any of the three would be a different command wearing this one's name.
 
 Decision [confirmed against the cluster plan, which proposed `1`]. The plan for this command wrote
 the assertion failure as exit `1`, and that is the pre-convention reflex. `1` is the band for "the
@@ -437,10 +453,17 @@ so an agent reading `1` would go looking for a usage mistake it did not make. Th
 `20`–`29` band exists for, and `runtime:errors --fail-on-error` already uses `20` for the identical
 one — a flag that turns a report into a gate.
 
-Two details:
+Three details:
 
 - **The whole report still prints on the run that exits `20`.** The exit code is the answer and the
   payload is why; a gate that dropped one of the two would be unreadable.
+- **`22` when nothing could be classified** [added — 2026-08-26]. `status` answers `class: null`
+  where nothing was established, and a gate must neither round that up to a conservative class nor
+  pass on it. `22` is this document's code for "nothing was shown to be wrong and nothing was proved
+  right", which is exactly the state, and `runtime:errors --fail-on-error` already uses it for the
+  same shape — an empty window from a runtime that cannot report. The two failures need different
+  fixes, which is what earns the second code: `20` means change the code or raise the assertion,
+  `22` means give the gate something to measure.
 - **The class is not the OTA verdict**, and neither is derived from the other. That split is the
   normative part of [[0011-impact-and-freshness]] and the reason it is a document rather than a
   paragraph here: a fingerprint answers "does the native binary differ" and OTA safety is a

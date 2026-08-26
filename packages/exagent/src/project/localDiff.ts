@@ -3,8 +3,8 @@
 //
 // `fingerprint:diff` in process, so `exagent status` can classify a change without spawning
 // anything. The CLI's own diff is a subprocess over two temporary files
-// (`diffFingerprintsAsync`), which is the right price for `exagent impact` — a command somebody
-// ran to ask this question — and the wrong one for a line on a report that promises to be instant.
+// (`diffFingerprintsAsync`), which is the right price under `--explain --build <id>` — a caller who
+// asked for it — and the wrong one for a line on a report that promises to be instant.
 //
 // **This is a port, and the constraint of llp/0001 is intact.** Nothing is imported from
 // `@expo/fingerprint`: what is reproduced here is a set difference over two lists of

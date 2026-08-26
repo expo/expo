@@ -103,7 +103,9 @@ describe(buildAssertStatus, () => {
     });
     expect(assertion.reason).toContain('costs "needs-native-build"');
     // The sentence that carried the class, so a failing gate says what tripped it.
-    expect(assertion.reason).toContain('needs-native-build reason');
+    expect(assertion.reason).toContain(': the needs-native-build reason');
+    // Never capitalized: a reason that begins with a path would become `Apps/…/tsconfig.json`.
+    expect(assertion.reason).not.toContain('The needs-native-build reason');
   });
 
   // The distinction that keeps this from being a two-outcome gate: `20` means change the code or
@@ -118,15 +120,16 @@ describe(buildAssertStatus, () => {
       exitCode: EXIT_OUTCOME_TIMEOUT,
     });
     expect(assertion.reason).toContain('No class could be established');
-    // The cause, in the words the freshness section already used.
-    expect(assertion.reason).toContain('No build is recorded for ios');
+    // The cause, verbatim in the words the freshness section already used — these sentences often
+    // begin with a path, so nothing capitalizes them.
+    expect(assertion.reason).toContain('no build is recorded for ios');
   });
 
   it(`should fail with 22 for a project that could not be probed at all`, () => {
     const assertion = buildAssertStatus('needs-native-build', null);
 
     expect(assertion).toMatchObject({ ok: false, exitCode: EXIT_OUTCOME_TIMEOUT, actual: null });
-    expect(assertion.reason).toContain('The project could not be probed');
+    expect(assertion.reason).toContain('the project could not be probed');
   });
 
   // The strictest gate on the cheapest change, which is the shape a CI line takes.
@@ -138,8 +141,8 @@ describe(buildAssertStatus, () => {
     ['dev-client-compatible', 'needs-native-build', false],
     ['needs-native-build', 'needs-native-build', true],
   ])(`--assert %s against a real %s should pass: %s`, (asserted, actual, ok) => {
-    expect(
-      buildAssertStatus(asserted as ImpactClass, freshness(actual as ImpactClass)).ok
-    ).toBe(ok);
+    expect(buildAssertStatus(asserted as ImpactClass, freshness(actual as ImpactClass)).ok).toBe(
+      ok
+    );
   });
 });

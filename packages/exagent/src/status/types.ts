@@ -55,9 +55,10 @@ export interface FreshnessImpact {
    * `js-only`, `dev-client-compatible`, `needs-native-build` — or **null**, when nothing was
    * established.
    *
-   * Deliberately nullable, where `exagent impact` is not. That command is a gate and has to name a
-   * class because `--assert` compares against one; this is a report, and its `unknown`s are never
-   * rounded down. See llp/0011 §Two commands, one classifier.
+   * Deliberately nullable, where a *gate* could not be. `--assert` compares against a class and
+   * "unknown" cannot be gated on, so the obvious move is to round this up to the conservative
+   * `needs-native-build`; the report does not, and `--assert` exits `22` on the null instead. The
+   * report stays honest and the gate stays safe. See llp/0011 §Two commands, one classifier.
    */
   class: ImpactClass | null;
   /** Whether the native fingerprint moved. Null when it could not be decided. */

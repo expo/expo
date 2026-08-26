@@ -2,14 +2,14 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent impact` (`src/impact/`); the last-build record (`src/plan/lastBuild.ts`); the fingerprint CLI wrapper (`src/project/fingerprint.ts`); the project-state probe (`src/project/probe.ts`, `src/status/statusAsync.ts`); `@expo/fingerprint`; `eas-cli` `fingerprint:compare` and `build:list`
+**Systems:** the change classifier (`src/impact/`, the engine under `exagent status` since 2026-08-26; `exagent impact` was its own command until then); the last-build record (`src/plan/lastBuild.ts`); the fingerprint CLI wrapper (`src/project/fingerprint.ts`); the project-state probe (`src/project/probe.ts`, `src/status/statusAsync.ts`); `@expo/fingerprint`; `eas-cli` `fingerprint:compare` and `build:list`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-24
 **Related:** [[0004-smart-start-and-project-state]], [[0006-agent-native-cli-surface]], [[0009-smart-followups]], [[0010-agent-conventions]]
 
 ## Summary
 
-`exagent impact` answers the question an agent asks after every edit: **do I need to build again?**
+This answers the question an agent asks after every edit: **do I need to build again?**
 And the one it should ask before every release and usually does not: **can this be shipped over the
 air?** Those are two questions about two different systems, and this document's central claim is
 that a tool answering both must never derive one from the other.
@@ -241,42 +241,54 @@ into an error. `resolveEasCli` (nullable) exists for exactly this, beside the th
 `--status finished` is load-bearing: a queued or errored build with the same fingerprint is not a
 build anyone can install.
 
-## Two commands, one classifier
+## Two commands, one classifier — and then one command
 
-Decision [confirmed — Kudo, 2026-08-26]. The classification this RFC designed is now read from two
-places, and the split between them is the one `git` makes: `exagent status` is the **reflex** and
-`exagent impact` is the **gate**.
+Decision [confirmed — Kudo, 2026-08-26], in two steps on the same day. The classification this RFC
+designed first became readable from `exagent status` as well as `exagent impact`; then `impact` was
+**removed** and `status` took the whole surface. Both steps are recorded, because the first one's
+argument is what made the second one obviously right.
 
-`status` grew an always-on `impact` line — the class and the sentence that says what carried it —
-because it was reporting `stale` and making the reader run a second command to learn what to do about
-it. [[0004-smart-start-and-project-state]] §The impact headline is free, the explanation is not has
-the cost argument and the measurements; what belongs here is what it means for *this* command.
+**Step one — the reflex and the gate.** `status` grew an always-on `impact` line because it was
+reporting `stale` and making the reader run a second command to learn what to do about it, which is
+a `git status` that tells you a file changed and sends you to another tool for the diff.
+[[0004-smart-start-and-project-state]] §The impact headline is free, the explanation is not has the
+cost argument and the measurements. The split was: `status` is the reflex you run constantly,
+`impact` is the gate you run when a decision turns on the answer.
 
-**`impact` is not diminished, it is scoped.** What only it does:
+**Step two — the gate was one flag, not one command.** Once `status` reported the class, the OTA
+verdict and the build-cache lookup, what was left of `impact` was `--assert`, `--build`, and two
+flags that changed only its caveats. That is a command's worth of surface for a flag's worth of
+behaviour. The exit-0 objection that seemed to make the separation necessary turned out to be a
+category error — the contract is about what a *report* does, and `--assert` is a caller asking for a
+verdict instead; [[0004-smart-start-and-project-state]] §An explicit flag turns the report into a
+gate has the argument and the exit codes. `exagent impact` is gone, and nothing it could do is gone
+with it.
 
-- **`--assert <class>`**, which is the whole of CI gating and cannot move: it exists to exit
-  non-zero, and `status` exits 0 by contract.
-- **`--build <id>` and `--base/--head`**, the comparisons against something other than the local
-  record — a cloud build, two git revisions. `status` compares the working tree against
-  `.expo/exagent-last-build.json` and nothing else, because that is the only base it has for free.
-- **Per-platform fingerprints.** `impact` runs `fingerprint:generate --platform <p>`; the `status`
-  probe runs it with no platform, so its headline cannot separate an `ios/` change from an `android/`
-  one.
-- **The tool's own diff.** `impact` spawns `fingerprint:diff`; `status` reproduces it in process
-  (`src/project/localDiff.ts`), pinned against a recorded real diff.
+**The classifier is unchanged, and so is the distinction the split was really about.** It was never
+about two commands. It is about a **report** and a **verdict over that report**:
 
-**Where the two disagree on purpose.** For a project with nothing recorded — or a v1 record holding
-only a hash — `impact` answers `needs-native-build` and `status` answers `class: null`. Both are
-right for what they are. A gate has to name a class because `--assert` compares against one and
-"unknown" cannot be gated on, so `impact` takes the conservative reading and over-plans at worst
-(§The three comparisons). A report must not, because its `unknown`s are load-bearing everywhere else
-in it. `src/impact/fromRecord.ts` is where that difference is written down, and it is the only
-classification path that returns a nullable class.
+- The report answers `class: null` where nothing was established — no recorded build, a v1 record
+  holding only a hash, no fingerprint CLI — because its `unknown`s are load-bearing everywhere else
+  in it (`auth`, `device`, the bundler's readiness).
+- The verdict refuses to pass on that same `null` rather than rounding it up to a conservative
+  class. `status --assert` exits **22** there, which is neither 20 nor 0.
 
-**The everyday pointer to `impact` is gone, and one deliberate pointer replaces it.** `status` names
-`npx exagent impact --assert js-only` in its `--help` and nowhere else — not in the report, not in a
-follow-up. A report that ended by suggesting another command for the question it had just answered
-would be admitting it had not answered it.
+`src/impact/fromRecord.ts` is where the nullable class lives, and it is still the only
+classification path that returns one. What changed is that the conservative rounding
+(`needs-native-build` for an undecided comparison, §The three comparisons) no longer has a caller:
+it existed so `--assert` would have something to compare against, and `--assert` now handles the
+undecided case honestly instead.
+
+**What the engine keeps.** `classify.ts`, `compare.ts`, `changedFiles.ts`, `buildCache.ts`,
+`runtimeVersion.ts`, `types.ts` and `fromRecord.ts` stay in `src/impact/` and are the engine under
+`status`. The directory keeps its name because it is named after the *question* — what does a change
+cost — and that question is what these modules answer, whichever command asks it. `index.ts`,
+`impactAsync.ts`, `format.ts` and `resolveOptions.ts` were the command, and are deleted.
+
+**The everyday pointer to another command went with the command.** `status` answers the question
+now, so it names nothing for it — not in the report, not in a follow-up. A report that ended by
+suggesting another command for the question it had just answered would be admitting it had not.
+
 
 ### The build-cache lookup answers in three states
 
@@ -383,19 +395,24 @@ one who has to know them.
 
 ## Command surface and exit codes
 
-Top-level verb, per the [[0006-agent-native-cli-surface]] naming rule: `expo` has no `impact`
-command, so there is no behaviour for the name to have to match. One `topLevelCommands` entry, one
-name in the Develop help section, `positionalArgs: 'own'` with the resolver rejecting a stray one —
-the argument a caller is most likely to type there is a build id, so the hint names `--build`
-([[0010-agent-conventions]] §Registry rules (d)).
-
-Exit codes:
+**Superseded as a command, kept as a contract** [2026-08-26]. There is no `exagent impact` any
+more; every rule below now describes `exagent status`, which absorbed it (§Two commands, one
+classifier — and then one command). The paragraph about the top-level verb and its
+`positionalArgs: 'own'` parse is gone with the entry it described. The exit codes survived the move
+unchanged, and gained one:
 
 | Code | Meaning |
 | --- | --- |
 | `0` | a report was produced, and the assertion held if one was made |
 | `20` | `--assert` was given and the real class is stronger than it |
+| `22` | `--assert` was given and **no class could be established** — nothing to gate on |
 | `1` | the tool could not do its job: bad flag, no fingerprint CLI, an unreadable build |
+
+`22` is the one the fold added, and it is the one that keeps the gate honest: a report that answers
+`class: null` must not be rounded up to a conservative class just because somebody asserted against
+it, and it must not pass either. [[0010-agent-conventions]] §Exit codes already spells `22` as
+"nothing was shown to be wrong and nothing was proved right", and `runtime:errors --fail-on-error`
+already uses it for the identical situation — an empty window from a runtime that cannot report.
 
 Decision [deviating from the cluster plan, which said `1`]. **A failed `--assert` is `20`, not
 `1`.** [[0010-agent-conventions]] §Exit codes reserves `20`–`29` for "the tool worked and the
@@ -403,10 +420,11 @@ operation failed", and this is exactly that shape: the classification ran, the r
 and printed, and the gate the caller opted into did not pass. `1` is the band for "the tool did not
 work: fix the call", and there is nothing about the call to fix — an agent reading `1` would go
 looking for a usage mistake it did not make. `runtime:errors --fail-on-error` already uses `20` for
-the identical shape, and `impact --assert` is the same flag under another name.
+the identical shape, and `status --assert` is the same flag under another name.
 
-Without `--assert` the command is `0` always, like `status` and for the same reason: it is
-information, not judgment.
+Without `--assert` the command is `0` always, because it is information rather than judgment. That
+is the whole safety of putting the gate on the report: a run that did not ask for a verdict is byte
+for byte the run it was before the flag existed.
 
 The whole report still prints on the run that exits `20`. The exit code is the answer and the
 payload is why; losing either makes the gate unreadable.
@@ -445,7 +463,12 @@ and on `ota.safe`, not on wording.
 1. ~~The `--json` shape of `eas fingerprint:compare`.~~ **Answered** [observed — 2026-08-26]: it is
    a pair of whole fingerprints and the diff is this CLI's to produce. See above.
 2. `--base <ref>`, which needs either `@expo/fingerprint --git-ref` or an honest `--reinstall`.
-   Neither is free, and `--build` covers the common case.
-3. Whether `status` should gain a `Try: npx exagent impact` rung. The two do not overlap — `status`
-   answers "is the last build stale" and `impact` answers "why, and what does it cost" — but the
-   follow-up ladder is [[0009-smart-followups]]'s to decide.
+   Neither is free, and `--build` covers the common case. Note that the flag never worked: it threw
+   `IMPACT_MODE_UNAVAILABLE` on every run, so removing the command that carried it lost nothing.
+3. ~~Whether `status` should gain a `Try: npx exagent impact` rung.~~ **Answered by the fold**
+   [2026-08-26]: there is nothing to point at. `status` answers both halves — "is the last build
+   stale" and "why, and what does it cost" — so a rung naming another command would be the report
+   admitting it had not answered the question it had just answered.
+4. `--preset` and `--profile`, dropped with the command. Both only ever reached the fingerprint run
+   and the caveat list, and the `status` probe takes neither. Worth restoring only if somebody meets
+   a project where the default preset gives the wrong answer.

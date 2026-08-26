@@ -340,27 +340,27 @@ declare module '2g' {
      * and types, which is not something to put on a telemetry stream.
      */
     /**
-     * One `exagent impact` run: what the change costs, and whether it can be shipped over the air.
+     * What installing one or more **packages** costs, from `exagent install`.
      *
-     * `class` and `otaSafe` are deliberately separate facts. The class comes from the fingerprint
-     * and the OTA verdict from the `runtimeVersion` policy; a consumer that derives one from the
-     * other is wrong for every policy but `fingerprint`.
+     * The *other* thing called impact (llp/0011 §Two things called impact): this classifies a
+     * package, and the change classifier — what a working-tree diff costs — is on `cli:status`
+     * under `impact` and `assertion`. `exagent impact` used to emit this name with a different
+     * payload; the command was folded into `status` on 2026-08-26 and `install` is the only
+     * producer left, so the schema is now what it actually sends.
      *
      * @see llp/0011-impact-and-freshness.rfc.md
      */
     'cli:impact': {
-      /** `last-build`, `eas-build`, or `git-refs`. */
-      mode: string;
-      /** The strongest class across the platforms classified. */
-      class: string;
-      /** Null when the runtimeVersion policy could not be resolved, which is not "unsafe". */
-      otaSafe: boolean | null;
-      runtimeVersionPolicy: string | null;
-      platforms: string[];
-      /** Null when it could not be decided, which is not "unchanged". */
-      fingerprintChanged: boolean | null;
-      /** The `--assert` gate and whether it held. Null when no assertion was made. */
-      assertion: { asserted: string; ok: boolean } | null;
+      /** The packages that were classified. */
+      packages: string[];
+      /** One entry per package: what it is, and what must rerun after installing it. */
+      reports: {
+        packageName: string;
+        impact: string;
+        expoGoBundled: boolean;
+        action: string;
+        reasons: string[];
+      }[];
     };
     'cli:typecheck': {
       /** Whether a compiler ran at all. False for a project with no TypeScript in it. */

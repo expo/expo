@@ -234,7 +234,8 @@ wrapper `impact` reads), and `src/followups/cachedBuild.ts`.
 Decision [confirmed — Kudo, 2026-08-26]. `exagent status` reports **what a change costs** on every
 run — `js-only`, `dev-client-compatible`, `needs-native-build`, with the one sentence that says what
 carried it — and `status --explain` adds the three things that cost a subprocess or a round trip.
-`exagent impact` stays, and stays a *gate*.
+`exagent impact` stays, and stays a *gate* — *for about an hour; it was removed the same day, and
+§The fold: `exagent impact` is removed says where each of its capabilities went.*
 
 **The git analogy is the whole design.** `status` is the **reflex**: you run it constantly, so it has
 to be instant and it has to answer, not judge. `impact` is the **gate**: you run it when a decision
@@ -279,8 +280,11 @@ things keep it honest:
 one hash covers both platforms — which is right for freshness and is why a change under `ios/` moves
 the android answer too. The headline inherits that: `ios` and `android` differ here only when their
 recorded builds were made at different moments, and the report prints one line for both when they
-agree rather than padding itself with the same sentence twice. `exagent impact` fingerprints per
-platform and is the command to run when that distinction matters.
+agree rather than padding itself with the same sentence twice. **This limit survived the fold**: the
+per-platform fingerprint went with `exagent impact`, so nothing resolves an `ios/`-only change from
+an `android/`-only one any more. It is the one thing the fold cost, it is cheap to restore (one
+`fingerprint:generate --platform` per platform, on the `--explain` side of the line), and nobody has
+yet met a case that needed it.
 
 **`--explain` adds three things and pays for two of them.** The per-source change list is free — the
 headline diffed locally, so the list is a by-product — and is withheld by default because a headline
@@ -293,12 +297,13 @@ The name is Kudo's and it harmonises with `build:explain`: both mean "give me th
 absorbed the `--builds` flag of the section above before either shipped — one flag for "you may pay",
 not two.
 
-**`--assert` deliberately does not come along.** `status` exits 0 always, by a contract older than
-this section, and a flag whose entire purpose is a non-zero exit cannot live on a command that has
-none. That is not a limitation to work around; it is the line between the two commands. So `status`
-mentions `impact` in exactly one place — its `--help`, naming `npx exagent impact --assert js-only`
-as the way to *gate* — and nowhere in its everyday output, because a report that ended by suggesting
-another command to answer the question it just answered would be admitting it had not.
+**`--assert` deliberately does not come along** — *reversed the same day; see §An explicit flag
+turns the report into a gate.* The paragraph below was the argument for keeping the two commands
+apart, and the thing it got wrong is named there.
+
+> `status` exits 0 always, by a contract older than this section, and a flag whose entire purpose is
+> a non-zero exit cannot live on a command that has none. That is not a limitation to work around;
+> it is the line between the two commands.
 
 **The one place the two commands answer differently, and why that is correct.** Where nothing could
 be classified — no recorded build, a v1 record holding only a hash, no fingerprint tool — `status`
@@ -314,6 +319,102 @@ Shipped in `src/project/localDiff.ts`, `src/impact/fromRecord.ts`,
 `FreshnessImpact` on `PlatformFreshness` and `ota` on `FreshnessStatus`
 (`src/status/types.ts`), the `impact`/`ota`/per-source lines in `src/status/format.ts`, and
 `exagent status [--explain]`.
+
+**The third class needed a `git` call, and is worth it** [added — 2026-08-26]. The fingerprint
+cannot tell "Fast Refresh picks it up" from "restart Metro": both leave the native surface
+untouched. Without the file-level view the headline's three-class vocabulary is really a two-class
+one, and a `metro.config.js` edit reads `js-only` while the reader reloads forever waiting for a
+change the dev server read once at start-up. That is a *wrong* headline rather than a coarse one, so
+`listChangedFilesAsync` runs in the free tier — but only when the fingerprint says the surface did
+not move, which is the one case where it can change the answer. `git status --porcelain` measured
+20–240 ms live, against a `status` that measures 1.58 s on the same project [observed —
+2026-08-26], and a deadline keeps a pathological repository from holding the report. A project
+outside git is an ordinary case and simply keeps the fingerprint's own answer.
+
+## An explicit flag turns the report into a gate
+
+Decision [confirmed — Kudo, 2026-08-26]. `exagent status --assert <class>` exits **20** when the
+change costs more than the class named, and **22** when no class could be established. Without the
+flag the command exits 0, exactly as before. **`exagent impact` is removed**; its surface is now
+`status`, and its modules are the engine underneath.
+
+This reverses the paragraph above it, and the argument that changed is worth keeping. "A command
+that exits 0 by contract cannot carry a flag whose purpose is a non-zero exit" sounds like a
+principle and is a category error: the contract is about what a *report* does, and `--assert` is a
+caller saying "do not report to me, judge for me". The precedent was already in this CLI and
+already documented — `runtime:errors --fail-on-error` is an information command that exits 20 only
+when a flag converts what it found into a verdict — so the shape is not new, and the safety comes
+from the same place it does there: **nothing changes unless the caller types the flag.** A run
+without `--assert` is byte for byte the report it was.
+
+**Three outcomes, and the middle one is why it is not two.** `20` is llp/0010's "the tool worked and
+the operation it performed failed" — never `1`, which would send an agent looking for a usage
+mistake it did not make. `22` is "nothing was shown to be wrong and nothing was proved right", and
+`runtime:errors --fail-on-error` already uses it for the identical situation: an empty window from a
+runtime that cannot report anything. The two need different fixes — `20` means change the code or
+raise the assertion, `22` means give the gate something to measure — which is the whole reason for
+spending a second code on it.
+
+**The report stays honest under the gate.** `--assert` does *not* make `status` name a class it
+could not establish; `FreshnessImpact.class` is still `null` and the `impact` line is still absent.
+What the flag does is **refuse to pass**, which is a different thing and is the safe one: a gate
+that returned 0 because nothing was measured would not be a gate. So the reflex/gate distinction of
+[[0011-impact-and-freshness]] §Two commands, one classifier survives the merge intact — it just
+stopped being a distinction between two *commands* and became one between a report and a verdict
+over the same report.
+
+**Two kinds of "no class", and the gate has to tell them apart** [observed — the first version
+failed every real project]. The report says `class: null` both for a platform that was never built
+here and for one that was built and cannot be measured, and treating them alike made `--assert`
+permanently inconclusive: an ordinary project builds for one platform, so the other has no record
+and the strictest reading dragged the whole answer to `22`. The rule is now:
+
+- **No record at all** — nothing this CLI built exists for that platform, so there is no installed
+  app the change could break. Skipped.
+- **A record that cannot be measured** (a v1 hash-only record, a fingerprint with no sources) — that
+  platform *is* in play and its cost is unknown, so the whole answer is unknown. Never skipped.
+
+`recordedHash` is what separates them, and it was already in the report.
+
+### The fold: `exagent impact` is removed
+
+Its four capabilities land as follows, and the accounting is exact because one of them turned out
+never to have worked:
+
+| `impact` had | now |
+| --- | --- |
+| the class | the always-on `impact` line |
+| `--assert <class>` | `status --assert <class>` |
+| `--build <id>` | `status --explain --build <id>` |
+| the OTA verdict | `status --explain` |
+| the build-cache lookup | the `eas build` section |
+| `--base`/`--head` | **nothing was lost** — the mode threw `IMPACT_MODE_UNAVAILABLE` on every run |
+| `--preset`, `--profile` | **dropped.** Both only ever reached the fingerprint run and the caveat list, and `status`'s probe takes neither. Recorded here rather than quietly left out. |
+
+**`--build` requires `--explain`**, and says so rather than implying it: the flag fetches a
+fingerprint from the service, and `--explain` is the one word in this surface that means "this run
+may spend a round trip". A `--build` that turned that on by itself would put the cost back where the
+design took it out of.
+
+**`--build` replaces the headline's base and leaves `fresh`/`stale` alone.** `eas
+fingerprint:compare --build-id` takes no platform, because a build was made for exactly one and
+which one is a fact about the build, so the one answer goes on every platform and
+`freshness.comparison` names what it was measured against. The `fresh`/`stale` states keep meaning
+"does the app *I* built here still match", because that is a different question and one of the two
+silently changing meaning would be worse than reporting both. Verified live against a real EAS build
+[observed — 2026-08-26]: `impact  vs EAS build 21d7d434-… · needs-native-build`, twelve changed
+sources listed, `freshness` still `fresh`, exit 0; and with `--assert js-only` beside it, exit 20.
+
+**One rename fell out of the fold.** The follow-up ids `impact-*` named a command nobody can run
+any more, so they are `change-*` — they describe what a *change* costs, which is a section of
+`status` now. `impact-cached-build` and `status-cached-build` were the same sentence reached from
+two directions; with one caller left they are one builder and one id, `cached-build`. The
+suggested-command lint (`src/lint/`) is what caught the stray `npx exagent impact …` strings, and
+what caught `status` printing a `--build` its own parse did not accept.
+
+Shipped in `src/status/assert.ts`, `src/status/resolveOptions.ts`, `AssertStatus` on
+`StatusReport`, `FreshnessComparison` and `changedFiles` on `FreshnessStatus`, the `assert` and
+`files` lines in `src/status/format.ts`, and `src/followups/change.ts`.
 
 ## Daemonization
 

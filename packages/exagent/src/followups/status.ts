@@ -26,8 +26,7 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   }
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free
-  // What the class implies, which is the ladder `exagent impact` used to print before it was
-  // folded in here. Only its **head**: this report has four other things to suggest and a budget
+  // What the class implies, which is the ladder the removed `exagent impact` used to print. Only its **head**: this report has four other things to suggest and a budget
   // of three, so the class contributes its single best next command rather than a ladder of its
   // own. Skipped entirely when a download is already offered above, because that *is* the answer
   // for the class that would otherwise lead here.
