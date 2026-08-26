@@ -402,6 +402,8 @@ declare module '2g' {
       /** It was running when the command started, so this is what stopped it. */
       wasRunning: boolean;
       platform: string;
+      /** Which device layer acted: `local-ios`, `local-android`, or `cloud`. */
+      deviceBackend: string;
       deviceId: string;
       bundleId: string;
       /**

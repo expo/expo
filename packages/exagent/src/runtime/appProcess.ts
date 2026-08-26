@@ -9,7 +9,8 @@
 // none of which the broadcast needs.
 
 import { resolveAdb, type AdbResolution } from '../device/adb';
-import type { NavigatePlatform } from '../navigate/device';
+import { buildCloudStopAppArgs, stopAppOnCloudSimulatorAsync } from '../device/cloudSimulator';
+import type { DeviceBackend, NavigatePlatform } from '../navigate/device';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 
 export interface StopAppCommand {
@@ -31,6 +32,16 @@ export interface StopAppParams {
   appId: string;
   /** The `adb` to spawn, as `src/device/adb.ts` resolved it. Absent means the bare name. */
   adb?: AdbResolution;
+  /**
+   * Which device layer this app is on. Defaults to the local one for the platform.
+   *
+   * `cloud` sends the controller's `close <appId>` through `eas simulator:exec` instead of a
+   * platform tool: the device is not on this machine, so `simctl` and `adb` have nothing to aim at
+   * (llp/0005 §What the cloud backend can and cannot do).
+   */
+  backend?: DeviceBackend;
+  /** The project whose session is driven. Required for `cloud`, ignored otherwise. */
+  projectRoot?: string;
 }
 
 export function buildStopAppCommand({
@@ -38,7 +49,12 @@ export function buildStopAppCommand({
   deviceId,
   appId,
   adb,
+  backend,
 }: StopAppParams): StopAppCommand {
+  if (backend === 'cloud') {
+    const args = buildCloudStopAppArgs({ appId });
+    return { bin: 'eas', args, display: ['eas', ...args].join(' ') };
+  }
   const command: StopAppCommand =
     platform === 'ios'
       ? { bin: 'xcrun', args: ['simctl', 'terminate', deviceId, appId], display: '' }
@@ -75,6 +91,9 @@ export interface StopAppResult {
  * failure of a reload whose next step starts it.
  */
 export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopAppResult> {
+  if (params.backend === 'cloud') {
+    return await stopAppOnCloudAsync(params);
+  }
   // Resolved here when the caller has none, for the same reason the screenshot does it (F49).
   const adb = params.adb ?? (params.platform === 'android' ? resolveAdb() : undefined);
   const { bin, args, display } = buildStopAppCommand({ ...params, adb });
@@ -109,9 +128,60 @@ export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopA
   return { command: display, ok: true, wasAlreadyStopped: exitCode !== 0 && notRunning, reason: null };
 }
 
+/**
+ * Stop the app through the session's controller.
+ *
+ * The same answer shape as the local path, and one deliberate difference in how a non-zero exit is
+ * read (llp/0005 §A non-zero exit means different things per backend). `simctl terminate` exiting
+ * non-zero is the device answering about the app; `simulator:exec` exiting non-zero is any of a
+ * session that ended, a signed-out account, or a binary that was never the EAS CLI — so it is a
+ * failure with the tool's own words in it, and only the "it was not running" wording is read as the
+ * state the caller wanted.
+ */
+async function stopAppOnCloudAsync(params: StopAppParams): Promise<StopAppResult> {
+  const { display } = buildStopAppCommand(params);
+  if (params.projectRoot == null) {
+    return {
+      command: display,
+      ok: false,
+      wasAlreadyStopped: false,
+      reason:
+        'a cloud simulator stop was asked for and no project was named to find the session in, which is a bug in this CLI',
+    };
+  }
+
+  const result = await stopAppOnCloudSimulatorAsync({
+    projectRoot: params.projectRoot,
+    appId: params.appId,
+  });
+  if (result.spawnError) {
+    return {
+      command: display,
+      ok: false,
+      wasAlreadyStopped: false,
+      reason: `could not run "${result.command}": ${result.spawnError}. Install the EAS CLI with "npm install -g eas-cli", or add it to the project with "npm install --save-dev eas-cli".`,
+    };
+  }
+  const notRunning = looksLikeNotRunning(`${result.stderr}\n${result.stdout}`);
+  if (result.exitCode !== 0 && !notRunning) {
+    return {
+      command: display,
+      ok: false,
+      wasAlreadyStopped: false,
+      reason: result.stderr.trim() || result.stdout.trim() || `exit code ${result.exitCode}`,
+    };
+  }
+  return {
+    command: display,
+    ok: true,
+    wasAlreadyStopped: result.exitCode !== 0 && notRunning,
+    reason: null,
+  };
+}
+
 /** Whether the device tool refused because the app was not running to begin with. */
 export function looksLikeNotRunning(output: string): boolean {
-  return /found nothing to terminate|not running|No such process|FBSOpenApplicationServiceErrorDomain/i.test(
+  return /found nothing to terminate|not running|No such process|FBSOpenApplicationServiceErrorDomain|no (?:such |matching )?app/i.test(
     output
   );
 }

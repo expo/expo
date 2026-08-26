@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import { vol } from 'memfs';
 
 import { buildStopAppCommand, looksLikeNotRunning, stopAppOnDeviceAsync } from '../appProcess';
 
@@ -70,6 +71,79 @@ describe(stopAppOnDeviceAsync, () => {
       ok: false,
       reason: 'Invalid device: NOPE',
     });
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do
+describe('stopping the app on a cloud simulator session', () => {
+  afterEach(() => vol.reset());
+
+  /** A project with an `eas` to spawn, so the resolver never reaches this machine's PATH. */
+  function cloudProject(): void {
+    vol.fromJSON({
+      '/project/package.json': '{}',
+      '/project/node_modules/.bin/eas': '#!/bin/sh\n',
+    });
+  }
+
+  const cloudParams = {
+    platform: 'ios' as const,
+    deviceId: 'sess-1',
+    appId: 'host.exp.Exponent',
+    backend: 'cloud' as const,
+    projectRoot: '/project',
+  };
+
+  // The named app, and nothing that would stop the billed machine.
+  it(`closes the named app through the session controller`, () => {
+    const command = buildStopAppCommand(cloudParams);
+
+    expect(command.display).toBe(
+      'eas simulator:exec npx agent-device@latest close host.exp.Exponent'
+    );
+    expect(command.display).not.toContain('--shutdown');
+    expect(command.display).not.toContain('simctl');
+    expect(command.display).not.toContain('adb');
+  });
+
+  it(`reports the app as stopped when the controller closed it`, async () => {
+    cloudProject();
+    mockSpawn({ stdout: 'closed' });
+
+    await expect(stopAppOnDeviceAsync(cloudParams)).resolves.toMatchObject({
+      ok: true,
+      wasAlreadyStopped: false,
+      reason: null,
+    });
+  });
+
+  it(`reads "it was not running" as the state the caller wanted`, async () => {
+    cloudProject();
+    mockSpawn({ exitCode: 1, stderr: 'no such app is running' });
+
+    await expect(stopAppOnDeviceAsync(cloudParams)).resolves.toMatchObject({
+      ok: true,
+      wasAlreadyStopped: true,
+    });
+  });
+
+  // A `simulator:exec` that failed for any other reason is not the device answering about the app,
+  // so it is a failure with what the tool printed in it (llp/0005 §A non-zero exit means different
+  // things per backend).
+  it(`reports anything else as a failure, with what the tool printed`, async () => {
+    cloudProject();
+    mockSpawn({ exitCode: 1, stderr: 'Remote daemon is unavailable' });
+
+    await expect(stopAppOnDeviceAsync(cloudParams)).resolves.toMatchObject({
+      ok: false,
+      reason: 'Remote daemon is unavailable',
+    });
+  });
+
+  it(`refuses rather than guessing when no project was named`, async () => {
+    await expect(
+      stopAppOnDeviceAsync({ ...cloudParams, projectRoot: undefined })
+    ).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('bug in this CLI') });
   });
 });
 

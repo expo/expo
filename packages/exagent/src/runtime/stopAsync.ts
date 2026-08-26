@@ -38,6 +38,13 @@ export interface RuntimeStopResultJson {
    */
   wasRunning: boolean;
   platform: string;
+  /**
+   * Which device layer acted: `local-ios`, `local-android`, or `cloud`.
+   *
+   * Reported for the reason `navigate` reports it — `ios` no longer says *where* the device is, and
+   * the difference decides which command a reader can run by hand (llp/0005 §Three backends).
+   */
+  deviceBackend: string;
   deviceId: string;
   /** Application id that was stopped. */
   bundleId: string;
@@ -75,7 +82,14 @@ export async function runtimeStopAsync(
   projectRoot: string,
   options: RuntimeStopOptions
 ): Promise<number> {
-  const device = await resolveDeviceAsync(options.platform);
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do.
+  // `required` and never `fallback`: a session bills by the minute, so `--cloud` is the only way a
+  // stop reaches one, and a machine with no local device is told it has none rather than quietly
+  // handed a paid device it did not ask for.
+  const device = await resolveDeviceAsync(options.platform, {
+    cloud: options.cloud ? 'required' : 'off',
+    projectRoot,
+  });
 
   // The dev server is consulted but never required: it is the strongest evidence for *which* app
   // is running, and an app can be running with no dev server behind it at all.
@@ -97,6 +111,8 @@ export async function runtimeStopAsync(
     appId: resolved.appId,
     // The same `adb` the device probe found, so this never falls back to a bare name (F49).
     adb: device.adb,
+    backend: device.backend,
+    projectRoot,
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §An `--app-id` nobody is running — friction run 4, F42.
@@ -115,6 +131,7 @@ export async function runtimeStopAsync(
     stopped: result.ok,
     wasRunning: result.ok && !result.wasAlreadyStopped,
     platform: device.platform,
+    deviceBackend: device.backend,
     deviceId: device.deviceId,
     bundleId: resolved.appId,
     bundleIdSource: resolved.source,
@@ -137,6 +154,7 @@ export async function runtimeStopAsync(
     stopped: report.stopped,
     wasRunning: report.wasRunning,
     platform: report.platform,
+    deviceBackend: report.deviceBackend,
     deviceId: report.deviceId,
     bundleId: report.bundleId,
     appIdMismatch: report.appIdMismatch,
@@ -153,10 +171,14 @@ export async function runtimeStopAsync(
       [
         chalk.red(`The device did not stop ${resolved.appId} (${result.command}).`),
         `Why: ${result.reason}.`,
+        // `simctl` and `adb` are commands about *this machine*, and the device may not be on it.
+        // A cloud session is checked with the CLI that owns it (llp/0005 §Where it composes).
         `How: check that ${resolved.appId} is the app you meant — ${resolved.reason} — and pass --app-id to name another. ${
-          device.platform === 'ios'
-            ? 'Check that the simulator is booted with "xcrun simctl list devices booted".'
-            : 'Check that the device is attached with "adb devices".'
+          device.backend === 'cloud'
+            ? 'Check that the session is still running with "npx eas simulator:list --status in-progress".'
+            : device.platform === 'ios'
+              ? 'Check that the simulator is booted with "xcrun simctl list devices booted".'
+              : 'Check that the device is attached with "adb devices".'
         }`,
       ].join('\n')
     );
@@ -201,13 +223,16 @@ function buildFollowUps(report: RuntimeStopResultJson): FollowUp[] {
       },
     ];
   }
+  // `--cloud` is carried through: the app was stopped on the session, and `navigate /` without the
+  // flag would look for a device on this machine — which is the machine that has none.
+  const onCloud = report.deviceBackend === 'cloud';
   return [
     {
       id: 'navigate',
-      command: 'npx exagent navigate /',
+      command: `npx exagent navigate /${onCloud ? ' --cloud' : ''}`,
       why: report.wasRunning
-        ? 'The app is stopped, so this starts it again on the root route with a clean JavaScript runtime.'
-        : 'The app was not running, so this is what starts it on the root route.',
+        ? `The app is stopped, so this starts it again on the root route with a clean JavaScript runtime${onCloud ? ', on the same cloud simulator session' : ''}.`
+        : `The app was not running, so this is what starts it on the root route${onCloud ? ', on the same cloud simulator session' : ''}.`,
     },
   ];
 }
@@ -234,7 +259,7 @@ function printHumanReport(report: RuntimeStopResultJson): void {
       ...(report.connectedAppIds.length > 0
         ? [chalk`{bold Connected} ${report.connectedAppIds.join(', ')}`]
         : []),
-      chalk`{bold Device} ${report.platform} ${report.deviceId}`,
+      chalk`{bold Device} ${report.platform} ${report.deviceId}${chalk.dim(` · ${report.deviceBackend}`)}`,
       chalk.dim(` ${report.command}`),
     ].join('\n')
   );

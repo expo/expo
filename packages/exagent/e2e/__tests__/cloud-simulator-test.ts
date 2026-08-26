@@ -371,18 +371,63 @@ describe('exagent navigate --cloud', () => {
 });
 
 describe('exagent runtime:stop --cloud', () => {
-  // `eas simulator:stop` ends the whole remote machine, which is a larger act than stopping one
-  // app. The flag is accepted only so the command can say that instead of "unknown option".
-  it(`refuses by name, and points at the two things it is not`, async () => {
+  // The controller's `close <app-id>` ends the named app and leaves the billed machine up. The
+  // pinned argv is the point: `--shutdown` would tear down the session, and `simulator:stop` would
+  // end it outright — neither of which is what this command was asked to do.
+  it(`closes the named app on the session, and never the session itself`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['runtime:stop', '--cloud', '--app-id', 'host.exp.Exponent', '--json', '--no-followups'],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      stopped: true,
+      deviceBackend: 'cloud',
+      deviceId: 'sess-e2e',
+      bundleId: 'host.exp.Exponent',
+      command: 'eas simulator:exec npx agent-device@latest close host.exp.Exponent',
+    });
+
+    const invocations = easInvocations(projectRoot);
+    expect(invocations[invocations.length - 1]).toEqual([
+      'simulator:exec',
+      'npx',
+      'agent-device@latest',
+      'close',
+      'host.exp.Exponent',
+    ]);
+    expect(invocations.some((argv) => argv.includes('--shutdown'))).toBe(false);
+    expect(invocations.some((argv) => argv[0] === 'simulator:stop')).toBe(false);
+  });
+
+  // `--cloud` is the only way a stop reaches a session: a machine with no local device is told it
+  // has none rather than quietly handed a device that bills by the minute.
+  it(`never reaches for a session that was not named`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+
+    // Whether this machine has a booted simulator is not this test's business; that no `eas` was
+    // ever spawned is.
+    await executeExagentAsync(projectRoot, ['runtime:stop', '--ios'], { reject: false });
+
+    expect(easInvocations(projectRoot)).toEqual([]);
+  });
+
+  it(`says how to start a session when --cloud finds none`, async () => {
     const projectRoot = await setupAsync('go-app');
 
     const result = await executeExagentAsync(projectRoot, ['runtime:stop', '--cloud'], {
       reject: false,
+      env: { STUB_SIM_SESSIONS: '0' },
     });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('eas simulator:stop');
-    expect(result.stderr).toContain('npx exagent navigate / --cloud');
-    expect(easInvocations(projectRoot)).toEqual([]);
+    expect(result.stderr).toContain('eas simulator:start');
+    expect(easInvocations(projectRoot).some((argv) => argv[0] === 'simulator:exec')).toBe(false);
   });
 });

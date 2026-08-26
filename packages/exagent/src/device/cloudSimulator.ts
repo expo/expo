@@ -674,6 +674,20 @@ export function openUrlOnCloudSimulatorAsync({
   return runCloudVerbAsync(buildCloudOpenUrlArgs({ url, platform }), options);
 }
 
+/**
+ * End one app on the cloud simulator, leaving the session up.
+ *
+ * The cloud form of `simctl terminate` and `am force-stop`. Never throws for a verb that ran and
+ * refused — the caller weighs "it was not running" against what it is trying to do, exactly as it
+ * does for the local backends.
+ */
+export function stopAppOnCloudSimulatorAsync({
+  appId,
+  ...options
+}: CloudRunOptions & { appId: string }): Promise<CloudRunResult> {
+  return runCloudVerbAsync(buildCloudStopAppArgs({ appId }), options);
+}
+
 /** Take a screenshot of the cloud simulator into a local file. */
 export function captureCloudScreenshotAsync({
   filePath,
@@ -905,16 +919,18 @@ export function cloudVerbFailedError(
 /**
  * The failure for an act the cloud backend has no verb for.
  *
- * Named rather than approximated. `eas simulator:stop` ends the **session** — the whole remote
- * machine — and running it for `runtime:stop`, which stops one app and leaves the device up, would
- * perform a much larger act than the one that was asked for and report it as that one.
+ * Kept for the acts that genuinely have none, and no longer used for `runtime:stop`: reading the
+ * controller found `close <appId>`, which ends the named app and leaves the device up (llp/0005
+ * §What the cloud backend can and cannot do). The distinction this text was protecting is real and
+ * is now a **flag** — `close --shutdown` would stop the billed machine, and this CLI never passes
+ * it — rather than a missing verb.
  */
 export function cloudVerbNotSupportedError(action: string): CommandError {
   const error = new CommandError(
     'CLOUD_SIMULATOR_UNSUPPORTED',
     [
       `${action} is not something this CLI can do on a cloud simulator, so nothing ran.`,
-      `Why: the controller that drives an EAS Simulator session has verbs for opening a link and taking a picture, and none for ending one app on the device. "eas simulator:stop" ends the whole session — the remote machine and everything on it — which is a larger act than the one asked for here, and doing it under this name would report a session teardown as an app that was stopped.`,
+      `Why: the controller that drives an EAS Simulator session has no verb for it. "eas simulator:stop" ends the whole session — the remote machine and everything on it — which is a larger act than the one asked for here, and doing it under this name would report a session teardown as the act that was requested.`,
       `How: to put the app back into a known state, open a route on it again with "npx exagent navigate / --cloud". To end the session itself, and its billing, run "npx eas simulator:stop".`,
     ].join('\n')
   );
