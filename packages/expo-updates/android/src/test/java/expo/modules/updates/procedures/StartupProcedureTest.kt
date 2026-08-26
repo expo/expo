@@ -7,7 +7,6 @@ import androidx.test.core.app.ApplicationProvider
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.BuildData
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher
@@ -104,7 +103,7 @@ class StartupProcedureTest {
     val procedure = StartupProcedure(
       context,
       config,
-      DatabaseHolder(database),
+      database,
       temporaryFolder.newFolder(".expo-internal"),
       mockk(relaxed = true),
       mockk(relaxed = true),

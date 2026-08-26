@@ -11,7 +11,6 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.events.IUpdatesEventManager
@@ -76,9 +75,9 @@ class EnabledUpdatesController(
       EASClientID(context).uuid.toString(),
       updatesConfiguration,
       logger,
-      databaseHolder.database
+      database
     )
-  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
+  private val database = UpdatesDatabase.getInstance(context, Dispatchers.IO)
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
   override val reloadScreenManager = ReloadScreenManager()
@@ -120,7 +119,7 @@ class EnabledUpdatesController(
   private val startupProcedure = StartupProcedure(
     context,
     updatesConfiguration,
-    databaseHolder,
+    database,
     updatesDirectory,
     fileDownloader,
     selectionPolicy,
@@ -194,7 +193,7 @@ class EnabledUpdatesController(
       weakActivity,
       updatesConfiguration,
       logger,
-      databaseHolder,
+      database,
       updatesDirectory,
       fileDownloader,
       selectionPolicy,
@@ -250,14 +249,14 @@ class EnabledUpdatesController(
   }
 
   override suspend fun checkForUpdate() = suspendCancellableCoroutine { continuation ->
-    val procedure = CheckForUpdateProcedure(context, updatesConfiguration, databaseHolder, logger, fileDownloader, selectionPolicy, launchedUpdate) {
+    val procedure = CheckForUpdateProcedure(context, updatesConfiguration, database, logger, fileDownloader, selectionPolicy, launchedUpdate) {
       continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
   }
 
   override suspend fun fetchUpdate() = suspendCancellableCoroutine { continuation ->
-    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate, controllerScope) {
+    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, database, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate, controllerScope) {
       continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
@@ -267,7 +266,7 @@ class EnabledUpdatesController(
     controllerScope.launch {
       try {
         val result = ManifestMetadata.getExtraParams(
-          databaseHolder.database,
+          database,
           updatesConfiguration
         )
         val resultMap = when (result) {
@@ -293,7 +292,7 @@ class EnabledUpdatesController(
     controllerScope.launch {
       try {
         ManifestMetadata.setExtraParam(
-          databaseHolder.database,
+          database,
           updatesConfiguration,
           key,
           value
