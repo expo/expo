@@ -58,15 +58,29 @@ export function resolvePathOrProject(
 
 // TODO: come up with a better solution for using app.json expo.name in various places
 export function sanitizedName(name: string) {
-  // Default to the name `app` when every safe character has been sanitized
-  return sanitizedNameForProjects(name) || sanitizedNameForProjects(slugify(name)) || 'app';
+  // Symbols carry no name information: drop them so 'A & B' stays 'AB' and 'Expo®'
+  // stays 'Expo'. Then strip diacritics via NFKD before slugify, because slugify
+  // deletes letters absent from its charmap ('Ċ' would vanish instead of becoming
+  // 'C'). NFKD also decomposes compatibility letters and numbers ('ﬁ' becomes 'fi',
+  // 'Ǉ' becomes 'LJ', fullwidth 'Ｅ' becomes 'E'); symbols like '™' are already
+  // dropped, so they do not turn into letters. slugify then transliterates letters
+  // that NFKD cannot decompose (ø, æ, ł, ß). Symbol-only names fall back to a
+  // slugify of the full name ('♥' becomes 'love'), then to the name `app`.
+  const lettersAndNumbers = name
+    .replace(/[^\p{L}\p{N}]+/gu, '')
+    .normalize('NFKD')
+    .replace(/\p{M}+/gu, '');
+  return (
+    sanitizedNameForProjects(slugify(lettersAndNumbers)) ||
+    sanitizedNameForProjects(slugify(name)) ||
+    'app'
+  );
 }
 
+// Normalize before stripping so diacritics decompose into combining marks that
+// `\W` removes, keeping the base letters ("Árbók" -> "Arbok", not "rbk").
 function sanitizedNameForProjects(name: string) {
-  return name
-    .replace(/[\W_]+/g, '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+  return name.normalize('NFKD').replace(/[\W_]+/g, '');
 }
 
 // TODO: it's silly and kind of fragile that we look at app config to determine
