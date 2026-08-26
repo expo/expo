@@ -23,7 +23,7 @@ Seed [confirmed — Kudo, 2026-08-22]: the CLI should be smart about attaching w
 
 ## Examples per command
 
-- `start` (Metro up, Expo Go): → `exagent navigate /`, the one step between "the dev server is up" and anything verifiable; → real device: how to open on a physical phone (tunnel/LAN URL); → `exagent runtime:errors` while reproducing an issue; → production: `eas build --profile production` (only when `eas.json` exists, else `eas build:configure` first), which the cap of three now drops.
+- `start` (Metro up, Expo Go): → `exagent navigate /`, the one step between "the dev server is up" and anything verifiable, and only on a machine that has a device (§Device-aware ladders); → real device: how to open on a physical phone (tunnel/LAN URL); → `exagent runtime:errors` while reproducing an issue; → production: `eas build --profile production` (only when `eas.json` exists, else `eas build:configure` first), which the cap of three now drops.
 - `start --web` **has its own ladder** [revised — 2026-08-23]. Every rung above is native: there is no device to deep-link into, no phone to reach the dev server from, and no debugger target for `runtime:errors` to read, because a web app runs in a browser and does not attach. The web run was inheriting them anyway, so it offered `runtime:errors` and `eas build:configure` — a cloud *native* build the run did not need — and named neither the site nor a way to check it [observed — friction run 2, 2026-08-23]. Its rungs are the three that exist for it: → `http://localhost:<port>`, the page a browser opens (or `exagent status --json` when nothing reported a port — a guessed URL is how this CLI once handed an agent another project's dev server); → `exagent dev:wait --platform web`, which builds the web entry bundle and is the only check the browser tab cannot give you (llp/0010 §The web target answers the same question with different documents); → `exagent deploy --web`, which is where a web build ships.
 - `install <native module>` while targeting Expo Go: → warning + `exagent dev` (Go cannot load it) — the impact classifier already knows this.
 - `install <js-only>`: → "reload is enough"; → the module's skill was dumped to context / `exagent skills:show <pkg>`.
@@ -72,6 +72,46 @@ reading.
 a clean run offers `dev:wait` and then `runtime:errors --fail-on-error`, a failing one offers only
 itself, and a run that checked nothing — a project with no TypeScript — offers `dev:wait`, because
 "nothing was checked" must not read as "everything passed".
+
+## Device-aware ladders
+
+Decision [confirmed — Kudo, 2026-08-25]. A rung that needs a **local** device is only offered to a
+machine that has one, and `absent` is the only answer that turns one off.
+
+The finding [observed — dogfood, 2026-08-24]. Expo Go was driven on a **cloud** EAS simulator
+through a tunnel, from a laptop with no simulator booted and no device attached
+(`EXPO_STAGING=1 EXPO_UNSTABLE_TUNNEL_V2=1 exagent start --tunnel --go`). With the dev server up and
+zero apps connected, `status.next` said `exagent navigate /` and the start banner said it first, for
+two hours. `navigate` drives `xcrun simctl openurl` or `adb shell am start`; neither can reach a
+device this machine does not have. Every rung above it — the screenshot follow-up, `dev:wait
+--require-app` — inherits the same assumption. The CLI had no way to know, because it had never
+asked.
+
+**The probe, and why three answers.** `src/device/localDevice.ts` runs the two probes `navigate`
+already had — `xcrun simctl list devices booted -j` on macOS, `adb devices` everywhere — once per
+process, and folds them into `present` / `absent` / `unknown`. `absent` may only be given by a tool
+that **ran** and reported nothing. A tool that is not installed establishes nothing: a Linux box
+with no `adb` is not a box with no device, and turning a working suggestion off on the strength of a
+missing binary is the same mistake backwards. `unknown` therefore leaves every ladder exactly as it
+was, which is also what a probe that threw or ran out of its budget reports.
+
+`adb` is resolved through the Android SDK when `PATH` has not got it (`src/toolchain/androidSdk.ts`,
+shared with the build-location probe). That gap is real on this machine: Android Studio's SDK is
+where the installer put it, no environment variable names it, and `adb` is not on `PATH` — a
+`PATH`-only probe reported "no device" with an emulator running [observed — 2026-08-25].
+
+**What replaces the rung.** Not nothing: the thing that has to happen next still has to happen, it
+just happens somewhere else. So the ladder names an **address** when one can be named — the
+`exp://<host>` link, with the tunnel host when the run has one and the LAN host otherwise — and
+`exagent navigate / --print-url` when it cannot, which is every development build (its scheme lives
+in the project config) and every host with no LAN address. `status.next` does the same, with the
+same `decideExpoGoTarget` the deep link uses, so the two never disagree about which app is running.
+
+**Where it is paid for.** `status` races the probe against 2.5 s and reports `unknown` if it
+expires; the `start`/`dev` banner races it against 1.5 s, on the last line before the bundler takes
+the terminal. Measured at 260 ms for a cold `xcrun simctl list devices booted -j` and 2 ms for
+`adb devices` [observed — 2026-08-25]. A ladder must never be what holds a start up, so both
+budgets fail open.
 
 ## Wider ideas from the same angle [inferred — brainstorm]
 

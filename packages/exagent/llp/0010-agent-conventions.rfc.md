@@ -751,6 +751,39 @@ Shipped [observed — 2026-08-24, `src/builds/explain/anchors.ts`]: 34 rules, a 
 
 This does not reopen [[0001-agentic-cli-on-expo-cli]] §Scoped out, which rules out **the build-failure signature DB**: a hosted, growing, community-fed corpus with its own service, submission path and moderation. What is in scope is the opposite of that in every dimension that made it a scope-out — no service, no ingestion, no unbounded growth, no data to moderate. Rationale [inferred]: the value of the feature is concentrated in a small number of failures Expo itself causes and can name precisely (a missing pod, a mismatched SDK, an unsupported New Architecture module); a table that stays small stays accurate, and the cap is what keeps a maintainer from answering every field report by appending a rule instead of fixing the cause.
 
+## Suggestions are pasted, so they have to be runnable
+
+Decision [confirmed — Kudo, 2026-08-25]. Every suggestion is **written** `npx exagent …` and
+**printed** in the spelling of the runner the caller actually used.
+
+The finding [observed — dogfood, 2026-08-24]. The project's own `AGENTS.md` says "Use `bunx` instead
+of `npx` if the project uses bun", and every line this CLI printed said `npx`. `npx` still works
+there, so this is a courtesy rather than a correctness fix — but a suggestion whose whole value is
+that it can be pasted should not need translating first.
+
+**Render-time substitution, not a second set of literals.** `src/utils/invoker.ts` decides once per
+process and rewrites the line as it goes out — `formatFollowUps` for the `Suggested next:` block,
+`logCmdError` for the error prose, its `Try:` line and the needs-human block. No builder learns
+about it, and the alternative (editing every literal, or threading a runner through every builder)
+would have to be redone for the next runner.
+
+**Detection, and what is not a signal** [observed — live against bun 1.3.14 and npm 11.17.0,
+2026-08-25]. `process.versions.bun` is conclusive and usually absent: `bunx` honours a
+`#!/usr/bin/env node` shebang, so this package's own bin runs on **Node** under `bunx`. What
+actually fires is `npm_config_user_agent`, which is `bun/1.3.14 npm/? node/…` under both `bunx` and
+`bun run` and `npm/11.17.0 node/…` under `npx`; `npm_execpath` points at the Bun binary in the same
+cases and is kept as a fallback. `BUN_INSTALL` is deliberately **not** consulted: it says Bun is
+installed, not that it started this process, and a Mac with `~/.bun` running `npx exagent` would be
+handed a line for a runner it is not in.
+
+**Scoped to this CLI's own name.** `npx eas-cli` is a *different package name* under Bun — projects
+run it as `bunx eas-cli` — and `npx expo` may be too, so a blanket `npx` → `bunx` swap would produce
+lines that do not run. Only `npx exagent` is rewritten.
+
+**The machine channels keep the written form.** The `--json` payloads and the `cli:followups` and
+`cli:error` events carry `npx exagent`, whatever shell the terminal is. That contract does not move
+with the caller's runner, and `npx exagent` runs in a Bun project exactly as it does anywhere else.
+
 ## Upstream asks
 
 Gaps found while building the tool layer. Per the process boundary of [[0001-agentic-cli-on-expo-cli]] constraint 5, these become upstream improvements rather than imports — but they are **recorded here, not yet filed**, and each is worked around in the meantime.
@@ -787,6 +820,34 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   than `${projectRoot}/${error.filename}` — would retire the other half.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.
+- Emit `devserver:url` in a **released** SDK, and revise it when the tunnel changes. The event
+  already exists on `main` with exactly the right fields — `url`, `runtimeUrl`, `hostType`, `port`
+  [observed — `BundlerDevServer.startAsync`, 2026-08-25] — and expo 57.0.17 does not emit it
+  [observed — live: `start.log` carries `metro:instantiate` and `devserver:start` and nothing else].
+  Until then the only way to learn a tunnel host is to parse `Waiting on <url>` out of captured
+  stdout (llp/0005 §Where a device reaches the dev server), which works and is prose. The second
+  half matters more than the first: the printed line is written once and never revised, so a tunnel
+  that dies leaves a dead address advertised. A `devserver:url` re-emitted on reconnect, or a
+  `tunnel:lost` event, would make "is this address still good?" answerable instead of inferred.
+- Do not let a failed tunnel reconnect take the dev server process down. `@expo/ws-tunnel`'s
+  `createTunnel` retries on close by calling `this.start(c)` inside a `setTimeout` and never
+  handling its rejection; `start` ends in `catch (e) { this.stop(); throw e }` [observed —
+  `@expo/ws-tunnel@2.0.0` `build/index.js`, 2026-08-25]. So a reconnect whose handshake is refused
+  — `Unexpected server response: 409` from `ws`, which is what the dogfood run got after about two
+  hours — is an unhandled rejection rather than an `onStatusChange('disconnected')`, and it ends the
+  whole `expo start`. The status handler that would have printed "Tunnel connection has been closed"
+  never runs. Awaiting the retry, or attaching a rejection handler that calls the existing
+  `disconnected` path, would turn a crash into the message that is already written for it.
+
+`@expo/ws-tunnel`:
+
+- Retry once before advising the user to change their environment. The signed-tunnel path fails
+  closed on its first bad answer: `getExpoAccountTunnelUrlAsync` swallows every error and returns
+  `null`, and `AsyncWsTunnel` turns that into `WS_TUNNEL_SIGNED_URL` — "Unset `EXPO_UNSTABLE_TUNNEL_V2`
+  to use an ngrok tunnel instead" [observed — `@expo/cli/src/start/server/AsyncWsTunnel.ts`]. That is
+  a permanent instruction for what is usually a transient GraphQL failure, and it moves the user to
+  a different tunnel implementation with different failure modes. One retry, with the environment
+  advice kept for the second failure, would leave the escape hatch where it belongs.
 
 Libraries:
 

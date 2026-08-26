@@ -315,6 +315,102 @@ launched with, so an app deep-linked to `/notes` returns to `/notes` after a rel
 2026-08-23, screenshot]. A development build never had the problem: its listener passes the URL
 through whatever the path is, so `<scheme>://` already means the index route, and it is unchanged.
 
+## Where a device reaches the dev server
+
+Decision [confirmed — Kudo, 2026-08-25]. The Expo Go link this CLI prints anywhere leads with the
+**tunnel host** when the dev server has one, and the tunnel is only claimed while it is still up.
+
+The finding [observed — dogfood, 2026-08-24]. A cloud EAS simulator was driven through a tunnel
+(`EXPO_STAGING=1 EXPO_UNSTABLE_TUNNEL_V2=1 exagent start --tunnel --go`), and every URL the CLI
+produced named `127.0.0.1:8081` or `192.168.1.233:8081`. Neither is loadable from a machine in
+somebody else's datacentre. The dev server knew the right answer the whole time and this CLI never
+asked it.
+
+### Where the tunnel host comes from, and why not the lock
+
+The dev-server lock (`src/devLock/`) answers where the dev server listens **on this machine**, which
+is the right answer for every command that talks to it over HTTP and the wrong one for a link a
+device opens. Four candidates were considered; only the last two survive.
+
+- **The lock.** Records `http://127.0.0.1:<port>` and nothing else. Extending its wire protocol
+  would work and was rejected for now: the lock is taken before the tunnel is up, so it would have
+  to be revised after the fact, and a fact that can go stale inside a live socket is the property
+  the lock exists to *not* have.
+- **The manifest endpoint.** `ExpoGoManifestHandlerMiddleware` builds `hostUri` through the same
+  `UrlCreator` that produces the tunnel host, so a `GET /` with an `expo-platform` header carries
+  it. Rejected as the primary source: it needs a live, correctly-headed request per call, and the
+  answer is wanted in places that must not make one — a start banner, a status line.
+- **The `devserver:url` JSONL event.** `BundlerDevServer.startAsync` emits it with `url`,
+  `runtimeUrl`, `hostType` and `port` [observed — `@expo/cli` on `main`, 2026-08-25]. Exactly the
+  right shape, and **not in any released SDK**: expo 57.0.17 writes `metro:instantiate` and
+  `devserver:start` into `.expo/dev/logs/start.log` and no `devserver:url` [observed — live,
+  2026-08-25]. Worth reading when it ships; useless today.
+- **The line the dev server prints.** `Waiting on <url>`, from `startAsync`, and that URL *is* the
+  tunnel origin whenever a `AsyncWsTunnel` is running — `getDevServerUrl` returns
+  `constructUrl()` in that case rather than the listen address. A detached run captures it in
+  `.expo/dev/logs/dev-detached.log`, so it is readable afterwards by anything. **Verified live**
+  [observed — 2026-08-25, notesapp on SDK 57.0.17 with a ws tunnel: `Waiting on
+  http://znakdiwe5j2n5o0.boltexpo.dev`, and `navigate / --print-url` answered
+  `exp://znakdiwe5j2n5o0.boltexpo.dev/--/?`].
+
+So `src/dev/advertisedUrl.ts` reads the printed line, classifies the host (`localhost` / `lan` /
+`tunnel`), and every device-facing URL prefers a current tunnel host over the listen address. A dev
+server started **attached** writes that line to somebody's terminal, so it is honestly reported as
+unknown rather than guessed at.
+
+### A `Waiting on` line is written once and never revised
+
+This is the half that makes the reading trustworthy rather than merely available. The dogfood
+tunnel died after about two hours — `Unexpected server response: 409` from `@expo/ws-tunnel`, and
+`getaddrinfo ENOTFOUND` on the tunnel host before that — the process exited, and the line at the top
+of the log went on naming a host that no longer resolved. Anything reading only that line would
+hand a cloud simulator a dead address that *looks* live.
+
+Two guards, and each answers a different way of being wrong:
+
+- **Order.** A failure only counts if it was printed **after** the URL. A tunnel that failed once
+  and then connected is a working tunnel, and the URL below the failure is the current one.
+- **The log has to belong to the run that is up.** `dev --detach` truncates the log per run and
+  refuses a second detached server while the lock is held, so a live detached run always has a log
+  written after its lock was taken. A dev server started attached leaves the previous detached log
+  untouched — and that is exactly where a tunnel host from days ago would come from. The comparison
+  is the log's mtime against the lock's `startedAt`.
+
+A tunnel is reported as current only when all of: the run had one, the dev server answers now, and
+nothing below the URL says it died. `status` therefore reports no tunnel URL for a stopped dev
+server even though the log still shows one [verified live — 2026-08-25].
+
+Deliberately **not** built: reconnection. That is `@expo/ws-tunnel`'s, and it is recorded as an
+upstream ask in llp/0010 §Upstream asks along with the reason its own retry did not fire.
+
+## Resolving a URL without a device
+
+Decision [confirmed — Kudo, 2026-08-25]. `exagent navigate <route> --print-url` resolves everything
+and opens nothing.
+
+The device this CLI can drive and the device the app runs on are not always the same one. A cloud
+simulator, a phone, and a teammate's laptop all need the identical thing — the URL — and none of
+them is reachable with `simctl` or `adb`. Before this, the URL was resolved one step before
+`resolveDeviceAsync` and thrown away with its failure.
+
+`resolveRouteUrlAsync` is `openRouteAsync` with the device half removed: the route check against the
+project's route table, the dev-server discovery, the Expo Go vs development build decision, the
+scheme, the `/--/?` root marker, and the tunnel host. `openRouteAsync` is now that function plus the
+device. One composition, two modes — which is the same reason `openRoute.ts` was split out of
+`navigateAsync` for `smoke` in the first place: a second composition is a second place for the
+findings of this document to be forgotten.
+
+Exit `0` on a resolvable URL. Whether anything then opens it is not this command's to know, and a
+non-zero code for "nobody opened it" would make the mode useless to the caller it exists for. The
+route check still fails the run, because a URL for a route the project has not got is not an answer.
+
+`--json` carries the URL, plus `hostType` — the fact that decides whether the URL is usable
+anywhere but here — and the four device keys as `null`, so a parser reads one shape either way.
+
+And `navigate` **without** the flag, on a machine with no device, now names that URL in its failure
+and names the flag: the resolution had already happened, and "no device found" was the whole truth
+and less than half the answer.
+
 ## Stopping the app
 
 Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:stop` ends the app on the device, and
