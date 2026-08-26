@@ -24,7 +24,7 @@
  *
  * Since the @expo/verify engine cutover (expo-sandbox-mcp LLP 0020), dispatch,
  * status, and ls are thin delegations to `npx @expo/verify` running against this
- * repo's .verify/ profile — the engine is where run resolution and dispatch
+ * repo's .expo-agents/verify/ profile — the engine is where run resolution and dispatch
  * live now, shared by every repo that adopts it. Only `roundup` (expo policy:
  * emoji conventions, verify/ branch scoping, cost tables) still runs here.
  */
@@ -33,7 +33,7 @@ import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 // Used only by `roundup --include-costs` (transcript artifacts land in a
 // temp dir on their way through unzip).
-import { mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -937,13 +937,19 @@ function contextHelp(argv: string[]): string {
 // The engine that owns dispatch/status/ls now: @expo/verify, pinned to the
 // same version the repo's verify.yml runs (expo-sandbox-mcp LLP 0020 / the
 // engine's LLP 0001). et verify keeps its entry point and grammar; these
-// subcommands exec the engine with the repo's .verify/ profile. roundup
+// subcommands exec the engine with the repo's .expo-agents/verify/ profile. roundup
 // stays native here — it is expo policy (emoji conventions, branch scoping,
 // cost tables) the engine has not absorbed yet.
-const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.8.1';
+const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.9.0';
 
 async function delegateToEngine(engineArgs: string[]): Promise<never> {
-  const configDir = join(getExpoRepositoryRootDir(), '.verify');
+  // The profile's home is .expo-agents/verify/ (engine 0.9.0); the engine itself
+  // falls back to a legacy .verify/, and so does this.
+  const root = getExpoRepositoryRootDir();
+  const configDir =
+    ['.expo-agents/verify', '.verify']
+      .map((dir) => join(root, dir))
+      .find((dir) => existsSync(join(dir, 'config.jsonc'))) ?? join(root, '.expo-agents/verify');
   const result = await spawnAsync(
     'npx',
     [
