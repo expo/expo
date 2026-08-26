@@ -494,7 +494,7 @@ export function cloudSessionEnvPath(projectRoot: string): string {
  * session):
  *
  * - the **preference** in {@link selectCloudSession}, when the service lists more than one session;
- * - the **suggestion ladders** — `status.next`, the `start`/`dev` banner, `dev:wait`'s open-app rung
+ * - the **suggestion ladders** — `status.next`, the `start`/`dev` banner, `smoke`'s open-app rung
  *   — which promise to be instant and so may not spawn an `eas`. A suggestion naming a dead session
  *   costs one command that says so; a banner held up by a network call costs every run.
  */
