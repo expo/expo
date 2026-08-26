@@ -488,8 +488,16 @@ export type StubDevServerOptions = {
    * `live` (the default) is a connected app. `none` is a **stale** target: the dev server still
    * lists the page and nothing is behind it, which is what an app that was force-stopped leaves
    * behind, and what `exagent status` used to count as a connected app [friction run 6, F56].
+   *
+   * `no-debugger` is the third real state, and the one the exit-code contract turns on: the socket
+   * is open and every CDP method is answered `-32601 Method not found`. That is not a double for a
+   * JavaScript runtime — llp/0002 §Tier 0 doubles the dev server, not the app rules one out — it is
+   * a double for a runtime having **no** debugger, which is a fact about the protocol and nothing
+   * about React Native. Expo Go for Android is exactly this [observed — Expo Go 57.0.9 on an
+   * Android emulator, 2026-08-22, recorded in `createDefaultTargetSelector`], and it is the state
+   * that makes `--fail-on-error` exit 22 rather than report health nothing observed.
    */
-  inspectorSocket?: 'live' | 'none';
+  inspectorSocket?: 'live' | 'none' | 'no-debugger';
   /**
    * Clients `getpeers` reports before any reload. Defaults to one that looks like an iOS app.
    *
@@ -710,6 +718,26 @@ export async function startStubDevServerAsync({
   let nextPeerId = 100;
   const messageServer = messageSocket === 'none' ? null : new WebSocketServer({ noServer: true });
   const inspectorServer = inspectorSocket === 'none' ? null : new WebSocketServer({ noServer: true });
+  // A runtime with no debugger: the socket is there, and every method it is asked for comes back
+  // `-32601`. `live` stays silent instead, which is a runtime that is being asked nothing.
+  if (inspectorSocket === 'no-debugger') {
+    inspectorServer?.on('connection', (socket: WebSocket) => {
+      socket.on('message', (data) => {
+        let message: { id?: unknown };
+        try {
+          message = JSON.parse(String(data));
+        } catch {
+          return;
+        }
+        if (message.id == null) {
+          return;
+        }
+        socket.send(
+          JSON.stringify({ id: message.id, error: { code: -32601, message: 'Method not found' } })
+        );
+      });
+    });
+  }
   messageServer?.on('connection', (socket: WebSocket) => {
     socket.on('message', (data) => {
       if (messageSocket === 'deaf') {

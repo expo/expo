@@ -19,11 +19,21 @@ import {
   type StubDevServer,
 } from '../utils';
 
-/** A debugger target that looks like Expo Go, so the platform is placeable. */
+/**
+ * A debugger target the default selector will consider.
+ *
+ * `reactNative.capabilities.nativePageReloads` is the gate: the selector skips every target without
+ * it, because Metro also lists stale and internal pages (`createDefaultTargetSelector`). A fixture
+ * missing it is not a connected app — it is a page no runtime command would ever talk to.
+ */
 const EXPO_GO_TARGET = {
   id: '1',
   appId: 'host.exp.Exponent',
-  deviceName: 'iPhone 17 Pro',
+  title: 'Expo Go',
+  type: 'native',
+  description: '',
+  devtoolsFrontendUrl: '/devtools',
+  reactNative: { capabilities: { nativePageReloads: true } },
   webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=1&page=1',
 };
 
@@ -177,9 +187,12 @@ describe('exagent runtime:errors', () => {
   // nothing was proved right", and it is the answer whenever the window could not observe.
   it('exits 22, never 0, for a gate that could observe nothing', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    // The stub lists a target and its inspector socket accepts the connection and then answers
-    // nothing at all — which is exactly a runtime with no CDP debugger behind a listed page.
-    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+    // A runtime with no debugger behind a listed page: the socket is open and every method comes
+    // back -32601, which is what Expo Go for Android does.
+    const stub = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      inspectorSocket: 'no-debugger',
+    });
     try {
       const result = await executeExagentAsync(
         projectRoot,
@@ -204,7 +217,10 @@ describe('exagent runtime:errors', () => {
 
   it('exits 0 for the same window without the gate flag', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+    const stub = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      inspectorSocket: 'no-debugger',
+    });
     try {
       const result = await executeExagentAsync(projectRoot, [
         'runtime:errors',
@@ -239,7 +255,10 @@ describe('exagent runtime:errors', () => {
 
   it('accepts a duration with a unit, which is what the help promises', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+    const stub = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      inspectorSocket: 'no-debugger',
+    });
     try {
       const result = await executeExagentAsync(projectRoot, [
         'runtime:errors',
