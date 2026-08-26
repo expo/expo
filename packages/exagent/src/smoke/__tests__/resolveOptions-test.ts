@@ -22,6 +22,7 @@ describe(resolveSmokeOptions, () => {
     expect(resolveSmokeOptions([])).toEqual({
       route: null,
       platform: 'ios',
+      cloud: 'fallback',
       start: false,
       windowMs: DEFAULT_SMOKE_WINDOW_MS,
       timeoutMs: DEFAULT_SMOKE_TIMEOUT_MS,

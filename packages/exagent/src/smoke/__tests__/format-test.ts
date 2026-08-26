@@ -11,6 +11,7 @@ function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
   return {
     route: null,
     platform: 'ios',
+    cloud: 'fallback',
     start: false,
     windowMs: 3_000,
     timeoutMs: 60_000,
@@ -26,6 +27,7 @@ function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
 
 function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
   return {
+    deviceBackend: null,
     outcome: 'passed',
     phases: [
       { id: 'dev-server', status: 'ok', ms: 12, reason: null },
@@ -81,6 +83,7 @@ describe(smokeResultToJson, () => {
       'appsConnected',
       'bundle',
       'devServerUrl',
+      'deviceBackend',
       'deviceId',
       'durationMs',
       'errors',

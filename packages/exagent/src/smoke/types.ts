@@ -137,6 +137,14 @@ export interface SmokeResultJson {
   platform: 'ios' | 'android';
   /** Device the run drove, or null when it never reached one. */
   deviceId: string | null;
+  /**
+   * Which device layer that was: `local-ios`, `local-android`, `cloud`, or null.
+   *
+   * `platform` no longer says where the device is — an EAS Simulator session runs iOS too — and
+   * this is what makes `deviceId` readable: a UDID and a session id look nothing alike to a person
+   * and identical to a parser.
+   */
+  deviceBackend: string | null;
   /** Whether the runtime answered an evaluation at all. Null when it was never asked. */
   runtimeSupported: boolean | null;
   errors: SmokeErrorsJson;

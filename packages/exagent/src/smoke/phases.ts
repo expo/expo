@@ -26,6 +26,7 @@
 // server, no device and no clock.
 
 import type { ScreenshotResult } from '../device/screenshot';
+import type { DeviceBackend } from '../navigate/device';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import type { OpenRouteResult } from '../navigate/openRoute';
 import type { RouteCheckJson } from '../navigate/routeCheck';
@@ -76,8 +77,17 @@ export interface SmokeDeps {
   waitForBundlerReady(devServerUrl: string, timeoutMs: number): Promise<BundlerReadyResult>;
   checkEntryBundle(devServerUrl: string, timeoutMs: number): Promise<BundleCheckResult>;
   waitForAppConnection(devServerUrl: string, timeoutMs: number): Promise<AppConnectionResult>;
-  /** Look for a booted device without failing when there is none: no device is an answer. */
-  probeDevice(): Promise<{ deviceId: string | null; reason: string | null }>;
+  /**
+   * Look for a device without failing when there is none: no device is an answer.
+   *
+   * Answers the *backend* too, because the picture is taken through a different tool for each and
+   * the phase that takes it must not guess. Null when nothing was found.
+   */
+  probeDevice(): Promise<{
+    deviceId: string | null;
+    backend: DeviceBackend | null;
+    reason: string | null;
+  }>;
   /**
    * Open a route on the device, the way `navigate` does. Throws what `navigate` throws.
    *
@@ -91,7 +101,7 @@ export interface SmokeDeps {
   openRoute(route: string, devServerUrl: string): Promise<OpenRouteResult>;
   evaluate(devServerUrl: string): Promise<SmokeEvaluateResult>;
   collectErrors(devServerUrl: string, windowMs: number): Promise<SmokeErrorsResult>;
-  captureScreenshot(deviceId: string): Promise<ScreenshotResult>;
+  captureScreenshot(deviceId: string, backend: DeviceBackend | null): Promise<ScreenshotResult>;
   /**
    * Wait until the dev server lists the same debugger targets twice, or the budget runs out.
    *
@@ -138,6 +148,7 @@ export interface SmokeRun {
   route: string | null;
   routeCheck: RouteCheckJson | null;
   deviceId: string | null;
+  deviceBackend: DeviceBackend | null;
   runtimeSupported: boolean | null;
   windowMs: number | null;
   errors: RuntimeErrorRecord[];
@@ -256,6 +267,7 @@ export async function runSmokePhasesAsync(
     route: options.route,
     routeCheck: null,
     deviceId: null,
+    deviceBackend: null,
     runtimeSupported: null,
     windowMs: null,
     errors: [],
@@ -407,6 +419,7 @@ export async function runSmokePhasesAsync(
   // ---- Phase 4: is an app attached, and can one be opened if not? ---------------------------
 
   let deviceId: string | null = null;
+  let deviceBackend: DeviceBackend | null = null;
   let routeCheck: RouteCheckJson | null = null;
   let routeOpenedWhileConnecting = false;
   // Whether this run put the app on the screen, which is the only case the settle wait before the
@@ -436,6 +449,7 @@ export async function runSmokePhasesAsync(
     const opened = await deps.openRoute(options.route ?? ROOT_ROUTE, devServerUrl);
     appOpenedByThisRun = true;
     deviceId = opened.deviceId;
+    deviceBackend = opened.deviceBackend;
     if (options.route != null) {
       routeCheck = opened.routeCheck;
       routeOpenedWhileConnecting = true;
@@ -466,7 +480,7 @@ export async function runSmokePhasesAsync(
     // No app, so no runtime and no window — but there may still be a device, and a picture of
     // whatever is on it is the most useful thing left to hand back.
     skipRest('route', 'no app is connected, so there was nothing to read', 'screenshot');
-    const screenshot = await captureIfPossible(deps, options, deviceId, phases, {
+    const screenshot = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
       devServerUrl,
       // The run opened the app in this phase, so whatever is on screen may still be loading.
       relaunched: appOpenedByThisRun,
@@ -475,6 +489,7 @@ export async function runSmokePhasesAsync(
     return done(appPhase.status === 'failed' ? 'failed' : 'inconclusive', {
       ...withApp,
       deviceId,
+      deviceBackend,
       routeCheck,
       screenshot,
       durationMs: deps.now() - startedAt,
@@ -502,6 +517,7 @@ export async function runSmokePhasesAsync(
       const result = await deps.openRoute(options.route!, devServerUrl);
       appOpenedByThisRun = true;
       deviceId = result.deviceId;
+      deviceBackend = result.deviceBackend;
       routeCheck = result.routeCheck;
       return result.exitCode === 0
         ? { status: 'ok' as const, reason: `opened ${result.url}`, value: result }
@@ -517,7 +533,7 @@ export async function runSmokePhasesAsync(
         'the route was not opened, so the app is not on the screen under test',
         'screenshot'
       );
-      const screenshot = await captureIfPossible(deps, options, deviceId, phases, {
+      const screenshot = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
         devServerUrl,
         relaunched: true,
         remainingMs: remaining(),
@@ -525,6 +541,7 @@ export async function runSmokePhasesAsync(
       return done('failed', {
         ...withApp,
         deviceId,
+        deviceBackend,
         routeCheck,
         screenshot,
         durationMs: deps.now() - startedAt,
@@ -591,7 +608,7 @@ export async function runSmokePhasesAsync(
 
   // ---- Phase 8: the picture -----------------------------------------------------------------
 
-  const screenshot = await captureIfPossible(deps, options, deviceId, phases, {
+  const screenshot = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
     devServerUrl,
     // Only when this run put the app there: an app that was already attached and on screen has
     // nothing left to settle, and the wait would be dead time in the common case.
@@ -606,6 +623,7 @@ export async function runSmokePhasesAsync(
     ...withApp,
     routeCheck,
     deviceId,
+    deviceBackend,
     runtimeSupported: runtime.unsupported ? false : runtime.ok ? true : null,
     windowMs: options.windowMs,
     errors: collected.records,
@@ -626,6 +644,7 @@ async function captureIfPossible(
   deps: SmokeDeps,
   options: SmokeOptions,
   deviceId: string | null,
+  deviceBackend: DeviceBackend | null,
   phases: SmokePhase[],
   settle: { devServerUrl: string; relaunched: boolean; remainingMs: number }
 ): Promise<ScreenshotResult> {
@@ -640,8 +659,10 @@ async function captureIfPossible(
   }
 
   let device = deviceId;
+  let backend = deviceBackend;
   if (device == null) {
     const probe = await deps.probeDevice();
+    backend = probe.backend;
     if (probe.deviceId == null) {
       const skipped = noScreenshot(
         `no screenshot was taken: ${probe.reason ?? 'no booted device was found to photograph'}`
@@ -660,7 +681,7 @@ async function captureIfPossible(
     );
   }
 
-  const result = await deps.captureScreenshot(device);
+  const result = await deps.captureScreenshot(device, backend);
   push(result.ok ? 'ok' : 'skipped', result.ok ? null : result.reason);
   return result;
 }

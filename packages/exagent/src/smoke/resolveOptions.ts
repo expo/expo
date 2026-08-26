@@ -3,6 +3,7 @@
 // Argument resolution for `exagent smoke`. Pure: argv in, options out, `CommandError` for anything
 // a user can get wrong, so every flag combination is testable without a dev server or a device.
 
+import type { CloudPreference } from '../navigate/device';
 import { resolveDevServerTarget } from '../runtime/devServer';
 import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../utils/args';
 import { CommandError } from '../utils/errors';
@@ -36,6 +37,16 @@ export interface SmokeOptions {
   route: string | null;
   /** Platform to drive and to build the entry bundle for. */
   platform: SmokePlatform;
+  /**
+   * Which device backends the device-dependent phases may use, decided by `--cloud`.
+   *
+   * The same ladder `navigate` resolves, and it has to be: the `route` phase *is* `navigate`, and a
+   * gate whose route phase and screenshot phase looked at different devices would photograph one
+   * device to answer for another.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   */
+  cloud: CloudPreference;
   /** Whether this run may start a dev server when it finds none (`--start`). */
   start: boolean;
   /** How long the error window stays open, in milliseconds. */
@@ -61,6 +72,7 @@ const SMOKE_ARGS = {
   '--platform': String,
   '--ios': Boolean,
   '--android': Boolean,
+  '--cloud': Boolean,
   '--start': Boolean,
   '--window': String,
   '--timeout': String,
@@ -108,6 +120,7 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
   return {
     route: args['--route'] ? String(args['--route']) : null,
     platform,
+    cloud: args['--cloud'] ? 'required' : 'fallback',
     start,
     windowMs: resolveDuration(args['--window'], '--window', DEFAULT_SMOKE_WINDOW_MS, {
       // A window of zero catches nothing and would report an empty one as evidence, which is the

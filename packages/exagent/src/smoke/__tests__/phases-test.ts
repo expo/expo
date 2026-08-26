@@ -22,6 +22,7 @@ function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
   return {
     route: null,
     platform: 'ios',
+    cloud: 'fallback',
     start: false,
     windowMs: 3_000,
     timeoutMs: 60_000,
@@ -143,7 +144,7 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
     }),
     checkEntryBundle: async () => bundle(),
     waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 3 }),
-    probeDevice: async () => ({ deviceId: 'SIM-1', reason: null }),
+    probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
     openRoute: async (route) => opened({ route }),
     evaluate: async () => ({ ok: true, unsupported: false, reason: null }),
     collectErrors: async () => ({ ok: true, records: [], reason: null }),
@@ -477,6 +478,7 @@ describe(runSmokePhasesAsync, () => {
         deps({
           waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 2 }),
           probeDevice: async () => ({
+            backend: null,
             deviceId: null,
             reason: 'no booted iOS simulator was found',
           }),
@@ -711,11 +713,17 @@ describe(runSmokePhasesAsync, () => {
     });
 
     it(`looks for a device when no phase before it drove one`, async () => {
-      const probeDevice = jest.fn(async () => ({ deviceId: 'SIM-9', reason: null }));
+      const probeDevice = jest.fn(async () => ({
+        deviceId: 'SIM-9',
+        backend: 'local-ios' as const,
+        reason: null,
+      }));
       const captureScreenshot = jest.fn(async () => screenshot({ deviceId: 'SIM-9' }));
       const run = await runSmokePhasesAsync(deps({ probeDevice, captureScreenshot }), options());
 
-      expect(captureScreenshot).toHaveBeenCalledWith('SIM-9');
+      // The backend travels with the device: the picture is taken through a different tool for
+      // each, and the phase that takes it must not guess.
+      expect(captureScreenshot).toHaveBeenCalledWith('SIM-9', 'local-ios');
       expect(run.deviceId).toBeNull();
       expect(run.screenshot.deviceId).toBe('SIM-9');
     });
@@ -778,7 +786,7 @@ describe(smokeExitCode, () => {
     [
       {
         waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 1 }),
-        probeDevice: async () => ({ deviceId: null, reason: 'no simulator' }),
+        probeDevice: async () => ({ deviceId: null, backend: null, reason: 'no simulator' }),
       },
       22,
     ],

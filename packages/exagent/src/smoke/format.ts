@@ -52,6 +52,7 @@ export function smokeResultToJson(
       ),
     platform: options.platform,
     deviceId: run.deviceId,
+    deviceBackend: run.deviceBackend,
     runtimeSupported: run.runtimeSupported,
     errors: {
       windowMs: run.windowMs,

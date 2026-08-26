@@ -13,7 +13,7 @@ import { resolveDevOptions } from '../dev/resolveOptions';
 import { event } from '../events';
 import { buildSmokeFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
-import { probeAndroidDeviceAsync, probeIosSimulatorAsync } from '../navigate/device';
+import { resolveDeviceAsync, type DeviceBackend } from '../navigate/device';
 import { openRouteAsync } from '../navigate/openRoute';
 import { checkEntryBundleAsync } from '../runtime/bundleCheck';
 import { CdpClient, isMethodNotFoundError } from '../runtime/cdpClient';
@@ -253,12 +253,27 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         deviceIndex: await indexAsync(devServerUrl),
       }),
 
+    // The same ladder `navigate` walks, through the same function — local device first, then this
+    // project's EAS Simulator session (llp/0005 §The cloud simulator backend). A second resolution
+    // here would be a second place for the order to drift, and a gate whose `route` phase and
+    // `screenshot` phase disagreed about the device would photograph one to answer for the other.
+    //
+    // It throws where the probes it replaced returned; caught, because no device is an answer this
+    // gate reports rather than fails on.
     probeDevice: async () => {
-      const probe =
-        options.platform === 'ios'
-          ? await probeIosSimulatorAsync()
-          : await probeAndroidDeviceAsync();
-      return { deviceId: probe.device?.deviceId ?? null, reason: probe.reason ?? null };
+      try {
+        const device = await resolveDeviceAsync(options.platform, {
+          cloud: options.cloud,
+          projectRoot,
+        });
+        return { deviceId: device.deviceId, backend: device.backend, reason: null };
+      } catch (error: unknown) {
+        return {
+          deviceId: null,
+          backend: null,
+          reason: error instanceof Error ? firstLine(error.message) : String(error),
+        };
+      }
     },
 
     // The dev server this run settled on, not the flag: a run that discovered one in its first
@@ -270,6 +285,7 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         devServerUrl,
         routeCheck: options.routeCheck,
         command: 'smoke',
+        cloud: options.cloud,
       }),
 
     evaluate: async (devServerUrl) => {
@@ -344,10 +360,12 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
       }
     },
 
-    captureScreenshot: (deviceId) =>
+    captureScreenshot: (deviceId, backend: DeviceBackend | null) =>
       captureScreenshotAsync({
         platform: options.platform,
         deviceId,
+        backend: backend ?? undefined,
+        projectRoot,
         filePath: options.screenshotPath ?? defaultScreenshotPath(projectRoot),
       }),
 
