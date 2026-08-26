@@ -53,6 +53,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       why: null,
       buildLocation: null,
     },
+    assertion: null,
     probe: null,
     errors: {},
     ...overrides,
@@ -121,6 +122,8 @@ describe(buildStatusFollowUps, () => {
             { platform: 'android', state: 'unknown', detail: '', recordedHash: null, impact: null },
           ],
           ota: null,
+          comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null },
+          changedFiles: null,
         },
         builds: {
           askedEas: true,
@@ -144,7 +147,7 @@ describe(buildStatusFollowUps, () => {
     it(`should offer the download when this project's own build is stale`, () => {
       const followups = buildStatusFollowUps(withBuild('stale'));
 
-      expect(ids(followups)).toEqual(['status-cached-build']);
+      expect(ids(followups)).toEqual(['cached-build']);
       expect(followups[0]!.command).toBe(`npx eas build:download --build-id ${BUILD_ID}`);
     });
 

@@ -19,7 +19,7 @@ import type { NativePlatform } from '../plan/types';
 import type { FingerprintSource } from '../project/fingerprint';
 import { diffFingerprintSourcesLocally } from '../project/localDiff';
 import { classifyFingerprintDiff } from './classify';
-import type { ChangedSource, ImpactClass } from './types';
+import type { ChangedFiles, ChangedSource, ImpactClass } from './types';
 
 /** What a change costs, as far as the data already in hand can establish it. */
 export interface RecordedImpact {
@@ -99,4 +99,74 @@ export function classifyAgainstRecordedBuild(
 
 function undecided(fingerprintChanged: boolean | null, reason: string): RecordedImpact {
   return { class: null, fingerprintChanged, reason, changedCount: null, changedSources: [] };
+}
+
+/**
+ * How long the changed-file read may take.
+ *
+ * `git status --porcelain` measured 20–240 ms live — the low end on a small project, the high end
+ * in this monorepo [observed — 2026-08-26]. The budget is for a repository far larger than either;
+ * expiring costs the refinement below and never the report, which then keeps the fingerprint's own
+ * `js-only`.
+ */
+export const CHANGED_FILES_TIMEOUT_MS = 3000;
+
+/** What the file-level view adds when the fingerprint had nothing left to say. */
+export interface FileRefinement {
+  /** `js-only` or `dev-client-compatible` — never stronger; the fingerprint owns that end. */
+  class: ImpactClass;
+  /** One sentence naming what has to restart, or saying that nothing does. */
+  reason: string;
+  counts: ChangedFiles;
+}
+
+/**
+ * Split "Fast Refresh picks it up" from "restart Metro", for a native surface that did not move.
+ *
+ * The fingerprint cannot tell these apart, and without this the headline's three-class vocabulary
+ * is really a two-class one: a `metro.config.js` edit would be reported `js-only` and the reader
+ * would reload forever waiting for a change the dev server read once at start-up. That is a
+ * *wrong* headline rather than a coarse one, which is why this is in the free tier despite costing
+ * a `git` call — and why it runs only when the fingerprint is unchanged, the one case where it can
+ * change the answer.
+ *
+ * Never throws, and answers `null` for every way of not knowing: a project outside git is an
+ * ordinary case (a fresh `create-expo-app` is not a repository), and the caller then keeps the
+ * fingerprint's own answer.
+ */
+export async function refineWithChangedFilesAsync(
+  projectRoot: string,
+  { timeoutMs = CHANGED_FILES_TIMEOUT_MS }: { timeoutMs?: number } = {}
+): Promise<FileRefinement | null> {
+  const { listChangedFilesAsync } =
+    require('./changedFiles') as typeof import('./changedFiles');
+  const { classifyChangedFiles } = require('./classify') as typeof import('./classify');
+
+  let timer: NodeJS.Timeout | undefined;
+  const deadline = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), timeoutMs);
+    timer.unref?.();
+  });
+
+  try {
+    const changed = await Promise.race([listChangedFilesAsync(projectRoot), deadline]);
+    if (!changed?.files) {
+      return null;
+    }
+    const classified = classifyChangedFiles(changed.files);
+    return {
+      class: classified.class,
+      reason:
+        classified.reasons[0] ??
+        `the native fingerprint is unchanged and nothing in the working tree has changed`,
+      counts: classified.counts,
+    };
+  } catch {
+    // git is a convenience here, not the answer. A failure costs the refinement.
+    return null;
+  } finally {
+    if (timer) {
+      clearTimeout(timer);
+    }
+  }
 }

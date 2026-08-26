@@ -10,6 +10,8 @@ export const exagentStatus: Command = async (argv) => {
       '--help': Boolean,
       '--json': Boolean,
       '--explain': Boolean,
+      '--assert': String,
+      '--build': String,
       '--dev-server-url': String,
       '--no-followups': Boolean,
       // Aliases
@@ -28,6 +30,10 @@ export const exagentStatus: Command = async (argv) => {
         `                          ship over the air, and a fresh answer from EAS about builds`,
         `                          for this fingerprint. Slower — it spawns "expo config" and`,
         `                          calls EAS; the default report spawns neither.`,
+        `--assert <class>          Exit 20 when the change costs more than this class, and 22`,
+        `                          when no class could be established. Without it, always 0.`,
+        `--build <id>              Compare against an EAS build instead of the local record.`,
+        `                          Needs --explain, because it asks the service.`,
         `--dev-server-url <url>    Dev server to probe (default: the project's own, then 8081-8085)`,
         `--no-followups            Leave the suggested follow-up commands out of the report`,
         `-h, --help                Usage info`,
@@ -52,12 +58,15 @@ export const exagentStatus: Command = async (argv) => {
         chalk`  from EAS about whether it already has a build for this exact fingerprint — which can`,
         chalk`  be downloaded with {bold eas build:download} instead of rebuilt.`,
         '',
-        chalk`  To {bold gate} on the class rather than read it, use {bold exagent impact}, which exits non-zero`,
-        chalk`  when the change costs more than you asserted:`,
+        chalk`  {bold Exit codes} — {bold 0} always, because this is information rather than judgment, unless`,
+        chalk`  {bold --assert} was given and turned it into a gate:`,
         '',
-        chalk`    {dim $} npx exagent impact --assert js-only`,
+        chalk`     {bold 0}   a report was produced (and the assertion held, if one was made)`,
+        chalk`    {bold 20}   {bold --assert} was given and the change costs more than the class named`,
+        chalk`    {bold 22}   {bold --assert} was given and no class could be established — nothing to gate on`,
+        chalk`     {bold 1}   this command could not do its job: a bad flag, an unusable value`,
         '',
-        chalk`  This command always exits 0, so it can report and never judge.`,
+        chalk`    {dim $} npx exagent status --assert js-only || echo "needs more than a reload"`,
         '',
         chalk`  {bold --json} carries the raw project probe too, under {bold probe}: the SDK version, the`,
         chalk`  native state, the fingerprint, and every reason Expo Go cannot run the project, exactly`,
@@ -73,16 +82,26 @@ export const exagentStatus: Command = async (argv) => {
     require('../utils/findUp') as typeof import('../utils/findUp');
   const { resolveDevServerUrlFlag } =
     require('../runtime/devServer') as typeof import('../runtime/devServer');
+  const { resolveAssertClass, resolveBuildId } =
+    require('./resolveOptions') as typeof import('./resolveOptions');
   const { printStatusAsync } = require('./statusAsync') as typeof import('./statusAsync');
 
   return (async () => {
+    const explain = !!args['--explain'];
+    // Resolved before the project is found, so a bad flag fails on the flag rather than on the
+    // directory somebody happened to run it in.
+    const assertClass = resolveAssertClass(args['--assert']);
+    const buildId = resolveBuildId(args['--build'], { explain });
+
     const projectRoot = findUpProjectRootOrAssert(process.cwd());
     const explicitDevServerUrl =
       args['--dev-server-url'] != null ? resolveDevServerUrlFlag(args['--dev-server-url']) : null;
     await printStatusAsync(projectRoot, {
       devServerUrl: explicitDevServerUrl,
       json: !!args['--json'],
-      explain: !!args['--explain'],
+      explain,
+      assert: assertClass,
+      buildId,
       followups: !args['--no-followups'],
     });
   })().catch(logCmdError);

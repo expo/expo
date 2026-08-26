@@ -18,6 +18,7 @@ import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
 import type {
   DevServerStatus,
   ExpoGoStatus,
+  FreshnessComparison,
   FreshnessStatus,
   LocalDeviceStatus,
   NextActionStatus,
@@ -120,8 +121,17 @@ export function buildFreshnessStatus(
       explain
     )
   );
-  // `ota` is filled in by the caller under `--explain`, because resolving it costs a subprocess.
-  return error ? { hash, error, platforms, ota: null } : { hash, platforms, ota: null };
+  // The base every headline above was measured against. `--build <id>` replaces it in the caller,
+  // which is also where the network call that would need lives.
+  const comparison: FreshnessComparison = {
+    kind: 'last-build',
+    label: 'last build recorded by exagent',
+    buildId: null,
+  };
+  // `ota` and `changedFiles` are filled in by the caller: one costs a subprocess, and the other is
+  // only read when the fingerprint said the native surface did not move.
+  const rest = { platforms, comparison, changedFiles: null, ota: null };
+  return error ? { hash, error, ...rest } : { hash, ...rest };
 }
 
 function platformFreshness(

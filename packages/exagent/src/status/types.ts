@@ -4,7 +4,7 @@
 
 import type { DevServerHostType } from '../dev/advertisedUrl';
 import type { LocalDeviceState } from '../device/localDevice';
-import type { ChangedSource, ImpactClass, OtaSafety } from '../impact/types';
+import type { ChangedFiles, ChangedSource, ImpactClass, OtaSafety } from '../impact/types';
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
 import type { DevServerSource } from '../runtime/devServer';
@@ -87,12 +87,38 @@ export interface PlatformFreshness {
   impact: FreshnessImpact | null;
 }
 
+/** What the impact headline was measured against. */
+export interface FreshnessComparison {
+  /** `last-build` for the project's own record, `eas-build` for `--explain --build <id>`. */
+  kind: 'last-build' | 'eas-build';
+  /** What a person would call the base: `last build recorded by exagent`, `EAS build <id>`. */
+  label: string;
+  /** The build id, for `eas-build`. Null otherwise. */
+  buildId: string | null;
+}
+
 export interface FreshnessStatus {
   /** Current fingerprint of the native surface, or null when the tool is unavailable. */
   hash: string | null;
   /** Why the fingerprint is unavailable. */
   error?: string;
   platforms: PlatformFreshness[];
+  /**
+   * What the impact headline is measured against.
+   *
+   * Always present, so a reader never has to infer the base from which flags were passed. The
+   * `fresh`/`stale` state above is *always* about the project's own record even under `--build`:
+   * "is the app I built here still current" and "does this differ from that cloud build" are two
+   * questions, and one of them silently changing meaning would be worse than reporting both.
+   */
+  comparison: FreshnessComparison;
+  /**
+   * How many files changed, and of what sort. Null when no file-level view was available.
+   *
+   * Read only when the fingerprint says the native surface did **not** move, which is the one case
+   * where it can change the answer — see {@link FreshnessImpact.class}.
+   */
+  changedFiles: ChangedFiles | null;
   /**
    * Whether an update published now would reach installed builds that can run it.
    *
@@ -278,6 +304,29 @@ export interface NextActionStatus {
   buildLocation: PlanBuildLocation | null;
 }
 
+/**
+ * The verdict of `status --assert <class>`, and the one thing that can make this command non-zero.
+ *
+ * @see llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+ */
+export interface AssertStatus {
+  /** The class the caller said the change may cost at most. */
+  asserted: ImpactClass;
+  /** The strongest class actually found, or null when nothing established one. */
+  actual: ImpactClass | null;
+  /** Whether the gate passed. False for a stronger class *and* for a class nothing established. */
+  ok: boolean;
+  /**
+   * The exit code the gate produced: `0`, `20` (stronger than asserted), or `22` (inconclusive).
+   *
+   * In the payload because an agent that captured stdout and lost the code can still read the
+   * verdict, and because the three outcomes lead to three different next actions.
+   */
+  exitCode: number;
+  /** One sentence: what the gate found, and why that is or is not a pass. */
+  reason: string;
+}
+
 /** Sections of the report, in the order they print. */
 export type StatusSectionName =
   | 'project'
@@ -320,6 +369,8 @@ export interface StatusReport {
   skills: SkillsStatus | null;
   auth: AuthStatus | null;
   next: NextActionStatus | null;
+  /** The `--assert` verdict, or null when no assertion was made. */
+  assertion: AssertStatus | null;
   /**
    * The raw project probe the sections above are summarized from, verbatim.
    *

@@ -2,6 +2,8 @@ import fs from 'fs';
 import { vol } from 'memfs';
 
 import { event } from '../../events';
+import { compareWithEasBuildAsync } from '../../impact/compare';
+import { refineWithChangedFilesAsync } from '../../impact/fromRecord';
 import { resolveRuntimeVersionAsync } from '../../impact/runtimeVersion';
 import * as Log from '../../log';
 import { readAuthPreflightAsync } from '../../needsHuman/preflight';
@@ -43,6 +45,12 @@ jest.mock('../../skills/discovery', () => ({ discoverSkillsAsync: jest.fn(async 
 jest.mock('../easBuilds', () => ({
   readEasBuildsStatusAsync: jest.fn(async () => ({ askedEas: false, platforms: [] })),
 }));
+jest.mock('../../impact/fromRecord', () => ({
+  ...(jest.requireActual('../../impact/fromRecord') as object),
+  refineWithChangedFilesAsync: jest.fn(async () => null),
+}));
+jest.mock('../../impact/compare', () => ({ compareWithEasBuildAsync: jest.fn() }));
+jest.mock('../../utils/easCli', () => ({ resolveEasCliOrThrow: jest.fn(() => ({ command: '/bin/eas', source: 'path' })) }));
 jest.mock('../../impact/runtimeVersion', () => ({
   resolveRuntimeVersionAsync: jest.fn(async () => ({
     policy: 'appVersion',
@@ -110,6 +118,14 @@ beforeEach(() => {
   });
   jest.mocked(discoverSkillsAsync).mockResolvedValue([]);
   jest.mocked(getPersistedAgentIdsAsync).mockResolvedValue(null);
+  // `clearMocks` clears calls and not implementations, so a `mockRejectedValue` set by one test
+  // would otherwise outlive it. These two are re-established rather than left to the factory.
+  jest.mocked(refineWithChangedFilesAsync).mockResolvedValue(null);
+  jest.mocked(resolveRuntimeVersionAsync).mockResolvedValue({
+    policy: 'appVersion',
+    literal: null,
+    source: 'app.json',
+  });
 });
 
 describe(collectStatusReportAsync, () => {
@@ -441,6 +457,227 @@ describe(collectStatusReportAsync, () => {
     });
   });
 
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free
+  // The file-level view runs only where it can change the answer, which is the one rule that keeps
+  // a `git` call off the common path.
+  describe('the file-level refinement', () => {
+    function unchanged() {
+      mockState({ fingerprint: { hash: 'abcdef0123456789', sources: [] } });
+      jest
+        .mocked(readLastBuildRecord)
+        .mockReturnValue({ ios: { hash: 'abcdef0123456789', sources: [] } });
+    }
+
+    it(`should upgrade js-only to dev-client-compatible when a config file moved`, async () => {
+      unchanged();
+      jest.mocked(refineWithChangedFilesAsync).mockResolvedValue({
+        class: 'dev-client-compatible',
+        reason: 'metro.config.js is read once when the dev server starts',
+        counts: { total: 1, native: 0, js: 1, config: 1 },
+      });
+
+      const report = await collectStatusReportAsync(projectRoot, options);
+
+      expect(report.freshness?.platforms[0]!.impact).toMatchObject({
+        class: 'dev-client-compatible',
+        reason: 'metro.config.js is read once when the dev server starts',
+      });
+      expect(report.freshness?.changedFiles).toEqual({ total: 1, native: 0, js: 1, config: 1 });
+    });
+
+    it(`should not look at files when the fingerprint already moved`, async () => {
+      mockState({ fingerprint: { hash: 'abcdef0123456789', sources: [] } });
+      jest.mocked(readLastBuildRecord).mockReturnValue({ ios: { hash: 'older', sources: [] } });
+
+      await collectStatusReportAsync(projectRoot, options);
+
+      expect(refineWithChangedFilesAsync).not.toHaveBeenCalled();
+    });
+
+    it(`should not look at files when no class was established`, async () => {
+      jest.mocked(readLastBuildRecord).mockReturnValue({});
+
+      await collectStatusReportAsync(projectRoot, options);
+
+      expect(refineWithChangedFilesAsync).not.toHaveBeenCalled();
+    });
+
+    it(`should keep the fingerprint's answer when git could not say`, async () => {
+      unchanged();
+      jest.mocked(refineWithChangedFilesAsync).mockResolvedValue(null);
+
+      const report = await collectStatusReportAsync(projectRoot, options);
+
+      expect(report.freshness?.platforms[0]!.impact?.class).toBe('js-only');
+      expect(report.freshness?.changedFiles).toBeNull();
+    });
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+  describe('--assert', () => {
+    function decided(recordedHash: string) {
+      mockState({ fingerprint: { hash: 'abcdef0123456789', sources: [] } });
+      jest
+        .mocked(readLastBuildRecord)
+        .mockReturnValue({ ios: { hash: recordedHash, sources: [] } });
+    }
+
+    it(`should report no assertion when none was made`, async () => {
+      const report = await collectStatusReportAsync(projectRoot, options);
+
+      expect(report.assertion).toBeNull();
+    });
+
+    it(`should pass when the change costs at most the asserted class`, async () => {
+      decided('abcdef0123456789');
+
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        assert: 'js-only',
+      });
+
+      expect(report.assertion).toMatchObject({ ok: true, actual: 'js-only', exitCode: 0 });
+    });
+
+    // With and without `--explain`, because the gate reads the headline and the headline is free.
+    it(`should work without --explain, which is what makes it cheap enough for CI`, async () => {
+      decided('abcdef0123456789');
+
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        assert: 'js-only',
+      });
+
+      expect(resolveRuntimeVersionAsync).not.toHaveBeenCalled();
+      expect(report.assertion?.ok).toBe(true);
+    });
+
+    it(`should compose with --explain`, async () => {
+      decided('abcdef0123456789');
+
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        assert: 'js-only',
+        explain: true,
+      });
+
+      expect(resolveRuntimeVersionAsync).toHaveBeenCalled();
+      expect(report.assertion?.ok).toBe(true);
+      expect(report.freshness?.ota).not.toBeNull();
+    });
+
+    it(`should fail with 22 for a project with nothing to compare against`, async () => {
+      jest.mocked(readLastBuildRecord).mockReturnValue({});
+
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        assert: 'js-only',
+      });
+
+      expect(report.assertion).toMatchObject({ ok: false, actual: null, exitCode: 22 });
+    });
+  });
+
+  // @ref llp/0011-impact-and-freshness.rfc.md §The three comparisons
+  describe('--build', () => {
+    beforeEach(() => {
+      jest.mocked(compareWithEasBuildAsync).mockResolvedValue({
+        base: { label: 'EAS build build-1', hash: 'base-hash' },
+        head: { label: 'working tree', hash: 'head-hash' },
+        items: [
+          {
+            op: 'added',
+            addedSource: {
+              type: 'dir',
+              filePath: 'node_modules/react-native-mmkv',
+              reasons: ['rncoreAutolinkingIos'],
+              hash: 'aa',
+            },
+          },
+        ],
+        fingerprintChanged: true,
+        caveats: [],
+        error: null,
+      });
+    });
+
+    it(`should name the build as the base and put its answer on every platform`, async () => {
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        explain: true,
+        buildId: 'build-1',
+      });
+
+      expect(compareWithEasBuildAsync).toHaveBeenCalledWith(
+        expect.anything(),
+        projectRoot,
+        'build-1'
+      );
+      expect(report.freshness?.comparison).toEqual({
+        kind: 'eas-build',
+        label: 'EAS build build-1',
+        buildId: 'build-1',
+      });
+      for (const platform of report.freshness!.platforms) {
+        expect(platform.impact).toMatchObject({
+          class: 'needs-native-build',
+          fingerprintChanged: true,
+        });
+      }
+    });
+
+    // The `fresh`/`stale` state is about the project's own record, and `--build` asks a different
+    // question. One of them silently changing meaning would be worse than reporting both.
+    it(`should leave the freshness states alone, because they answer another question`, async () => {
+      jest
+        .mocked(readLastBuildRecord)
+        .mockReturnValue({ ios: { hash: 'abcdef0123456789', sources: null } });
+
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        explain: true,
+        buildId: 'build-1',
+      });
+
+      expect(report.freshness?.platforms[0]).toMatchObject({ platform: 'ios', state: 'fresh' });
+    });
+
+    it(`should compose with --assert, gating on the build comparison`, async () => {
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        explain: true,
+        buildId: 'build-1',
+        assert: 'js-only',
+      });
+
+      expect(report.assertion).toMatchObject({
+        ok: false,
+        actual: 'needs-native-build',
+        exitCode: 20,
+      });
+    });
+
+    it(`should note a comparison it could not make, and keep every other fact`, async () => {
+      jest.mocked(compareWithEasBuildAsync).mockResolvedValue({
+        base: { label: 'EAS build build-1', hash: null },
+        head: { label: 'working tree', hash: null },
+        items: null,
+        fingerprintChanged: null,
+        caveats: [],
+        error: 'Could not compare against EAS build build-1.',
+      });
+
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        explain: true,
+        buildId: 'build-1',
+      });
+
+      expect(report.errors.freshness).toContain('Could not compare against EAS build build-1.');
+      expect(report.project).not.toBeNull();
+    });
+  });
+
   // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — what an agent reads before it
   // starts a command that would stop on a login.
   it(`should report who the CLI family acts as`, async () => {
@@ -499,6 +736,7 @@ describe(printStatusAsync, () => {
       'skills',
       'auth',
       'next',
+      'assertion',
       'probe',
       'errors',
       'followups',
@@ -511,6 +749,7 @@ describe(printStatusAsync, () => {
     await printStatusAsync(projectRoot, { ...options, json: true });
 
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
+      'assertion',
       'auth',
       'builds',
       'devServer',
@@ -534,6 +773,7 @@ describe(printStatusAsync, () => {
     // A failed section is reported as null plus a note in `errors`, so the shape never changes.
     expect(Log.log).toHaveBeenCalledTimes(1);
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
+      'assertion',
       'auth',
       'builds',
       'devServer',
@@ -577,6 +817,8 @@ describe(printStatusAsync, () => {
       freshness: { ios: 'stale', android: 'stale' },
       // The section builder is mocked out here; its own suite covers what it answers.
       easBuilds: { ios: null, android: null },
+      impact: { ios: null, android: null },
+      assertion: null,
       easBuildsAsked: false,
       skillsDiscovered: 0,
       skillsLinked: 0,

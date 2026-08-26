@@ -6,7 +6,10 @@
 
 import type { LastBuildFingerprint } from '../../plan/lastBuild';
 import type { FingerprintSource } from '../../project/fingerprint';
-import { classifyAgainstRecordedBuild } from '../fromRecord';
+import { listChangedFilesAsync } from '../changedFiles';
+import { classifyAgainstRecordedBuild, refineWithChangedFilesAsync } from '../fromRecord';
+
+jest.mock('../changedFiles', () => ({ listChangedFilesAsync: jest.fn() }));
 
 /** One autolinked native module, in the shape the sourcer emits. */
 function nativeModule(hash: string): FingerprintSource {
@@ -132,6 +135,18 @@ describe(classifyAgainstRecordedBuild, () => {
     });
   });
 
+  // Without the file-level refinement the three-class vocabulary is really a two-class one: the
+  // fingerprint cannot see a `metro.config.js` edit, so this stays `js-only` until the refinement
+  // in `refineWithChangedFilesAsync` corrects it.
+  it(`should leave the js-only-versus-dev-client question to the file-level view`, () => {
+    const sources = [appConfig('a')];
+
+    expect(
+      classifyAgainstRecordedBuild('ios', recorded('same', sources), { hash: 'same', sources })
+        .class
+    ).toBe('js-only');
+  });
+
   // No subprocess, no promise: the whole reason this exists rather than reusing `impact`'s path.
   it(`should be synchronous, so a status line costs nothing to produce`, () => {
     const result = classifyAgainstRecordedBuild('ios', recorded('base', [appConfig('a')]), {
@@ -140,5 +155,73 @@ describe(classifyAgainstRecordedBuild, () => {
     });
 
     expect(result).not.toHaveProperty('then');
+  });
+});
+
+// @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free
+// The one part of the free tier that costs a subprocess, and the reason it is worth it: without
+// this a `metro.config.js` edit reads `js-only` and the reader reloads forever.
+describe(refineWithChangedFilesAsync, () => {
+  const projectRoot = '/project';
+
+  beforeEach(() => {
+    jest.mocked(listChangedFilesAsync).mockReset();
+  });
+
+  it(`should call a config the dev server read once at start-up dev-client-compatible`, async () => {
+    jest
+      .mocked(listChangedFilesAsync)
+      .mockResolvedValue({ files: ['metro.config.js', 'app/index.tsx'], gap: null, detail: null });
+
+    const refinement = await refineWithChangedFilesAsync(projectRoot);
+
+    expect(refinement).toMatchObject({
+      class: 'dev-client-compatible',
+      counts: { total: 2 },
+    });
+    expect(refinement!.reason).toContain('metro.config.js');
+    expect(refinement!.reason).toContain('Metro has to be restarted');
+  });
+
+  it(`should keep js-only when every changed file is inside the bundle`, async () => {
+    jest
+      .mocked(listChangedFilesAsync)
+      .mockResolvedValue({ files: ['app/index.tsx'], gap: null, detail: null });
+
+    await expect(refineWithChangedFilesAsync(projectRoot)).resolves.toMatchObject({
+      class: 'js-only',
+    });
+  });
+
+  // A project outside git is an ordinary case — a fresh `create-expo-app` is not a repository —
+  // so the caller keeps the fingerprint's own answer rather than losing the report.
+  it(`should answer null for a project git cannot speak for`, async () => {
+    jest.mocked(listChangedFilesAsync).mockResolvedValue({
+      files: null,
+      gap: 'not-a-work-tree',
+      detail: 'not inside a work tree',
+    });
+
+    await expect(refineWithChangedFilesAsync(projectRoot)).resolves.toBeNull();
+  });
+
+  it(`should answer null rather than throwing when git blows up`, async () => {
+    jest.mocked(listChangedFilesAsync).mockRejectedValue(new Error('git exploded'));
+
+    await expect(refineWithChangedFilesAsync(projectRoot)).resolves.toBeNull();
+  });
+
+  it(`should give up on its deadline rather than holding the report`, async () => {
+    jest.useFakeTimers();
+    try {
+      jest.mocked(listChangedFilesAsync).mockReturnValue(new Promise(() => {}));
+
+      const pending = refineWithChangedFilesAsync(projectRoot, { timeoutMs: 3000 });
+      await jest.advanceTimersByTimeAsync(3000);
+
+      await expect(pending).resolves.toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

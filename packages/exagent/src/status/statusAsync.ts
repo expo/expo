@@ -13,8 +13,10 @@ import { resolveDevServerReachAsync } from '../dev/advertisedUrl';
 import { readCloudSessionIdSync } from '../device/cloudSimulator';
 import { probeLocalDeviceAsync } from '../device/localDevice';
 import { event } from '../events';
+import { exitWithCodeAsync } from '../exitCodes';
 import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
-import type { OtaSafety } from '../impact/types';
+import { refineWithChangedFilesAsync } from '../impact/fromRecord';
+import type { ImpactClass, OtaSafety } from '../impact/types';
 import * as Log from '../log';
 import { readProjectSchemeConfig } from '../navigate/deepLink';
 import { readAuthPreflightAsync } from '../needsHuman/preflight';
@@ -33,6 +35,7 @@ import { waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { getAllAgents, getPersistedAgentIdsAsync } from '../skills/agents';
 import { discoverSkillsAsync } from '../skills/discovery';
 import type { DiscoveredSkill } from '../skills/types';
+import { buildAssertStatus } from './assert';
 import { readEasBuildsStatusAsync } from './easBuilds';
 import { formatStatusReport } from './format';
 import {
@@ -49,6 +52,7 @@ import type {
   AuthStatus,
   BuildLookupState,
   DevServerStatus,
+  FreshnessImpact,
   FreshnessState,
   FreshnessStatus,
   LocalDeviceStatus,
@@ -107,8 +111,23 @@ export interface StatusOptions {
    * @see llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
    */
   explain?: boolean;
+  /**
+   * Turn the report into a gate: exit `20` when the change costs more than this class (`--assert`).
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+   */
+  assert?: ImpactClass | null;
+  /**
+   * Compare against a specific EAS build instead of the project's own record (`--build <id>`).
+   *
+   * Requires `--explain`, because it fetches a fingerprint from the service. Server ground truth:
+   * it needs no local record, which is what makes it the answer for a build made in the cloud.
+   */
+  buildId?: string | null;
   /** Overrides {@link EAS_BUILD_LOOKUP_TIMEOUT_MS}, for tests. */
   buildLookupTimeoutMs?: number;
+  /** Overrides {@link CHANGED_FILES_TIMEOUT_MS}, for tests. */
+  changedFilesTimeoutMs?: number;
   /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
   followups?: boolean;
 }
@@ -137,6 +156,11 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     easBuildsAsked: report.builds?.askedEas ?? false,
     skillsDiscovered: report.skills?.discovered ?? 0,
     skillsLinked: report.skills?.linked ?? 0,
+    impact: {
+      ios: impactClassOf(report, 'ios'),
+      android: impactClassOf(report, 'android'),
+    },
+    assertion: report.assertion,
     sectionErrors: Object.keys(report.errors),
   });
 
@@ -146,6 +170,14 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
   // Silent on purpose: repeating the plan the `next` line already names would be noise, so the
   // follow-ups reach a driving agent through the event and the JSON report only.
   reportFollowUps('status', followups, { silent: true });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+  // The one path out of this command that is not 0, and it exists only because the caller asked
+  // for a verdict. The report is printed first either way: a gate that failed is still a report,
+  // and an agent reading the exit code needs the reasons above it.
+  if (report.assertion && !report.assertion.ok) {
+    await exitWithCodeAsync(report.assertion.exitCode);
+  }
 }
 
 /**
@@ -178,6 +210,7 @@ export async function collectStatusReportAsync(
     skills: null,
     auth: null,
     next: null,
+    assertion: null,
     probe: null,
     errors,
   };
@@ -228,6 +261,20 @@ export async function collectStatusReportAsync(
     report.freshness = buildFreshnessStatus(state, lastBuild, record, {
       explain: !!options.explain,
     });
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free
+    // The file-level refinement, and then — only when the caller named one — the comparison
+    // against an EAS build, which replaces the headline's base. Both fold into the section that
+    // is already built rather than being threaded through the pure builder, because both are I/O
+    // and `buildFreshnessStatus` is the part that has to stay testable without a project.
+    await refineFreshnessAsync(projectRoot, report.freshness, options);
+    if (options.buildId) {
+      const compared = await attemptAsync(() =>
+        compareAgainstEasBuildAsync(projectRoot, report.freshness!, options)
+      );
+      if ('error' in compared) {
+        errors.freshness = compared.error;
+      }
+    }
     report.next = buildNextActionStatus(
       state,
       lastBuild,
@@ -299,11 +346,108 @@ export async function collectStatusReportAsync(
   // OTA read costs the verdict and leaves every freshness fact beside it standing.
   if (ota && 'value' in ota && report.freshness) {
     report.freshness.ota = ota.value;
-  } else if (ota && 'error' in ota) {
+  } else if (ota && 'error' in ota && !errors.freshness) {
+    // Never over one already written: a `--build` comparison that failed is the more specific
+    // cause, and the section has one line to say it on.
     errors.freshness = ota.error;
   }
 
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+  // Last, because it judges what every section above it found, and only when a class was asserted.
+  if (options.assert) {
+    report.assertion = buildAssertStatus(options.assert, report.freshness);
+  }
+
   return report;
+}
+
+/**
+ * Split "Fast Refresh picks it up" from "restart Metro", for platforms the fingerprint cleared.
+ *
+ * @ref llp/0011-impact-and-freshness.rfc.md §When the fingerprint did not move
+ * Runs at most once, and only when *every* decided platform reported the native surface unchanged
+ * — the same rule `impact` follows, and for the same reason: git has no per-platform answer, and a
+ * platform whose fingerprint moved already has the stronger class. A `js-only` that this leaves
+ * alone is a `js-only` the file list agreed with.
+ */
+async function refineFreshnessAsync(
+  projectRoot: string,
+  freshness: FreshnessStatus,
+  options: StatusOptions
+): Promise<void> {
+  const decided = freshness.platforms.filter((platform) => platform.impact?.class != null);
+  if (!decided.length || !decided.every((platform) => platform.impact!.fingerprintChanged === false)) {
+    return;
+  }
+
+  const refinement = await refineWithChangedFilesAsync(projectRoot, {
+    timeoutMs: options.changedFilesTimeoutMs,
+  });
+  if (!refinement) {
+    return;
+  }
+
+  freshness.changedFiles = refinement.counts;
+  for (const platform of decided) {
+    if (platform.impact!.class === 'js-only') {
+      platform.impact!.class = refinement.class;
+      platform.impact!.reason = refinement.reason;
+    }
+  }
+}
+
+/**
+ * Compare the working tree against one EAS build, and make that the headline's base.
+ *
+ * @ref llp/0011-impact-and-freshness.rfc.md §The three comparisons
+ * `eas fingerprint:compare --build-id` takes **no platform**, because a build was made for exactly
+ * one and which one is a fact about the build rather than a question to ask. So this replaces every
+ * platform's headline with the one answer and says so through `freshness.comparison` — the
+ * `fresh`/`stale` states are left alone, because they are about the project's own record and that
+ * question did not change.
+ */
+async function compareAgainstEasBuildAsync(
+  projectRoot: string,
+  freshness: FreshnessStatus,
+  options: StatusOptions
+): Promise<void> {
+  const { resolveEasCliOrThrow } = require('../utils/easCli') as typeof import('../utils/easCli');
+  const { compareWithEasBuildAsync } =
+    require('../impact/compare') as typeof import('../impact/compare');
+  const { classifyFingerprintDiff } = require('../impact/classify') as typeof import('../impact/classify');
+
+  const buildId = options.buildId!;
+  const comparison = await compareWithEasBuildAsync(
+    resolveEasCliOrThrow(projectRoot),
+    projectRoot,
+    buildId
+  );
+  if (comparison.error) {
+    throw new Error(comparison.error);
+  }
+
+  freshness.comparison = { kind: 'eas-build', label: `EAS build ${buildId}`, buildId };
+
+  const classified = comparison.items ? classifyFingerprintDiff(comparison.items) : null;
+  const impact: FreshnessImpact = {
+    // The same rule as everywhere else in this report: a comparison that established nothing gets
+    // `null`, not the conservative guess a gate would have to make (llp/0011 §Two commands).
+    class: classified?.class ?? (comparison.fingerprintChanged === false ? 'js-only' : null),
+    fingerprintChanged: comparison.fingerprintChanged,
+    reason:
+      classified?.reasons[0] ??
+      (comparison.fingerprintChanged === false
+        ? `the native surface matches EAS build ${buildId}, so that build can run this code`
+        : comparison.fingerprintChanged
+          ? `the native surface differs from EAS build ${buildId}, and what differs could not be listed`
+          : `whether the native surface differs from EAS build ${buildId} could not be established`),
+    changedCount: classified?.changedSources.length ?? null,
+    changedSources: classified ? classified.changedSources : null,
+  };
+
+  for (const platform of freshness.platforms) {
+    platform.impact = impact;
+  }
 }
 
 /**
@@ -538,6 +682,12 @@ function freshnessOf(report: StatusReport, platform: NativePlatform): FreshnessS
 
 function easBuildOf(report: StatusReport, platform: NativePlatform): BuildLookupState | null {
   return report.builds?.platforms.find((entry) => entry.platform === platform)?.state ?? null;
+}
+
+function impactClassOf(report: StatusReport, platform: NativePlatform): ImpactClass | null {
+  return (
+    report.freshness?.platforms.find((entry) => entry.platform === platform)?.impact?.class ?? null
+  );
 }
 
 type Attempt<T> = { value: T } | { error: string };

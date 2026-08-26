@@ -1,6 +1,11 @@
-// @ref llp/0009-smart-followups.rfc.md §Examples per command — `impact`.
+// @ref llp/0009-smart-followups.rfc.md §Examples per command — the impact headline of `status`.
 // Each class has a different next command, and the OTA verdict is a rung of its own because it is
 // a different question with a different answer: a change can be free to run and unsafe to publish.
+//
+// The ids are spelled `change-*` rather than `impact-*`: they name what a *change* costs, which is
+// a section of `exagent status` now that `exagent impact` is gone. An id that named a command
+// nobody can run is exactly the stale string the suggested-command lint exists to catch, one level
+// up.
 
 import type { CachedBuild, ImpactClass } from '../impact/types';
 import {
@@ -15,7 +20,7 @@ import type { BuildBackendChoice } from '../toolchain/selectBackend';
 import { cachedBuildFollowUp } from './cachedBuild';
 import { capFollowUps, type FollowUp } from './types';
 
-export interface ImpactFollowUpInput {
+export interface ChangeFollowUpInput {
   impactClass: ImpactClass;
   /** The OTA verdict, `null` when the runtimeVersion policy could not be resolved. */
   otaSafe: boolean | null;
@@ -34,13 +39,13 @@ export interface ImpactFollowUpInput {
   buildBackend?: BuildBackendChoice | null;
 }
 
-export function buildImpactFollowUps({
+export function buildChangeFollowUps({
   impactClass,
   otaSafe,
   cachedBuild,
   platform,
   buildBackend = null,
-}: ImpactFollowUpInput): FollowUp[] {
+}: ChangeFollowUpInput): FollowUp[] {
   const followups: FollowUp[] = [];
   const platformFlag = platform ? ` --platform ${platform}` : '';
 
@@ -49,7 +54,7 @@ export function buildImpactFollowUps({
       // The materially better answer, and the reason the build-cache lookup exists at all: a
       // build that already exists is minutes saved over one that has to be started. `status`
       // offers the same rung from its own starting point, so the builder is shared.
-      followups.push(cachedBuildFollowUp('impact', cachedBuild.id));
+      followups.push(cachedBuildFollowUp(cachedBuild.id));
     } else {
       // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
       // Both routes, because "you need a native build" is not one instruction: one of them runs on
@@ -63,14 +68,14 @@ export function buildImpactFollowUps({
       // and why, rather than offering a local build to a host that has no toolchain for it.
       const runsOnEas = buildBackend?.runsOn === 'eas';
       followups.push({
-        id: 'impact-native-build',
+        id: 'change-native-build',
         command: `npx exagent dev${platformFlag ? ` --${platform}` : ''}`,
         why: runsOnEas
           ? `The native surface changed, so the installed app cannot run this code. This plans the rebuild ${EAS_WHERE} — ${buildBackend!.because} — and prints the plan before it starts anything.`
           : `The native surface changed, so the installed app cannot run this code. This rebuilds it ${LOCAL_WHERE} — the fast route when this machine has ${localTool(platform)}, because the plan engine prebuilds and rebuilds only what has to be.`,
       });
       followups.push({
-        id: runsOnEas ? 'impact-local-build' : 'impact-eas-build',
+        id: runsOnEas ? 'change-local-build' : 'change-eas-build',
         command: runsOnEas
           ? `npx exagent dev${platformFlag ? ` --${platform}` : ''} --local`
           : platform
@@ -83,13 +88,13 @@ export function buildImpactFollowUps({
     }
   } else if (impactClass === 'dev-client-compatible') {
     followups.push({
-      id: 'impact-restart-metro',
+      id: 'change-restart-metro',
       command: 'npx exagent dev:stop && npx exagent dev --detach',
       why: 'The installed app is still the right one; what changed is a file the dev server read once at start-up, so only Metro has to come back.',
     });
   } else {
     followups.push({
-      id: 'impact-reload',
+      id: 'change-reload',
       command: 'npx exagent runtime:reload',
       why: 'Nothing native changed, so the running app only has to fetch the new bundle. This also reports whether the entry bundle compiles before it broadcasts anything.',
     });
@@ -97,20 +102,20 @@ export function buildImpactFollowUps({
 
   if (otaSafe === false) {
     followups.push({
-      id: 'impact-ota-unsafe',
-      command: `npx exagent impact${platformFlag} --json`,
+      id: 'change-ota-unsafe',
+      command: `npx exagent status --explain --json`,
       why: 'An update published now would reach installed builds that cannot run it — read the "ota" section for the runtimeVersion policy that decides this, before running eas update.',
     });
   } else if (otaSafe === true && impactClass !== 'needs-native-build') {
     followups.push({
-      id: 'impact-ota-safe',
+      id: 'change-ota-safe',
       command: 'npx eas update --auto',
       why: 'The native surface is unchanged and the runtimeVersion policy agrees, so this change can ship over the air without a new build.',
     });
   }
 
   followups.push({
-    id: 'impact-typecheck',
+    id: 'change-typecheck',
     command: 'npx exagent typecheck',
     why: 'This classifies what a change costs to run, not whether it is correct: a type error compiles and bundles perfectly.',
   });

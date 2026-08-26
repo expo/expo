@@ -22,6 +22,8 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: {
+      comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+      changedFiles: null,
       hash: 'abcdef0123456789',
       platforms: [
         {
@@ -80,6 +82,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
         },
       ],
     },
+    assertion: null,
     // The text report never prints the raw probe, so it is null here on purpose.
     probe: null,
     errors: {},
@@ -198,6 +201,8 @@ describe(formatStatusReport, () => {
   it(`should print the fingerprint error on the freshness line`, () => {
     const report = mockReport({
       freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
         hash: null,
         error: 'fingerprint CLI not found\nInstall @expo/fingerprint',
         platforms: [
@@ -230,6 +235,8 @@ describe(formatStatusReport, () => {
     const error = `The @expo/fingerprint CLI is not installed in this project, so the native surface cannot be hashed. Install it with "npx expo install @expo/fingerprint".`;
     const report = mockReport({
       freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
         hash: null,
         error,
         platforms: [
@@ -552,6 +559,8 @@ describe('the impact line', () => {
       };
     return mockReport({
       freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
         hash: 'abcdef0123456789',
         ota: null,
         platforms: [
@@ -627,6 +636,8 @@ describe('the --explain detail', () => {
   function withSources(count: number): StatusReport {
     return mockReport({
       freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
         hash: 'abcdef0123456789',
         ota: null,
         platforms: [
@@ -686,6 +697,8 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          changedFiles: null,
           hash: 'abcdef0123456789',
           platforms: [],
           ota: {
@@ -707,6 +720,8 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          changedFiles: null,
           hash: 'abcdef0123456789',
           platforms: [],
           ota: {

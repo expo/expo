@@ -9,7 +9,7 @@ export { buildConfigEffectiveFollowUps, type ConfigEffectiveFollowUpInput } from
 export { buildDevWaitFollowUps, type DevWaitFollowUpInput } from './devWait';
 export { buildDoctorCheckFollowUps, buildDoctorFixFollowUps, extractAdviceAction } from './doctor';
 export { buildExplainFollowUps, type ExplainFollowUpInput } from './explain';
-export { buildImpactFollowUps, type ImpactFollowUpInput } from './impact';
+export { buildChangeFollowUps, type ChangeFollowUpInput } from './change';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export {
   buildNavigateFollowUps,

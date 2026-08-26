@@ -160,6 +160,27 @@ declare module '2g' {
       easBuilds: { ios: string | null; android: string | null };
       /** Whether this run was allowed to call EAS, i.e. `--explain` was passed. */
       easBuildsAsked: boolean;
+      /**
+       * What the change since the last recorded build costs, per platform.
+       *
+       * `js-only`, `dev-client-compatible`, `needs-native-build`, or `null` when nothing could be
+       * established — which is never rounded up to a class, however conservative that class would
+       * be. See llp/0011 §Two commands, one classifier.
+       */
+      impact: { ios: string | null; android: string | null };
+      /**
+       * The `--assert` verdict, or null when nothing was asserted.
+       *
+       * The only thing in this report that decides an exit code, which is why it is on the event:
+       * an agent that read the code and wants the sentence behind it finds it here.
+       */
+      assertion: {
+        asserted: string;
+        actual: string | null;
+        ok: boolean;
+        exitCode: number;
+        reason: string;
+      } | null;
       skillsDiscovered: number;
       skillsLinked: number;
       /** Sections that could not be read, e.g. `["project"]`. */
