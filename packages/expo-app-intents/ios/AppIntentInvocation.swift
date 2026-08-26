@@ -21,11 +21,14 @@ public struct AppIntentInvocation: Codable, Sendable {
   }
 
   func toDict() -> [String: Any] {
+    // swift-format requires a trailing comma in multiline collection literals.
+    // swiftlint:disable trailing_comma
     return [
       "id": id,
       "name": name,
       "params": params.mapValues(\.foundationValue),
-      "createdAt": createdAt
+      "createdAt": createdAt,
     ]
+    // swiftlint:enable trailing_comma
   }
 }
