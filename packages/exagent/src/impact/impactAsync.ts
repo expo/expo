@@ -12,6 +12,7 @@ import { exitWithCodeAsync, EXIT_OUTCOME_FAILED } from '../exitCodes';
 import { buildImpactFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
+import type { BuildBackendChoice } from '../toolchain/selectBackend';
 import { resolveEasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { findCachedBuildAsync } from './buildCache';
@@ -86,6 +87,11 @@ export async function impactAsync(projectRoot: string, options: ImpactOptions): 
     changedFilesGap: changed?.gap ?? null,
     changedFilesDetail: changed?.detail ?? null,
     runtimeVersion,
+    // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
+    // Resolved only when this report is about to say "you need a native build" for one platform:
+    // that is the only answer whose next commands depend on where a build can run, and the probe
+    // is not worth a subprocess on a report that ends in "reload the bundle".
+    buildBackend: await resolveImpactBackendAsync(projectRoot, results),
   });
 
   event('impact', {
@@ -128,6 +134,12 @@ export interface BuildImpactReportInput {
   /** What happened, in one clause, for the caveat. */
   changedFilesDetail?: string | null;
   runtimeVersion: RuntimeVersionInfo;
+  /**
+   * Where a rebuild of this project would run, when the caller resolved it.
+   *
+   * @see llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
+   */
+  buildBackend?: BuildBackendChoice | null;
 }
 
 /**
@@ -146,6 +158,7 @@ export function buildImpactReport({
   changedFilesGap = null,
   changedFilesDetail = null,
   runtimeVersion,
+  buildBackend = null,
 }: BuildImpactReportInput): ImpactReport {
   // A platform whose fingerprint did not move falls through to the file-level answer, which is
   // the only thing that can tell "Fast Refresh picks it up" from "restart Metro". A platform whose
@@ -187,9 +200,47 @@ export function buildImpactReport({
           otaSafe: ota.safe,
           cachedBuild: platforms.find((result) => result.cachedBuild)?.cachedBuild ?? null,
           platform: platforms.length === 1 ? platforms[0]!.platform : null,
+          buildBackend,
         })
       : [],
   };
+}
+
+/**
+ * Where a rebuild of this project would run, or null when the question does not arise.
+ *
+ * Null for everything but a single-platform `needs-native-build`: the follow-ups of every other
+ * class name no build, and a probe nobody reads is two subprocesses spent on nothing. A config
+ * this CLI cannot read is also null here rather than an error — `impact` answers a question about
+ * a *change*, and refusing to answer it over a preference file would be the wrong trade.
+ */
+async function resolveImpactBackendAsync(
+  projectRoot: string,
+  results: PlatformImpact[]
+): Promise<BuildBackendChoice | null> {
+  const platform = results.length === 1 ? results[0]!.platform : null;
+  if (platform == null || !results.some((result) => result.class === 'needs-native-build')) {
+    return null;
+  }
+
+  const { readExagentSettings, settingsBuildBackend } =
+    require('../settings') as typeof import('../settings');
+  const { detectToolchainAsync } = require('../toolchain') as typeof import('../toolchain');
+  const { selectBuildBackend } =
+    require('../toolchain/selectBackend') as typeof import('../toolchain/selectBackend');
+
+  try {
+    const configured = settingsBuildBackend(readExagentSettings(projectRoot).settings, platform);
+    return selectBuildBackend({
+      platform,
+      hostPlatform: process.platform,
+      requested: null,
+      configured,
+      probe: configured === 'eas' ? null : await detectToolchainAsync(platform),
+    });
+  } catch {
+    return null;
+  }
 }
 
 /** One platform's answer, with the build-cache line attached when EAS had one. */
