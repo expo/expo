@@ -442,7 +442,10 @@ describe(parseAvailabilityJson, () => {
   // The one `simulator:*` payload that could be recorded without starting a session, which is what
   // `availability` exists for. See `src/__fixtures__/eas/README.md`.
   it(`reads the recorded answer, and ignores the account it names`, () => {
-    expect(parseAvailabilityJson(JSON.stringify(recordedAvailability))).toBe(true);
+    expect(parseAvailabilityJson(JSON.stringify(recordedAvailability))).toEqual({
+      available: true,
+      waitlistUrl: null,
+    });
   });
 
   it(`reads the flag both ways`, () => {
