@@ -91,6 +91,22 @@ recorded.
 | `simulator-list-in-progress.json` | the same command while the session was up |
 | `simulator-list-stopped.json` | `eas simulator:list --limit 5 --json` after `simulator:stop` |
 
+### The Android half, recorded on staging
+
+Every session recording above is **iOS**. `simulator-list-android-in-progress.staging.json` is the
+other half [observed — 2026-08-26, `EXPO_STAGING=1`, `eas-cli/22.5.0`, account `kudo1`, project
+`DailyWords-Grok`], captured from a session that had a **real development build installed on it** —
+`eas simulator --platform android --build-id <id> --type agent-device`, where the build is the APK
+of the app under test rather than Expo Go. The session was stopped when the run finished
+(`{"id": …, "status": "STOPPED"}`).
+
+It carries no credential: the daemon URL and token come back from `eas simulator --json` on stdout
+and are deliberately not recorded here, the same rule the iOS recordings follow.
+
+What it settles is that the shapes below are not iOS-specific — `platform` is the raw enum
+`ANDROID`, `status` is `IN_PROGRESS`, `type` is the flag spelling `agent-device`, `finishedAt` is
+absent rather than null, and `pageInfo` carries both cursors on a non-empty page.
+
 Two shapes worth noticing, because both would be easy to get wrong from the docs alone:
 
 - `status` and `platform` are the **raw GraphQL enums** (`IN_PROGRESS`, `STOPPED`, `IOS`) while

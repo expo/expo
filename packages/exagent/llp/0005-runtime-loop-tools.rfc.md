@@ -590,11 +590,31 @@ Still standing, and still the design:
   for the reason `buildOpenUrlCommand` and `buildScreenshotCommand` are — except more so. A wrong
   `simctl` flag fails on a machine with a simulator; a wrong `simulator:exec` flag fails on a
   machine with an account, a session, and a bill.
-- **What is still [inferred]** is what one short session on a *blank* simulator could not reach: the
-  gated-account branch of `availability`, `open` and `screenshot` against an app that is actually
-  installed, an Android session, and `close` on a foregrounded app. Those are the next validation
-  pass, and until then nothing here may be read as saying `runtime:stop --cloud` was seen to stop a
-  running app — because it was not.
+- **That validation pass has now been run** [observed — 2026-08-26, staging, session
+  `01a03ec5-9255-78c6-bd1d-0f09d4350677`]. What it reached is everything the blank-simulator session
+  could not: an **Android** session, started with a **real development build installed on it**
+  (`eas simulator --platform android --build-id <id> --type agent-device`, the APK of the app under
+  test rather than Expo Go), and `open`, `screenshot` and `close` run against that app.
+
+  Every argv this module builds was spawned unchanged and exited 0.
+  `navigate / --cloud` resolved the session from the service — no `.env.eas-simulator` involved —
+  and ran `eas simulator:exec npx agent-device@latest open dailywordsgrok:// --platform android`,
+  reporting `deviceBackend: "cloud"`, `platform: "android"` and the session's own id.
+  `screenshot` wrote a 320×640 PNG of the app's own launcher screen to a local path, which is the
+  first time the cloud backend has been seen to photograph a real app.
+  `runtime:stop --cloud` ran `… close dev.expo.kudo.dailywords` and answered `stopped: true` with
+  `wasRunning: null`, which is the honest report §What `close` will not tell you argues for.
+
+  **`runtime:stop --cloud` was seen to stop a running app**, which the previous pass could not say.
+  The evidence is not `close`'s own exit code — that proves nothing about the id — but the state
+  after it: the next `screenshot` failed with
+  `Error (SESSION_NOT_FOUND): No active session. Run open first.`, where the screenshot before it
+  had succeeded. The app was foregrounded, then it was not.
+
+  Two things this pass did **not** reach. `runtime:reload --cloud` stopped at its dev-server
+  precondition — `NO_DEV_SERVER`, exit 1, correctly, since a cloud simulator needs a *tunnelled*
+  dev server and none was running — so the reload broadcast over a cloud session is still
+  [inferred]. And the gated-account branch of `availability` still needs a gated account.
 
 ### What `close` will not tell you
 
