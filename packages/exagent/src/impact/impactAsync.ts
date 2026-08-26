@@ -68,9 +68,10 @@ export async function impactAsync(projectRoot: string, options: ImpactOptions): 
   // has not established anything for the files to refine, and letting `null` through here is what
   // made a project with no recorded build report a cheap class it had no evidence for.
   // It runs once, not per platform: git does not have a per-platform answer.
-  const changedFiles = results.every((result) => result.fingerprintChanged === false)
+  const changed = results.every((result) => result.fingerprintChanged === false)
     ? await listChangedFilesAsync(projectRoot)
     : null;
+  const changedFiles = changed?.files ?? null;
   const fileClass = changedFiles ? classifyChangedFiles(changedFiles) : null;
 
   const runtimeVersion = await resolveRuntimeVersionAsync(projectRoot);
@@ -80,6 +81,10 @@ export async function impactAsync(projectRoot: string, options: ImpactOptions): 
     platforms: results,
     fileClass,
     changedFilesKnown: changedFiles != null,
+    // Why there is no file-level view, in the words of what actually happened. `null` here means
+    // the fingerprint already decided and nothing looked (F60).
+    changedFilesGap: changed?.gap ?? null,
+    changedFilesDetail: changed?.detail ?? null,
     runtimeVersion,
   });
 
@@ -118,6 +123,10 @@ export interface BuildImpactReportInput {
   fileClass: FileClassification | null;
   /** Whether the changed-file list was readable at all, which decides a caveat. */
   changedFilesKnown: boolean;
+  /** Why the file-level view is missing, or null when it was never needed. */
+  changedFilesGap?: 'not-a-work-tree' | 'git-failed' | null;
+  /** What happened, in one clause, for the caveat. */
+  changedFilesDetail?: string | null;
   runtimeVersion: RuntimeVersionInfo;
 }
 
@@ -134,6 +143,8 @@ export function buildImpactReport({
   platforms,
   fileClass,
   changedFilesKnown,
+  changedFilesGap = null,
+  changedFilesDetail = null,
   runtimeVersion,
 }: BuildImpactReportInput): ImpactReport {
   // A platform whose fingerprint did not move falls through to the file-level answer, which is
@@ -166,7 +177,7 @@ export function buildImpactReport({
     ota,
     class: impactClass,
     changedFiles: fileClass?.counts ?? null,
-    caveats: buildCaveats(platforms, options, changedFilesKnown),
+    caveats: buildCaveats(platforms, options, changedFilesKnown, changedFilesGap, changedFilesDetail),
     assertion: options.assert
       ? { asserted: options.assert, ok: !isStrongerClass(impactClass, options.assert) }
       : null,
@@ -303,7 +314,9 @@ function baseLabel(options: ImpactOptions): string {
 function buildCaveats(
   results: PlatformImpact[],
   options: ImpactOptions,
-  changedFilesKnown: boolean
+  changedFilesKnown: boolean,
+  changedFilesGap: 'not-a-work-tree' | 'git-failed' | null = null,
+  changedFilesDetail: string | null = null
 ): string[] {
   const caveats: string[] = [];
   for (const result of results) {
@@ -321,8 +334,12 @@ function buildCaveats(
   );
 
   if (!changedFilesKnown && results.every((result) => !result.fingerprintChanged)) {
+    // @ref ./changedFiles — friction run 6, F60. This sentence used to be printed for both causes,
+    // so a project `checkpoint` had just snapshotted was told it had no repository.
     caveats.push(
-      `This project is not in a git work tree, so which files changed could not be read. The class comes from the fingerprint alone, which cannot tell a change Metro picks up from one that needs it restarted.`
+      changedFilesGap === 'git-failed'
+        ? `Which files changed could not be read: ${changedFilesDetail ?? 'git did not answer'}. This project *is* in a git work tree, so this is git failing rather than a project without a repository. The class comes from the fingerprint alone, which cannot tell a change Metro picks up from one that needs it restarted.`
+        : `This project is not in a git work tree, so which files changed could not be read${changedFilesDetail ? ` (${changedFilesDetail})` : ''}. The class comes from the fingerprint alone, which cannot tell a change Metro picks up from one that needs it restarted.`
     );
   }
 

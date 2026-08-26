@@ -115,8 +115,17 @@ declare module '2g' {
       sdkVersion: string | null;
       expoGoCompatible: boolean | null;
       devServerRunning: boolean;
-      /** Debugger targets the dev server reported, i.e. apps connected to it. */
+      /**
+       * Apps connected whose debugger socket still opens, which is what a runtime command can read.
+       *
+       * Not the length of `/json/list` [friction run 6, F56]: a page an app left behind stays in
+       * that list, and this used to count it while every runtime command refused it.
+       */
       appsConnected: number;
+      /** Targets the dev server listed, live or not. */
+      appsListed: number;
+      /** Of those, the ones nothing answered on. */
+      appsStale: number;
       freshness: { ios: string | null; android: string | null };
       skillsDiscovered: number;
       skillsLinked: number;

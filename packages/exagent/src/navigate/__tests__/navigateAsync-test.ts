@@ -370,7 +370,7 @@ describe(navigateAsync, () => {
         },
         {
           id: 'runtime-errors',
-          command: 'npx exagent runtime:errors',
+          command: 'npx exagent runtime:errors --ios',
           why: expect.any(String),
         },
       ],

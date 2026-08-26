@@ -23,8 +23,12 @@ export function buildNavigateFollowUps({ platform, deviceId }: NavigateFollowUpI
     },
     {
       id: 'runtime-errors',
-      command: 'npx exagent runtime:errors',
-      why: 'Reads the errors the app reported while rendering this route.',
+      // The platform this link was opened on, carried into the next command. Without it, a machine
+      // with both an iOS simulator and an Android emulator attached to one dev server reads
+      // whichever target the dev server lists first — which after `navigate --android` was the
+      // simulator [friction run 6, F54 and F51].
+      command: `npx exagent runtime:errors --${platform}`,
+      why: `Reads the errors the app on this ${platform} device reported while rendering this route.`,
     },
   ]);
 }

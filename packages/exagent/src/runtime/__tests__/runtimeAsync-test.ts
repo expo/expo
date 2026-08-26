@@ -199,9 +199,12 @@ describe(runtimeEvalAsync, () => {
 
     expect(error.code).toBe('RUNTIME_EVALUATE_UNSUPPORTED');
     expect(error.message).toContain('Expo Go for Android');
-    expect(error.message).toContain('report an empty window');
+    expect(error.message).toContain('reports an empty window');
+    // @ref ../runtimeAsync — friction run 6, F55. `dev --plan` prints the Expo Go path for a
+    // project Expo Go can serve, so it must not be offered as the way to see a development build.
+    expect(error.message).not.toContain('"npx exagent dev" prints the plan');
     expect(error.message).not.toMatch(/--timeout/);
-    expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
+    expect(error.suggestedCommand).toBe('npx exagent runtime:errors --android');
   });
 
   // F21: a rejected promise is the asynchronous form of a throw, so an agent gating on the exit

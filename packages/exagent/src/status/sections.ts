@@ -123,12 +123,33 @@ export interface DevServerReadiness {
 export function buildDevServerStatus(
   url: string,
   probe: DevServerProbe,
-  readiness: DevServerReadiness
+  readiness: DevServerReadiness,
+  /**
+   * What a liveness probe of the listed targets found, when one was run.
+   *
+   * Optional so the pure section stays testable without a socket; a caller that skips it gets the
+   * old behaviour — the listing counted as connected — and says so by having nothing to report.
+   */
+  liveness?: { live: number; stale: number }
 ): DevServerStatus {
   if (probe.reachable) {
-    return { url, running: true, appsConnected: probe.targets.length, ...readiness };
+    return {
+      url,
+      running: true,
+      appsConnected: liveness?.live ?? probe.targets.length,
+      appsListed: probe.targets.length,
+      appsStale: liveness?.stale ?? 0,
+      ...readiness,
+    };
   }
-  const status: DevServerStatus = { url, running: false, appsConnected: 0, ...readiness };
+  const status: DevServerStatus = {
+    url,
+    running: false,
+    appsConnected: 0,
+    appsListed: 0,
+    appsStale: 0,
+    ...readiness,
+  };
   return probe.reason ? { ...status, reason: probe.reason } : status;
 }
 

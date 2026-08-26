@@ -212,11 +212,16 @@ function evaluateUnsupportedError(devServerUrl: string): CommandError {
     'RUNTIME_EVALUATE_UNSUPPORTED',
     [
       `The app connected to ${devServerUrl} cannot evaluate JavaScript.`,
-      `Why: its runtime answered Runtime.evaluate with "method not found". Expo Go for Android ships a JavaScript engine built without the Chrome DevTools Protocol debugger, so nothing can be evaluated in it, and "npx exagent runtime:errors" and "npx exagent runtime:network" connect to it but report an empty window. Expo Go on iOS answers all three.`,
-      `How: run "npx exagent runtime:errors" to see whether this runtime reports anything at all. If that window is empty too, open the app in a development build ("npx exagent dev" prints the plan) or on iOS, either of which carries a debuggable engine.`,
+      `Why: its runtime answered Runtime.evaluate with "method not found". Expo Go for Android ships a JavaScript engine built without the Chrome DevTools Protocol debugger, so nothing can be evaluated in it, and "npx exagent runtime:network" connects to it, is acknowledged, and reports an empty window. Expo Go on iOS answers all three [observed — 2026-08-25].`,
+      // Not "npx exagent dev prints the plan" [friction run 6, F55]: for a project Expo Go can
+      // still serve, `dev --plan` prints the **Expo Go** path, because the plan engine only reaches
+      // the development-build steps when a native module makes Expo Go incompatible
+      // (`src/plan/decide.ts`). So the sentence names what does help instead.
+      `How: run "npx exagent runtime:errors --android", which falls back to the dev server's own log when the runtime cannot answer — the app's errors are there, with a code frame. Expo Go on iOS answers this command directly. To leave Expo Go behind, "npx expo run:android" builds and installs this project's own Android app; "npx exagent dev --plan --android" prints the Expo Go path while Expo Go can still serve this project.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent runtime:errors';
+  // The platform is on it, so the command a driving agent runs next reads the same app (F54).
+  error.suggestedCommand = 'npx exagent runtime:errors --android';
   return error;
 }
 

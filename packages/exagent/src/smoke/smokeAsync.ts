@@ -49,6 +49,9 @@ const LIVENESS_EXPRESSION = '1';
 /** How long the liveness evaluation gets before it is called unanswered. */
 const LIVENESS_TIMEOUT_MS = 5_000;
 
+/** How often the target list is re-read while the run waits for the app to stop re-registering. */
+const TARGET_SETTLE_POLL_MS = 500;
+
 /**
  * The command line `--start` runs `exagent dev` with.
  *
@@ -146,6 +149,7 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
     screenshotTaken: run.screenshot.ok,
     screenshotPath: run.screenshot.ok ? run.screenshot.path : null,
     route: options.route,
+    platform: options.platform,
   });
 }
 
@@ -314,6 +318,29 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
           records: [],
           reason: `the app could not be watched (${error instanceof Error ? firstLine(error.message) : String(error)})`,
         };
+      }
+    },
+
+    // @ref ./phases §SCREENSHOT_SETTLE_MS — friction run 6, F57. Nothing over this protocol says
+    // "rendered", so what is waited for is the app having stopped re-registering: two reads of the
+    // dev server's target list that name the same ids. A relaunching app changes them.
+    waitForStableTargets: async (devServerUrl, timeoutMs) => {
+      const deadline = Date.now() + timeoutMs;
+      let previous: string | null = null;
+      for (;;) {
+        const probe = await probeDevServerAsync(devServerUrl);
+        const ids = probe.targets
+          .map((target) => target.id)
+          .sort()
+          .join(',');
+        if (previous != null && ids === previous && ids !== '') {
+          return { stable: true };
+        }
+        previous = ids;
+        if (Date.now() + TARGET_SETTLE_POLL_MS >= deadline) {
+          return { stable: false };
+        }
+        await new Promise((resolve) => setTimeout(resolve, TARGET_SETTLE_POLL_MS));
       }
     },
 

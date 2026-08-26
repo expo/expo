@@ -92,6 +92,16 @@ export interface SmokeDeps {
   evaluate(devServerUrl: string): Promise<SmokeEvaluateResult>;
   collectErrors(devServerUrl: string, windowMs: number): Promise<SmokeErrorsResult>;
   captureScreenshot(deviceId: string): Promise<ScreenshotResult>;
+  /**
+   * Wait until the dev server lists the same debugger targets twice, or the budget runs out.
+   *
+   * The picture is evidence, and a picture of a splash screen is evidence of nothing
+   * [observed — friction run 6 (Android), 2026-08-24, `and-05-settled-after-smoke.png`: the run
+   * opened the app itself and photographed it mid-load]. Nothing over this protocol says
+   * "rendered", so what is waited for is the honest neighbouring fact — the app has stopped
+   * re-registering, which is what a still-loading relaunch does.
+   */
+  waitForStableTargets(devServerUrl: string, timeoutMs: number): Promise<{ stable: boolean }>;
   /** The clock, so a test can pin the durations it reports. */
   now(): number;
 }
@@ -140,6 +150,14 @@ const ROOT_ROUTE = '/';
 
 /** How long the first look for an attached app gets before the run opens one itself. */
 const APP_PROBE_MS = 2_000;
+
+/**
+ * How long the app gets to stop re-registering before the picture is taken.
+ *
+ * Only spent by a run that opened the app itself: a run that attached to an app already on screen
+ * has nothing to settle, and the wait would be dead time in the common case.
+ */
+const SCREENSHOT_SETTLE_MS = 4_000;
 
 /** Every phase, in the order they are reported. */
 const PHASE_ORDER: SmokePhaseId[] = [
@@ -391,6 +409,10 @@ export async function runSmokePhasesAsync(
   let deviceId: string | null = null;
   let routeCheck: RouteCheckJson | null = null;
   let routeOpenedWhileConnecting = false;
+  // Whether this run put the app on the screen, which is the only case the settle wait before the
+  // picture is for (F57). Not the same as `routeOpenedWhileConnecting`: a run with no `--route`
+  // still opens the root route when nothing is attached.
+  let appOpenedByThisRun = false;
 
   const connection = await record('app', async () => {
     const first = await deps.waitForAppConnection(devServerUrl, Math.min(remaining(), APP_PROBE_MS));
@@ -412,6 +434,7 @@ export async function runSmokePhasesAsync(
     }
 
     const opened = await deps.openRoute(options.route ?? ROOT_ROUTE, devServerUrl);
+    appOpenedByThisRun = true;
     deviceId = opened.deviceId;
     if (options.route != null) {
       routeCheck = opened.routeCheck;
@@ -443,7 +466,12 @@ export async function runSmokePhasesAsync(
     // No app, so no runtime and no window — but there may still be a device, and a picture of
     // whatever is on it is the most useful thing left to hand back.
     skipRest('route', 'no app is connected, so there was nothing to read', 'screenshot');
-    const screenshot = await captureIfPossible(deps, options, deviceId, phases);
+    const screenshot = await captureIfPossible(deps, options, deviceId, phases, {
+      devServerUrl,
+      // The run opened the app in this phase, so whatever is on screen may still be loading.
+      relaunched: appOpenedByThisRun,
+      remainingMs: remaining(),
+    });
     return done(appPhase.status === 'failed' ? 'failed' : 'inconclusive', {
       ...withApp,
       deviceId,
@@ -472,6 +500,7 @@ export async function runSmokePhasesAsync(
   } else {
     const opened = await record('route', async () => {
       const result = await deps.openRoute(options.route!, devServerUrl);
+      appOpenedByThisRun = true;
       deviceId = result.deviceId;
       routeCheck = result.routeCheck;
       return result.exitCode === 0
@@ -488,7 +517,11 @@ export async function runSmokePhasesAsync(
         'the route was not opened, so the app is not on the screen under test',
         'screenshot'
       );
-      const screenshot = await captureIfPossible(deps, options, deviceId, phases);
+      const screenshot = await captureIfPossible(deps, options, deviceId, phases, {
+        devServerUrl,
+        relaunched: true,
+        remainingMs: remaining(),
+      });
       return done('failed', {
         ...withApp,
         deviceId,
@@ -558,7 +591,13 @@ export async function runSmokePhasesAsync(
 
   // ---- Phase 8: the picture -----------------------------------------------------------------
 
-  const screenshot = await captureIfPossible(deps, options, deviceId, phases);
+  const screenshot = await captureIfPossible(deps, options, deviceId, phases, {
+    devServerUrl,
+    // Only when this run put the app there: an app that was already attached and on screen has
+    // nothing left to settle, and the wait would be dead time in the common case.
+    relaunched: appOpenedByThisRun,
+    remainingMs: remaining(),
+  });
 
   // The verdict. `failed` needs something to have gone wrong; `passed` needs the runtime to have
   // answered, so a window nobody could have read is never a pass.
@@ -587,7 +626,8 @@ async function captureIfPossible(
   deps: SmokeDeps,
   options: SmokeOptions,
   deviceId: string | null,
-  phases: SmokePhase[]
+  phases: SmokePhase[],
+  settle: { devServerUrl: string; relaunched: boolean; remainingMs: number }
 ): Promise<ScreenshotResult> {
   const at = deps.now();
   const push = (status: SmokePhaseStatus, reason: string | null) =>
@@ -610,6 +650,14 @@ async function captureIfPossible(
       return skipped;
     }
     device = probe.deviceId;
+  }
+
+  // @ref ./phases §SCREENSHOT_SETTLE_MS — friction run 6, F57.
+  if (settle.relaunched) {
+    await deps.waitForStableTargets(
+      settle.devServerUrl,
+      Math.min(SCREENSHOT_SETTLE_MS, Math.max(0, settle.remainingMs))
+    );
   }
 
   const result = await deps.captureScreenshot(device);
