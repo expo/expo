@@ -47,12 +47,15 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 350
-    continue-on-error: true # a verify failure must never fail the repo's checks
+    # Job-level only: a verify failure must never fail the repo's checks, but
+    # the STEP must fail honestly — a step-level continue-on-error here hid an
+    # engine exit 1 behind a green run (run 32919110451).
+    continue-on-error: true
     env:
       # Same version feeds the guard and the run, so the engine that clears
       # the profile is the engine that reads it. Override with the repo
       # variable VERIFY_VERSION; the fallback pins the tested release.
-      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.1.0' }}
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.3.0' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -72,7 +75,6 @@ jobs:
 
       - name: Run verify
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify ci ${{ inputs.dry_run == true && '--dry-run' || '' }}
-        continue-on-error: true
         env:
           # Inputs cross as env only — never ${{ }} inside run: lines.
           VERIFY_TARGET: ${{ inputs.target }}
