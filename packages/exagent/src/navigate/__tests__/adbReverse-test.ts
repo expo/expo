@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 
+import type { AdbResolution } from '../../device/adb';
 import { buildReverseCommand, loopbackPortOfUrl, reverseLoopbackPortAsync } from '../adbReverse';
 
 /** Answer every `spawn` call with the queued stdout and exit code. */
@@ -28,7 +29,12 @@ function mockSpawnQueue(answers: { stdout?: string; stderr?: string; exitCode?: 
   return calls;
 }
 
-const ADB = { bin: '/sdk/platform-tools/adb', source: 'ANDROID_HOME', searched: [], fromPathOnly: false } as const;
+const ADB: AdbResolution = {
+  bin: '/sdk/platform-tools/adb',
+  source: 'ANDROID_HOME',
+  searched: [],
+  fromPathOnly: false,
+};
 
 describe(loopbackPortOfUrl, () => {
   it.each([

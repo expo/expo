@@ -74,6 +74,16 @@ function opened(overrides: Partial<OpenRouteResult> = {}): OpenRouteResult {
     stderr: '',
     routeCheck: { checked: true, ok: true, matched: '/', routeCount: 4, reason: null },
     isExpoGo: true,
+    // `smoke` has an app-connection phase of its own, so its opens never wait for one.
+    reverse: null,
+    attach: {
+      checked: false,
+      confirmed: null,
+      waitedMs: 0,
+      targets: 0,
+      recovered: false,
+      reason: 'this run did not wait for the app to attach',
+    },
     ...overrides,
   };
 }

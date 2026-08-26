@@ -429,6 +429,15 @@ declare module '2g' {
       platform: string;
       deviceId: string;
       exitCode: number | null;
+      /** The device port forwarded to this machine before the link, or null when none was. */
+      reversedPort: number | null;
+      /**
+       * Whether an app on this platform was seen to attach afterwards, or null when no wait ran.
+       *
+       * The field that separates "the intent was delivered" from "the app is running the project"
+       * (llp/0005 §Android, F50). `exitCode` only ever answered the first.
+       */
+      attached: boolean | null;
     };
     /**
      * The state-aware next actions of the command that just ran. Emitted whenever follow-ups are
