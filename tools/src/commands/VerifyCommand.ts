@@ -33,6 +33,7 @@ import spawnAsync from '@expo/spawn-async';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
 import { getExpoRepositoryRootDir } from '../Directories';
 
 const REPO = 'expo/expo';
