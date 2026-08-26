@@ -12,6 +12,7 @@ import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -39,6 +40,8 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class RequestingBackgroundPermissionsWithoutForegroundGrantException: CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
 
@@ -70,8 +73,6 @@ enum class LocationAccuracy(val value: String) : Enumerable {
   NOT_GRANTED("NOT_GRANTED")
 }
 
-// Deliberately a separate enum from LocationAccuracy: NOT_GRANTED is a valid response value
-// but must not be accepted as a request option.
 enum class LocationAccuracyOption(val value: String) : Enumerable {
   FULL("FULL"),
   REDUCED("REDUCED")
@@ -89,6 +90,51 @@ class LocationPermissionResponse(
   @Field val accuracy: LocationAccuracy,
   @Field val expires: String = "never"
 ) : Record
+
+enum class LocationProfile(val value: String): Enumerable {
+  DEFAULT("DEFAULT"),
+  AUTOMOTIVE_NAVIGATION("AUTOMOTIVE_NAVIGATION"),
+  OTHER_NAVIGATION("OTHER_NAVIGATION"),
+  FITNESS("FITNESS"),
+  AIRBORNE("AIRBORNE"),
+  LOW_POWER("LOW_POWER");
+
+  fun priority(): LocationPriority {
+    return when (this) {
+      DEFAULT -> LocationPriority.BALANCED_POWER_ACCURACY
+      AUTOMOTIVE_NAVIGATION -> LocationPriority.HIGH_ACCURACY
+      OTHER_NAVIGATION -> LocationPriority.HIGH_ACCURACY
+      FITNESS -> LocationPriority.HIGH_ACCURACY
+      AIRBORNE -> LocationPriority.HIGH_ACCURACY
+      LOW_POWER -> LocationPriority.LOW_POWER
+    }
+  }
+}
+
+enum class LocationPriority {
+  HIGH_ACCURACY,
+  BALANCED_POWER_ACCURACY,
+  LOW_POWER,
+  PASSIVE,
+}
+
+data class GetCurrentPositionOptions(
+  val maxCachedAge: Duration,
+  val timeout: Duration,
+  val priority: LocationPriority
+)
+
+class GetPositionOptions(
+  @Field val maxCachedAge: Double = 0.0,
+  @Field val timeout: Double = 90.0,
+  @Field val profile: LocationProfile = LocationProfile.DEFAULT
+) : Record {
+  fun toProviderOptions(): GetCurrentPositionOptions = GetCurrentPositionOptions(
+    maxCachedAge = maxCachedAge.seconds,
+    timeout = timeout.seconds,
+    priority = profile.priority()
+  )
+}
 
 sealed interface LocationServicesContinuation {
   object Empty: LocationServicesContinuation
@@ -161,14 +207,13 @@ class LocationModuleNext : Module() {
       }
     }
 
-    AsyncFunction("getCurrentPositionAsync") Coroutine { ->
+    AsyncFunction("getPosition") Coroutine { options: GetPositionOptions ->
       ensureForegroundPermissions()
-      return@Coroutine defaultLocationProvider.getCurrentPosition().getOrThrow()
-    }
-
-    AsyncFunction("getLastKnownPositionAsync") Coroutine { ->
-      ensureForegroundPermissions()
-      return@Coroutine defaultLocationProvider.getLastKnownPosition()
+      var position = defaultLocationProvider.getLastKnownPosition().getOrThrow()
+      defaultLocationProvider.getCurrentPosition(options.toProviderOptions()).getOrThrow().let{
+        position = it
+      }
+      return@Coroutine position
     }
 
     Function("watchPosition") { ->
@@ -552,9 +597,9 @@ sealed interface ProviderResult<out T> {
 
 
 interface LocationProvider {
-  suspend fun getCurrentPosition(): ProviderResult<Position>
+  suspend fun getCurrentPosition(options: GetCurrentPositionOptions): ProviderResult<Position>
   fun watchPosition(): ProviderResult<PositionWatchHandle>
-  suspend fun getLastKnownPosition(): Position?
+  suspend fun getLastKnownPosition(): ProviderResult<Position>
 
   // Prompt user to enable location services.
   // This function assumes that the location services are turned off, hence there is no reason to perform a check for it.
