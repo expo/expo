@@ -15,13 +15,22 @@ import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 class NotificationForwarderActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    // A PendingIntent created by an older version of this library still carries the notification
+    // as a Parcelable, and the loader this Bundle arrives with cannot resolve
+    // expo.modules.notifications.… classes. Point it at ours before anything reads the extras -
+    // the Bundle is unparcelled lazily, so doing it here is early enough to save that first read.
+    intent?.setExtrasClassLoader(NotificationsService::class.java.classLoader)
     try {
       val broadcastIntent =
         NotificationsService.createNotificationResponseBroadcastIntent(applicationContext, intent)
       val notificationResponse = NotificationsService.getNotificationResponseFromBroadcastIntent(intent)
       ExpoHandlingDelegate.openAppToForeground(this, notificationResponse)
       sendBroadcast(broadcastIntent)
-    } catch (e: IllegalArgumentException) {
+    } catch (e: RuntimeException) {
+      // Covers IllegalArgumentException from the extras being unrecoverable, and
+      // BadParcelableException from the Bundle failing to unparcel at all - the latter is not an
+      // IllegalArgumentException, so it used to take the app down. See
+      // https://github.com/expo/expo/issues/49252
       Log.e("expo-notifications", "Failed to handle notification response: could not recover notification data from intent extras. This may happen on some Android versions. Opening app to foreground.", e)
       // Open the app anyway so the user isn't stuck.
       ExpoHandlingDelegate.getMainActivityLauncher(this)?.let {

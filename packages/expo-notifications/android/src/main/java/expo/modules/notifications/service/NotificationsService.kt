@@ -461,12 +461,17 @@ open class NotificationsService : BroadcastReceiver() {
           intent.component = ComponentName(it.packageName, it.name)
         }
         intent.putExtra(EVENT_TYPE_KEY, RECEIVE_RESPONSE_TYPE)
-        intent.putExtra(NOTIFICATION_KEY, notification)
-        intent.putExtra(NOTIFICATION_ACTION_KEY, action as Parcelable)
-        // Also store as byte arrays for resilience against Parcelable deserialization failures.
-        // On some Android versions (especially 11/12), custom Parcelable extras in a PendingIntent
-        // come back as null when delivered through NotificationForwarderActivity.
-        // See https://github.com/expo/expo/issues/38908
+        // Carry the notification and the action as byte arrays *only*, the same way
+        // [setNotificationResponseToIntent] does, and for the same reason: the class loader that
+        // unparcels this Bundle after the system hands the PendingIntent back cannot resolve
+        // expo.modules.notifications.… classes.
+        //
+        // A Bundle is unparcelled as a unit. One unresolvable Parcelable in it therefore fails the
+        // whole Bundle - it is erased when defusing is on, and throws BadParcelableException when
+        // it is not - so putting the Parcelables in alongside the byte arrays does not merely fail
+        // to help, it destroys the byte arrays that were added as the fallback for it.
+        // See https://github.com/expo/expo/issues/38908 and
+        // https://github.com/expo/expo/issues/49252
         marshalObject(notification)?.let { intent.putExtra(NOTIFICATION_BYTES_KEY, it) }
         marshalObject(action)?.let { intent.putExtra(NOTIFICATION_ACTION_BYTES_KEY, it) }
       }

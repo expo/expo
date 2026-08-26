@@ -11,6 +11,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class NotificationsServiceResponseIntentTest {
@@ -98,6 +99,59 @@ class NotificationsServiceResponseIntentTest {
     assertNotNull(broadcastIntent)
     assertEquals("round-trip-test", response.notification.notificationRequest.identifier)
     assertEquals("open", response.actionIdentifier)
+  }
+
+  /**
+   * Stands in for the class loader a Bundle is unparcelled with once the system has held the
+   * PendingIntent: it can load framework classes but not this library's model classes.
+   */
+  private class BlindToNotificationClasses(parent: ClassLoader) : ClassLoader(parent) {
+    override fun loadClass(name: String, resolve: Boolean): Class<*> {
+      if (name.startsWith("expo.modules.notifications")) throw ClassNotFoundException(name)
+      return super.loadClass(name, resolve)
+    }
+  }
+
+  /** Sends an Intent through a Parcel, the way the system does when it stores a PendingIntent. */
+  private fun parcelRoundTrip(intent: Intent): Intent {
+    val parcel = Parcel.obtain()
+    intent.writeToParcel(parcel, 0)
+    parcel.setDataPosition(0)
+    val restored = Intent.CREATOR.createFromParcel(parcel)
+    parcel.recycle()
+    return restored
+  }
+
+  /**
+   * The response PendingIntent has to survive being unparcelled by a class loader that cannot see
+   * this library's classes. A Bundle is unparcelled as a unit, so a single unresolvable Parcelable
+   * in it fails the whole Bundle - taking the byte-array fallback down with it, which is why
+   * https://github.com/expo/expo/issues/38908 kept coming back as
+   * https://github.com/expo/expo/issues/49252.
+   */
+  @Test
+  fun `response intent extras survive a class loader that cannot resolve the model classes`() {
+    val notification = buildNotification(identifier = "hostile-loader-test")
+    val action = NotificationAction("tap", "Open", false)
+
+    val pendingIntent = NotificationsService.createNotificationResponseIntent(context, notification, action)
+    val saved = shadowOf(pendingIntent).savedIntent
+
+    val delivered = parcelRoundTrip(saved)
+    delivered.setExtrasClassLoader(BlindToNotificationClasses(javaClass.classLoader!!))
+
+    // Reading the extras at all is the part that used to blow up.
+    val extras = delivered.extras
+    assertNotNull("extras should be readable under a foreign class loader", extras)
+    assertNotNull(
+      "the byte-array fallback must still be there",
+      extras!!.getByteArray(NotificationsService.NOTIFICATION_BYTES_KEY)
+    )
+
+    // ...and the response has to come back intact through the ordinary path.
+    val response = NotificationsService.getNotificationResponseFromBroadcastIntent(delivered)
+    assertEquals("hostile-loader-test", response.notification.notificationRequest.identifier)
+    assertEquals("tap", response.actionIdentifier)
   }
 
   private fun marshalParcelable(parcelable: android.os.Parcelable): ByteArray {
