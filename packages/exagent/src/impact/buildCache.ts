@@ -189,7 +189,7 @@ export async function findCachedBuildAsync(
  *
  * The command prints an array of `BuildFragment` [observed — eas-cli `build/list.ts` calls
  * `printJsonOnlyOutput` with the list]. Everything is optional here for the reason everything is
- * optional in `build:wait`'s parser: this is another CLI's payload across a process boundary, and
+ * optional in the deferred `build:wait` parser (llp/0016): this is another CLI's payload across a process boundary, and
  * a field that moved must become `null` rather than throw.
  */
 export function parseCachedBuild(stdout: string): CachedBuild | null {

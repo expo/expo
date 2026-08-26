@@ -191,6 +191,6 @@ function unreadable(filePath: string, why: string, how: string): CommandError {
       `How: ${how}`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent build:explain --help';
+  error.suggestedCommand = 'npx exagent inspect:build-log --help';
   return error;
 }

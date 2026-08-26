@@ -1,7 +1,7 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
 // What `exagent install --json` prints. The top-level keys are the de-facto version of this
-// command, so they never depend on which way the install went: a caller that reads `checkpoint`
-// after a run that made none gets `null`, not a missing key.
+// command, so they never depend on which way the install went: a caller that reads `impact` after
+// a run that classified nothing gets `[]`, not a missing key.
 
 import type { FollowUp } from '../followups/types';
 import type { InstallImpactReport } from '../project/types';
@@ -23,11 +23,6 @@ export interface InstallReport {
    * not to classify (`--no-impact`), which is the same list the human output prints.
    */
   impact: InstallImpactReport[];
-  /**
-   * The snapshot taken before the install, or null when none was made — the project is not in
-   * git, `--no-checkpoint` was passed, or this was a `--check` run that changes nothing.
-   */
-  checkpoint: { id: string; files: number } | null;
   /** Which of the installed packages ship an agent skill, by package name. */
   skillPackages: string[];
   /**

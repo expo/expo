@@ -3,7 +3,6 @@
 // `--plan` stopped us, or a person declined it) run its steps as subprocesses. The plain
 // `expo start` wrapper is `exagent start`, whose dev-server runner and follow-ups this reuses.
 
-import { checkpointBeforeAsync } from '../checkpoint/integration';
 import { outputTail } from '../deploy/parseOutput';
 import { EXIT_OUTCOME_FAILED } from '../exitCodes';
 import {
@@ -117,17 +116,6 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   // and nothing is wrong, so the command exits 0.
   if (!(await confirmPlanAsync(plan, options))) {
     return 0;
-  }
-
-  // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints: only `expo prebuild` writes files git
-  // tracks, by generating the native projects over whatever is there. Every other step of a plan
-  // reads the project or writes into gitignored directories, so it needs no snapshot.
-  if (plan.steps.some(isPrebuildStep)) {
-    await checkpointBeforeAsync(projectRoot, {
-      label: 'exagent dev',
-      enabled: options.checkpoint,
-      silent: options.json,
-    });
   }
 
   const run = await executePlanAsync(projectRoot, plan, state, options);
@@ -402,13 +390,13 @@ async function portDemandedError(projectRoot: string, port: number): Promise<Com
         ? `Why: this project's own dev server is already on port ${port}, held by ${holder}. Nothing was started, because there is already one there.`
         : `Why: ${holder} is listening on it, and --port ${port} is a requirement rather than a preference — moving the dev server to another port would leave every URL and every command that names ${port} pointing at nothing.`,
       ours
-        ? `How: use the dev server that is running ("npx exagent dev:wait" to wait for its bundle), or stop it first with "npx exagent dev:stop".`
+        ? `How: use the dev server that is running ("npx exagent smoke" checks its bundle and its app), or stop it first with "npx exagent dev:stop".`
         : `How: free the port with "npx exagent dev:stop --port ${port} --force", which stops it only when it answers as an Expo dev server${listener ? ` and pid ${listener.pid} looks like one` : ''}${free == null ? '' : `, or start on a free port instead with "npx exagent dev --yes --port ${free}"`}. Leaving --port out lets this command pick a free port on its own.`,
     ].join('\n')
   );
   // Never the command that just failed: it would stop in exactly the same place.
   error.suggestedCommand = ours
-    ? 'npx exagent dev:wait'
+    ? 'npx exagent smoke'
     : free == null
       ? `npx exagent dev:stop --port ${port} --force`
       : `npx exagent dev --yes --port ${free}`;
@@ -646,11 +634,6 @@ function resolveStepArgs(step: PlanStep, options: DevOptions, isLast: boolean): 
   // The plan already sets the flags it needs (`--go`, `--dev-client`, `--web`), so a user who
   // passed the same flag does not get it twice.
   return [...args, ...options.expoArgs.filter((arg) => !args.includes(arg))];
-}
-
-/** Steps that generate the native projects, overwriting whatever is checked in. */
-function isPrebuildStep(step: PlanStep): boolean {
-  return step.argv[0] === 'expo' && step.argv[1] === 'prebuild';
 }
 
 /** Steps that start a dev server, and so get the skill sync of the `exagent start` wrapper. */

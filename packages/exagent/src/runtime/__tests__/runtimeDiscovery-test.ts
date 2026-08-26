@@ -5,13 +5,8 @@
 import * as Log from '../../log';
 import { CdpClient } from '../cdpClient';
 import { discoverDevServerAsync, requireConnectedAppAsync } from '../devServer';
-import { CdpNetworkCollector } from '../networkCollector';
-import type {
-  RuntimeErrorsOptions,
-  RuntimeEvalOptions,
-  RuntimeNetworkOptions,
-} from '../resolveOptions';
-import { runtimeErrorsAsync, runtimeEvalAsync, runtimeNetworkAsync } from '../runtimeAsync';
+import type { RuntimeErrorsOptions, RuntimeEvalOptions } from '../resolveOptions';
+import { runtimeErrorsAsync, runtimeEvalAsync } from '../runtimeAsync';
 import { CdpRuntimeErrorCollector } from '../runtimeErrorCollector';
 
 jest.mock('../../log');
@@ -25,10 +20,6 @@ jest.mock('../cdpClient', () => ({
   CdpClient: jest.fn(),
 }));
 jest.mock('../runtimeErrorCollector', () => ({ CdpRuntimeErrorCollector: jest.fn() }));
-jest.mock('../networkCollector', () => ({
-  ...jest.requireActual('../networkCollector'),
-  CdpNetworkCollector: jest.fn(),
-}));
 
 const projectRoot = '/project';
 
@@ -50,14 +41,6 @@ const errorsOptions: RuntimeErrorsOptions = {
   failOnError: false,
 };
 
-const networkOptions: RuntimeNetworkOptions = {
-  action: 'network',
-  devServerUrl: null,
-  durationMs: 0,
-  json: true,
-  followups: false,
-};
-
 /** Make discovery answer with one URL, as if the project's lock had named it. */
 function mockDiscovered(devServerUrl: string) {
   jest.mocked(discoverDevServerAsync).mockResolvedValue({
@@ -75,9 +58,6 @@ beforeEach(() => {
   jest
     .mocked(CdpRuntimeErrorCollector)
     .mockImplementation(() => ({ collectAsync: async () => [] }) as any);
-  jest
-    .mocked(CdpNetworkCollector)
-    .mockImplementation(() => ({ collectAsync: async () => [] }) as any);
   mockDiscovered('http://127.0.0.1:8083');
 });
 
@@ -85,7 +65,6 @@ describe('the dev server a runtime command talks to', () => {
   it.each([
     ['runtime:eval', () => runtimeEvalAsync(evalOptions, { projectRoot })],
     ['runtime:errors', () => runtimeErrorsAsync(errorsOptions, { projectRoot })],
-    ['runtime:network', () => runtimeNetworkAsync(networkOptions, { projectRoot })],
   ])(`%s discovers it from the project when no URL was given`, async (_name, run) => {
     await run();
 
@@ -107,14 +86,6 @@ describe('the dev server a runtime command talks to', () => {
       'runtime:errors',
       () =>
         runtimeErrorsAsync({ ...errorsOptions, devServerUrl: 'http://host:9000' }, { projectRoot }),
-    ],
-    [
-      'runtime:network',
-      () =>
-        runtimeNetworkAsync(
-          { ...networkOptions, devServerUrl: 'http://host:9000' },
-          { projectRoot }
-        ),
     ],
   ])(`%s uses the URL it was given, and discovers nothing`, async (_name, run) => {
     await run();

@@ -3,11 +3,8 @@
 // never has to guess the next command. The builders are pure functions over state the command
 // already probed; `report.ts` is the only module that writes anything.
 
-export { buildBuildWaitFollowUps, type BuildWaitFollowUpInput } from './builds';
-export { buildUndoFollowUps, type UndoFollowUpInput } from './checkpoint';
 export { buildConfigEffectiveFollowUps, type ConfigEffectiveFollowUpInput } from './config';
-export { buildDevWaitFollowUps, type DevWaitFollowUpInput } from './devWait';
-export { buildDoctorCheckFollowUps, buildDoctorFixFollowUps, extractAdviceAction } from './doctor';
+export { buildDoctorCheckFollowUps, extractAdviceAction } from './doctor';
 export { buildExplainFollowUps, type ExplainFollowUpInput } from './explain';
 export { buildChangeFollowUps, type ChangeFollowUpInput } from './change';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
@@ -21,12 +18,7 @@ export { resolveExpoGoLanUrl, resolveLanHost } from './network';
 export { dependsOnDevClientSync, easJsonExistsSync } from './projectFiles';
 export { buildReloadFollowUps, type ReloadFollowUpInput } from './reload';
 export { followUpsEnabled, reportFollowUps, type ReportFollowUpsOptions } from './report';
-export {
-  buildRuntimeErrorsFollowUps,
-  buildRuntimeNetworkFollowUps,
-  type RuntimeErrorsFollowUpInput,
-  type RuntimeNetworkFollowUpInput,
-} from './runtime';
+export { buildRuntimeErrorsFollowUps, type RuntimeErrorsFollowUpInput } from './runtime';
 export { buildSkillsSyncFollowUps, type SkillsSyncFollowUpInput } from './skills';
 export { buildSmokeFollowUps, type SmokeFollowUpInput } from './smoke';
 export {

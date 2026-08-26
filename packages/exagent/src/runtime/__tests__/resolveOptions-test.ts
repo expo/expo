@@ -6,7 +6,6 @@ describe(resolveRuntimeCommand, () => {
   it(`should leave the dev server unresolved when no URL was given`, () => {
     expect(resolveRuntimeCommand(['eval', '1'])).toMatchObject({ devServerUrl: null });
     expect(resolveRuntimeCommand(['errors'])).toMatchObject({ devServerUrl: null });
-    expect(resolveRuntimeCommand(['network'])).toMatchObject({ devServerUrl: null });
   });
 
   it(`should keep rejecting a --dev-server-url that is not an http URL`, () => {
@@ -90,11 +89,6 @@ describe(resolveRuntimeCommand, () => {
     });
   });
 
-  // A failed request is something `network` reports about the app, not a verdict on it.
-  it(`should reject --fail-on-error on network`, () => {
-    expect(() => resolveRuntimeCommand(['network', '--fail-on-error'])).toThrow(/--fail-on-error/);
-  });
-
   it(`should suppress the follow-ups of errors with --no-followups`, () => {
     const options = resolveRuntimeCommand(['errors', '--no-followups']);
 
@@ -109,46 +103,8 @@ describe(resolveRuntimeCommand, () => {
     );
   });
 
-  it(`should default the window of network`, () => {
-    expect(resolveRuntimeCommand(['network'])).toEqual({
-      action: 'network',
-      devServerUrl: null,
-      durationMs: 5000,
-      json: false,
-      followups: true,
-    });
-  });
-
-  it(`should read the network flags`, () => {
-    expect(
-      resolveRuntimeCommand([
-        'network',
-        '--duration',
-        '10000',
-        '--dev-server-url',
-        'http://192.168.1.10:8081/',
-        '--json',
-        '--no-followups',
-      ])
-    ).toEqual({
-      action: 'network',
-      devServerUrl: 'http://192.168.1.10:8081',
-      durationMs: 10000,
-      json: true,
-      followups: false,
-    });
-  });
-
-  it(`should reject a flag of another action on network`, () => {
-    expect(() => resolveRuntimeCommand(['network', '--timeout', '10'])).toThrow(/--timeout/);
-  });
-
-  it(`should reject an argument after network`, () => {
-    expect(() => resolveRuntimeCommand(['network', 'GET'])).toThrow(/Unexpected argument: GET/);
-  });
-
   it(`should require an action`, () => {
-    expect(() => resolveRuntimeCommand([])).toThrow(/Missing action.*eval\|errors\|network/);
+    expect(() => resolveRuntimeCommand([])).toThrow(/Missing action.*eval\|errors/);
   });
 
   it(`should reject an unknown action`, () => {

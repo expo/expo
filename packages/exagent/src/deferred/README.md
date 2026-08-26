@@ -1,0 +1,34 @@
+# Deferred from v1
+
+Code for the commands the v1 scope narrowing took out of the surface (2026-08-26, `llp/0016-v1-scope.rfc.md`).
+
+Every file here is kept **as reference** and is **imported by nothing**: no registry entry loads it,
+no help line names it, and no follow-up suggests it. It is here so the design work that produced it
+survives the narrowing — a command that comes back is restored from this directory rather than
+rewritten from its LLP.
+
+Each area is one directory, named after the command it used to be:
+
+| Directory          | Was                                     | Why it left v1                    | LLP        |
+| ------------------ | --------------------------------------- | --------------------------------- | ---------- |
+| `dev-wait/`        | `exagent dev:wait`                       | `smoke` is the gate agents reach for | `llp/0010` |
+| `checkpoint/`      | `exagent checkpoint[:list\|:undo]`       | agents manage git themselves      | `llp/0008` |
+| `build-wait/`      | `exagent build:wait`                     | returns as `exagent build --wait` | `llp/0010` |
+| `runtime-network/` | `exagent runtime:network`                | RN's Network domain is unstable   | `llp/0005` |
+| `doctor-fix/`      | `exagent doctor:fix`                     | the check half is the v1 answer   | `llp/0013` |
+
+## How it stays out of the way
+
+Three exclusions, one per tool, all naming this directory:
+
+- **jest** — `testPathIgnorePatterns` in `jest.config.js`. The suites moved here with their code and
+  are not run: they assert against a surface this CLI no longer has.
+- **tsc** — `exclude` in `tsconfig.json`. Reference code is not held to compiling against a tree
+  that has moved on around it.
+- **the suggested-command lint** — `SKIPPED_DIRECTORIES` in `src/lint/sweep.ts`. Every file here
+  names a command the registry no longer resolves, which is exactly what the lint exists to catch;
+  the point of the exclusion is that the lint keeps catching it *everywhere else*.
+
+Restoring an area is the reverse: move the code back under `src/`, put its registry entry back, drop
+its `Deferred` banner from the LLP, and run the lint — which will then hold the restored suggestions
+to the same rules as the rest.

@@ -67,7 +67,7 @@ export interface CommandMention {
   text: string;
   /** The whole string literal it was found in, for the failure message to quote. */
   literal: string;
-  /** The command name, e.g. `dev:wait`. Null when nothing followed the prefix. */
+  /** The command name, e.g. `dev:stop`. Null when nothing followed the prefix. */
   command: string | null;
   /** Everything after the command name, split on whitespace. */
   args: string[];
@@ -79,7 +79,7 @@ export interface CommandMention {
  * Characters that end a mention, because prose resumes at them.
  *
  * The codebase delimits a command inside a sentence with quotes or backticks
- * (`Run "npx exagent dev:wait" for …`), and `chalk` templates delimit with braces, so those are
+ * (`Run "npx exagent dev:stop" for …`), and `chalk` templates delimit with braces, so those are
  * the boundaries. The shell operators are boundaries too: a suggestion may be two commands joined
  * by `&&`, and each half is a command of its own to check rather than a long argument list for the
  * first of them.
@@ -146,7 +146,7 @@ export function extractCommandMentions(file: string, source: string): CommandMen
  *
  * The commands are not all this CLI's: a `Try:` line is `npx eas login` as often as it is
  * `npx exagent status`, and `npx eas build --profile <profile>` is exactly as unrunnable as
- * `npx exagent build:wait <id>` would be. So the placeholder rule is checked over these — every
+ * `npx exagent navigate <route>` would be. So the placeholder rule is checked over these — every
  * suggestion, whatever CLI it names — while the registry rules are checked over the
  * {@link CommandMention}s, which are only the ones this CLI can resolve.
  */

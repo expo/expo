@@ -1,4 +1,3 @@
-import { checkpointBeforeAsync } from '../../checkpoint/integration';
 import * as Log from '../../log';
 import type { InstallImpactReport } from '../../project/types';
 import {
@@ -12,7 +11,6 @@ import { installAsync } from '../installAsync';
 import { resolveInstallPlan } from '../resolveOptions';
 
 jest.mock('../../log');
-jest.mock('../../checkpoint/integration', () => ({ checkpointBeforeAsync: jest.fn() }));
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn(), spawnExpoAsync: jest.fn() }));
 jest.mock('../impactReport', () => ({ reportInstallImpactAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({
@@ -41,13 +39,7 @@ function printed(): string {
 
 beforeEach(() => {
   // `clearMocks` empties the call log but keeps implementations, so every mock whose *answer*
-  // matters is given its default back here — otherwise one test's checkpoint leaks into the next.
-  jest.mocked(checkpointBeforeAsync).mockResolvedValue({
-    record: null,
-    files: 0,
-    skipped: 'not-a-git-repo',
-    detail: '',
-  });
+  // matters is given its default back here — otherwise one test's answer leaks into the next.
   jest.mocked(runExpoAsync).mockResolvedValue(0);
   jest.mocked(spawnExpoAsync).mockResolvedValue({
     cli: { command: 'expo', args: [] },
@@ -58,36 +50,6 @@ beforeEach(() => {
 });
 
 describe(installAsync, () => {
-  it(`should snapshot the project before expo install runs`, async () => {
-    const order: string[] = [];
-    jest.mocked(checkpointBeforeAsync).mockImplementation(async () => {
-      order.push('checkpoint');
-      return { record: null, files: 0, skipped: 'not-a-git-repo', detail: '' };
-    });
-    jest.mocked(runExpoAsync).mockImplementation(async () => {
-      order.push('install');
-      return 0;
-    });
-
-    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
-
-    expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
-      label: 'exagent install',
-      enabled: true,
-      silent: false,
-    });
-    expect(order).toEqual(['checkpoint', 'install']);
-  });
-
-  it(`should skip the snapshot with --no-checkpoint`, async () => {
-    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-checkpoint']));
-
-    expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
-      label: 'exagent install',
-      enabled: false,
-      silent: false,
-    });
-  });
 
   it(`should run expo install with the forwarded arguments`, async () => {
     await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--dev']));
@@ -250,12 +212,6 @@ describe(installAsync, () => {
     }
 
     it(`should print one object carrying what the human output knows`, async () => {
-      jest.mocked(checkpointBeforeAsync).mockResolvedValue({
-        record: { id: 'abc123', label: 'exagent install', createdAt: '', argv: [], path: '' },
-        files: 55,
-        skipped: null,
-        detail: '',
-      });
       jest.mocked(listSkillPackagesAsync).mockResolvedValue(['@expo/ui']);
 
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--json']));
@@ -266,7 +222,6 @@ describe(installAsync, () => {
         installed: true,
         exitCode: 0,
         impact: [report()],
-        checkpoint: { id: 'abc123', files: 55 },
         skillPackages: ['@expo/ui'],
         check: null,
         followups: expect.any(Array),
@@ -276,12 +231,8 @@ describe(installAsync, () => {
     it(`should keep every other line off stdout`, async () => {
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--json']));
 
-      // The checkpoint line, the impact table and the skill sync notice each stay away by asking
-      // the thing that prints them not to.
-      expect(checkpointBeforeAsync).toHaveBeenCalledWith(
-        projectRoot,
-        expect.objectContaining({ silent: true })
-      );
+      // The impact table and the skill sync notice each stay away by asking the thing that
+      // prints them not to.
       expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite'], {
         silent: true,
       });
@@ -339,7 +290,6 @@ describe(installAsync, () => {
           output: null,
           notes: [],
         },
-        checkpoint: null,
       });
       // A passing check has nothing to add, and the CLI's own report is the answer, so its stdout
       // does not also arrive on stderr.

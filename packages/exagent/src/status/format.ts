@@ -430,7 +430,7 @@ function deviceLine(device: LocalDeviceStatus): string {
  * What the short readiness probe found.
  *
  * `null` is "still bundling", not "not ready": status never waits for a bundle, so a dev server
- * that has not answered yet is unknown here and `npx exagent dev:wait` is what settles it.
+ * that has not answered yet is unknown here and `npx exagent smoke` is what settles it.
  */
 function bundlerFact(ready: boolean | null): string {
   if (ready == null) {

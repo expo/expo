@@ -34,7 +34,6 @@ export const DEV_OWN_FLAGS: readonly string[] = [
   '--local',
   '--no-agent-skills',
   '--no-followups',
-  '--no-checkpoint',
   '--plan',
   '--yes',
   '--json',

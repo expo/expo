@@ -59,8 +59,8 @@ export const exagentSmoke: Command = async (argv) => {
         '',
         chalk`  {bold Eight phases, one exit code.} Each asks the question of a command you can also run`,
         chalk`  on its own, in this order: a dev server is found, its bundler is waited for and`,
-        chalk`  checked against this project ({bold dev:wait}), this project's entry bundle is built`,
-        chalk`  ({bold dev:wait}), an app is waited for and opened if there is none ({bold navigate}), the`,
+        chalk`  checked against this project, this project's entry bundle is built, an app is waited`,
+        chalk`  for and opened if there is none ({bold navigate}), the`,
         chalk`  route is opened ({bold navigate}), the runtime is asked to evaluate {bold 1} ({bold runtime:eval}),`,
         chalk`  errors are collected over a window ({bold runtime:errors}), and the screen is`,
         chalk`  photographed. Every phase is reported with its status and how long it took.`,
@@ -106,7 +106,7 @@ export const exagentSmoke: Command = async (argv) => {
         '',
         chalk`  {bold web is not a platform for this command.} A browser registers nothing in the dev`,
         chalk`  server's debugger target list, so there is no runtime here to read. Run`,
-        chalk`  {bold npx exagent dev:wait --platform web} for the part of this that web can answer.`,
+        chalk`  {bold npx exagent typecheck} for the part of this that web can answer without a device.`,
         '',
       ].join('\n')
     );

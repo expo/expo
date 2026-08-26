@@ -1,7 +1,6 @@
 import { vol } from 'memfs';
 import os from 'os';
 
-import { checkpointBeforeAsync } from '../../checkpoint/integration';
 import type { FollowUp } from '../../followups';
 import { Log } from '../../log';
 import { emitStartPlan } from '../../plan/emit';
@@ -17,7 +16,6 @@ import { resolveDevOptions } from '../resolveOptions';
 
 jest.mock('../../log');
 jest.mock('../confirmPlan', () => ({ confirmPlanAsync: jest.fn() }));
-jest.mock('../../checkpoint/integration', () => ({ checkpointBeforeAsync: jest.fn() }));
 jest.mock('../../plan/emit', () => ({ emitStartPlan: jest.fn() }));
 jest.mock('../../plan/events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 jest.mock('../../plan/lastBuild', () => ({
@@ -234,15 +232,6 @@ describe(devAsync, () => {
       expect(runDevServerAsync).not.toHaveBeenCalled();
     });
 
-    it(`should not snapshot the project for a plan that was declined`, async () => {
-      mockStaleDevClientState();
-      jest.mocked(confirmPlanAsync).mockResolvedValue(false);
-
-      await devAsync(projectRoot, resolveDevOptions(['--ios']));
-
-      expect(checkpointBeforeAsync).not.toHaveBeenCalled();
-    });
-
     it(`should never ask in --plan mode, which runs nothing anyway`, async () => {
       mockStaleDevClientState();
 
@@ -313,36 +302,6 @@ describe(devAsync, () => {
       });
     });
 
-    it(`should snapshot the project before a plan that prebuilds`, async () => {
-      mockStaleDevClientState();
-
-      await devAsync(projectRoot, resolveDevOptions(['--ios']));
-
-      expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
-        label: 'exagent dev',
-        enabled: true,
-        silent: false,
-      });
-    });
-
-    it(`should not snapshot a plan that only starts the dev server`, async () => {
-      mockProjectState();
-
-      await devAsync(projectRoot, resolveDevOptions([]));
-
-      expect(checkpointBeforeAsync).not.toHaveBeenCalled();
-    });
-
-    it(`should skip the snapshot with --no-checkpoint`, async () => {
-      mockStaleDevClientState();
-
-      await devAsync(projectRoot, resolveDevOptions(['--ios', '--no-checkpoint']));
-
-      expect(checkpointBeforeAsync).toHaveBeenCalledWith(
-        projectRoot,
-        expect.objectContaining({ enabled: false })
-      );
-    });
 
     // The code is still the subprocess's own (llp/0010 §Exit codes); what changed is that a run
     // whose step failed reports a failure instead of its plan.
@@ -498,7 +457,7 @@ describe(devAsync, () => {
 
       await devAsync(projectRoot, resolveDevOptions(['--web', '--port', '8134']));
 
-      expect(emittedFollowUpIds()).toEqual(['web-url', 'web-bundle-check', 'deploy-web']);
+      expect(emittedFollowUpIds()).toEqual(['web-url', 'web-typecheck', 'deploy-web']);
       expect(emittedFollowUps()[0]!.command).toBe('http://localhost:8134');
     });
 

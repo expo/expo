@@ -55,7 +55,6 @@ describe('exagent install', () => {
       const report = JSON.parse(result.stdout);
       expect(Object.keys(report).sort()).toEqual([
         'check',
-        'checkpoint',
         'exitCode',
         'followups',
         'impact',
@@ -370,11 +369,11 @@ describe('expo passthrough', () => {
   // A name that is only the *action* half is a caller that knows what it wants and not which
   // group owns it, so the error names every group that has an action by that name.
   it('names the closest commands for a name that is only an action', async () => {
-    const result = await executeExagentAsync(projectRoot, ['wait'], { reject: false });
+    const result = await executeExagentAsync(projectRoot, ['stop'], { reject: false });
 
     expect(result.exitCode).toBe(1);
-    expect(result.all).toContain('npx exagent build:wait');
-    expect(result.all).toContain('npx exagent dev:wait');
+    expect(result.all).toContain('npx exagent dev:stop');
+    expect(result.all).toContain('npx exagent runtime:stop');
     // Two candidates are a choice, so the last line stays the full listing.
     expect(result.all).toContain('Try: npx exagent --help');
   });
@@ -451,7 +450,7 @@ describe('expo passthrough', () => {
   // option line itself, not only in the message it prints when a value is rejected.
   // The action, not the group: `<group> --help` is the listing (llp/0010 §Registry rules), and the
   // option block of the `runtime:*` actions lives one hop down.
-  it.each([['dev:wait'], ['build:wait'], ['runtime:eval'], ['runtime:errors']])(
+  it.each([['smoke'], ['runtime:eval'], ['runtime:errors']])(
     'documents that %s durations take units, not only milliseconds',
     async (command) => {
       const result = await executeExagentAsync(projectRoot, [command, '--help']);
@@ -487,7 +486,7 @@ describe('command registry', () => {
   });
 
   // The other half of the rule — a group *with* a default action still gets its options — is
-  // `exagent checkpoint --label ...` in `checkpoint-test.ts`, which needs a git repository.
+  // `exagent doctor --json`, which `doctor-test.ts` covers.
   it('still lists the actions of a bare group, and exits 0', async () => {
     const result = await executeExagentAsync(projectRoot, ['runtime']);
 

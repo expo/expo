@@ -36,10 +36,12 @@ import {
   readProjectPackageJsonAsync,
 } from '../../project/nodeModules';
 import { readProjectRoutesAsync } from '../../project/routes';
-import { bundleToJson, type DevWaitBundleJson } from '../../dev/waitFormat';
+
 import {
+  bundleToJson,
   checkEntryBundleAsync,
   resolveBundleCheckPlatformsAsync,
+  type BundleCheckJson,
   type BundleCheckResult,
   type BundlePlatformSource,
 } from '../bundleCheck';
@@ -124,7 +126,7 @@ export interface ReloadResultJson {
    * The same object `dev:wait` prints under the same key, because it is the same check
    * (llp/0010 §The reload gate). `ok: false` is the one answer that stops the command.
    */
-  bundle: DevWaitBundleJson;
+  bundle: BundleCheckJson;
   /** Every platform whose entry bundle was built, in the order they were. */
   bundlePlatforms: string[];
   /**
@@ -176,7 +178,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
         `How: start the dev server ("npx exagent dev --yes"), then run this command again. ${howToNameTheDevServer(options.devServerUrl != null)}`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent dev:wait';
+    error.suggestedCommand = 'npx exagent dev --detach --wait-ready';
     throw error;
   }
 
@@ -690,7 +692,7 @@ function explainFailure(report: ReloadResultJson, options: ReloadOptions): strin
         `The bundler was still building this project's entry bundle after ${options.timeoutMs}ms, so the app was not reloaded.`
       ),
       `Why: ${report.bundle.reason}. Until that build finishes it is not known whether a reload would fetch working code, and nothing was attempted rather than reload onto an answer nobody has.`,
-      `How: run this command again with a longer --timeout — a first build of a large app takes tens of seconds — or run "npx exagent dev:wait" first and reload once it is green.`,
+      `How: run this command again with a longer --timeout — a first build of a large app takes tens of seconds — or run "npx exagent smoke" first and reload once it is green.`,
     ].join('\n');
   }
   if (!report.reloaded) {
@@ -709,7 +711,7 @@ function explainFailure(report: ReloadResultJson, options: ReloadOptions): strin
         `The app reloaded, but it had not reconnected to the dev server ${options.timeoutMs}ms later.`
       ),
       `Why: its debugger target list (${report.devServerUrl}/json/list) was empty, so no app is running this project's JavaScript — the app either closed or is still loading a cold bundle, which can take longer than this wait.`,
-      `How: run "npx exagent dev:wait --require-app" to wait for it, or run this command again with a longer --timeout. If the app is not on screen, "npx exagent navigate /" opens it. Nothing is known to be wrong; the wait ran out first.`,
+      `How: run "npx exagent smoke" to wait for the bundle and the app together, or run this command again with a longer --timeout. If the app is not on screen, "npx exagent navigate /" opens it. Nothing is known to be wrong; the wait ran out first.`,
     ].join('\n');
   }
   return [
@@ -717,6 +719,6 @@ function explainFailure(report: ReloadResultJson, options: ReloadOptions): strin
       `The app reloaded, but its JavaScript had not registered again ${options.timeoutMs}ms later.`
     ),
     `Why: ${report.devServerUrl}/json/list still names ${report.appsConnected === 1 ? 'the same debugger target' : `only the same ${report.appsConnected} debugger targets`} it named before the reload, and the dev server never reuses a target id — so the runtime that answers now is the one from before, not a reloaded one. Its errors and its state describe the run this reload was meant to replace.`,
-    `How: run this command again with a longer --timeout, or run "npx exagent dev:wait --require-app" and read the app after it. Do not believe "npx exagent runtime:errors" until a reload reports a reconnected app.`,
+    `How: run this command again with a longer --timeout, or run "npx exagent smoke" and read the app after it. Do not believe "npx exagent runtime:errors" until a reload reports a reconnected app.`,
   ].join('\n');
 }

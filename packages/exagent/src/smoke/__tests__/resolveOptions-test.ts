@@ -36,7 +36,7 @@ describe(resolveSmokeOptions, () => {
   });
 
   // The budget of a run that may start a dev server contains a cold first bundle, which is the
-  // same reason `dev:wait` defaults to two minutes rather than to seconds.
+  // same reason a readiness wait defaults to two minutes rather than to seconds.
   it(`gives --start a larger budget, and lets --timeout override it`, () => {
     expect(resolveSmokeOptions(['--start']).timeoutMs).toBe(DEFAULT_SMOKE_START_TIMEOUT_MS);
     expect(resolveSmokeOptions(['--start', '--timeout', '30s']).timeoutMs).toBe(30_000);
@@ -84,7 +84,7 @@ describe(resolveSmokeOptions, () => {
 
     expect(error.code).toBe('BAD_ARGS');
     expect(error.message).toContain('cannot be smoke-tested');
-    expect(error.suggestedCommand).toBe('npx exagent dev:wait --platform web');
+    expect(error.suggestedCommand).toBe('npx exagent typecheck');
   });
 
   it(`refuses a platform neither device tool covers`, () => {

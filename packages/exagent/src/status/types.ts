@@ -26,7 +26,7 @@ export interface ProjectStatus {
   /**
    * The version of the **installed `expo` package**, e.g. `57.0.15`. Null when it is unresolvable.
    *
-   * The code that is actually on disk, not the SDK line the app config names. `config:effective`
+   * The code that is actually on disk, not the SDK line the app config names. `inspect:config-plugins`
    * reports that one, and it reports it as `configuredSdkVersion` for exactly this reason:
    * `57.0.15` and `57.0.0` are two answers to two questions, and one field name for both read as
    * a disagreement between the commands.
@@ -200,7 +200,7 @@ export interface DevServerStatus {
    * Null when it could not be decided in the moment status allows itself: nothing answered, or
    * the dev server was still bundling when the short probe expired. Status reports where the
    * project is *now* and never waits, so "still working" is reported as unknown rather than as
-   * not ready — `npx exagent dev:wait` is the command that waits for the answer.
+   * not ready — `npx exagent smoke` is the command that waits for the answer.
    */
   ready: boolean | null;
   /**

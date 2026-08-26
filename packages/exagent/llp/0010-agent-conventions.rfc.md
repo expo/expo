@@ -36,14 +36,28 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 
 ### The first command in the outcome band: `build:wait`
 
+> **Status:** Deferred — reference (2026-08-26). The command is out of the v1 surface and its code
+> is on the reference shelf at `src/deferred/build-wait/`; the exit-code band it established is
+> unchanged and every command that stayed still uses it.
+>
+> **Why:** the shape is wrong rather than the work. A caller who wants to wait on a build has
+> already run a build command, and `exagent build:wait <id>` asks them to carry an id from one
+> command to another — while `npx eas build --wait` does the whole thing in one. The answer is a
+> **`--wait` flag on a build verb this CLI owns**, not a command of its own.
+>
+> **Re-entry criteria:** `exagent build` exists as a verb with local and EAS parity — the same flag
+> waiting on a local `expo run:ios` and on an EAS build — so that `exagent build --wait` is one
+> answer rather than two commands wearing one name. The table below is what it returns as. See
+> [[0016-v1-scope]].
+
 [observed — 2026-08-23, `src/builds/`] `exagent build:wait <id>` is the first command whose whole answer is its exit code, and it is what the `20`–`29` band was reserved for. It attaches to an EAS build that already exists — one started by CI, by the dashboard, or by another agent — polls `eas build:view <id> --json`, and leaves with what the build did:
 
 | Code | The build                                          | Where it is decided            |
 | ---- | -------------------------------------------------- | ------------------------------ |
-| `0`  | `FINISHED`                                         | `src/builds/status.ts`         |
-| `20` | `ERRORED`                                          | `src/builds/status.ts`         |
-| `21` | `CANCELED`, **or this wait was interrupted**       | `src/builds/status.ts`         |
-| `22` | still running when `--timeout` elapsed             | `src/builds/waitAsync.ts`      |
+| `0`  | `FINISHED`                                         | `src/deferred/build-wait/status.ts` |
+| `20` | `ERRORED`                                          | `src/deferred/build-wait/status.ts` |
+| `21` | `CANCELED`, **or this wait was interrupted**       | `src/deferred/build-wait/status.ts` |
+| `22` | still running when `--timeout` elapsed             | `src/deferred/build-wait/waitAsync.ts` |
 | `7`  | nobody is signed in, so no build is visible        | `src/needsHuman/assertAuth.ts` |
 | `1`  | not readable: bad id, no `eas`, three failed polls | `CommandError`                 |
 
@@ -63,6 +77,31 @@ Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never t
 Two consequences worth stating. First, adopting the convention changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
 
 ### The second: `dev:wait`, and what an outcome is an outcome _about_
+
+> **Status:** Deferred — reference (2026-08-26). The command is out of the v1 surface and its code
+> is on the reference shelf at `src/deferred/dev-wait/`. Its **library internals stayed**:
+> `src/runtime/waitReady.ts` and `src/runtime/bundleCheck.ts` are what `smoke`, `runtime:reload` and
+> `dev --detach --wait-ready` call, so every question this section settles is still asked — by
+> `smoke`, which asks all of them and three more in one command.
+>
+> **Why:** two commands answered the same question with different amounts of it. `dev:wait` proved
+> the bundler was ready, the dev server was this project's, and the entry bundle compiled;
+> `smoke` proves those and then opens the app, evaluates in it and collects what it threw. An agent
+> that ran the smaller one and believed it had a verdict is the failure mode this whole document is
+> about, and the answer is one gate rather than a choice between two.
+>
+> **Where each of its jobs went, in v1:**
+>
+> | what it was reached for       | the v1 answer                        |
+> | ----------------------------- | ------------------------------------ |
+> | the gate before reading the app | `exagent smoke`                    |
+> | app health over a window        | `exagent runtime:errors --fail-on-error` |
+> | readiness at start             | `exagent dev --detach --wait-ready`  |
+>
+> **Re-entry criteria:** `smoke` is observed being too much for a case that only needs the bundler
+> question — a CI job with no device, say — and the cheaper wait cannot be had by flags on `smoke`.
+> See [[0016-v1-scope]].
+
 
 [observed — 2026-08-23, `src/dev/`] `exagent dev:wait` joined the band next, and it made the band's
 one ambiguity concrete: `20` says "the operation failed", and a readiness gate has to decide what
@@ -273,9 +312,11 @@ window. The flag exists because the asymmetry was itself the friction: an agent 
 `dev:wait` and not on `runtime:errors`, and had to parse `count` out of `--json` to close the loop
 that the exit code closes everywhere else.
 
-Only `errors` has it. `runtime:network`'s failed requests are something it reports _about_ the app —
-a 404 the app handles is not the command's operation failing — and there is no equivalent question
-for its exit code to answer.
+Only `errors` has it. The rule was written against `runtime:network`, which had no equivalent
+question for its exit code to answer: its failed requests are something it reports _about_ the app —
+a 404 the app handles is not the command's operation failing. That command was deferred out of v1 on
+2026-08-26 ([[0016-v1-scope]]), and the rule it established stands: a command that reports on the app
+does not gate on what it reported.
 
 **Amendment — a runtime that cannot answer is `22`, not `0`** [observed — friction run 6 (Android),
 2026-08-24; settled in [[0005-runtime-loop-tools]] §Android]. "The default stays `0` whatever it
@@ -752,7 +793,7 @@ Before [observed — 2026-08-22]: `exagent runtime --json` resolved to `group-he
 
 Now [observed — 2026-08-23]: a group name followed by options and no action, in a group with no `defaultAction`, resolves to `flags-without-action`. `cli.ts` prints the group listing first and the error last — the last line is what an agent acts on — as `UNKNOWN_ACTION` with `Try: npx exagent <group> --help`, and exits `1`.
 
-Unchanged, deliberately: a bare group still prints its listing and exits `0` (there is nothing wrong with asking a group what it does), `<group> --help`/`-h` is always the listing, and a group that declares a `defaultAction` still gives it every option — `exagent checkpoint --label x` snapshots, because there the options do belong to something.
+Unchanged, deliberately: a bare group still prints its listing and exits `0` (there is nothing wrong with asking a group what it does), `<group> --help`/`-h` is always the listing, and a group that declares a `defaultAction` still gives it every option — `exagent doctor --json` checks, because there the options do belong to something.
 
 ### (b) A group cannot capture the bare form of a forwarded `expo` command
 
@@ -765,6 +806,14 @@ The case it is written for [inferred, no such group exists yet]: `config` is in 
 Cost [observed]: a group under a forwarded name reaches its actions by one spelling instead of two, so the "the space form is free" property of llp/0006 has an exception, and the group's `--help` must show the colon form. That is cheaper than a name meaning two things depending on its arguments.
 
 ### (c) A group named after another CLI's verb recovers into that CLI
+
+> **Amendment — 2026-08-26 ([[0016-v1-scope]]).** No group is named after another CLI's verb any
+> more: the v1 narrowing emptied `build` — `build:wait` deferred, `build:explain` renamed to
+> `inspect:build-log` — so `exagent build --platform ios` is now a name in none of the three maps,
+> and the answer comes from the absent-capability table instead: "starting a build is the EAS CLI's
+> job", with `Try: npx eas build`. The one thing lost is the caller's own flags on that line, which
+> is the price of the answer moving from a group to a name. The `bareNameCommand` mechanism below is
+> kept and still tested, because the next group named after another CLI's verb wants it.
 
 Rule (a) says what `exagent build --platform ios` must not do — print a listing and exit 0. It does not say what the reader should do instead, and for this group the honest answer is not "read our help": `build` is a real verb of a real CLI, `--platform ios` is a real flag of it, and the caller aimed a correct command at the wrong binary.
 
@@ -793,7 +842,7 @@ declare `'own'` too: their arguments are forwarded to the Expo CLI, which report
 Note that this is a _silent_ no-op, which llp/0006 §Errors are prompts treats as the one answer a
 driving agent cannot recover from — it is indistinguishable from the command having understood.
 
-## `build:explain`: the rule table is capped and in-repo
+## `inspect:build-log` (then `build:explain`): the rule table is capped and in-repo
 
 Decision [confirmed — Kudo, 2026-08-23]. The failure-signature rules that `build:explain` matches build logs against ship **in the repository, as a bounded table** — a capped set of Expo-specific signatures with a test each, reviewed like code and versioned with the CLI.
 

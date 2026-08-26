@@ -50,7 +50,7 @@ Each fixture ships its own copy of these, because a fixture must stand alone onc
   `stub-expo-invocations.jsonl` and never starts a real dev server. `expo config` answers with the
   contents of the file `STUB_EXPO_CONFIG_JSON` names and exits, the way the real CLI prints one JSON
   object there and nothing else — with the stub's own `stub_expo_start` line still above it, so the
-  "last JSON line wins" parse of `config:effective` is tested against a stream that has two.
+  "last JSON line wins" parse of `inspect:config-plugins` is tested against a stream that has two.
 - `node_modules/expo/internal/unstable-autolinking-exports.js` — resolves the direct dependencies
   listed in `package.json`, reporting unresolved ones as `undefined` like the real linker does.
   Skill discovery needs it; the project-state probe does not, because the probe classifies packages

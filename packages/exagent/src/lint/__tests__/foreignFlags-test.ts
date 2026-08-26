@@ -4,25 +4,29 @@
 // it. The inventory is the point: it is the list a reviewer has to have run against the published
 // binary, and a snapshot is what makes adding to it deliberate.
 
-import path from 'path';
+import path from "path";
 
-import { extractForeignFlags } from '../foreignFlags';
-import { sweepSuggestedCommands, type Sweep } from '../sweep';
+import { extractForeignFlags } from "../foreignFlags";
+import { sweepSuggestedCommands, type Sweep } from "../sweep";
 
-jest.unmock('fs');
-jest.unmock('node:fs');
+jest.unmock("fs");
+jest.unmock("node:fs");
 
-const at = (source: string) => extractForeignFlags('src/example.ts', source);
+const at = (source: string) => extractForeignFlags("src/example.ts", source);
 
 describe(extractForeignFlags, () => {
   it(`reads an array literal passed straight to a spawn helper`, () => {
     expect(
-      at(`await spawnExpoAsync(projectRoot, ['export', '--platform', 'web'], { output });`)
-    ).toEqual([{ file: 'src/example.ts', line: 1, flag: '--platform' }]);
+      at(
+        `await spawnExpoAsync(projectRoot, ['export', '--platform', 'web'], { output });`
+      )
+    ).toEqual([{ file: "src/example.ts", line: 1, flag: "--platform" }]);
   });
 
   it(`reads an argv assembled before its spawn`, () => {
-    expect(at(`const DOCTOR_ARGS = ['--verbose'];`).map((use) => use.flag)).toEqual(['--verbose']);
+    expect(
+      at(`const DOCTOR_ARGS = ['--verbose'];`).map((use) => use.flag)
+    ).toEqual(["--verbose"]);
   });
 
   it(`reads a flag pushed onto an argv, which is the conditional shape the rule is about`, () => {
@@ -34,9 +38,9 @@ describe(extractForeignFlags, () => {
           `  if (preset) { args.push('--preset', preset); }`,
           `  return args;`,
           `}`,
-        ].join('\n')
+        ].join("\n")
       ).map((use) => use.flag)
-    ).toEqual(['--preset']);
+    ).toEqual(["--preset"]);
   });
 
   it(`ignores an option in an object, which is a schema and not a command line`, () => {
@@ -48,10 +52,10 @@ describe(extractForeignFlags, () => {
   });
 });
 
-describe('the flags this CLI writes onto a command line', () => {
+describe("the flags this CLI writes onto a command line", () => {
   let sweep: Sweep;
   beforeAll(() => {
-    sweep = sweepSuggestedCommands(path.resolve(__dirname, '../..'));
+    sweep = sweepSuggestedCommands(path.resolve(__dirname, "../.."));
   });
 
   it(`is this list, and every foreign one has been run against the published binary`, () => {
@@ -67,13 +71,13 @@ describe('the flags this CLI writes onto a command line', () => {
     // normalizes onto a command's own argv, and the three flags `smoke --start` gives `exagent
     // dev`. They are here because leaving them out would mean keeping an exclusion list, which is
     // a place for a real one to hide.
-    expect(sweep.foreignFlags.map(({ flag, file }) => `${flag}  ${file}`).sort())
-      .toMatchInlineSnapshot(`
+    expect(
+      sweep.foreignFlags.map(({ flag, file }) => `${flag}  ${file}`).sort()
+    ).toMatchInlineSnapshot(`
       [
         "--detach  src/smoke/smokeAsync.ts",
         "--help  src/cli.ts",
         "--is-inside-work-tree  src/new/git.ts",
-        "--json  src/builds/waitAsync.ts",
         "--json  src/config/introspectAsync.ts",
         "--json  src/deploy/launchCli.ts",
         "--json  src/impact/runtimeVersion.ts",
@@ -98,7 +102,6 @@ describe('the flags this CLI writes onto a command line', () => {
         "-ano  src/dev/portListener.ts",
         "-j  src/navigate/device.ts",
         "-j  src/runtime/targetPlatform.ts",
-        "-m  src/checkpoint/git.ts",
         "-nP  src/dev/portListener.ts",
         "-p  src/device/screenshot.ts",
         "-p  src/toolchain/detect.ts",
@@ -115,8 +118,11 @@ describe('the flags this CLI writes onto a command line', () => {
     // default `fingerprint:generate` carries no option at all, so a published CLI too old for
     // either of them still answers. `buildGenerateArgs` has the per-option tests.
     const fingerprint = sweep.foreignFlags.filter(
-      (use) => use.file === path.join('src', 'project', 'fingerprint.ts')
+      (use) => use.file === path.join("src", "project", "fingerprint.ts")
     );
-    expect(fingerprint.map((use) => use.flag).sort()).toEqual(['--platform', '--preset']);
+    expect(fingerprint.map((use) => use.flag).sort()).toEqual([
+      "--platform",
+      "--preset",
+    ]);
   });
 });

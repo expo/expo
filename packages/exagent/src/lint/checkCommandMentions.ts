@@ -56,7 +56,7 @@ export const ALLOWED_PLACEHOLDER_COMMANDS: readonly {
   why: string;
 }[] = [
   {
-    command: 'npx exagent build:explain --file <path>',
+    command: 'npx exagent inspect:build-log --file <path>',
     why: "eas-cli has no `build:logs` (llp/0010 §Upstream asks), so nothing here can download the log this reads — the path exists only once a person has saved it, and the follow-up's own `why` says so.",
   },
 ];
@@ -147,7 +147,7 @@ export function checkCommandMentions(
         subject,
         rule: 'unknown-command',
         why: `"${command}" is not one of the options the launcher itself takes (${[...LAUNCHER_OPTIONS].join(', ')}), and nothing before it names a command, so this line runs nothing.`,
-        how: 'Name the command the option belongs to, as in "npx exagent dev:wait --json".',
+        how: 'Name the command the option belongs to, as in "npx exagent dev:stop --json".',
       });
       continue;
     }

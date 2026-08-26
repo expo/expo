@@ -41,7 +41,7 @@ describe(resolveStartOptions, () => {
   // The flags of the plan engine moved to `exagent dev`, and this command shares its name with an
   // `expo` command, so it forwards them instead of acting on them: `expo start` is the one that
   // decides whether an argument is its own (llp/0006 §The `exagent` launcher).
-  it.each(['--plan', '--smart', '--passthrough', '--yes', '--json', '--no-checkpoint'])(
+  it.each(['--plan', '--smart', '--passthrough', '--yes', '--json'])(
     `should forward %s to expo start instead of handling it`,
     (flag) => {
       expect(resolveStartOptions([flag]).expoArgs).toEqual([flag]);

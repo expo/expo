@@ -58,7 +58,7 @@ describe('exagent dev', () => {
     expect(result.all).toContain('npx exagent start');
   });
 
-  // `dev` became a group so `dev:wait` could join it, and a group asked for help lists its actions
+  // `dev` became a group so `dev:stop` and `dev:logs` could join it, and a group asked for help lists its actions
   // (llp/0010 §Registry rules). Because the bare name runs `dev:run`, the listing is followed by
   // that action's options: a caller reading `dev --help` before running `dev` has to be able to
   // learn that `--plan` exists.
@@ -68,14 +68,14 @@ describe('exagent dev', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('dev:run');
-    expect(result.all).toContain('dev:wait');
+    expect(result.all).toContain('dev:logs');
     expect(result.all).toContain('npx exagent dev runs dev:run');
     // The options of the action the bare name runs, in the listing's own output.
     expect(result.all).toContain('--plan');
     expect(result.all).toContain('--yes');
     expect(result.all).toContain('--port');
     // The listing comes first: the options belong to the action it just named.
-    expect(result.all.indexOf('dev:wait')).toBeLessThan(result.all.indexOf('--plan'));
+    expect(result.all.indexOf('dev:logs')).toBeLessThan(result.all.indexOf('--plan'));
   });
 
   it('does not accept the flags that moved off `start`', async () => {
@@ -438,7 +438,7 @@ describe('exagent dev', () => {
     // A web run used to inherit the native rungs and offer `runtime:errors` (no debugger target
     // attaches from a browser) and `eas build:configure` (a cloud native build it did not need),
     // while naming neither the site nor a way to check it [observed — friction run 2, 2026-08-23].
-    it('leads a web run with the site URL and the web bundle check', async () => {
+    it('leads a web run with the site URL and the check that proves it compiles', async () => {
       const projectRoot = await setupAsync('go-app');
 
       const result = await executeExagentAsync(
@@ -453,7 +453,7 @@ describe('exagent dev', () => {
       const followups = JSON.parse(result.stdout).followups as { id: string; command: string }[];
       expect(followups.map((followup) => followup.id)).toEqual([
         'web-url',
-        'web-bundle-check',
+        'web-typecheck',
         'deploy-web',
       ]);
       expect(followups[0]!.command).toBe('http://localhost:8124');

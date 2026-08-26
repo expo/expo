@@ -1,4 +1,4 @@
-# `build:explain` fixtures
+# `inspect:build-log` fixtures
 
 Every `.log` here is an input to the extractor and every `.json` next to it is what the extractor
 must answer for it. `extract-test.ts` asserts the pair; `explainAsync-test.ts` asserts that neither

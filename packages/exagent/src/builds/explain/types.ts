@@ -1,6 +1,6 @@
 // @ref llp/0012-build-explain.rfc.md
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — the top-level keys of
-// `ExplainReport` are the versioned surface of `build:explain --json`, pinned by a shape test.
+// `ExplainReport` are the versioned surface of `inspect:build-log --json`, pinned by a shape test.
 
 import type { FollowUp } from '../../followups/types';
 
@@ -103,7 +103,7 @@ export interface ExplainSource {
   droppedLines: number;
 }
 
-/** The one JSON object `build:explain --json` prints. */
+/** The one JSON object `inspect:build-log --json` prints. */
 export interface ExplainReport {
   source: ExplainSource;
   phases: Phase[];

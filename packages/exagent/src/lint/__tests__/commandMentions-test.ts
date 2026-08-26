@@ -9,14 +9,14 @@ const at = (source: string) => extractCommandMentions('src/example.ts', source);
 
 describe(extractCommandMentions, () => {
   it(`finds a command in a plain string, and reads its name and arguments`, () => {
-    expect(at(`const x = 'npx exagent dev:wait --json';`)).toEqual([
+    expect(at(`const x = 'npx exagent dev:stop --json';`)).toEqual([
       {
         file: 'src/example.ts',
         line: 1,
         role: 'message',
-        literal: 'npx exagent dev:wait --json',
-        text: 'npx exagent dev:wait --json',
-        command: 'dev:wait',
+        literal: 'npx exagent dev:stop --json',
+        text: 'npx exagent dev:stop --json',
+        command: 'dev:stop',
         args: ['--json'],
         dynamic: false,
       },

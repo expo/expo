@@ -43,7 +43,7 @@ export function generateAgentsMdBlock({ state, projectName, skillsDirs }: Agents
     '- `npx exagent navigate <route>` — open a route as a deep link on a device',
     '- `npx exagent skills:list` — the agent skills the installed packages ship',
     '- `npx exagent new <dir>` / `npx exagent deploy` — create a project headlessly / deploy web and native',
-    '- `npx exagent checkpoint:undo` — restore the last checkpoint taken before a mutating command',
+    '- `npx exagent smoke` — the whole gate in one command: the dev server bundles, the app is up, and nothing threw',
     '',
     skillsLine(skillsDirs),
   ].join('\n');

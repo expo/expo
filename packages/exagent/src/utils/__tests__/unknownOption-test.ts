@@ -17,14 +17,14 @@ describe(unknownOptionError, () => {
   });
 
   it('names the sibling command that does take the option', () => {
-    const error = unknownOptionError('build:wait', '--route');
+    const error = unknownOptionError('dev:stop', '--route');
 
     expect(error.message).toContain('"npx exagent runtime:reload"');
   });
 
   it('never names the command that failed as its own sibling', () => {
-    expect(siblingCommandsFor('--port', 'dev:wait')).not.toContain('dev:wait');
-    expect(siblingCommandsFor('--port', 'dev:wait')).toContain('dev');
+    expect(siblingCommandsFor('--port', 'dev:stop')).not.toContain('dev:stop');
+    expect(siblingCommandsFor('--port', 'dev:stop')).toContain('dev');
   });
 
   it('answers an option nothing in the table owns without inventing a command', () => {
@@ -38,7 +38,7 @@ describe(unknownOptionError, () => {
 describe(argParseError, () => {
   it('reads the option name out of the parser own sentence', () => {
     const error = argParseError(
-      'dev:wait',
+      'dev:stop',
       'unknown or unexpected option: --bogus',
       'ARG_UNKNOWN_OPTION'
     );
@@ -76,14 +76,13 @@ describe('OPTION_OWNERS', () => {
   it.each([
     ['--tail', 'dev:logs'],
     ['--fail-on-error', 'runtime:errors'],
-    ['--require-app', 'dev:wait'],
     ['--duration', 'runtime:errors'],
   ])('names the command that owns %s', (option, owner) => {
     expect(OPTION_OWNERS[option]).toContain(owner);
   });
 
-  it('points a caller who asked dev:wait for a window at runtime:errors', () => {
-    const error = unknownOptionError('dev:wait', '--duration');
+  it('points a caller who asked dev:stop for a window at runtime:errors', () => {
+    const error = unknownOptionError('dev:stop', '--duration');
 
     expect(error.message).toContain('"npx exagent runtime:errors"');
   });

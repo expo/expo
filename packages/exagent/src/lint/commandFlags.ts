@@ -2,8 +2,8 @@
 // for is an error, and so is an option it has no place for.
 // Which options each command accepts, read out of the calls that parse them.
 //
-// The command name in a suggestion is only half of what can go stale. `npx exagent dev:wait
-// --require-app` is a command that resolves and an option that exists; `npx exagent dev:wait
+// The command name in a suggestion is only half of what can go stale. `npx exagent dev:stop
+// --force` is a command that resolves and an option that exists; `npx exagent dev:stop
 // --tail` is a command that resolves and an option that was moved to `dev:logs`, and the reader
 // finds that out by running it. Both `parseArgsOrThrow` and `assertWithOptionsArgs` take the
 // command's own `arg` schema and the command's own name in one call, so the pairing is in the
@@ -30,14 +30,14 @@ export type ScannedPositionalPolicy = 'none' | 'own' | 'unknown';
 
 /** The options one command accepts, and whether that list is the whole of them. */
 export interface CommandFlagSpec {
-  /** The command as a caller types it, e.g. `dev:wait`. */
+  /** The command as a caller types it, e.g. `dev:stop`. */
   command: string;
   /** Every option key of its `arg` schemas, long forms and aliases together. */
   flags: string[];
   /**
    * The options that consume the next argument, i.e. everything but the `Boolean` ones.
    *
-   * Needed to tell an argument from a value: in `dev:wait --timeout 90s` the `90s` is not a
+   * Needed to tell an argument from a value: in `dev:stop --timeout 90s` the `90s` is not a
    * positional argument, and in `typecheck src/app.tsx` the path is.
    */
   valueFlags: string[];
@@ -173,9 +173,11 @@ interface SchemaFlags {
  * The options of an `arg` schema expression, or null when it cannot be read here.
  *
  * Three shapes, because three shapes are what the commands use: the object literal itself, a `const`
- * in the same file, and a conditional between two of those — `runtime:errors` and `runtime:network`
- * share one resolver and pick their schema with a ternary, and the union of the two branches is the
- * honest answer for either.
+ * in the same file, and a conditional between two of those — a resolver shared by two commands picks
+ * its schema with a ternary, and the union of the two branches is the honest answer for either. The
+ * case that forced it was `runtime:errors` and `runtime:network`, which shared one resolver until
+ * the v1 narrowing deferred the second (llp/0016); the shape is still one the commands reach for,
+ * so the branch stays.
  */
 function readSchemaFlags(node: ts.Expression, sourceFile: ts.SourceFile): SchemaFlags | null {
   if (ts.isObjectLiteralExpression(node)) {
@@ -332,7 +334,7 @@ export function mergeFlagSpecs(specs: readonly CommandFlagSpec[]): Map<string, C
   // A group whose actions are one module parses them all under the bare group name (`skills`,
   // `runtime` — the `withAction` shape of llp/0006), so the schema found for the group is the
   // schema of each of its actions. Only where the action has none of its own: `dev` is a group too,
-  // and its `run` action's options are not `dev:wait`'s.
+  // and its `run` action's options are not `dev:stop`'s.
   for (const [group, entry] of Object.entries(commandGroups)) {
     const groupSpec = merged.get(group);
     if (!groupSpec) {

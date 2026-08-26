@@ -133,7 +133,7 @@ describe(buildExplainFollowUps, () => {
   });
 
   it('spells the log back into the re-run rung, so it can be pasted', () => {
-    // A follow-up is the next thing to *run*: `build:explain --all` with no source would read a
+    // A follow-up is the next thing to *run*: `inspect:build-log --all` with no source would read a
     // terminal's stdin and fail with BAD_ARGS.
     const fromFile = buildExplainFollowUps({
       failure: mockFailure({ docsUrl: null }),
@@ -142,7 +142,7 @@ describe(buildExplainFollowUps, () => {
       source: { kind: 'file', path: '/tmp/build.log' },
     });
     expect(fromFile.find((followup) => followup.id === 'explain-all')?.command).toBe(
-      'npx exagent build:explain --file /tmp/build.log --all'
+      'npx exagent inspect:build-log --file /tmp/build.log --all'
     );
 
     // A piped log cannot be re-read — the bytes are gone — so the rung spells the pipe back out
@@ -153,7 +153,7 @@ describe(buildExplainFollowUps, () => {
       moreMayExist: true,
       source: { kind: 'stdin' },
     });
-    expect(fromStdin[0]!.command).toBe('npx exagent build:explain --stdin --all --context 40');
+    expect(fromStdin[0]!.command).toBe('npx exagent inspect:build-log --stdin --all --context 40');
   });
 
   it('never offers more than the budget', () => {

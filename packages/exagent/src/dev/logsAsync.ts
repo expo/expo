@@ -153,9 +153,9 @@ function buildFollowUps(report: DevLogsResultJson): FollowUp[] {
   }
   return [
     {
-      id: 'dev-wait',
-      command: 'npx exagent dev:wait',
-      why: 'The log says what the bundler printed; this says whether it finished and whether this project still compiles.',
+      id: 'smoke',
+      command: 'npx exagent smoke',
+      why: 'The log says what the bundler printed; this says whether it finished, whether this project still compiles, and whether the app comes up on it.',
     },
   ];
 }
@@ -176,7 +176,7 @@ function noLogError(projectRoot: string, serverRunning: boolean): CommandError {
       ? [
           `This project has a dev server running, but no log to read: it was started attached.`,
           `Why: only "npx exagent dev --detach" writes to ${logFile}. A dev server started in a terminal writes to that terminal, and nothing captured it — so its output is there and nowhere else.`,
-          `How: read it in the terminal it is running in. To get a log next time, stop it with "npx exagent dev:stop" and start it again with "npx exagent dev --detach". For what the bundler is doing right now, "npx exagent dev:wait" answers without a log.`,
+          `How: read it in the terminal it is running in. To get a log next time, stop it with "npx exagent dev:stop" and start it again with "npx exagent dev --detach". For what the bundler is doing right now, "npx exagent smoke" answers without a log.`,
         ].join('\n')
       : [
           `This project has no detached dev server log, so there is nothing to read.`,
@@ -185,7 +185,7 @@ function noLogError(projectRoot: string, serverRunning: boolean): CommandError {
         ].join('\n')
   );
   error.suggestedCommand = serverRunning
-    ? 'npx exagent dev:wait'
+    ? 'npx exagent smoke'
     : 'npx exagent dev --detach --wait-ready';
   return error;
 }

@@ -377,7 +377,7 @@ describe(formatStatusReport, () => {
   it(`should print the reason instead of a plan when a dev server changed the answer`, () => {
     const report = mockReport({
       next: {
-        command: 'exagent dev:wait --require-app',
+        command: 'exagent smoke',
         rule: 'expo-go',
         target: 'expo-go',
         steps: [],
@@ -387,7 +387,7 @@ describe(formatStatusReport, () => {
     });
 
     const rendered = line(report, 'next');
-    expect(rendered).toContain('exagent dev:wait --require-app');
+    expect(rendered).toContain('exagent smoke');
     expect(rendered).toContain('a dev server is already running');
     expect(rendered).not.toContain('expo start --go');
   });
@@ -899,7 +899,7 @@ describe('the build line', () => {
     const rendered = report(
       mockReport({
         next: {
-          command: 'exagent dev:wait --require-app',
+          command: 'exagent smoke',
           rule: 'dev-client-stale',
           target: 'dev-client',
           steps: [],

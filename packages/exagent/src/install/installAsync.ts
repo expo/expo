@@ -1,5 +1,3 @@
-import { checkpointBeforeAsync } from '../checkpoint/integration';
-import type { CheckpointResult } from '../checkpoint/types';
 import { buildInstallFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import type { FollowUp } from '../followups/types';
 import * as Log from '../log';
@@ -26,24 +24,12 @@ import type { InstallReport } from './types';
  * @returns the exit code of the `expo install` subprocess.
  */
 export async function installAsync(projectRoot: string, plan: InstallPlan): Promise<number> {
-  // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints: taken before the mutating phase, so
-  // `exagent checkpoint:undo` puts back the manifest and lockfile `expo install` is about to
-  // rewrite. Every argument was checked in `resolveInstallPlan` before this ran: a rejected
-  // invocation must not leave behind a snapshot of an install that never happened.
-  const checkpoint = await checkpointBeforeAsync(projectRoot, {
-    label: 'exagent install',
-    enabled: plan.checkpoint,
-    // `--json` owns stdout, and the line naming the snapshot is not the object a caller parses.
-    silent: plan.json,
-  });
-
   const { exitCode, checkPayload, checkOutput } = await runInstallAsync(projectRoot, plan);
   if (exitCode !== 0) {
     // Nothing was installed, so there is nothing to classify and nothing to link — but a caller
     // that asked for JSON still gets one object, the way a successful run does.
     await reportAsync(projectRoot, plan, {
       exitCode,
-      checkpoint,
       impact: [],
       checkPayload,
       checkOutput,
@@ -69,7 +55,7 @@ export async function installAsync(projectRoot: string, plan: InstallPlan): Prom
     }
   }
 
-  await reportAsync(projectRoot, plan, { exitCode, checkpoint, impact, checkPayload, checkOutput });
+  await reportAsync(projectRoot, plan, { exitCode, impact, checkPayload, checkOutput });
   return exitCode;
 }
 
@@ -143,13 +129,11 @@ async function reportAsync(
   plan: InstallPlan,
   {
     exitCode,
-    checkpoint,
     impact,
     checkPayload,
     checkOutput,
   }: {
     exitCode: number;
-    checkpoint: CheckpointResult;
     impact: InstallImpactReport[];
     checkPayload: unknown;
     checkOutput: string | null;
@@ -186,7 +170,6 @@ async function reportAsync(
       installed: exitCode === 0 && !plan.check,
       exitCode,
       impact,
-      checkpoint: checkpoint.record ? { id: checkpoint.record.id, files: checkpoint.files } : null,
       skillPackages,
       check,
       followups,

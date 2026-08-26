@@ -26,7 +26,7 @@ export const DEFAULT_SMOKE_TIMEOUT_MS = 60_000;
 /**
  * Total budget of a run allowed to start the dev server.
  *
- * Larger because it contains a cold first bundle, which is the same reason `dev:wait` defaults to
+ * Larger because it contains a cold first bundle, which is the same reason a readiness wait defaults to
  * two minutes: a budget that expired before the common slow path finished would report `22` for
  * every first run of the day.
  */
@@ -146,10 +146,10 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
  * Read the platform flags: `--ios`/`--android`, or `--platform <name>`.
  *
  * **`--platform web` is refused**, and this is the one place the command's flag set is narrower
- * than `dev:wait`'s. The reason is llp/0010 §What app counting can and cannot see: `/json/list` is
+ * than a bundler wait's. The reason is llp/0010 §What app counting can and cannot see: `/json/list` is
  * the inspector proxy's list of React Native runtimes, a browser registers nothing in it, and this
  * command's whole subject is the running app. Every phase after the bundle check would be skipped,
- * so a `passed` would be `dev:wait --platform web` under a name that promises a runtime check.
+ * so a `passed` would be a bundle check under a name that promises a runtime check.
  * That section settled the same shape for `--require-app --platform web`, and for the same reason
  * it is exit `1` rather than `22`: no amount of looking again makes a browser answer a debugger.
  *
@@ -172,10 +172,10 @@ function resolveSmokePlatform(args: { [flag: string]: unknown }): SmokePlatform 
       [
         `--platform web cannot be smoke-tested, so nothing ran.`,
         `Why: every phase of this command after the bundle check reads the running app through the dev server's debugger, and that list holds React Native runtimes only — a browser running the web bundle never registers one, whether or not the page is open. A pass here would mean "the web bundle compiles" while the word "smoke" promises that the app runs.`,
-        `How: run "npx exagent dev:wait --platform web", which is the part of this that web can answer — it proves the bundler is this project's and that the web entry bundle compiles. For a runtime gate, run this command with --ios or --android.`,
+        `How: run "npx exagent typecheck", which is the part of this that web can answer without a device — it proves this project's own compiler is happy with it. For a runtime gate, run this command with --ios or --android.`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent dev:wait --platform web';
+    error.suggestedCommand = 'npx exagent typecheck';
     throw error;
   }
 

@@ -2,7 +2,7 @@
 // What a developer may tell this CLI about their own preferences, as pure data.
 //
 // Named `settings` rather than `config` because `src/config/` is already taken by
-// `exagent config:effective`, which reports the **app** config — the thing `app.json` holds and
+// `exagent inspect:config-plugins`, which reports the **app** config — the thing `app.json` holds and
 // the config plugins compile. This is the opposite kind of file: a preference about how this
 // machine's developer wants their app run and built, which never reaches the app.
 

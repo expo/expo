@@ -139,7 +139,7 @@ describe(printTypeCheckAsync, () => {
       await printTypeCheckAsync(projectRoot, { json: true });
 
       expect(payload().followups.map((followup: any) => followup.id)).toEqual([
-        'typecheck-dev-wait',
+        'typecheck-smoke',
         'typecheck-runtime-errors',
       ]);
     });

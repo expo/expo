@@ -65,7 +65,11 @@ declare module '2g' {
      * One `exagent dev:wait` run: whether the bundler finished, whose bundle it is, and how long
      * the wait took. The command's exit code is the same answer, and this is where the detail is.
      *
-     * @see llp/0005-runtime-loop-tools.rfc.md
+     * Deferred from v1 (2026-08-26): the command is on the reference shelf
+     * (`src/deferred/dev-wait/`), so nothing emits this now. The declaration stays as the schema a
+     * consumer wrote against; `cli:smoke` is what a v1 run of the same gate emits.
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md, llp/0016-v1-scope.rfc.md
      */
     'cli:dev_wait': {
       devServerUrl: string;
@@ -112,6 +116,14 @@ declare module '2g' {
       /** How many of the collected errors got a stack mapped onto project files. */
       symbolicated: number;
     };
+    /**
+     * Deferred from v1 (2026-08-26): `runtime:network` is on the reference shelf
+     * (`src/deferred/runtime-network/`), so nothing emits this now.
+     *
+     * The declaration stays because it is the schema a consumer wrote against, and a deferral is
+     * not a schema change — the command comes back emitting these fields or it comes back as
+     * something else. See llp/0016 and llp/0005 §Network inspection.
+     */
     'cli:runtime_network': {
       devServerUrl: string;
       durationMs: number;
@@ -189,6 +201,10 @@ declare module '2g' {
     /**
      * One poll of `exagent build:wait`, while the wait is still running.
      *
+     * Deferred from v1 (2026-08-26) with the two events below: the command is on the reference shelf
+     * (`src/deferred/build-wait/`), so nothing emits these now. The declarations stay as the schema
+     * a consumer wrote against. See llp/0016 and llp/0010 §The first command in the outcome band.
+     *
      * Progress belongs here and not on stdout: `--json` prints exactly one object (llp/0006
      * §Output contract), so a wait that printed its polls would break the contract for the sake of
      * output nobody parses. `queuePosition` and `estimatedWaitTimeLeftSeconds` are what would turn
@@ -243,7 +259,7 @@ declare module '2g' {
       interrupted: boolean;
     };
     /**
-     * One `build:explain` run: what was read, and what the rule table made of it.
+     * One `inspect:build-log` run: what was read, and what the rule table made of it.
      *
      * The located line and its signature only — not the quoted context, which belongs in the
      * command's own output rather than on a stream that may be collected somewhere else. Every
@@ -265,7 +281,7 @@ declare module '2g' {
       otherFailures: number;
     };
     /**
-     * One `exagent config:effective` run, as counts.
+     * One `exagent inspect:config-plugins` run, as counts.
      *
      * Counts only, deliberately: an effective config carries bundle identifiers, URL schemes and
      * permission strings, which belong in the answer the caller asked for and not on a stream that
@@ -306,6 +322,10 @@ declare module '2g' {
     /**
      * The plan one `exagent doctor:fix` run built, emitted before anything is applied.
      *
+     * Deferred from v1 (2026-08-26): the fix half of `doctor` is on the reference shelf
+     * (`src/deferred/doctor-fix/`), so nothing emits this now. The declaration stays as the schema
+     * a consumer wrote against. See llp/0016 and llp/0013.
+     *
      * Ids and counts only: the targets are absolute paths on the user's machine, and the plan is
      * printed in full on the command's own output where the caller asked for it.
      *
@@ -325,6 +345,8 @@ declare module '2g' {
     };
     /**
      * One step of an applied `doctor:fix` plan, emitted as it finishes.
+     *
+     * Deferred from v1 (2026-08-26), with `cli:doctor_fix_plan` above.
      *
      * @see llp/0013-doctor-fix.rfc.md
      */

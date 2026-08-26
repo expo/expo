@@ -77,5 +77,5 @@ export async function printEffectiveConfigAsync(
     Log.log(file == null ? formatEffectiveConfig(report) : formatModFile(report, file));
   }
 
-  reportFollowUps('config:effective', followups, { json: !!options.json });
+  reportFollowUps('inspect:config-plugins', followups, { json: !!options.json });
 }

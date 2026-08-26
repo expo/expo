@@ -11,7 +11,6 @@ describe(resolveDevOptions, () => {
       buildBackend: null,      runTarget: null,
       json: false,
       followups: true,
-      checkpoint: true,
       yes: false,
       detach: false,
       waitReady: false,
@@ -32,7 +31,6 @@ describe(resolveDevOptions, () => {
       buildBackend: null,      runTarget: null,
       json: false,
       followups: true,
-      checkpoint: true,
       yes: false,
       detach: false,
       waitReady: false,
@@ -55,7 +53,6 @@ describe(resolveDevOptions, () => {
       buildBackend: null,      runTarget: null,
       json: false,
       followups: true,
-      checkpoint: true,
       yes: false,
       detach: false,
       waitReady: false,
@@ -112,7 +109,6 @@ describe(resolveDevOptions, () => {
       buildBackend: null,      runTarget: null,
       json: true,
       followups: true,
-      checkpoint: true,
       yes: false,
       detach: false,
       waitReady: false,
@@ -139,7 +135,6 @@ describe(resolveDevOptions, () => {
       buildBackend: null,      runTarget: null,
       json: false,
       followups: false,
-      checkpoint: true,
       yes: false,
       detach: false,
       waitReady: false,
@@ -151,14 +146,6 @@ describe(resolveDevOptions, () => {
 
   it(`should keep the follow-ups without the flag`, () => {
     expect(resolveDevOptions([]).followups).toBe(true);
-  });
-
-  it(`should strip --no-checkpoint and skip the snapshot`, () => {
-    const options = resolveDevOptions(['--no-checkpoint']);
-
-    expect(options.checkpoint).toBe(false);
-    expect(options.expoArgs).toEqual([]);
-    expect(resolveDevOptions([]).checkpoint).toBe(true);
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — `--port` is the answer to the

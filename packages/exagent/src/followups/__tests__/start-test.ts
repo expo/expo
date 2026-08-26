@@ -141,9 +141,9 @@ describe(buildStartFollowUps, () => {
     it(`should lead with the site URL and the web bundle check`, () => {
       const followups = buildStartFollowUps({ ...web, webUrl: 'http://localhost:8134' });
 
-      expect(ids(followups)).toEqual(['web-url', 'web-bundle-check', 'deploy-web']);
+      expect(ids(followups)).toEqual(['web-url', 'web-typecheck', 'deploy-web']);
       expect(followups[0]!.command).toBe('http://localhost:8134');
-      expect(followups[1]!.command).toBe('npx exagent dev:wait --platform web');
+      expect(followups[1]!.command).toBe('npx exagent typecheck');
     });
 
     it(`should offer the deploy that ships a web build, not a native cloud build`, () => {
@@ -158,7 +158,7 @@ describe(buildStartFollowUps, () => {
     it(`should name no URL when nothing reported a port`, () => {
       const followups = buildStartFollowUps({ ...web, webUrl: null });
 
-      expect(ids(followups)).toEqual(['dev-server-port-unknown', 'web-bundle-check', 'deploy-web']);
+      expect(ids(followups)).toEqual(['dev-server-port-unknown', 'web-typecheck', 'deploy-web']);
       expect(followups.some((followup) => followup.command.startsWith('http://localhost'))).toBe(
         false
       );

@@ -686,6 +686,6 @@ function unreachableNamedDevServerError(
       `How: start the dev server ("npx exagent dev --detach"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev:wait';
+  error.suggestedCommand = 'npx exagent dev --detach --wait-ready';
   return error;
 }

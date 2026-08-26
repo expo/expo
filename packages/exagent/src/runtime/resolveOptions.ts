@@ -14,7 +14,7 @@ import { resolveDevicePlatform } from './devicePlatform';
 import { resolveDevServerTarget } from './devServer';
 
 /** Actions of the `runtime` group, in the order the help prints them. */
-export const RUNTIME_ACTIONS = ['eval', 'errors', 'network'] as const;
+export const RUNTIME_ACTIONS = ['eval', 'errors'] as const;
 
 export type RuntimeAction = (typeof RUNTIME_ACTIONS)[number];
 
@@ -65,19 +65,7 @@ export interface RuntimeErrorsOptions extends RuntimeSharedOptions {
   failOnError: boolean;
 }
 
-export interface RuntimeNetworkOptions extends RuntimeSharedOptions {
-  action: 'network';
-  /** How long to listen for network requests, in milliseconds. */
-  durationMs: number;
-  json: boolean;
-  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
-  followups: boolean;
-}
-
-export type RuntimeCommandOptions =
-  | RuntimeEvalOptions
-  | RuntimeErrorsOptions
-  | RuntimeNetworkOptions;
+export type RuntimeCommandOptions = RuntimeEvalOptions | RuntimeErrorsOptions;
 
 const SHARED_ARGS = {
   '--dev-server-url': String,
@@ -98,32 +86,21 @@ const EVAL_ARGS = {
   '--no-await-promise': Boolean,
 };
 
-// `errors` and `network` both listen over a window and both report follow-ups, so they share one
-// flag set. `eval` does not take `--no-followups`: there it would be a flag that does nothing, and
-// an unknown flag is a clearer answer than a silent no-op.
-const WINDOW_ARGS = {
+// `errors` listens over a window and reports follow-ups. `eval` does not take `--no-followups`:
+// there it would be a flag that does nothing, and an unknown flag is a clearer answer than a
+// silent no-op.
+//
+// `runtime:network` shared this schema until the v1 narrowing deferred it (llp/0016); what it took
+// with it is in `src/deferred/runtime-network/resolveOptions.ts`.
+const ERRORS_ARGS = {
   ...SHARED_ARGS,
   '--duration': String,
   '--no-followups': Boolean,
-};
-
-// Only `errors` gates on what it collected. A failed request is a report `network` makes about the
-// app's behaviour, not a verdict, and there is no equivalent question to answer there.
-const ERRORS_ARGS = {
-  ...WINDOW_ARGS,
   '--fail-on-error': Boolean,
 };
 
-/**
- * Default window per listening action.
- *
- * Network activity is sparser than errors — a screen often makes one request after a tap — so its
- * window is longer, or the usual answer would be an empty report.
- */
-const DEFAULT_WINDOW_MS: Record<'errors' | 'network', number> = {
-  errors: 2000,
-  network: 5000,
-};
+/** How long `runtime:errors` listens when the caller names no window. */
+const DEFAULT_ERRORS_WINDOW_MS = 2000;
 
 /**
  * Resolve the arguments of `exagent runtime:<action>`.
@@ -180,41 +157,33 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     };
   }
 
-  const windowAction = action as 'errors' | 'network';
-  // Each branch names its own schema and its own command rather than picking both out of
-  // `windowAction`. Same parse either way; the difference is that the pairing is now legible to a
-  // reader — and to the suggested-command lint, which checks a printed `--flag` against the schema
-  // of the command it is printed for, and can only do that where the two are named together
-  // (`src/lint/commandFlags.ts`).
-  const args =
-    windowAction === 'errors'
-      ? parseArgsOrThrow(ERRORS_ARGS, argv, 'runtime:errors')
-      : parseArgsOrThrow(WINDOW_ARGS, argv, 'runtime:network');
+  // The schema and the command name are written together on purpose: the suggested-command lint
+  // checks a printed `--flag` against the schema of the command it is printed for, and can only do
+  // that where the two are named in one call (`src/lint/commandFlags.ts`).
+  const args = parseArgsOrThrow(ERRORS_ARGS, argv, 'runtime:errors');
   const positional = args._.slice(1);
   if (positional.length > 0) {
-    throw strayArgumentError(`runtime:${windowAction}`, positional, {
-      hint: `this command listens over a window and takes no target. Usage: npx exagent runtime:${windowAction} [--duration ${DURATION_METAVAR}]`,
+    throw strayArgumentError('runtime:errors', positional, {
+      hint: `this command listens over a window and takes no target. Usage: npx exagent runtime:errors [--duration ${DURATION_METAVAR}]`,
     });
   }
 
-  const shared = {
+  return {
+    action: 'errors',
     devServerUrl: resolveDevServerTarget(
       args['--dev-server-url'],
       args['--port'],
-      `runtime:${windowAction}`
+      'runtime:errors'
     ),
-    durationMs: resolveDuration(args['--duration'], '--duration', DEFAULT_WINDOW_MS[windowAction], {
+    durationMs: resolveDuration(args['--duration'], '--duration', DEFAULT_ERRORS_WINDOW_MS, {
       allowZero: true,
     }),
-    platform: resolveDevicePlatform(args, `runtime:${windowAction}`, {
+    platform: resolveDevicePlatform(args, 'runtime:errors', {
       bothHint: `pass one, or leave both out to read whichever app is connected.`,
     }),
     json: !!args['--json'],
     followups: !args['--no-followups'],
+    failOnError: !!args['--fail-on-error'],
   };
-
-  return windowAction === 'errors'
-    ? { action: 'errors', ...shared, failOnError: !!args['--fail-on-error'] }
-    : { action: 'network', ...shared };
 }
 

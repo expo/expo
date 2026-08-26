@@ -1410,7 +1410,7 @@ process.exit(1);
         ]);
 
         const report: StatusReport = JSON.parse(result.stdout);
-        expect(report.next?.command).toBe('exagent dev:wait --require-app');
+        expect(report.next?.command).toBe('exagent smoke');
         expect(report.next?.why).toContain('instead of starting a second server');
         // The project's own shape is still reported: a running server does not change it.
         expect(report.next?.rule).toBe('expo-go');
@@ -1431,7 +1431,7 @@ process.exit(1);
           stub.url,
         ]);
 
-        expect(result.stdout).toContain('exagent dev:wait --require-app');
+        expect(result.stdout).toContain('exagent smoke');
         expect(result.stdout).not.toContain('exagent dev → expo-go');
       } finally {
         await stub.close();

@@ -6,7 +6,7 @@ import chalk from 'chalk';
 
 import type { ExplainReport, Failure, Phase } from './types';
 
-/** Width of the label column, matching `status`, `deploy` and `build:wait`. */
+/** Width of the label column, matching `status` and `deploy`. */
 const LABEL_WIDTH = 12;
 
 /** How many lines of context the human report prints. `--json` carries all of them. */
