@@ -21,6 +21,7 @@ import {
   type CommandMention,
   type SuggestedCommand,
 } from './commandMentions';
+import { extractForeignFlags, type ForeignFlagUse } from './foreignFlags';
 
 /**
  * Directory names the sweep never descends into.
@@ -76,6 +77,8 @@ export interface Sweep extends MentionCheckResult {
   flagSpecs: Map<string, CommandFlagSpec>;
   /** The parse calls whose command name is computed, so their options are unchecked. */
   unreadableParses: UnreadableParseCall[];
+  /** Every option this CLI puts on another CLI's command line. */
+  foreignFlags: ForeignFlagUse[];
 }
 
 /**
@@ -92,6 +95,7 @@ export function sweepSuggestedCommands(root: string): Sweep {
   const suggestions: SuggestedCommand[] = [];
   const specs: CommandFlagSpec[] = [];
   const unreadableParses: UnreadableParseCall[] = [];
+  const foreignFlags: ForeignFlagUse[] = [];
 
   for (const file of files) {
     const reported = path.join(label, file);
@@ -101,6 +105,7 @@ export function sweepSuggestedCommands(root: string): Sweep {
     const scan = extractFlagSpecs(reported, source);
     specs.push(...scan.specs);
     unreadableParses.push(...scan.unreadable);
+    foreignFlags.push(...extractForeignFlags(reported, source));
   }
 
   const read = [...files];
@@ -119,6 +124,7 @@ export function sweepSuggestedCommands(root: string): Sweep {
     suggestions,
     flagSpecs,
     unreadableParses,
+    foreignFlags,
     ...checkCommandMentions(mentions, suggestions, flagSpecs),
   };
 }
