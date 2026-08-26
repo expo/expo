@@ -93,7 +93,14 @@ Two shapes deserve their own treatment:
 
    If you could not get the tooling to run at all, that is a legitimate outcome — but then write **"the repository's own checks were not run"** in the pull-request body and the findings comment, in those words. "Not run" must never be phrased so it reads as "passed": a previous run reported a green `tsc --strict` against a copy, and its pull request failed CI on the real thing.
 
-5. **Write `.verify-out/pr.md`.** First line is the pull-request title (imperative, specific — "Fix `use_dev_client` detection in EXUpdates.podspec", not "Fix bug"). The rest is the body: what changed, why that is the cause, and how it was verified, citing your evidence. The server prepends a banner marking the pull request agent-authored and unreviewed, and links the run — do not write your own disclaimer.
+5. **Write `.verify-out/pr.md`.** First line is the pull-request title (imperative, specific — "Fix `use_dev_client` detection in EXUpdates.podspec", not "Fix bug"). The rest is the body, and it has **the same shape as the findings comment**: a short visible opening, everything else behind `<details>`. The publisher prepends a banner marking the pull request agent-authored and unreviewed, links the run, and appends a link to your findings comment plus its attested screenshots — do not write your own disclaimer, and do not repeat the investigation.
+
+   **The visible opening — at most 1,000 characters, three short paragraphs, nothing else outside a `<details>` block:**
+   1. **What was wrong and why** — the failure and its cause, one or two sentences. Name the file and the mechanism, not the history of how you found it.
+   2. **What this change does** — the change in one or two sentences, and what does NOT change for apps that work today.
+   3. **How it was proven** — one sentence naming the decisive measurement ("before/after bundles are byte-identical on both platforms; the warning is gone", "the repro app's crash on mount no longer occurs on the patched build; 111 tests pass").
+
+   **Then `<details>` blocks, each with a short `<summary>` label and a BLANK LINE after it**, in this order, omitting any that have nothing to say: **Cause** (the analysis, with links to the exact lines at the checkout SHA), **Verification** (the procedure and the tally — a table for before/after arms), **Checks run** (the repository's own tooling you ran and their results, or the literal words "the repository's own checks were not run"), **Not covered**, then the **Options considered** block below. No `##` headings, no "Summary:" / "Test plan:" scaffolding — the summary IS the visible opening. The evidence narrative already lives in your findings comment, which the publisher links; the body must stand on its own for a reviewer who never opens that link, but it must not be a second copy of it.
 
    **Record the options you weighed**, in a marker-wrapped section at the end of the body:
 
