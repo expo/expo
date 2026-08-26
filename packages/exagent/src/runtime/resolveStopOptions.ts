@@ -2,6 +2,7 @@
 // Argument resolution for `exagent runtime:stop`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
+import { cloudVerbNotSupportedError } from '../device/cloudSimulator';
 import type { NavigatePlatform } from '../navigate/device';
 import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
 import { resolveDevServerTarget } from './devServer';
@@ -23,6 +24,10 @@ export interface RuntimeStopOptions {
 const RUNTIME_STOP_ARGS = {
   '--ios': Boolean,
   '--android': Boolean,
+  // Accepted so it can be **refused by name**. `navigate` has this flag, so an agent that learned
+  // it there will type it here, and "unknown option --cloud" is a dead end where the truth — the
+  // session controller has no verb that ends one app — is a next action. See below.
+  '--cloud': Boolean,
   '--app-id': String,
   '--dev-server-url': String,
   // Sugar for the two flags above (llp/0005 §The dev server a caller names).
@@ -48,6 +53,14 @@ export function resolveRuntimeStopOptions(argv: string[]): RuntimeStopOptions {
     throw strayArgumentError('runtime:stop', args._, {
       hint: `to stop a particular app, pass its id as a flag: npx exagent runtime:stop --app-id ${args._[0]}`,
     });
+  }
+
+  // @ref src/device/cloudSimulator.ts §cloudVerbNotSupportedError — llp/0005 §The cloud simulator
+  // backend. `eas simulator:stop` ends the whole remote machine, which is a larger act than this
+  // command's, and performing it under this name would report a session teardown as one app having
+  // been stopped. So the flag is answered rather than silently doing something else.
+  if (args['--cloud']) {
+    throw cloudVerbNotSupportedError('Stopping the app');
   }
 
   return {

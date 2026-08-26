@@ -59,3 +59,23 @@ function expectThrow(run: () => unknown): any {
   }
   throw new Error('Expected the call to throw, but it returned');
 }
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+describe('resolveRuntimeStopOptions and the cloud backend', () => {
+  // The flag exists to be refused by name: `navigate --cloud` works, so an agent will type this,
+  // and the truth — there is no controller verb that ends one app — is a next action.
+  it(`refuses --cloud and names the two acts it is not`, () => {
+    const error = (() => {
+      try {
+        resolveRuntimeStopOptions(['--cloud']);
+        return null;
+      } catch (thrown: unknown) {
+        return thrown as { code?: string; message: string };
+      }
+    })();
+
+    expect(error?.code).toBe('CLOUD_SIMULATOR_UNSUPPORTED');
+    expect(error?.message).toContain('eas simulator:stop');
+    expect(error?.message).toContain('npx exagent navigate / --cloud');
+  });
+});

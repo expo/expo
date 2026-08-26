@@ -19,8 +19,10 @@
 import fs from 'fs';
 import path from 'path';
 
+import type { DeviceBackend } from '../navigate/device';
 import { resolveSpawnTarget } from '../utils/windowsShim';
 import { resolveAdb, type AdbResolution } from './adb';
+import { buildCloudScreenshotArgs, captureCloudScreenshotAsync } from './cloudSimulator';
 
 /** Platforms a screenshot can be taken on: the two with a device tool this CLI already spawns. */
 export type ScreenshotPlatform = 'ios' | 'android';
@@ -103,7 +105,28 @@ const SCREENSHOT_TIMEOUT_MS = 20_000;
 export interface CaptureScreenshotParams extends BuildScreenshotCommandParams {
   /** How long the device tool gets, in milliseconds. */
   timeoutMs?: number;
+  /**
+   * Which device layer to photograph. Defaults to the local tool for {@link platform}.
+   *
+   * `cloud` takes the picture through the EAS Simulator session's controller, which **downloads**
+   * a PNG to {@link filePath} rather than writing it here. Everything after that is the same: the
+   * bytes are checked for the PNG signature, because "the command ran" and "there is a screenshot"
+   * are two facts on a network too.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   */
+  backend?: DeviceBackend;
+  /** The project whose session is used. Required for `cloud`, ignored otherwise. */
+  projectRoot?: string;
 }
+
+/**
+ * How long the cloud capture gets.
+ *
+ * Much longer than the local 20 s: the controller is fetched through `npx`, the verb crosses a
+ * network, and the image comes back over the same link.
+ */
+const CLOUD_SCREENSHOT_TIMEOUT_MS = 120_000;
 
 /**
  * Take a screenshot of the device, and say whether one arrived.
@@ -121,12 +144,17 @@ export async function captureScreenshotAsync({
   platform,
   deviceId,
   filePath,
-  timeoutMs = SCREENSHOT_TIMEOUT_MS,
+  backend,
+  projectRoot,
+  timeoutMs = backend === 'cloud' ? CLOUD_SCREENSHOT_TIMEOUT_MS : SCREENSHOT_TIMEOUT_MS,
   // Resolved here when the caller has none, so this never spawns a bare `adb` on a machine whose
-  // SDK is where the SDK normally is (F49).
-  adb = platform === 'android' ? resolveAdb() : undefined,
+  // SDK is where the SDK normally is (F49). Never for the cloud backend, which has no `adb`.
+  adb = platform === 'android' && backend !== 'cloud' ? resolveAdb() : undefined,
 }: CaptureScreenshotParams): Promise<ScreenshotResult> {
-  const command = buildScreenshotCommand({ platform, deviceId, filePath, adb });
+  const cloud = backend === 'cloud';
+  const command = cloud
+    ? cloudScreenshotCommand(filePath)
+    : buildScreenshotCommand({ platform, deviceId, filePath, adb });
   const base: ScreenshotResult = {
     path: filePath,
     ok: false,
@@ -136,6 +164,14 @@ export async function captureScreenshotAsync({
     command: command.display,
     bytes: null,
   };
+
+  if (cloud && projectRoot == null) {
+    return {
+      ...base,
+      reason:
+        'a cloud simulator screenshot was asked for and no project was named to find the session in, which is a bug in this CLI',
+    };
+  }
 
   try {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -152,7 +188,9 @@ export async function captureScreenshotAsync({
     // A path that cannot be removed is reported below, when nothing new turns up at it.
   }
 
-  const run = await runScreenshotAsync(command, filePath, timeoutMs);
+  const run = cloud
+    ? await runCloudScreenshotAsync(projectRoot!, filePath, timeoutMs)
+    : await runScreenshotAsync(command, filePath, timeoutMs);
   if (run.spawnError) {
     return {
       ...base,
@@ -186,6 +224,41 @@ export async function captureScreenshotAsync({
   }
 
   return { ...base, ok: true, bytes };
+}
+
+/**
+ * The cloud capture, as a command descriptor for the report.
+ *
+ * `output: 'file'` like `simctl`, and for the same reason: the controller is *given* the path and
+ * puts the image there itself. Nothing about it is redirected, so the descriptor plumbing below is
+ * never reached for it.
+ */
+function cloudScreenshotCommand(filePath: string): ScreenshotCommand {
+  const args = buildCloudScreenshotArgs({ filePath });
+  return { bin: 'eas', args, output: 'file', display: `eas ${args.join(' ')}` };
+}
+
+/**
+ * Run the cloud capture, and answer in the shape the local runner answers in.
+ *
+ * The failure of the EAS CLI is folded into `stderr` rather than raised: this whole module degrades
+ * and never decides (llp/0005 §The screenshot primitive), and a run that established the app does
+ * not throw has established that with or without a picture. A session that ended mid-run is exactly
+ * that case.
+ */
+async function runCloudScreenshotAsync(
+  projectRoot: string,
+  filePath: string,
+  timeoutMs: number
+): Promise<{ exitCode: number | null; stderr: string; spawnError?: string }> {
+  const result = await captureCloudScreenshotAsync({ projectRoot, filePath, timeoutMs });
+  return {
+    exitCode: result.exitCode,
+    // Both streams, because the EAS CLI reports a dead session on either one and the reason line
+    // below is all a reader gets of it.
+    stderr: result.stderr.trim() || result.stdout.trim(),
+    spawnError: result.spawnError ?? undefined,
+  };
 }
 
 /** Whether the first bytes of a file are a PNG header. */

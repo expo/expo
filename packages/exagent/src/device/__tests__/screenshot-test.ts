@@ -262,3 +262,49 @@ describe(captureScreenshotAsync, () => {
     expect(fs.existsSync('/project/seven.png')).toBe(false);
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+describe(`${captureScreenshotAsync.name} on a cloud simulator`, () => {
+  beforeEach(() =>
+    vol.fromJSON({
+      '/project/package.json': '{}',
+      '/project/node_modules/.bin/eas': '#!/bin/sh\n',
+    })
+  );
+  afterEach(() => vol.reset());
+
+  it(`takes the picture through the session, and never through xcrun`, async () => {
+    mockTool({ toFile: Buffer.concat([PNG_HEADER, Buffer.from('bytes')]) });
+
+    const result = await captureScreenshotAsync({
+      backend: 'cloud',
+      projectRoot: '/project',
+      platform: 'ios',
+      deviceId: 'sess-1',
+      filePath: '/project/.expo/exagent/cloud.png',
+    });
+
+    expect(result).toMatchObject({ ok: true, reason: null });
+    expect(result.command).toContain('simulator:exec');
+    expect(result.command).not.toContain('xcrun');
+    // The controller is given the path and downloads to it, so no descriptor is handed over: a
+    // number here would be the Android redirect aimed at a tool that never writes to stdout.
+    expect(typeof recordedStdio[1]).not.toBe('number');
+  });
+
+  // Degrades and never decides: a dead session costs the picture, not the run.
+  it(`reports why there is no picture when the session refuses`, async () => {
+    mockTool({ exitCode: 1, stderr: 'Remote daemon is unavailable' });
+
+    const result = await captureScreenshotAsync({
+      backend: 'cloud',
+      projectRoot: '/project',
+      platform: 'ios',
+      deviceId: 'sess-1',
+      filePath: '/project/.expo/exagent/cloud.png',
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.reason).toContain('Remote daemon is unavailable');
+  });
+});
