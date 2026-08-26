@@ -579,9 +579,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       .setSessionCommand(sessionCommand)
       .setIconResId(resId)
 
-    val slots = nowPlayingAction.slots
-    if(!slots.isNullOrEmpty()){
-      commandButton.setSlots(* slots.toIntArray())
+    nowPlayingAction.slots?.let { slots ->
+      val commandButtonSlots = slots.map { it.toCommandButtonSlot() }
+      commandButton.setSlots(* commandButtonSlots.toIntArray())
     }
 
     return commandButton.build()

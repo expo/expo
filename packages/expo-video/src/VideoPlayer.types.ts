@@ -1,6 +1,5 @@
 import { SharedObject } from 'expo';
 
-import { NowPlayingActionSlot } from './NowPlayingActionSlot';
 import { type VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
 
@@ -858,6 +857,30 @@ export type ScrubbingModeOptions = {
 export type VideoChangeFrameRateStrategy = 'off' | 'onlyIfSeamless';
 
 /**
+ * Defines the slots in which custom buttons can be displayed in the now playing notification and lock screen controls.
+ * - `SLOT_CENTRAL`: A central slot in a playback control UI, most commonly used for play or pause actions.
+ *
+ * - `SLOT_BACK`: A slot in a playback control UI for backward-directed playback actions, most commonly used for previous or rewind actions.
+ *
+ * - `SLOT_FORWARD`: A slot in a playback control UI for forward-directed playback actions, most commonly used for next or fast-forward actions.
+ *
+ * - `SLOT_BACK_SECONDARY`: A slot in a playback control UI for secondary backward-directed playback actions, most commonly used for previous or rewind actions.
+ *
+ * - `SLOT_FORWARD_SECONDARY`: A slot in a playback control UI for secondary forward-directed playback actions, most commonly used for next or fast-forward actions.
+ *
+ * - `SLOT_OVERFLOW`: A slot in a playback control UI for additional actions that don't fit into other slots.
+ *
+ * @platform android
+ */
+export type NowPlayingActionSlot =
+  | 'SLOT_CENTRAL'
+  | 'SLOT_BACK'
+  | 'SLOT_FORWARD'
+  | 'SLOT_BACK_SECONDARY'
+  | 'SLOT_FORWARD_SECONDARY'
+  | 'SLOT_OVERFLOW';
+
+/**
  * Specifies a custom action to be displayed in the now playing notification and lock screen.
  * @platform android
  */
@@ -869,14 +892,17 @@ export type NowPlayingAction = {
    * > **Note**: The name of the icon is the file name without the extension. For example, if the icon file is named **heart_icon.png**, the `iconName` should be `heart_icon`.
    */
   iconName: string;
+
   /**
    * The display name of the action.
    */
   displayName: string;
+
   /**
    * The action that will be passed to the `nowPlayingActionPressed` event when the action is pressed.
    */
   action: string;
+
   /**
    * The button is only allowed in the defined slots. If none of the slots can display the button, either because the slots do not exist, are already occupied or the UI surface does not allow the specific type of button in these slots, the button will not be displayed at all.
    */
@@ -892,14 +918,17 @@ export type PictureInPictureAction = {
    * The action that will be passed to the `pictureInPictureActionPressed` event when the action is pressed.
    */
   action: string;
+
   /**
    * The title of the Picture In Picture action.
    */
   title: string;
+
   /**
    * The description of the Picture In Picture action.
    */
   description: string;
+
   /**
    * The name of the icon to be displayed in the Picture In Picture action.
    * > **Note**: The icon must be included in the `icons` list property of app config.

@@ -98,11 +98,10 @@ internal fun applyPiPParams(activity: Activity, autoEnterPiP: Boolean, aspectRat
 
 internal fun applyPiPActions(activity: Activity, actions: List<RemoteAction>) {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-    val paramsBuilder = PictureInPictureParams.Builder()
-    paramsBuilder.setActions(actions)
+    val actionsParams = PictureInPictureParams.Builder().setActions(actions).build()
 
     runWithPiPMisconfigurationSoftHandling {
-      activity.setPictureInPictureParams(paramsBuilder.build())
+      activity.setPictureInPictureParams(actionsParams)
     }
   }
 }
