@@ -7,7 +7,7 @@ import { findRouteNodeAndParamsForState, type RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
-import { StoreContext } from '../../global-state/storeContext';
+import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import type { ReactNavigationState } from '../../global-state/types';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../../global-state/utils';
@@ -28,7 +28,7 @@ import { PreviewRouteContext } from './PreviewRouteContext';
 export function HrefPreview({ href }: { href: Href }) {
   // TODO(@ubax): Extract `linking` and `routeNode` into separate contexts to avoid unrelated rerenders.
   const { segments: routeSegments } = useRouteInfo();
-  const { linking, routeNode } = use(StoreContext) ?? {};
+  const { linking, routeNode } = use(RouterConfigContext) ?? {};
   const rootNavigationState = use(RootNavigationStateContext);
   const hrefState = useMemo(
     () => getStateForHref(href, { segments: routeSegments }, linking),

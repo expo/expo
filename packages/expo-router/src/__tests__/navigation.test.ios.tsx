@@ -11,7 +11,7 @@ import {
   Slot,
   usePathname,
 } from '../exports';
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link';
@@ -1842,20 +1842,21 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(screen.queryByTestId('d')).toBeNull();
   expect(screen).toHavePathname('/b/e');
 
-  expect(store.state!.index).toBe(0);
-  expect(store.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.name).toBe('__root');
+  const rootState = navigationRef.getRootState();
+  expect(rootState.index).toBe(0);
+  expect(rootState.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.name).toBe('__root');
   // Both pushes from 'c' will create new routes in root layout. This is because both pushes are happening on the same state, where there is no 'b' stack yet.
-  expect(store.state!.routes[0]!.state!.routes).toHaveLength(3);
-  expect(store.state!.routes[0]!.state!.routes[0]!.name).toBe('a');
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
-  expect(store.state!.routes[0]!.state!.routes[1]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
-  expect(store.state!.routes[0]!.state!.routes[2]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
+  expect(rootState.routes[0]!.state!.routes).toHaveLength(3);
+  expect(rootState.routes[0]!.state!.routes[0]!.name).toBe('a');
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
+  expect(rootState.routes[0]!.state!.routes[1]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
+  expect(rootState.routes[0]!.state!.routes[2]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
 
   act(() => router.back());
   expect(screen.getByTestId('d')).toBeVisible();

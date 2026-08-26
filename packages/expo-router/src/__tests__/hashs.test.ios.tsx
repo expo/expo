@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { router } from '../exports';
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { renderRouter } from '../testing-library';
 import { parseUrlUsingCustomBase } from '../utils/url';
 import { expectCompleteStateToMatch } from './assertCompleteState';
@@ -23,7 +23,7 @@ it('can push a hash url', () => {
   act(() => router.push('/test#b'));
   act(() => router.push('/test#c'));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -208,7 +208,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: () => <Text testID="index" />,
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -238,7 +238,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
 
   act(() => router.navigate('/?#hash1'));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],

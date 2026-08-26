@@ -9,27 +9,22 @@ import {
   RoutingQueueProvider,
 } from '../../../global-state/routingQueueContext';
 import type { RoutingIntent } from '../../../global-state/routingQueue';
-import { storeRef } from '../../../global-state/store';
-import { StoreContext, type StoreContextValue } from '../../../global-state/storeContext';
+import type { RouteNode } from '../../../Route';
+import { defaultRouteInfo, getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
+import { RouteInfoContext } from '../../../global-state/routeInfoContext';
+import { RouterConfigContext } from '../../../global-state/routerConfigContext';
+import type { NavigationState } from '../../../react-navigation/routers';
 
-function EmptyScreen() {
-  return null;
+let routeNode: RouteNode | null = null;
+let navigationState: NavigationState | undefined;
+
+export function setRouteNode(value: RouteNode | null) {
+  routeNode = value;
 }
 
-export const storeValue: StoreContextValue = {
-  get navigationRef() {
-    return storeRef.current.navigationRef;
-  },
-  linking: undefined,
-  get state() {
-    return storeRef.current.state;
-  },
-  rootComponent: EmptyScreen,
-  get routeNode() {
-    return storeRef.current.routeNode;
-  },
-  redirects: [],
-};
+export function setNavigationState(value: NavigationState | undefined) {
+  navigationState = value;
+}
 
 let pendingIntents: RoutingIntent[] = [];
 
@@ -43,10 +38,16 @@ export function getPendingIntents() {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const routeInfo =
+    navigationState?.routes[0]?.name === '__root'
+      ? getRouteInfoFromState(navigationState)
+      : defaultRouteInfo;
   return (
     <RoutingQueueProvider>
-      <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>
-      <PendingIntentsProbe />
+      <RouterConfigContext.Provider value={{ linking: undefined, redirects: [], routeNode }}>
+        <RouteInfoContext.Provider value={routeInfo}>{children}</RouteInfoContext.Provider>
+        <PendingIntentsProbe />
+      </RouterConfigContext.Provider>
     </RoutingQueueProvider>
   );
 }

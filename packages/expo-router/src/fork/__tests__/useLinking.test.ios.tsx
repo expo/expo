@@ -3,11 +3,15 @@ import { act, type RenderAPI } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
-import { store, storeRef as mockStoreRef } from '../../global-state/store';
+import { completeParsedState } from '../../global-state/createSeededNavigationState';
+import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
+import { getStateFromPath } from '../../link/linking';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
+import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
+import { getMockConfig } from '../../testing-library/mock-config';
 import { NavigationContainer } from '../NavigationContainer';
 import { useLinking } from '../useLinking';
-import { getPendingIntents, render, renderHook } from './__fixtures__/store';
+import { getPendingIntents, render, renderHook, setRouteNode } from './__fixtures__/store';
 
 let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
 
@@ -23,8 +27,7 @@ function getParsedHomeState() {
 }
 
 beforeEach(() => {
-  mockStoreRef.current.routeNode = node('root', [node('home', [node('[id]')])]);
-  mockStoreRef.current.state = undefined;
+  setRouteNode(node('root', [node('home', [node('[id]')])]));
 });
 
 afterEach(() => {
@@ -35,7 +38,7 @@ test('queues an incoming deep link using its extracted app path', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   // Only `getRootState` is used by the linking subscription.
   ref.current = {
-    getRootState: () => ({ routeNames: ['home'] }),
+    getRootState: () => ({ routeNames: ['home'], routes: [{ name: '__root' }] }),
   } as typeof ref.current;
   let listener: ((url: string) => void) | undefined;
   const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
@@ -72,11 +75,51 @@ test('queues an incoming deep link using its extracted app path', () => {
   ]);
 });
 
+test('keeps the current route group when parsing an incoming deep link', () => {
+  const config = getMockConfig(['(a)/shared', '(b)/shared', '(a)/index', '(b)/other']);
+  const currentState = completeParsedState(
+    getStateFromPath('/other', config, ['(b)', 'other']),
+    ROOT_CHAIN
+  );
+  expect(getRouteInfoFromState(currentState).segments).toEqual(['(b)', 'other']);
+  const ref = createNavigationContainerRef<ParamListBase>();
+  ref.current = {
+    getRootState: () => currentState,
+  } as typeof ref.current;
+  let listener: ((url: string) => void) | undefined;
+  const parsePath = jest.fn(getStateFromPath);
+
+  function Sample() {
+    useLinking(
+      ref,
+      {
+        prefixes: ['example://'],
+        config,
+        getStateFromPath: parsePath,
+        subscribe: (nextListener) => {
+          listener = nextListener;
+          return () => {};
+        },
+      },
+      () => {}
+    );
+    return null;
+  }
+
+  render(<Sample />);
+  act(() => listener?.('example://shared'));
+
+  expect(parsePath).toHaveBeenCalledWith('shared', config, ['(b)', 'other']);
+  expect(
+    getRouteInfoFromState(getStateFromPath('/shared', config, ['(b)', 'other'])).segments
+  ).toEqual(['(b)', 'shared']);
+});
+
 test('reports an incoming deep link using its extracted app path', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   // Only `getRootState` is used by the linking subscription.
   ref.current = {
-    getRootState: () => ({ routeNames: ['home'] }),
+    getRootState: () => ({ routeNames: ['home'], routes: [{ name: '__root' }] }),
   } as typeof ref.current;
   let listener: ((url: string) => void) | undefined;
   const onUnhandledLinking = jest.fn();
@@ -106,7 +149,7 @@ test('reports an incoming deep link using its extracted app path', () => {
   });
 });
 
-test('resolves a completed state from an async initial URL without writing to the store', async () => {
+test('resolves a completed state from an async initial URL', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   const getStateFromPath = jest.fn(() => ({
     routes: [
@@ -145,14 +188,13 @@ test('resolves a completed state from an async initial URL without writing to th
     key: expect.any(String),
     routeNames: ['[id]'],
   });
-  expect(mockStoreRef.current.state).toBeUndefined();
 });
 
 test('resubscribes on re-render and cleans up the previous subscription', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   // Only `getRootState` is used by the linking subscription.
   ref.current = {
-    getRootState: () => ({ routeNames: ['home'] }),
+    getRootState: () => ({ routeNames: ['home'], routes: [{ name: '__root' }] }),
   } as typeof ref.current;
   const listeners: ((url: string) => void)[] = [];
   const unsubscribes = [jest.fn(), jest.fn()];
@@ -215,9 +257,11 @@ test('async initial URL is parsed with first-render options', async () => {
   expect(secondGetStateFromPath).not.toHaveBeenCalled();
 });
 
-test('does not reseed the store when it already holds the seeded state', () => {
+test('preserves seeded state on rerender', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
   const element = render(
     <NavigationContainer
+      ref={ref}
       linking={{
         prefixes: ['example://'],
         getInitialURL: () => 'example://home',
@@ -226,10 +270,11 @@ test('does not reseed the store when it already holds the seeded state', () => {
       {null}
     </NavigationContainer>
   );
-  const seededState = mockStoreRef.current.state;
+  const seededState = ref.getRootState();
 
   element.rerender(
     <NavigationContainer
+      ref={ref}
       linking={{
         prefixes: ['example://'],
         getInitialURL: () => 'example://home',
@@ -239,7 +284,7 @@ test('does not reseed the store when it already holds the seeded state', () => {
     </NavigationContainer>
   );
 
-  expect(mockStoreRef.current.state).toBe(seededState);
+  expect(ref.getRootState()).toBe(seededState);
 });
 
 test('renders children on first paint with a synchronous initial URL and no initialState prop', () => {
@@ -280,16 +325,18 @@ test('shows fallback then content for an async initial URL', async () => {
   expect(element.getByTestId('content')).toBeTruthy();
 });
 
-test('seeds the store when a synchronous initial URL is absent', () => {
+test('seeds navigation state when a synchronous initial URL is absent', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
   render(
     <NavigationContainer
+      ref={ref}
       documentTitle={{ enabled: false }}
       linking={{ prefixes: [], getInitialURL: () => null }}>
       {null}
     </NavigationContainer>
   );
 
-  expect(mockStoreRef.current.state).toMatchObject({
+  expect(ref.getRootState()).toMatchObject({
     stale: false,
     routeKeySeq: expect.any(Number),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -300,11 +347,11 @@ test('seeds the store when a synchronous initial URL is absent', () => {
       },
     ],
   });
-  expect(store.getRouteInfo().pathname).toBe('/home');
+  expect(getRouteInfoFromState(ref.getRootState()).pathname).toBe('/home');
 });
 
 test('throws when linking does not produce an initial state', () => {
-  mockStoreRef.current.routeNode = null;
+  setRouteNode(null);
 
   expect(() =>
     render(

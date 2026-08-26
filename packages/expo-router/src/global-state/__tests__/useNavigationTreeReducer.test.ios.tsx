@@ -29,17 +29,16 @@ const initialState: NavigationState = {
 
 function renderReducer({
   registry,
-  onStateChangeInsertion = jest.fn(),
+  state = initialState,
 }: {
   registry: RouterRegistry;
-  onStateChangeInsertion?: (state: NavigationState) => void;
+  state?: NavigationState;
 }) {
   return renderHook<ReturnType<typeof useNavigationTreeReducer>, { registry: RouterRegistry }>(
     ({ registry }) =>
       useNavigationTreeReducer({
-        initialState,
+        initialState: state,
         registry,
-        onStateChangeInsertion,
       }),
     { initialProps: { registry } }
   );
@@ -50,10 +49,8 @@ it('reduces consecutive actions against accumulated state with one committed upd
     state: { ...state, index: state.index + 1 },
     affectedRouteKey: state.routes[state.index + 1]!.key,
   }));
-  const onStateChangeInsertion = jest.fn();
   const result = renderReducer({
     registry: new Map([['root', entry(reduce)]]),
-    onStateChangeInsertion,
   });
 
   act(() => {
@@ -64,7 +61,59 @@ it('reduces consecutive actions against accumulated state with one committed upd
   expect(reduce).toHaveBeenCalledTimes(2);
   expect(reduce.mock.calls[1]![0].index).toBe(1);
   expect(result.result.current.state.index).toBe(2);
-  expect(onStateChangeInsertion).toHaveBeenCalledTimes(2);
+});
+
+it('logs an error for stale focused state after commit', () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const nodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'development';
+  const reduce = jest.fn((state: NavigationState) => {
+    // `NavigationState` excludes stale committed state, which this test deliberately creates.
+    const staleState = {
+      ...state,
+      routes: [{ ...state.routes[0]!, state: { ...state, stale: true as const } }],
+    } as unknown as NavigationState;
+    return { state: staleState, affectedRouteKey: state.routes[0]!.key };
+  });
+  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+
+  act(() => result.result.current.handleAction({ type: 'STALE' }));
+
+  expect(error).toHaveBeenCalledWith('Detected stale state. This is likely a bug in Expo Router.');
+  process.env.NODE_ENV = nodeEnv;
+  error.mockRestore();
+});
+
+it('logs an error for focused state without an index after commit', () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const nodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'development';
+  const reduce = jest.fn((state: NavigationState) => {
+    // `NavigationState` excludes incomplete committed state, which this test deliberately creates.
+    const incompleteState = {
+      ...state,
+      routes: [
+        {
+          ...state.routes[0]!,
+          state: {
+            stale: false,
+            routeKeySeq: state.routeKeySeq,
+            key: state.key,
+            routeNames: state.routeNames,
+            routes: state.routes,
+          },
+        },
+      ],
+    } as unknown as NavigationState;
+    return { state: incompleteState, affectedRouteKey: state.routes[0]!.key };
+  });
+  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+
+  act(() => result.result.current.handleAction({ type: 'INCOMPLETE' }));
+
+  expect(error).toHaveBeenCalledWith('Detected stale state. This is likely a bug in Expo Router.');
+  process.env.NODE_ENV = nodeEnv;
+  error.mockRestore();
 });
 
 it('reduces consecutive queued intents against accumulated state', () => {

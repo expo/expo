@@ -4,7 +4,8 @@ import * as React from 'react';
 import { View } from 'react-native';
 
 import { ExpoRoot } from '../../../ExpoRoot';
-import { store } from '../../../global-state/router-store';
+import { getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
+import { navigationRef } from '../../../global-state/navigationRef';
 import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/StackClient';
 import { getMockContext } from '../../../testing-library/mock-config';
@@ -44,12 +45,12 @@ test.skip('continues a blocked router back after disabling prevention', () => {
   act(() => router.back());
 
   expect(screen.getByTestId('form')).toBeTruthy();
-  expect(store.getRouteInfo().pathname).toBe('/form');
+  expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/form');
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 
   act(() => discard());
 
-  expect(store.getRouteInfo().pathname).toBe('/');
+  expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/');
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 });
 
@@ -78,11 +79,11 @@ test.skip('continues a blocked parent back after disabling nested prevention', (
 
   act(() => router.push('/nested'));
   act(() => router.back());
-  expect(store.getRouteInfo().pathname).toBe('/nested');
+  expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/nested');
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 
   act(() => discard());
-  expect(store.getRouteInfo().pathname).toBe('/');
+  expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/');
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 });
 
@@ -116,5 +117,5 @@ test.skip('throws a descriptive error when beforeRemove calls preventDefault', (
   expect(() => act(() => goBack())).toThrow(
     '`beforeRemove` is a notification-only event and cannot prevent screen removal. Use `usePreventRemove` with the `removePrevented` event instead.'
   );
-  expect(store.getRouteInfo().pathname).toBe('/form');
+  expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/form');
 });

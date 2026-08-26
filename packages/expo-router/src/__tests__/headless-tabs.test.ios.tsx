@@ -4,7 +4,7 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { useGuardRedirect } from '../layouts/GuardContext';
@@ -1439,7 +1439,7 @@ it.skip('dispatches only one action when re-tapping active tab with nested stack
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
+  const unsubscribe = navigationRef.current!.addListener('__unsafe_action__', (e) => {
     dispatchedActions.push(e.data.action);
   });
 
@@ -1494,7 +1494,7 @@ it.skip('JSTabs dispatches only one action when re-tapping active tab with neste
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
+  const unsubscribe = navigationRef.current!.addListener('__unsafe_action__', (e) => {
     dispatchedActions.push(e.data.action);
   });
 

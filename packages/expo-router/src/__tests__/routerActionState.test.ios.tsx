@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { useRootNavigationState } from '../hooks';
 import { renderHook } from '../hooks/__tests__/renderHook';
 import { router } from '../imperative-api';
@@ -34,12 +34,12 @@ it.each([
   ['dismissTo', () => router.dismissTo('/(tabs)/deep/1')],
   ['prefetch', () => router.prefetch('/(tabs)/deep/1')],
   ['Link press', () => fireEvent.press(screen.getByTestId('deep-link'))],
-])('store.state has no marker after %s', (_, navigate) => {
+])('root state has no marker after %s', (_, navigate) => {
   renderRouter(routes);
 
   act(navigate);
 
-  expectNoMarker(store.state);
+  expectNoMarker(navigationRef.getRootState());
 });
 
 it('useRootNavigationState has no marker', () => {
@@ -62,14 +62,14 @@ it('warns and ignores action state without the internal marker', () => {
   });
 
   act(() =>
-    store.navigationRef.current!.dispatch({
+    navigationRef.current!.dispatch({
       type: 'NAVIGATE',
       payload: { name: 'second', state: { routes: [{ name: 'nested' }] } },
     })
   );
 
   expect(warning).toHaveBeenCalledWith(expect.stringContaining(MARKER));
-  const layoutState = store.navigationRef.current!.getRootState().routes[0]!.state!;
+  const layoutState = navigationRef.current!.getRootState().routes[0]!.state!;
   expect(layoutState.routes.find((route) => route.name === 'second')?.state).toBeUndefined();
   warning.mockRestore();
 });

@@ -1,9 +1,8 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
+import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { RoutingQueueApiContext, RoutingQueueProvider } from '../global-state/routingQueueContext';
-import { syncStoreNavigationState } from '../global-state/store';
-import { StoreContext } from '../global-state/storeContext';
 import type {
   DocumentTitleOptions,
   LinkingOptions,
@@ -75,7 +74,7 @@ function NavigationContainerInner(
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
 ) {
-  const store = React.use(StoreContext);
+  const routerConfig = React.use(RouterConfigContext);
 
   if (linking?.config) {
     validatePathConfig(linking.config);
@@ -147,7 +146,6 @@ function NavigationContainerInner(
   });
 
   const [isResolved, initialState] = useThenable(getInitialState);
-
   React.useImperativeHandle(ref, () => refContainer.current!);
 
   if (!isResolved) {
@@ -172,8 +170,7 @@ function NavigationContainerInner(
             onReady={onReadyForLinkingHandling}
             onStateChange={onStateChangeForLinkingHandling}
             initialState={initialState}
-            UNSTABLE_routeNode={store?.routeNode ?? undefined}
-            UNSTABLE_onStateChangeInsertion={store ? syncStoreNavigationState : undefined}
+            UNSTABLE_routeNode={routerConfig?.routeNode ?? undefined}
             ref={refContainer}
           />
         </LinkingContext.Provider>
