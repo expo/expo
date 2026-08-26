@@ -17,14 +17,14 @@ const platform = _nodeOs().default.platform();
 // WARN(@kitten): We don't read this dynamically to ignore later modifications to this env var
 const safeKeys = new Set(process.env.EXPO_UNSAFE_DOTENV_KEYS?.split(',').filter(x => !!x));
 function isUnsafeAllowedEnvKey(name) {
-  return safeKeys.has(name);
+  return name !== '__EXPO_CONFIG_MODE' && safeKeys.has(name);
 }
 function isIgnoredEnvKey(name) {
   if (platform === 'darwin' && name.startsWith('DYLD_')) {
     return true;
   } else if (platform === 'linux' && name.startsWith('LD_')) {
     return true;
-  } else if (safeKeys.has(name)) {
+  } else if (isUnsafeAllowedEnvKey(name)) {
     return false;
   }
 
@@ -35,6 +35,7 @@ function isIgnoredEnvKey(name) {
   switch (name) {
     // NOTE: Expo internal env vars
     case '__EXPO_ENV_LOADED':
+    case '__EXPO_CONFIG_MODE':
     case 'EXPO_NO_DOTENV':
     case 'EXPO_UNSAFE_DOTENV_KEYS':
       return true;
