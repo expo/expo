@@ -288,53 +288,46 @@ describe(resolveCommand, () => {
     });
   });
 
-  // The rule above with the real group registered. `config` is both a forwarded `expo` command and
-  // this CLI's group for `config:effective`, which is the case the rule was written for, so it is
-  // pinned against the registry as it actually ships rather than only against a synthetic group.
-  describe('the real config group', () => {
-    it('leaves exagent config as expo config', () => {
-      expect(resolveCommand('config', ['--type', 'introspect', '--json'])).toEqual({
-        kind: 'passthrough',
-        command: 'config',
-        argv: ['--type', 'introspect', '--json'],
-      });
-      expect(resolveCommand('config', [])).toEqual({
-        kind: 'passthrough',
-        command: 'config',
-        argv: [],
-      });
-      // Even the help flag: the bare name is the `expo` command, so its help is that command's.
-      expect(resolveCommand('config', ['--help'])).toEqual({
-        kind: 'passthrough',
-        command: 'config',
-        argv: ['--help'],
-      });
+  // `config` used to be both a forwarded `expo` command and this CLI's group, which is the case
+  // rule (b) was written for. The v1 narrowing moved that action to `inspect:config-plugins`
+  // (llp/0016), so no group is named after a forwarded command any more — the rule is pinned by the
+  // synthetic group above, and this block pins that the forward is now unconditional.
+  describe('config, which is a forwarded expo command and nothing else', () => {
+    it('forwards every form of it', () => {
+      for (const argv of [['--type', 'introspect', '--json'], [], ['--help'], ['effective']]) {
+        expect(resolveCommand('config', argv)).toEqual({
+          kind: 'passthrough',
+          command: 'config',
+          argv,
+        });
+      }
     });
 
-    it('owns config:effective', () => {
-      expect(resolveCommand('config:effective', ['--json'])).toMatchObject({
+    it('is not a group of this CLI', () => {
+      expect(commandGroups.config).toBeUndefined();
+      expect(resolveCommand('config:why', [])).toEqual({
+        kind: 'unknown-command',
+        command: 'config:why',
+      });
+    });
+  });
+
+  describe('the inspect group', () => {
+    it('owns both of its actions, in both spellings', () => {
+      expect(resolveCommand('inspect:config-plugins', ['--json'])).toMatchObject({
         kind: 'command',
-        name: 'config:effective',
+        name: 'inspect:config-plugins',
         argv: ['--json'],
       });
-    });
-
-    it('answers a colon form it does not have without forwarding it', () => {
-      expect(resolveCommand('config:why', [])).toEqual({
-        kind: 'unknown-action',
-        group: 'config',
-        action: 'why',
+      expect(resolveCommand('inspect', ['build-log', '--stdin'])).toMatchObject({
+        kind: 'command',
+        name: 'inspect:build-log',
+        argv: ['--stdin'],
       });
     });
 
-    // The documented cost of the rule: the space form is the bare form with an argument, and the
-    // bare form is `expo config`, which takes a positional directory.
-    it('forwards the space form instead of resolving it', () => {
-      expect(resolveCommand('config', ['effective'])).toEqual({
-        kind: 'passthrough',
-        command: 'config',
-        argv: ['effective'],
-      });
+    it('is not a forwarded expo command, so the space form is available', () => {
+      expect(forwardedCommands).not.toContain('inspect');
     });
   });
 
@@ -373,7 +366,7 @@ describe(resolveCommand, () => {
       kind: 'command',
       name: 'install',
       argv: ['expo-camera'],
-      load: topLevelCommands.install,
+      load: topLevelCommands.install!.load,
     });
     expect(forwardedCommands).not.toContain('add');
   });
@@ -461,7 +454,9 @@ describe(resolveCommand, () => {
 
   it('loads every registered command', async () => {
     const loaders = [
-      ...Object.entries(topLevelCommands),
+      ...Object.entries(topLevelCommands).map(
+        ([name, { load }]) => [name, load] as [string, () => Promise<Command>]
+      ),
       ...Object.entries(commandGroups).flatMap(([group, { actions }]) =>
         Object.entries(actions).map(
           ([action, { load }]) => [`${group}:${action}`, load] as [string, () => Promise<Command>]
@@ -520,44 +515,66 @@ describe(formatGroupHelp, () => {
   });
 });
 
-// `exagent build --platform ios` is the worst thing a `build` group could do: `build` is a real
-// verb of a real CLI, and printing a listing and exiting 0 would tell a driving agent it had
-// started a build (llp/0010 §Registry rules).
+// `exagent build --platform ios` is the worst thing a group named after another CLI's verb could
+// do: `build` is a real verb of a real CLI, and printing a listing and exiting 0 would tell a
+// driving agent it had started a build (llp/0010 §Registry rules).
 describe('a group whose name is another CLI’s verb', () => {
+  const group = {
+    summary: 'Synthetic group named after another CLI’s verb',
+    bareNameCommand: 'npx eas build',
+    actions: {
+      explain: { summary: 'Synthetic action', load: async () => (() => {}) as Command },
+    },
+  };
+
   it('fails on the bare name with options, instead of listing its actions', () => {
-    expect(resolveCommand('build', ['--platform', 'ios'])).toEqual({
-      kind: 'flags-without-action',
-      group: 'build',
-      flags: ['--platform', 'ios'],
+    withGroup('build', group, () => {
+      expect(resolveCommand('build', ['--platform', 'ios'])).toEqual({
+        kind: 'flags-without-action',
+        group: 'build',
+        flags: ['--platform', 'ios'],
+      });
     });
   });
 
   it('still answers the bare name, and the help flag, with the listing', () => {
-    expect(resolveCommand('build', [])).toEqual({ kind: 'group-help', group: 'build' });
-    expect(resolveCommand('build', ['--help'])).toEqual({ kind: 'group-help', group: 'build' });
-  });
-
-  it('resolves its actions in both spellings', () => {
-    expect(resolveCommand('build:explain', ['--file', 'x.log'])).toMatchObject({
-      kind: 'command',
-      name: 'build:explain',
-      argv: ['--file', 'x.log'],
-    });
-    expect(resolveCommand('build', ['explain', '--stdin'])).toMatchObject({
-      kind: 'command',
-      name: 'build:explain',
-      argv: ['--stdin'],
+    withGroup('build', group, () => {
+      expect(resolveCommand('build', [])).toEqual({ kind: 'group-help', group: 'build' });
+      expect(resolveCommand('build', ['--help'])).toEqual({ kind: 'group-help', group: 'build' });
     });
   });
 
   it('names the command the caller was reaching for, with their own flags', () => {
-    const message = flagsWithoutActionMessage('build', ['--platform', 'ios']);
+    withGroup('build', group, () => {
+      const message = flagsWithoutActionMessage('build', ['--platform', 'ios']);
 
-    expect(message).toContain('"exagent build --platform ios"');
-    expect(message).toContain('"npx eas build"');
-    expect(flagsWithoutActionSuggestion('build', ['--platform', 'ios'])).toBe(
-      'npx eas build --platform ios'
-    );
+      expect(message).toContain('"exagent build --platform ios"');
+      expect(message).toContain('"npx eas build"');
+      expect(flagsWithoutActionSuggestion('build', ['--platform', 'ios'])).toBe(
+        'npx eas build --platform ios'
+      );
+    });
+  });
+});
+
+// The v1 narrowing emptied the real `build` group — `build:wait` deferred, `build:explain` renamed
+// to `inspect:build-log` — so the bare verb is now a name this CLI does not have, and the answer
+// comes from the absent-capability table instead of from a group listing (llp/0016).
+describe('the build verb, which this CLI no longer groups anything under', () => {
+  it('is in none of the three maps', () => {
+    expect(commandGroups.build).toBeUndefined();
+    expect(resolveCommand('build', ['--platform', 'ios'])).toEqual({
+      kind: 'unknown-command',
+      command: 'build',
+    });
+  });
+
+  it('answers with the CLI that does start a build, and with the log reader that stayed', () => {
+    const message = unknownCommandMessage('build');
+
+    expect(message).toContain('npx eas build');
+    expect(message).toContain('npx exagent inspect:build-log');
+    expect(unknownCommandSuggestion('build')).toBe('npx eas build');
   });
 });
 
@@ -665,7 +682,8 @@ describe(suggestCommandNames, () => {
     ['stop', ['dev:stop', 'runtime:stop']],
     ['sync', ['skills:sync']],
     ['setup', ['agents:setup']],
-    ['effective', ['config:effective']],
+    ['config-plugins', ['inspect:config-plugins']],
+    ['build-log', ['inspect:build-log']],
     // A small number of edits away from a name that exists.
     ['stauts', ['status']],
     ['deploi', ['deploy']],

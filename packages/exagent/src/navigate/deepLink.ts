@@ -280,7 +280,7 @@ export function resolveDeepLinkUrl({
     // The one case where a person has to supply a value this CLI cannot know. The `Try:` is
     // therefore the command that *prints what the project declares* rather than a line with a
     // hole in it: `--scheme <your-app-scheme>` is not something an agent can run.
-    suggestedCommand: 'npx exagent config:effective --json',
+    suggestedCommand: 'npx exagent inspect:config-plugins --json',
   };
 }
 

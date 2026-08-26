@@ -82,7 +82,7 @@ describe('rule 1 — the command resolves', () => {
   });
 
   it(`catches a group given options and no action, which exits 1`, () => {
-    const [problem] = check(`const x = 'npx exagent build --platform ios';`);
+    const [problem] = check(`const x = 'npx exagent runtime --json';`);
     expect(problem?.rule).toBe('unknown-command');
     expect(problem?.why).toContain('no default action');
   });
@@ -170,12 +170,12 @@ describe('rule 4 — a suggestion is runnable as printed', () => {
   });
 
   it(`allows a placeholder in prose and in a usage line, which are not commands to run`, () => {
-    expect(check("const x = 'Usage: npx exagent build:explain --file <path>';")).toEqual([]);
+    expect(check("const x = 'Usage: npx exagent inspect:build-log --file <path>';")).toEqual([]);
   });
 
   it(`allows the documented suggestions that genuinely cannot be filled in`, () => {
     expect(
-      check(`const f = { id: 'x', command: 'npx exagent build:explain --file <path>', why: 'w' };`)
+      check(`const f = { id: 'x', command: 'npx exagent inspect:build-log --file <path>', why: 'w' };`)
     ).toEqual([]);
   });
 

@@ -1,5 +1,5 @@
 // @ref llp/0009-smart-followups.rfc.md §Examples per command — the next actions of
-// `config:effective`. The summary answers "how much did the plugins produce"; these are the two
+// `inspect:config-plugins`. The summary answers "how much did the plugins produce"; these are the two
 // ways to get at *what* they produced, and they are only offered when the run did not already ask
 // for it.
 
@@ -31,7 +31,7 @@ export function buildConfigEffectiveFollowUps({
   if (report.platforms.ios?.infoPlist != null) {
     followups.push({
       id: 'config-effective-file',
-      command: 'npx exagent config:effective --file infoPlist',
+      command: 'npx exagent inspect:config-plugins --file infoPlist',
       why: 'The summary counts the Info.plist keys; --file prints them with their values.',
     });
   }
@@ -39,7 +39,7 @@ export function buildConfigEffectiveFollowUps({
   if (!json) {
     followups.push({
       id: 'config-effective-json',
-      command: 'npx exagent config:effective --json',
+      command: 'npx exagent inspect:config-plugins --json',
       why: 'The JSON report carries every introspected value, not just how many of them there are.',
     });
   }

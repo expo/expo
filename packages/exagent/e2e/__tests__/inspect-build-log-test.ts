@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0012-build-explain.rfc.md
 //
-// `exagent build:explain` at the process boundary, through the published bin. The unit suite pins
+// `exagent inspect:build-log` at the process boundary, through the published bin. The unit suite pins
 // what the extractor answers for each committed log; this pins the things only a real process
 // shows — that `--json` is one parseable object, that a piped log is read off a real pipe with no
 // TTY anywhere, that a report is exit 0 even when it located nothing, and that a log that could
@@ -31,7 +31,7 @@ function fixture(name: string): string {
   return path.join(LOG_FIXTURES, name);
 }
 
-/** The shape `build:explain --json` prints, per `src/builds/explain/types.ts`. */
+/** The shape `inspect:build-log --json` prints, per `src/builds/explain/types.ts`. */
 type ExplainReport = {
   source: {
     kind: 'file' | 'stdin';
@@ -97,12 +97,12 @@ function readEvents(eventsFile: string): Record<string, any>[] {
     .map((line) => JSON.parse(line));
 }
 
-describe('exagent build:explain --file', () => {
+describe('exagent inspect:build-log --file', () => {
   it('reports the failure in a real xcodebuild log, and exits 0', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     const result = await executeExagentAsync(projectRoot, [
-      'build:explain',
+      'inspect:build-log',
       '--file',
       fixture('xcodebuild-pods-out-of-sync.log'),
     ]);
@@ -123,7 +123,7 @@ describe('exagent build:explain --file', () => {
 
     const result = await executeExagentAsync(
       projectRoot,
-      ['build:explain', '--file', fixture('metro-unresolved-module.log'), '--json'],
+      ['inspect:build-log', '--file', fixture('metro-unresolved-module.log'), '--json'],
       { env: { LOG_EVENTS: eventsFile } }
     );
 
@@ -156,7 +156,7 @@ describe('exagent build:explain --file', () => {
     const logPath = fixture('gradle-kotlin-compile-error.log');
 
     const first: ExplainReport = JSON.parse(
-      (await executeExagentAsync(projectRoot, ['build:explain', '--file', logPath, '--json']))
+      (await executeExagentAsync(projectRoot, ['inspect:build-log', '--file', logPath, '--json']))
         .stdout
     );
     const rerun = first.followups.find((followup) => followup.id === 'explain-all')!;
@@ -178,7 +178,7 @@ describe('exagent build:explain --file', () => {
     // A pod install that printed eight `[!]` warnings and succeeded. "No error located" is a
     // report, and a report is exit 0 (llp/0012 §Exit codes).
     const result = await executeExagentAsync(projectRoot, [
-      'build:explain',
+      'inspect:build-log',
       '--file',
       fixture('no-failure-successful-pod-install.log'),
       '--json',
@@ -192,7 +192,7 @@ describe('exagent build:explain --file', () => {
 
   it('lists the other matches only when --all is passed', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const args = ['build:explain', '--file', fixture('gradle-kotlin-compile-error.log'), '--json'];
+    const args = ['inspect:build-log', '--file', fixture('gradle-kotlin-compile-error.log'), '--json'];
 
     const plain: ExplainReport = JSON.parse((await executeExagentAsync(projectRoot, args)).stdout);
     const all: ExplainReport = JSON.parse(
@@ -205,14 +205,14 @@ describe('exagent build:explain --file', () => {
   });
 });
 
-describe('exagent build:explain --stdin', () => {
+describe('exagent inspect:build-log --stdin', () => {
   it('reads a log off a pipe, with no TTY anywhere', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const log = fs.readFileSync(fixture('npm-package-not-found.log'), 'utf8');
 
     const result = await pipeIntoExagentAsync(
       projectRoot,
-      ['build:explain', '--stdin', '--json'],
+      ['inspect:build-log', '--stdin', '--json'],
       log
     );
 
@@ -229,7 +229,7 @@ describe('exagent build:explain --stdin', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const log = fs.readFileSync(fixture('gradle-duplicate-class.log'), 'utf8');
 
-    const result = await pipeIntoExagentAsync(projectRoot, ['build:explain', '--json'], log);
+    const result = await pipeIntoExagentAsync(projectRoot, ['inspect:build-log', '--json'], log);
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout).failure.signature).toBe('android.gradle.duplicate-class');
@@ -242,7 +242,7 @@ describe('exagent build:explain --stdin', () => {
     // A chunk boundary lands in the middle of a line here, which is what a real subprocess pipe
     // does and what a naive reader gets wrong.
     const { npm_config_minimum_release_age, ...processEnv } = process.env;
-    const child = spawn(process.execPath, [bin, 'build:explain', '--stdin', '--json'], {
+    const child = spawn(process.execPath, [bin, 'inspect:build-log', '--stdin', '--json'], {
       cwd: projectRoot,
       env: { ...processEnv, CI: '1', FORCE_COLOR: '0', NO_COLOR: '1' },
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -263,7 +263,7 @@ describe('exagent build:explain --stdin', () => {
 
     // The shared runner wires stdin to `ignore`, so this is a run with stdin at EOF and no TTY —
     // exactly the "the log never arrived" case.
-    const result = await executeExagentAsync(projectRoot, ['build:explain', '--json'], {
+    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', '--json'], {
       reject: false,
     });
 
@@ -282,7 +282,7 @@ describe('when no report can be produced', () => {
 
     const result = await executeExagentAsync(
       projectRoot,
-      ['build:explain', '--file', path.join(projectRoot, 'nope.log'), '--json'],
+      ['inspect:build-log', '--file', path.join(projectRoot, 'nope.log'), '--json'],
       { reject: false, env: { LOG_EVENTS: eventsFile } }
     );
 
@@ -293,7 +293,7 @@ describe('when no report can be produced', () => {
       error: {
         code: 'LOG_UNREADABLE',
         message: expect.stringContaining('there is nothing at that path'),
-        suggestedCommand: 'npx exagent build:explain --help',
+        suggestedCommand: 'npx exagent inspect:build-log --help',
         needsHuman: null,
       },
     });
@@ -301,7 +301,7 @@ describe('when no report can be produced', () => {
     const events = readEvents(eventsFile);
     expect(events.find((entry) => entry._e === 'cli:error')).toMatchObject({
       code: 'LOG_UNREADABLE',
-      suggestedCommand: 'npx exagent build:explain --help',
+      suggestedCommand: 'npx exagent inspect:build-log --help',
     });
   });
 
@@ -309,7 +309,7 @@ describe('when no report can be produced', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const buildId = '2f1c9f0e-6b1e-4a3d-9c1a-0b6f1e2d3c4a';
 
-    const result = await executeExagentAsync(projectRoot, ['build:explain', buildId], {
+    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', buildId], {
       reject: false,
     });
 
@@ -325,7 +325,7 @@ describe('when no report can be produced', () => {
 
     const result = await executeExagentAsync(
       projectRoot,
-      ['build:explain', '--file', fixture('npm-peer-conflict.log'), '--bogus'],
+      ['inspect:build-log', '--file', fixture('npm-peer-conflict.log'), '--bogus'],
       { reject: false }
     );
 
@@ -335,19 +335,34 @@ describe('when no report can be produced', () => {
 });
 
 describe('the registry', () => {
-  it('lists build:explain in the group', async () => {
+  it('lists inspect:build-log in the group, tagged experimental', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['build', '--help']);
+    const result = await executeExagentAsync(projectRoot, ['inspect', '--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('build:explain');
+    expect(result.stdout).toContain('inspect:build-log');
+    expect(result.stdout).toContain('[experimental]');
+    expect(result.stdout).toContain('experimental commands may change or vanish');
+  });
+
+  // The bare verb belongs to the EAS CLI, and this one never wrapped it (llp/0016).
+  it('answers the bare build verb with the CLI that does start a build', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['build', '--platform', 'ios'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.all).toContain('npx eas build');
+    expect(result.all).toContain('npx exagent inspect:build-log');
   });
 
   it('prints usage for --help without reading anything', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['build:explain', '--help']);
+    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('--file <path>');

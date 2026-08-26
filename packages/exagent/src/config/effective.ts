@@ -56,7 +56,7 @@ export const NOT_ATTRIBUTABLE: string[] = ['ios.xcodeproj', '*.dangerous'];
  *
  * The list is Expo-module autolinking only, which is a defensible scope and was an undocumented
  * one: `exagent install` classified `@react-native-async-storage/async-storage` as a native module
- * and `config:effective` then left it out, so two commands of one CLI disagreed about one package
+ * and `inspect:config-plugins` then left it out, so two commands of one CLI disagreed about one package
  * with nothing on screen to reconcile them [observed — friction run 3, F35]. The field name says
  * the scope now; this says what to run for the packages outside it.
  */
@@ -94,7 +94,7 @@ export interface BuildEffectiveConfigOptions {
 }
 
 /**
- * Reshape one introspected config into the report `config:effective` prints.
+ * Reshape one introspected config into the report `inspect:config-plugins` prints.
  *
  * @throws {CommandError} `CONFIG_INTROSPECT_UNSUPPORTED` when the payload carries no
  * `_internal.modResults`, which is the one thing this command exists to read.

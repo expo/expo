@@ -167,7 +167,7 @@ describe('readLogFileAsync', () => {
 
   it('ends every failure with something to run', async () => {
     await expect(readLogFileAsync(path.join(temporaryDir, 'nope.log'))).rejects.toMatchObject({
-      suggestedCommand: 'npx exagent build:explain --help',
+      suggestedCommand: 'npx exagent inspect:build-log --help',
     });
   });
 });

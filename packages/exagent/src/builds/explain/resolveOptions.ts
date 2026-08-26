@@ -1,5 +1,5 @@
 // @ref llp/0012-build-explain.rfc.md §Two input sources, and one that is reserved
-// Argument resolution for `exagent build:explain`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `exagent inspect:build-log`. Pure: argv in, options out, `CommandError` for
 // anything a caller can get wrong, so every combination is unit-testable without a log.
 
 import path from 'node:path';
@@ -40,7 +40,7 @@ export interface ResolveExplainContext {
 }
 
 /**
- * Resolve the arguments of `exagent build:explain`.
+ * Resolve the arguments of `exagent inspect:build-log`.
  *
  * @throws {CommandError} `BAD_ARGS` for two input sources, an unusable `--platform` or
  *   `--context`, or no input source at all on a terminal; `BUILD_ID_UNSUPPORTED` for the
@@ -50,7 +50,7 @@ export function resolveExplainOptions(
   argv: string[],
   { stdinIsTTY, cwd }: ResolveExplainContext
 ): ExplainOptions {
-  const args = parseArgsOrThrow(EXPLAIN_ARGS, argv, 'build:explain');
+  const args = parseArgsOrThrow(EXPLAIN_ARGS, argv, 'inspect:build-log');
   const positional = args._.map(String);
 
   if (positional.length > 0) {
@@ -89,7 +89,7 @@ export function resolveExplainOptions(
  * Which of the two sources this run reads.
  *
  * With neither flag, a run whose stdin is *not* a terminal is being piped to, so `--stdin` is
- * implied — `eas build:view … | exagent build:explain` is the shape the command is for. A run on
+ * implied — `eas build:view … | exagent inspect:build-log` is the shape the command is for. A run on
  * a terminal with neither flag has nothing to read and is told so, rather than blocking forever
  * on a stdin nobody is going to write to.
  */
@@ -115,10 +115,10 @@ function resolveSource({
     [
       `No log to explain: neither --file nor --stdin was passed, and stdin is a terminal.`,
       `Why: this command reads a build log and reports what failed in it. On a terminal there is nothing being piped in, so waiting on stdin would hang instead of answering.`,
-      `How: run "npx exagent build:explain --file <path>", or pipe a log in: "cat build.log | npx exagent build:explain".`,
+      `How: run "npx exagent inspect:build-log --file <path>", or pipe a log in: "cat build.log | npx exagent inspect:build-log".`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent build:explain --help';
+  error.suggestedCommand = 'npx exagent inspect:build-log --help';
   throw error;
 }
 
@@ -181,7 +181,7 @@ function badContext(value: string): CommandError {
  * The error for the positional argument this command reserves but does not read yet.
  *
  * The build-id form is the whole reason the argument is reserved rather than rejected as a stray:
- * `exagent build:explain <build-id>` is the command an agent will reach for, and it will exist.
+ * `exagent inspect:build-log <build-id>` is the command an agent will reach for, and it will exist.
  * Until it does, saying so precisely — and naming the two forms that work today — is a better
  * answer than the generic "reads no positional arguments" of `positionalArgs: 'none'`, which
  * would send the reader looking for a typo instead of for the flag.
@@ -192,9 +192,9 @@ function buildIdUnsupported(value: string): CommandError {
   const error = new CommandError(
     'BUILD_ID_UNSUPPORTED',
     [
-      `"exagent build:explain ${value}" cannot fetch a build's logs yet, so it has nothing to explain.`,
+      `"exagent inspect:build-log ${value}" cannot fetch a build's logs yet, so it has nothing to explain.`,
       `Why: eas-cli has no "build:logs" command, so there is no supported way for this CLI to read an EAS build's log. The argument is reserved for when there is; it is not a typo.`,
-      `How: save the log and pass it in — "npx eas build:view ${value}" prints where the log files are — then run "npx exagent build:explain --file <path>". A local build's output pipes straight in: "npx expo run:ios 2>&1 | npx exagent build:explain".`,
+      `How: save the log and pass it in — "npx eas build:view ${value}" prints where the log files are — then run "npx exagent inspect:build-log --file <path>". A local build's output pipes straight in: "npx expo run:ios 2>&1 | npx exagent inspect:build-log".`,
     ].join('\n')
   );
   error.suggestedCommand = `npx eas build:view ${value}`;

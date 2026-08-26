@@ -807,6 +807,14 @@ Cost [observed]: a group under a forwarded name reaches its actions by one spell
 
 ### (c) A group named after another CLI's verb recovers into that CLI
 
+> **Amendment — 2026-08-26 ([[0016-v1-scope]]).** No group is named after another CLI's verb any
+> more: the v1 narrowing emptied `build` — `build:wait` deferred, `build:explain` renamed to
+> `inspect:build-log` — so `exagent build --platform ios` is now a name in none of the three maps,
+> and the answer comes from the absent-capability table instead: "starting a build is the EAS CLI's
+> job", with `Try: npx eas build`. The one thing lost is the caller's own flags on that line, which
+> is the price of the answer moving from a group to a name. The `bareNameCommand` mechanism below is
+> kept and still tested, because the next group named after another CLI's verb wants it.
+
 Rule (a) says what `exagent build --platform ios` must not do — print a listing and exit 0. It does not say what the reader should do instead, and for this group the honest answer is not "read our help": `build` is a real verb of a real CLI, `--platform ios` is a real flag of it, and the caller aimed a correct command at the wrong binary.
 
 So [observed — 2026-08-23, `src/commandRegistry.ts`] a `CommandGroup` may declare `bareNameCommand`, the command another CLI owns its bare name for. When it has one, the `flags-without-action` error names it and the `Try:` line is that command **with the caller's own flags on it** — `Try: npx eas build --platform ios` — so the recovery is a paste rather than a re-read. A group without one is unchanged and recovers into `npx exagent <group> --help`.
@@ -834,7 +842,7 @@ declare `'own'` too: their arguments are forwarded to the Expo CLI, which report
 Note that this is a _silent_ no-op, which llp/0006 §Errors are prompts treats as the one answer a
 driving agent cannot recover from — it is indistinguishable from the command having understood.
 
-## `build:explain`: the rule table is capped and in-repo
+## `inspect:build-log` (then `build:explain`): the rule table is capped and in-repo
 
 Decision [confirmed — Kudo, 2026-08-23]. The failure-signature rules that `build:explain` matches build logs against ship **in the repository, as a bounded table** — a capped set of Expo-specific signatures with a test each, reviewed like code and versioned with the CLI.
 

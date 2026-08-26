@@ -1,7 +1,7 @@
-// @ref llp/0010-agent-conventions.rfc.md §`build:explain`: the rule table is capped and in-repo
+// @ref llp/0010-agent-conventions.rfc.md §`inspect:build-log`: the rule table is capped and in-repo
 // @ref llp/0012-build-explain.rfc.md §The rule table
 //
-// The rules `build:explain` matches a build log against. Data, not code: every entry is a regular
+// The rules `inspect:build-log` matches a build log against. Data, not code: every entry is a regular
 // expression, a stable id, one sentence of what broke, and the command to run next. Nothing here
 // does I/O and nothing here is fetched — the table ships in the repository, is capped at
 // {@link MAX_SIGNATURES}, and every entry has a fixture (`__tests__/fixtures/`) with a test.
@@ -28,7 +28,7 @@ import type { PhaseName } from './types';
 /**
  * How many rules this table may hold.
  *
- * A number, in code, with a test on it: the cap of llp/0010 §`build:explain` is only a cap if
+ * A number, in code, with a test on it: the cap of llp/0010 §`inspect:build-log` is only a cap if
  * something enforces it. Raising it is a decision to record in that document, not an edit to make
  * while adding a rule.
  */
@@ -190,7 +190,7 @@ export const ANCHORS: Anchor[] = [
     // reported `context.before` carries.
     pattern: /^\s*at (\w+) \((?!.*node_modules)\S*\/plugins?\/[^)]*\.js:\d+:\d+\)/,
     message: 'A config plugin in this project threw while the app config was being resolved.',
-    suggestedCommand: () => 'npx exagent config:effective',
+    suggestedCommand: () => 'npx exagent inspect:config-plugins',
     docsUrl: 'https://docs.expo.dev/config-plugins/development-and-debugging/',
     provenance: 'captured',
   },
@@ -200,7 +200,7 @@ export const ANCHORS: Anchor[] = [
     kind: 'summary',
     pattern: /^PluginError: (.+)$/,
     message: 'A config plugin failed while the app config was being resolved.',
-    suggestedCommand: () => 'npx exagent config:effective',
+    suggestedCommand: () => 'npx exagent inspect:config-plugins',
     docsUrl: 'https://docs.expo.dev/config-plugins/development-and-debugging/',
     provenance: 'captured',
   },

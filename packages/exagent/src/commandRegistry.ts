@@ -25,11 +25,35 @@ import type { Command } from './types';
 /** Loads one command module on demand, so `exagent --help` never pays for the whole CLI. */
 export type CommandLoader = () => Promise<Command>;
 
+/**
+ * Whether a command may change or vanish, which is a property of the **command** and not of the
+ * group it is in.
+ *
+ * Per action on purpose: `inspect` is a group a stable action can join, and marking the group would
+ * say the opposite of what is meant about the ones that follow. The help prints an `[experimental]`
+ * tag on the line and one footnote per section that has any, so a reader learns it where they learn
+ * the command rather than in a release note.
+ *
+ * `true` or absent — never `false`. A command that is not marked is the ordinary case, and a
+ * `unstable: false` beside twenty entries with nothing would read as a claim somebody made rather
+ * than as the default.
+ */
+export type Unstable = true;
+
 /** One action of a group, e.g. the `eval` of `runtime:eval`. */
 export interface CommandAction {
   /** One line, printed by the group help. */
   summary: string;
   load: CommandLoader;
+  /** @see Unstable */
+  unstable?: Unstable;
+}
+
+/** One command with a name of its own, e.g. `smoke`. */
+export interface TopLevelCommand {
+  load: CommandLoader;
+  /** @see Unstable */
+  unstable?: Unstable;
 }
 
 /** One colon group, e.g. the `runtime` of `runtime:eval`. */
@@ -66,20 +90,24 @@ export function withAction(action: string, load: CommandLoader): CommandLoader {
 }
 
 /** Commands with a name of their own. Add a new top-level command here. */
-export const topLevelCommands: { [command: string]: CommandLoader } = {
-  deploy: () => import('./deploy').then((i) => i.exagentDeploy),
-  install: () => import('./install').then((i) => i.exagentInstall),
-  navigate: () => import('./navigate').then((i) => i.exagentNavigate),
-  new: () => import('./new').then((i) => i.exagentNew),
+export const topLevelCommands: { [command: string]: TopLevelCommand } = {
+  deploy: { load: () => import('./deploy').then((i) => i.exagentDeploy) },
+  install: { load: () => import('./install').then((i) => i.exagentInstall) },
+  navigate: { load: () => import('./navigate').then((i) => i.exagentNavigate) },
+  new: { load: () => import('./new').then((i) => i.exagentNew) },
   // A capability only this CLI has, so it gets a verb of its own (llp/0006 naming rule): `expo`
   // has no `smoke` in its command map, so there is no `expo` behaviour for this name to match.
-  smoke: () => import('./smoke').then((i) => i.exagentSmoke),
-  start: () => import('./start').then((i) => i.exagentStart),
-  status: () => import('./status').then((i) => i.exagentStatus),
+  //
+  // Unstable: the gate is eight phases, and which of them belong in one command is the thing a
+  // first release is for finding out. The name is not going anywhere; the phase list and the
+  // outcome table might.
+  smoke: { load: () => import('./smoke').then((i) => i.exagentSmoke), unstable: true },
+  start: { load: () => import('./start').then((i) => i.exagentStart) },
+  status: { load: () => import('./status').then((i) => i.exagentStatus) },
   // A capability only this CLI has gets a verb of its own (llp/0006 naming rule): `expo` has no
   // `typecheck` in its command map [observed — `packages/@expo/cli/src/index.ts`, 2026-08-23], so
   // there is no `expo` behaviour for this name to have to match.
-  typecheck: () => import('./typecheck').then((i) => i.exagentTypecheck),
+  typecheck: { load: () => import('./typecheck').then((i) => i.exagentTypecheck) },
 };
 
 /** Commands that belong to a group. Add a new action, or a new group, here. */
@@ -93,26 +121,25 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       },
     },
   },
-  build: {
-    summary: 'Work with the EAS builds this project already has',
-    // No `defaultAction`: `exagent build --platform ios` means `eas build`, and running an
-    // action of this group for it would be a command nobody asked for. See `bareNameCommand`.
-    bareNameCommand: 'npx eas build',
+  // Read-only questions about a project that is not running. The two actions were `inspect:build-log`
+  // and `inspect:config-plugins`, under two groups named after other CLIs' verbs; one group named after
+  // what the caller is doing holds them and every read-only answer that follows.
+  //
+  // The group is not marked unstable — both of its actions are, individually. A group-level mark
+  // would say something about the stable actions that join it later, which is the opposite of what
+  // is meant (see {@link Unstable}).
+  inspect: {
+    summary: 'Read what this project produced, without running it',
     actions: {
-      explain: {
-        summary: 'Read a build log and say what failed in it',
-        load: () => import('./builds').then((i) => i.exagentBuildExplain),
+      'build-log': {
+        summary: 'Read a native build log and say what failed in it',
+        load: () => import('./builds').then((i) => i.exagentInspectBuildLog),
+        unstable: true,
       },
-    },
-  },
-  // `config` is also a forwarded `expo` command, so this group owns its colon forms only and
-  // `exagent config` stays `expo config` (llp/0010 §Registry rules, rule b).
-  config: {
-    summary: 'Read the native configuration the config plugins produce',
-    actions: {
-      effective: {
+      'config-plugins': {
         summary: 'What the config plugins actually produced, per platform',
-        load: () => import('./config').then((i) => i.exagentConfigEffective),
+        load: () => import('./config').then((i) => i.exagentInspectConfigPlugins),
+        unstable: true,
       },
     },
   },
@@ -348,9 +375,9 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
     };
   }
 
-  const load = topLevelCommands[command];
-  if (load) {
-    return { kind: 'command', name: command, argv, load };
+  const entry = topLevelCommands[command];
+  if (entry) {
+    return { kind: 'command', name: command, argv, load: entry.load };
   }
 
   const aliased = commandAliases[command];
@@ -359,7 +386,7 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
       kind: 'command',
       name: aliased,
       argv,
-      load: topLevelCommands[aliased]!,
+      load: topLevelCommands[aliased]!.load,
     };
   }
 
@@ -404,15 +431,11 @@ export const helpSections: HelpSection[] = [
   },
   {
     title: 'Inspect the project',
-    commands: ['config:effective', 'doctor'],
-    note: 'exagent config (bare) is expo config; only config:effective is this CLI',
+    commands: [...actionNames('inspect'), 'doctor'],
+    note: 'inspect:build-log reads a log a build left behind; nothing here runs the project.',
   },
   { title: 'Create', commands: ['new'] },
-  {
-    title: 'Deployment',
-    commands: ['deploy', ...actionNames('build')],
-    note: 'Builds are started with npx eas build; build:explain reads the log one left behind.'
-  },
+  { title: 'Deployment', commands: ['deploy'] },
   {
     title: 'Debug a running app',
     commands: ['smoke', ...actionNames('runtime'), 'navigate'],
@@ -432,6 +455,34 @@ export const helpSections: HelpSection[] = [
 
 /** Width the help wraps a long command list at, so the Expo CLI section stays readable. */
 const HELP_WIDTH = 80;
+
+/** What an unstable command's line carries, and the sentence a section carrying one ends with. */
+const EXPERIMENTAL_TAG = '[experimental]';
+const EXPERIMENTAL_NOTE = 'experimental commands may change or vanish';
+
+/**
+ * Whether one runnable name is marked unstable.
+ *
+ * Reads the same two maps `resolveCommand` reads, so a command cannot be tagged in the help and
+ * untagged in the registry. A bare group name answers for its default action, which is the command
+ * that name runs; a group name with no default action runs nothing and is never tagged.
+ */
+export function isUnstableCommand(name: string): boolean {
+  const [group, action] = name.split(':');
+  if (action != null) {
+    return commandGroups[group!]?.actions[action]?.unstable === true;
+  }
+  const entry = commandGroups[name];
+  if (entry?.defaultAction) {
+    return entry.actions[entry.defaultAction]?.unstable === true;
+  }
+  return topLevelCommands[name]?.unstable === true;
+}
+
+/** One command as the help prints it: the name, plus the tag when it has one. */
+function helpName(command: string): string {
+  return isUnstableCommand(command) ? `${command} ${EXPERIMENTAL_TAG}` : command;
+}
 
 /** One comma-separated list of commands, wrapped onto as many indented lines as it needs. */
 function wrapCommands(commands: string[], indent: string): string {
@@ -458,8 +509,11 @@ export function formatTopLevelHelp(): string {
     .map(({ title, commands, note }) =>
       [
         chalk`    {bold ${title}}`,
-        wrapCommands(commands, '      '),
+        wrapCommands(commands.map(helpName), '      '),
         note ? chalk`      {dim ${note}}` : null,
+        // One footnote per section that has any, rather than one at the bottom of the listing: a
+        // reader who took in the Inspect block and stopped reading has still been told.
+        commands.some(isUnstableCommand) ? chalk`      {dim ${EXPERIMENTAL_NOTE}}` : null,
       ]
         .filter((line) => line != null)
         .join('\n')
@@ -488,11 +542,15 @@ export function formatGroupHelp(name: string): string {
   // One column for the names, so the summaries line up whatever the longest action is called.
   const width = Math.max(...actionNames(name).map((action) => action.length)) + 3;
   const actions = actionNames(name)
-    .map(
-      (action, index) =>
-        chalk`    {bold ${action.padEnd(width)}}${Object.values(group.actions)[index]!.summary}`
-    )
+    .map((action, index) => {
+      const summary = Object.values(group.actions)[index]!.summary;
+      const tag = isUnstableCommand(action) ? chalk` {dim ${EXPERIMENTAL_TAG}}` : '';
+      return chalk`    {bold ${action.padEnd(width)}}${summary}${tag}`;
+    })
     .join('\n');
+  const experimental = actionNames(name).some(isUnstableCommand)
+    ? chalk`\n\n    {dim ${EXPERIMENTAL_NOTE}}`
+    : '';
   const bare = group.defaultAction
     ? chalk`\n\n    {bold npx exagent ${name}} runs {bold ${name}:${group.defaultAction}}, whose options are below.`
     : '';
@@ -510,7 +568,7 @@ export function formatGroupHelp(name: string): string {
     {dim $} npx exagent ${name}:{dim <action> [options]}
 
   {bold Actions}
-${actions}${bare}
+${actions}${experimental}${bare}
 
   For the options of one action, run it with the {bold --help} flag
     {dim $} npx exagent ${example} --help
@@ -582,7 +640,7 @@ const MAX_SUGGESTIONS = 3;
  * Edits above which two names are simply different words rather than one of them mistyped.
  *
  * Scaled by length, because two edits in `dev` is a different command and two edits in
- * `config:effective` is a typo.
+ * `inspect:config-plugins` is a typo.
  */
 function maxEditsFor(name: string): number {
   return name.length <= 5 ? 1 : 2;
@@ -661,6 +719,15 @@ const absentCapabilities: {
   // `dev:logs` exists now, so the bare name is a caller one hop away from it rather than one
   // reaching for a capability this CLI does not have. The other two commands stay in the answer:
   // a log is read for three different questions, and only one of them is "what did it print".
+  // `exagent build --platform ios` is a real command of a real CLI aimed at the wrong one. It used
+  // to be answered by a `build` group with a `bareNameCommand` (llp/0010 §Registry rules (c)); the
+  // v1 narrowing left that group with nothing in it — `build:wait` deferred, `build:explain` renamed
+  // to `inspect:build-log` — so the answer moved here, where a name this CLI does not have belongs.
+  build: {
+    absent: `starting a build is the EAS CLI's job, not this one's`,
+    instead: `Run "npx eas build" with the flags you meant to pass here — this CLI wraps no build verb, and never did. What it has is "npx exagent inspect:build-log", which reads the log a finished build left behind and says what failed in it.`,
+    suggestedCommand: 'npx eas build',
+  },
   logs: {
     absent: `the log this CLI keeps is the dev server's, and it is "npx exagent dev:logs"`,
     instead: `That reads what a dev server started with "npx exagent dev --detach" has printed. For the two questions a log is more often opened for: "npx exagent smoke" says whether the bundler finished, whether this project compiles and whether the app came up, and "npx exagent runtime:errors" collects what the running app threw over a time window.`,

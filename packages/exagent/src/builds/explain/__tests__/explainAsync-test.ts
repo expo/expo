@@ -1,6 +1,6 @@
 /* eslint-env jest */
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
-// The shape test. The top-level keys of `build:explain --json` are the de-facto version of this
+// The shape test. The top-level keys of `inspect:build-log --json` are the de-facto version of this
 // command, so they are pinned here and must not depend on what the log held: an agent reading
 // `failure` on a clean log gets `null`, never a missing key.
 import fs from 'node:fs';

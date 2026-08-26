@@ -1,11 +1,19 @@
-# 0012: `build:explain` — Deterministic Triage of a Native Build Log
+# 0012: `inspect:build-log` — Deterministic Triage of a Native Build Log
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent build:explain` (`src/builds/index.ts`, `src/builds/explain/`); the follow-up ladder (`src/followups/explain.ts`, `src/followups/builds.ts`); the fixture corpus (`src/builds/explain/__tests__/fixtures/`); `eas-cli`
+**Systems:** `exagent inspect:build-log` (`src/builds/index.ts`, `src/builds/explain/`); the follow-up ladder (`src/followups/explain.ts`); the fixture corpus (`src/builds/explain/__tests__/fixtures/`); `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-24
-**Related:** [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]], [[0001-agentic-cli-on-expo-cli]]
+**Related:** [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]], [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]]
+
+> **Renamed 2026-08-26:** this command was `build:explain` until the v1 scope narrowing
+> ([[0016-v1-scope]]). The `build` group it was in held one command that started nothing and one
+> that waited on a build somebody else started; `build:wait` was deferred and this one moved to
+> `inspect`, the group named after what the caller is doing. It ships marked `[experimental]`.
+> Nothing about its behaviour, its flags or its rule table changed. Occurrences of the old name
+> below are the historical record and are left as written where they are quoting a decision; the
+> source paths are unchanged (`src/builds/`, which llp/0016 records as deliberate).
 
 ## Summary
 

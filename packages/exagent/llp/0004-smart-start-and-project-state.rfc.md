@@ -293,7 +293,7 @@ drops the fingerprint's own `sources` for exactly this reason). The two that cos
 spawns `expo config --json --type public` to resolve the `runtimeVersion` policy, and the EAS build
 lookup makes its network call. Measured live on the same project: **1.57 s** → **3.29 s**.
 
-The name is Kudo's and it harmonises with `build:explain`: both mean "give me the why". It also
+The name is Kudo's and it harmonises with `inspect:build-log` (then `build:explain`): both mean "give me the why". It also
 absorbed the `--builds` flag of the section above before either shipped — one flag for "you may pay",
 not two.
 

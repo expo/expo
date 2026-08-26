@@ -31,7 +31,7 @@ export interface EffectivePlugin {
 /** The mods of one platform, as `expo config` compiled them, e.g. `{ infoPlist: {...} }`. */
 export type PlatformMods = { [mod: string]: unknown };
 
-/** The whole answer of `config:effective`, minus the follow-ups the command attaches. */
+/** The whole answer of `inspect:config-plugins`, minus the follow-ups the command attaches. */
 export interface EffectiveConfigReport {
   projectRoot: string;
   /**

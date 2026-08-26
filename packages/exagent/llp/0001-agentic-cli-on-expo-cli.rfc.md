@@ -102,7 +102,7 @@ Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries 
 - [[0013-doctor-fix]] — the deterministic cache and build-state reset: the tier table, the path-safety predicate, and the one command checkpoints do not protect. Deferred ([[0016-v1-scope]]).
 - [[0015-backend-selection-and-config]] — which of the two build backends a plan uses, decided at planning time from the host and the toolchain; and the developer config (`package.json` › `expo.exagent`) that overrides it.
 
-**Scoped out** [confirmed — Kudo, 2026-08-19]: ambient/long-running modes (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work; a separate `exagent mcp` feature (subsumed by Shape 1); **the build-failure signature DB** — a hosted, growing, community-fed corpus with its own service and submission path. The capped, in-repo, ~40-entry rule table `build:explain` matches against is deliberately not that; [[0010-agent-conventions]] §`build:explain` records the decision and [[0012-build-explain]] §The rule table implements the cap.
+**Scoped out** [confirmed — Kudo, 2026-08-19]: ambient/long-running modes (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work; a separate `exagent mcp` feature (subsumed by Shape 1); **the build-failure signature DB** — a hosted, growing, community-fed corpus with its own service and submission path. The capped, in-repo, ~40-entry rule table `inspect:build-log` matches against is deliberately not that; [[0010-agent-conventions]] §`inspect:build-log` records the decision and [[0012-build-explain]] §The rule table implements the cap.
 
 ## Open questions
 

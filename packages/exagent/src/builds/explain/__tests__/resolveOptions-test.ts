@@ -29,7 +29,7 @@ describe('the input source', () => {
   });
 
   it('implies --stdin when something is piping in', () => {
-    // `npx expo run:ios 2>&1 | npx exagent build:explain` is the shape the command is for, and
+    // `npx expo run:ios 2>&1 | npx exagent inspect:build-log` is the shape the command is for, and
     // making the caller also type `--stdin` would be a flag that only ever has one value.
     expect(resolveExplainOptions([], PIPED).source).toEqual({ kind: 'stdin' });
   });
@@ -63,7 +63,7 @@ describe('the reserved build-id positional', () => {
       expect(error.suggestedCommand).toBe(`npx eas build:view ${BUILD_ID}`);
       // The two forms that do work, in the line a reader acts on.
       expect(error.message).toContain('--file');
-      expect(error.message).toContain('build:explain');
+      expect(error.message).toContain('inspect:build-log');
     }
   });
 });

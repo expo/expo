@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
 //
-// `exagent config:effective` is orchestration: it runs the project's `expo` CLI and reshapes what
+// `exagent inspect:config-plugins` is orchestration: it runs the project's `expo` CLI and reshapes what
 // it printed. These tests drive the published CLI against the stub `expo` bin of the fixtures
 // (`e2e/fixtures/README.md`), so the whole path — the registry, the subprocess, the parse, the
 // three output channels — is asserted without evaluating a real config.
@@ -18,7 +18,7 @@ import {
   setupFixtureAsync,
 } from '../utils';
 
-/** The shape `config:effective --json` prints, per `src/config/types.ts`. */
+/** The shape `inspect:config-plugins --json` prints, per `src/config/types.ts`. */
 type EffectiveConfigPayload = {
   projectRoot: string;
   configuredSdkVersion: string | null;
@@ -106,11 +106,11 @@ async function setupAsync(
   return { projectRoot, env: { STUB_EXPO_CONFIG_JSON: payloadPath } };
 }
 
-describe('exagent config:effective', () => {
+describe('exagent inspect:config-plugins', () => {
   it('introspects through the expo CLI and prints the report as JSON', async () => {
     const { projectRoot, env } = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['config:effective', '--json'], { env });
+    const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--json'], { env });
 
     expect(result.exitCode).toBe(0);
     const payload: EffectiveConfigPayload = JSON.parse(result.stdout);
@@ -137,7 +137,7 @@ describe('exagent config:effective', () => {
   it('never calls the SDK of the config `sdkVersion`, which status already means', async () => {
     const { projectRoot, env } = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['config:effective', '--json'], { env });
+    const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--json'], { env });
     const payload = JSON.parse(result.stdout) as Record<string, unknown>;
 
     expect(payload).toHaveProperty('configuredSdkVersion', '54.0.0');
@@ -147,7 +147,7 @@ describe('exagent config:effective', () => {
   it('says which SDK it means in the human report', async () => {
     const { projectRoot, env } = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['config:effective'], { env });
+    const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins'], { env });
 
     expect(result.stdout).toContain('54.0.0 per config');
   });
@@ -157,7 +157,7 @@ describe('exagent config:effective', () => {
   it('marks a declared plugin apart from an auto-applied one', async () => {
     const { projectRoot, env } = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['config:effective', '--json'], { env });
+    const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--json'], { env });
     const payload: EffectiveConfigPayload = JSON.parse(result.stdout);
 
     expect(payload.plugins).toEqual([
@@ -169,7 +169,7 @@ describe('exagent config:effective', () => {
   it('prints a terse labelled report for a terminal', async () => {
     const { projectRoot, env } = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['config:effective'], { env });
+    const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins'], { env });
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain(`Project      ${projectRoot}`);
@@ -188,7 +188,7 @@ describe('exagent config:effective', () => {
 
     const result = await executeExagentAsync(
       projectRoot,
-      ['config:effective', '--file', 'infoPlist'],
+      ['inspect:config-plugins', '--file', 'infoPlist'],
       { env }
     );
 
@@ -205,7 +205,7 @@ describe('exagent config:effective', () => {
 
     const result = await executeExagentAsync(
       projectRoot,
-      ['config:effective', '--platform', 'ios', '--json'],
+      ['inspect:config-plugins', '--platform', 'ios', '--json'],
       { env }
     );
 
@@ -216,7 +216,7 @@ describe('exagent config:effective', () => {
     const { projectRoot, env } = await setupAsync('go-app');
     const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-    await executeExagentAsync(projectRoot, ['config:effective', '--json'], {
+    await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--json'], {
       env: { ...env, LOG_EVENTS: eventsFile },
     });
 
@@ -243,13 +243,13 @@ describe('exagent config:effective', () => {
   it('suppresses the follow-ups on request', async () => {
     const { projectRoot, env } = await setupAsync('go-app');
 
-    const withFollowups = await executeExagentAsync(projectRoot, ['config:effective'], { env });
-    const without = await executeExagentAsync(projectRoot, ['config:effective', '--no-followups'], {
+    const withFollowups = await executeExagentAsync(projectRoot, ['inspect:config-plugins'], { env });
+    const without = await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--no-followups'], {
       env,
     });
 
-    expect(withFollowups.stdout).toContain('config:effective --file infoPlist');
-    expect(without.stdout).not.toContain('config:effective --file infoPlist');
+    expect(withFollowups.stdout).toContain('inspect:config-plugins --file infoPlist');
+    expect(without.stdout).not.toContain('inspect:config-plugins --file infoPlist');
   });
 
   describe('failures', () => {
@@ -262,7 +262,7 @@ describe('exagent config:effective', () => {
         sdkVersion: '54.0.0',
       });
 
-      const result = await executeExagentAsync(projectRoot, ['config:effective'], {
+      const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins'], {
         env,
         reject: false,
       });
@@ -275,7 +275,7 @@ describe('exagent config:effective', () => {
     it('reports a failed expo CLI in the words the CLI used, and exits 1', async () => {
       const { projectRoot, env } = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['config:effective'], {
+      const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins'], {
         env: { ...env, STUB_EXPO_EXIT_CODE: '3' },
         reject: false,
       });
@@ -289,7 +289,7 @@ describe('exagent config:effective', () => {
 
       const result = await executeExagentAsync(
         projectRoot,
-        ['config:effective', '--file', 'AndroidManifest.xml'],
+        ['inspect:config-plugins', '--file', 'AndroidManifest.xml'],
         { env, reject: false }
       );
 
@@ -303,10 +303,10 @@ describe('exagent config:effective', () => {
   it('prints its own help, naming the colon form', async () => {
     const { projectRoot, env } = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['config:effective', '--help'], { env });
+    const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--help'], { env });
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('npx exagent config:effective');
+    expect(result.stdout).toContain('npx exagent inspect:config-plugins');
     expect(result.stdout).toContain('--platform <ios|android|all>');
     expect(result.stdout).toContain('--file <name>');
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);

@@ -1,19 +1,20 @@
 // @ref llp/0012-build-explain.rfc.md
-// The `build` group — `build:explain` since the v1 narrowing deferred `build:wait` (llp/0016) — and
-// no `defaultAction` on purpose: the registry rule that answers `exagent build --platform ios` with
-// an error is what keeps the bare name from silently printing a listing and exiting 0 for a caller
-// that meant `eas build`.
+// `exagent inspect:build-log`, which the v1 narrowing renamed from `build:explain` (llp/0016): the
+// `build` group it was in held one command that started nothing and one that waited on a build
+// somebody else started, and `inspect` is the group named after what the caller is actually doing.
+// The bare `build` verb is now a name this CLI does not have, answered by the absent-capability
+// table in `src/commandRegistry.ts` with `npx eas build`.
 //
-// The directory is `src/builds/` and not `src/build/` because the repository's `.gitignore` has
-// `/packages/**/build/` for the compiled output, which would have swallowed the source directory
-// whole.
+// The directory is still `src/builds/` and not `src/inspect/`: it is what llp/0012 and the rule
+// fixtures name throughout, and moving it would rewrite a hundred references to say nothing new.
+// (`src/build/` was never available — the repository's `.gitignore` has `/packages/**/build/`.)
 
 import chalk from 'chalk';
 
 import type { Command } from '../types';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 
-export const exagentBuildExplain: Command = async (argv) => {
+export const exagentInspectBuildLog: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -26,7 +27,7 @@ export const exagentBuildExplain: Command = async (argv) => {
       // The rest is resolved by `resolveExplainOptions`, which reports a bad flag as a
       // CommandError.
       permissive: true,
-      command: 'build:explain',
+      command: 'inspect:build-log',
       // The build-id positional is reserved rather than rejected here: `resolveExplainOptions`
       // owns the message that says why it does not work yet and what does.
       positionalArgs: 'own',
@@ -36,7 +37,7 @@ export const exagentBuildExplain: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Read a build log and say what failed in it`,
-      chalk`npx exagent build:explain {dim --file <path> | --stdin [options]}`,
+      chalk`npx exagent inspect:build-log {dim --file <path> | --stdin [options]}`,
       [
         `--file <path>          Read the log from this file`,
         `--stdin                Read the log from stdin. Implied when stdin is not a terminal`,
@@ -53,15 +54,15 @@ export const exagentBuildExplain: Command = async (argv) => {
         chalk`  this repository, each with a fixture and a test. Every answer carries the line it`,
         chalk`  came from, so nothing has to be taken on trust.`,
         '',
-        chalk`    {dim $} npx expo run:ios 2>&1 | npx exagent build:explain --json`,
-        chalk`    {dim $} npx exagent build:explain --file ~/Downloads/xcodebuild.log`,
+        chalk`    {dim $} npx expo run:ios 2>&1 | npx exagent inspect:build-log --json`,
+        chalk`    {dim $} npx exagent inspect:build-log --file ~/Downloads/xcodebuild.log`,
         '',
         chalk`  {bold Exit codes}:`,
         '',
         chalk`     {bold 0}   a report was produced — including "no error located", which is a report`,
         chalk`     {bold 1}   no report could be produced: unreadable file, empty log, bad flag`,
         '',
-        chalk`  {bold npx exagent build:explain <build-id>} is reserved and does not work yet: eas-cli`,
+        chalk`  {bold npx exagent inspect:build-log <build-id>} is reserved and does not work yet: eas-cli`,
         chalk`  has no {bold build:logs} command, so an EAS build's log has to be saved and passed in`,
         chalk`  with {bold --file}. {bold npx eas build:view <id>} prints where the log files are.`,
         '',
@@ -69,7 +70,7 @@ export const exagentBuildExplain: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent build:explain -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx exagent inspect:build-log -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { resolveExplainOptions } =
     require('./explain/resolveOptions') as typeof import('./explain/resolveOptions');

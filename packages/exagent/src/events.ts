@@ -259,7 +259,7 @@ declare module '2g' {
       interrupted: boolean;
     };
     /**
-     * One `build:explain` run: what was read, and what the rule table made of it.
+     * One `inspect:build-log` run: what was read, and what the rule table made of it.
      *
      * The located line and its signature only — not the quoted context, which belongs in the
      * command's own output rather than on a stream that may be collected somewhere else. Every
@@ -281,7 +281,7 @@ declare module '2g' {
       otherFailures: number;
     };
     /**
-     * One `exagent config:effective` run, as counts.
+     * One `exagent inspect:config-plugins` run, as counts.
      *
      * Counts only, deliberately: an effective config carries bundle identifiers, URL schemes and
      * permission strings, which belong in the answer the caller asked for and not on a stream that

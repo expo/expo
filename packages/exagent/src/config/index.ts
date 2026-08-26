@@ -1,9 +1,17 @@
+// @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
+// `exagent inspect:config-plugins`, which the v1 narrowing renamed from `config:effective`
+// (llp/0016). The old name put it under a group named after a forwarded `expo` command, so it was
+// reachable by its colon form only (llp/0010 §Registry rules, rule b); `inspect` is this CLI's own
+// name, so `exagent inspect config-plugins` resolves too. `exagent config` is still `expo config`.
+//
+// The directory stays `src/config/`, which is what it reads.
+
 import chalk from 'chalk';
 
 import type { Command } from '../types';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 
-export const exagentConfigEffective: Command = async (argv) => {
+export const exagentInspectConfigPlugins: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -15,13 +23,13 @@ export const exagentConfigEffective: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv, command: 'config:effective', positionalArgs: 'none' }
+    { argv, command: 'inspect:config-plugins', positionalArgs: 'none' }
   );
 
   if (args['--help']) {
     printHelp(
       `What the config plugins actually produced for each platform`,
-      chalk`npx exagent config:effective {dim [options]}`,
+      chalk`npx exagent inspect:config-plugins {dim [options]}`,
       [
         `--platform <ios|android|all>  Platform to introspect (default: all)`,
         `--file <name>                 Print one native file: infoPlist, entitlements, expoPlist,`,
@@ -62,7 +70,7 @@ export const exagentConfigEffective: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent config:effective -h` shows as fast as
+  // Load modules after the help prompt so `npx exagent inspect:config-plugins -h` shows as fast as
   // possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =

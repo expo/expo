@@ -1,5 +1,5 @@
 /* eslint-env jest */
-// @ref llp/0010-agent-conventions.rfc.md §`build:explain`: the rule table is capped and in-repo
+// @ref llp/0010-agent-conventions.rfc.md §`inspect:build-log`: the rule table is capped and in-repo
 // The invariants of the table itself, in the style of the needs-human registry test: ids are the
 // contract, so they have to be unique and well-formed, and the cap is only a cap if something
 // enforces it.
@@ -8,7 +8,7 @@ import { ANCHORS, anchorFor, MAX_SIGNATURES } from '../anchors';
 
 describe('the rule table', () => {
   it('stays under the cap', () => {
-    // llp/0010 §`build:explain` records that this table is capped and in-repo, which is what
+    // llp/0010 §`inspect:build-log` records that this table is capped and in-repo, which is what
     // keeps it from becoming the hosted, growing signature DB llp/0001 scoped out. Raising this
     // number is a decision to record there, not an edit to make while adding a rule.
     expect(ANCHORS.length).toBeLessThanOrEqual(MAX_SIGNATURES);

@@ -183,7 +183,7 @@ reach the fingerprint [observed — `sourcer/Bare.ts`], so nothing here moves a 
 app. And `expo.<tool>` survives `exagent` ever merging into the Expo CLI without the key moving.
 
 The module is `src/settings/` rather than `src/config/`, because `src/config/` is
-`exagent config:effective` — the **app** config, which is the opposite kind of file.
+`exagent inspect:config-plugins` — the **app** config, which is the opposite kind of file.
 
 ### The schema
 

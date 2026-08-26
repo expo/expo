@@ -3,7 +3,7 @@
 //
 // `expo config --type introspect --json` runs the prebuild config and compiles every introspective
 // mod in memory [observed — `packages/@expo/cli/src/config/configAsync.ts`], writing nothing to the
-// project. That is the whole hard part of `config:effective`, and it belongs to the CLI the project
+// project. That is the whole hard part of `inspect:config-plugins`, and it belongs to the CLI the project
 // installed, so this module only starts it and parses what it printed.
 
 import { CommandError } from '../utils/errors';

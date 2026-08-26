@@ -51,8 +51,8 @@ describe("the suggested-command sweep", () => {
       "runtime:errors",
       "runtime:reload",
       "skills:list",
-      "build:explain",
-      "config:effective",
+      "inspect:build-log",
+      "inspect:config-plugins",
       "agents:setup",
       "deploy",
     ]) {
@@ -77,14 +77,14 @@ describe("the option lists the sweep checks against", () => {
     expect(covered).toMatchInlineSnapshot(`
       [
         "agents:setup",
-        "build:explain",
-        "config:effective",
         "deploy",
         "dev",
         "dev:logs",
         "dev:run",
         "dev:stop",
         "doctor:check",
+        "inspect:build-log",
+        "inspect:config-plugins",
         "install",
         "navigate",
         "new",
