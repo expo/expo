@@ -212,12 +212,16 @@ export async function collectStatusReportAsync(
     // The probe rides along whole, so `--json` is also the project brief: the sections round its
     // facts off for a terminal, and a caller that wants them exactly reads `probe`.
     //
-    // Whole except the fingerprint's `sources`, which are dropped here and nowhere else. They are
-    // the list the hash was computed from — tens of thousands of bytes for a real project
-    // [observed — ~25 KB for iOS on an SDK 57 Expo Router app, 2026-08-24] — and this report
-    // answers a freshness question, for which the hash is the entire answer. `exagent impact` is
-    // the command that reads them, and it fingerprints for itself. Dropping them keeps `status`
-    // the instant, small report its contract promises (llp/0004 §`exagent status`).
+    // Whole except the fingerprint's `sources`, which are dropped from the *payload* and nowhere
+    // else. They are the list the hash was computed from — tens of thousands of bytes for a real
+    // project [observed — ~25 KB for iOS on an SDK 57 Expo Router app, 2026-08-24] — and a caller
+    // reading this report wants the answer, not the evidence. Dropping them keeps `status` the
+    // small report its contract promises (llp/0004 §`exagent status`).
+    //
+    // They are still *read*: the impact headline diffs them against the recorded build's, in
+    // process and for free (llp/0004 §The impact headline is free, the explanation is not). What
+    // reaches `--json` from that is the class, the count, and — only under `--explain` — the
+    // sources that actually moved, which is a handful rather than the whole surface.
     report.probe = { ...state, fingerprint: { ...state.fingerprint, sources: undefined } };
     report.project = buildProjectStatus(state, packageName);
     report.expoGo = buildExpoGoStatus(state);
