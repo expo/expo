@@ -10,6 +10,7 @@ import {
   describeGenerateFailure,
   parseEasCompare,
 } from '../compare';
+import recordedList from '../../__fixtures__/eas/build-list.json';
 import recordedCompare from '../../__fixtures__/eas/fingerprint-compare.json';
 import realDiff from './fixtures/notesapp-ios-diff.json';
 
@@ -370,6 +371,20 @@ describe(findCachedBuildAsync, () => {
 });
 
 describe(parseCachedBuild, () => {
+  // Every field this parser reads, read off a payload the real service produced for the exact
+  // argv `buildCacheArgs` builds — so a field that moves upstream fails here rather than turning
+  // a cache hit into a row of nulls. See `src/__fixtures__/eas/README.md`.
+  it(`should read every field out of a recorded build:list payload`, () => {
+    expect(parseCachedBuild(JSON.stringify(recordedList))).toEqual({
+      id: '21d7d434-6495-4e74-b8c7-68ecd0dff489',
+      status: 'FINISHED',
+      platform: 'IOS',
+      buildProfile: 'simulator',
+      createdAt: '2026-08-19T17:37:12.674Z',
+      buildUrl: recordedList[0].artifacts.buildUrl,
+    });
+  });
+
   it(`should answer null for an empty list`, () => {
     expect(parseCachedBuild('[]')).toBeNull();
   });

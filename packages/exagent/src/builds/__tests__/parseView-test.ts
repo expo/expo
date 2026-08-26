@@ -1,3 +1,4 @@
+import recordedView from '../../__fixtures__/eas/build-view.json';
 import { parseLastJsonObject, readBuildDetails, readProgress } from '../parseView';
 
 describe(parseLastJsonObject, () => {
@@ -49,6 +50,40 @@ describe(parseLastJsonObject, () => {
     expect(parseLastJsonObject('[{"status":"FINISHED"}]')).toBeNull();
     expect(parseLastJsonObject('"FINISHED"')).toBeNull();
     expect(parseLastJsonObject('null')).toBeNull();
+  });
+});
+
+describe(`the recorded build:view payload`, () => {
+  // A real finished build, read by the real parser — see `src/__fixtures__/eas/README.md`. What it
+  // pins is the fields that *do* arrive, and the shape of the ones that do not: `error`,
+  // `queuePosition` and `estimatedWaitTimeLeftSeconds` are simply absent on a finished build, and
+  // `artifacts.buildArtifactsUrl` is absent on this one, so every reader has to answer `null`
+  // rather than throw. That is the whole reason nothing in this parser is required.
+  it(`reads the details of a finished build`, () => {
+    const details = readBuildDetails(recordedView);
+
+    expect(details.metrics).toEqual({
+      buildWaitTime: 4688,
+      buildQueueTime: 26451,
+      buildDuration: 692681,
+    });
+    expect(details.fingerprint).toEqual({ hash: '780787df6bf4487623fb422f7e020974dc98c4a9' });
+    expect(details.artifacts).toMatchObject({ buildArtifactsUrl: null });
+    expect(details.artifacts?.applicationArchiveUrl).toBe(recordedView.artifacts.buildUrl);
+    expect(details.completedAt).toBe('2026-08-19T17:49:16.494Z');
+    expect(details.appVersion).toBe('1.0.0');
+    expect(details.appBuildVersion).toBe('43');
+    // Absent, not empty: a finished build has no error object at all.
+    expect(details.error).toBeNull();
+  });
+
+  it(`reads the progress of a build that is no longer queued`, () => {
+    expect(readProgress(recordedView, 1000)).toEqual({
+      status: 'FINISHED',
+      queuePosition: null,
+      estimatedWaitTimeLeftSeconds: null,
+      elapsedMs: 1000,
+    });
   });
 });
 
