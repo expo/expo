@@ -55,7 +55,7 @@ that pins the *plan* an EAS run would produce.
 | project shape: space in path | — | none | **e2e (2)** |
 | project shape: workspace | — | one deploy case | **e2e (2)** |
 | project shape: no project | — | none | **e2e (3) — found bug 6** |
-| project shape: not an Expo app | — | none | **e2e (2) + 1 skipped, see below** |
+| project shape: not an Expo app | — | none | **e2e (2) + 1 skipped, see below; closed by [[0020-not-an-expo-app]] — 9 rows now** |
 
 ## The bugs
 
@@ -103,16 +103,17 @@ produced on its own — the tool on the other side of the spawn is the variable.
 Recorded rather than fixed, because each is either a design question or a boundary this tier cannot
 cross.
 
-- **`dev` in a directory that is not an Expo app plans `expo install expo-dev-client`.** The
-  decision table reads "no `expo` dependency" as "lacks a dev client", so an agent that ran `dev`
-  one directory too high gets a plan to install packages into the wrong repository. The failing test
-  is `e2e/__tests__/project-shapes-test.ts`, skipped with a TODO. The fix is a new row at the top of
-  `decideStartPlan` **and** a decision about what `dev`, `smoke` and `navigate` should each answer
-  there, which belongs to the plan engine's owner.
-- **Exit 21 is reserved and reachable from nothing.** `EXIT_OUTCOME_CANCELED` is defined, documented
-  and used by no command; a declined plan exits 0 by explicit decision ([[0008-guardrails]] §Plan-
-  with-cost dry run). Nothing is wrong, but an agent told to branch on 21 is branching on a code
-  this release never emits, and the exit-code table should say so.
+- ~~**`dev` in a directory that is not an Expo app plans `expo install expo-dev-client`.**~~
+  **Closed** [2026-08-26] — the design call and the implementation are [[0020-not-an-expo-app]]. The
+  decision table read "no `expo` dependency" as "lacks a dev client", so an agent that ran `dev` one
+  directory too high got a plan to install packages into the wrong repository. It is a `not-expo-app`
+  row above every other now, six commands stop at the entry with `NOT_EXPO_APP`, and the skipped test
+  in `e2e/__tests__/project-shapes-test.ts` is unskipped with six rows beside it.
+- ~~**Exit 21 is reserved and reachable from nothing.**~~ **Closed as documentation** [2026-08-26] —
+  [[0010-agent-conventions]] §Exit codes says so in the table and in the paragraph under it, and
+  `src/__tests__/exitCodes-test.ts` sweeps the loadable source so the claim cannot quietly stop being
+  true. Nothing was wrong with the code: `build:wait` is deferred, and a declined plan exits 0 by
+  explicit decision ([[0008-guardrails]] §Plan-with-cost dry run). The constant stays defined.
 - **A successful `runtime:eval` is unreachable at tier 0**, unchanged from
   [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app. What this wave *did* add is
   the third inspector state — a socket that answers every method `-32601` — which is a double for a

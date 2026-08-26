@@ -24,6 +24,15 @@ export interface ProjectStatus {
   /** `name` from the project `package.json`, or the directory name. */
   name: string | null;
   /**
+   * This package declares `expo`, which is what makes it an Expo app.
+   *
+   * `status` is the one command that answers here rather than refusing: it is how a caller finds
+   * out it is in the wrong directory, so taking the answer away would leave nothing to read
+   * (llp/0020 §What each command does). Every other field below describes a package that may not
+   * be this CLI's subject at all, and this is the field that says which.
+   */
+  isExpoApp: boolean;
+  /**
    * The version of the **installed `expo` package**, e.g. `57.0.15`. Null when it is unresolvable.
    *
    * The code that is actually on disk, not the SDK line the app config names. `inspect:config-plugins`

@@ -14,6 +14,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     project: {
       root: '/project',
       name: 'my-app',
+      isExpoApp: true,
       sdkVersion: '54.0.0',
       native: 'cng',
       nativeDirs: { ios: false, android: false },

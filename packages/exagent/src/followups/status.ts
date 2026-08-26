@@ -10,6 +10,21 @@ import { capFollowUps, type FollowUp } from './types';
 
 /** The actions the status report proves are available, in the order they are worth taking. */
 export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
+  // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
+  // Before every rung below, and instead of them: this directory is not this CLI's subject, so the
+  // only honest action is to go and find the one that is. The rung this replaces was
+  // `npx exagent install expo-dev-client` — the trap, spelled as a follow-up, aimed at whatever
+  // repository the caller was standing in.
+  if (report.project?.isExpoApp === false) {
+    return [
+      {
+        id: 'not-expo-app',
+        command: 'npx exagent new my-app',
+        why: 'This package declares no "expo" dependency, so it is not an Expo app: change to the app\'s own directory, or create one here.',
+      },
+    ];
+  }
+
   const followups: FollowUp[] = [];
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in

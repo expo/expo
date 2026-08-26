@@ -23,6 +23,12 @@ export type LastBuildFingerprints = Partial<Record<NativePlatform, string>>;
  * @see llp/0004-smart-start-and-project-state.rfc.md §Decision table
  */
 export type StartPlanRule =
+  /**
+   * This directory declares no `expo` dependency, so there is no app to plan for.
+   *
+   * @see llp/0020-not-an-expo-app.rfc.md
+   */
+  | 'not-expo-app'
   /** Web needs no native app, so the dev server is the whole plan. */
   | 'web'
   /** Expo Go can run the project as-is. */

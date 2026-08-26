@@ -85,6 +85,7 @@ function mockPlatform(value: typeof process.platform) {
 function mockProjectState(overrides: Partial<ProjectState> = {}): ProjectState {
   const state: ProjectState = {
     projectRoot,
+    isExpoApp: true,
     sdkVersion: '54.0.0',
     nativeDirs: { ios: false, android: false },
     usesDevClient: false,

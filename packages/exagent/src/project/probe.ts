@@ -34,6 +34,10 @@ export async function probeProjectStateAsync(projectRoot: string): Promise<Proje
 
   return {
     projectRoot,
+    // @ref llp/0020-not-an-expo-app.rfc.md — read from what the project *declares*, so it is the
+    // same answer `assertExpoAppSync` gives at the top of a command that acts on the app. The two
+    // must never disagree: one refuses the directory and the other describes it.
+    isExpoApp: dependencyNames.includes('expo'),
     sdkVersion,
     nativeDirs,
     usesDevClient,

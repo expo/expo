@@ -5,8 +5,14 @@ import type { RunsOn } from '../toolchain/runsOn';
 import type { PlanBuildLocation } from '../toolchain/types';
 import type { FingerprintSource } from './fingerprint';
 
-/** How the app is expected to run during development. */
-export type ProjectTarget = 'expo-go' | 'dev-client' | 'bare' | 'web';
+/**
+ * How the app is expected to run during development.
+ *
+ * `none` is the one value that is not a way of running the app: it is what a directory that is not
+ * an Expo app gets, because there is no app here to run in any of the others
+ * (llp/0020 §The plan engine says so too).
+ */
+export type ProjectTarget = 'expo-go' | 'dev-client' | 'bare' | 'web' | 'none';
 
 /** One reason a project cannot run in Expo Go. */
 export interface ExpoGoIncompatibility {
@@ -26,6 +32,18 @@ export interface ExpoGoCompatibility {
  * without a device: device/simulator install state is intentionally out of scope for v1. */
 export interface ProjectState {
   projectRoot: string;
+  /**
+   * The project's `package.json` declares `expo` as a dependency — which is what makes a package
+   * an Expo app.
+   *
+   * **Declared, not installed**, and deliberately so: a fresh clone with no `node_modules` is the
+   * most ordinary state a real project is ever in, and reading the installed package instead would
+   * call every one of them "not an Expo app". {@link sdkVersion} is the installed half, and the
+   * two answer different questions.
+   *
+   * @see llp/0020-not-an-expo-app.rfc.md
+   */
+  isExpoApp: boolean;
   /** From the installed `expo` package, e.g. "54.0.0". Null when unresolvable. */
   sdkVersion: string | null;
   /** Bare native project directories checked into the repo (vs CNG). */

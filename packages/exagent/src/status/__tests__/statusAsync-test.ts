@@ -82,6 +82,7 @@ const uiSkill: DiscoveredSkill = {
 function mockState(overrides: Partial<ProjectState> = {}): ProjectState {
   const state: ProjectState = {
     projectRoot,
+    isExpoApp: true,
     sdkVersion: '54.0.0',
     nativeDirs: { ios: false, android: false },
     usesDevClient: false,
@@ -146,6 +147,7 @@ describe(collectStatusReportAsync, () => {
     expect(report.project).toEqual({
       root: projectRoot,
       name: 'my-app',
+      isExpoApp: true,
       sdkVersion: '54.0.0',
       native: 'cng',
       nativeDirs: { ios: false, android: false },

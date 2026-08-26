@@ -44,6 +44,20 @@ export function decideStartPlan(
   state: ProjectState,
   options: DecideStartPlanOptions = {}
 ): StartPlan {
+  // @ref llp/0020-not-an-expo-app.rfc.md §The plan engine says so too
+  // The first row, above the web short-circuit, because it is not a fact about how the app runs —
+  // it is the fact that there is no app. Without it the table read "no `expo` dependency" as "lacks
+  // a dev client" and planned `expo install expo-dev-client` plus a native build for whatever
+  // repository the caller happened to be standing in. Every command that would *act* on the plan
+  // stops before reaching here; this row is what the commands that only *describe* the directory
+  // print, so the engine and the guard never disagree.
+  if (!state.isExpoApp) {
+    return plan('not-expo-app', 'none', [], [
+      `This directory is not an Expo app: its package.json declares no "expo" dependency.`,
+      `There is nothing here to get onto a device, so the plan is empty. The app is most likely one directory down, or "npx exagent new my-app" would create one here.`,
+    ]);
+  }
+
   // Web needs no native app at all, so it short-circuits every native row. The web target is
   // only chosen when it is asked for: an Expo project always *can* target native, so no probed
   // fact proves that web is the only option.

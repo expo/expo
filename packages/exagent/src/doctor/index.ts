@@ -44,12 +44,14 @@ export const exagentDoctorCheck: Command = async (argv) => {
   // Load modules after the help prompt so `npx exagent doctor:check -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
-  const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+  // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
+  // directory that holds no app rather than planning work against whatever is there.
+  const { findUpExpoAppRootOrAssert } =
+    require('../project/expoApp') as typeof import('../project/expoApp');
   const { printDoctorCheckAsync } = require('./doctorAsync') as typeof import('./doctorAsync');
 
   return (async () => {
-    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const projectRoot = findUpExpoAppRootOrAssert(process.cwd());
     const exitCode = await printDoctorCheckAsync(projectRoot, {
       json: !!args['--json'],
       followups: !args['--no-followups'],

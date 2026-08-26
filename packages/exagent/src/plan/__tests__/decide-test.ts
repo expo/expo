@@ -6,6 +6,7 @@ import type { RunTargetChoice } from '../runTarget';
 function createState(overrides: Partial<ProjectState> = {}): ProjectState {
   return {
     projectRoot: '/project',
+    isExpoApp: true,
     sdkVersion: '54.0.0',
     nativeDirs: { ios: false, android: false },
     usesDevClient: false,
@@ -63,6 +64,45 @@ function runTarget(
 }
 
 describe(decideStartPlan, () => {
+  // @ref llp/0020-not-an-expo-app.rfc.md §The plan engine says so too
+  describe('rule: not-expo-app', () => {
+    it(`should plan nothing for a directory that declares no expo dependency`, () => {
+      const plan = decideStartPlan(createState({ isExpoApp: false }));
+
+      expect(plan.rule).toBe('not-expo-app');
+      expect(plan.target).toBe('none');
+      expect(plan.steps).toEqual([]);
+      expect(plan.buildLocation).toBeNull();
+      expect(plan.reasons.join(' ')).toContain('not an Expo app');
+    });
+
+    // The trap this row exists for: the table used to read "no `expo` dependency" as "lacks a dev
+    // client" and planned an install into whatever repository the caller was standing in.
+    it(`should never plan an install into a directory that is not an Expo app`, () => {
+      const plan = decideStartPlan(
+        createDevClientState({ isExpoApp: false, usesDevClient: false })
+      );
+
+      expect(argvOf(plan.steps)).toEqual([]);
+    });
+
+    it(`should outrank the web short-circuit, which is also about an app that is not here`, () => {
+      const plan = decideStartPlan(createState({ isExpoApp: false }), { platform: 'web' });
+
+      expect(plan.rule).toBe('not-expo-app');
+      expect(plan.steps).toEqual([]);
+    });
+
+    it(`should outrank checked-in native directories`, () => {
+      const plan = decideStartPlan(
+        createState({ isExpoApp: false, nativeDirs: { ios: true, android: true } })
+      );
+
+      expect(plan.rule).toBe('not-expo-app');
+      expect(plan.steps).toEqual([]);
+    });
+  });
+
   describe('rule: web', () => {
     it(`should start the dev server for web when the web platform is requested`, () => {
       const plan = decideStartPlan(createState(), { platform: 'web' });

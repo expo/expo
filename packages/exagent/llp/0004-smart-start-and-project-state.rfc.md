@@ -23,12 +23,21 @@ Per [[0001-agentic-cli-on-expo-cli]] §Constraints, the engine _invokes_ `expo p
 
 | State                                                   | Plan                                            |
 | ------------------------------------------------------- | ----------------------------------------------- |
+| **Not an Expo app** (no `expo` dependency)              | **nothing — no steps** ([[0020-not-an-expo-app]]) |
 | Expo Go compatible, Go installed                        | start Metro → open in Expo Go                   |
 | Dev client installed, fingerprint matches last build    | start Metro → open dev client                   |
 | Fingerprint changed (new native module / config plugin) | prebuild (CNG) → native build → install → start |
 | Build cache hit for current fingerprint                 | download/install cached build → start Metro     |
 | Bare project, native dirs dirty                         | pod install / gradle sync → build → start       |
 | Web                                                     | start Metro for web                             |
+
+The first row is above the others, and above the web short-circuit, for the reason
+[[0020-not-an-expo-app]] records: it is not a fact about how the app runs, it is the fact that there
+is no app. Without it the table read "no `expo` dependency" as "lacks a dev client" and planned
+`expo install expo-dev-client` plus a native build for whatever repository the caller was standing in
+[observed — 2026-08-26]. Every command that would *act* on the plan stops before the table is
+reached; the row is what the commands that only *describe* the directory print, so the guard and the
+engine can never disagree.
 
 ## Contract
 

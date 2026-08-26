@@ -52,12 +52,14 @@ export const exagentStart: Command = async (argv) => {
 
   // Load modules after the help prompt so `npx exagent start -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
-  const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+  // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
+  // directory that holds no app rather than planning work against whatever is there.
+  const { findUpExpoAppRootOrAssert } =
+    require('../project/expoApp') as typeof import('../project/expoApp');
   const { resolveStartOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
 
   return (async () => {
-    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const projectRoot = findUpExpoAppRootOrAssert(process.cwd());
     const options = resolveStartOptions(argv ?? []);
 
     // @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher — a command that

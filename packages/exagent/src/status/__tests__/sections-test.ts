@@ -19,6 +19,7 @@ const projectRoot = '/project';
 function mockState(overrides: Partial<ProjectState> = {}): ProjectState {
   return {
     projectRoot,
+    isExpoApp: true,
     sdkVersion: '54.0.0',
     nativeDirs: { ios: false, android: false },
     usesDevClient: false,
@@ -44,6 +45,7 @@ describe(buildProjectStatus, () => {
     expect(buildProjectStatus(mockState(), 'my-app')).toEqual({
       root: projectRoot,
       name: 'my-app',
+      isExpoApp: true,
       sdkVersion: '54.0.0',
       native: 'cng',
       nativeDirs: { ios: false, android: false },
@@ -228,6 +230,38 @@ describe(buildDevServerStatus, () => {
 });
 
 describe(buildNextActionStatus, () => {
+  // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
+  // `status` answers here rather than refusing, so its `next` line is the one place the trap could
+  // survive: `exagent dev` in a directory that is not an Expo app is exactly what `dev` now stops.
+  it(`should not name exagent dev for a directory that is not an Expo app`, () => {
+    const next = buildNextActionStatus(mockState({ isExpoApp: false }), {}, 'ios', null);
+
+    expect(next.command).not.toBe('exagent dev');
+    expect(next.rule).toBe('not-expo-app');
+    expect(next.target).toBe('none');
+    expect(next.steps).toEqual([]);
+    expect(next.buildLocation).toBeNull();
+    expect(next.why).toContain('not an Expo app');
+  });
+
+  it(`should say so even when a dev server this project could use is answering`, () => {
+    const next = buildNextActionStatus(mockState({ isExpoApp: false }), {}, 'ios', {
+      url: 'http://127.0.0.1:8081',
+      running: true,
+      appsConnected: 1,
+      appsListed: 1,
+      appsStale: 0,
+      source: 'lock',
+      ready: true,
+      projectRootMatched: true,
+      hostType: null,
+      tunnelUrl: null,
+    });
+
+    expect(next.rule).toBe('not-expo-app');
+    expect(next.steps).toEqual([]);
+  });
+
   it(`should report the Expo Go rule and the command that runs it`, () => {
     const next = buildNextActionStatus(mockState(), {}, 'ios', null);
 

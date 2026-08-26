@@ -15,6 +15,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     project: {
       root: '/project',
       name: 'my-app',
+      isExpoApp: true,
       sdkVersion: '54.0.0',
       native: 'cng',
       nativeDirs: { ios: false, android: false },
@@ -179,6 +180,31 @@ describe(buildStatusFollowUps, () => {
     expect(ids(followups)).toEqual([]);
   });
 
+  // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
+  // The same rung, aimed at a directory that is not this CLI's subject, is the trap spelled as a
+  // follow-up: `npx exagent install expo-dev-client` would have written into whatever repository
+  // the caller happened to be standing in.
+  it(`should offer nothing but a way out when the directory is not an Expo app`, () => {
+    const followups = buildStatusFollowUps(
+      mockReport({
+        expoGo: { compatible: false, reasonCount: 2 },
+        project: {
+          root: '/project',
+          name: 'plain',
+          isExpoApp: false,
+          sdkVersion: null,
+          native: 'cng',
+          nativeDirs: { ios: false, android: false },
+          usesDevClient: false,
+          hasWeb: false,
+        },
+      })
+    );
+
+    expect(ids(followups)).toEqual(['not-expo-app']);
+    expect(followups[0]!.command).toBe('npx exagent new my-app');
+  });
+
   // The reasons themselves are in `status --json` now, so the follow-up is the action they imply
   // rather than a second command that would only reprint them.
   it(`should offer the dev client install when Expo Go is out and none is installed`, () => {
@@ -197,6 +223,7 @@ describe(buildStatusFollowUps, () => {
         project: {
           root: '/project',
           name: 'my-app',
+          isExpoApp: true,
           sdkVersion: '54.0.0',
           native: 'cng',
           nativeDirs: { ios: false, android: false },

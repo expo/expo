@@ -107,15 +107,17 @@ export const exagentNavigate: Command = async (argv) => {
 
   // Load modules after the help prompt so `npx exagent navigate -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
-  const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+  // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
+  // directory that holds no app rather than planning work against whatever is there.
+  const { findUpExpoAppRootOrAssert } =
+    require('../project/expoApp') as typeof import('../project/expoApp');
   const { resolveNavigateOptions } =
     require('./resolveOptions') as typeof import('./resolveOptions');
   const { navigateAsync } = require('./navigateAsync') as typeof import('./navigateAsync');
 
   return (async () => {
     const options = resolveNavigateOptions(argv ?? []);
-    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const projectRoot = findUpExpoAppRootOrAssert(process.cwd());
     process.exitCode = await navigateAsync(projectRoot, options);
   })().catch(logCmdError);
 };

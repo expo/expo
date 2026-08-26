@@ -61,13 +61,15 @@ export const exagentDeploy: Command = async (argv) => {
 
   // Load modules after the help prompt so `npx exagent deploy -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
-  const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+  // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
+  // directory that holds no app rather than planning work against whatever is there.
+  const { findUpExpoAppRootOrAssert } =
+    require('../project/expoApp') as typeof import('../project/expoApp');
   const { resolveDeployOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
   const { deployAsync } = require('./deployAsync') as typeof import('./deployAsync');
 
   return (async () => {
     const options = resolveDeployOptions(argv ?? []);
-    await deployAsync(findUpProjectRootOrAssert(process.cwd()), options);
+    await deployAsync(findUpExpoAppRootOrAssert(process.cwd()), options);
   })().catch(logCmdError);
 };

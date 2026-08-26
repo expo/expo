@@ -114,8 +114,10 @@ export const exagentSmoke: Command = async (argv) => {
 
   // Load modules after the help prompt so `npx exagent smoke -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
-  const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+  // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
+  // directory that holds no app rather than planning work against whatever is there.
+  const { findUpExpoAppRootOrAssert } =
+    require('../project/expoApp') as typeof import('../project/expoApp');
   const { EXIT_OK, exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
   const { resolveSmokeOptions } =
     require('./resolveOptions') as typeof import('./resolveOptions');
@@ -124,7 +126,7 @@ export const exagentSmoke: Command = async (argv) => {
     const options = resolveSmokeOptions(argv ?? []);
     // Asserting, unlike `dev:wait`: this command reads the project's routes and writes its
     // screenshot under the project's `.expo`, so there is no useful run outside one.
-    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const projectRoot = findUpExpoAppRootOrAssert(process.cwd());
 
     const { smokeAsync } = require('./smokeAsync') as typeof import('./smokeAsync');
     const code = await smokeAsync(projectRoot, options);

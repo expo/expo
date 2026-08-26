@@ -328,8 +328,14 @@ function unavailableLine(report: StatusReport, name: StatusSectionName): string 
 
 function projectLine(project: ProjectStatus): string {
   const dirs = (['ios', 'android'] as const).filter((platform) => project.nativeDirs[platform]);
+  // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
+  // Second on the line and in yellow, because everything after it — the SDK, the native shape, the
+  // dev client — describes a package this CLI has no business acting on, and a reader who misses
+  // that reads five facts about the wrong repository.
+  const notAnApp = project.isExpoApp ? [] : [chalk.yellow('not an Expo app')];
   return [
     project.name ?? 'unnamed project',
+    ...notAnApp,
     `SDK ${project.sdkVersion ?? chalk.yellow('unknown')}`,
     project.native === 'bare' && dirs.length ? `bare (${dirs.join(', ')})` : 'CNG',
     project.usesDevClient ? 'dev client' : 'no dev client',

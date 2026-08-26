@@ -1,4 +1,6 @@
 import { flushEventLogger } from '2g';
+import fs from 'fs';
+import path from 'path';
 
 import {
   EXIT_ERROR,
@@ -11,6 +13,35 @@ import {
 } from '../exitCodes';
 
 jest.mock('2g', () => ({ flushEventLogger: jest.fn(async () => {}) }));
+
+// The sweep below reads this repository rather than a fixture, and the suite-wide `fs` mock is
+// memfs, which has none of these files in it.
+jest.unmock('fs');
+jest.unmock('node:fs');
+
+/**
+ * Every `.ts` file of the CLI that a command can reach, relative to `src`.
+ *
+ * `deferred` is out for the reason llp/0016 §Deferred is a place gives: nothing there is loaded by
+ * a registry entry, and `build:wait` — the one command whose outcomes reached exit 21 — lives in
+ * it. The tests are out because a test naming a constant is not a command emitting it.
+ *
+ * Walked here rather than through `src/lint/sweep.ts`, which pulls the event logger in with it and
+ * would need this suite's `2g` double to be the whole module.
+ */
+function sourceFilesUnder(root: string, prefix = ''): string[] {
+  const skipped = new Set(['__tests__', '__mocks__', 'node_modules', 'build', 'deferred']);
+  return fs
+    .readdirSync(path.join(root, prefix), { withFileTypes: true })
+    .flatMap((entry) => {
+      const relative = path.join(prefix, entry.name);
+      if (entry.isDirectory()) {
+        return skipped.has(entry.name) ? [] : sourceFilesUnder(root, relative);
+      }
+      return entry.name.endsWith('.ts') ? [relative] : [];
+    })
+    .sort();
+}
 
 describe('exit codes', () => {
   // The numbers are the contract a driving agent reads before it reads any output, so they are
@@ -29,6 +60,26 @@ describe('exit codes', () => {
       expect(code).toBeGreaterThanOrEqual(20);
       expect(code).toBeLessThanOrEqual(29);
     }
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §Exit codes — `21` is reserved and unemitted
+  // The doc comment on the constant, and the row of the table, both claim that no v1 command exits
+  // 21. This is what makes the claim checkable: a command that starts emitting it fails here, and
+  // whoever adds it updates the documentation in the same change.
+  it('emits 21 from nowhere, which is what its documentation says', () => {
+    const root = path.resolve(__dirname, '..');
+    const files = sourceFilesUnder(root);
+    // A floor, so a walk that stopped finding anything cannot report "nothing emits it".
+    expect(files.length).toBeGreaterThan(150);
+
+    const users = files.filter(
+      (file) =>
+        file !== 'exitCodes.ts' &&
+        fs.readFileSync(path.join(root, file), 'utf8').includes('EXIT_OUTCOME_CANCELED')
+    );
+
+
+    expect(users).toEqual([]);
   });
 
   it('names every code once', () => {

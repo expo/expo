@@ -21,7 +21,7 @@ Decision [confirmed — Kudo, 2026-08-23]. A driving agent reads the exit code b
 | `1`     | The tool did not work: usage error, missing dependency, bug | Read the error and the `Try:` line; fix the call  |
 | `7`     | The tool worked; a person must finish the step              | Hand the printed URL or instruction to the human  |
 | `20`    | The tool worked; the operation failed                       | Read the payload; act on the _subject's_ failure  |
-| `21`    | The tool worked; the operation was canceled                 | Nothing is known; re-run if it was not deliberate |
+| `21`    | The tool worked; the operation was canceled — **reserved, emitted by no v1 command** | Nothing branches on it in this release            |
 | `22`    | The tool worked; the operation timed out (inconclusive)     | Wait longer, or look again                        |
 | `23–29` | Reserved for further outcome classes                        | —                                                 |
 
@@ -31,6 +31,19 @@ Rationale for the shape [inferred]:
 - **`7`, away from both bands.** A step only a person can complete — signing in through a browser, approving a device, finishing a launch in a web page — is neither a tool error nor an outcome. The recovery is not another command, so it must not look like one that a retry could fix. The error class that carries it arrives with the first command that needs it; the number is reserved now.
 - **Timeout apart from failure.** Retrying is the obvious next action after `22` and a waste of minutes after `20`. Collapsing them costs either wasted builds or missed successes.
 - **Shell-safe range.** Nothing above `125`, which POSIX shells and `npx` use for their own conditions.
+
+**`21` is reserved and no v1 command emits it** [added — 2026-08-26; the gap was found by
+[[0019-backend-parity-audit]] §What is still not tested]. Two things emptied it and neither is a
+bug. `build:wait` was the one command whose outcomes reached it, and it is deferred out of v1
+([[0016-v1-scope]] §The decision table, code in `src/deferred/build-wait/`). A **declined plan exits
+`0`** by explicit decision — nothing ran, so nothing failed ([[0008-guardrails]] §Plan-with-cost dry
+run) — which is the other cancellation a caller would expect to find here. The row above says so
+because a table that lists a code an agent can never observe is an instruction to write a branch
+that never runs, and a wrong branch is worse than a missing one. The constant stays defined: the
+number keeps its meaning for the command that brings it back, and removing it would let a future
+command take `21` for something that is not a cancellation. `src/__tests__/exitCodes-test.ts` sweeps
+the loadable source for `EXIT_OUTCOME_CANCELED` and fails when anything starts using it, so the
+sentence above cannot quietly stop being true.
 
 Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are the only place a code is spelled, and there are two supported ways to leave the process with one. A **tool** error throws a `CommandError`, optionally carrying an `exitCode`; `logCmdError` prints it, puts it on the `cli:error` event with its `suggestedCommand`, then exits with `error.exitCode ?? EXIT_ERROR`. An **outcome** is not an error and has nothing to print that the command has not printed already, so it calls `exitWithCodeAsync(code)`. Both flush the event logger first: `process.exit` drops whatever the JSONL stream has buffered, which would lose the very events that explain the code the agent just read.
 

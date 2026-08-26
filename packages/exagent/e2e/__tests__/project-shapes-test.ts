@@ -200,6 +200,11 @@ describe('a directory with no project in it', () => {
   });
 });
 
+// @ref llp/0020-not-an-expo-app.rfc.md
+// The wrong-directory failure the `NO_PROJECT` one cannot catch: there *is* a package.json here,
+// it is just not an app. Every row below is about one of the two answers that document settles —
+// a command that acts on the app stops, a command that describes the directory answers and says
+// what the directory is.
 describe('a package.json that is not an Expo app', () => {
   /** A plain Node package: a `package.json`, and nothing that makes it an Expo project. */
   async function plainPackageAsync(): Promise<string> {
@@ -235,27 +240,125 @@ describe('a package.json that is not an Expo app', () => {
     expect(report.reason).toContain('no TypeScript');
   });
 
-  // TODO(exagent#project-shape): `exagent dev` in a directory that is not an Expo app plans
-  // `expo install expo-dev-client` followed by a native build, because the decision table reads a
-  // project with no `expo` dependency as a project that merely lacks a dev client. An agent that
-  // ran `dev` one directory too high therefore gets a plan to *install packages into the wrong
-  // repository* rather than "this is not an Expo app".
-  //
-  // Left failing and skipped rather than deleted: the fix is a new row at the top of
-  // `decideStartPlan` and a decision about what `dev`, `smoke` and `navigate` should each answer
-  // there, which is a design question for the plan engine's owner rather than a test change.
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §The decision table
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('refuses to plan a build for a directory that is not an Expo app', async () => {
+  // The trap this whole section exists for: the decision table used to read "no `expo` dependency"
+  // as "lacks a dev client", so an agent that ran `dev` one directory too high — at a repository or
+  // workspace root — was handed a plan to install packages into the *wrong repository* and then
+  // build it.
+  it('refuses to plan a build for a directory that is not an Expo app', async () => {
     const directory = await plainPackageAsync();
 
     const result = await executeExagentAsync(directory, ['dev', '--plan', '--json'], {
       reject: false,
     });
 
-    const plan = JSON.parse(result.stdout);
-    expect(plan.steps.map((step: { argv: string[] }) => step.argv.join(' '))).not.toContain(
-      'expo install expo-dev-client'
+    expect(result.exitCode).toBe(1);
+    expect(result.all).not.toContain('expo install expo-dev-client');
+    const report = JSON.parse(result.stdout);
+    expect(report.error.code).toBe('NOT_EXPO_APP');
+    expect(report.error.message).toContain('Why:');
+    expect(report.error.message).toContain('How:');
+    expect(report.error.suggestedCommand).toBe('npx exagent new my-app');
+  });
+
+  // One answer for every command that acts on the app, because an agent that learns the answer
+  // from `dev` must not have to learn it again from `smoke`.
+  it('answers the same way for every command that acts on the app', async () => {
+    const directory = await plainPackageAsync();
+
+    for (const argv of [
+      ['dev', '--plan', '--json'],
+      ['start', '--json'],
+      ['smoke', '--json'],
+      ['navigate', '/', '--json'],
+      ['deploy', '--web', '--json'],
+      ['doctor', '--json'],
+    ]) {
+      const result = await executeExagentAsync(directory, argv, { reject: false });
+      expect({ argv, exitCode: result.exitCode }).toEqual({ argv, exitCode: 1 });
+      expect({ argv, code: JSON.parse(result.stdout).error.code }).toEqual({
+        argv,
+        code: 'NOT_EXPO_APP',
+      });
+    }
+  });
+
+  // `status` is how a caller *finds out* it is in the wrong place, so refusing it would take away
+  // the answer. It reports instead — and stops naming `exagent dev`, which is the same trap one
+  // hop later.
+  it('lets status report, and stops it recommending a build here', async () => {
+    const directory = await plainPackageAsync();
+
+    const result = await executeExagentAsync(directory, ['status', '--json']);
+
+    expect(result.exitCode).toBe(0);
+    const report = JSON.parse(result.stdout);
+    expect(report.project.isExpoApp).toBe(false);
+    expect(report.next.rule).toBe('not-expo-app');
+    expect(report.next.command).not.toBe('exagent dev');
+    expect(report.next.steps).toEqual([]);
+    expect(report.followups.map((followup: { command: string }) => followup.command)).not.toContain(
+      'npx exagent install expo-dev-client'
     );
+    expect(result.all).not.toContain('expo install expo-dev-client');
+  });
+
+  it('says so on the project line of the text report', async () => {
+    const directory = await plainPackageAsync();
+
+    const result = await executeExagentAsync(directory, ['status']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.all).toContain('not an Expo app');
+  });
+
+  // The escape hatch has to stay open: adding Expo to this package is the one thing that makes it
+  // an Expo app, and a guard that refused it would leave no way out of the state it reports.
+  it('does not refuse the commands that would make this an Expo app', async () => {
+    const directory = await plainPackageAsync();
+
+    for (const argv of [['install', 'expo', '--check'], ['new', '--help']]) {
+      const result = await executeExagentAsync(directory, argv, { reject: false });
+      expect({ argv, all: result.all.includes('NOT_EXPO_APP') }).toEqual({ argv, all: false });
+    }
+  });
+
+  // The dev-server commands act on this project's lock file rather than on the app, so they answer
+  // for the same reason the auth commands do: what they read exists whether or not there is an app.
+  it('does not refuse the dev-server commands, which act on the lock rather than the app', async () => {
+    const directory = await plainPackageAsync();
+
+    for (const argv of [
+      ['dev:stop', '--json'],
+      ['dev:logs', '--json'],
+    ]) {
+      const result = await executeExagentAsync(directory, argv, { reject: false });
+      expect({ argv, all: result.all.includes('NOT_EXPO_APP') }).toEqual({ argv, all: false });
+    }
+  });
+});
+
+describe('an Expo app whose dependencies are not installed', () => {
+  // The rule is *declared*, not installed: `expo` in package.json makes this an Expo app, and a
+  // fresh clone with no node_modules is the most ordinary state a real project is ever in. Reading
+  // the installed package instead would have refused every one of them.
+  it('is planned for, rather than refused as not an Expo app', async () => {
+    const directory = await fs.promises.realpath(
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-uninstalled-'))
+    );
+    await fs.promises.writeFile(
+      path.join(directory, 'package.json'),
+      JSON.stringify(
+        { name: 'cloned', version: '1.0.0', dependencies: { expo: '~54.0.0' } },
+        null,
+        2
+      )
+    );
+
+    const result = await executeExagentAsync(directory, ['dev', '--plan', '--json'], {
+      reject: false,
+    });
+
+    expect(result.all).not.toContain('NOT_EXPO_APP');
+    expect(JSON.parse(result.stdout).rule).not.toBe('not-expo-app');
   });
 });

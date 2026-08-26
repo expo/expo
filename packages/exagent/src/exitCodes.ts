@@ -59,6 +59,14 @@ export const EXIT_OUTCOME_FAILED = 20;
  *
  * Canceled by the caller (a declined prompt, `SIGINT`) or by the service that was running it, so
  * nothing is known about whether it would have succeeded.
+ *
+ * **Reserved, and emitted by no v1 command** [observed — 2026-08-26]. The one command whose
+ * outcomes reached it was `build:wait`, which is deferred (`src/deferred/build-wait/`,
+ * llp/0016 §The decision table); and a declined plan exits `0` by explicit decision, because
+ * nothing ran and so nothing failed (llp/0008 §Plan-with-cost dry run). The constant stays so the
+ * number keeps its meaning for the command that brings it back — but an agent told to branch on
+ * `21` is branching on a code this release never produces. `src/__tests__/exitCodes-test.ts` is
+ * what keeps that sentence true.
  */
 export const EXIT_OUTCOME_CANCELED = 21;
 
