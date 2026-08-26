@@ -18,6 +18,7 @@ export async function fixPackagesAsync(
     packageManager,
     sdkVersion,
     packageManagerArguments,
+    expoOnly,
   }: {
     packages: Awaited<ReturnType<typeof getVersionedDependenciesAsync>>;
     /** Package manager to use when installing the versioned packages. */
@@ -32,6 +33,8 @@ export async function fixPackagesAsync(
      * @example ['--no-save']
      */
     packageManagerArguments: string[];
+    /** Should only fix packages from Expo. */
+    expoOnly?: boolean;
   }
 ): Promise<void> {
   if (!packages.length) {
@@ -59,7 +62,7 @@ export async function fixPackagesAsync(
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: `expo@${expoDep.expectedVersionOrRange}`,
-      followUpCommandArgs: ['--fix'],
+      followUpCommandArgs: ['--fix', ...(expoOnly ? ['--expo-only'] : [])],
     });
     // follow-up commands will be spawned in a detached process, so return immediately
     return;

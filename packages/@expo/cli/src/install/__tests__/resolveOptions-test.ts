@@ -24,6 +24,29 @@ describe(resolveArgsAsync, () => {
       message: 'The --json flag can only be used with --check',
     });
   });
+  it('rejects --expo-only without --check or --fix', async () => {
+    await expect(resolveArgsAsync(['--expo-only'])).rejects.toMatchObject({
+      code: 'BAD_ARGS',
+      message: 'The --expo-only flag can only be used with --check or --fix',
+    });
+  });
+  it('allows --expo-only with --check', async () => {
+    await expect(resolveArgsAsync(['--expo-only', '--check'])).resolves.toEqual({
+      variadic: [],
+      options: {
+        npm: false,
+        yarn: false,
+        check: true,
+        json: false,
+        pnpm: false,
+        bun: false,
+        fix: false,
+        dev: false,
+        expoOnly: true,
+      },
+      extras: [],
+    });
+  });
   it('allows --json with --check', async () => {
     await expect(resolveArgsAsync(['--json', '--check'])).resolves.toEqual({
       variadic: [],
@@ -36,6 +59,7 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
+        expoOnly: false,
       },
       extras: [],
     });
@@ -54,6 +78,7 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
+        expoOnly: false,
       },
       extras: ['--save-exact', '--ignore-scripts'],
     });
@@ -81,6 +106,7 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
+        expoOnly: false,
       },
       extras: ['--npm', '-g', 'not-a-plugin'],
     });
@@ -98,6 +124,7 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
+        expoOnly: false,
       },
       extras: [],
     });
