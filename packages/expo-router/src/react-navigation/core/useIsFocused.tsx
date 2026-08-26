@@ -15,7 +15,7 @@ export function useIsFocused(): boolean {
 
   if (isFocused === undefined) {
     throw new Error(
-      "Couldn't find a navigation object. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
+      "Couldn't find a focus context. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
     );
   }
 

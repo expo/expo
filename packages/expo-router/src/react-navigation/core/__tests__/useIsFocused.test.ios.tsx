@@ -30,6 +30,17 @@ test('uses the focus context without a navigation object', () => {
   expect(root).toMatchInlineSnapshot(`"focused"`);
 });
 
+test('throws without a focus context', () => {
+  const Test = () => {
+    useIsFocused();
+    return null;
+  };
+
+  expect(() => render(<Test />)).toThrow(
+    "Couldn't find a focus context. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
+  );
+});
+
 test('renders correct focus state', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
