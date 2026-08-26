@@ -325,9 +325,12 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   const followups =
     followUpsEnabled(wantFollowUps) && exitCode === EXIT_OK
       ? buildReloadFollowUps({
-          platform: device?.platform ?? null,
+          // The session's platform when no device was resolved: the dev-server method never looks
+          // for one, and a run told `--android` still has to hand back Android commands (F54).
+          platform: device?.platform ?? options.platform ?? null,
           deviceId: device?.deviceId ?? null,
           route,
+          adbPath: device?.adb?.bin,
         })
       : [];
 
