@@ -1,0 +1,80 @@
+# Thin adapter only — all logic lives in @expo/verify (LLP 0020). Customize
+# through .verify/ and dispatch inputs. VERIFY_VERSION is an EAS env var on
+# this project (no vars. context exists); the :? guard fails loudly instead
+# of expanding to `npx @expo/verify@ ci`.
+#
+# P4 spike facts this file depends on: no gh on the worker (installed in the
+# first step), Node defaults to 18 (tools.node below), the hard job cap is
+# 120 minutes — the engine's watchdog reserves the salvage tail under it.
+name: verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        type: string
+        required: true
+      fix:
+        type: choice
+        options: ["auto", "yes", "no"]
+        default: auto
+      retry:
+        type: boolean
+        default: false
+      actor:
+        type: string
+        required: true
+      dry_run:
+        type: boolean
+        default: false
+      # `model` intentionally absent: comment-forwarded dispatches never carry it.
+
+# No concurrency block: EAS groups cancel, never queue. Per-target
+# serialization is server-enforced at token mint (LLP 0020 Layer 1).
+
+defaults:
+  tools:
+    node: 24
+
+jobs:
+  verify:
+    runs_on: linux-large
+    environment: production
+    env:
+      VERIFY_TARGET: ${{ inputs.target }}
+      VERIFY_FIX: ${{ inputs.fix }}
+      # Boolean inputs must be coerced: EAS job env values are strings, and a
+      # raw boolean fails job-parameter validation ("Invalid input") — a
+      # server-side check the local validator does not run. P4 spike 2.
+      VERIFY_RETRY: ${{ inputs.retry && 'true' || 'false' }}
+      VERIFY_ACTOR: ${{ inputs.actor }}
+      VERIFY_DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+    steps:
+      - uses: eas/checkout # the COMPANION repo; the engine clones the target,
+                           # and target code executes only in sandboxes
+      - name: Install gh and the Claude Code CLI
+        # Tarball install: the worker has no gh and sudo is not assumed
+        # (P4 spike: user `expo`, HOME=/home/expo).
+        run: |
+          GH_V=2.98.0
+          curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_V}/gh_${GH_V}_linux_amd64.tar.gz" | tar -xz -C "$HOME"
+          mkdir -p "$HOME/bin" && mv "$HOME/gh_${GH_V}_linux_amd64/bin/gh" "$HOME/bin/gh"
+          echo "$HOME/bin" >> "$GITHUB_PATH" 2>/dev/null || export PATH="$HOME/bin:$PATH"
+          "$HOME/bin/gh" --version
+          npm install -g @anthropic-ai/claude-code@2.1.229
+      - name: Guard, then run
+        run: |
+          npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify verify-config
+          export PATH="$HOME/bin:$PATH"
+          if [ "$VERIFY_DRY_RUN" = "true" ]; then
+            npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify run --dry-run
+          else
+            npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify run
+          fi
+      - name: Upload run log
+        if: ${{ always() }} # CLI failures; the hard VM kill is the watchdog's job
+        uses: eas/upload_artifact
+        with:
+          type: other
+          name: verify-run-log
+          path: .verify-out

@@ -1,0 +1,9 @@
+# Written by verify init: upload only the verify files for an EAS run.
+*
+!.verify
+!.verify/**
+!.eas
+!.eas/**
+!app.json
+!eas.json
+!package.json

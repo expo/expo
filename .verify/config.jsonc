@@ -4,13 +4,10 @@
   // the scoped-token mint body, and which publish steps run.
   "repo": "expo/expo",
   "runner": "gha", // default; `et verify <n> --runner eas` overrides per run
-  // Where each runner's thin workflow lives. EAS runs go through the
-  // workflows REST API to the companion project @expo-verification-bot/
-  // verify-workflows (github.com/expo/verify-workflows) — no local checkout.
-  "hosts": {
-    "gha": { "repo": "expo/expo" },
-    "eas": { "projectId": "48c34336-2a8b-4c3b-b301-c2280bd0e7bc" }
-  },
+  // EAS runs upload this checkout's verify files (app.json links the EAS
+  // project; .easignore trims the upload). No hosts.eas: that would select
+  // the linked-repo REST mode instead of the upload.
+  "hosts": { "gha": { "repo": "expo/expo" } },
   "fix": "pr",
   "ghaSandbox": true,
   "bot": { "login": "expo-bot" },
