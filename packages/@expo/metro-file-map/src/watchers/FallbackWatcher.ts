@@ -171,12 +171,20 @@ export default class FallbackWatcher extends AbstractWatcher {
         this.#normalizeChange(dir, event, filename as string)
       );
     } catch (error: any) {
+      // Directory can vanish before watch; filterDir must not throw.
       this.#checkedEmitError(error);
       return false;
     }
     this.#watched[dir] = watcher;
 
-    watcher.on('error', this.#checkedEmitError);
+    watcher.on('error', (error) => {
+      // Node emits no `close` after `error`.
+      if (this.#watched[dir] === watcher) {
+        delete this.#watched[dir];
+      }
+      watcher.close();
+      this.#checkedEmitError(error);
+    });
 
     if (this.root !== dir) {
       this.#register(dir, 'd');
@@ -189,13 +197,15 @@ export default class FallbackWatcher extends AbstractWatcher {
    */
   async #stopWatching(dir: string): Promise<void> {
     const watcher = this.#watched[dir];
-    if (watcher) {
-      await new Promise<void>((resolve) => {
-        watcher.once('close', () => process.nextTick(resolve));
-        watcher.close();
-        delete this.#watched[dir];
-      });
+    if (!watcher) {
+      return;
     }
+    delete this.#watched[dir];
+    await new Promise<void>((resolve) => {
+      watcher.once('close', () => process.nextTick(resolve));
+      watcher.once('error', () => process.nextTick(resolve));
+      watcher.close();
+    });
   }
 
   /**
@@ -429,6 +439,7 @@ function recReaddir(
   ignored: RegExp | undefined | null
 ) {
   const walk = walker(dir);
+  // Watch before readdir so a file written in between is not missed.
   walk.filterDir((currentDir: string, stats: Stats) => {
     if (ignored && common.posixPathMatchesPattern(ignored, currentDir)) {
       return false;

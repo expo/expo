@@ -2,6 +2,7 @@
  * Copyright (c) 650 Industries, Inc. (Expo).
  */
 
+import EventEmitter from 'events';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -31,6 +32,20 @@ async function waitFor(predicate: () => boolean, description: string): Promise<v
     }
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
+}
+
+function makeFsError(code: string, syscall: string, target: string): NodeJS.ErrnoException {
+  const error: NodeJS.ErrnoException = new Error(
+    `${code}: simulated ${syscall} error, '${target}'`
+  );
+  error.code = code;
+  error.syscall = syscall;
+  error.path = target;
+  return error;
+}
+
+class DeadWatcher extends EventEmitter {
+  close(): void {}
 }
 
 // Native realpath: 8.3 temp paths crash libuv 1.52 (libuv#5010).
@@ -128,6 +143,63 @@ describe('FallbackWatcher', () => {
     await waitFor(
       () => hasTouchEvent('node_modules/late-pkg/package.json'),
       'a touch event for node_modules/late-pkg/package.json'
+    );
+  });
+
+  test('stopWatching resolves after an errored watcher', async () => {
+    await startWatcher();
+
+    const packageDir = path.join(root, 'node_modules', 'dead-pkg');
+    const realWatch = fs.watch;
+    const deadWatcher = new DeadWatcher();
+    let watchedPackageDir = false;
+    jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
+      if (dir === packageDir && !watchedPackageDir) {
+        watchedPackageDir = true;
+        return deadWatcher as unknown as fs.FSWatcher;
+      }
+      return (realWatch as any)(dir, ...rest);
+    }) as typeof fs.watch);
+
+    fs.mkdirSync(packageDir);
+    await waitFor(() => watchedPackageDir, 'the watcher to watch the new directory');
+
+    deadWatcher.emit('error', makeFsError('ENOENT', 'watch', packageDir));
+
+    await watcher!.stopWatching();
+    await watcher!.stopWatching();
+  });
+
+  test('watches a directory recreated at the path of an errored watcher', async () => {
+    await startWatcher();
+
+    const packageDir = path.join(root, 'node_modules', 'err-pkg');
+    const realWatch = fs.watch;
+    const deadWatcher = new DeadWatcher();
+    let packageDirWatchCount = 0;
+    jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
+      if (dir === packageDir) {
+        packageDirWatchCount++;
+        if (packageDirWatchCount === 1) {
+          return deadWatcher as unknown as fs.FSWatcher;
+        }
+      }
+      return (realWatch as any)(dir, ...rest);
+    }) as typeof fs.watch);
+
+    fs.mkdirSync(packageDir);
+    await waitFor(() => packageDirWatchCount >= 1, 'the watcher to watch the new directory');
+
+    deadWatcher.emit('error', makeFsError('ENOENT', 'watch', packageDir));
+
+    fs.rmdirSync(packageDir);
+    fs.mkdirSync(packageDir);
+    await waitFor(() => packageDirWatchCount >= 2, 'a new watch on the recreated directory');
+
+    fs.writeFileSync(path.join(packageDir, 'index.js'), 'module.exports = 1;\n');
+    await waitFor(
+      () => hasTouchEvent('node_modules/err-pkg/index.js'),
+      'a touch event for node_modules/err-pkg/index.js'
     );
   });
 });
