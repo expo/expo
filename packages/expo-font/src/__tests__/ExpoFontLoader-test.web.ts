@@ -79,6 +79,30 @@ if (typeof window === 'undefined') {
 
       expect(ExpoFontLoader.isLoaded('DIN 2015')).toBe(false);
     });
+
+    it(`matches a family whose name itself contains quotes`, () => {
+      installFontFaceRules(['"\\"Weird\\""']);
+
+      expect(ExpoFontLoader.isLoaded('"Weird"')).toBe(true);
+    });
+
+    it(`matches a family name with significant surrounding whitespace`, () => {
+      installFontFaceRules(['"  Padded  "']);
+
+      expect(ExpoFontLoader.isLoaded('  Padded  ')).toBe(true);
+    });
+
+    it(`does not conflate a padded name with its trimmed form`, () => {
+      installFontFaceRules(['"  Padded  "']);
+
+      expect(ExpoFontLoader.isLoaded('Padded')).toBe(false);
+    });
+
+    it(`does not treat quotes in the caller's name as CSS quoting`, () => {
+      installFontFaceRules(['"MyFont"']);
+
+      expect(ExpoFontLoader.isLoaded('"MyFont"')).toBe(false);
+    });
   });
 
   describe('getLoadedFonts', () => {
@@ -100,6 +124,15 @@ if (typeof window === 'undefined') {
       await ExpoFontLoader.unloadAsync('DIN 2014');
 
       expect(sheet.cssRules).toHaveLength(0);
+    });
+
+    it(`removes every matching rule when more than one matches`, async () => {
+      const sheet = installFontFaceRules(['"DIN 2014"', '"DIN 2014"', '"Other"']);
+
+      await ExpoFontLoader.unloadAsync('DIN 2014');
+
+      expect(sheet.cssRules).toHaveLength(1);
+      expect(sheet.cssRules[0].style.fontFamily).toBe('"Other"');
     });
   });
 }
