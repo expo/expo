@@ -95,6 +95,7 @@ persists.
 - **Project**: name/slug, SDK version, CNG vs bare, dev-client/web deps.
 - **Expo Go**: compatible or not, with reason count (the reasons themselves in the `probe` key of `--json`).
 - **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool).
+- **EAS build**: whether EAS already has a *finished* build made from this exact fingerprint, per platform — `found` / `none` / `unknown` [added — 2026-08-26]. The other half of the freshness question: `freshness` asks whether the app **this machine** built still matches, and a `stale` there used to mean a rebuild; this asks whether anybody has already built exactly this, where the answer is a download. Cached answer always, network call only under `--builds`; see §The EAS build lookup, and why it is opt-in for the measurements that decided that and for why the cache key is exact.
 - **Dev server**: running or not, and how many CDP targets are connected (app open?). Discovery order [observed — 2026-08-22]: explicit `--dev-server-url` → the project's **dev-server lock** (below) → the port the project's own `.expo/dev/logs/start.log` names (`metro:instantiate` event; project-scoped but carries no liveness/PID, so it is probed, never trusted) → 8081 → a short scan of the ports `expo start` falls back to.
 - **Skills**: agent selection cached? linked skill count vs discovered count (out-of-sync hint). **Left out of the text report entirely** when no agent is selected *and* nothing was discovered [revised — 2026-08-25]: `no agent selected · no skills discovered` is a line about two things that are not there, on a report whose every other line is a fact about the project [observed — dogfood, 2026-08-24]. The section stays in `--json` and in the `cli:status` event, where a key that is always present is the contract (llp/0006 §Output contract), and it stays in the text report the moment either half has something to say — including when the section could not be read at all, because the reason is worth printing.
 - **Device**: does this machine have a booted simulator or an attached device to open the app on — `present`, `absent`, or `unknown` [added — 2026-08-25]. Its own line because it changes what every other suggestion is worth; see llp/0009 §Device-aware ladders for the probe and for why `unknown` is never rounded down to "none".
@@ -127,6 +128,103 @@ Renamed [confirmed — Kudo, 2026-08-22]: **the smart engine is its own verb, `e
 Implemented [observed — 2026-08-22]: `exagent status [--json] [--dev-server-url]`, ~65 ms, per-section error notes with exit 0 (argument errors exit 1); next action names `exagent dev`; project name from `package.json` (dynamic app config needs an `expo config` subprocess, same approximation as item 7 below); live-verified against a real running project.
 
 Rename implemented [observed — 2026-08-22]: the engine is `src/dev/` (`devAsync.ts`, `confirmPlan.ts`, `resolveOptions.ts`), and `resolveDevOptions` resolves `run` with no flag and `plan` with `--plan` — the only two things the command can do. `src/start/` keeps the `expo start` wrapper: `resolveStartOptions` strips exactly two flags of its own (`--no-agent-skills`, `--no-followups`) and forwards everything else untouched, so `expo start` stays the one that rejects an argument it does not know. `dev` reuses the wrapper's `runDevServerAsync` for the dev-server step of a plan and its `resolveStartFollowUps` for the follow-ups of a run that ends in one. The guardrail lives in `src/dev/confirmPlan.ts` and is asked only when the run is interactive (`isInteractive()`: a TTY, not CI, not headless), `--yes` was not passed, `--json` was not passed (the prompt would land inside the parsed payload), and at least one step is costlier than `seconds`. A decline emits `cli:start_plan_declined`, points at `dev --plan` and `start`, and exits 0 — nothing ran, so nothing failed. It is asked after the plan is emitted and before the checkpoint is taken, so a declined plan snapshots nothing. The `cli:start_plan` event keeps its name and its `mode: 'plan' | 'smart'` field: they name the plan engine of this RFC, not the command that drives it.
+
+## The EAS build lookup, and why it is opt-in
+
+Decision [confirmed — Kudo, 2026-08-26]. `exagent status` reports whether **EAS already has a
+finished build made from this project's current fingerprint**, per platform, in three states —
+`found` / `none` / `unknown` with a reason. The **cached** answer is read on every run because it
+costs nothing and is exact; the **network** call that produces it happens only under `--builds`.
+
+The ask was "`status` could find available build on eas? using fingerprint", and the lookup already
+existed — [[0011-impact-and-freshness]] §The build-cache lookup has run
+`eas build:list --fingerprint-hash` since 2026-08-24. So the feature is not the query. It is
+reconciling the query with the one thing this command promises: `status` is *instant*. Its
+dev-server readiness probe is capped at 400 ms; its cloud-session check is a `stat` rather than an
+`eas simulator:get` for exactly this reason; it drops the fingerprint's ~25 KB of `sources` from
+`probe` to stay small. A section that added a second or more to every run would contradict all
+three.
+
+**Two costs, measured, not estimated** [observed — live against `apps/observe-tester`, a linked
+project of the `expo` account, `eas-cli/22.4.0`, 2026-08-26]:
+
+- `eas build:list --platform ios --fingerprint-hash <hash> --status finished --limit 1 --json
+  --non-interactive` takes **1.10–1.33 s** over five runs, a hit and a miss alike, with a warm CLI.
+  (`eas --version` returns in 0.07 s, so this is the network, not process start-up — which matters,
+  because a start-up cost would have been amortizable and a round trip is not.)
+- **The hash `status` has is the wrong hash.** Its probe runs `fingerprint:generate` with *no*
+  `--platform`, which hashes both platforms together — the right answer for freshness, and a hash no
+  build carries, because a build is made for one platform. On one working tree: `031f6b0c…` for the
+  project and `8ce1acfb…` for iOS. So asking EAS costs a **second** fingerprint run first
+  (**1.24 s**) before the network call.
+
+Together that is ~2.4 s per platform, against a `status` that measures ~65 ms on a fixture and
+1.58 s on that real project. Option (b) from the design space — always on, with a hard deadline like
+the auth preflight's — is therefore not available: any deadline short enough to keep the report
+instant is *below the floor* of a real lookup, so it would answer `unknown` on every run, and a
+section that is always unknown is worse than no section. Option (a) alone — a flag and nothing else
+— works but leaves the good answer behind a flag nobody remembers to pass.
+
+**The cache is what makes the hybrid exact rather than approximate**, and this is the argument the
+whole design rests on. The whole-project hash **dominates** the per-platform ones: `--platform`
+filters the same source list, so an unchanged project hash implies unchanged per-platform hashes.
+(The converse does not hold, and is not needed: a moved project hash simply misses, which costs a
+lookup and never a wrong answer.) That makes the hash `status` already computes for free a *sound*
+key for an answer about a hash it does not have. A hit costs one `readFileSync` and is as true as
+the lookup that wrote it — not a stale approximation like the cloud-session `stat`, which is
+tolerated because it is cheap; this one is kept because it is right.
+
+- **`.expo/exagent-eas-builds.json`**, one entry per platform: the `projectHash` it was true for,
+  the `fingerprintHash` that was actually asked about, `checkedAt`, and the build. An entry that
+  cannot name both hashes and a build id is dropped on read rather than repaired — the entire value
+  of this cache is that a hit is exact.
+- **Only a hit is written.** A `none` goes out of date on the ordinary timeline of the workflow this
+  serves: you start a build, it finishes fifteen minutes later, and a cached "there is no build"
+  would then be wrong exactly when it mattered. A hit only goes stale when somebody deletes a build,
+  which is rare and which the download command reports for itself. The asymmetry is the policy.
+- Consequently a `--builds` run that finds a build makes every later `status` free until the project
+  changes, and a `--builds` run that finds none leaves the next run saying "not asked". Both are
+  honest.
+
+**Section isolation, and where the reasons come from.** No EAS CLI, no `@expo/fingerprint`, a
+project with no EAS link, a network that refused, a payload in an unrecognised shape, the deadline
+expiring — every one is an `unknown` carrying its reason, the command still exits 0, and no other
+line of the report is affected. Two of those are worth writing down:
+
+- **A signed-out machine is never probed twice.** The `auth` section has already answered, so
+  `loggedIn: false` short-circuits the lookup with a reason naming it. `loggedIn: null` is *not*
+  treated as signed out — nothing was established — so the lookup runs.
+- **The reason of a refusal is read off stdout, before stderr**, which is the opposite of the usual
+  order and is what the CLI actually does: an unlinked project gets `EAS project not configured…`
+  and both `eas init` forms on **stdout**, with only `Error: build:list command failed.` on stderr
+  [observed — live against the unlinked `notesapp`, 2026-08-26; recorded as
+  `src/__fixtures__/eas/build-list-unconfigured.json`]. Reading stderr first would have reported the
+  one sentence with nothing in it.
+
+**Why `--builds` and not `--eas`.** `dev --eas` and `dev --local` already name a build *backend*,
+and a `status --eas` meaning "you may call EAS" would be a second sense of the same word one command
+apart. `--builds` names the section it fills and cannot be confused with either.
+
+**The line is printed only when it says something**, the same rule the `skills` line follows: a
+build was found, or the caller passed `--builds` and is owed the answer whatever it is, or the
+section could not be read at all. A default run with an empty cache prints nothing, because "nobody
+asked" is not a fact about the project. The key is always present in `--json` (llp/0006 §Output
+contract), and the `cli:status` event gains `easBuilds` and `easBuildsAsked`.
+
+**The follow-up is shared with `impact`, and gated on this project's own freshness.**
+`status-cached-build` fires only when a platform is `found` *and* that platform's freshness is
+`stale` — the case where the alternative was a fifteen-minute rebuild. `fresh` needs nothing, and
+`unknown` establishes nothing about which app is installed, so a download there would be a guess.
+The sentence lives in `src/followups/cachedBuild.ts` beside `impact`'s, because it is the reason the
+whole build-cache lookup exists and two copies of it would drift.
+
+**What is still not closed.** This is `status` reporting the answer, not the *plan engine* consuming
+it — item 2 of §Implemented in v1 as still has that half open. `exagent dev` continues to plan a
+build for a project whose fingerprint EAS already has a build for.
+
+Shipped as `exagent status [--builds]`, `src/status/easBuilds.ts`, `BuildLookupOutcome` in
+`src/impact/buildCache.ts` (the three-state form; `findCachedBuildAsync` is now the two-state
+wrapper `impact` reads), and `src/followups/cachedBuild.ts`.
 
 ## Daemonization
 
@@ -305,7 +403,7 @@ and `null` for a plan that builds nothing, so a caller reads one key rather than
 [observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/status/`, `src/dev/`, `exagent dev [--plan]`) with these deliberate approximations of the table above:
 
 1. **No device probe.** "Go/dev client installed on the device" is unobservable without simctl/adb; those rows are dropped — `expo start` prompts for Go itself and `expo run:*` installs what it builds.
-2. **No build-cache lookup.** Freshness = probe fingerprint vs `.expo/exagent-last-build.json` (written after a successful `run:*` step). Unrecorded ⇒ stale: v1 over-plans a build at worst, never under-plans. **Closed for `impact`** [added — 2026-08-24]: `eas build:list --fingerprint-hash` is a build-cache lookup, and [[0011-impact-and-freshness]] §The build-cache lookup uses it to turn "you need a native build" into "a finished build already exists for this exact fingerprint". The *plan engine* does not consult it yet, and that is the remaining half of this item.
+2. **No build-cache lookup.** Freshness = probe fingerprint vs `.expo/exagent-last-build.json` (written after a successful `run:*` step). Unrecorded ⇒ stale: v1 over-plans a build at worst, never under-plans. **Closed for `impact`** [added — 2026-08-24]: `eas build:list --fingerprint-hash` is a build-cache lookup, and [[0011-impact-and-freshness]] §The build-cache lookup uses it to turn "you need a native build" into "a finished build already exists for this exact fingerprint". **Closed for `status` too** [added — 2026-08-26]: see §The EAS build lookup, and why it is opt-in, which also records why the answer is cached rather than always fetched. The *plan engine* still does not consult it, and that is the remaining half of this item — `exagent dev` plans a build for a project whose fingerprint EAS already has a build for.
 3. The recorded hash is the pre-build probe hash (what an unchanged project re-probes to). The record now holds the whole fingerprint rather than the hash alone [added — 2026-08-24], because a hash cannot be diffed and "what changed" is the whole of what `impact` reports; a bare string still reads, as a record whose sources are null. See [[0011-impact-and-freshness]] §The record has to hold the sources, including the measurement behind storing it uncompressed.
 4. The `web` rule fires only on an explicit `--web`; `ProjectState` cannot prove "web-only".
 5. Bare-vs-CNG uses "any native dir present"; the argv uses the resolved platform.

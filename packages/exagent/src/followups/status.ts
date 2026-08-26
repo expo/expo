@@ -16,7 +16,8 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   // would produce. Only when *this* project's freshness says so — a fresh platform has the right
   // app installed already, and downloading it again would be work for nothing.
   const downloadable = report.builds?.platforms.find(
-    (platform) => platform.state === 'found' && platform.buildId && isStale(report, platform.platform)
+    (platform) =>
+      platform.state === 'found' && platform.buildId && isStale(report, platform.platform)
   );
   if (downloadable?.buildId) {
     followups.push(cachedBuildFollowUp('status', downloadable.buildId));

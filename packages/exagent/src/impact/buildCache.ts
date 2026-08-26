@@ -85,7 +85,10 @@ export async function lookUpCachedBuildAsync(
     timeoutMs,
   });
   if (result.spawnError) {
-    return { state: 'unknown', reason: `the EAS CLI could not be run: ${result.spawnError.message}` };
+    return {
+      state: 'unknown',
+      reason: `the EAS CLI could not be run: ${result.spawnError.message}`,
+    };
   }
   if (result.timedOut) {
     return { state: 'unknown', reason: `the lookup did not answer within ${timeoutMs}ms` };
@@ -140,10 +143,16 @@ function readLookupPayload(stdout: string): BuildLookupOutcome {
   try {
     parsed = JSON.parse(stdout.slice(start));
   } catch {
-    return { state: 'unknown', reason: 'the EAS CLI printed a build list this version cannot read' };
+    return {
+      state: 'unknown',
+      reason: 'the EAS CLI printed a build list this version cannot read',
+    };
   }
   if (!Array.isArray(parsed)) {
-    return { state: 'unknown', reason: 'the EAS CLI printed a build list this version cannot read' };
+    return {
+      state: 'unknown',
+      reason: 'the EAS CLI printed a build list this version cannot read',
+    };
   }
   if (parsed.length === 0) {
     return { state: 'none' };

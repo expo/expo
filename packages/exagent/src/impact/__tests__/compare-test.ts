@@ -1,6 +1,9 @@
+import recordedUnconfigured from '../../__fixtures__/eas/build-list-unconfigured.json';
+import recordedList from '../../__fixtures__/eas/build-list.json';
+import recordedCompare from '../../__fixtures__/eas/fingerprint-compare.json';
+import { readLastBuildRecord } from '../../plan/lastBuild';
 import { diffFingerprintsAsync, generateFingerprintAsync } from '../../project/fingerprint';
 import type { FingerprintDiffItem } from '../../project/fingerprint';
-import { readLastBuildRecord } from '../../plan/lastBuild';
 import { spawnSubprocessAsync } from '../../utils/subprocess';
 import {
   buildCacheArgs,
@@ -15,9 +18,6 @@ import {
   describeGenerateFailure,
   parseEasCompare,
 } from '../compare';
-import recordedList from '../../__fixtures__/eas/build-list.json';
-import recordedUnconfigured from '../../__fixtures__/eas/build-list-unconfigured.json';
-import recordedCompare from '../../__fixtures__/eas/fingerprint-compare.json';
 import realDiff from './fixtures/notesapp-ios-diff.json';
 
 jest.mock('../../utils/subprocess', () => ({ spawnSubprocessAsync: jest.fn() }));
@@ -154,11 +154,10 @@ describe(compareWithEasBuildAsync, () => {
 
     await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
 
-    expect(spawnSubprocessAsync).toHaveBeenCalledWith(
-      '/bin/eas',
-      buildEasCompareArgs('build-1'),
-      { cwd: projectRoot, output: 'capture' }
-    );
+    expect(spawnSubprocessAsync).toHaveBeenCalledWith('/bin/eas', buildEasCompareArgs('build-1'), {
+      cwd: projectRoot,
+      output: 'capture',
+    });
   });
 
   it(`should report a non-zero exit as an error naming the id`, async () => {
@@ -185,7 +184,9 @@ describe(compareWithEasBuildAsync, () => {
   // the diff is this CLI's to produce — from the sources that came with them.
   it(`should diff the two fingerprints the recorded payload carries`, async () => {
     mockSpawn({ stdout: JSON.stringify(recordedCompare) });
-    jest.mocked(diffFingerprintsAsync).mockResolvedValue({ items: realDiff as FingerprintDiffItem[] });
+    jest
+      .mocked(diffFingerprintsAsync)
+      .mockResolvedValue({ items: realDiff as FingerprintDiffItem[] });
 
     const result = await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
 
@@ -205,7 +206,9 @@ describe(compareWithEasBuildAsync, () => {
   // elaboration must not lose the answer.
   it(`should still answer "whether" when the local diff fails`, async () => {
     mockSpawn({ stdout: JSON.stringify(recordedCompare) });
-    jest.mocked(diffFingerprintsAsync).mockResolvedValue({ items: null, error: 'no fingerprint CLI' });
+    jest
+      .mocked(diffFingerprintsAsync)
+      .mockResolvedValue({ items: null, error: 'no fingerprint CLI' });
 
     const result = await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
 
@@ -337,7 +340,11 @@ describe(findCachedBuildAsync, () => {
     expect(spawnSubprocessAsync).toHaveBeenCalledWith(
       '/bin/eas',
       buildCacheArgs('ios', 'abc'),
-      expect.objectContaining({ cwd: projectRoot, output: 'capture', timeoutMs: expect.any(Number) })
+      expect.objectContaining({
+        cwd: projectRoot,
+        output: 'capture',
+        timeoutMs: expect.any(Number),
+      })
     );
   });
 

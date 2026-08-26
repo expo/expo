@@ -696,7 +696,11 @@ process.exit(1);
 
       const report = await reportInAsync(projectRoot, ['--builds']);
 
-      expect(iosOf(report)).toMatchObject({ state: 'none', source: 'eas', reason: expect.any(String) });
+      expect(iosOf(report)).toMatchObject({
+        state: 'none',
+        source: 'eas',
+        reason: expect.any(String),
+      });
     });
 
     // The live case: `notesapp` has no EAS link, and the CLI refuses on stdout with exit 1.
@@ -718,7 +722,8 @@ process.exit(1);
       const report: StatusReport = JSON.parse(result.stdout);
       expect(iosOf(report)).toMatchObject({
         state: 'unknown',
-        reason: 'EAS project not configured. This command cannot configure it in non-interactive mode.',
+        reason:
+          'EAS project not configured. This command cannot configure it in non-interactive mode.',
       });
       expect(report.errors).toEqual({});
     });

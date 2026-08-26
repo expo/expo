@@ -1,7 +1,7 @@
 import { stripVTControlCharacters } from 'node:util';
 
-import { formatStatusReport } from '../format';
 import type { PlanBuildLocation } from '../../toolchain/types';
+import { formatStatusReport } from '../format';
 import type { StatusReport } from '../types';
 
 /** The report without color, so assertions never depend on the terminal's color support. */
@@ -553,7 +553,9 @@ describe('the eas build line', () => {
 
     expect(rendered).toContain('ios: finished build');
     expect(rendered).toContain('simulator');
-    expect(rendered).toContain('npx eas build:download --build-id 21d7d434-6495-4e74-b8c7-68ecd0dff489');
+    expect(rendered).toContain(
+      'npx eas build:download --build-id 21d7d434-6495-4e74-b8c7-68ecd0dff489'
+    );
   });
 
   it(`prints the answer a caller asked for outright, even when it is none`, () => {

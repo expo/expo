@@ -241,6 +241,27 @@ into an error. `resolveEasCli` (nullable) exists for exactly this, beside the th
 `--status finished` is load-bearing: a queued or errored build with the same fingerprint is not a
 build anyone can install.
 
+### The build-cache lookup answers in three states
+
+Added 2026-08-26, when [[0004-smart-start-and-project-state]] §The EAS build lookup, and why it is
+opt-in gave the lookup a second caller. `impact` folds "EAS has no such build" and "nobody could
+ask" together on purpose — it is *decorating* a report that is complete without either, so both lead
+to the same follow-up ladder. `status` cannot: its whole contract is that a reader knows whether a
+missing answer was established or merely assumed, which is the same rule its `auth`, `device` and
+`ready` lines already follow.
+
+So `lookUpCachedBuildAsync` is the primitive and answers `{ state: 'found', build }`,
+`{ state: 'none' }`, or `{ state: 'unknown', reason }`, and `findCachedBuildAsync` is the two-state
+wrapper `impact` keeps reading — same argv, same parser, same "never fails the command", byte for
+byte the same behaviour. Only an **empty list from an exit-0 run** is `none`; output this CLI cannot
+parse is `unknown`, because a shape that moved upstream must never be reported as a fact about an
+account.
+
+The reason of a refusal is read off **stdout before stderr**, which is the opposite of the usual
+order and is what the CLI does: an unlinked project gets the whole explanation on stdout and only
+`Error: build:list command failed.` on stderr [observed — live, 2026-08-26; recorded as
+`src/__fixtures__/eas/build-list-unconfigured.json`].
+
 ## A fingerprint change is not "OTA-unsafe"
 
 **This section is the normative one.** `ota.safe` comes from the resolved `runtimeVersion` policy,
