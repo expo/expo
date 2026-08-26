@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Remove Node's built-in `TextDecoder` before installing the `expo` winter runtime, simulating the native runtimes where the polyfill is used. ([#48790](https://github.com/expo/expo/pull/48790) by [@tomekzaw](https://github.com/tomekzaw))
+
 ## 57.0.3 - 2026-07-29
 
 _This version does not introduce any user-facing changes._

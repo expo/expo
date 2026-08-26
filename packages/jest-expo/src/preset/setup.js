@@ -362,6 +362,10 @@ jest.doMock('expo/src/winter/FormData', () => ({
   // so we don't need to patch `FormData` for the jest runtime.
   installFormDataPatch: jest.fn(),
 }));
+// Simulate the native runtime, where no engine-provided `TextDecoder` exists
+// yet: the winter runtime only installs its polyfill when the global is
+// absent, and the tests exercise the polyfill rather than Node's built-in.
+delete globalThis.TextDecoder;
 // Ensure the environment globals are installed before the first test runs.
 require('expo/src/winter');
 
