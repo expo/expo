@@ -56,6 +56,84 @@ env:
   SKIP_SKIA_DOWNLOAD: '1'
 
 jobs:
+  install-e2e-debian:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    container: node:24-bookworm
+    strategy:
+      fail-fast: false
+      matrix:
+        pm: [bun, npm, pnpm]
+    steps:
+      - name: 🐧 Install container prerequisites
+        run: apt-get update && apt-get install -y unzip
+
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.x'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile --ignore-scripts
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🔨 Build the CLI and its dependencies
+        run: pnpm turbo run build --filter=@expo/cli
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🧪 Install-while-running E2E
+        working-directory: packages/@expo/cli
+        run: pnpm test:e2e install-while-running --max-workers 1
+        env:
+          E2E_INSTALL_PM: ${{ matrix.pm }}
+
+  fallback-watcher-windows:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - name: 🪟 Setup Windows
+        shell: bash
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile --ignore-scripts
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🧪 FallbackWatcher unit tests
+        working-directory: packages/@expo/metro-file-map
+        run: pnpm exec jest src/watchers/__tests__/FallbackWatcher.test.ts --runInBand
+
   jest-ubuntu:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
