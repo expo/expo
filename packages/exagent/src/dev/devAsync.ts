@@ -30,6 +30,11 @@ import { CommandError } from '../utils/errors';
 import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
 import { isInteractive } from '../utils/interactive';
 import type { SubprocessOutput } from '../utils/subprocess';
+import {
+  looksLikeWrapperCrash,
+  wrapperCrashDetail,
+  type WrapperCrashTool,
+} from '../utils/wrapperCrash';
 import { confirmPlanAsync } from './confirmPlan';
 import { event as devEvent } from './events';
 import {
@@ -195,6 +200,14 @@ interface StepFailure {
   exitCode: number;
   stdout: string;
   stderr: string;
+  /**
+   * The file that actually ran, when the step resolved one.
+   *
+   * Kept because it is the only fact that resolves a wrapper crash: the reader has to look at the
+   * file under that name, not at the package they believe they installed (`wrapperCrash.ts`).
+   * Null for a dev-server step, whose output nothing captures anyway.
+   */
+  binPath: string | null;
 }
 
 /** What one execution of a plan amounts to. */
@@ -285,6 +298,7 @@ async function executePlanAsync(
         exitCode,
         stdout: result.stdout,
         stderr: result.stderr,
+        binPath: (result as StepResult).binPath ?? null,
       };
       // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 3 — a step that
       // stopped because the Expo CLI needed an answer, or because macOS refused it a permission,
@@ -308,7 +322,13 @@ async function executePlanAsync(
 }
 
 /** What one step run amounts to, for the retry that may replace it. */
-type StepResult = { exitCode: number; stdout: string; stderr: string };
+type StepResult = {
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+  /** The file that ran, when this step resolved one. @see StepFailure.binPath */
+  binPath?: string | null;
+};
 
 /**
  * Start the dev server again on a port this CLI picked, after the Expo CLI stopped on a busy one.
@@ -410,15 +430,20 @@ async function runStepAsync(
   step: PlanStep,
   args: string[],
   output: SubprocessOutput
-): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+): Promise<StepResult> {
   if (step.argv[0] === 'eas') {
     return await runEasStepAsync(projectRoot, args, output);
   }
   if (output === 'inherit') {
-    return { exitCode: await runExpoAsync(projectRoot, args), stdout: '', stderr: '' };
+    return { exitCode: await runExpoAsync(projectRoot, args), stdout: '', stderr: '', binPath: null };
   }
-  const { result } = await spawnExpoAsync(projectRoot, args, { output });
-  return { exitCode: result.exitCode ?? 1, stdout: result.stdout, stderr: result.stderr };
+  const { cli, result } = await spawnExpoAsync(projectRoot, args, { output });
+  return {
+    exitCode: result.exitCode ?? 1,
+    stdout: result.stdout,
+    stderr: result.stderr,
+    binPath: cli.command,
+  };
 }
 
 /**
@@ -435,14 +460,19 @@ async function runEasStepAsync(
   projectRoot: string,
   args: string[],
   output: SubprocessOutput
-): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+): Promise<StepResult> {
   const { resolveEasCliOrThrow } = require('../utils/easCli') as typeof import('../utils/easCli');
   const { spawnSubprocessAsync } =
     require('../utils/subprocess') as typeof import('../utils/subprocess');
 
   const easCli = resolveEasCliOrThrow(projectRoot);
   const result = await spawnSubprocessAsync(easCli.command, args, { cwd: projectRoot, output });
-  return { exitCode: result.exitCode ?? 1, stdout: result.stdout, stderr: result.stderr };
+  return {
+    exitCode: result.exitCode ?? 1,
+    stdout: result.stdout,
+    stderr: result.stderr,
+    binPath: easCli.command,
+  };
 }
 
 /**
@@ -503,12 +533,19 @@ function stopPromptFor(
   // The port question is deliberately not among these any more: it is recognised before the
   // classifier runs and either retried on a free port or reported as an outcome
   // (`detectPortCollision`, `portDemandedError`). What is left here genuinely needs the person.
+  //
+  // **The code is the registry row's own, never one spelled here.** A plan runs steps of two CLIs
+  // (llp/0015 §Running an `eas` step), and an `eas build` that stopped for a login is a different
+  // scenario, with a different recovery, from an `expo start` that stopped for a prompt — which is
+  // the whole reason the classifier is told which tool ran. Naming `EXPO_NEEDS_INPUT` here
+  // flattened all four rows onto the Expo CLI's, so an agent branching on the code was told to
+  // answer a question when what it had to do was sign in.
   const asked = lastNonEmptyLine(failure.stderr) ?? lastNonEmptyLine(failure.stdout);
+  const cli = `${cliNameOf(failure.step)} CLI`;
   return {
-    code: 'EXPO_NEEDS_INPUT',
     message: [
       `The plan stopped at "${failure.step.id}": "${invocation}" needed an answer and this run has no terminal to give one.`,
-      `Why: the Expo CLI asks before it does something it cannot decide, and a run with no terminal fails there instead of prompting. The question it asked is quoted below.`,
+      `Why: the ${cli} asks before it does something it cannot decide, and a run with no terminal fails there instead of prompting. The question it asked is quoted below.`,
       `How: run the command above in a terminal once and answer it. If the answer is a value this CLI takes as a flag, pass that flag instead — "npx exagent dev --help" lists them.`,
       asked ? `\nWhat it asked for:\n${asked}` : '',
     ]
@@ -552,6 +589,22 @@ function planStepFailedError(
   exitCode: number
 ): CommandError {
   const invocation = invocationOf(failure);
+  // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — the process on the other side of
+  // the spawn is whatever this machine has under that name, and sometimes it is a wrapper, a shim
+  // or a stale link. Quoting *its* bytes under "What the tool printed" tells the reader the Expo or
+  // EAS CLI said them, and an agent then acts on a sentence no Expo tool wrote (`wrapperCrash.ts`).
+  // The guard needs captured output, so it can only fire in `capture` mode — which is the mode a
+  // driving agent runs in, and the only one where anything is quoted at all.
+  const tool: WrapperCrashTool = failure.step.argv[0] === 'eas' ? 'eas' : 'expo';
+  const wrapperCrash =
+    output === 'capture' &&
+    failure.binPath != null &&
+    looksLikeWrapperCrash({
+      tool,
+      exitCode: failure.exitCode,
+      stdout: failure.stdout,
+      stderr: failure.stderr,
+    });
   // In `tee` and `inherit` mode the tool's own output already reached the terminal, and repeating
   // it would bury the three lines that say what to do.
   const tail = output === 'capture' ? outputTail(`${failure.stdout}${failure.stderr}`, 12) : '';
@@ -563,7 +616,11 @@ function planStepFailedError(
         ? `Why: that step is the one that starts the dev server, and its process has exited, so no dev server is running for this project. The exit code above is the ${cliNameOf(failure.step)} CLI's own, not this command's.`
         : `Why: every later step of the plan depends on this one, so nothing after it ran. The exit code above is the ${cliNameOf(failure.step)} CLI's own, not this command's.`,
       `How: run the command above yourself to see it fail with its whole output, or run "npx exagent dev --plan" to see the steps this plan is made of.`,
-      tail ? `\nWhat the tool printed:\n${tail}` : '',
+      wrapperCrash
+        ? wrapperCrashDetail({ tool, exitCode: failure.exitCode }, failure.binPath!)
+        : tail
+          ? `\nWhat the tool printed:\n${tail}`
+          : '',
     ]
       .filter(Boolean)
       .join('\n')

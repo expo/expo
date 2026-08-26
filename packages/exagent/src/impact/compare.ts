@@ -7,6 +7,7 @@ import type { FingerprintDiffItem, FingerprintSource } from '../project/fingerpr
 import { readLastBuildRecord } from '../plan/lastBuild';
 import type { EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
+import { looksLikeWrapperCrash, wrapperCrashDetail } from '../utils/wrapperCrash';
 import type { ComparisonSide } from './types';
 
 /** What every comparison mode answers with. */
@@ -199,19 +200,30 @@ export async function compareWithEasBuildAsync(
   const headSide: ComparisonSide = { label: 'working tree', hash: null };
 
   if (result.spawnError || result.exitCode !== 0) {
+    // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — the binary under the name `eas`
+    // may be a wrapper, a shim or a stale link. Its bytes are not an answer about this build, and
+    // the "check the id, check your sign-in" line below is advice about neither problem it has.
+    const wrapperCrash =
+      !result.spawnError && looksLikeWrapperCrash({ tool: 'eas', ...result });
     return {
       base: baseSide,
       head: headSide,
       items: null,
       fingerprintChanged: null,
       caveats: [],
-      error: [
-        `Could not compare against EAS build ${buildId}.`,
-        `Why: "${[easCli.command, ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}${
-          result.stderr.trim() ? `: ${outputTail(result.stderr)}` : ''
-        }`,
-        `How: check the id with "npx eas build:list --limit 5 --json --non-interactive", and that this machine is signed in to the account that owns it.`,
-      ].join('\n'),
+      error: wrapperCrash
+        ? [
+            `Could not compare against EAS build ${buildId}.`,
+            `Why: "${[easCli.command, ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}.`,
+            wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCli.command),
+          ].join('\n')
+        : [
+            `Could not compare against EAS build ${buildId}.`,
+            `Why: "${[easCli.command, ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}${
+              result.stderr.trim() ? `: ${outputTail(result.stderr)}` : ''
+            }`,
+            `How: check the id with "npx eas build:list --limit 5 --json --non-interactive", and that this machine is signed in to the account that owns it.`,
+          ].join('\n'),
     };
   }
 
