@@ -1,6 +1,12 @@
-# Thin adapter only — all logic lives in @expo/verify (LLP 0020). Do not add
-# steps here; customize through .verify/ (config.jsonc, build.md, policy.md,
-# report.md, pr.md) and dispatch inputs.
+# Thin adapter only — all logic lives in the @expo/verify engine
+# (design of record: expo-sandbox-mcp LLP 0020). Do not add steps here;
+# customize through .verify/ (config.jsonc, the prompt files) and dispatch
+# inputs.
+#
+# STAGED CUTOVER: this workflow runs only on explicit dispatch and lives
+# beside agent-commands.yml, which remains the live /verify pipeline until
+# shadow parity is approved. The dry_run input runs the full investigation
+# but posts nothing — artifacts only.
 name: verify
 
 on:
@@ -18,6 +24,10 @@ on:
         description: "Model override (quiet path only)"
         type: string
       retry:
+        type: boolean
+        default: false
+      dry_run:
+        description: "Investigate for real, post nothing (P1b shadow)"
         type: boolean
         default: false
 
@@ -39,8 +49,9 @@ jobs:
     continue-on-error: true # a verify failure must never fail the repo's checks
     env:
       # Same version feeds the guard and the run, so the engine that clears
-      # the profile is the engine that reads it. Pin via repo variable.
-      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || 'latest' }}
+      # the profile is the engine that reads it. Override with the repo
+      # variable VERIFY_VERSION; the fallback pins the tested release.
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.1.0' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -59,7 +70,7 @@ jobs:
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
 
       - name: Run verify
-        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify ci
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify ci ${{ inputs.dry_run == true && '--dry-run' || '' }}
         continue-on-error: true
         env:
           # Inputs cross as env only — never ${{ }} inside run: lines.
@@ -71,10 +82,11 @@ jobs:
           VERIFY_ACTOR: ${{ github.actor }}
           VERIFY_RUN_ID: ${{ github.run_id }}
           VERIFY_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          MCP_URL: ${{ vars.VERIFY_MCP_URL }}
+          # Same deployment agent-commands.yml uses.
+          MCP_URL: https://agile-minnow-543.convex.site
           # Secrets: held by this step's process only. The engine strips ALL
           # of these from the agent/critic subprocess env.
-          GH_TOKEN: ${{ secrets.VERIFY_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           ECR_1: ${{ secrets.ECR_1 }}
           ECR_2: ${{ secrets.ECR_2 }}
@@ -92,6 +104,7 @@ jobs:
             .verify-out/run-log.txt
             .verify-out/findings.md
             .verify-out/review.md
+            .verify-out/final-comment.md
             .verify-out/partial-findings.md
             .verify-out/denied-writes.txt
             .verify-out/publish-plan.json
