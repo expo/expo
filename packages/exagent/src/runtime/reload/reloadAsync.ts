@@ -328,6 +328,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
           // The session's platform when no device was resolved: the dev-server method never looks
           // for one, and a run told `--android` still has to hand back Android commands (F54).
           platform: device?.platform ?? options.platform ?? null,
+          backend: device?.backend,
           deviceId: device?.deviceId ?? null,
           route,
           adbPath: device?.adb?.bin,

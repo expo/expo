@@ -2,9 +2,20 @@
 // What to do with an app that has just been put back on the current code: read what the *new*
 // run reports, and look at the screen it is on.
 
+import { AGENT_DEVICE_SPEC } from '../device/cloudSimulator';
+import type { DeviceBackend } from '../navigate/device';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ReloadFollowUpInput {
+  /**
+   * Which device layer the app is on.
+   *
+   * The same reason `navigate`'s follow-ups carry it: a `Try:` line has to be runnable [llp/0009
+   * §Design], and `xcrun simctl io <session-id>` is not — a cloud session is not a simulator on
+   * this machine. Defaults to the local backend for the platform, which is what a run whose reload
+   * went over the dev server and never resolved a device means.
+   */
+  backend?: DeviceBackend;
   /**
    * Platform this reload was about, or null when nothing named one.
    *
@@ -30,12 +41,14 @@ export interface ReloadFollowUpInput {
  * with a reloaded app is to read the errors of the run that does.
  */
 export function buildReloadFollowUps({
+  backend,
   platform,
   deviceId,
   route,
   adbPath = 'adb',
 }: ReloadFollowUpInput): FollowUp[] {
   const flag = platform == null ? '' : ` --${platform}`;
+  const on = backend ?? (platform === 'android' ? 'local-android' : 'local-ios');
   const followups: FollowUp[] = [
     {
       id: 'runtime-errors',
@@ -48,17 +61,25 @@ export function buildReloadFollowUps({
     followups.push({
       id: 'screenshot',
       command:
-        platform === 'ios'
-          ? `xcrun simctl io ${deviceId} screenshot screen.png`
-          : `${adbPath} -s ${deviceId} exec-out screencap -p > screen.png`,
-      why: `Captures what the reloaded app is showing${route ? ` on ${route}` : ''}, which is the one thing no gate in this CLI can read.`,
+        on === 'cloud'
+          ? // The controller's own verb, run through the session bridge. Never `xcrun`: there is no
+            // simulator on this machine to point it at.
+            `npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} screenshot screen.png`
+          : platform === 'ios'
+            ? `xcrun simctl io ${deviceId} screenshot screen.png`
+            : `${adbPath} -s ${deviceId} exec-out screencap -p > screen.png`,
+      why: `Captures what the reloaded app is showing${route ? ` on ${route}` : ''}${
+        on === 'cloud' ? ' on the cloud simulator, downloaded here' : ''
+      }, which is the one thing no gate in this CLI can read.`,
     });
   }
 
   if (route == null) {
     followups.push({
       id: 'navigate',
-      command: `npx exagent navigate /${flag}`,
+      // The backend the reload used, carried on: `navigate /` without it looks for a device on
+      // this machine, which is the machine a cloud run has none on.
+      command: `npx exagent navigate /${flag}${on === 'cloud' ? ' --cloud' : ''}`,
       why: 'The app resumed on the route it was launched with; this puts it back on the root route.',
     });
   }

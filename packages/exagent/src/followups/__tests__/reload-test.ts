@@ -27,4 +27,24 @@ describe(`${buildReloadFollowUps.name} and the session's platform`, () => {
       '/sdk/platform-tools/adb -s emulator-5554 exec-out screencap -p > screen.png'
     );
   });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Where it composes. A `Try:` line has to be runnable,
+  // and `xcrun simctl io <session-id>` is not: the device is not on this machine.
+  it(`never names a platform tool for a cloud session`, () => {
+    const followups = buildReloadFollowUps({
+      backend: 'cloud',
+      platform: 'ios',
+      deviceId: 'sess-1',
+      route: null,
+    });
+    const commands = followups.map((followup) => followup.command);
+
+    expect(commands.join('\n')).not.toContain('simctl');
+    expect(commands.join('\n')).not.toContain('adb');
+    expect(commands).toContain(
+      'npx eas simulator:exec npx agent-device@latest screenshot screen.png'
+    );
+    // The backend is carried on: `navigate /` alone looks for a device on this machine.
+    expect(commands).toContain('npx exagent navigate / --ios --cloud');
+  });
 });

@@ -176,4 +176,25 @@ describe(buildDevWaitFollowUps, () => {
       expect(ids(followups)).not.toContain('dev-wait-bundle-broken');
     }
   );
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Where it composes. "Open it on the booted simulator
+  // or the attached device" is an instruction that cannot work on the machine this backend is for.
+  it(`aims the open-app rung at the session when this machine has no device`, () => {
+    const followups = buildDevWaitFollowUps(
+      input({ ready: true, appsConnected: 0, openOn: 'cloud' })
+    );
+    const openApp = followups.find((followup) => followup.id === 'dev-wait-open-app');
+
+    expect(openApp?.command).toBe('npx exagent navigate / --cloud');
+    expect(openApp?.why).toContain('EAS Simulator session');
+    expect(openApp?.why).toContain('bills until');
+  });
+
+  it(`keeps the local wording when this machine has a device`, () => {
+    const followups = buildDevWaitFollowUps(input({ ready: true, appsConnected: 0 }));
+
+    expect(followups.find((followup) => followup.id === 'dev-wait-open-app')?.command).toBe(
+      'npx exagent navigate /'
+    );
+  });
 });

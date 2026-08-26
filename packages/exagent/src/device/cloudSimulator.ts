@@ -411,6 +411,14 @@ export interface CloudSessionProbe {
   sessionName: string | null;
   /** How many drivable sessions the listing held, so a report can say a choice was made. */
   candidateCount: number;
+  /**
+   * How many live sessions were dropped for having a controller this CLI cannot speak to.
+   *
+   * Carried so a failure that is *not* about the cloud — a `navigate` with no device at all — can
+   * still name the session that is up. "No device found" next to a running `serve-sim` is true and
+   * unhelpful, and the reader is one `simulator:start` away from a device this CLI can drive.
+   */
+  otherSessionCount: number;
   /** Why the state is what it is, for a failure that has to explain itself. Null when `active`. */
   reason: string | null;
   /** Whether the account has EAS Simulator at all, when it was worth asking. Null when it was not. */
@@ -561,6 +569,7 @@ export async function probeCloudSessionAsync({
       status: selected.status,
       sessionName: selected.name,
       candidateCount: candidates.length,
+      otherSessionCount: wrongType.length,
       available: true,
       waitlistUrl: null,
       failure: null,
@@ -617,6 +626,7 @@ async function noUsableSessionAsync({
     status: null,
     sessionName: null,
     candidateCount: 0,
+    otherSessionCount: wrongType.length,
     available,
     waitlistUrl: waitlistUrl ?? (available === false ? CLOUD_SIMULATOR_WAITLIST_URL : null),
     failure: null,
@@ -960,6 +970,7 @@ function unknownSession(sessionId: string | null, reason: string): CloudSessionP
     status: null,
     sessionName: null,
     candidateCount: 0,
+    otherSessionCount: 0,
     available: null,
     waitlistUrl: null,
     failure: null,

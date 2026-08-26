@@ -7,8 +7,10 @@
 // The third is not on this machine at all: an EAS Simulator session, driven through `eas
 // simulator:*` (`src/device/cloudSimulator.ts`). It is opt-in per caller rather than always
 // considered, because it is the only backend that costs money and the only one whose invocations
-// this package has never verified against a live service. `navigate` and `smoke` opt in; every
-// `runtime:*` action that force-stops an app does not, because the controller has no verb for it.
+// this package has never verified against a live service. `navigate` and `smoke` put it on their
+// ladder as a *fallback*; `runtime:stop` and `runtime:reload` reach for it only when `--cloud`
+// names it, so a session that happens to be up never quietly bills a run a local device would have
+// served.
 
 import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import {
@@ -390,12 +392,12 @@ export type CloudPreference =
   /** The default for the device-facing commands: local first, cloud when there is none. */
   | 'fallback'
   /**
-   * Never. The default, and what every `runtime:*` action that stops an app keeps.
+   * Never. The default, and what a `runtime:*` action keeps until `--cloud` names the backend.
    *
-   * Deliberate rather than pending: the controller behind a session has verbs for opening a link
-   * and taking a picture, and none for ending one app, so a command whose act is a force-stop has
-   * nothing to fall back *to* (`cloudVerbNotSupportedError`). Silently resolving a cloud device for
-   * it would mean reporting a session teardown as an app that was stopped.
+   * Not because the acts are impossible — the controller has `close <app-id>` and `open <url>`,
+   * which is the whole of the stop-and-relaunch pair — but because a session **bills by the
+   * minute**. A fallback that quietly reached one would spend somebody's money to answer a command
+   * that asked about this machine (llp/0005 §What the cloud backend can and cannot do).
    */
   | 'off';
 
@@ -516,8 +518,17 @@ function noDeviceError(
 
 /** The `Or:` line for a cloud session this project has on record and this run could not use. */
 function cloudSessionLine(probe: CloudSessionProbe | null): string | null {
-  if (probe == null || probe.state === 'none') {
+  if (probe == null) {
     return null;
+  }
+  if (probe.state === 'none') {
+    // A live session of a type this CLI cannot drive is still worth naming: "no device found" next
+    // to a running `serve-sim` is true and leaves the reader one command short of a device.
+    return probe.otherSessionCount > 0
+      ? `Or: this project has ${probe.otherSessionCount} running EAS Simulator session${
+          probe.otherSessionCount === 1 ? '' : 's'
+        } this CLI cannot drive — ${probe.reason ?? 'none of them is an agent-device session'}. Start one it can with "npx eas simulator:start --platform ios --type agent-device --non-interactive --name exagent-navigate" and pass --cloud.`
+      : null;
   }
   if (probe.state === 'active') {
     // Reached when the session is live and is for the *other* platform, or reported none.
