@@ -73,6 +73,21 @@ jobs:
       - name: Guard profile and credential env
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
 
+      # Token custody across steps: the parent EXPO_SANDBOX_MCP_TOKEN is mapped
+      # into the mint and revoke steps ONLY. The run step — the one that
+      # executes the agent — holds just the scoped token, via a 0600 file in
+      # runner.temp, so nothing in that process can reach the parent.
+      - name: Mint scoped token
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify mint
+        env:
+          VERIFY_TARGET: ${{ inputs.target }}
+          VERIFY_RETRY: ${{ inputs.retry }}
+          VERIFY_RUN_ID: ${{ github.run_id }}
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          # Same deployment agent-commands.yml uses.
+          MCP_URL: https://agile-minnow-543.convex.site
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+
       - name: Run verify
         run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify run ${{ inputs.dry_run == true && '--dry-run' || '' }}
         env:
@@ -85,18 +100,25 @@ jobs:
           VERIFY_ACTOR: ${{ github.actor }}
           VERIFY_RUN_ID: ${{ github.run_id }}
           VERIFY_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          # Same deployment agent-commands.yml uses.
-          MCP_URL: https://agile-minnow-543.convex.site
-          # Secrets: held by this step's process only. The engine strips ALL
-          # of these from the agent/critic subprocess env.
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          # Secrets: held by this step's process only (never the parent MCP
+          # token). The engine strips ALL of these from the agent/critic
+          # subprocess env.
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           ECR_1: ${{ secrets.ECR_1 }}
           ECR_2: ${{ secrets.ECR_2 }}
           ECR_3: ${{ secrets.ECR_3 }}
           ECR_4: ${{ secrets.ECR_4 }}
           ECR_5: ${{ secrets.ECR_5 }}
           CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+
+      - name: Revoke scoped token
+        if: always() # releases the per-target verify slot; TTL is the backstop
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify revoke
+        env:
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          MCP_URL: https://agile-minnow-543.convex.site
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
 
       - name: Upload run log
         if: always()

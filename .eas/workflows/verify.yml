@@ -74,17 +74,35 @@ jobs:
           echo "$HOME/bin" >> "$GITHUB_PATH" 2>/dev/null || export PATH="$HOME/bin:$PATH"
           "$HOME/bin/gh" --version
           npm install -g @anthropic-ai/claude-code@2.1.229
-      - name: Guard, then run
+      - name: Guard profile and credential env
+        run: npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify verify-config
+      # Token custody across steps: the environment's variables (including
+      # the parent EXPO_SANDBOX_MCP_TOKEN) are baked into every step's env on
+      # EAS — a step can blank a value but not withhold it. So the parent is
+      # USED here and in the revoke step, and BLANKED on the run step: the
+      # agent's step never holds it, only the scoped token in a 0600 file.
+      - name: Mint scoped token
+        env:
+          VERIFY_MCP_CONFIG: "~/.verify/mcp.json"
+        run: npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify mint
+      - name: Run verify
         id: run
         outputs: [target, mode, fix, dry_run, actor, outcome]
+        env:
+          VERIFY_MCP_CONFIG: "~/.verify/mcp.json"
+          EXPO_SANDBOX_MCP_TOKEN: "" # blanked: the engine treats empty as unset
         run: |
-          npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify verify-config
           export PATH="$HOME/bin:$PATH"
           if [ "$VERIFY_DRY_RUN" = "true" ]; then
             npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify run --dry-run
           else
             npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify run
           fi
+      - name: Revoke scoped token
+        if: ${{ always() }} # releases the per-target verify slot; TTL is the backstop
+        env:
+          VERIFY_MCP_CONFIG: "~/.verify/mcp.json"
+        run: npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify revoke
       - name: Collect run log
         # .verify-out sits at the root on a checkout run, or inside the
         # engine's clone (.verify-target/) on an upload run; gather either.
