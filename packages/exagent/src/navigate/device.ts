@@ -3,8 +3,13 @@
 // first attached Android device. Both are read from the platform tools as subprocesses, so no
 // simulator or emulator library is linked into the CLI.
 
+import fs from 'fs';
+import path from 'path';
+
+import { androidSdkDir } from '../toolchain/androidSdk';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
+import { findExecutableOnPath } from '../utils/subprocess';
 import { debugEvent } from './events';
 
 export type NavigatePlatform = 'ios' | 'android';
@@ -21,6 +26,14 @@ export interface DeviceProbe {
   device: NavigateDevice | null;
   /** Why no device was found, for the error message. */
   reason?: string;
+  /**
+   * The platform tool could not be run at all, so this probe established nothing.
+   *
+   * The difference decides whether "no device" may be *claimed*: a `simctl` that ran and listed
+   * nothing proves a machine has no booted simulator, and an `adb` that is not installed proves
+   * nothing about whether a phone is plugged into it (`src/device/localDevice.ts`).
+   */
+  unavailable?: boolean;
 }
 
 /**
@@ -50,6 +63,38 @@ export function parseBootedIosSimulator(stdout: string): { udid: string; name: s
   return null;
 }
 
+/**
+ * Where `adb` is, preferring `PATH` and falling back to the SDK the build tooling already finds.
+ *
+ * The two answers come apart on a machine that installed Android Studio and set nothing:
+ * `src/toolchain/detect.ts` reports that SDK as `present` — a Gradle build finds it through
+ * `ANDROID_HOME` or `local.properties` — while `adb` is not on `PATH`, so a device probe that only
+ * knew `PATH` would report "no Android device" on a machine with the device plugged in. Naming the
+ * binary inside the SDK removes that gap; when neither exists, the bare name is returned so the
+ * failure still says `adb` rather than a path nobody wrote.
+ */
+export function resolveAdbPath(): string {
+  if (findExecutableOnPath('adb')) {
+    return 'adb';
+  }
+  const sdkDir = androidSdkDir();
+  if (sdkDir) {
+    const candidate = path.join(
+      sdkDir,
+      'platform-tools',
+      process.platform === 'win32' ? 'adb.exe' : 'adb'
+    );
+    try {
+      if (fs.statSync(candidate).isFile()) {
+        return candidate;
+      }
+    } catch {
+      // Fall through to the bare name.
+    }
+  }
+  return 'adb';
+}
+
 /** Read the first ready device out of `adb devices`. */
 export function parseFirstAndroidDevice(stdout: string): string | null {
   // The first line is the `List of devices attached` header.
@@ -74,7 +119,11 @@ export async function probeIosSimulatorAsync(): Promise<DeviceProbe> {
   ]);
 
   if (spawnError) {
-    return { device: null, reason: `could not run "xcrun simctl": ${spawnError.message}` };
+    return {
+      device: null,
+      reason: `could not run "xcrun simctl": ${spawnError.message}`,
+      unavailable: true,
+    };
   }
   if (exitCode !== 0) {
     return {
@@ -90,16 +139,25 @@ export async function probeIosSimulatorAsync(): Promise<DeviceProbe> {
 
   debugEvent('device_resolved', { platform: 'ios', deviceId: simulator.udid });
   return {
-    device: { platform: 'ios', deviceId: simulator.udid, name: simulator.name || undefined },
+    device: {
+      platform: 'ios',
+      deviceId: simulator.udid,
+      name: simulator.name || undefined,
+    },
   };
 }
 
 /** Look for an attached Android device or emulator. Never throws: no device is an answer. */
 export async function probeAndroidDeviceAsync(): Promise<DeviceProbe> {
-  const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync('adb', ['devices']);
+  const adb = resolveAdbPath();
+  const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync(adb, ['devices']);
 
   if (spawnError) {
-    return { device: null, reason: `could not run "adb": ${spawnError.message}` };
+    return {
+      device: null,
+      reason: `could not run "${adb}": ${spawnError.message}`,
+      unavailable: true,
+    };
   }
   if (exitCode !== 0) {
     return {
@@ -110,7 +168,10 @@ export async function probeAndroidDeviceAsync(): Promise<DeviceProbe> {
 
   const deviceId = parseFirstAndroidDevice(stdout);
   if (!deviceId) {
-    return { device: null, reason: 'no Android device or emulator is attached' };
+    return {
+      device: null,
+      reason: 'no Android device or emulator is attached',
+    };
   }
 
   debugEvent('device_resolved', { platform: 'android', deviceId });
