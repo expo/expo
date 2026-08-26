@@ -381,7 +381,7 @@ describe(parseCachedBuild, () => {
       platform: 'IOS',
       buildProfile: 'simulator',
       createdAt: '2026-08-19T17:37:12.674Z',
-      buildUrl: recordedList[0].artifacts.buildUrl,
+      buildUrl: recordedList[0]!.artifacts.buildUrl,
     });
   });
 
