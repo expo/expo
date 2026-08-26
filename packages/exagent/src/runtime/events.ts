@@ -5,7 +5,8 @@ declare module '2g' {
     'runtime:stop_app_resolved': { appId: string; source: string };
     'runtime:stop_app_done': {
       stopped: boolean;
-      wasRunning: boolean;
+      /** Null on a cloud session, whose controller does not answer about the application id. */
+      wasRunning: boolean | null;
       /** `--app-id` named an app that was not running while another one is connected. */
       appIdMismatch: boolean;
     };

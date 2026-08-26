@@ -110,6 +110,16 @@ if (args[0] === 'simulator:exec') {
     process.stderr.write((process.env.STUB_SIM_STDERR || 'Remote daemon is unavailable') + '\\n');
     process.exit(exitCode);
   }
+  // What the real controller answers a \`close\`, verbatim, whatever id it is given
+  // [observed — live session 01a03d80, 2026-08-26]. It is the reason \`wasRunning\` is null on this
+  // backend, so the stub has to say it rather than something more convenient.
+  if (args.includes('close')) {
+    process.stdout.write(
+      JSON.stringify({ success: true, data: { session: 'default', message: 'Closed: default' } }) +
+        '\\n'
+    );
+    process.exit(0);
+  }
   process.stdout.write('opened\\n');
   process.exit(0);
 }
@@ -347,6 +357,24 @@ describe('exagent navigate --cloud', () => {
     expect(result.stderr).toContain('npx eas simulator:list --status in-progress');
   });
 
+  // @ref llp/0005 §A non-zero exit means different things per backend. The controller's own
+  // refusal, in the exact shape the first live run produced. Blaming the syntax here sends a reader
+  // to check a command that was already correct.
+  it(`says the device refused, not that the command was wrong, when the controller answered`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+
+    const result = await navigateCloud(projectRoot, [], {
+      STUB_SIM_EXEC_EXIT: '1',
+      STUB_SIM_STDERR: 'Error (COMMAND_FAILED): Simulator device failed to open myapp://notes.',
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('The cloud simulator refused the command');
+    expect(result.stderr).toContain('COMMAND_FAILED');
+    expect(result.stderr).not.toContain('may not be the one the installed eas-cli has');
+  });
+
   // A cloud simulator is on EAS's network, so a loopback host in the link resolves to a machine in
   // a datacenter. Refused before anything opens, rather than opened onto an error screen.
   it(`refuses a dev server only this machine can reach`, async () => {
@@ -385,13 +413,18 @@ describe('exagent runtime:stop --cloud', () => {
     );
 
     expect(result.exitCode).toBe(0);
-    expect(JSON.parse(result.stdout)).toMatchObject({
+    const report = JSON.parse(result.stdout);
+    expect(report).toMatchObject({
       stopped: true,
       deviceBackend: 'cloud',
       deviceId: 'sess-e2e',
       bundleId: 'host.exp.Exponent',
       command: 'eas simulator:exec npx agent-device@latest close host.exp.Exponent',
     });
+    // The live finding, held at the process boundary: `close` reports success for any id, so this
+    // command must not claim the app it named had been running (llp/0005 §What `close` will not
+    // tell you). Null, never true.
+    expect(report.wasRunning).toBeNull();
 
     const invocations = easInvocations(projectRoot);
     expect(invocations[invocations.length - 1]).toEqual([

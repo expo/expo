@@ -16,7 +16,9 @@
 
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import fs from 'fs';
 import { vol } from 'memfs';
+import path from 'path';
 
 import { isNeedsHumanError } from '../../utils/errors';
 import {
@@ -43,6 +45,7 @@ import {
   parseSessionListJson,
   probeCloudSessionAsync,
   readCloudSessionIdSync,
+  readControllerError,
   selectCloudSession,
   type CloudRunResult,
   type CloudSessionInfo,
@@ -112,6 +115,73 @@ function sessionRow({
 function listJson(...sessions: Record<string, string>[]): string {
   return JSON.stringify({ sessions, pageInfo: { hasNextPage: false, endCursor: null } });
 }
+
+/**
+ * A payload the real service actually sent, read off disk.
+ *
+ * `jest.requireActual` because this suite mocks `fs` with `memfs`, and these are the one thing in
+ * it that must come from the real filesystem: a recorded answer that memfs could shadow would stop
+ * being a recording.
+ */
+function recorded(name: string): string {
+  const real = jest.requireActual('fs') as typeof fs;
+  return real.readFileSync(path.join(__dirname, '..', '..', '__fixtures__', 'eas', name), 'utf8');
+}
+
+// ---- What the service actually answered --------------------------------------------------------
+//
+// @ref src/__fixtures__/eas/README.md. Everything in this block is [observed — live, 2026-08-26]:
+// the payloads are verbatim, so a parser that drifts from the service fails here rather than on
+// somebody's paid session.
+
+describe('the payloads the service really sent', () => {
+  it(`reads the live listing of a running session`, () => {
+    const sessions = parseSessionListJson(recorded('simulator-list-in-progress.json'));
+
+    expect(sessions).toEqual([
+      {
+        id: '01a03d80-0556-7d22-98df-f415d9392b98',
+        name: 'exagent wave11 discovery check',
+        // The flag spelling, unlike `status` and `platform` next to it.
+        type: 'agent-device',
+        status: 'IN_PROGRESS',
+        platform: 'ios',
+        createdAt: '2026-08-26T09:56:35.286Z',
+      },
+    ]);
+    expect(selectCloudSession(sessions!).selected?.id).toBe(
+      '01a03d80-0556-7d22-98df-f415d9392b98'
+    );
+  });
+
+  // `[]` and not null: the service answered, and what it answered is "nothing is running". The two
+  // must stay apart, because only one of them is an instruction to start a billed session.
+  it(`reads the live listing of a project with nothing running`, () => {
+    const sessions = parseSessionListJson(recorded('simulator-list-empty.json'));
+
+    expect(sessions).toEqual([]);
+    expect(selectCloudSession(sessions!).selected).toBeNull();
+  });
+
+  // The same session after `simulator:stop`. `STOPPED` is a real terminal status the service uses,
+  // and it is what a stale dotenv points at.
+  it(`never offers a session the service has stopped`, () => {
+    const sessions = parseSessionListJson(recorded('simulator-list-stopped.json'));
+
+    expect(sessions![0]!.status).toBe('STOPPED');
+    expect(isActiveSessionStatus(sessions![0]!.status)).toBe(false);
+    expect(selectCloudSession(sessions!).selected).toBeNull();
+  });
+
+  // `createdAt` is ISO 8601 with a fixed-width fractional part, which is what makes the ordering
+  // rule a plain string comparison rather than a date parse.
+  it(`orders by createdAt as strings, because the service sends ISO 8601`, () => {
+    const [live] = parseSessionListJson(recorded('simulator-list-in-progress.json'))!;
+    const older = { ...live!, id: 'older', createdAt: '2026-08-26T08:00:00.000Z' };
+
+    expect(selectCloudSession([older, live!]).selected?.id).toBe(live!.id);
+  });
+});
 
 // ---- The argv ---------------------------------------------------------------------------------
 
@@ -321,6 +391,39 @@ describe(selectCloudSession, () => {
     const same = { ...ios, id: 'ios-2' };
     expect(selectCloudSession([ios, same]).selected?.id).toBe('ios-1');
     expect(selectCloudSession([same, ios]).selected?.id).toBe('ios-1');
+  });
+});
+
+// @ref llp/0005 §A non-zero exit means different things per backend. The controller's own refusal
+// has to be told apart from a verb this CLI got wrong, or a reader is sent to `--help` for a
+// command that was already correct.
+describe(readControllerError, () => {
+  it.each([
+    ['Error (COMMAND_FAILED): Simulator device failed to open myapp://.', 'COMMAND_FAILED'],
+    ['Error (SESSION_NOT_FOUND): No active session. Run open first.', 'SESSION_NOT_FOUND'],
+  ])(`reads %s`, (line, code) => {
+    expect(readControllerError(line)?.code).toBe(code);
+  });
+
+  // The real output has npm noise and a diagnostics block around it.
+  it(`finds it among everything else the controller printed`, () => {
+    const output = [
+      'npm warn exec The following package was not found and will be installed: agent-device@0.20.10',
+      'Building Apple runner...',
+      'Error (COMMAND_FAILED): Simulator device failed to open myapp://.',
+      'Hint: Retry with --debug and inspect diagnostics log for details.',
+      'Diagnostic ID: mt9x7nns-fbd904d9',
+    ].join('\n');
+
+    expect(readControllerError(output)).toEqual({
+      code: 'COMMAND_FAILED',
+      message: 'Simulator device failed to open myapp://.',
+    });
+  });
+
+  it(`answers null for output that is not the controller refusing`, () => {
+    expect(readControllerError('Remote daemon is unavailable')).toBeNull();
+    expect(readControllerError('')).toBeNull();
   });
 });
 

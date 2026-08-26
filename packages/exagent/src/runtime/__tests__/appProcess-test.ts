@@ -106,44 +106,66 @@ describe('stopping the app on a cloud simulator session', () => {
     expect(command.display).not.toContain('adb');
   });
 
-  it(`reports the app as stopped when the controller closed it`, async () => {
+  it(`reports the verb as having run when the controller closed the app`, async () => {
     cloudProject();
-    mockSpawn({ stdout: 'closed' });
+    mockSpawn({ stdout: '{"success":true,"data":{"session":"default","message":"Closed: default"}}' });
 
     await expect(stopAppOnDeviceAsync(cloudParams)).resolves.toMatchObject({
       ok: true,
-      wasAlreadyStopped: false,
       reason: null,
     });
   });
 
-  it(`reads "it was not running" as the state the caller wanted`, async () => {
+  // The live finding this whole branch exists for: `close <anything>` exits 0 with
+  // `Closed: default` whether or not the id is installed [observed — session 01a03d80, 2026-08-26].
+  // So the answer is never about the id, and `verified: false` is what stops a caller reporting it
+  // as one.
+  it(`never claims the answer was about this application id`, async () => {
     cloudProject();
-    mockSpawn({ exitCode: 1, stderr: 'no such app is running' });
+    mockSpawn({ stdout: '{"success":true,"data":{"session":"default","message":"Closed: default"}}' });
 
-    await expect(stopAppOnDeviceAsync(cloudParams)).resolves.toMatchObject({
-      ok: true,
-      wasAlreadyStopped: true,
-    });
+    const result = await stopAppOnDeviceAsync(cloudParams);
+
+    expect(result.verified).toBe(false);
+    expect(result.wasAlreadyStopped).toBe(false);
   });
 
-  // A `simulator:exec` that failed for any other reason is not the device answering about the app,
-  // so it is a failure with what the tool printed in it (llp/0005 §A non-zero exit means different
-  // things per backend).
-  it(`reports anything else as a failure, with what the tool printed`, async () => {
+  // A `simulator:exec` that failed is not the device answering about the app, so it is a failure
+  // with what the tool printed in it (llp/0005 §A non-zero exit means different things per
+  // backend).
+  it(`reports a failure with what the tool printed`, async () => {
     cloudProject();
     mockSpawn({ exitCode: 1, stderr: 'Remote daemon is unavailable' });
 
     await expect(stopAppOnDeviceAsync(cloudParams)).resolves.toMatchObject({
       ok: false,
+      verified: false,
       reason: 'Remote daemon is unavailable',
+    });
+  });
+
+  // The controller's own wording, which the live run gave: `Error (CODE): sentence`.
+  it(`quotes the controller's own refusal when it gave one`, async () => {
+    cloudProject();
+    mockSpawn({
+      exitCode: 1,
+      stderr: 'Error (SESSION_NOT_FOUND): No active session. Run open first.',
+    });
+
+    await expect(stopAppOnDeviceAsync(cloudParams)).resolves.toMatchObject({
+      ok: false,
+      reason: "the session's controller answered SESSION_NOT_FOUND: No active session. Run open first.",
     });
   });
 
   it(`refuses rather than guessing when no project was named`, async () => {
     await expect(
       stopAppOnDeviceAsync({ ...cloudParams, projectRoot: undefined })
-    ).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('bug in this CLI') });
+    ).resolves.toMatchObject({
+      ok: false,
+      verified: false,
+      reason: expect.stringContaining('bug in this CLI'),
+    });
   });
 });
 

@@ -179,22 +179,49 @@ export function buildCloudScreenshotArgs({ filePath }: { filePath: string }): st
 }
 
 /**
- * Ending one app on the session's device, and not the session.
+ * Ending the app on the session's device, and not the session.
  *
- * `close <appId>` closes the **named app**; with no argument it closes whatever app the controller
- * session is on, and `--shutdown` also stops the simulator [observed — `agent-device@0.20.10`,
- * `agent-device help close`]. So the distinction the first cut of this backend was protecting — one
- * application versus the whole remote machine — is a flag and an argument, not a missing verb.
+ * `--shutdown` is never passed, and that is the safety of this function: it would stop the
+ * simulator itself, which is a machine billed by the minute and may belong to a session this CLI
+ * did not start [observed — `agent-device@0.20.10`, `agent-device help close`].
  *
- * **The app id is always passed** and `--shutdown` never is. That is the whole safety of this
- * function: an id-less `close` would end whatever happened to be in front, and `--shutdown` would
- * tear down a machine that is billed by the minute and belongs to a session this CLI did not start.
+ * **What `close` does not do is tell you whether it stopped the app you named.** The help says
+ * "close the named app, or the active session app when app is omitted", and the live run says
+ * something narrower: `close com.nonexistent.zzz.qqq` on a blank simulator exits **0** with
+ * `{"success":true,"data":{"session":"default","message":"Closed: default"}}` — the same answer as
+ * `close host.exp.Exponent` on a simulator that had never had Expo Go on it [observed — live
+ * session `01a03d80`, 2026-08-26]. So the argument does not make the answer specific: a success
+ * here is evidence that the **controller closed its session's app**, and no evidence at all about
+ * the id. `stopAppOnCloudAsync` is where that is turned into a report that does not overclaim, and
+ * llp/0005 §What `close` will not tell you is why it is not simply approximated.
+ *
+ * The id is still passed, because it is the documented way to name a target and a later controller
+ * may honour it; nothing downstream is allowed to read the exit code as being about that id.
  *
  * No `--platform`: a session has one device, and the documented flag table carries the platform
  * binding on `open`/`install`/`apps` rather than on this verb.
  */
 export function buildCloudStopAppArgs({ appId }: { appId: string }): string[] {
   return ['simulator:exec', 'npx', AGENT_DEVICE_SPEC, 'close', appId];
+}
+
+/**
+ * Whether the controller — rather than the EAS CLI — is what refused.
+ *
+ * `agent-device` prints its own failures as `Error (CODE): <sentence>` and exits non-zero, and
+ * `simulator:exec` propagates that exit code as its own [observed — live, 2026-08-26:
+ * `Error (COMMAND_FAILED): Simulator device failed to open myapp://.` for a scheme no app on the
+ * simulator had registered, and `Error (SESSION_NOT_FOUND): No active session. Run open first.` for
+ * a screenshot with nothing open].
+ *
+ * It matters because the two failures need opposite headlines. A non-zero exit from `eas` may be a
+ * verb this CLI got wrong — but when the controller printed one of these, the argv was right, the
+ * bridge worked, and the **device** is what said no. Blaming the syntax there sends a reader to
+ * `--help` for a command that is already correct.
+ */
+export function readControllerError(output: string): { code: string; message: string } | null {
+  const match = /^\s*Error \(([A-Z_]+)\):\s*(.+)$/m.exec(output);
+  return match ? { code: match[1]!, message: match[2]!.trim() } : null;
 }
 
 // ---- Reading a session -----------------------------------------------------------------------
@@ -873,10 +900,18 @@ export function cloudNeedsTunnelError(url: string, hostType: string | null): Com
 /**
  * The failure for a device verb that ran and did not work.
  *
- * Three things folded into one place, because all three are about a subprocess this CLI cannot
+ * Four things folded into one place, because all of them are about a subprocess this CLI cannot
  * verify: a binary that was never the EAS CLI is named as such rather than quoted (`wrapperCrash`),
  * a signed-out account becomes the needs-human handoff and exit `7` rather than a plain failure,
- * and anything else quotes what the tool printed.
+ * **the controller refusing is separated from the syntax being wrong**, and anything else quotes
+ * what the tool printed.
+ *
+ * That third one was a live finding. The first cut had one "Why" for every non-zero exit — "a verb
+ * or a flag this CLI sends may not be the one the installed eas-cli has" — and the first real
+ * session printed `Error (COMMAND_FAILED): Simulator device failed to open myapp://.` under it
+ * [observed — 2026-08-26]. The argv was right, the bridge worked, and the **device** had refused a
+ * scheme no app on it had registered; sending that reader to `--help` would have had them checking
+ * a command that was already correct.
  */
 export function cloudVerbFailedError(
   result: CloudRunResult,
@@ -891,6 +926,21 @@ export function cloudVerbFailedError(
         `How: install the EAS CLI with "npm install -g eas-cli", or add it to the project with "npm install --save-dev eas-cli", then run this command again.`,
       ].join('\n')
     );
+  }
+
+  // The controller's own refusal, which is a fact about the **device** rather than about the argv.
+  const controller = readControllerError(`${result.stderr}\n${result.stdout}`);
+  if (controller) {
+    const error = new CommandError(
+      'CLOUD_SIMULATOR_DEVICE_REFUSED',
+      [
+        `The cloud simulator refused the command, so ${what}`,
+        `Why: the session's controller ran and answered ${controller.code} — "${controller.message}" — so the command reached the device and the device is what said no. This is not a syntax problem: "${result.command}" was accepted and executed.`,
+        `How: ${how}`,
+      ].join('\n')
+    );
+    error.suggestedCommand = 'npx eas simulator:list --status in-progress';
+    return error;
   }
 
   const wrapperCrash = looksLikeWrapperCrash({ tool: 'eas', ...result });

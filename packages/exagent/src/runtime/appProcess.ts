@@ -9,7 +9,11 @@
 // none of which the broadcast needs.
 
 import { resolveAdb, type AdbResolution } from '../device/adb';
-import { buildCloudStopAppArgs, stopAppOnCloudSimulatorAsync } from '../device/cloudSimulator';
+import {
+  buildCloudStopAppArgs,
+  readControllerError,
+  stopAppOnCloudSimulatorAsync,
+} from '../device/cloudSimulator';
 import type { DeviceBackend, NavigatePlatform } from '../navigate/device';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 
@@ -71,6 +75,18 @@ export interface StopAppResult {
   command: string;
   ok: boolean;
   /**
+   * Whether the tool's answer is about **this application id**.
+   *
+   * True for the local backends, where `simctl terminate` and `am force-stop` name a process and
+   * the exit code is about that process. False for a cloud session, where `agent-device close`
+   * answers about the controller's session whatever id it is given [observed — live, 2026-08-26].
+   *
+   * It exists so `wasRunning` can be *absent* rather than wrong: a run that cannot know must not
+   * report `wasRunning: true`, which would tell a caller its app had been stopped when the verb
+   * established nothing of the kind.
+   */
+  verified: boolean;
+  /**
    * The app was not running to begin with, so nothing was stopped.
    *
    * Reported separately from {@link ok} because the two answer different questions. Both commands
@@ -103,6 +119,7 @@ export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopA
     return {
       command: display,
       ok: false,
+      verified: true,
       wasAlreadyStopped: false,
       reason:
         params.platform === 'android'
@@ -118,6 +135,7 @@ export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopA
     return {
       command: display,
       ok: false,
+      verified: true,
       wasAlreadyStopped: false,
       reason: stderr.trim() || stdout.trim() || `exit code ${exitCode}`,
     };
@@ -125,18 +143,33 @@ export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopA
   // `adb shell am force-stop` exits 0 whether or not the app was running and prints nothing
   // either way, so on Android this is only ever inferred from the iOS-shaped message above. The
   // honest reading is "not known to have been stopped already", which is what `false` says.
-  return { command: display, ok: true, wasAlreadyStopped: exitCode !== 0 && notRunning, reason: null };
+  return {
+    command: display,
+    ok: true,
+    verified: true,
+    wasAlreadyStopped: exitCode !== 0 && notRunning,
+    reason: null,
+  };
 }
 
 /**
  * Stop the app through the session's controller.
  *
- * The same answer shape as the local path, and one deliberate difference in how a non-zero exit is
- * read (llp/0005 §A non-zero exit means different things per backend). `simctl terminate` exiting
- * non-zero is the device answering about the app; `simulator:exec` exiting non-zero is any of a
- * session that ended, a signed-out account, or a binary that was never the EAS CLI — so it is a
- * failure with the tool's own words in it, and only the "it was not running" wording is read as the
- * state the caller wanted.
+ * Two deliberate differences from the local path, and the second one is a live finding.
+ *
+ * **A non-zero exit means something else** (llp/0005 §A non-zero exit means different things per
+ * backend). `simctl terminate` exiting non-zero is the device answering about the app;
+ * `simulator:exec` exiting non-zero is any of a session that ended, a signed-out account, or a
+ * binary that was never the EAS CLI.
+ *
+ * **A zero exit does not mean the named app was stopped.** `close com.nonexistent.zzz.qqq` on a
+ * blank simulator exits 0 with `{"success":true,"data":{"session":"default","message":"Closed:
+ * default"}}` — the same answer as closing an app that really is there [observed — live session
+ * `01a03d80`, 2026-08-26]. So the verb's success is evidence that the controller closed its
+ * session's app and no evidence about the id, and {@link StopAppResult.verified} is `false` for
+ * this backend so that no caller can report otherwise. `simctl terminate` and `am force-stop` name
+ * a process and fail when there is none, which is what makes `wasRunning` knowable there and not
+ * here (llp/0005 §What `close` will not tell you).
  */
 async function stopAppOnCloudAsync(params: StopAppParams): Promise<StopAppResult> {
   const { display } = buildStopAppCommand(params);
@@ -144,6 +177,7 @@ async function stopAppOnCloudAsync(params: StopAppParams): Promise<StopAppResult
     return {
       command: display,
       ok: false,
+      verified: false,
       wasAlreadyStopped: false,
       reason:
         'a cloud simulator stop was asked for and no project was named to find the session in, which is a bug in this CLI',
@@ -158,30 +192,33 @@ async function stopAppOnCloudAsync(params: StopAppParams): Promise<StopAppResult
     return {
       command: display,
       ok: false,
+      verified: false,
       wasAlreadyStopped: false,
       reason: `could not run "${result.command}": ${result.spawnError}. Install the EAS CLI with "npm install -g eas-cli", or add it to the project with "npm install --save-dev eas-cli".`,
     };
   }
-  const notRunning = looksLikeNotRunning(`${result.stderr}\n${result.stdout}`);
-  if (result.exitCode !== 0 && !notRunning) {
+  if (result.exitCode !== 0) {
+    // The controller's own wording, when it gave one, so the reason is what the device said rather
+    // than a guess about the argv.
+    const controller = readControllerError(`${result.stderr}\n${result.stdout}`);
     return {
       command: display,
       ok: false,
+      verified: false,
       wasAlreadyStopped: false,
-      reason: result.stderr.trim() || result.stdout.trim() || `exit code ${result.exitCode}`,
+      reason: controller
+        ? `the session's controller answered ${controller.code}: ${controller.message}`
+        : result.stderr.trim() || result.stdout.trim() || `exit code ${result.exitCode}`,
     };
   }
-  return {
-    command: display,
-    ok: true,
-    wasAlreadyStopped: result.exitCode !== 0 && notRunning,
-    reason: null,
-  };
+  // `wasAlreadyStopped: false` and `verified: false` together say the honest thing: the verb ran,
+  // and whether this id was running beforehand was never established.
+  return { command: display, ok: true, verified: false, wasAlreadyStopped: false, reason: null };
 }
 
 /** Whether the device tool refused because the app was not running to begin with. */
 export function looksLikeNotRunning(output: string): boolean {
-  return /found nothing to terminate|not running|No such process|FBSOpenApplicationServiceErrorDomain|no (?:such |matching )?app/i.test(
+  return /found nothing to terminate|not running|No such process|FBSOpenApplicationServiceErrorDomain/i.test(
     output
   );
 }
