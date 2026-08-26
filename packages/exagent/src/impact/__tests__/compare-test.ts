@@ -1,4 +1,5 @@
 import { diffFingerprintsAsync, generateFingerprintAsync } from '../../project/fingerprint';
+import type { FingerprintDiffItem } from '../../project/fingerprint';
 import { readLastBuildRecord } from '../../plan/lastBuild';
 import { spawnSubprocessAsync } from '../../utils/subprocess';
 import { buildCacheArgs, findCachedBuildAsync, parseCachedBuild } from '../buildCache';
@@ -9,6 +10,7 @@ import {
   describeGenerateFailure,
   parseEasCompare,
 } from '../compare';
+import recordedCompare from '../../__fixtures__/eas/fingerprint-compare.json';
 import realDiff from './fixtures/notesapp-ios-diff.json';
 
 jest.mock('../../utils/subprocess', () => ({ spawnSubprocessAsync: jest.fn() }));
@@ -171,6 +173,39 @@ describe(compareWithEasBuildAsync, () => {
     expect(result.fingerprintChanged).toBe(true);
     expect(result.caveats).toEqual([]);
   });
+
+  // What the published CLI really prints. It hands back both whole fingerprints and no diff, so
+  // the diff is this CLI's to produce — from the sources that came with them.
+  it(`should diff the two fingerprints the recorded payload carries`, async () => {
+    mockSpawn({ stdout: JSON.stringify(recordedCompare) });
+    jest.mocked(diffFingerprintsAsync).mockResolvedValue({ items: realDiff as FingerprintDiffItem[] });
+
+    const result = await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
+
+    expect(diffFingerprintsAsync).toHaveBeenCalledWith(
+      projectRoot,
+      { hash: recordedCompare.fingerprint1.hash, sources: recordedCompare.fingerprint1.sources },
+      { hash: recordedCompare.fingerprint2.hash, sources: recordedCompare.fingerprint2.sources }
+    );
+    expect(result.items).toHaveLength(3);
+    expect(result.base.hash).toBe(recordedCompare.fingerprint1.hash);
+    expect(result.head.hash).toBe(recordedCompare.fingerprint2.hash);
+    expect(result.fingerprintChanged).toBe(true);
+    expect(result.caveats).toEqual([]);
+  });
+
+  // The hashes are the server's answer and the diff is a local elaboration of it, so losing the
+  // elaboration must not lose the answer.
+  it(`should still answer "whether" when the local diff fails`, async () => {
+    mockSpawn({ stdout: JSON.stringify(recordedCompare) });
+    jest.mocked(diffFingerprintsAsync).mockResolvedValue({ items: null, error: 'no fingerprint CLI' });
+
+    const result = await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
+
+    expect(result.items).toBeNull();
+    expect(result.fingerprintChanged).toBe(true);
+    expect(result.caveats).toEqual(['no fingerprint CLI']);
+  });
 });
 
 describe(parseEasCompare, () => {
@@ -194,6 +229,30 @@ describe(parseEasCompare, () => {
       expect(result.caveats).toEqual([]);
     }
   );
+
+  // The recorded payload: `fingerprint1` is the build, `fingerprint2` is the working tree, and
+  // neither is a diff. Both sides come with their sources, which is what makes a diff producible.
+  it(`should read the fingerprint pair the published CLI prints`, () => {
+    const result = parseEasCompare(JSON.stringify(recordedCompare));
+
+    expect(result).toMatchObject({
+      items: null,
+      baseHash: recordedCompare.fingerprint1.hash,
+      headHash: recordedCompare.fingerprint2.hash,
+      fingerprintChanged: true,
+    });
+    expect(result.baseSources).toHaveLength(3);
+    expect(result.headSources).toHaveLength(3);
+    // Not a shape it "does not recognise" any more.
+    expect(result.caveats).toEqual([]);
+  });
+
+  it(`should read a pair of identical fingerprints as unchanged`, () => {
+    const one = { hash: 'aaa', sources: [] };
+    const result = parseEasCompare(JSON.stringify({ fingerprint1: one, fingerprint2: one }));
+
+    expect(result).toMatchObject({ fingerprintChanged: false, caveats: [] });
+  });
 
   it(`should read the two hashes out of a shape it does not otherwise recognise`, () => {
     // The shape of this payload is unverified, so the fallback has to be able to answer from the

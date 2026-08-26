@@ -3,7 +3,7 @@
 // same shape, so `impactAsync` orchestrates without knowing which mode ran.
 
 import { diffFingerprintsAsync, generateFingerprintAsync } from '../project/fingerprint';
-import type { FingerprintDiffItem } from '../project/fingerprint';
+import type { FingerprintDiffItem, FingerprintSource } from '../project/fingerprint';
 import { readLastBuildRecord } from '../plan/lastBuild';
 import type { EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
@@ -167,12 +167,22 @@ export function describeGenerateFailure(
  * rather than a question to ask. So this runs once per command, not once per platform, and the
  * report carries one entry whose `platform` is `null` unless the caller named one.
  *
- * **The `--json` output shape of this command is unverified** [inferred — 2026-08-24]. eas-cli
- * depends on `@expo/fingerprint`, so its diff is very likely the same `FingerprintDiffItem[]`, and
- * this parser looks for that shape in the three places it could be: the payload itself, a `diff`
- * key, and a `fingerprintDiff` key. When none of them matches, the payload's `rawTail` rides along
- * in the caveats rather than the command failing — the same discipline `src/deploy/parseOutput.ts`
- * uses for a parse that missed. Verify against a real account and delete the guessing.
+ * **It does not print a diff** [observed — 2026-08-26, eas-cli 22.4.0, recorded in
+ * `src/__fixtures__/eas/fingerprint-compare.json`]. `--json` prints
+ * `{ fingerprint1, fingerprint2 }`, each a whole `{ hash, sources }` — `fingerprint1` is the
+ * build's fingerprint, `fingerprint2` is the one it computed from this directory. The guess that
+ * it would answer with `FingerprintDiffItem[]` was wrong, and against the real service the old
+ * parser found neither a diff nor a hash and reported only a caveat carrying a megabyte of
+ * payload.
+ *
+ * So the diff is produced *here*, by handing both fingerprints to the project's own
+ * `fingerprint:diff` — the same call the working-tree mode already makes, and the reason the
+ * sources riding along in the payload matter. The hashes are the server's answer to "did anything
+ * change"; the diff is a local elaboration of it, and a failure to elaborate is a caveat rather
+ * than a lost answer.
+ *
+ * The older guesses are kept as fallbacks, because a shape that changes should degrade to
+ * "whether" rather than to nothing.
  */
 export async function compareWithEasBuildAsync(
   easCli: EasCli,
@@ -206,14 +216,42 @@ export async function compareWithEasBuildAsync(
   }
 
   const parsed = parseEasCompare(result.stdout);
+  const elaborated = await elaborateDiffAsync(projectRoot, parsed);
+
   return {
     base: { ...baseSide, hash: parsed.baseHash },
     head: { ...headSide, hash: parsed.headHash },
-    items: parsed.items,
+    items: elaborated.items,
     fingerprintChanged: parsed.fingerprintChanged,
-    caveats: parsed.caveats,
+    caveats: [...parsed.caveats, ...elaborated.caveats],
     error: null,
   };
+}
+
+/**
+ * Turn a pair of whole fingerprints into the list of what differs.
+ *
+ * Only runs when the payload carried both sides' sources and no diff of its own, which is the
+ * recorded shape. Everything else passes through untouched — including a payload that *did* carry
+ * a diff, whose items are already the answer.
+ */
+async function elaborateDiffAsync(
+  projectRoot: string,
+  parsed: EasCompareParse
+): Promise<{ items: FingerprintDiffItem[] | null; caveats: string[] }> {
+  const { items, baseHash, headHash, baseSources, headSources } = parsed;
+  if (items || !baseSources || !headSources || !baseHash || !headHash) {
+    return { items, caveats: [] };
+  }
+
+  const diff = await diffFingerprintsAsync(
+    projectRoot,
+    { hash: baseHash, sources: baseSources },
+    { hash: headHash, sources: headSources }
+  );
+  // The hashes already answered whether anything changed, so a diff that could not be produced
+  // costs the detail and not the verdict.
+  return { items: diff.items, caveats: diff.items ? [] : diff.error ? [diff.error] : [] };
 }
 
 /**
@@ -232,16 +270,19 @@ export interface EasCompareParse {
   fingerprintChanged: boolean | null;
   baseHash: string | null;
   headHash: string | null;
+  /** Each side's own sources, when the payload carried whole fingerprints. */
+  baseSources: FingerprintSource[] | null;
+  headSources: FingerprintSource[] | null;
   caveats: string[];
 }
 
 /**
  * Read the comparison out of whatever eas-cli printed.
  *
- * Defensive on purpose: the shape is unverified, so every field is looked for and none is
- * required. A payload that yields nothing produces a caveat carrying its tail, so a caller who
- * hits it can report exactly what to fix, and the class still comes from the hashes when those
- * are readable.
+ * The recorded shape is read first, and the older guesses are kept behind it: this is another
+ * CLI's payload across a process boundary, and a field that moves must degrade to a smaller answer
+ * rather than to none. A payload that yields nothing at all produces a caveat carrying its tail,
+ * so a caller who hits it can report exactly what to fix.
  */
 export function parseEasCompare(stdout: string): EasCompareParse {
   const caveats: string[] = [];
@@ -253,6 +294,8 @@ export function parseEasCompare(stdout: string): EasCompareParse {
       fingerprintChanged: null,
       baseHash: null,
       headHash: null,
+      baseSources: null,
+      headSources: null,
       caveats: [
         `"eas fingerprint:compare --json" printed something this CLI could not parse as JSON, so only the hashes below were read. What it printed: ${outputTail(stdout)}`,
       ],
@@ -260,10 +303,14 @@ export function parseEasCompare(stdout: string): EasCompareParse {
   }
 
   const items = findDiffItems(payload);
-  const baseHash = findHash(payload, ['builds', 'build', 'base', 'first']);
-  const headHash = findHash(payload, ['projects', 'project', 'head', 'second', 'local']);
+  const pair = findFingerprintPair(payload);
+  const baseHash = pair?.base.hash ?? findHash(payload, ['builds', 'build', 'base', 'first']);
+  const headHash =
+    pair?.head.hash ?? findHash(payload, ['projects', 'project', 'head', 'second', 'local']);
 
-  if (!items) {
+  // Silent when the pair was read: two whole fingerprints are a shape this CLI recognises, and the
+  // diff it does not carry is the caller's to produce.
+  if (!items && !pair) {
     caveats.push(
       `"eas fingerprint:compare --json" answered in a shape this CLI does not recognise, so it reports whether the fingerprints differ and not what differs. What it printed: ${outputTail(JSON.stringify(payload))}`
     );
@@ -275,7 +322,53 @@ export function parseEasCompare(stdout: string): EasCompareParse {
       ? baseHash !== headHash
       : null;
 
-  return { items, fingerprintChanged, baseHash, headHash, caveats };
+  return {
+    items,
+    fingerprintChanged,
+    baseHash,
+    headHash,
+    baseSources: pair?.base.sources ?? null,
+    headSources: pair?.head.sources ?? null,
+    caveats,
+  };
+}
+
+/** One whole fingerprint, as `fingerprint:compare` prints each side. */
+interface ParsedFingerprint {
+  hash: string;
+  sources: FingerprintSource[];
+}
+
+/**
+ * The two whole fingerprints, when the payload is the recorded shape.
+ *
+ * `fingerprint1` is the *base* — the build, the update, or the first hash given — and
+ * `fingerprint2` is the *head*, which for `--build-id` is the working directory. Both sides must
+ * be complete: half a pair cannot be diffed, and the hash-only fallbacks below already cover a
+ * payload that carries hashes and nothing else.
+ */
+function findFingerprintPair(
+  payload: unknown
+): { base: ParsedFingerprint; head: ParsedFingerprint } | null {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return null;
+  }
+  const record = payload as Record<string, unknown>;
+  const base = readFingerprint(record.fingerprint1);
+  const head = readFingerprint(record.fingerprint2);
+  return base && head ? { base, head } : null;
+}
+
+/** One side of the pair, or null when it is not a fingerprint. */
+function readFingerprint(value: unknown): ParsedFingerprint | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const { hash, sources } = value as { hash?: unknown; sources?: unknown };
+  if (typeof hash !== 'string' || !hash || !Array.isArray(sources)) {
+    return null;
+  }
+  return { hash, sources: sources as FingerprintSource[] };
 }
 
 /** The array of diff items, wherever in the payload it is. */
