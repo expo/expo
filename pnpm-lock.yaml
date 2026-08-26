@@ -135,6 +135,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-app-intents:
+        specifier: workspace:*
+        version: link:../../packages/expo-app-intents
       expo-app-metrics:
         specifier: workspace:*
         version: link:../../packages/expo-app-metrics
@@ -3691,6 +3694,34 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+
+  packages/expo-app-intents:
+    dependencies:
+      react:
+        specifier: '*'
+        version: 19.2.3
+      react-native:
+        specifier: 0.86.0
+        version: 0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+    devDependencies:
+      '@testing-library/react-native':
+        specifier: ^13.3.0
+        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
       expo:
         specifier: workspace:*
         version: link:../expo
