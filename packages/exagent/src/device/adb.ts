@@ -12,10 +12,14 @@
 // Two things fix it, and they are separate:
 //
 //  1. **Look where the SDK actually is.** `ANDROID_HOME`, then the deprecated `ANDROID_SDK_ROOT`,
-//     then this platform's default install location — the same order and the same locations
-//     `@expo/cli` resolves [reimplemented from `src/start/platforms/android/AndroidSdk.ts`; not
-//     imported, per llp/0001 §Constraints item 5]. `PATH` is the last resort rather than the first,
-//     because a bare name is the only candidate this module cannot check before spawning it.
+//     then `PATH`, then this platform's default install location — the same locations `@expo/cli`
+//     resolves [reimplemented from `src/start/platforms/android/AndroidSdk.ts`; not imported, per
+//     llp/0001 §Constraints item 5], with one difference. `@expo/cli` puts `PATH` last; here it
+//     sits **between** the environment variables and the default location, because all three are
+//     different kinds of statement: an `ANDROID_HOME` and an `adb` on `PATH` are both somebody
+//     having chosen a copy on purpose, and the default install location is this module guessing.
+//     Overruling a deliberate `PATH` entry with a guess would be the wrong way round — and it is
+//     what made a test's stub `adb` photograph a real emulator.
 //  2. **Never report a device failure for a tool failure.** {@link adbNotRunnableError} is what a
 //     caller raises when the spawn itself failed, and it says so — the "no device" message is only
 //     reachable once `adb` has run and answered.
@@ -101,10 +105,6 @@ export function resolveAdb({
   if (env.ANDROID_SDK_ROOT) {
     roots.push([env.ANDROID_SDK_ROOT, 'ANDROID_SDK_ROOT']);
   }
-  for (const location of DEFAULT_SDK_LOCATIONS[platform]?.(homedir) ?? []) {
-    roots.push([location, 'default-sdk-location']);
-  }
-
   for (const [root, source] of roots) {
     const found = fromRoot(root, source);
     if (found) {
@@ -112,10 +112,50 @@ export function resolveAdb({
     }
   }
 
-  // Nothing on disk. The bare name is still worth spawning — a machine may have `adb` on `PATH`
-  // from a package manager rather than from an SDK directory — but it is the one candidate whose
-  // absence is only discovered by trying it.
+  // A copy somebody put on `PATH` on purpose, before this module's own guess at where the SDK is.
+  const onPath = findOnPath(executable, env.PATH ?? '', platform, exists, searched);
+  if (onPath) {
+    return { bin: onPath, source: 'PATH', searched, fromPathOnly: false };
+  }
+
+  for (const location of DEFAULT_SDK_LOCATIONS[platform]?.(homedir) ?? []) {
+    const found = fromRoot(location, 'default-sdk-location');
+    if (found) {
+      return found;
+    }
+  }
+
+  // Nothing on disk anywhere. The bare name is still spawned rather than refused here: `PATH` can
+  // be rewritten by a shim this module cannot see, and letting the spawn fail names the real error.
   return { bin: executable, source: 'PATH', searched, fromPathOnly: true };
+}
+
+/**
+ * The first `adb` on `PATH`, resolved to an absolute path.
+ *
+ * Resolved rather than left as a bare name so the report can say *which* copy ran — two Android
+ * SDKs on one machine is common, and "adb" names neither of them.
+ */
+function findOnPath(
+  executable: string,
+  pathValue: string,
+  platform: string,
+  exists: (candidate: string) => boolean,
+  searched: string[]
+): string | null {
+  const separator = platform === 'win32' ? ';' : ':';
+  for (const entry of pathValue.split(separator)) {
+    if (!entry) {
+      continue;
+    }
+    const candidate = path.join(entry, executable);
+    if (exists(candidate)) {
+      return candidate;
+    }
+  }
+  // Not listed in `searched`: `PATH` is often dozens of directories, and naming every one of them
+  // in an error message would bury the two that matter.
+  return null;
 }
 
 /** Everything one `adb` run amounts to, with where the binary came from kept alongside. */

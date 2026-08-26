@@ -483,6 +483,14 @@ export type StubDevServerOptions = {
    */
   messageSocket?: 'v2' | 'deaf' | 'no-churn' | 'none';
   /**
+   * Whether the debugger sockets the listed targets point at accept a connection.
+   *
+   * `live` (the default) is a connected app. `none` is a **stale** target: the dev server still
+   * lists the page and nothing is behind it, which is what an app that was force-stopped leaves
+   * behind, and what `exagent status` used to count as a connected app [friction run 6, F56].
+   */
+  inspectorSocket?: 'live' | 'none';
+  /**
    * Clients `getpeers` reports before any reload. Defaults to one that looks like an iOS app.
    *
    * An empty object is a dev server nothing has connected to, which is the case where there is
@@ -583,6 +591,7 @@ export async function startStubDevServerAsync({
   bundle = 'compiles',
   bundleDelayMs = 0,
   messageSocket = 'v2',
+  inspectorSocket = 'live',
   messagePeers = { 'socket#1': 'role=ios' },
   reloadTargets = 'reconnect',
   targetsAppearWithFile = null,
@@ -669,7 +678,11 @@ export async function startStubDevServerAsync({
     if (route === '/json/list') {
       const started = targetsAppearWithFile == null || fs.existsSync(targetsAppearWithFile);
       response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify(started ? listedTargets : []));
+      // Rewritten onto this stub's own port, the way a real dev server publishes its debugger URLs
+      // — a fixture URL naming 8081 or no port at all is one nothing can connect to, and
+      // `exagent status` now opens each of them to tell a live target from a page an app left
+      // behind (llp/0005 §Android, F56).
+      response.end(JSON.stringify(started ? listedTargets.map(onThisPort) : []));
       return;
     }
 
@@ -680,9 +693,23 @@ export async function startStubDevServerAsync({
   // upgrade on `/message`. This is a double for the *protocol*, so the `version: 2` stamp and the
   // `getpeers` request/response pair are reproduced verbatim — they are the two things a change
   // upstream would break, and they are invisible to a unit test.
+  /** One listed target with its debugger URL moved onto the port this stub ended up on. */
+  const onThisPort = (target: unknown): unknown => {
+    const url = (target as { webSocketDebuggerUrl?: unknown }).webSocketDebuggerUrl;
+    if (typeof url !== 'string' || !url) {
+      return target;
+    }
+    const query = url.split('?')[1];
+    return {
+      ...(target as Record<string, unknown>),
+      webSocketDebuggerUrl: `ws://127.0.0.1:${port}/inspector/debug${query ? `?${query}` : ''}`,
+    };
+  };
+
   let peers: Record<string, string | null> = { ...messagePeers };
   let nextPeerId = 100;
   const messageServer = messageSocket === 'none' ? null : new WebSocketServer({ noServer: true });
+  const inspectorServer = inspectorSocket === 'none' ? null : new WebSocketServer({ noServer: true });
   messageServer?.on('connection', (socket: WebSocket) => {
     socket.on('message', (data) => {
       if (messageSocket === 'deaf') {
@@ -724,6 +751,15 @@ export async function startStubDevServerAsync({
     });
   });
   server.on('upgrade', (request, socket, head) => {
+    // The inspector socket a debugger target points at. `live` keeps it open and answers nothing,
+    // which is exactly what a connected app that is not being asked anything does; `none` refuses
+    // the upgrade, which is what a stale page left in `/json/list` does.
+    if (inspectorServer && (request.url ?? '').split('?')[0] === '/inspector/debug') {
+      inspectorServer.handleUpgrade(request, socket as never, head, (ws) => {
+        inspectorServer.emit('connection', ws, request);
+      });
+      return;
+    }
     if (messageServer && (request.url ?? '').split('?')[0] === '/message') {
       messageServer.handleUpgrade(request, socket as never, head, (ws) => {
         messageServer.emit('connection', ws, request);
@@ -750,10 +786,14 @@ export async function startStubDevServerAsync({
     close: () =>
       new Promise<void>((resolve) => {
         // Any request left waiting on `statusDelayMs` holds the server open otherwise.
-        for (const client of messageServer?.clients ?? []) {
+        for (const client of [
+          ...(messageServer?.clients ?? []),
+          ...(inspectorServer?.clients ?? []),
+        ]) {
           client.terminate();
         }
         messageServer?.close();
+        inspectorServer?.close();
         server.closeAllConnections?.();
         server.close(() => resolve());
       }),

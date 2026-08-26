@@ -36,6 +36,32 @@ describe(resolveAdb, () => {
     expect(resolution.searched).toContain('/sdk-home/platform-tools/adb');
   });
 
+  it('prefers an adb somebody put on PATH over this module\'s guess at the SDK location', () => {
+    const resolution = resolveAdb({
+      env: { PATH: '/opt/bin:/usr/local/bin' },
+      platform: 'darwin',
+      homedir: '/Users/ada',
+      exists: existsIn([
+        '/usr/local/bin/adb',
+        '/Users/ada/Library/Android/sdk/platform-tools/adb',
+      ]),
+    });
+
+    // Both exist. A `PATH` entry is somebody choosing a copy; the default location is a guess.
+    expect(resolution).toMatchObject({ bin: '/usr/local/bin/adb', source: 'PATH', fromPathOnly: false });
+  });
+
+  it('still prefers ANDROID_HOME over PATH, because naming it is more deliberate still', () => {
+    expect(
+      resolveAdb({
+        env: { ANDROID_HOME: '/sdk', PATH: '/usr/local/bin' },
+        platform: 'darwin',
+        homedir: '/Users/ada',
+        exists: existsIn(['/sdk/platform-tools/adb', '/usr/local/bin/adb']),
+      }).bin
+    ).toBe('/sdk/platform-tools/adb');
+  });
+
   it('finds the default macOS SDK location when no environment variable names one', () => {
     const resolution = resolveAdb({
       env: {},
