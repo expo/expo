@@ -158,8 +158,8 @@ function resolveBuildBackend(argv: readonly string[]): BuildBackend | null {
     throw opposite(
       '--eas and --local name two different places for one build, so this run has no build to plan.',
       'Why: --eas builds in the cloud on EAS, which needs an Expo account; --local builds on this machine, which needs Xcode or the Android SDK. A plan contains one build, and it happens in one place.',
-      'How: pass whichever you meant. Passing neither lets this command choose — it prints which and why in the plan, and "npx exagent dev --plan" shows that without running anything.',
-      'npx exagent dev --plan'
+      'How: pass whichever you meant. Passing neither lets this command choose — the plan says which place it picked and why, before anything runs.',
+      'npx exagent dev --plan --eas'
     );
   }
   return eas ? 'eas' : local ? 'local' : null;
@@ -182,7 +182,7 @@ function resolveRunTarget(argv: readonly string[]): RunTarget | null {
       '--go and --dev-client name two different apps to run the project in, so this run has no target to plan for.',
       'Why: --go runs the project inside Expo Go, which needs no native build; --dev-client runs it inside a development build of this project, which needs one. A plan aims at one of them.',
       'How: pass whichever you meant. Passing neither lets this command choose — Expo Go when it can run the project, a development build when it cannot.',
-      'npx exagent dev --plan'
+      'npx exagent dev --plan --dev-client'
     );
   }
   return go ? 'expo-go' : devClient ? 'dev-build' : null;

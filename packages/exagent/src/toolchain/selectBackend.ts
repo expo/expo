@@ -82,7 +82,9 @@ export function selectBuildBackend({
   const tool = localTool(platform);
 
   /** The clause an explicit choice gains on a host that cannot honour it. */
-  const anyway = impossible ? ` This host cannot build for ${platform} at all — ${probe?.detail}` : '';
+  const anyway = impossible
+    ? ` This host cannot build for ${platform} at all — ${endSentence(probe?.detail ?? '')}`
+    : '';
 
   if (requested) {
     return choice(requested, 'flag', `${requested === 'eas' ? '--eas' : '--local'} was passed on the command line.${anyway}`, requested === 'local' && impossible);
@@ -110,7 +112,7 @@ export function selectBuildBackend({
     return choice(
       'eas',
       'toolchain',
-      `this machine does not have ${tool} — ${probe.detail} Install it to build here instead.`
+      `this machine does not have ${tool} — ${endSentence(probe.detail)} Install it to build here instead.`
     );
   }
 
@@ -131,12 +133,23 @@ function choice(
 /** Why the build stays here, per what the probe managed to establish. */
 function localBecause(probe: ToolchainProbe | null, tool: string): string {
   if (probe?.status === 'present') {
-    return `this machine has ${tool} — ${probe.detail}`;
+    return `this machine has ${tool} — ${endSentence(probe.detail)}`;
   }
   if (probe?.status === 'unknown') {
     // Deliberately still local. `unknown` is "the probe could not tell", and a plan that moved to
     // a build queue on the strength of that would be acting on nothing.
-    return `whether this machine has ${tool} could not be established — ${probe.detail} Pass --eas to build in the cloud instead.`;
+    return `whether this machine has ${tool} could not be established — ${endSentence(probe.detail)} Pass --eas to build in the cloud instead.`;
   }
   return `it needs ${tool}, and nothing probed this machine for it.`;
+}
+
+/**
+ * A probe detail with a full stop on it, so the sentence that follows starts as one.
+ *
+ * The details come from tools rather than from this CLI — `xcode-select` ends its complaint
+ * without one — and the reason strings here always continue after them.
+ */
+function endSentence(detail: string): string {
+  const trimmed = detail.trim();
+  return !trimmed || /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
 }
