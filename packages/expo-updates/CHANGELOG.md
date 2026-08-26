@@ -37,6 +37,7 @@
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Link `libc++` in the test spec so the unit test bundle resolves the C++ symbols it pulls from `ExpoModulesCore`. ([#48762](https://github.com/expo/expo/pull/48762) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Run the build data consistency check inside the startup procedure so it no longer queries the database on the main thread. ([#49374](https://github.com/expo/expo/pull/49374) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Disallow main thread queries on the updates database. ([#49375](https://github.com/expo/expo/pull/49375) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.11 - 2026-07-29
 
