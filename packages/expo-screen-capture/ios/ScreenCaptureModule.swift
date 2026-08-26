@@ -125,22 +125,21 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func preventScreenshots() throws {
-    if let canvas = secureCanvas {
-      if let protected = canvas.window, protected === keyWindow {
-        return
-      }
-      // The protected window changed or died; move protection to the current key window.
-      canvas.restore()
-      secureCanvas = nil
+    if let canvas = secureCanvas, let protected = canvas.window, protected === keyWindow {
+      return
     }
 
     guard let keyWindow else {
       throw NoKeyWindowException()
     }
 
+    // The protected window changed or died; move protection to the current key window.
+    // Attach the new canvas before releasing the old one so a failed attach keeps
+    // the existing protection in place.
     guard let canvas = SecureWindowCanvas(protecting: keyWindow) else {
       throw SecureCanvasAttachmentException()
     }
+    secureCanvas?.restore()
     secureCanvas = canvas
   }
 

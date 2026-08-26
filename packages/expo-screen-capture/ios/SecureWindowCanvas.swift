@@ -30,7 +30,8 @@ internal final class SecureWindowCanvas {
       return nil
     }
 
-    Self.reparent(window, into: canvasLayer)
+    window.layer.removeFromSuperlayer()
+    canvasLayer.addSublayer(window.layer)
 
     self.textField = textField
     self.originalParent = originalParent
@@ -44,34 +45,7 @@ internal final class SecureWindowCanvas {
     guard let window else {
       return
     }
-    Self.reparent(window, into: originalParent)
-  }
-
-  /**
-   Re-parenting drops pending display work on `drawRect`-backed views (for example
-   `react-native-svg` surfaces), leaving them blank until the next display pass. Complete
-   pending draws first so nothing is in flight, and re-issue display work once the commit
-   containing the re-parent lands, covering draws scheduled later in the same turn.
-   */
-  private static func reparent(_ window: UIWindow, into parent: CALayer) {
-    displayPendingDraws(in: window.layer)
     window.layer.removeFromSuperlayer()
-    parent.addSublayer(window.layer)
-    CATransaction.setCompletionBlock { [weak window] in
-      window.map { setNeedsDisplayRecursively(in: $0) }
-    }
-  }
-
-  // `displayIfNeeded` is not recursive; walk the subtree so dirty descendants display too.
-  private static func displayPendingDraws(in layer: CALayer) {
-    layer.displayIfNeeded()
-    layer.sublayers?.forEach { displayPendingDraws(in: $0) }
-  }
-
-  private static func setNeedsDisplayRecursively(in view: UIView) {
-    view.setNeedsDisplay()
-    for subview in view.subviews {
-      setNeedsDisplayRecursively(in: subview)
-    }
+    originalParent.addSublayer(window.layer)
   }
 }

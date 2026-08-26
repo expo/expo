@@ -5,14 +5,6 @@ import UIKit
 
 @testable import ExpoScreenCapture
 
-private final class DrawSpyView: UIView {
-  var drawCount = 0
-
-  override func draw(_ rect: CGRect) {
-    drawCount += 1
-  }
-}
-
 @Suite("SecureWindowCanvas", .serialized)
 @MainActor
 struct SecureWindowCanvasTests {
@@ -93,41 +85,6 @@ struct SecureWindowCanvasTests {
     canvas.restore()
 
     #expect(parent.sublayers?.isEmpty != false)
-  }
-
-  /// Adds a draw-recording view nested inside the window, mirroring a `drawRect`-backed
-  /// view (like a react-native-svg surface) whose display work is pending at re-parent time.
-  private func addDrawSpy(to window: UIWindow) -> DrawSpyView {
-    let container = UIView()
-    let spy = DrawSpyView(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-    container.addSubview(spy)
-    window.addSubview(container)
-    return spy
-  }
-
-  @Test
-  func `protecting a window completes pending draws instead of dropping them`() throws {
-    let (window, _) = makeAttachedWindow()
-    let spy = addDrawSpy(to: window)
-    spy.setNeedsDisplay()
-    let pendingCount = spy.drawCount
-
-    _ = try #require(SecureWindowCanvas(protecting: window))
-
-    #expect(spy.drawCount == pendingCount + 1)
-  }
-
-  @Test
-  func `restoring a window completes pending draws instead of dropping them`() throws {
-    let (window, _) = makeAttachedWindow()
-    let spy = addDrawSpy(to: window)
-    let canvas = try #require(SecureWindowCanvas(protecting: window))
-    spy.setNeedsDisplay()
-    let pendingCount = spy.drawCount
-
-    canvas.restore()
-
-    #expect(spy.drawCount == pendingCount + 1)
   }
 
   @Test

@@ -87,7 +87,9 @@ export async function allowScreenCaptureAsync(key: string = 'default'): Promise<
  */
 export function usePreventScreenCapture(key: string = 'default'): void {
   useEffect(() => {
-    preventScreenCaptureAsync(key);
+    preventScreenCaptureAsync(key).catch((error) => {
+      console.error(`Failed to prevent screen capture: ${error}`);
+    });
 
     return () => {
       allowScreenCaptureAsync(key);
