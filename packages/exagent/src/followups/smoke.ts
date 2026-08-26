@@ -45,12 +45,27 @@ export interface SmokeFollowUpInput {
    * the iOS simulator [friction run 6, F58].
    */
   platform: 'ios' | 'android';
+  /**
+   * Whether this run was told to use the project's EAS Simulator session.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   * The same fact as {@link platform}, for the other half of "which device is this run about", and
+   * carried for the same reason: a `smoke --cloud` that found no session used to be answered with
+   * `npx exagent navigate / --ios`, which is a ladder off the backend the caller chose onto a
+   * booted device the host that reached for the cloud may not have at all. `src/followups/reload.ts`
+   * already carried it; this did not.
+   */
+  cloud: boolean;
 }
 
 export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   const sameRoute = input.route == null ? '' : ` --route ${input.route}`;
+  // Every command that takes `--cloud` keeps it, so a suggested run is the run the caller asked
+  // for. The commands that do not take it — `dev --detach`, `typecheck`, `status`,
+  // `runtime:errors` — are unaffected: none of them is about a device.
+  const onCloud = input.cloud ? ' --cloud' : '';
   // The flag first, so a reader sees what the command is about before what it opens.
-  const same = ` --${input.platform}${sameRoute}`;
+  const same = ` --${input.platform}${sameRoute}${onCloud}`;
   const otherPlatform = input.platform === 'android' ? 'ios' : 'android';
 
   // No dev server, and this run was not allowed to start one. The one thing to do is the thing
@@ -104,8 +119,10 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'navigate',
-        command: `npx exagent navigate ${input.route ?? '/'} --${input.platform}`,
-        why: 'No app is connected to the dev server, and this is what opens one on a booted device.',
+        command: `npx exagent navigate ${input.route ?? '/'} --${input.platform}${onCloud}`,
+        why: input.cloud
+          ? "No app is connected to the dev server, and this is what opens one on the project's EAS Simulator session."
+          : 'No app is connected to the dev server, and this is what opens one on a booted device.',
       },
       {
         id: 'smoke-again',
@@ -130,11 +147,19 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
         command: 'npx exagent runtime:errors --android --duration 5s',
         why: "This runtime reports nothing over the debugger, so that command falls back to the dev server's own log, which does carry the app's errors — with a code frame. It needs a dev server started with --detach.",
       },
-      {
-        id: 'smoke-other-platform',
-        command: `npx exagent smoke --${otherPlatform}${sameRoute}`,
-        why: `Expo Go on ${otherPlatform === 'ios' ? 'iOS' : 'Android'} was measured to answer the debugger, so the same gate has a runtime to read there [observed — 2026-08-25].`,
-      },
+      // Not on a cloud run: a session is one device, so "the other platform" is a *different*
+      // session — one this CLI was never told about. Naming it with `--cloud` would name a session
+      // that does not exist, and naming it without would drop the backend the caller chose, so the
+      // honest ladder here is one rung.
+      ...(input.cloud
+        ? []
+        : [
+            {
+              id: 'smoke-other-platform',
+              command: `npx exagent smoke --${otherPlatform}${sameRoute}`,
+              why: `Expo Go on ${otherPlatform === 'ios' ? 'iOS' : 'Android'} was measured to answer the debugger, so the same gate has a runtime to read there [observed — 2026-08-25].`,
+            },
+          ]),
     ]);
   }
 
@@ -142,7 +167,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'runtime-reload',
-        command: `npx exagent runtime:reload --${input.platform}`,
+        command: `npx exagent runtime:reload --${input.platform}${onCloud}`,
         why: 'An error window is a property of the app’s session and the session outlives a fix, so reload before believing a second reading.',
       },
       {

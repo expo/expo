@@ -9,6 +9,7 @@
 
 import type { EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
+import { looksLikeWrapperCrash, wrapperCrashReason } from '../utils/wrapperCrash';
 import type { CachedBuild } from './types';
 
 /** How long the lookup may take before it is abandoned. */
@@ -94,6 +95,17 @@ export async function lookUpCachedBuildAsync(
     return { state: 'unknown', reason: `the lookup did not answer within ${timeoutMs}ms` };
   }
   if (result.exitCode !== 0) {
+    // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — what answered the spawn is
+    // whatever this machine has under the name `eas`, and a wrapper's panic reported here reads as
+    // EAS's answer about this account's builds. The guard is conservative (`wrapperCrash.ts`): both
+    // "nothing an EAS run would print" and "died the way a wrapper dies" must hold, so a real
+    // refusal keeps its own words.
+    if (looksLikeWrapperCrash({ tool: 'eas', ...result })) {
+      return {
+        state: 'unknown',
+        reason: wrapperCrashReason({ tool: 'eas', exitCode: result.exitCode }, easCli.command),
+      };
+    }
     return { state: 'unknown', reason: describeLookupFailure(result.stdout, result.stderr) };
   }
   return readLookupPayload(result.stdout);

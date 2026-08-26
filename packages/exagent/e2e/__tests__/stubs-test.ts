@@ -125,6 +125,51 @@ describe(startStubDevServerAsync, () => {
     }
   });
 
+  // The inspector socket has three modes and they are three different runtimes, so the one that
+  // decides an exit code is worth checking on its own. `no-debugger` is a socket that is open and
+  // answers `-32601` to everything, which is what `runtime:errors --fail-on-error` reads as "this
+  // window observed nothing" and exits 22 for.
+  it('answers every debugger method -32601 in the no-debugger mode', async () => {
+    const server = await startStubDevServerAsync({ inspectorSocket: 'no-debugger' });
+    try {
+      const socket = new WebSocket(`ws://127.0.0.1:${server.port}/inspector/debug?page=1`);
+      const answer = await new Promise<any>((resolve, reject) => {
+        socket.addEventListener('error', reject);
+        socket.addEventListener('open', () =>
+          socket.send(JSON.stringify({ id: 7, method: 'Runtime.evaluate', params: {} }))
+        );
+        socket.addEventListener('message', (event) => resolve(JSON.parse(String(event.data))));
+      });
+      socket.close();
+
+      expect(answer).toEqual({ id: 7, error: { code: -32601, message: 'Method not found' } });
+    } finally {
+      await server.close();
+    }
+  });
+
+  // The default is the other runtime: a socket that accepts the connection and says nothing, which
+  // is a connected app that is being asked nothing.
+  it('accepts the connection and answers nothing in the live mode', async () => {
+    const server = await startStubDevServerAsync();
+    try {
+      const socket = new WebSocket(`ws://127.0.0.1:${server.port}/inspector/debug?page=1`);
+      const answered = await new Promise<boolean>((resolve, reject) => {
+        socket.addEventListener('error', reject);
+        socket.addEventListener('open', () => {
+          socket.send(JSON.stringify({ id: 7, method: 'Runtime.evaluate', params: {} }));
+          setTimeout(() => resolve(false), 300);
+        });
+        socket.addEventListener('message', () => resolve(true));
+      });
+      socket.close();
+
+      expect(answered).toBe(false);
+    } finally {
+      await server.close();
+    }
+  });
+
   it('listens on its own port, and stops answering once closed', async () => {
     const first = await startStubDevServerAsync();
     const second = await startStubDevServerAsync();

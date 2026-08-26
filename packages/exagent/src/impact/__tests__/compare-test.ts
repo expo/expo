@@ -170,6 +170,23 @@ describe(compareWithEasBuildAsync, () => {
     expect(result.error).toContain('eas build:list');
   });
 
+  // The "How" line of the ordinary error is advice about the build id and the sign-in, and neither
+  // is what is wrong when the file under the name `eas` was never the EAS CLI.
+  it(`should name a binary that was never the EAS CLI instead of quoting its panic`, async () => {
+    mockSpawn({
+      exitCode: 101,
+      stdout: '',
+      stderr: "thread 'main' panicked at src/main.rs:41:9:\nStack backtrace:\n",
+    });
+
+    const result = await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
+
+    expect(result.error).toContain('build-1');
+    expect(result.error).toContain('may not be the real CLI');
+    expect(result.error).not.toContain('panicked');
+    expect(result.error).not.toContain('signed in to the account');
+  });
+
   it(`should read a diff array printed at the top level`, async () => {
     mockSpawn({ stdout: JSON.stringify(realDiff) });
 
@@ -434,6 +451,33 @@ describe(lookUpCachedBuildAsync, () => {
       state: 'unknown',
       reason:
         'EAS project not configured. This command cannot configure it in non-interactive mode. Run one of the following, then re-run this command:',
+    });
+  });
+
+  // @ref src/utils/wrapperCrash.ts — the binary under the name `eas` may be a wrapper, a shim or a
+  // stale link, and this `reason` is printed as EAS's answer about the caller's own builds.
+  it(`should name a binary that was never the EAS CLI instead of quoting its panic`, async () => {
+    mockSpawn({
+      exitCode: 101,
+      stdout: '',
+      stderr: "thread 'main' panicked at src/main.rs:41:9:\nStack backtrace:\n",
+    });
+
+    const outcome = await lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc');
+
+    expect(outcome).toMatchObject({ state: 'unknown' });
+    expect((outcome as { reason: string }).reason).toContain('/bin/eas');
+    expect((outcome as { reason: string }).reason).toContain('may not be the real CLI');
+    expect((outcome as { reason: string }).reason).not.toContain('panicked');
+  });
+
+  // The other half of the same guard: a real refusal keeps its own words, whatever its exit code.
+  it(`should keep the EAS CLI's own words for a refusal that names EAS`, async () => {
+    mockSpawn({ exitCode: 127, stdout: '', stderr: 'eas build:list: not signed in\n' });
+
+    await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toEqual({
+      state: 'unknown',
+      reason: 'eas build:list: not signed in',
     });
   });
 

@@ -105,6 +105,24 @@ export function wrapperCrashDetail(
 }
 
 /**
+ * The same fact as {@link wrapperCrashDetail}, as one sentence.
+ *
+ * For a report field that holds a *reason* rather than a message — `status`'s per-platform build
+ * lookup is the case: it never fails the command, so what a reader gets is one line, and that line
+ * is printed as what EAS answered about their account. A panic quoted there is a sentence about
+ * their builds that no Expo service ever said.
+ */
+export function wrapperCrashReason(
+  { tool, exitCode }: Pick<WrapperCrashInput, 'tool' | 'exitCode'>,
+  binPath: string
+): string {
+  return (
+    `the ${tool} at ${binPath} exited ${exitCode} and printed nothing an ${tool} run would print, ` +
+    `so it may not be the real CLI — check that file`
+  );
+}
+
+/**
  * The command that reproduces a failure against the binary that actually ran.
  *
  * `npx eas-cli whoami` checks a *different* program than the one that just failed, so a reader who

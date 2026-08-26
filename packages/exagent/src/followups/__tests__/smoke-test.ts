@@ -24,6 +24,7 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
     route: null,
     // Named, always: a re-run that drops the platform is a different run (F58).
     platform: 'ios',
+    cloud: false,
     ...overrides,
   };
 }
@@ -153,5 +154,58 @@ describe(buildSmokeFollowUps, () => {
     expect(commands({ bundleBroken: true, outcome: 'failed', route: '/notes' })).toContain(
       'npx exagent smoke --ios --route /notes'
     );
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+// The same rule the `platform` comment above states, for the other fact that decides which device a
+// run is about. A `smoke --cloud` that could not find a session was answered with
+// `npx exagent navigate / --ios` and `npx exagent smoke --ios` — a ladder off the backend the
+// caller chose, onto a booted device the host that reached for the cloud may not have at all.
+describe('a run that asked for the cloud', () => {
+  it(`keeps --cloud on every command that takes it`, () => {
+    for (const overrides of [
+      { devServerFound: false },
+      { appsConnected: 0 },
+      { failing: 2, outcome: 'failed' as const },
+      { outcome: 'inconclusive' as const, screenshotTaken: false, screenshotPath: null },
+    ]) {
+      for (const command of commands({ ...overrides, cloud: true })) {
+        if (/exagent (smoke|navigate|runtime:reload)\b/.test(command)) {
+          expect(command).toContain('--cloud');
+        }
+      }
+    }
+  });
+
+  it(`opens the app on the session rather than on a booted device`, () => {
+    const followups = buildSmokeFollowUps(input({ appsConnected: 0, cloud: true }));
+    const navigate = followups.find((followup) => followup.id === 'navigate')!;
+
+    expect(navigate.command).toBe('npx exagent navigate / --ios --cloud');
+    expect(navigate.why).not.toContain('booted device');
+  });
+
+  // The one rung a cloud run cannot have: a session is one device, so "try the other platform" is
+  // a different session this CLI was never told about, and suggesting it with --cloud would name a
+  // session that does not exist while suggesting it without would leave the backend silently.
+  it(`never offers the other platform, which is another session`, () => {
+    expect(commands({ runtimeSupported: false, cloud: true })).not.toContain(
+      'npx exagent smoke --android'
+    );
+    // The local run still has it: there the other platform is another simulator on this machine.
+    expect(commands({ runtimeSupported: false })).toContain('npx exagent smoke --android');
+  });
+
+  it(`changes nothing for a run that did not ask for the cloud`, () => {
+    for (const overrides of [
+      { devServerFound: false },
+      { appsConnected: 0 },
+      { failing: 2, outcome: 'failed' as const },
+    ]) {
+      for (const command of commands(overrides)) {
+        expect(command).not.toContain('--cloud');
+      }
+    }
   });
 });

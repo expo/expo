@@ -3,14 +3,28 @@ import path from 'path';
 
 import { CommandError } from './errors';
 
-/** Look up directories until one with a `package.json` can be found, assert if none can be found. */
+/**
+ * Look up directories until one with a `package.json` can be found, assert if none can be found.
+ *
+ * @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts
+ * This is the first thing a caller in the wrong directory sees, and it is the one failure that
+ * needs no diagnosis: the answer is always "run this somewhere else, or make a project here". It
+ * used to be a single clause with no reason, no next step and a null `suggestedCommand`, so an
+ * agent that read it had nothing on the `Try:` line to act on.
+ */
 export function findUpProjectRootOrAssert(cwd: string): string {
   const projectRoot = findUpProjectRoot(cwd);
   if (!projectRoot) {
-    throw new CommandError(
+    const error = new CommandError(
       'NO_PROJECT',
-      `Project root directory not found (working directory: ${cwd})`
+      [
+        `No project was found here, so this command has nothing to act on.`,
+        `Why: neither ${cwd} nor any directory above it holds a package.json, which is what marks the root of a JavaScript project — so there is no app for this command to be about.`,
+        `How: change to the directory of an existing app and run this again, or create one here with "npx exagent new my-app".`,
+      ].join('\n')
     );
+    error.suggestedCommand = 'npx exagent new my-app';
+    throw error;
   }
   return path.dirname(projectRoot);
 }
