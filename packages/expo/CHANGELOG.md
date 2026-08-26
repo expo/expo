@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add a scene URL transformation hook to `ExpoAppSceneDelegate`.
+- [iOS] Add a scene URL transformation hook to `ExpoAppSceneDelegate`. ([#49391](https://github.com/expo/expo/pull/49391) by [@Shahroz16](https://github.com/Shahroz16))
 
 ### 🐛 Bug fixes
 
