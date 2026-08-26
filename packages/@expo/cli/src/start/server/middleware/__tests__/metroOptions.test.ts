@@ -1,6 +1,10 @@
 import { env } from 'node:process';
 
-import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
+import {
+  createBundleUrlPath,
+  getMetroDirectBundleOptions,
+  getMetroDirectBundleOptionsForExpoConfig,
+} from '../metroOptions';
 
 describe(getMetroDirectBundleOptions, () => {
   it(`asserts unsupported options: using bytecode on web`, () => {
@@ -100,6 +104,32 @@ describe(getMetroDirectBundleOptions, () => {
         'false'
       );
     });
+  });
+});
+describe(getMetroDirectBundleOptionsForExpoConfig, () => {
+  it('changes transform cache options when the public Expo config changes', () => {
+    const options = {
+      mainModuleName: '/index.js',
+      mode: 'production' as const,
+      platform: 'web',
+      isExporting: true,
+    };
+
+    const first = getMetroDirectBundleOptionsForExpoConfig(
+      '/app',
+      { name: 'app', slug: 'app', extra: { API_BASE_URL: 'http://localhost:3000' } },
+      options
+    );
+    const second = getMetroDirectBundleOptionsForExpoConfig(
+      '/app',
+      { name: 'app', slug: 'app', extra: { API_BASE_URL: 'https://api.example.com' } },
+      options
+    );
+
+    expect(first.customTransformOptions?.expoConfigHash).toEqual(expect.any(String));
+    expect(first.customTransformOptions?.expoConfigHash).not.toBe(
+      second.customTransformOptions?.expoConfigHash
+    );
   });
 });
 describe(createBundleUrlPath, () => {

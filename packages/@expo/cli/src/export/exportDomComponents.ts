@@ -56,7 +56,7 @@ export async function exportDomComponentAsync({
   const relativeImport =
     './' + toPosixPath(path.relative(path.dirname(virtualEntry), generatedEntryPath));
   // Run metro bundler and create the JS bundles/source maps.
-  const bundle = await devServer.legacySinglePageExportBundleAsync({
+  const bundle = await devServer.legacySinglePageExportBundleAsync(exp, {
     platform: 'web',
     domRoot: encodeURI(relativeImport),
     splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,

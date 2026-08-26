@@ -1,6 +1,7 @@
 import type { ExpoConfig } from '@expo/config';
 import Server from '@expo/metro/metro/Server';
 import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types';
+import crypto from 'crypto';
 
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -62,6 +63,8 @@ export type ExpoMetroOptions = {
   liveBindings?: boolean;
   /** When true, indicates this bundle should contain only the loader export. */
   isLoaderBundle?: boolean;
+  /** Hash of the Expo config embedded in client bundles. */
+  expoConfigHash?: string;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -150,7 +153,12 @@ export function getMetroDirectBundleOptionsForExpoConfig(
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
+    expoConfigHash: getExpoConfigHash(exp),
   });
+}
+
+export function getExpoConfigHash(exp: ExpoConfig): string {
+  return crypto.createHash('sha1').update(JSON.stringify(exp)).digest('hex');
 }
 
 export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
@@ -184,6 +192,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     liveBindings,
     isLoaderBundle,
     excludeSource,
+    expoConfigHash,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -226,6 +235,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     useMd5Filename: useMd5Filename || undefined,
     liveBindings: !liveBindings ? toBoolStr(!!liveBindings) : undefined,
     isLoaderBundle: isLoaderBundle ? toBoolStr(isLoaderBundle) : undefined,
+    expoConfigHash,
   };
 
   // Iterate and delete undefined values

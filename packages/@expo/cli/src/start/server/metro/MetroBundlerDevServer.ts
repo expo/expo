@@ -67,6 +67,7 @@ import {
   createBundleOsPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
+  getExpoConfigHash,
   getMetroDirectBundleOptions,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
@@ -986,7 +987,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return this.singlePageReactServerComponentExportAsync(exp, options, files, extraOptions);
     }
 
-    return this.legacySinglePageExportBundleAsync(options, extraOptions);
+    return this.legacySinglePageExportBundleAsync(exp, options, extraOptions);
   }
 
   private async singlePageReactServerComponentExportAsync(
@@ -1044,6 +1045,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // Run metro bundler and create the JS bundles/source maps.
       const bundle = await this.legacySinglePageExportBundleAsync(
+        exp,
         {
           ...options,
           clientBoundaries,
@@ -1170,6 +1172,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   async legacySinglePageExportBundleAsync(
+    exp: ExpoConfig,
     options: Omit<
       ExpoMetroOptions,
       'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment' | 'hosted'
@@ -1194,6 +1197,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       ...options,
       environment: 'client',
       serializerOutput: 'static',
+      expoConfigHash: getExpoConfigHash(exp),
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
