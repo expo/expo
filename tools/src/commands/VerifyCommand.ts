@@ -27,6 +27,7 @@ import spawnAsync from '@expo/spawn-async';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { getExpoRepositoryRootDir } from '../Directories';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -1261,6 +1262,24 @@ function contextHelp(argv: string[]): string {
   return HELP;
 }
 
+// The engine that owns dispatch/status/ls now: @expo/verify, pinned to the
+// same version the repo's verify.yml runs (expo-sandbox-mcp LLP 0020 / the
+// engine's LLP 0001). et verify keeps its entry point and grammar; these
+// subcommands exec the engine with the repo's .verify/ profile. roundup
+// stays native here — it is expo policy (emoji conventions, branch scoping,
+// cost tables) the engine has not absorbed yet.
+const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.2.2';
+
+async function delegateToEngine(engineArgs: string[]): Promise<never> {
+  const configDir = join(getExpoRepositoryRootDir(), '.verify');
+  const result = await spawnAsync(
+    'npx',
+    ['--yes', '-p', `@expo/verify@${ENGINE_VERSION}`, 'verify', ...engineArgs, '--config-dir', configDir],
+    { stdio: 'inherit' }
+  ).catch((error: { status?: number }) => ({ status: error.status ?? 1 }));
+  process.exit(result.status ?? 0);
+}
+
 async function main(args: string[]): Promise<void> {
   const wantsHelp = args.includes('-h') || args.includes('--help');
 
@@ -1271,8 +1290,7 @@ async function main(args: string[]): Promise<void> {
       console.log(LS_HELP);
       return;
     }
-    await listInFlight(parseLsArgs(args.slice(1)));
-    return;
+    await delegateToEngine(['ls']);
   }
 
   if (args[0] === 'roundup') {
@@ -1292,13 +1310,11 @@ async function main(args: string[]): Promise<void> {
     if (args.slice(1).some((a) => a !== '-h' && a !== '--help')) {
       die('dashboard takes no extra arguments (try --help)');
     }
-    await showDashboard();
-    return;
+    await delegateToEngine(['status']);
   }
 
   if (args.length === 0) {
-    await showDashboard();
-    return;
+    await delegateToEngine(['status']);
   }
 
   if (wantsHelp) {
@@ -1306,7 +1322,11 @@ async function main(args: string[]): Promise<void> {
     return;
   }
 
-  await dispatchAsync(args);
+  // Dispatch grammar is identical between et verify and the engine
+  // (target forms, --fix/--no-fix, --retry, --watch, --model/shorthands),
+  // so argv passes through; the engine's target parser refuses non-expo
+  // URLs exactly as parseTarget() did.
+  await delegateToEngine(['dispatch', ...args]);
 }
 
 function ageMins(iso: string): number {
