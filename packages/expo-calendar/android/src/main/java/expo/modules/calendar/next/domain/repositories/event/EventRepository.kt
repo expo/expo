@@ -9,6 +9,7 @@ import expo.modules.calendar.next.domain.dto.event.EventExceptionInput
 import expo.modules.calendar.next.domain.model.event.EventEntity
 import expo.modules.calendar.next.domain.dto.event.EventInput
 import expo.modules.calendar.next.domain.dto.event.EventUpdate
+import expo.modules.calendar.next.domain.repositories.getOptionalLong
 import expo.modules.calendar.next.domain.repositories.safeDelete
 import expo.modules.calendar.next.domain.repositories.safeInsert
 import expo.modules.calendar.next.domain.repositories.safeQuery
@@ -53,6 +54,35 @@ class EventRepository(private val contentResolver: ContentResolver) {
   suspend fun remove(id: EventId): Boolean = withContext(Dispatchers.IO) {
     contentResolver.safeDelete(
       uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id.value)
+    ) > 0
+  }
+
+  /**
+   * Flags the event as carrying local changes that still have to be pushed.
+   *
+   * Rows written through a sync adapter URI are recorded as already in sync, so a change made that
+   * way — an extended property, for instance — never leaves the device on its own. Writing any
+   * column back through the plain URI makes `CalendarProvider2` set `dirty`, and the pending change
+   * then travels with the next sync. The start date is the column written back, unchanged, because
+   * it is the one an event is guaranteed to have.
+   *
+   * @return whether the event was found and flagged.
+   */
+  suspend fun markDirty(id: EventId): Boolean = withContext(Dispatchers.IO) {
+    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id.value)
+    val dtStart = contentResolver.safeQuery(
+      uri = uri,
+      projection = arrayOf(CalendarContract.Events.DTSTART)
+    ).use { cursor ->
+      cursor.takeIf { it.moveToFirst() }
+        ?.getOptionalLong(CalendarContract.Events.DTSTART)
+    } ?: return@withContext false
+
+    contentResolver.safeUpdate(
+      uri = uri,
+      values = ContentValues().apply {
+        put(CalendarContract.Events.DTSTART, dtStart)
+      }
     ) > 0
   }
 

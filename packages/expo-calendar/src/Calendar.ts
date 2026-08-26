@@ -8,6 +8,7 @@ import { Platform, processColor } from 'react-native';
 
 import InternalExpoCalendar from './ExpoCalendar';
 import type {
+  ExtendedProperty,
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
@@ -73,6 +74,27 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     const newAttendee = await super.createAttendee(attendee);
     Object.setPrototypeOf(newAttendee, ExpoCalendarAttendee.prototype);
     return newAttendee;
+  }
+
+  override async getExtendedProperties(): Promise<ExtendedProperty[]> {
+    if (Platform.OS !== 'android') {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'getExtendedProperties');
+    }
+    return await super.getExtendedProperties();
+  }
+
+  override async setExtendedProperty(name: string, value: string): Promise<void> {
+    if (Platform.OS !== 'android') {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'setExtendedProperty');
+    }
+    await super.setExtendedProperty(name, value);
+  }
+
+  override async deleteExtendedProperty(name: string): Promise<boolean> {
+    if (Platform.OS !== 'android') {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'deleteExtendedProperty');
+    }
+    return await super.deleteExtendedProperty(name);
   }
 
   override async update(details: Partial<ModifiableEventProperties>): Promise<void> {
@@ -355,6 +377,7 @@ export function getSourcesSync(): Source[] {
 }
 
 export type {
+  ExtendedProperty,
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,

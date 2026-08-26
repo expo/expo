@@ -79,6 +79,27 @@ export type ModifiableReminderProperties = Pick<
 
 export type ModifiableAttendeeProperties = ExpoCalendarAttendee;
 
+/**
+ * Key/value pair attached to an event, stored in Android's `CalendarContract.ExtendedProperties`
+ * table. Apps use it to keep metadata of their own on an event, such as an identifier tying the
+ * event back to one of their own records, which the event itself has no field for.
+ * @platform android
+ */
+export type ExtendedProperty = {
+  /**
+   * Name the property is stored under, visibility prefix included. Names prefixed `private:` are
+   * readable by the account owning the event, names prefixed `shared:` by the guests of the event,
+   * and both survive a round trip to the server the calendar syncs with. A name carrying neither
+   * prefix stays on the device: the sync adapter drops it on the next sync.
+   */
+  name: string;
+  /**
+   * Value stored under `name`. It is stored verbatim, so anything structured has to be serialized
+   * by the caller.
+   */
+  value: string;
+};
+
 export declare class ExpoCalendar {
   constructor(id: string);
 
@@ -396,6 +417,49 @@ export declare class ExpoCalendarEvent {
    * @return An array of [`Attendee`](#attendee) associated with the specified event.
    */
   getAttendees(): Promise<ExpoCalendarAttendee[]>;
+
+  /**
+   * Gets the extended properties attached to this event, including the ones written by other apps
+   * or by the calendar's own sync adapter.
+   * @return A promise that resolves to the properties stored on the event.
+   * @platform android
+   */
+  getExtendedProperties(): Promise<ExtendedProperty[]>;
+
+  /**
+   * Attaches a key/value pair to this event, replacing the value already stored under the same name.
+   *
+   * The property is written as the sync adapter of the account owning the event, because the
+   * calendar provider accepts writes to that table from no one else. Writing that way records the
+   * row as already synced, so the event is flagged as locally modified afterwards, and that flag
+   * is what carries the property to the server on the next sync.
+   *
+   * > **Note:** on an event of a calendar owned by an account, `name` has to start with `private:`
+   * > or `shared:`. Any other name is stored on the device and dropped by the sync adapter on the
+   * > next sync, without an error, so this method rejects it instead. Calendars of the local
+   * > account are never synced and accept any name.
+   *
+   * @param name Name to store the value under, visibility prefix included.
+   * @param value Value to store.
+   *
+   * @example
+   * ```ts
+   * await event.setExtendedProperty('private:my-app-id', 'a4f1c2');
+   * ```
+   *
+   * @platform android
+   */
+  setExtendedProperty(name: string, value: string): Promise<void>;
+
+  /**
+   * Removes the property stored under `name` on this event, and flags the event so that the removal
+   * reaches the server on the next sync.
+   * @param name Name of the property to remove, visibility prefix included.
+   * @return A promise that resolves to `true` when a property was removed, and to `false` when the
+   * event carried none under that name.
+   * @platform android
+   */
+  deleteExtendedProperty(name: string): Promise<boolean>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,

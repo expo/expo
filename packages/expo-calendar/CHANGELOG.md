@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] Add `getExtendedProperties()`, `setExtendedProperty()` and `deleteExtendedProperty()` to `ExpoCalendarEvent`, so that apps can recognize the events they created: Android has no `url` field to mark them with, and `CalendarContract.ExtendedProperties` — the mechanism meant for it — was not exposed. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@MoOx](https://github.com/MoOx))
+
 ### 🐛 Bug fixes
 
 - [ios] Fix a crash when reading `calendarId` on an event or reminder whose `EKCalendarItem.calendar` is nil. The property is `null_unspecified` in the EventKit headers, so the bare access was an implicit force-unwrap that trapped the JS thread. ([#48445](https://github.com/expo/expo/pull/48445) by [@cvburgess](https://github.com/cvburgess))
