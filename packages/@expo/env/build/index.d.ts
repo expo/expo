@@ -5,6 +5,20 @@ export declare function isEnabled(): boolean;
 export declare const KNOWN_MODES: string[];
 /** The environment variable name to use when marking the environment as loaded */
 export declare const LOADED_ENV_NAME = "__EXPO_ENV_LOADED";
+/** Modes used by Expo commands and tools. */
+export type EnvMode = 'development' | 'production';
+/**
+ * Set `NODE_ENV` for an Expo command or tool and replace any existing value.
+ *
+ * Pass a custom `systemEnv` to set the value without changing `process.env`.
+ */
+export declare function setNodeEnv(mode: EnvMode, { systemEnv }?: {
+    systemEnv?: EnvOutput;
+}): EnvOutput;
+/** @internal Read and remove the config mode passed by a parent Expo tool. */
+export declare function consumeConfigEnvMode({ systemEnv }?: {
+    systemEnv?: EnvOutput;
+}): EnvMode | undefined;
 /**
  * Get a list of all `.env*` files based on the `NODE_ENV` mode.
  * This returns a list of files, in order of highest priority to lowest priority.
@@ -76,27 +90,28 @@ export declare function loadProjectEnv(projectRoot: string, options?: Parameters
     result: "loaded";
 };
 /**
- * Get a fresh clone of the system environment with all `@expo/env`-applied
- * mutations reverted to their pre-load values. The result is intended to be
+ * Get a fresh clone of the system environment with dotenv changes reverted to their pre-load
+ * values. Values set by `setNodeEnv` are not reverted. The result is intended to be
  * passed as the `env` option of `child_process.spawn` / `@expo/spawn-async`
  * when a subprocess should observe the environment as it was before any
  * `.env*` files were loaded — for example, when resolving SDK tooling paths
  * that should not be influenced by project-controlled `.env` values.
  *
- * Allocates lazily: nothing is held until this function is called, and each
- * call returns a new object so callers may mutate it freely.
+ * The inherited `__EXPO_ENV_LOADED` marker lists the dotenv keys loaded by a parent process.
+ *
+ * Each call returns a new object so callers may mutate it freely.
  *
  * @param systemEnv The env to revert against; defaults to `process.env`.
  */
 export declare function getOriginalEnv(systemEnv?: EnvOutput): EnvOutput;
 /**
- * Get the pre-load value of a single environment variable as recorded by
- * `@expo/env`. Falls through to the value in `systemEnv` for keys that
- * `@expo/env` never touched. O(1) and allocation-free, intended for read-sites
- * that resolve filesystem paths or executables from a single env var.
+ * Get the pre-load value of one environment variable. If `@expo/env` did not load the key,
+ * return its value from `systemEnv`. Use this when a caller only needs one env var, such as a
+ * filesystem path or executable.
  *
- * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into
- * via the escape hatch return their currently loaded value, not the original.
+ * The inherited `__EXPO_ENV_LOADED` marker lists the dotenv keys loaded by a parent process.
+ *
+ * Non-internal dotenv keys listed in `EXPO_UNSAFE_DOTENV_KEYS` keep their current value.
  *
  * @param key The environment variable to read.
  * @param systemEnv The env to read against; defaults to `process.env`.
