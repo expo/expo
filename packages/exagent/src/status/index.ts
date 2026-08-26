@@ -39,7 +39,7 @@ export const exagentStatus: Command = async (argv) => {
         chalk`  running with an app connected, which agent skills are linked, and the command that`,
         chalk`  would get the app onto a device.`,
         '',
-        chalk`  Nothing is started or built, and nothing in the project is changed — {bold --builds} caches`,
+        chalk`  Nothing is started or built, and nothing in the project is changed — {bold --explain} caches`,
         chalk`  its answer under {bold .expo}, and that is the only thing this command ever writes. It always`,
         chalk`  exits 0, so a script can read the report without branching on the exit code.`,
         '',

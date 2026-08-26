@@ -4,11 +4,11 @@
 // the only one that really matters: the same pair of fingerprints, and the item list the **real**
 // `fingerprint:diff` printed for it. See `src/__fixtures__/fingerprint/README.md` for provenance.
 
-import { diffFingerprintSourcesLocally, sourceIdentity } from '../localDiff';
 import recordedBase from '../../__fixtures__/fingerprint/diff-base.json';
 import recordedHead from '../../__fixtures__/fingerprint/diff-head.json';
 import recordedItems from '../../__fixtures__/fingerprint/diff-items.json';
 import type { FingerprintDiffItem, FingerprintSource } from '../fingerprint';
+import { diffFingerprintSourcesLocally, sourceIdentity } from '../localDiff';
 
 /** Order-insensitive comparison: this join is keyed, and the CLI's is a merge over sorted lists. */
 function normalize(items: FingerprintDiffItem[]): string[] {

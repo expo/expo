@@ -14,7 +14,7 @@
 //    1.10–1.33 s over five live runs, hit and miss alike, against a warm CLI [observed — same
 //    session]. `status` measures ~65 ms.
 //
-// So the network half is opt-in (`--builds`) and the **cache is always read**, because the cache
+// So the network half is opt-in (`--explain`) and the **cache is always read**, because the cache
 // is exact rather than approximate: the whole-project hash *dominates* the per-platform ones —
 // `--platform` filters the same source list, so an unchanged project hash implies unchanged
 // per-platform hashes — which makes the hash `status` already has a sound key for an answer about
@@ -65,7 +65,7 @@ interface CachedEntry {
 type EasBuildsRecord = Partial<Record<NativePlatform, CachedEntry>>;
 
 export interface EasBuildsOptions {
-  /** Whether this run may call EAS. False on every run without `--builds`. */
+  /** Whether this run may call EAS. False on every run without `--explain`. */
   lookUp: boolean;
   /**
    * What the auth section answered.
@@ -84,7 +84,7 @@ export interface EasBuildsOptions {
 /**
  * What EAS already has for this project, per platform.
  *
- * Reads the cache always and calls EAS only under `--builds`. Never throws: every way of not
+ * Reads the cache always and calls EAS only under `--explain`. Never throws: every way of not
  * getting an answer is an `unknown` carrying the reason, so a section that could not be read costs
  * one line of the report and the command still exits 0.
  */
@@ -113,7 +113,7 @@ async function readPlatformAsync(
   if (!options.lookUp) {
     // Short on purpose: this is the reason on every platform of every default run, and the cost it
     // is short about is spelled out in `status --help`, which is where somebody weighing it looks.
-    return unknown(platform, null, 'EAS was not asked — pass --builds');
+    return unknown(platform, null, 'EAS was not asked — pass --explain');
   }
   if (options.auth?.loggedIn === false) {
     // The answer is already in the report. A second probe would spend a second to be told the

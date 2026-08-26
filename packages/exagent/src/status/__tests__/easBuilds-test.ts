@@ -57,7 +57,7 @@ beforeEach(() => {
 });
 
 describe(readEasBuildsStatusAsync, () => {
-  it(`should answer unknown for both platforms without --builds, and spawn nothing`, async () => {
+  it(`should answer unknown for both platforms without --explain, and spawn nothing`, async () => {
     const status = await readEasBuildsStatusAsync(projectRoot, {
       lookUp: false,
       auth: signedIn,
@@ -66,13 +66,13 @@ describe(readEasBuildsStatusAsync, () => {
 
     expect(status.askedEas).toBe(false);
     expect(status.platforms.map((platform) => platform.state)).toEqual(['unknown', 'unknown']);
-    expect(iosOf(status.platforms).reason).toContain('--builds');
+    expect(iosOf(status.platforms).reason).toContain('--explain');
     expect(generateFingerprintAsync).not.toHaveBeenCalled();
     expect(lookUpCachedBuildAsync).not.toHaveBeenCalled();
   });
 
   // The whole point of keying the cache on the hash `status` already has: a hit is exact and free.
-  it(`should answer found from the cache without --builds, and still spawn nothing`, async () => {
+  it(`should answer found from the cache without --explain, and still spawn nothing`, async () => {
     writeCache({ projectHash: PROJECT_HASH, fingerprintHash: IOS_HASH, build: BUILD });
 
     const status = await readEasBuildsStatusAsync(projectRoot, {
@@ -120,7 +120,7 @@ describe(readEasBuildsStatusAsync, () => {
 
   // The auth section already answered this. A second probe would spend a second to be told the
   // same thing, which is exactly the cost this design exists to avoid.
-  it(`should not ask EAS on a signed-out machine, even with --builds`, async () => {
+  it(`should not ask EAS on a signed-out machine, even with --explain`, async () => {
     const status = await readEasBuildsStatusAsync(projectRoot, {
       lookUp: true,
       auth: { loggedIn: false, user: null, source: 'eas whoami' },

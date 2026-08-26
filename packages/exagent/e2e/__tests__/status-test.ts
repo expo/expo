@@ -42,7 +42,19 @@ type StatusReport = {
       state: 'fresh' | 'stale' | 'unknown';
       detail: string;
       recordedHash: string | null;
+      impact: {
+        class: 'js-only' | 'dev-client-compatible' | 'needs-native-build' | null;
+        fingerprintChanged: boolean | null;
+        reason: string;
+        changedCount: number | null;
+        changedSources: { op: string; path: string | null; kind: string }[] | null;
+      } | null;
     }[];
+    ota: {
+      safe: boolean | null;
+      runtimeVersion: { policy: string | null; literal: string | null; source: string | null };
+      why: string;
+    } | null;
   } | null;
   devServer: {
     url: string;
@@ -474,6 +486,280 @@ describe('exagent status', () => {
     });
   });
 
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+  //
+  // What a change costs, on every run. The two things worth asserting end to end are the answer
+  // and the *cost*: the headline must arrive without `expo config` or `eas` being spawned at all,
+  // which is the whole reason it can be always-on.
+  describe('the impact headline', () => {
+    /** One autolinked native module, in the shape the sourcer emits. */
+    const NATIVE_MODULE = {
+      type: 'dir',
+      filePath: 'node_modules/react-native-mmkv',
+      reasons: ['rncoreAutolinkingIos'],
+      hash: 'aabb',
+    };
+    const APP_CONFIG = {
+      type: 'file',
+      filePath: 'app.json',
+      reasons: ['expoConfig'],
+      hash: 'ccdd',
+    };
+
+    /**
+     * A `fingerprint` bin whose sources the test chooses.
+     *
+     * The fixture's own stub always prints an empty list, which can only ever produce an empty
+     * diff. STUB_FP_SOURCES is what lets these tests move the native surface.
+     */
+    const STUB_FINGERPRINT = `#!/usr/bin/env node
+'use strict';
+const hash = process.env.STUB_FINGERPRINT_HASH || ${JSON.stringify(FIXTURE_FINGERPRINT_HASH)};
+const sources = JSON.parse(process.env.STUB_FP_SOURCES || '[]');
+process.stdout.write(JSON.stringify({ hash, sources }) + '\\n');
+`;
+
+    /** Copy the fixture, install the steerable fingerprint stub, and write the v2 build record. */
+    async function setupImpactAsync(recorded: unknown): Promise<string> {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      const binDir = path.join(projectRoot, '.stub-bin');
+      await fs.promises.mkdir(binDir, { recursive: true });
+      const stub = path.join(binDir, 'fingerprint-sources-stub.js');
+      await fs.promises.writeFile(stub, STUB_FINGERPRINT);
+      for (const dir of [binDir, path.join(projectRoot, 'node_modules', '.bin')]) {
+        await installStubBinAsync(dir, 'fingerprint', stub);
+      }
+      await fs.promises.writeFile(
+        path.join(projectRoot, '.expo', 'exagent-last-build.json'),
+        JSON.stringify(recorded)
+      );
+      return projectRoot;
+    }
+
+    /** The v2 record: the whole fingerprint, which is what makes a diff possible. */
+    function v2Record(sources: unknown[]) {
+      return {
+        ios: { hash: FIXTURE_FINGERPRINT_HASH, sources },
+        android: { hash: FIXTURE_FINGERPRINT_HASH, sources },
+      };
+    }
+
+    function iosImpact(report: StatusReport) {
+      return report.freshness!.platforms.find((platform) => platform.platform === 'ios')!.impact;
+    }
+
+    it('classifies an added native module without spawning anything', async () => {
+      const projectRoot = await setupImpactAsync(v2Record([APP_CONFIG]));
+
+      const report = await reportInAsync(projectRoot, [], {
+        STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+        STUB_FP_SOURCES: JSON.stringify([APP_CONFIG, NATIVE_MODULE]),
+      });
+
+      expect(iosImpact(report)).toMatchObject({
+        class: 'needs-native-build',
+        fingerprintChanged: true,
+        changedCount: 1,
+      });
+      expect(iosImpact(report)!.reason).toContain('autolinked native modules changed');
+      // The detail is the paid tier's; the headline carries the count and nothing else.
+      expect(iosImpact(report)!.changedSources).toBeNull();
+      // No `expo config`, because the OTA verdict is the paid tier's too.
+      expect(
+        readStubExpoInvocations(projectRoot).some((invocation) => invocation.args[0] === 'config')
+      ).toBe(false);
+    });
+
+    it('classifies an unmoved native surface as js-only', async () => {
+      const projectRoot = await setupImpactAsync(v2Record([APP_CONFIG]));
+
+      const report = await reportInAsync(projectRoot, [], {
+        STUB_FP_SOURCES: JSON.stringify([APP_CONFIG]),
+      });
+
+      expect(iosImpact(report)).toMatchObject({
+        class: 'js-only',
+        fingerprintChanged: false,
+        changedCount: 0,
+      });
+    });
+
+    it('prints the class and the sentence on an impact line', async () => {
+      const projectRoot = await setupImpactAsync(v2Record([APP_CONFIG]));
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        {
+          env: {
+            STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+            STUB_FP_SOURCES: JSON.stringify([APP_CONFIG, NATIVE_MODULE]),
+          },
+        }
+      );
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('impact');
+      expect(result.stdout).toContain('needs-native-build');
+      // Both platforms recorded the same fingerprint, so they agree and the line is printed once.
+      expect(result.stdout).toContain('ios, android: needs-native-build');
+    });
+
+    // The v1 record is a bare hash string. It can say the surface moved and not what moved, and
+    // `status` refuses to name a class it did not establish. See llp/0011 §Two commands, one
+    // classifier for why `exagent impact` answers differently for the same project.
+    it('refuses to name a class for a record that stored only a hash, and still exits 0', async () => {
+      const projectRoot = await setupImpactAsync({ ios: FIXTURE_FINGERPRINT_HASH });
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env: { STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111' } }
+      );
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).not.toContain('impact');
+
+      const report = await reportInAsync(projectRoot, [], {
+        STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+      });
+      expect(iosImpact(report)).toMatchObject({ class: null, fingerprintChanged: true });
+      expect(iosImpact(report)!.reason).toContain('stored only a hash');
+    });
+
+    it('says nothing about impact when there is no fingerprint at all', async () => {
+      const report = await reportAsync('go-app');
+
+      expect(report.freshness!.platforms.every((platform) => platform.impact == null)).toBe(true);
+    });
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+  describe('status --explain', () => {
+    const NATIVE_MODULE = {
+      type: 'dir',
+      filePath: 'node_modules/react-native-mmkv',
+      reasons: ['rncoreAutolinkingIos'],
+      hash: 'aabb',
+    };
+
+    const STUB_FINGERPRINT = `#!/usr/bin/env node
+'use strict';
+process.stdout.write(JSON.stringify({
+  hash: process.env.STUB_FINGERPRINT_HASH || ${JSON.stringify(FIXTURE_FINGERPRINT_HASH)},
+  sources: JSON.parse(process.env.STUB_FP_SOURCES || '[]'),
+}) + '\\n');
+`;
+
+    async function setupExplainAsync(runtimeVersion: unknown): Promise<{
+      projectRoot: string;
+      env: Record<string, string>;
+    }> {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      const binDir = path.join(projectRoot, '.stub-bin');
+      await fs.promises.mkdir(binDir, { recursive: true });
+      const stub = path.join(binDir, 'fingerprint-explain-stub.js');
+      await fs.promises.writeFile(stub, STUB_FINGERPRINT);
+      for (const dir of [binDir, path.join(projectRoot, 'node_modules', '.bin')]) {
+        await installStubBinAsync(dir, 'fingerprint', stub);
+      }
+      await fs.promises.writeFile(
+        path.join(projectRoot, '.expo', 'exagent-last-build.json'),
+        JSON.stringify({ ios: { hash: FIXTURE_FINGERPRINT_HASH, sources: [] } })
+      );
+
+      const payloadPath = path.join(projectRoot, 'stub-expo-config.json');
+      await fs.promises.writeFile(
+        payloadPath,
+        JSON.stringify({ name: 'fresh', slug: 'fresh', runtimeVersion })
+      );
+      return {
+        projectRoot,
+        env: {
+          STUB_EXPO_CONFIG_JSON: payloadPath,
+          STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111',
+          STUB_FP_SOURCES: JSON.stringify([NATIVE_MODULE]),
+        },
+      };
+    }
+
+    it('carries the per-source list and the OTA verdict, and still exits 0', async () => {
+      const { projectRoot, env } = await setupExplainAsync({ policy: 'appVersion' });
+
+      const report = await reportInAsync(projectRoot, ['--explain'], env);
+
+      const ios = report.freshness!.platforms.find((platform) => platform.platform === 'ios')!;
+      expect(ios.impact!.changedSources).toEqual([
+        expect.objectContaining({
+          op: 'added',
+          path: 'node_modules/react-native-mmkv',
+          kind: 'native-module',
+        }),
+      ]);
+      expect(report.freshness!.ota).toMatchObject({
+        safe: false,
+        runtimeVersion: { policy: 'appVersion' },
+      });
+      expect(report.errors).toEqual({});
+    });
+
+    // The policy that makes a native change safe to publish: the runtime version moves with the
+    // fingerprint, so an update is only offered to builds that can run it.
+    it('reports a fingerprint policy as safe even for a native change', async () => {
+      const { projectRoot, env } = await setupExplainAsync({ policy: 'fingerprint' });
+
+      const report = await reportInAsync(projectRoot, ['--explain'], env);
+
+      expect(report.freshness!.ota).toMatchObject({ safe: true });
+    });
+
+    it('spawns expo config only under --explain', async () => {
+      const { projectRoot, env } = await setupExplainAsync({ policy: 'appVersion' });
+
+      await reportInAsync(projectRoot, [], env);
+      const configuredWithout = readStubExpoInvocations(projectRoot).filter(
+        (invocation) => invocation.args[0] === 'config'
+      );
+      expect(configuredWithout).toHaveLength(0);
+
+      await reportInAsync(projectRoot, ['--explain'], env);
+      const configuredWith = readStubExpoInvocations(projectRoot).filter(
+        (invocation) => invocation.args[0] === 'config'
+      );
+      expect(configuredWith).toHaveLength(1);
+      expect(configuredWith[0]!.args).toEqual(['config', '--json', '--type', 'public']);
+    });
+
+    it('prints the changed sources and the ota verdict for a human', async () => {
+      const { projectRoot, env } = await setupExplainAsync({ policy: 'appVersion' });
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env }
+      );
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('ios changed');
+      expect(result.stdout).toContain('node_modules/react-native-mmkv');
+      expect(result.stdout).toContain('ota');
+      expect(result.stdout).toContain('not safe to publish');
+    });
+
+    // Section isolation: `--explain` is three answers, and one that cannot be had costs one line.
+    it('keeps every other fact when the config subprocess fails', async () => {
+      const { projectRoot, env } = await setupExplainAsync({ policy: 'appVersion' });
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--json', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env: { ...env, STUB_EXPO_EXIT_CODE: '1' } }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report: StatusReport = JSON.parse(result.stdout);
+      // Nothing resolved the policy, so the verdict is unknown — never "not safe".
+      expect(report.freshness!.ota).toMatchObject({ safe: null });
+      expect(report.project).not.toBeNull();
+    });
+  });
+
   // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
   //
   // Three states, and one cost. The cost is the design: a default run must not spawn `eas
@@ -596,7 +882,7 @@ process.exit(1);
         'unknown',
         'unknown',
       ]);
-      expect(iosOf(report).reason).toContain('--builds');
+      expect(iosOf(report).reason).toContain('--explain');
       // The auth section still asks `whoami`; the lookup asks nothing. That is the whole promise.
       expect(easCommands(projectRoot)).toEqual(['whoami']);
     });
@@ -613,10 +899,10 @@ process.exit(1);
       expect(result.stdout).not.toContain('eas build');
     });
 
-    it('asks EAS about the per-platform fingerprint with --builds, and reports the hit', async () => {
+    it('asks EAS about the per-platform fingerprint with --explain, and reports the hit', async () => {
       const projectRoot = await setupWithEasAsync();
 
-      const report = await reportInAsync(projectRoot, ['--builds'], {
+      const report = await reportInAsync(projectRoot, ['--explain'], {
         STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
       });
 
@@ -640,7 +926,7 @@ process.exit(1);
 
     it('pins the argv of the lookup that crossed the process boundary', async () => {
       const projectRoot = await setupWithEasAsync();
-      await reportInAsync(projectRoot, ['--builds']);
+      await reportInAsync(projectRoot, ['--explain']);
 
       const invocations = fs
         .readFileSync(path.join(projectRoot, STUB_EAS_LOG_NAME), 'utf8')
@@ -667,7 +953,7 @@ process.exit(1);
     // next run answers it for free. A cache that still spawned would be no cache at all.
     it('answers a second run from the cache, spawning no lookup at all', async () => {
       const projectRoot = await setupWithEasAsync();
-      await reportInAsync(projectRoot, ['--builds'], {
+      await reportInAsync(projectRoot, ['--explain'], {
         STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
       });
       await fs.promises.rm(path.join(projectRoot, STUB_EAS_LOG_NAME));
@@ -680,7 +966,7 @@ process.exit(1);
 
     it('stops trusting the cached answer once the project fingerprint moves', async () => {
       const projectRoot = await setupWithEasAsync();
-      await reportInAsync(projectRoot, ['--builds'], {
+      await reportInAsync(projectRoot, ['--explain'], {
         STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
       });
 
@@ -694,7 +980,7 @@ process.exit(1);
     it('reports none when EAS answered and has no build for the fingerprint', async () => {
       const projectRoot = await setupWithEasAsync();
 
-      const report = await reportInAsync(projectRoot, ['--builds']);
+      const report = await reportInAsync(projectRoot, ['--explain']);
 
       expect(iosOf(report)).toMatchObject({
         state: 'none',
@@ -708,7 +994,7 @@ process.exit(1);
       const projectRoot = await setupWithEasAsync();
       const result = await executeExagentAsync(
         projectRoot,
-        ['status', '--json', '--builds', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        ['status', '--json', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         {
           env: {
             STUB_EAS_BUILD_LIST_EXIT: '1',
@@ -746,7 +1032,7 @@ process.exit(1);
 `
       );
 
-      const report = await reportInAsync(projectRoot, ['--builds']);
+      const report = await reportInAsync(projectRoot, ['--explain']);
 
       expect(report.auth?.loggedIn).toBe(false);
       expect(iosOf(report)).toMatchObject({ state: 'unknown' });
@@ -763,7 +1049,7 @@ process.exit(1);
       };
       const result = await executeExagentAsync(
         projectRoot,
-        ['status', '--builds', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        ['status', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env }
       );
 
@@ -771,7 +1057,7 @@ process.exit(1);
       expect(result.stdout).toContain('eas build');
       expect(result.stdout).toContain(`npx eas build:download --build-id ${BUILD_ID}`);
 
-      const report = await reportInAsync(projectRoot, ['--builds'], env);
+      const report = await reportInAsync(projectRoot, ['--explain'], env);
       expect(report.followups.map((followup) => followup.id)).toContain('status-cached-build');
     });
   });

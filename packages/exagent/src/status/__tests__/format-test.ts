@@ -744,7 +744,7 @@ describe('the eas build line', () => {
     buildProfile: null,
     buildUrl: null,
     source: null,
-    reason: 'EAS was not asked — pass --builds',
+    reason: 'EAS was not asked — pass --explain',
   };
 
   it(`is left out entirely on a default run with nothing cached`, () => {

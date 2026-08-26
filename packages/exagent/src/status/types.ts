@@ -142,7 +142,7 @@ export interface PlatformBuild {
  * @see llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
  */
 export interface BuildsStatus {
-  /** Whether this run was allowed to call EAS. False on every run without `--builds`. */
+  /** Whether this run was allowed to call EAS. False on every run without `--explain`. */
   askedEas: boolean;
   platforms: PlatformBuild[];
 }
