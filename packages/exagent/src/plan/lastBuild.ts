@@ -10,7 +10,7 @@
 //
 // **v2 stores the whole fingerprint, not only its hash.** A hash answers "is the last build
 // stale" and nothing else; `fingerprint:diff` needs both sides' `sources` to say *what* changed,
-// which is the question `exagent impact` exists to answer. The read is backwards compatible in
+// which is the question the impact headline of `exagent status` exists to answer. The read is backwards compatible in
 // the one direction that matters — a v1 value is a bare string, and it reads as a record whose
 // `sources` are `null`, which every consumer already has to handle for a failed fingerprint.
 

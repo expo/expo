@@ -38,12 +38,141 @@ export function buildCacheArgs(platform: 'ios' | 'android', hash: string): strin
 }
 
 /**
+ * The three things a build-cache lookup can establish.
+ *
+ * @ref llp/0011-impact-and-freshness.rfc.md §The build-cache lookup answers in three states
+ * "EAS has no finished build for this fingerprint" and "nobody could ask" are different facts, and
+ * only the first is an answer. `impact` folds them together on purpose — it is *decorating* a
+ * report that is complete without them — but `exagent status` reports the difference, because the
+ * reader of a status line has to know whether a missing build was established or merely assumed.
+ */
+export type BuildLookupOutcome =
+  | { state: 'found'; build: CachedBuild }
+  | { state: 'none' }
+  | { state: 'unknown'; reason: string };
+
+/** How much of another CLI's failure fits in a `reason`. */
+const REASON_MAX_LENGTH = 160;
+
+/**
  * Look for a finished EAS build made from this exact fingerprint.
  *
- * **Never fails the command.** No EAS CLI, no account, no network, a payload in a shape this CLI
- * does not recognise — every one of them answers `null`, which is read as "no cached build was
- * found" and never as "there is none". `impact` exits 0 whatever happens here, because the report
- * it is decorating is complete without it.
+ * **Never throws and never fails a command.** No EAS CLI, no account, no network, a project that
+ * is not linked to EAS, a payload in a shape this CLI does not recognise — every one of them is an
+ * `unknown` with the reason attached, and the caller decides what a section that could not be read
+ * is worth.
+ */
+export async function lookUpCachedBuildAsync(
+  easCli: EasCli | null,
+  projectRoot: string,
+  platform: 'ios' | 'android',
+  hash: string | null,
+  { timeoutMs = BUILD_CACHE_TIMEOUT_MS }: { timeoutMs?: number } = {}
+): Promise<BuildLookupOutcome> {
+  if (!easCli) {
+    return {
+      state: 'unknown',
+      reason: 'no EAS CLI is installed, so nothing here can ask EAS about builds',
+    };
+  }
+  if (!hash) {
+    return { state: 'unknown', reason: 'there is no fingerprint to ask about' };
+  }
+
+  const result = await spawnSubprocessAsync(easCli.command, buildCacheArgs(platform, hash), {
+    cwd: projectRoot,
+    output: 'capture',
+    timeoutMs,
+  });
+  if (result.spawnError) {
+    return {
+      state: 'unknown',
+      reason: `the EAS CLI could not be run: ${result.spawnError.message}`,
+    };
+  }
+  if (result.timedOut) {
+    return { state: 'unknown', reason: `the lookup did not answer within ${timeoutMs}ms` };
+  }
+  if (result.exitCode !== 0) {
+    return { state: 'unknown', reason: describeLookupFailure(result.stdout, result.stderr) };
+  }
+  return readLookupPayload(result.stdout);
+}
+
+/**
+ * Why a lookup that ran did not answer, in the words the EAS CLI used.
+ *
+ * **stdout before stderr**, which is the opposite of the usual order and is what the CLI actually
+ * does: an unlinked project gets the whole explanation — `EAS project not configured…`, and the two
+ * `eas init` forms that would fix it — on *stdout*, with only `Error: build:list command failed.`
+ * on stderr [observed — live against an unlinked project, 2026-08-26]. Reading stderr first would
+ * report the one sentence with nothing in it.
+ */
+function describeLookupFailure(stdout: string, stderr: string): string {
+  const line = firstLine(stdout) ?? firstLine(stderr);
+  if (!line) {
+    return 'the EAS CLI refused the lookup and printed nothing';
+  }
+  return line.length > REASON_MAX_LENGTH ? `${line.slice(0, REASON_MAX_LENGTH).trimEnd()}…` : line;
+}
+
+function firstLine(output: string): string | null {
+  for (const raw of output.split('\n')) {
+    const line = raw.trim();
+    if (line) {
+      return line;
+    }
+  }
+  return null;
+}
+
+/**
+ * What a lookup that exited 0 established.
+ *
+ * An empty list is the service answering "there is no such build", and it is the only output that
+ * may be read that way. Output this CLI cannot parse is `unknown`: a shape that moved upstream must
+ * never be reported as a fact about an account.
+ */
+function readLookupPayload(stdout: string): BuildLookupOutcome {
+  const start = stdout.indexOf('[');
+  if (start < 0) {
+    return { state: 'unknown', reason: 'the EAS CLI printed no build list' };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(stdout.slice(start));
+  } catch {
+    return {
+      state: 'unknown',
+      reason: 'the EAS CLI printed a build list this version cannot read',
+    };
+  }
+  if (!Array.isArray(parsed)) {
+    return {
+      state: 'unknown',
+      reason: 'the EAS CLI printed a build list this version cannot read',
+    };
+  }
+  if (parsed.length === 0) {
+    return { state: 'none' };
+  }
+
+  const build = parseCachedBuild(stdout);
+  return build
+    ? { state: 'found', build }
+    : {
+        state: 'unknown',
+        reason: 'the EAS CLI listed a build in a shape this version cannot read',
+      };
+}
+
+/**
+ * The one finished build EAS has for this fingerprint, or `null` for every other outcome.
+ *
+ * The two-state form `impact` reads: it is decorating a report that is complete without a cached
+ * build, so "there is none" and "nobody could ask" lead to the same follow-up ladder there. A
+ * caller that has to report the difference uses {@link lookUpCachedBuildAsync}.
  */
 export async function findCachedBuildAsync(
   easCli: EasCli | null,
@@ -51,20 +180,8 @@ export async function findCachedBuildAsync(
   platform: 'ios' | 'android',
   hash: string | null
 ): Promise<CachedBuild | null> {
-  if (!easCli || !hash) {
-    return null;
-  }
-
-  const result = await spawnSubprocessAsync(easCli.command, buildCacheArgs(platform, hash), {
-    cwd: projectRoot,
-    output: 'capture',
-    timeoutMs: BUILD_CACHE_TIMEOUT_MS,
-  });
-  if (result.spawnError || result.timedOut || result.exitCode !== 0) {
-    return null;
-  }
-
-  return parseCachedBuild(result.stdout);
+  const outcome = await lookUpCachedBuildAsync(easCli, projectRoot, platform, hash);
+  return outcome.state === 'found' ? outcome.build : null;
 }
 
 /**

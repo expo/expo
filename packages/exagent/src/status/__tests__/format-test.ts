@@ -1,8 +1,8 @@
 import { stripVTControlCharacters } from 'node:util';
 
-import { formatStatusReport } from '../format';
 import type { PlanBuildLocation } from '../../toolchain/types';
-import type { StatusReport } from '../types';
+import { formatStatusReport } from '../format';
+import type { FreshnessImpact, StatusReport } from '../types';
 
 /** The report without color, so assertions never depend on the terminal's color support. */
 function report(value: StatusReport): string {
@@ -22,17 +22,29 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: {
+      comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+      changedFiles: null,
       hash: 'abcdef0123456789',
       platforms: [
-        { platform: 'ios', state: 'stale', detail: 'no recorded build', recordedHash: null },
+        {
+          platform: 'ios',
+          state: 'stale',
+          detail: 'no recorded build',
+          recordedHash: null,
+          impact: null,
+        },
         {
           platform: 'android',
           state: 'fresh',
           detail: 'matches abcdef01',
           recordedHash: 'abcdef0123456789',
+          impact: null,
         },
       ],
+      ota: null,
     },
+    // The default run: nothing cached and EAS not asked, which prints no line at all.
+    builds: { askedEas: false, platforms: [] },
     devServer: {
       url: 'http://127.0.0.1:8081',
       running: true,
@@ -70,6 +82,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
         },
       ],
     },
+    assertion: null,
     // The text report never prints the raw probe, so it is null here on purpose.
     probe: null,
     errors: {},
@@ -188,17 +201,27 @@ describe(formatStatusReport, () => {
   it(`should print the fingerprint error on the freshness line`, () => {
     const report = mockReport({
       freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
         hash: null,
         error: 'fingerprint CLI not found\nInstall @expo/fingerprint',
         platforms: [
-          { platform: 'ios', state: 'unknown', detail: 'no fingerprint tool', recordedHash: null },
+          {
+            platform: 'ios',
+            state: 'unknown',
+            detail: 'no fingerprint tool',
+            recordedHash: null,
+            impact: null,
+          },
           {
             platform: 'android',
             state: 'unknown',
             detail: 'no fingerprint tool',
             recordedHash: null,
+            impact: null,
           },
         ],
+        ota: null,
       },
     });
 
@@ -212,11 +235,20 @@ describe(formatStatusReport, () => {
     const error = `The @expo/fingerprint CLI is not installed in this project, so the native surface cannot be hashed. Install it with "npx expo install @expo/fingerprint".`;
     const report = mockReport({
       freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
         hash: null,
         error,
         platforms: [
-          { platform: 'ios', state: 'unknown', detail: 'no fingerprint tool', recordedHash: null },
+          {
+            platform: 'ios',
+            state: 'unknown',
+            detail: 'no fingerprint tool',
+            recordedHash: null,
+            impact: null,
+          },
         ],
+        ota: null,
       },
     });
 
@@ -510,6 +542,288 @@ describe(formatStatusReport, () => {
 });
 
 // @ref llp/0015-backend-selection-and-config.rfc.md §What `status` reports
+// @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+describe('the impact line', () => {
+  function withImpact(
+    ios: Partial<FreshnessImpact> | null,
+    android: Partial<FreshnessImpact> | null = null
+  ): StatusReport {
+    const impact = (overrides: Partial<FreshnessImpact> | null): FreshnessImpact | null =>
+      overrides && {
+        class: 'needs-native-build',
+        fingerprintChanged: true,
+        reason: 'the autolinked native modules changed (node_modules/react-native-mmkv)',
+        changedCount: 1,
+        changedSources: null,
+        ...overrides,
+      };
+    return mockReport({
+      freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
+        hash: 'abcdef0123456789',
+        ota: null,
+        platforms: [
+          {
+            platform: 'ios',
+            state: 'stale',
+            detail: 'no recorded build',
+            recordedHash: null,
+            impact: impact(ios),
+          },
+          {
+            platform: 'android',
+            state: 'stale',
+            detail: 'no recorded build',
+            recordedHash: null,
+            impact: impact(android),
+          },
+        ],
+      },
+    });
+  }
+
+  it(`names the class and the one sentence that says what carried it`, () => {
+    const rendered = line(withImpact({}), 'impact');
+
+    expect(rendered).toContain('ios: needs-native-build');
+    expect(rendered).toContain('the autolinked native modules changed');
+  });
+
+  // The probe fingerprints both platforms together, so the two normally agree, and printing the
+  // identical sentence twice would be the report padding itself.
+  it(`prints one entry for two platforms that agree`, () => {
+    const rendered = line(withImpact({}, {}), 'impact');
+
+    expect(rendered).toContain('ios, android: needs-native-build');
+    expect(
+      report(withImpact({}, {}))
+        .split('\n')
+        .filter((text) => text.startsWith('impact')).length
+    ).toBe(1);
+  });
+
+  it(`prints one entry per platform when they disagree`, () => {
+    const rendered = report(
+      withImpact({}, { class: 'js-only', reason: 'the native fingerprint is unchanged' })
+    )
+      .split('\n')
+      .filter((text) => text.startsWith('impact'));
+
+    expect(rendered).toHaveLength(2);
+    expect(rendered[0]).toContain('ios: needs-native-build');
+    expect(rendered[1]).toContain('android: js-only');
+  });
+
+  // Nothing was established, and the freshness line above has already said why.
+  it(`is left out entirely when nothing could be classified`, () => {
+    const rendered = report(
+      withImpact({ class: null, reason: 'no build is recorded for ios' }, null)
+    );
+
+    expect(rendered).not.toContain('impact');
+  });
+
+  it(`is left out for a project with no freshness section at all`, () => {
+    expect(report(mockReport({ freshness: null }))).not.toContain('impact');
+  });
+});
+
+// @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+// `--explain` is recognised by its *data* — a per-source list that is present, an OTA verdict that
+// was resolved — so the text and `--json` can never disagree about what the caller asked for.
+describe('the --explain detail', () => {
+  function withSources(count: number): StatusReport {
+    return mockReport({
+      freshness: {
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        changedFiles: null,
+        hash: 'abcdef0123456789',
+        ota: null,
+        platforms: [
+          {
+            platform: 'ios',
+            state: 'stale',
+            detail: 'no recorded build',
+            recordedHash: null,
+            impact: {
+              class: 'needs-native-build',
+              fingerprintChanged: true,
+              reason: 'the autolinked native modules changed',
+              changedCount: count,
+              changedSources: Array.from({ length: count }, (_, index) => ({
+                op: 'added' as const,
+                type: 'dir',
+                path: `node_modules/module-${index}`,
+                reasons: ['rncoreAutolinkingIos'],
+                kind: 'native-module' as const,
+                class: 'needs-native-build' as const,
+              })),
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  it(`lists the sources that moved, with what each one is`, () => {
+    const rendered = report(withSources(2));
+
+    expect(rendered).toContain('ios changed');
+    expect(rendered).toContain('added   node_modules/module-0 [native-module]');
+    expect(rendered).toContain('node_modules/module-1');
+  });
+
+  it(`stops listing after a readable number and says where the rest are`, () => {
+    const rendered = report(withSources(12));
+
+    expect(rendered).toContain('node_modules/module-7');
+    expect(rendered).not.toContain('node_modules/module-8');
+    expect(rendered).toContain('… and 4 more, in --json');
+  });
+
+  it(`prints nothing extra on a default run, where the list is null`, () => {
+    const rendered = report(mockReport());
+
+    expect(rendered).not.toContain('changed');
+    expect(rendered).not.toContain('ota');
+  });
+
+  it.each([
+    [true, 'safe to publish'],
+    [false, 'not safe to publish'],
+    [null, 'unknown'],
+  ])(`prints the ota verdict for safe: %s`, (safe, expected) => {
+    const rendered = report(
+      mockReport({
+        freshness: {
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          changedFiles: null,
+          hash: 'abcdef0123456789',
+          platforms: [],
+          ota: {
+            safe: safe as boolean | null,
+            runtimeVersion: { policy: 'appVersion', literal: null, source: 'app.json' },
+            why: 'The runtimeVersion policy is "appVersion".',
+          },
+        },
+      })
+    );
+
+    expect(rendered).toContain(expected);
+    expect(rendered).toContain('policy appVersion');
+    expect(rendered).toContain('(app.json)');
+    expect(rendered).toContain('The runtimeVersion policy is "appVersion".');
+  });
+
+  it(`says the runtimeVersion is unresolved rather than naming a policy it does not have`, () => {
+    const rendered = report(
+      mockReport({
+        freshness: {
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          changedFiles: null,
+          hash: 'abcdef0123456789',
+          platforms: [],
+          ota: {
+            safe: null,
+            runtimeVersion: { policy: null, literal: null, source: null },
+            why: 'Nothing could resolve the runtimeVersion.',
+          },
+        },
+      })
+    );
+
+    expect(rendered).toContain('runtimeVersion unresolved');
+  });
+});
+
+// @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+describe('the eas build line', () => {
+  const foundIos = {
+    platform: 'ios' as const,
+    state: 'found' as const,
+    fingerprintHash: '8ce1acfbc22138726c1525aeb99d577a812de3cf',
+    buildId: '21d7d434-6495-4e74-b8c7-68ecd0dff489',
+    createdAt: '2026-08-19T17:37:12.674Z',
+    buildProfile: 'simulator',
+    buildUrl: 'https://expo.dev/artifacts/eas/abc.tar.gz',
+    source: 'cache' as const,
+    reason: null,
+  };
+  const notAskedAndroid = {
+    platform: 'android' as const,
+    state: 'unknown' as const,
+    fingerprintHash: null,
+    buildId: null,
+    createdAt: null,
+    buildProfile: null,
+    buildUrl: null,
+    source: null,
+    reason: 'EAS was not asked — pass --explain',
+  };
+
+  it(`is left out entirely on a default run with nothing cached`, () => {
+    const rendered = report(
+      mockReport({ builds: { askedEas: false, platforms: [notAskedAndroid] } })
+    );
+
+    expect(rendered).not.toContain('eas build');
+  });
+
+  it(`names the build and the command that installs it when one was found`, () => {
+    const rendered = line(
+      mockReport({ builds: { askedEas: false, platforms: [foundIos, notAskedAndroid] } }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('ios: finished build');
+    expect(rendered).toContain('simulator');
+    expect(rendered).toContain(
+      'npx eas build:download --build-id 21d7d434-6495-4e74-b8c7-68ecd0dff489'
+    );
+  });
+
+  it(`prints the answer a caller asked for outright, even when it is none`, () => {
+    const rendered = line(
+      mockReport({
+        builds: {
+          askedEas: true,
+          platforms: [{ ...notAskedAndroid, platform: 'ios', state: 'none', reason: null }],
+        },
+      }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('ios: none');
+  });
+
+  it(`prints the reason of an unknown, and never rounds it down to none`, () => {
+    const rendered = line(
+      mockReport({
+        builds: {
+          askedEas: true,
+          platforms: [
+            { ...notAskedAndroid, platform: 'ios', reason: 'EAS project not configured.' },
+          ],
+        },
+      }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('ios: unknown');
+    expect(rendered).toContain('EAS project not configured.');
+  });
+
+  it(`prints the section note when the section could not be read at all`, () => {
+    const rendered = line(
+      mockReport({ builds: null, errors: { builds: 'the record is unreadable' } }),
+      'eas build'
+    );
+
+    expect(rendered).toContain('unavailable: the record is unreadable');
+  });
+});
+
 describe('the build line', () => {
   /** A build location, as the resolved plan attaches one to `next`. */
   function buildLocation(overrides: Partial<PlanBuildLocation> = {}): PlanBuildLocation {

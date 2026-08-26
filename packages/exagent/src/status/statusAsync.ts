@@ -13,11 +13,14 @@ import { resolveDevServerReachAsync } from '../dev/advertisedUrl';
 import { readCloudSessionIdSync } from '../device/cloudSimulator';
 import { probeLocalDeviceAsync } from '../device/localDevice';
 import { event } from '../events';
+import { exitWithCodeAsync } from '../exitCodes';
 import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
+import { refineWithChangedFilesAsync } from '../impact/fromRecord';
+import type { ImpactClass, OtaSafety } from '../impact/types';
 import * as Log from '../log';
 import { readProjectSchemeConfig } from '../navigate/deepLink';
 import { readAuthPreflightAsync } from '../needsHuman/preflight';
-import { readLastBuildFingerprints } from '../plan/lastBuild';
+import { readLastBuildRecord, type LastBuildRecord } from '../plan/lastBuild';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
 import { probeProjectStateAsync } from '../project/probe';
@@ -32,6 +35,8 @@ import { waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { getAllAgents, getPersistedAgentIdsAsync } from '../skills/agents';
 import { discoverSkillsAsync } from '../skills/discovery';
 import type { DiscoveredSkill } from '../skills/types';
+import { buildAssertStatus } from './assert';
+import { readEasBuildsStatusAsync } from './easBuilds';
 import { formatStatusReport } from './format';
 import {
   buildDevServerStatus,
@@ -45,8 +50,11 @@ import {
 } from './sections';
 import type {
   AuthStatus,
+  BuildLookupState,
   DevServerStatus,
+  FreshnessImpact,
   FreshnessState,
+  FreshnessStatus,
   LocalDeviceStatus,
   SkillsStatus,
   StatusReport,
@@ -91,6 +99,35 @@ export interface StatusOptions {
   devServerReadyTimeoutMs?: number;
   /** Overrides {@link DEVICE_PROBE_TIMEOUT_MS}, for tests. */
   deviceProbeTimeoutMs?: number;
+  /**
+   * The deep dive: `--explain`.
+   *
+   * Three things join the report, and only two of them cost anything — which is the whole design.
+   * The per-source change list is free (the headline diffs locally, so the list is a by-product)
+   * and is left out by default because a headline with fifty rows attached is not a headline. The
+   * OTA verdict spawns `expo config --json --type public`, and the EAS build lookup makes a
+   * network call; both are what a reader who typed `--explain` asked to pay for.
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+   */
+  explain?: boolean;
+  /**
+   * Turn the report into a gate: exit `20` when the change costs more than this class (`--assert`).
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+   */
+  assert?: ImpactClass | null;
+  /**
+   * Compare against a specific EAS build instead of the project's own record (`--build <id>`).
+   *
+   * Requires `--explain`, because it fetches a fingerprint from the service. Server ground truth:
+   * it needs no local record, which is what makes it the answer for a build made in the cloud.
+   */
+  buildId?: string | null;
+  /** Overrides {@link EAS_BUILD_LOOKUP_TIMEOUT_MS}, for tests. */
+  buildLookupTimeoutMs?: number;
+  /** Overrides {@link CHANGED_FILES_TIMEOUT_MS}, for tests. */
+  changedFilesTimeoutMs?: number;
   /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
   followups?: boolean;
 }
@@ -115,8 +152,15 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     tunnelUrl: report.devServer?.tunnelUrl ?? null,
     localDevice: report.device?.state ?? 'unknown',
     freshness: { ios: freshnessOf(report, 'ios'), android: freshnessOf(report, 'android') },
+    easBuilds: { ios: easBuildOf(report, 'ios'), android: easBuildOf(report, 'android') },
+    easBuildsAsked: report.builds?.askedEas ?? false,
     skillsDiscovered: report.skills?.discovered ?? 0,
     skillsLinked: report.skills?.linked ?? 0,
+    impact: {
+      ios: impactClassOf(report, 'ios'),
+      android: impactClassOf(report, 'android'),
+    },
+    assertion: report.assertion,
     sectionErrors: Object.keys(report.errors),
   });
 
@@ -126,6 +170,14 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
   // Silent on purpose: repeating the plan the `next` line already names would be noise, so the
   // follow-ups reach a driving agent through the event and the JSON report only.
   reportFollowUps('status', followups, { silent: true });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+  // The one path out of this command that is not 0, and it exists only because the caller asked
+  // for a verdict. The report is printed first either way: a gate that failed is still a report,
+  // and an agent reading the exit code needs the reasons above it.
+  if (report.assertion && !report.assertion.ok) {
+    await exitWithCodeAsync(report.assertion.exitCode);
+  }
 }
 
 /**
@@ -152,11 +204,13 @@ export async function collectStatusReportAsync(
     project: null,
     expoGo: null,
     freshness: null,
+    builds: null,
     devServer: null,
     device: null,
     skills: null,
     auth: null,
     next: null,
+    assertion: null,
     probe: null,
     errors,
   };
@@ -182,20 +236,45 @@ export async function collectStatusReportAsync(
     const { state, packageName } = project.value;
     // Advisory by contract, and read after the probe, so the fingerprint it is compared against
     // and the record it is compared to describe the same moment.
-    const lastBuild = readLastBuildFingerprints(projectRoot);
+    //
+    // The whole record, not only the hashes: its `sources` are the base of the impact headline
+    // (llp/0004 §The impact headline is free, the explanation is not), and `readLastBuildRecord`
+    // is one file read whichever of the two shapes the caller wants out of it.
+    const record = readLastBuildRecord(projectRoot);
+    const lastBuild = fingerprintsOf(record);
     // The probe rides along whole, so `--json` is also the project brief: the sections round its
     // facts off for a terminal, and a caller that wants them exactly reads `probe`.
     //
-    // Whole except the fingerprint's `sources`, which are dropped here and nowhere else. They are
-    // the list the hash was computed from — tens of thousands of bytes for a real project
-    // [observed — ~25 KB for iOS on an SDK 57 Expo Router app, 2026-08-24] — and this report
-    // answers a freshness question, for which the hash is the entire answer. `exagent impact` is
-    // the command that reads them, and it fingerprints for itself. Dropping them keeps `status`
-    // the instant, small report its contract promises (llp/0004 §`exagent status`).
+    // Whole except the fingerprint's `sources`, which are dropped from the *payload* and nowhere
+    // else. They are the list the hash was computed from — tens of thousands of bytes for a real
+    // project [observed — ~25 KB for iOS on an SDK 57 Expo Router app, 2026-08-24] — and a caller
+    // reading this report wants the answer, not the evidence. Dropping them keeps `status` the
+    // small report its contract promises (llp/0004 §`exagent status`).
+    //
+    // They are still *read*: the impact headline diffs them against the recorded build's, in
+    // process and for free (llp/0004 §The impact headline is free, the explanation is not). What
+    // reaches `--json` from that is the class, the count, and — only under `--explain` — the
+    // sources that actually moved, which is a handful rather than the whole surface.
     report.probe = { ...state, fingerprint: { ...state.fingerprint, sources: undefined } };
     report.project = buildProjectStatus(state, packageName);
     report.expoGo = buildExpoGoStatus(state);
-    report.freshness = buildFreshnessStatus(state, lastBuild);
+    report.freshness = buildFreshnessStatus(state, lastBuild, record, {
+      explain: !!options.explain,
+    });
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free
+    // The file-level refinement, and then — only when the caller named one — the comparison
+    // against an EAS build, which replaces the headline's base. Both fold into the section that
+    // is already built rather than being threaded through the pure builder, because both are I/O
+    // and `buildFreshnessStatus` is the part that has to stay testable without a project.
+    await refineFreshnessAsync(projectRoot, report.freshness, options);
+    if (options.buildId) {
+      const compared = await attemptAsync(() =>
+        compareAgainstEasBuildAsync(projectRoot, report.freshness!, options)
+      );
+      if ('error' in compared) {
+        errors.freshness = compared.error;
+      }
+    }
     report.next = buildNextActionStatus(
       state,
       lastBuild,
@@ -235,7 +314,182 @@ export async function collectStatusReportAsync(
     errors.auth = auth.error;
   }
 
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+  // Last, and after the parallel block rather than in it, because it consumes two of its answers:
+  // the project's fingerprint is the cache key, and the auth answer is what keeps a signed-out
+  // machine from being asked the same question twice. On a run without `--explain` this is one
+  // `readFileSync`, so the report is as instant as it was before the section existed.
+  //
+  // These two are independent of each other and both are the expensive half of `--explain`, so
+  // they run together rather than one after the other.
+  const [builds, ota] = await Promise.all([
+    attemptAsync(() =>
+      readEasBuildsStatusAsync(projectRoot, {
+        lookUp: !!options.explain,
+        auth: report.auth,
+        projectHash: report.freshness?.hash ?? null,
+        timeoutMs: options.buildLookupTimeoutMs,
+      })
+    ),
+    options.explain && report.freshness
+      ? attemptAsync(() => resolveOtaSafetyAsync(projectRoot, report.freshness!))
+      : Promise.resolve(null),
+  ]);
+
+  if ('value' in builds) {
+    report.builds = builds.value;
+  } else {
+    errors.builds = builds.error;
+  }
+
+  // Its own section note under `freshness`, because that is the section it belongs to: a failed
+  // OTA read costs the verdict and leaves every freshness fact beside it standing.
+  if (ota && 'value' in ota && report.freshness) {
+    report.freshness.ota = ota.value;
+  } else if (ota && 'error' in ota && !errors.freshness) {
+    // Never over one already written: a `--build` comparison that failed is the more specific
+    // cause, and the section has one line to say it on.
+    errors.freshness = ota.error;
+  }
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+  // Last, because it judges what every section above it found, and only when a class was asserted.
+  if (options.assert) {
+    report.assertion = buildAssertStatus(options.assert, report.freshness);
+  }
+
   return report;
+}
+
+/**
+ * Split "Fast Refresh picks it up" from "restart Metro", for platforms the fingerprint cleared.
+ *
+ * @ref llp/0011-impact-and-freshness.rfc.md §When the fingerprint did not move
+ * Runs at most once, and only when *every* decided platform reported the native surface unchanged
+ * — the same rule `impact` follows, and for the same reason: git has no per-platform answer, and a
+ * platform whose fingerprint moved already has the stronger class. A `js-only` that this leaves
+ * alone is a `js-only` the file list agreed with.
+ */
+async function refineFreshnessAsync(
+  projectRoot: string,
+  freshness: FreshnessStatus,
+  options: StatusOptions
+): Promise<void> {
+  const decided = freshness.platforms.filter((platform) => platform.impact?.class != null);
+  if (!decided.length || !decided.every((platform) => platform.impact!.fingerprintChanged === false)) {
+    return;
+  }
+
+  const refinement = await refineWithChangedFilesAsync(projectRoot, {
+    timeoutMs: options.changedFilesTimeoutMs,
+  });
+  if (!refinement) {
+    return;
+  }
+
+  freshness.changedFiles = refinement.counts;
+  for (const platform of decided) {
+    if (platform.impact!.class === 'js-only') {
+      platform.impact!.class = refinement.class;
+      platform.impact!.reason = refinement.reason;
+    }
+  }
+}
+
+/**
+ * Compare the working tree against one EAS build, and make that the headline's base.
+ *
+ * @ref llp/0011-impact-and-freshness.rfc.md §The three comparisons
+ * `eas fingerprint:compare --build-id` takes **no platform**, because a build was made for exactly
+ * one and which one is a fact about the build rather than a question to ask. So this replaces every
+ * platform's headline with the one answer and says so through `freshness.comparison` — the
+ * `fresh`/`stale` states are left alone, because they are about the project's own record and that
+ * question did not change.
+ */
+async function compareAgainstEasBuildAsync(
+  projectRoot: string,
+  freshness: FreshnessStatus,
+  options: StatusOptions
+): Promise<void> {
+  const { resolveEasCliOrThrow } = require('../utils/easCli') as typeof import('../utils/easCli');
+  const { compareWithEasBuildAsync } =
+    require('../impact/compare') as typeof import('../impact/compare');
+  const { classifyFingerprintDiff } = require('../impact/classify') as typeof import('../impact/classify');
+
+  const buildId = options.buildId!;
+  const comparison = await compareWithEasBuildAsync(
+    resolveEasCliOrThrow(projectRoot),
+    projectRoot,
+    buildId
+  );
+  if (comparison.error) {
+    throw new Error(comparison.error);
+  }
+
+  freshness.comparison = { kind: 'eas-build', label: `EAS build ${buildId}`, buildId };
+
+  const classified = comparison.items ? classifyFingerprintDiff(comparison.items) : null;
+  const impact: FreshnessImpact = {
+    // The same rule as everywhere else in this report: a comparison that established nothing gets
+    // `null`, not the conservative guess a gate would have to make (llp/0011 §Two commands).
+    class: classified?.class ?? (comparison.fingerprintChanged === false ? 'js-only' : null),
+    fingerprintChanged: comparison.fingerprintChanged,
+    reason:
+      classified?.reasons[0] ??
+      (comparison.fingerprintChanged === false
+        ? `the native surface matches EAS build ${buildId}, so that build can run this code`
+        : comparison.fingerprintChanged
+          ? `the native surface differs from EAS build ${buildId}, and what differs could not be listed`
+          : `whether the native surface differs from EAS build ${buildId} could not be established`),
+    changedCount: classified?.changedSources.length ?? null,
+    changedSources: classified ? classified.changedSources : null,
+  };
+
+  for (const platform of freshness.platforms) {
+    platform.impact = impact;
+  }
+}
+
+/**
+ * Whether an update published now would reach installed builds that can run it.
+ *
+ * @ref llp/0011-impact-and-freshness.rfc.md §A fingerprint change is not "OTA-unsafe"
+ * Deliberately not derived from the impact class: a fingerprint change answers "does the native
+ * binary differ", and OTA safety is a `runtimeVersion` question. The two coincide only under
+ * `policy: "fingerprint"`. Resolving the policy spawns `expo config --json --type public`, which
+ * is why this is on the `--explain` side of the line.
+ */
+async function resolveOtaSafetyAsync(
+  projectRoot: string,
+  freshness: FreshnessStatus
+): Promise<OtaSafety> {
+  const { resolveRuntimeVersionAsync, resolveOtaSafety } =
+    require('../impact/runtimeVersion') as typeof import('../impact/runtimeVersion');
+  const runtimeVersion = await resolveRuntimeVersionAsync(projectRoot);
+  // The strongest answer across the platforms, the way `impact` folds them: one platform whose
+  // native surface moved is enough to decide the question for an update published now.
+  const changed = freshness.platforms.reduce<boolean | null>(
+    (strongest, platform) =>
+      platform.impact?.fingerprintChanged === true
+        ? true
+        : strongest === null && platform.impact?.fingerprintChanged === false
+          ? false
+          : strongest,
+    null
+  );
+  return resolveOtaSafety(runtimeVersion, changed);
+}
+
+/** The hashes alone, out of a record that was read once for both of its shapes. */
+function fingerprintsOf(record: LastBuildRecord): LastBuildFingerprints {
+  const fingerprints: LastBuildFingerprints = {};
+  for (const platform of ['ios', 'android'] as NativePlatform[]) {
+    const entry = record[platform];
+    if (entry) {
+      fingerprints[platform] = entry.hash;
+    }
+  }
+  return fingerprints;
 }
 
 /**
@@ -424,6 +678,16 @@ function countLinkedSkills(
 
 function freshnessOf(report: StatusReport, platform: NativePlatform): FreshnessState | null {
   return report.freshness?.platforms.find((entry) => entry.platform === platform)?.state ?? null;
+}
+
+function easBuildOf(report: StatusReport, platform: NativePlatform): BuildLookupState | null {
+  return report.builds?.platforms.find((entry) => entry.platform === platform)?.state ?? null;
+}
+
+function impactClassOf(report: StatusReport, platform: NativePlatform): ImpactClass | null {
+  return (
+    report.freshness?.platforms.find((entry) => entry.platform === platform)?.impact?.class ?? null
+  );
 }
 
 type Attempt<T> = { value: T } | { error: string };

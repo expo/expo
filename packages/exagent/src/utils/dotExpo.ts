@@ -23,6 +23,7 @@ The ".expo" folder is created when an Expo project is started using "expo start"
 - "settings.json": contains the server configuration that is used to serve the application manifest.
 - "agent-skill-links.json": remembers which coding agents were selected for the "exagent skills" command.
 - "exagent-last-build.json": remembers the native fingerprint of the last successful "exagent dev" build per platform, so the next plan can skip an unnecessary rebuild.
+- "exagent-eas-builds.json": remembers a finished EAS build that "exagent status --explain" found for this project's current fingerprint, so the next "exagent status" can report it without calling EAS again. The entry is dropped as soon as the project fingerprint changes.
 - "exagent-checkpoints.json": lists the git snapshots "exagent checkpoint" and the commands that change the project took, so "exagent checkpoint:undo" can restore one. It holds git object ids, not file contents.
 - "exagent-dev-server.sock": a socket the "exagent start" and "exagent dev" commands listen on while they run a dev server, so other commands can ask which port it is on instead of scanning for it. It holds no data on disk: connecting to it is what answers. A leftover file from a stopped dev server answers nothing and is replaced by the next one.
 - "dev/logs/": contains structured JSONL event logs from CLI commands (e.g. start.log, export.log). These are truncated on each run.

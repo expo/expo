@@ -4,10 +4,11 @@
 
 import type { DevServerHostType } from '../dev/advertisedUrl';
 import type { LocalDeviceState } from '../device/localDevice';
+import type { ChangedFiles, ChangedSource, ImpactClass, OtaSafety } from '../impact/types';
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
-import type { PlanBuildLocation } from '../toolchain/types';
 import type { DevServerSource } from '../runtime/devServer';
+import type { PlanBuildLocation } from '../toolchain/types';
 
 /** Whether the installed development build can be proven to match the project. */
 export type FreshnessState =
@@ -44,6 +45,32 @@ export interface ExpoGoStatus {
   reasonCount: number;
 }
 
+/**
+ * What the change since the recorded build costs, as `status` can establish it for free.
+ *
+ * @see llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
+ */
+export interface FreshnessImpact {
+  /**
+   * `js-only`, `dev-client-compatible`, `needs-native-build` — or **null**, when nothing was
+   * established.
+   *
+   * Deliberately nullable, where a *gate* could not be. `--assert` compares against a class and
+   * "unknown" cannot be gated on, so the obvious move is to round this up to the conservative
+   * `needs-native-build`; the report does not, and `--assert` exits `22` on the null instead. The
+   * report stays honest and the gate stays safe. See llp/0011 §Two commands, one classifier.
+   */
+  class: ImpactClass | null;
+  /** Whether the native fingerprint moved. Null when it could not be decided. */
+  fingerprintChanged: boolean | null;
+  /** One sentence: the strongest finding, or why nothing could be decided. */
+  reason: string;
+  /** How many fingerprint sources moved. Null when no diff was possible. */
+  changedCount: number | null;
+  /** The per-source list. Present only under `--explain`; null otherwise. */
+  changedSources: ChangedSource[] | null;
+}
+
 export interface PlatformFreshness {
   platform: NativePlatform;
   state: FreshnessState;
@@ -51,6 +78,24 @@ export interface PlatformFreshness {
   detail: string;
   /** Fingerprint of the last build `exagent` recorded for the platform. */
   recordedHash: string | null;
+  /**
+   * What has changed since that build, and what it costs.
+   *
+   * Null when there is no fingerprint at all — the `state` above already says so, and repeating it
+   * as a second unknown would be one non-fact printed twice. Computed from the probe's own sources
+   * and the recorded ones, so it costs no subprocess.
+   */
+  impact: FreshnessImpact | null;
+}
+
+/** What the impact headline was measured against. */
+export interface FreshnessComparison {
+  /** `last-build` for the project's own record, `eas-build` for `--explain --build <id>`. */
+  kind: 'last-build' | 'eas-build';
+  /** What a person would call the base: `last build recorded by exagent`, `EAS build <id>`. */
+  label: string;
+  /** The build id, for `eas-build`. Null otherwise. */
+  buildId: string | null;
 }
 
 export interface FreshnessStatus {
@@ -59,6 +104,74 @@ export interface FreshnessStatus {
   /** Why the fingerprint is unavailable. */
   error?: string;
   platforms: PlatformFreshness[];
+  /**
+   * What the impact headline is measured against.
+   *
+   * Always present, so a reader never has to infer the base from which flags were passed. The
+   * `fresh`/`stale` state above is *always* about the project's own record even under `--build`:
+   * "is the app I built here still current" and "does this differ from that cloud build" are two
+   * questions, and one of them silently changing meaning would be worse than reporting both.
+   */
+  comparison: FreshnessComparison;
+  /**
+   * How many files changed, and of what sort. Null when no file-level view was available.
+   *
+   * Read only when the fingerprint says the native surface did **not** move, which is the one case
+   * where it can change the answer — see {@link FreshnessImpact.class}.
+   */
+  changedFiles: ChangedFiles | null;
+  /**
+   * Whether an update published now would reach installed builds that can run it.
+   *
+   * Present only under `--explain`: the `runtimeVersion` policy is resolved with an
+   * `expo config --json --type public` subprocess, which is the kind of cost the default report
+   * does not pay. Null on every other run — "not asked", not "not safe".
+   *
+   * @see llp/0011-impact-and-freshness.rfc.md §A fingerprint change is not "OTA-unsafe"
+   */
+  ota: OtaSafety | null;
+}
+
+/** Whether EAS has a finished build made from the project's current fingerprint. */
+export type BuildLookupState =
+  /** A finished build exists for this exact fingerprint, and can be downloaded instead of built. */
+  | 'found'
+  /** EAS was asked and has none. */
+  | 'none'
+  /** Nobody could ask, or nobody was allowed to. Never rounded down to `none`. */
+  | 'unknown';
+
+export interface PlatformBuild {
+  platform: NativePlatform;
+  state: BuildLookupState;
+  /**
+   * The **per-platform** fingerprint the question was about, which is the one an EAS build carries.
+   *
+   * Not {@link FreshnessStatus.hash}, which covers both platforms at once and is therefore a hash
+   * no build has. Null when the answer came from nothing that computed one.
+   */
+  fingerprintHash: string | null;
+  /** The build EAS has, when one was found. */
+  buildId: string | null;
+  createdAt: string | null;
+  buildProfile: string | null;
+  /** The artifact URL, when the payload carried one. */
+  buildUrl: string | null;
+  /** `cache` for the project's own record, `eas` for a lookup. Null when nothing answered. */
+  source: 'cache' | 'eas' | null;
+  /** Why the state is not `found`. Null when it is. */
+  reason: string | null;
+}
+
+/**
+ * What EAS already has for this project, per platform.
+ *
+ * @see llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+ */
+export interface BuildsStatus {
+  /** Whether this run was allowed to call EAS. False on every run without `--explain`. */
+  askedEas: boolean;
+  platforms: PlatformBuild[];
 }
 
 export interface DevServerStatus {
@@ -192,11 +305,35 @@ export interface NextActionStatus {
   buildLocation: PlanBuildLocation | null;
 }
 
+/**
+ * The verdict of `status --assert <class>`, and the one thing that can make this command non-zero.
+ *
+ * @see llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
+ */
+export interface AssertStatus {
+  /** The class the caller said the change may cost at most. */
+  asserted: ImpactClass;
+  /** The strongest class actually found, or null when nothing established one. */
+  actual: ImpactClass | null;
+  /** Whether the gate passed. False for a stronger class *and* for a class nothing established. */
+  ok: boolean;
+  /**
+   * The exit code the gate produced: `0`, `20` (stronger than asserted), or `22` (inconclusive).
+   *
+   * In the payload because an agent that captured stdout and lost the code can still read the
+   * verdict, and because the three outcomes lead to three different next actions.
+   */
+  exitCode: number;
+  /** One sentence: what the gate found, and why that is or is not a pass. */
+  reason: string;
+}
+
 /** Sections of the report, in the order they print. */
 export type StatusSectionName =
   | 'project'
   | 'expoGo'
   | 'freshness'
+  | 'builds'
   | 'devServer'
   | 'device'
   | 'skills'
@@ -213,6 +350,14 @@ export interface StatusReport {
   project: ProjectStatus | null;
   expoGo: ExpoGoStatus | null;
   freshness: FreshnessStatus | null;
+  /**
+   * Whether EAS already has a finished build of what is on disk right now.
+   *
+   * The other half of the freshness question. `freshness` answers "does the app **this machine**
+   * built still match", and a `stale` there used to mean a rebuild; this answers "has anybody
+   * already built exactly this", where the answer is a download instead.
+   */
+  builds: BuildsStatus | null;
   devServer: DevServerStatus | null;
   /**
    * Whether this machine has a device to open the app on.
@@ -225,6 +370,8 @@ export interface StatusReport {
   skills: SkillsStatus | null;
   auth: AuthStatus | null;
   next: NextActionStatus | null;
+  /** The `--assert` verdict, or null when no assertion was made. */
+  assertion: AssertStatus | null;
   /**
    * The raw project probe the sections above are summarized from, verbatim.
    *

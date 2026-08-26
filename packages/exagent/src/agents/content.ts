@@ -32,6 +32,8 @@ export function generateAgentsMdBlock({ state, projectName, skillsDirs }: Agents
     '',
     '- `npx exagent status` — where the project is right now, and what would happen next',
     '- `npx exagent status --json` — the same report as one object, with the raw project probe under `probe`',
+    '- `npx exagent status --explain` — the deep dive: which sources changed, whether an update can ship over the air, and whether EAS already has a build for this fingerprint',
+    '- `npx exagent status --assert js-only` — a gate on what a change costs: exit 20 when it costs more than the class named, 22 when nothing could be measured, 0 otherwise',
     '- `npx exagent dev` — get the app onto a device: it prints the plan, then runs it; `npx exagent dev --plan` prints the steps without running them',
     '- `npx exagent start` — `expo start` and nothing else: a dev server no planning may touch',
     '- `npx exagent install <pkg>` — install a package and report what it changes natively',

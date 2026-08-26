@@ -3,9 +3,9 @@
 // `impact` says a native build is needed; these assert that it says *where* one can happen. The
 // two routes want different things of the caller — a toolchain on this machine, or an Expo
 // account — so naming only one of them is an instruction half the readers cannot follow.
-import { buildImpactFollowUps, type ImpactFollowUpInput } from '../impact';
+import { buildChangeFollowUps, type ChangeFollowUpInput } from '../change';
 
-function input(overrides: Partial<ImpactFollowUpInput> = {}): ImpactFollowUpInput {
+function input(overrides: Partial<ChangeFollowUpInput> = {}): ChangeFollowUpInput {
   return {
     impactClass: 'needs-native-build',
     otaSafe: null,
@@ -32,21 +32,21 @@ function backend(runsOn: 'local' | 'eas') {
   };
 }
 
-describe(buildImpactFollowUps, () => {
+describe(buildChangeFollowUps, () => {
   describe('needs-native-build', () => {
     it(`should name the local route and the cloud route, in that order`, () => {
-      const followups = buildImpactFollowUps(input());
+      const followups = buildChangeFollowUps(input());
 
-      expect(ids(followups).slice(0, 2)).toEqual(['impact-native-build', 'impact-eas-build']);
+      expect(ids(followups).slice(0, 2)).toEqual(['change-native-build', 'change-eas-build']);
       expect(followups[0]!.command).toBe('npx exagent dev --ios');
       expect(followups[1]!.command).toBe('npx eas build --platform ios --profile development');
     });
 
     // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
     it(`should say the plan goes to the cloud when this host cannot build`, () => {
-      const followups = buildImpactFollowUps(input({ buildBackend: backend('eas') }));
+      const followups = buildChangeFollowUps(input({ buildBackend: backend('eas') }));
 
-      expect(ids(followups).slice(0, 2)).toEqual(['impact-native-build', 'impact-local-build']);
+      expect(ids(followups).slice(0, 2)).toEqual(['change-native-build', 'change-local-build']);
       // Still `exagent dev` first: it is the command that makes a plan, and on this host the plan
       // it makes is the cloud one.
       expect(followups[0]!.command).toBe('npx exagent dev --ios');
@@ -55,20 +55,20 @@ describe(buildImpactFollowUps, () => {
     });
 
     it(`should offer --local as the way past a choice the caller disagrees with`, () => {
-      const [, forced] = buildImpactFollowUps(input({ buildBackend: backend('eas') }));
+      const [, forced] = buildChangeFollowUps(input({ buildBackend: backend('eas') }));
 
       expect(forced!.command).toBe('npx exagent dev --ios --local');
       expect(forced!.why).toContain('on this machine');
     });
 
     it(`should keep the old order when the backend was chosen as local`, () => {
-      const followups = buildImpactFollowUps(input({ buildBackend: backend('local') }));
+      const followups = buildChangeFollowUps(input({ buildBackend: backend('local') }));
 
-      expect(ids(followups).slice(0, 2)).toEqual(['impact-native-build', 'impact-eas-build']);
+      expect(ids(followups).slice(0, 2)).toEqual(['change-native-build', 'change-eas-build']);
     });
 
     it(`should say what each route costs the caller`, () => {
-      const [local, cloud] = buildImpactFollowUps(input());
+      const [local, cloud] = buildChangeFollowUps(input());
 
       expect(local!.why).toContain('on this machine');
       expect(local!.why).toContain('this machine has Xcode');
@@ -79,14 +79,14 @@ describe(buildImpactFollowUps, () => {
     });
 
     it(`should name the android toolchain when android is the platform`, () => {
-      const [local, cloud] = buildImpactFollowUps(input({ platform: 'android' }));
+      const [local, cloud] = buildChangeFollowUps(input({ platform: 'android' }));
 
       expect(local!.why).toContain('this machine has the Android SDK');
       expect(cloud!.command).toBe('npx eas build --platform android --profile development');
     });
 
     it(`should leave the platform out of both commands when the report named none`, () => {
-      const [local, cloud] = buildImpactFollowUps(input({ platform: null }));
+      const [local, cloud] = buildChangeFollowUps(input({ platform: null }));
 
       expect(local!.command).toBe('npx exagent dev');
       expect(local!.why).toContain('the platform toolchain');
@@ -96,7 +96,7 @@ describe(buildImpactFollowUps, () => {
     // A build that already exists beats both routes, so it stays the only one offered: neither
     // "build it here" nor "build it there" is worth minutes when the artifact is sitting on EAS.
     it(`should offer neither route when EAS already has a build for this fingerprint`, () => {
-      const followups = buildImpactFollowUps(
+      const followups = buildChangeFollowUps(
         input({
           cachedBuild: {
             id: 'abc-123',
@@ -109,23 +109,23 @@ describe(buildImpactFollowUps, () => {
         })
       );
 
-      expect(ids(followups)).toContain('impact-cached-build');
-      expect(ids(followups)).not.toContain('impact-native-build');
-      expect(ids(followups)).not.toContain('impact-eas-build');
+      expect(ids(followups)).toContain('cached-build');
+      expect(ids(followups)).not.toContain('change-native-build');
+      expect(ids(followups)).not.toContain('change-eas-build');
     });
   });
 
   it.each(['js-only', 'dev-client-compatible'] as const)(
     `should name no build route for a %s change, which needs none`,
     (impactClass) => {
-      const followups = buildImpactFollowUps(input({ impactClass }));
+      const followups = buildChangeFollowUps(input({ impactClass }));
 
-      expect(ids(followups)).not.toContain('impact-native-build');
-      expect(ids(followups)).not.toContain('impact-eas-build');
+      expect(ids(followups)).not.toContain('change-native-build');
+      expect(ids(followups)).not.toContain('change-eas-build');
     }
   );
 
   it(`should never offer more than three follow-ups`, () => {
-    expect(buildImpactFollowUps(input({ otaSafe: false }))).toHaveLength(3);
+    expect(buildChangeFollowUps(input({ otaSafe: false }))).toHaveLength(3);
   });
 });
