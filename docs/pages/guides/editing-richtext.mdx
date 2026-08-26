@@ -10,7 +10,7 @@ A lot of applications need to allow users to type in text. For example, if you w
 
 However, sometimes you need to be more flexible. Think of long social media posts, note apps, or document editors. Ideally, you need to allow different text styles, lists, headings, embedded images, and more. This is called a rich text editor, and it's a difficult problem to solve everywhere, including in React Native.
 
-There is currently no default solution for that in the React Native ecosystem. However, this guide explores some options and promising approaches, each with its own tradeoffs.
+There is currently no default solution for that in the React Native ecosystem. However, this guide explores some options and promising approaches, each with its own tradeoffs. For most apps, start with a native editor from Software Mansion: [`react-native-enriched-markdown`](https://github.com/software-mansion/enriched-markdown) for markdown output or [`react-native-enriched-html`](https://github.com/software-mansion/react-native-enriched-html) for HTML output.
 
 <VideoBoxLink
   videoId="CxORa1tXMjw"
@@ -22,7 +22,7 @@ There is currently no default solution for that in the React Native ecosystem. H
 
 There are a lot of good options to display rich text:
 
-- For markdown content, you can use a markdown renderer such as [`react-native-enriched-markdown`](https://github.com/software-mansion/react-native-enriched-markdown) or another.
+- For markdown content, you can use a markdown renderer such as [`react-native-enriched-markdown`](https://github.com/software-mansion/enriched-markdown) or another.
 
 - For HTML content, you can use [`@expo/html-elements`](https://www.npmjs.com/package/@expo/html-elements) or a webview ([`react-native-webview`](/versions/latest/sdk/webview/)).
 
@@ -42,6 +42,21 @@ There are a lot of good options to display rich text:
 
 There are a few approaches to get rich text rendering to work. However, all have different limitations.
 
+### Native editors
+
+A native editor renders and edits text with the platform's text APIs instead of a webview. It gives you native performance and text behavior that matches the rest of your app. Software Mansion maintains two libraries that take this approach:
+
+- [`react-native-enriched-markdown`](https://github.com/software-mansion/enriched-markdown) edits rich text with markdown output on Android, iOS, macOS, and web. It also ships standalone native SDKs for iOS (Swift) and Android (Kotlin).
+- [`react-native-enriched-html`](https://github.com/software-mansion/react-native-enriched-html) provides native input and display components with HTML output on Android, iOS, and web. It requires the [New Architecture](/guides/new-architecture/).
+
+[`react-native-live-markdown`](https://github.com/Expensify/react-native-live-markdown) is another native option. It is a drop-in replacement for `<TextInput>` that applies live formatting to markdown on every keystroke.
+
+You can also wrap any native rich text editor using [Expo Modules API](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
+
+> Rich text is usually represented using [abstract syntax trees](https://en.wikipedia.org/wiki/Abstract_syntax_tree). For example, a bullet list can be a node of type `bulleted-list` with several children of type `list-item`. You can convert both HTML and markdown to a suitable AST format.
+
+There is also an effort to port the lexical editor to Android and iOS and provide a React Native wrapper. To follow its progress, see the [lexical discussion about React Native support](https://github.com/facebook/lexical/discussions/2410).
+
 ### Webview-based editors
 
 While most React Native UI components wrap native platform primitives and are fast, performant, and **native feeling** as a result, the webview-based rich text editors use a different approach.
@@ -52,11 +67,7 @@ You will not be able to use native UI components inside the editor. Any implemen
 
 ### Existing webview-based React Native libraries
 
-There are a couple of existing React Native libraries to allow rich-text editing. These are the easiest options to get started if you need a basic rich text editor with limited configuration and don't have strict performance or UX requirements:
-
-- [`react-native-rich-editor`](https://github.com/wxik/react-native-rich-editor)
-- [`react-native-cn-quill`](https://github.com/imnapo/react-native-cn-quill)
-- [`@10play/tentap-editor`](https://github.com/10play/10Tap-Editor)
+For a ready-made webview-based editor, use [`@10play/tentap-editor`](https://github.com/10play/10tap-editor). It is the easiest option to get started if you need a basic rich text editor with limited configuration and don't have strict performance or UX requirements.
 
 ### Custom webview-based editor
 
@@ -95,28 +106,12 @@ There are some attempts to build such an editor, such as [`markdown-editor`](htt
 
 ## Markdown editors with visible styling markers
 
-If using a markdown to style text fulfills your requirement, you can render the markdown in a separate, non-editable view while editing. It is not complex to build on your own using any markdown renderer. You can also use a third-party library such as [`react-native-markdown-editor`](https://github.com/kunall17/react-native-markdown-editor).
+If using markdown to style text fulfills your requirement, you can render the markdown in a separate, non-editable view while editing. It is not complex to build on your own using any markdown renderer.
 
 This editing experience suits power users or programming/tech applications. You can also explore rendering rich text while showing markdown only in the selected chunk of text or other hybrid approaches.
 
-## Native editors
-
-You can use a native Android or iOS rich text editor wrapped into a React Native module. There are a few options:
-
-- [`react-native-aztec`](https://github.com/WordPress/gutenberg/tree/trunk/packages/react-native-aztec)
-- [`gutenberg-mobile`](https://github.com/wordpress-mobile/gutenberg-mobile)
-- [`react-native-live-markdown`](https://github.com/Expensify/react-native-live-markdown)
-- [`react-native-enriched-markdown`](https://github.com/software-mansion/react-native-enriched-markdown)
-- [`react-native-enriched-html`](https://github.com/software-mansion/react-native-enriched-html)
-
-You can also wrap any native rich text editor using [Expo Modules API](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
-
-> Rich text is usually represented using [abstract syntax trees](https://en.wikipedia.org/wiki/Abstract_syntax_tree). For example, a bullet list can be a node of type `bulleted-list` with several children of type `list-item`. You can convert both HTML and markdown to a suitable AST format.
-
-There is also an effort to port the lexical editor to Android and iOS and provide a React Native wrapper, [track it here](https://github.com/facebook/lexical/discussions/2410).
-
 ## Summary
 
-While there are many great options for showing rich text, there is no one-size-fits-all solution for rich text editing in React Native. There's no popular solution that is sufficient in most use cases. Further contribution from the community is needed to improve existing solutions or add new ones.
+While there are many options for showing rich text, there is no one-size-fits-all solution for rich text editing in React Native. For most apps, start with one of the [native editors](#native-editors) from Software Mansion.
 
-For now, you need to carefully choose between a more complex, native editor that offers more features but may be harder to maintain, or an editor built on top of react-native primitives. This depends on how core the feature is to your app, how many features you need in your editor, and how much effort you are willing to spend on building it out.
+Choose a webview-based editor when you need a feature that only a web editor offers. Build on top of React Native primitives only when your requirements are minimal, since you have to handle selection and formatting yourself.
