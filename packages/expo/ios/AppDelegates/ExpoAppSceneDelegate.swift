@@ -102,8 +102,9 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
    Gives a scene delegate subclass an opportunity to replace or consume a URL before Expo forwards
    it to app delegate subscribers and React Native Linking.
 
-   Return the URL to forward, or `nil` when the URL was fully handled and should not be forwarded.
-   The default implementation returns the original URL unchanged.
+   Return the URL to forward, or `nil` when the URL was fully handled and should not be forwarded
+   to either app delegate subscribers or React Native Linking. The default implementation returns
+   the original URL unchanged.
 
    This hook applies to URL contexts. `NSUserActivity` values are routed separately and unchanged.
    */
@@ -156,6 +157,8 @@ extension ExpoAppSceneDelegate {
   }
 
   /// Pass incoming URL contexts to both the subscriber manager and `RCTLinkingManager`.
+  /// This static helper routes the contexts as provided; it does not invoke an instance's
+  /// `transformURL(_:)` override.
   public static func route(urlContexts: Set<UIOpenURLContext>) {
     route(urlContexts: urlContexts.map { ($0.url, $0.options) })
   }
