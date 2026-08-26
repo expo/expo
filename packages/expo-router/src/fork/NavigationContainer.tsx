@@ -1,6 +1,7 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
+import { RoutingQueueApiContext, RoutingQueueProvider } from '../global-state/routingQueueContext';
 import { syncStoreNavigationState } from '../global-state/store';
 import { StoreContext } from '../global-state/storeContext';
 import type {
@@ -196,7 +197,20 @@ function NavigationContainerInner(
   );
 }
 
-export const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
+const NavigationContainerContent = React.forwardRef(NavigationContainerInner);
+
+// TODO(@ubax): Remove this component once we require single container in the whole app
+function NavigationContainerWithQueue(
+  props: Props<ParamListBase>,
+  ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
+) {
+  const api = React.use(RoutingQueueApiContext);
+  const content = <NavigationContainerContent {...props} ref={ref} />;
+
+  return api === undefined ? <RoutingQueueProvider>{content}</RoutingQueueProvider> : content;
+}
+
+export const NavigationContainer = React.forwardRef(NavigationContainerWithQueue) as <
   RootParamList extends object = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {

@@ -2,24 +2,8 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RoutingQueueDrainer } from '../RoutingQueueDrainer';
-import { routingQueue, type RoutingIntent } from '../routingQueue';
-
-const multipleDrainersError = [
-  'Looks like you have multiple navigation containers draining the shared routing queue. Only one container will receive queued actions, while the others will drop them. Make sure that:',
-  "- You don't have multiple NavigationContainers in the app",
-  '- Only a single instance of the root component is rendered',
-].join('\n');
-
-let error: jest.SpyInstance | undefined;
-
-beforeEach(() => {
-  routingQueue.queue = [];
-  routingQueue.subscribers.clear();
-});
-
-afterEach(() => {
-  error?.mockRestore();
-});
+import type { RoutingIntent } from '../routingQueue';
+import { RoutingQueueProvider, useEnqueueRoutingIntent } from '../routingQueueContext';
 
 function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
@@ -32,55 +16,74 @@ function actionType(intent: RoutingIntent): string {
   return intent.payload.action.type;
 }
 
+function renderDrainer(ready: boolean, processIntent: (intent: RoutingIntent) => void) {
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
+
+  function CaptureEnqueue() {
+    enqueue = useEnqueueRoutingIntent();
+    return null;
+  }
+
+  const result = render(
+    <RoutingQueueProvider>
+      <CaptureEnqueue />
+      <RoutingQueueDrainer ready={ready} processIntent={processIntent} />
+    </RoutingQueueProvider>
+  );
+
+  return { ...result, enqueue: (intent: RoutingIntent) => enqueue(intent) };
+}
+
 it('isolates queue notifications from its parent', () => {
   const parentRender = jest.fn();
   const processIntent = jest.fn();
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
-  function Parent() {
-    parentRender();
+  function Consumer() {
+    enqueue = useEnqueueRoutingIntent();
     return <RoutingQueueDrainer ready processIntent={processIntent} />;
   }
 
+  function Parent() {
+    parentRender();
+    return (
+      <RoutingQueueProvider>
+        <Consumer />
+      </RoutingQueueProvider>
+    );
+  }
+
   render(<Parent />);
-  act(() => routingQueue.add(actionIntent('TEST')));
+  act(() => enqueue(actionIntent('TEST')));
 
   expect(parentRender).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
 });
 
-it('logs an error when multiple drainers are mounted', () => {
-  error = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-  render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-  render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(multipleDrainersError);
-});
-
-it('cleans up the mounted drainer when it unmounts', () => {
-  error = jest.spyOn(console, 'error').mockImplementation(() => {});
-  const first = render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-
-  first.unmount();
-  render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-
-  expect(error).not.toHaveBeenCalled();
-});
-
 it('keeps intents queued until ready', () => {
   const processIntent = jest.fn();
-  const result = render(<RoutingQueueDrainer ready={false} processIntent={processIntent} />);
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
-  act(() => routingQueue.add(actionIntent('TEST')));
+  function Tree({ ready }: { ready: boolean }) {
+    enqueue = useEnqueueRoutingIntent();
+    return <RoutingQueueDrainer ready={ready} processIntent={processIntent} />;
+  }
 
+  const result = render(
+    <RoutingQueueProvider>
+      <Tree ready={false} />
+    </RoutingQueueProvider>
+  );
+  act(() => enqueue(actionIntent('TEST')));
   expect(processIntent).not.toHaveBeenCalled();
-  expect(routingQueue.snapshot()).toEqual([actionIntent('TEST')]);
 
-  result.rerender(<RoutingQueueDrainer ready processIntent={processIntent} />);
+  result.rerender(
+    <RoutingQueueProvider>
+      <Tree ready />
+    </RoutingQueueProvider>
+  );
 
   expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
-  expect(routingQueue.snapshot()).toEqual([]);
 });
 
 it('processes a queued batch in FIFO order', () => {
@@ -88,29 +91,45 @@ it('processes a queued batch in FIFO order', () => {
   const processIntent = jest.fn((intent: RoutingIntent) => calls.push(actionType(intent)));
   const dispatchSync = jest.fn(() => calls.push('NAVIGATOR_ACTION'));
   const onDispatch = jest.fn(() => calls.push('onDispatch'));
-  render(<RoutingQueueDrainer ready processIntent={processIntent} />);
+  const result = renderDrainer(true, processIntent);
 
   act(() => {
-    routingQueue.add(actionIntent('FIRST'));
-    routingQueue.add({
+    result.enqueue(actionIntent('FIRST'));
+    result.enqueue({
       type: 'NAVIGATOR_ACTION',
       payload: { action: { type: 'SECOND' }, dispatchSync },
       onDispatch,
     });
-    routingQueue.add(actionIntent('THIRD'));
+    result.enqueue(actionIntent('THIRD'));
   });
 
   expect(calls).toEqual(['FIRST', 'onDispatch', 'NAVIGATOR_ACTION', 'THIRD']);
   expect(dispatchSync).toHaveBeenCalledWith({ type: 'SECOND' });
 });
 
-it('does not process a snapshot twice in Strict Mode', () => {
+it('does not process a batch twice in Strict Mode', () => {
   const processIntent = jest.fn();
-  routingQueue.add(actionIntent('TEST'));
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
-  render(
+  function CaptureEnqueue() {
+    enqueue = useEnqueueRoutingIntent();
+    return null;
+  }
+
+  const result = render(
     <React.StrictMode>
-      <RoutingQueueDrainer ready processIntent={processIntent} />
+      <RoutingQueueProvider>
+        <CaptureEnqueue />
+      </RoutingQueueProvider>
+    </React.StrictMode>
+  );
+  act(() => enqueue(actionIntent('TEST')));
+  result.rerender(
+    <React.StrictMode>
+      <RoutingQueueProvider>
+        <CaptureEnqueue />
+        <RoutingQueueDrainer ready processIntent={processIntent} />
+      </RoutingQueueProvider>
     </React.StrictMode>
   );
 
@@ -119,30 +138,30 @@ it('does not process a snapshot twice in Strict Mode', () => {
 
 it('processes intents added while draining in a later batch', () => {
   const processed: string[] = [];
+  let enqueue: (intent: RoutingIntent) => void;
   const processIntent = jest.fn((intent: RoutingIntent) => {
     processed.push(actionType(intent));
     if (actionType(intent) === 'FIRST') {
-      routingQueue.add(actionIntent('SECOND'));
+      enqueue(actionIntent('SECOND'));
     }
   });
-  render(<RoutingQueueDrainer ready processIntent={processIntent} />);
+  const result = renderDrainer(true, processIntent);
+  enqueue = result.enqueue;
 
-  act(() => routingQueue.add(actionIntent('FIRST')));
+  act(() => enqueue(actionIntent('FIRST')));
 
   expect(processed).toEqual(['FIRST', 'SECOND']);
 });
 
-it('unsubscribes when unmounted', () => {
+it('drops pending intents when the provider unmounts', () => {
   const processIntent = jest.fn();
-  const result = render(<RoutingQueueDrainer ready processIntent={processIntent} />);
-  expect(routingQueue.subscribers.size).toBe(1);
-  result.unmount();
+  const first = renderDrainer(false, processIntent);
+  act(() => first.enqueue(actionIntent('TEST')));
 
-  act(() => routingQueue.add(actionIntent('TEST')));
+  first.unmount();
+  renderDrainer(true, processIntent);
 
-  expect(routingQueue.subscribers.size).toBe(0);
   expect(processIntent).not.toHaveBeenCalled();
-  expect(routingQueue.snapshot()).toEqual([actionIntent('TEST')]);
 });
 
 it('continues after processIntent throws synchronously', () => {
@@ -152,11 +171,11 @@ it('continues after processIntent throws synchronously', () => {
       throw new Error('failed');
     }
   });
-  render(<RoutingQueueDrainer ready processIntent={processIntent} />);
+  const result = renderDrainer(true, processIntent);
 
   act(() => {
-    routingQueue.add(actionIntent('FIRST'));
-    routingQueue.add(actionIntent('SECOND'));
+    result.enqueue(actionIntent('FIRST'));
+    result.enqueue(actionIntent('SECOND'));
   });
 
   expect(processIntent).toHaveBeenCalledTimes(2);

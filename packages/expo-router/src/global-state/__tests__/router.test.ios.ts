@@ -4,6 +4,7 @@ import { emitDomDismiss, emitDomDismissAll, emitDomGoBack } from '../../domCompo
 import {
   canDismiss,
   canGoBack,
+  createImperativeRouter,
   dismiss,
   dismissAll,
   dismissTo,
@@ -14,9 +15,9 @@ import {
   push,
   reload,
   replace,
+  router,
   setParams,
 } from '../router';
-import { routingQueue } from '../routingQueue';
 import { store } from '../store';
 
 jest.mock('../store', () => ({
@@ -36,12 +37,6 @@ jest.mock('../store', () => ({
     linking: { getStateFromPath: jest.fn(), config: {} },
     getRouteInfo: jest.fn(() => ({ pathname: '/', segments: [], params: {} })),
     redirects: [],
-  },
-}));
-
-jest.mock('../routingQueue', () => ({
-  routingQueue: {
-    add: jest.fn(),
   },
 }));
 
@@ -65,14 +60,19 @@ jest.mock('../../link/href', () => ({
   resolveHref: jest.fn((href: any) => (typeof href === 'string' ? href : href.pathname || '/')),
 }));
 
-const mockAdd = routingQueue.add as jest.Mock;
+const mockAdd = jest.fn();
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;
-
 beforeEach(() => {
   jest.clearAllMocks();
   (store as any).state = undefined;
+});
+
+it('throws before the module-level router is installed', () => {
+  expect(() => navigate('/first')).toThrow('first render');
+
+  Object.assign(router, createImperativeRouter(mockAdd));
 });
 
 describe('canDismiss', () => {
@@ -282,13 +282,13 @@ describe('router action functions', () => {
   });
 
   it('prefetch enqueues NAVIGATE_TO_HREF intent with PRELOAD event', () => {
-    prefetch('/path');
+    prefetch('/path', { withAnchor: true });
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
-          options: expect.objectContaining({ event: 'PRELOAD' }),
+          options: expect.objectContaining({ event: 'PRELOAD', withAnchor: true }),
         }),
       })
     );

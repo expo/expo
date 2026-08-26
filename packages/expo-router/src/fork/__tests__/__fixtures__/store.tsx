@@ -2,8 +2,13 @@ import {
   render as renderWithoutStore,
   renderHook as renderHookWithoutStore,
 } from '@testing-library/react-native';
-import type { ReactElement, ReactNode } from 'react';
+import { use, type ReactElement, type ReactNode } from 'react';
 
+import {
+  PendingIntentsContext,
+  RoutingQueueProvider,
+} from '../../../global-state/routingQueueContext';
+import type { RoutingIntent } from '../../../global-state/routingQueue';
 import { storeRef } from '../../../global-state/store';
 import { StoreContext, type StoreContextValue } from '../../../global-state/storeContext';
 
@@ -26,8 +31,24 @@ export const storeValue: StoreContextValue = {
   redirects: [],
 };
 
+let pendingIntents: RoutingIntent[] = [];
+
+function PendingIntentsProbe() {
+  pendingIntents = use(PendingIntentsContext);
+  return null;
+}
+
+export function getPendingIntents() {
+  return pendingIntents;
+}
+
 export function StoreProvider({ children }: { children: ReactNode }) {
-  return <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>;
+  return (
+    <RoutingQueueProvider>
+      <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>
+      <PendingIntentsProbe />
+    </RoutingQueueProvider>
+  );
 }
 
 export function render(element: ReactElement): ReturnType<typeof renderWithoutStore> {

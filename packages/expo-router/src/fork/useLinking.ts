@@ -6,7 +6,8 @@ import {
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
-import { routingQueue, type RoutingIntent } from '../global-state/routingQueue';
+import type { RoutingIntent } from '../global-state/routingQueue';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { StoreContext } from '../global-state/storeContext';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
@@ -180,6 +181,7 @@ function useBrowserHistorySync({
   onUnhandledLinking: (path: string | undefined) => void;
 }) {
   const store = use(StoreContext);
+  const enqueue = useEnqueueRoutingIntent();
   const [history] = useState(createMemoryHistory);
   const configRef = useRef(config);
   const getStateFromPathRef = useRef(getStateFromPath);
@@ -221,7 +223,7 @@ function useBrowserHistorySync({
             pendingHistoryOperationsRef.current.push(metadata.history);
           }
         };
-        routingQueue.add(intent);
+        enqueue(intent);
       };
       const reset = (state: ResetState) => ({
         type: 'RESET',
@@ -289,7 +291,7 @@ function useBrowserHistorySync({
       unsubscribe();
       pendingHistoryOperationsRef.current = [];
     };
-  }, [history, onUnhandledLinking, ref]);
+  }, [enqueue, history, onUnhandledLinking, ref]);
 
   useEffect(() => {
     const getPathForRoute = (
