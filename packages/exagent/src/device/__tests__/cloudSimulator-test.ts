@@ -38,6 +38,7 @@ import {
   readCloudSessionIdSync,
   type CloudRunResult,
 } from '../cloudSimulator';
+import recordedAvailability from '../../__fixtures__/eas/simulator-availability.json';
 
 /** The `eas` this project has, so the resolver finds one without touching the machine's PATH. */
 const PROJECT_EAS = '/project/node_modules/.bin/eas';
@@ -208,6 +209,12 @@ describe(isActiveSessionStatus, () => {
 });
 
 describe(parseAvailabilityJson, () => {
+  // The one `simulator:*` payload that could be recorded without starting a session, which is what
+  // `availability` exists for. See `src/__fixtures__/eas/README.md`.
+  it(`reads the recorded answer, and ignores the account it names`, () => {
+    expect(parseAvailabilityJson(JSON.stringify(recordedAvailability))).toBe(true);
+  });
+
   it(`reads the flag both ways`, () => {
     expect(parseAvailabilityJson('{"available": true}')).toBe(true);
     expect(parseAvailabilityJson('{"available": false}')).toBe(false);

@@ -28,6 +28,7 @@ Nothing else is altered: keys, casing, ordering and null-ness are as the CLI pri
 | `build-list.json` | `eas build:list --platform ios --fingerprint-hash <hash> --status finished --limit 1 --json --non-interactive` | The build-cache lookup's exact argv, and that `id`/`status`/`platform`/`buildProfile`/`createdAt`/`artifacts.buildUrl` all exist. See `src/impact/buildCache.ts`. |
 | `fingerprint-compare.json` | `eas fingerprint:compare --build-id <id> --json --non-interactive` | `{ fingerprint1, fingerprint2 }`, each `{ hash, sources }` — **two whole fingerprints, not a diff**. `fingerprint1` is the build, `fingerprint2` is the working tree. See `src/impact/compare.ts`. |
 | `whoami.txt` | `eas whoami` | The account name is the **first** line; the email, and an `Accounts:` list when the actor belongs to more than their personal account, follow it. See `src/needsHuman/preflight.ts`. |
+| `simulator-availability.json` | `eas simulator:availability --json --non-interactive` | `{ available, accountName }`. The one `simulator:*` payload that can be recorded without starting a session. See `src/device/cloudSimulator.ts`. |
 
 ## What could not be recorded, and why
 
@@ -35,6 +36,9 @@ Nothing else is altered: keys, casing, ordering and null-ness are as the CLI pri
   only observable while a build is running, and starting one is a mutating, billable call. The
   casing of the four recorded here plus the enum's own spelling is what `src/builds/status.ts`
   rests on; `CANCELED` and `CANCELLED` stay `[inferred]` for the same reason.
+- **Every other `simulator:*` payload.** `simulator:get`, `simulator:exec` and `simulator:stop` all
+  need a live session, and starting one is a mutating, billable call. Their *argv* is confirmed
+  against `--help` on 22.4.0 (llp/0005 §The cloud simulator backend); their JSON stays `[inferred]`.
 - **`eas whoami` under `EXPO_TOKEN`.** The first line becomes
   `<name> (authenticated using EXPO_TOKEN)` [observed — `eas-cli/build/commands/account/view.js`,
   22.4.0], but recording it needs a token this machine does not have. The parser handles the suffix

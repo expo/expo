@@ -537,21 +537,37 @@ the session's connection environment and **spawns the command it is given**, and
 family binary; what it asks that binary to run is a second process this CLI never resolves itself.
 `AGENT_DEVICE_SPEC` is the whole of that decision, in one constant.
 
-### Everything below is [inferred]
+### The argv is confirmed; the payloads mostly are not
 
-**The account on the machine this was written on is signed out, and the `eas` on its `PATH` is a
-shim that fails before it reaches the CLI** [observed — 2026-08-26: `eas --version` answers `Error:
-Apple Developer setup is incomplete`]. So **no invocation in this table has ever been run against a
-live session.** They are built from the syntax the `eas-simulator` skill documents, which was read
-and not run.
+The table below was written from the syntax the `eas-simulator` skill documents, read and not run,
+because the account on the machine it was written on was signed out and the `eas` on its `PATH` is
+a shim that fails before it reaches the CLI [observed — 2026-08-26: `eas --version` answers
+`Error: Apple Developer setup is incomplete`].
+
+A signed-in pass on 2026-08-26 checked it against **eas-cli 22.4.0**, read-only. Every command and
+every flag in the table exists and is spelled as written [observed — `eas <cmd> --help`, and
+`eas help sim`, which names `simulator:start` / `sim` / `sim:start` as aliases of one command and
+documents `--out-config-type dotenv` writing `.env.eas-simulator`]. **What is still `[inferred]` is
+the JSON**, not the invocation: reading a session's payload needs a live session, and starting one
+is a mutating, billable call the pass was not allowed to make.
+
+`simulator:availability` is the exception, and it is the exception by design — it exists to be
+asked without spending anything, so it could be run.
+
+One command was added upstream that this document did not know about: **`eas simulator:list
+[--status …] [--platform …] --json --non-interactive`**, which answers
+`{ "sessions": [...], "pageInfo": {...} }` [observed — 2026-08-26, empty for a project with no
+sessions]. It is a per-project list, so it is a cheaper answer to "does this project have a session
+up" than `simulator:get` against a remembered id — worth considering if the `.env.eas-simulator`
+round trip ever becomes a problem.
 
 | Invocation | What this CLI believes it does | Status |
 | --- | --- | --- |
-| `eas simulator:get [--id <id>] --json` | Answers the session's `status` and `platform`; `IN_PROGRESS` is live | [inferred] |
-| `eas simulator:availability --json` | `{"available": bool}` — read-only, starts and bills nothing | [inferred] |
-| `eas simulator:exec npx agent-device@latest open <url> --platform <ios\|android>` | Opens a deep link on the session's device | [inferred] |
-| `eas simulator:exec npx agent-device@latest screenshot <path>` | Downloads a PNG of the screen to a local path. No `--platform`: the documented verb table carries it on `open`/`install`/`apps` and not on this one | [inferred] |
-| `eas simulator:stop` | Ends the session. **Never spawned by this CLI** — it appears only inside error text, as the command a person runs to end their own session. See §What the cloud backend cannot do | [inferred] |
+| `eas simulator:get [--id <id>] --json` | Answers the session's `status` and `platform`; `IN_PROGRESS` is live | argv [observed — 22.4.0]; payload [inferred] |
+| `eas simulator:availability --json` | Read-only, starts and bills nothing | [observed — 22.4.0: `{"available": true, "accountName": "expo"}`, recorded in `src/__fixtures__/eas/simulator-availability.json`]. The extra `accountName` is ignored |
+| `eas simulator:exec npx agent-device@latest open <url> --platform <ios\|android>` | Opens a deep link on the session's device | argv [observed — 22.4.0]; behaviour [inferred] |
+| `eas simulator:exec npx agent-device@latest screenshot <path>` | Downloads a PNG of the screen to a local path. No `--platform`: the documented verb table carries it on `open`/`install`/`apps` and not on this one | argv [observed — 22.4.0]; behaviour [inferred] |
+| `eas simulator:stop` | Ends the session. **Never spawned by this CLI** — it appears only inside error text, as the command a person runs to end their own session. See §What the cloud backend cannot do | argv [observed — 22.4.0] |
 | `EAS_SIMULATOR_SESSION_ID` in `.env.eas-simulator` | Names the session `eas-cli` last started for this project | [inferred] |
 
 Two things follow from that, and they are the design rather than a caveat:
