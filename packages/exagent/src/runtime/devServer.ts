@@ -398,7 +398,7 @@ export async function requireConnectedAppAsync(
         // simulator or an attached device, and a dogfood session ran Expo Go on a cloud simulator
         // through a tunnel with neither [observed — 2026-08-24]; `--print-url` is the same
         // resolution with the opening left to whatever can do it.
-        `How: open the app on a device or simulator with "npx exagent navigate /" — or, when the device is a phone or a cloud simulator this machine cannot drive, get the URL to open on it with "npx exagent navigate / --print-url". Then wait for the bundle to finish loading with "npx exagent dev:wait --require-app" and run this command again.`,
+        `How: open the app on a device or simulator with "npx exagent navigate /" — or, when the device is a phone or a cloud simulator this machine cannot drive, get the URL to open on it with "npx exagent navigate / --print-url". Then let "npx exagent smoke" wait for the bundle and the app together, and run this command again.`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent navigate /';

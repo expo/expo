@@ -4,7 +4,6 @@
 // already probed; `report.ts` is the only module that writes anything.
 
 export { buildConfigEffectiveFollowUps, type ConfigEffectiveFollowUpInput } from './config';
-export { buildDevWaitFollowUps, type DevWaitFollowUpInput } from './devWait';
 export { buildDoctorCheckFollowUps, extractAdviceAction } from './doctor';
 export { buildExplainFollowUps, type ExplainFollowUpInput } from './explain';
 export { buildChangeFollowUps, type ChangeFollowUpInput } from './change';

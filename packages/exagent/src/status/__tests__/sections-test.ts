@@ -311,7 +311,7 @@ describe(buildNextActionStatus, () => {
         devServerStatus({ appsConnected: 1 })
       );
 
-      expect(next.command).toBe('exagent dev:wait --require-app');
+      expect(next.command).toBe('exagent smoke');
       expect(next.why).toContain('app connected');
     });
 
@@ -326,7 +326,7 @@ describe(buildNextActionStatus, () => {
         devServerStatus({ projectRootMatched: null, appsConnected: 1 })
       );
 
-      expect(next.command).toBe('exagent dev:wait --require-app');
+      expect(next.command).toBe('exagent smoke');
     });
 
     it(`should keep the plan for another project's dev server`, () => {

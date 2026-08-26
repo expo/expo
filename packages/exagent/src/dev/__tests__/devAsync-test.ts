@@ -457,7 +457,7 @@ describe(devAsync, () => {
 
       await devAsync(projectRoot, resolveDevOptions(['--web', '--port', '8134']));
 
-      expect(emittedFollowUpIds()).toEqual(['web-url', 'web-bundle-check', 'deploy-web']);
+      expect(emittedFollowUpIds()).toEqual(['web-url', 'web-typecheck', 'deploy-web']);
       expect(emittedFollowUps()[0]!.command).toBe('http://localhost:8134');
     });
 

@@ -117,19 +117,16 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     },
   },
   // `dev` is a group with a default action rather than a top-level command, so `exagent dev` runs
-  // the plan engine exactly as before while `dev:wait` joins it as one entry. Promoting a name
-  // this way costs nothing at the call site: a group with a `defaultAction` gives it every option.
+  // the plan engine exactly as before while `dev:stop` and `dev:logs` join it as entries. Promoting
+  // a name this way costs nothing at the call site: a group with a `defaultAction` gives it every
+  // option.
   dev: {
-    summary: 'Get this app onto a device, and wait for its dev server to be ready',
+    summary: 'Get this app onto a device, and manage the dev server it runs against',
     defaultAction: 'run',
     actions: {
       run: {
         summary: 'Decide what must run to get this app on a device, print the plan, then run it',
         load: () => import('./dev').then((i) => i.exagentDev),
-      },
-      wait: {
-        summary: `Wait until the dev server has finished bundling, and say whose bundle it is`,
-        load: () => import('./dev/wait').then((i) => i.exagentDevWait),
       },
       stop: {
         summary: `Stop this project's dev server`,
@@ -162,7 +159,7 @@ export const commandGroups: { [group: string]: CommandGroup } = {
         summary: 'Collect runtime errors over a time window',
         load: withAction('errors', () => import('./runtime').then((i) => i.exagentRuntime)),
       },
-      // Two actions with modules of their own, like `dev:wait`: they drive the app rather than
+      // Two actions with modules of their own, like `dev:stop`: they drive the app rather than
       // read it, so they take different options and print different reports, and folding them
       // into the shared `runtime` module would give one `--help` block three subjects.
       reload: {
@@ -396,7 +393,6 @@ export const helpSections: HelpSection[] = [
     title: 'Develop',
     commands: [
       'dev',
-      'dev:wait',
       'dev:logs',
       'dev:stop',
       'typecheck',
@@ -667,7 +663,7 @@ const absentCapabilities: {
   // a log is read for three different questions, and only one of them is "what did it print".
   logs: {
     absent: `the log this CLI keeps is the dev server's, and it is "npx exagent dev:logs"`,
-    instead: `That reads what a dev server started with "npx exagent dev --detach" has printed. For the two questions a log is more often opened for: "npx exagent dev:wait" says whether the bundler finished and whether this project compiles, and "npx exagent runtime:errors" collects what the running app threw over a time window.`,
+    instead: `That reads what a dev server started with "npx exagent dev --detach" has printed. For the two questions a log is more often opened for: "npx exagent smoke" says whether the bundler finished, whether this project compiles and whether the app came up, and "npx exagent runtime:errors" collects what the running app threw over a time window.`,
     suggestedCommand: 'npx exagent dev:logs',
   },
 };
@@ -687,7 +683,7 @@ export function unknownCommandMessage(command: string): string {
 
   const suggestions = suggestCommandNames(command);
   // The closest names come before the "run --help" fallback: a caller that typed `wait` wants
-  // `dev:wait`, not a listing of thirty commands to find it in again.
+  // `dev:logs`, not a listing of thirty commands to find it in again.
   const didYouMean = suggestions.length
     ? `The closest ${suggestions.length === 1 ? 'name is' : 'names are'} ${suggestions
         .map((name) => `"npx exagent ${name}"`)

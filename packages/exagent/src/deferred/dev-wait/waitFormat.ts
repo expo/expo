@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
 // The two halves of what `dev:wait` reports, as pure functions over one result: labelled lines for
 // a terminal, and one JSON object whose keys mirror those labels. Nothing here does I/O, so the
@@ -5,14 +7,14 @@
 
 import chalk from 'chalk';
 
-import type { FollowUp } from '../followups';
+import type { FollowUp } from '../../followups';
 import type {
   BundleCheckError,
   BundleCheckPlatform,
   BundleCheckResult,
   BundlePlatformSource,
-} from '../runtime/bundleCheck';
-import type { DevServerSource } from '../runtime/devServer';
+} from '../../runtime/bundleCheck';
+import type { DevServerSource } from '../../runtime/devServer';
 
 /** Width of the label column, matching `exagent status`. */
 const LABEL_WIDTH = 12;
@@ -86,39 +88,6 @@ export interface DevWaitResult {
   bundlePlatformSource?: BundlePlatformSource;
   /** Why the wait did not end in a ready bundler. Absent when it did. */
   reason?: string;
-}
-
-/**
- * The `bundle` object of the `--json` payload.
- *
- * Always present with the same keys, so a parser reads one shape whether the check ran, was
- * declined with `--no-bundle-check`, or could not decide (llp/0006 §Output contract).
- */
-export interface DevWaitBundleJson {
-  /**
-   * Whether the bundler answered about this project's entry bundle.
-   *
-   * Exactly `ok != null`, and that invariant is the point: `checked: true` with `ok: null` said
-   * "this was checked and the answer is nothing", which is a contradiction a caller cannot act on
-   * [observed — friction run 2, 2026-08-23, on `--platform web`]. A check that was declined, could
-   * not find the entry bundle URL, or ran out of budget is `checked: false` with a {@link reason}.
-   */
-  checked: boolean;
-  /**
-   * True when it compiled, false when the bundler reported an error.
-   *
-   * Null when it was not decided: the check was declined, the dev server was never ready, the
-   * budget expired, or the entry bundle URL could not be read. Null is never "broken".
-   */
-  ok: boolean | null;
-  /** Platform the bundle was built for, or null when nothing was built. */
-  platform: BundleCheckPlatform | null;
-  /** Entry bundle URL that was fetched, resolved from the dev server's own manifest. */
-  url: string | null;
-  /** What the bundler reported. Present exactly when `ok` is false. */
-  error: BundleCheckError | null;
-  /** Why `ok` is null. */
-  reason: string | null;
 }
 
 /** The `--json` payload: one object, with the keys the labelled lines print. */
@@ -205,44 +174,6 @@ export function devWaitResultToJson(
     ),
     bundlePlatformSource: result.bundlePlatformSource ?? 'default',
     followups,
-  };
-}
-
-/** The reason a bundle object carries when nothing was built, per why nothing was. */
-const BUNDLE_NOT_RUN_REASON = 'the entry bundle check was not run';
-const BUNDLE_SKIPPED_REASON = `${BUNDLE_NOT_RUN_REASON} (--no-bundle-check)`;
-
-/**
- * The `bundle` object, with the same keys whatever the check did or did not manage to do.
- *
- * Shared with `runtime:reload`, which runs the same check before it reloads anything, so the one
- * question "does this project's entry bundle compile" is reported in one shape wherever it is
- * asked (llp/0010 §The reload gate).
- */
-export function bundleToJson(
-  bundle: BundleCheckResult | null,
-  { skippedByFlag = false }: { skippedByFlag?: boolean } = {}
-): DevWaitBundleJson {
-  if (bundle == null) {
-    return {
-      checked: false,
-      ok: null,
-      platform: null,
-      url: null,
-      error: null,
-      reason: skippedByFlag ? BUNDLE_SKIPPED_REASON : BUNDLE_NOT_RUN_REASON,
-    };
-  }
-  const ok = bundle.outcome === 'ok' ? true : bundle.outcome === 'broken' ? false : null;
-  return {
-    // `checked` and `ok` move together: nothing but an answer from the bundler counts as a check.
-    checked: ok != null,
-    ok,
-    platform: bundle.platform,
-    url: bundle.url,
-    error: bundle.error,
-    reason:
-      ok == null ? (bundle.reason ?? 'the bundler gave no answer about the entry bundle') : null,
   };
 }
 

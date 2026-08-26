@@ -200,7 +200,7 @@ export interface DevServerStatus {
    * Null when it could not be decided in the moment status allows itself: nothing answered, or
    * the dev server was still bundling when the short probe expired. Status reports where the
    * project is *now* and never waits, so "still working" is reported as unknown rather than as
-   * not ready — `npx exagent dev:wait` is the command that waits for the answer.
+   * not ready — `npx exagent smoke` is the command that waits for the answer.
    */
   ready: boolean | null;
   /**

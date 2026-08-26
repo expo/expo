@@ -78,6 +78,31 @@ Two consequences worth stating. First, adopting the convention changed no shippe
 
 ### The second: `dev:wait`, and what an outcome is an outcome _about_
 
+> **Status:** Deferred — reference (2026-08-26). The command is out of the v1 surface and its code
+> is on the reference shelf at `src/deferred/dev-wait/`. Its **library internals stayed**:
+> `src/runtime/waitReady.ts` and `src/runtime/bundleCheck.ts` are what `smoke`, `runtime:reload` and
+> `dev --detach --wait-ready` call, so every question this section settles is still asked — by
+> `smoke`, which asks all of them and three more in one command.
+>
+> **Why:** two commands answered the same question with different amounts of it. `dev:wait` proved
+> the bundler was ready, the dev server was this project's, and the entry bundle compiled;
+> `smoke` proves those and then opens the app, evaluates in it and collects what it threw. An agent
+> that ran the smaller one and believed it had a verdict is the failure mode this whole document is
+> about, and the answer is one gate rather than a choice between two.
+>
+> **Where each of its jobs went, in v1:**
+>
+> | what it was reached for       | the v1 answer                        |
+> | ----------------------------- | ------------------------------------ |
+> | the gate before reading the app | `exagent smoke`                    |
+> | app health over a window        | `exagent runtime:errors --fail-on-error` |
+> | readiness at start             | `exagent dev --detach --wait-ready`  |
+>
+> **Re-entry criteria:** `smoke` is observed being too much for a case that only needs the bundler
+> question — a CI job with no device, say — and the cheaper wait cannot be had by flags on `smoke`.
+> See [[0016-v1-scope]].
+
+
 [observed — 2026-08-23, `src/dev/`] `exagent dev:wait` joined the band next, and it made the band's
 one ambiguity concrete: `20` says "the operation failed", and a readiness gate has to decide what
 its operation _is_. Waiting for a dev server to answer, or establishing that this project's app is

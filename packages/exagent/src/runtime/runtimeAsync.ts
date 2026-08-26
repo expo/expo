@@ -162,7 +162,7 @@ function promisePendingError(
       ? [
           `The promise the expression returned was lost before it settled (dev server ${devServerUrl}).`,
           `Why: the app reloaded during the wait, which clears the globals this command parks the outcome on, so the value it resolved to — if it ever did — cannot be read any more.`,
-          `How: run the expression again once the app has finished reloading ("npx exagent dev:wait --require-app" waits for that).`,
+          `How: run the expression again once the app has finished reloading ("npx exagent smoke" waits for the bundle and the app together).`,
         ].join('\n')
       : [
           `The promise the expression returned had not settled after ${timeoutMs}ms (dev server ${devServerUrl}).`,

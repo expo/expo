@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 // What `exagent dev:wait` does: find the dev server, hold one request open until its bundler
 // finishes, and answer four questions an agent cannot otherwise ask — is the bundler done, is it
@@ -9,20 +11,21 @@
 // server to wait on at all. Only the last is a failure of the *tool*; the others are outcomes, so
 // they are reported and exited with rather than thrown.
 
-import { readCloudSessionIdSync } from '../device/cloudSimulator';
-import { event } from '../events';
-import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
-import { buildDevWaitFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
-import * as Log from '../log';
+import { readCloudSessionIdSync } from '../../device/cloudSimulator';
+import { event } from '../../events';
+import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
+import { followUpsEnabled, reportFollowUps } from '../../followups';
+import { buildDevWaitFollowUps } from './followups';
+import * as Log from '../../log';
 import {
   checkEntryBundleAsync,
   resolveBundleCheckPlatformsAsync,
   type BundleCheckResult,
-} from '../runtime/bundleCheck';
-import { probeLocalDeviceAsync } from '../device/localDevice';
-import { discoverDevServerAsync, howToNameTheDevServer } from '../runtime/devServer';
-import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
-import { CommandError } from '../utils/errors';
+} from '../../runtime/bundleCheck';
+import { probeLocalDeviceAsync } from '../../device/localDevice';
+import { discoverDevServerAsync, howToNameTheDevServer } from '../../runtime/devServer';
+import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../../runtime/waitReady';
+import { CommandError } from '../../utils/errors';
 import type { DevWaitOptions } from './resolveWaitOptions';
 import {
   devWaitResultToJson,

@@ -144,7 +144,7 @@ export function strayArgumentError(
  * Use this when the arguments of a subcommand are resolved by a pure function: the caller keeps
  * one error path for both a bad flag and a bad value, and the resolver stays testable.
  *
- * @param command the command as a caller types it, e.g. `dev:wait`. Required, and not inferred,
+ * @param command the command as a caller types it, e.g. `dev:stop`. Required, and not inferred,
  * because it is what the error names — both in the `Try:` line and in the sentence that says which
  * *other* command takes the option ({@link import('./unknownOption').OPTION_OWNERS}).
  */

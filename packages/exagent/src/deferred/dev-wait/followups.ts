@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0009-smart-followups.rfc.md §Examples per command — the readiness gate.
 // Five outcomes, five different next steps: a wait that expired is worth repeating with a longer
 // budget, an entry bundle that does not compile needs the file it names fixed, a ready bundler with
@@ -9,8 +11,8 @@
 // `runtime:errors`, which talks to a *native* runtime over the debugger. A follow-up that silently
 // changes platform answers a question the caller did not ask.
 
-import type { BundleCheckPlatform, BundleCheckResult } from '../runtime/bundleCheck';
-import { capFollowUps, type FollowUp } from './types';
+import type { BundleCheckPlatform, BundleCheckResult } from '../../runtime/bundleCheck';
+import { capFollowUps, type FollowUp } from '../../followups/types';
 
 export interface DevWaitFollowUpInput {
   /** The dev server answered `packager-status:running`. */

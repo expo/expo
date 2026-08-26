@@ -12,7 +12,7 @@
 // Both halves are fixed here rather than per command: a `CommandError` gets the envelope, the
 // event and the exit code for free, and there is exactly one wording to keep right.
 //
-// The second half is {@link OPTION_OWNERS}. `dev --port 8180` is correct and `dev:wait --port 8180`
+// The second half is {@link OPTION_OWNERS}. `dev --port 8180` is correct and `dev:stop --port 8180`
 // was not, and the answer that helps is not "that option does not exist" — it is which command it
 // does exist on. That is a small hand-kept table, in the style of `absentCapabilities` in
 // `commandRegistry.ts`: only options a caller actually reaches for on the wrong command belong in
@@ -32,9 +32,9 @@ function optionFrom(message: string): string | null {
  * a caller plausibly confuses with this one; it is not a second copy of every `--help`.
  */
 export const OPTION_OWNERS: { [option: string]: string[] } = {
-  '--port': ['dev', 'dev:wait', 'dev:stop'],
+  '--port': ['dev', 'dev:stop', 'smoke'],
   '--dev-server-url': [
-    'dev:wait',
+    'smoke',
     'runtime:eval',
     'runtime:errors',
     'runtime:reload',
@@ -42,19 +42,17 @@ export const OPTION_OWNERS: { [option: string]: string[] } = {
     'navigate',
     'status',
   ],
-  '--platform': ['dev:wait'],
-  '--route': ['runtime:reload'],
+  '--platform': ['smoke', 'runtime:eval', 'runtime:errors'],
+  '--route': ['runtime:reload', 'smoke'],
   '--app-id': ['runtime:stop'],
-  '--timeout': ['dev:wait', 'dev:stop', 'runtime:reload'],
-  '--json': ['dev', 'dev:wait', 'dev:stop', 'status', 'typecheck', 'install', 'navigate'],
-  // Four more from friction run 5 (F48-2). Each is an option a caller reached for on the
+  '--timeout': ['dev:stop', 'runtime:reload', 'smoke'],
+  '--json': ['dev', 'dev:stop', 'status', 'typecheck', 'install', 'navigate'],
+  // Three more from friction run 5 (F48-2). Each is an option a caller reached for on the
   // *neighbour* of the command that has it, which is the only thing that earns a row here:
-  // `--tail` reads like a `dev:logs` option and is one, `--duration` and `--fail-on-error` are
-  // what an agent gating on a window types after `dev:wait`, and `--require-app` is what it types
-  // on the command that reads the app rather than on the one that waits for it.
+  // `--tail` reads like a `dev:logs` option and is one, and `--duration` and `--fail-on-error` are
+  // what an agent gating on a window types after the command that opened one.
   '--tail': ['dev:logs'],
   '--fail-on-error': ['runtime:errors'],
-  '--require-app': ['dev:wait'],
   '--duration': ['runtime:errors'],
 };
 
@@ -109,7 +107,7 @@ export function missingOptionValueError(command: string, option: string | null):
  * Only errors whose code starts with `ARG_` and not `ARG_CONFIG_` are the user's; the rest are this
  * CLI's own schema mistakes and are rethrown by the callers.
  *
- * @param command the command as a caller types it, e.g. `dev:wait`.
+ * @param command the command as a caller types it, e.g. `dev:stop`.
  * @param message `arg`'s own message.
  * @param code `arg`'s own error code, which is what tells the two user failures apart.
  */

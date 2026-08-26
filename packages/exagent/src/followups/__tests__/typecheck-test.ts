@@ -17,7 +17,7 @@ describe(buildTypeCheckFollowUps, () => {
   it(`should name the two gates a clean type check does not cover`, () => {
     const followups = buildTypeCheckFollowUps({ checked: true, errorCount: 0 });
 
-    expect(ids(followups)).toEqual(['typecheck-dev-wait', 'typecheck-runtime-errors']);
+    expect(ids(followups)).toEqual(['typecheck-smoke', 'typecheck-runtime-errors']);
     expect(followups[1]!.command).toContain('--fail-on-error');
   });
 

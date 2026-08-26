@@ -6,7 +6,7 @@
 // formatter and the follow-ups depend on the shape rather than on the machinery that fills it.
 
 import type { ScreenshotResult } from '../device/screenshot';
-import type { DevWaitBundleJson } from '../dev/waitFormat';
+import type { BundleCheckJson } from '../runtime/bundleCheck';
 import type { FollowUp } from '../followups';
 import type { RouteCheckJson } from '../navigate/routeCheck';
 import type { DevServerSource } from '../runtime/devServer';
@@ -128,7 +128,7 @@ export interface SmokeResultJson {
   /** Debugger targets attached when the run read them. Null when it never got that far. */
   appsConnected: number | null;
   /** The same `bundle` object `dev:wait` and `runtime:reload` print, from the same check. */
-  bundle: DevWaitBundleJson;
+  bundle: BundleCheckJson;
   /** Route the run opened, or null when none was asked for. */
   route: string | null;
   /** Whether that route was checked against the project's routes. */

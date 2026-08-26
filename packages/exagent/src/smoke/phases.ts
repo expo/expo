@@ -13,13 +13,17 @@
 // | phase           | the command whose question it is | the function                |
 // | --------------- | -------------------------------- | --------------------------- |
 // | `dev-server`    | every runtime command            | `discoverDevServerAsync`    |
-// | `bundler-ready` | `dev:wait`                       | `waitForBundlerReadyAsync`  |
-// | `bundle`        | `dev:wait`, `runtime:reload`     | `checkEntryBundleAsync`     |
-// | `app`           | `dev:wait --require-app`         | `waitForAppConnectionAsync` |
+// | `bundler-ready` | this command only                | `waitForBundlerReadyAsync`  |
+// | `bundle`        | this command, `runtime:reload`   | `checkEntryBundleAsync`     |
+// | `app`           | this command only                | `waitForAppConnectionAsync` |
 // | `route`         | `navigate`                       | `openRouteAsync`            |
 // | `runtime`       | `runtime:eval`                   | `CdpClient.evaluateAsync`   |
 // | `errors`        | `runtime:errors`                 | `CdpRuntimeErrorCollector`  |
 // | `screenshot`    | (new)                            | `captureScreenshotAsync`    |
+//
+// The first three used to be `dev:wait`'s, which the v1 narrowing deferred (llp/0016). The library
+// functions they call are unchanged and still live in `src/runtime/`; only the second command that
+// called them is gone.
 //
 // The dependencies are injected rather than imported, so the outcome table below — which is the
 // part that can be wrong in a way no type checker sees — is testable against fakes, with no dev

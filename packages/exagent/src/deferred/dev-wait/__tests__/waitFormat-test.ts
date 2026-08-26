@@ -1,4 +1,6 @@
-import type { BundleCheckResult } from '../../runtime/bundleCheck';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
+import type { BundleCheckResult } from '../../../runtime/bundleCheck';
 import {
   devWaitResultToJson,
   devWaitSucceeded,

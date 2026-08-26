@@ -136,7 +136,7 @@ describe('exagent typecheck', () => {
     const payload = JSON.parse(result.stdout);
     expect(payload).toMatchObject({ checked: true, errorCount: 0, errors: [], reason: null });
     expect(payload.followups.map((followup: any) => followup.id)).toEqual([
-      'typecheck-dev-wait',
+      'typecheck-smoke',
       'typecheck-runtime-errors',
     ]);
   });
@@ -254,33 +254,34 @@ describe('exagent typecheck', () => {
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts — one central fix, so every
 // command answers a bad option the same way [F47, friction run 4].
 describe('unknown options across commands', () => {
-  it(`should name the command that does take --port when dev:wait is given one`, async () => {
+  it(`should name the command own help when smoke is given an option it has not`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev:wait', '--bogus', '--json'], {
+    const result = await executeExagentAsync(projectRoot, ['smoke', '--bogus', '--json'], {
       reject: false,
     });
 
     expect(result.exitCode).toBe(1);
-    expect(JSON.parse(result.stdout).error.suggestedCommand).toBe('npx exagent dev:wait --help');
+    expect(JSON.parse(result.stdout).error.suggestedCommand).toBe('npx exagent smoke --help');
   });
 
   // The sugar itself: `--port` is what the caller has in hand after `exagent dev --port`.
-  it(`should accept dev:wait --port as the dev server on that port`, async () => {
+  it(`should accept smoke --port as the dev server on that port`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     const result = await executeExagentAsync(
       projectRoot,
-      ['dev:wait', '--port', '65533', '--timeout', '1s', '--json'],
+      ['smoke', '--port', '65533', '--timeout', '1s', '--json'],
       { reject: false }
     );
 
-    // Nothing listens there, so the answer is "no dev server at that URL" — and the URL it names
+    // Nothing listens there, so the gate fails on its first phase — and the URL that phase names
     // is the one the port spells, which is the proof that the flag was understood rather than
     // rejected as unknown.
-    const { error } = JSON.parse(result.stdout);
-    expect(error.code).toBe('NO_DEV_SERVER');
-    expect(error.message).toContain('http://127.0.0.1:65533');
+    const report = JSON.parse(result.stdout);
+    expect(report.outcome).toBe('failed');
+    expect(report.phases[0]).toMatchObject({ id: 'dev-server', status: 'failed' });
+    expect(report.phases[0].reason).toContain('http://127.0.0.1:65533');
   });
 
   it(`should tell runtime:stop --platform ios apart from an unknown option`, async () => {

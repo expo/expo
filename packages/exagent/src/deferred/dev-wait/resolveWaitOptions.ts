@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
 // Argument resolution for `exagent dev:wait`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong, so every flag combination is unit-testable without a dev server.
@@ -6,15 +8,15 @@ import {
   BUNDLE_CHECK_PLATFORMS,
   DEFAULT_BUNDLE_CHECK_PLATFORM,
   type BundleCheckPlatform,
-} from '../runtime/bundleCheck';
-import { resolveDevServerTarget } from '../runtime/devServer';
+} from '../../runtime/bundleCheck';
+import { resolveDevServerTarget } from '../../runtime/devServer';
 import {
   DURATION_METAVAR,
   parseArgsOrThrow,
   resolveDuration,
   strayArgumentError,
-} from '../utils/args';
-import { CommandError } from '../utils/errors';
+} from '../../utils/args';
+import { CommandError } from '../../utils/errors';
 
 /**
  * Total budget of a wait, when the caller names none.

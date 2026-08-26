@@ -502,7 +502,7 @@ describe('exagent smoke', () => {
       expect(result.exitCode).toBe(1);
       const { error } = JSON.parse(result.stdout);
       expect(error.code).toBe('BAD_ARGS');
-      expect(error.suggestedCommand).toBe('npx exagent dev:wait --platform web');
+      expect(error.suggestedCommand).toBe('npx exagent typecheck');
     });
   });
 

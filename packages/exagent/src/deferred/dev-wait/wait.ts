@@ -1,12 +1,14 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 import chalk from 'chalk';
 
-import type { Command } from '../types';
+import type { Command } from '../../types';
 import {
   assertWithOptionsArgs,
   DURATION_HELP_NOTE,
   DURATION_METAVAR,
   printHelp,
-} from '../utils/args';
+} from '../../utils/args';
 
 export const exagentDevWait: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -84,9 +86,9 @@ export const exagentDevWait: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx exagent dev:wait -h` shows as fast as possible.
-  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
-  const { findUpProjectRootOrCwd } = require('../utils/findUp') as typeof import('../utils/findUp');
-  const { EXIT_OK, exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
+  const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
+  const { findUpProjectRootOrCwd } = require('../../utils/findUp') as typeof import('../../utils/findUp');
+  const { EXIT_OK, exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');
   const { resolveDevWaitOptions } =
     require('./resolveWaitOptions') as typeof import('./resolveWaitOptions');
 

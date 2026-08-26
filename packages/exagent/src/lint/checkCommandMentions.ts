@@ -147,7 +147,7 @@ export function checkCommandMentions(
         subject,
         rule: 'unknown-command',
         why: `"${command}" is not one of the options the launcher itself takes (${[...LAUNCHER_OPTIONS].join(', ')}), and nothing before it names a command, so this line runs nothing.`,
-        how: 'Name the command the option belongs to, as in "npx exagent dev:wait --json".',
+        how: 'Name the command the option belongs to, as in "npx exagent dev:stop --json".',
       });
       continue;
     }

@@ -5,7 +5,7 @@
 
 import chalk from 'chalk';
 
-import { bundleToJson } from '../dev/waitFormat';
+import { bundleToJson } from '../runtime/bundleCheck';
 import type { FollowUp } from '../followups';
 import type { RouteCheckJson } from '../navigate/routeCheck';
 import { wrapUntrustedAppOutput } from '../runtime/untrusted';
@@ -13,7 +13,7 @@ import { isFailingRecord, type SmokeRun } from './phases';
 import type { SmokeOptions } from './resolveOptions';
 import type { SmokePhase, SmokeResultJson } from './types';
 
-/** Width of the label column, matching `dev:wait` and `status`. */
+/** Width of the label column, matching `status` and `deploy`. */
 const LABEL_WIDTH = 12;
 
 /** Separates the facts inside one line. */

@@ -31,7 +31,7 @@ export const exagentTypecheck: Command = async (argv) => {
         chalk`  as a subprocess and reports its diagnostics as data: {bold file}, {bold line}, {bold column}, {bold code}`,
         chalk`  and {bold message}, one entry each.`,
         '',
-        chalk`  This is the gate the other ones cannot be. {bold dev:wait} says the entry bundle compiles`,
+        chalk`  This is the gate the other ones cannot be. {bold smoke} says the entry bundle compiles`,
         chalk`  and {bold runtime:errors} says what the running app threw — a type error that is neither a`,
         chalk`  syntax error nor a throw is invisible to both, and it is the ordinary case: a property`,
         chalk`  that does not exist is {bold undefined} at runtime, so the app renders, wrongly.`,

@@ -403,9 +403,9 @@ function detachFollowUps(report: DevDetachResultJson): FollowUp[] {
   const followups: FollowUp[] = [];
   if (report.ready == null) {
     followups.push({
-      id: 'dev-wait',
-      command: 'npx exagent dev:wait',
-      why: 'The dev server is up, but nothing has said whether its bundler finished or whether this project compiles.',
+      id: 'smoke',
+      command: 'npx exagent smoke',
+      why: 'The dev server is up, but nothing has said whether its bundler finished, whether this project compiles, or whether the app comes up on it.',
     });
   }
   if (report.logFile) {
@@ -507,10 +507,10 @@ export function notReadyError(
       // the one they will not think of: a port number is not a listener, and this CLI only ever
       // looks at one of the two a machine can have.
       `Note: this CLI reaches the dev server at ${lock.url}, over IPv4. A port number is not one listener — 127.0.0.1:${lock.port} and [::1]:${lock.port} are different sockets, so another process can be answering this port on the other stack while this project's dev server is fine, and neither will have reported a collision. "lsof -nP -iTCP:${lock.port} -sTCP:LISTEN" lists both.`,
-      `How: wait for it with "npx exagent dev:wait", which reports what the bundler is doing and whether this project compiles, or read ${logFile} with "npx exagent dev:logs". Stop it with "npx exagent dev:stop".`,
+      `How: run "npx exagent smoke", which reports what the bundler is doing and whether this project compiles and runs, or read ${logFile} with "npx exagent dev:logs". Stop it with "npx exagent dev:stop".`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev:wait';
+  error.suggestedCommand = 'npx exagent smoke';
   return error;
 }
 

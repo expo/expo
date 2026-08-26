@@ -48,8 +48,9 @@ describe(resolveCommand, () => {
     });
   });
 
-  // `dev` became a group so that `dev:wait` could join it as one entry. The bare name still runs
-  // the plan engine with every option it was given, which is what makes the promotion invisible.
+  // `dev` became a group so that `dev:stop` and `dev:logs` could join it as entries. The bare name
+  // still runs the plan engine with every option it was given, which is what makes the promotion
+  // invisible.
   describe('the dev group', () => {
     it('runs the plan engine for the bare name, with its options', () => {
       expect(resolveCommand('dev', ['--plan', '--json'])).toMatchObject({
@@ -60,16 +61,16 @@ describe(resolveCommand, () => {
       expect(resolveCommand('dev', [])).toMatchObject({ kind: 'command', name: 'dev:run' });
     });
 
-    it('resolves the readiness gate in both spellings', () => {
-      expect(resolveCommand('dev:wait', ['--require-app'])).toMatchObject({
+    it('resolves an action in both spellings', () => {
+      expect(resolveCommand('dev:stop', ['--force'])).toMatchObject({
         kind: 'command',
-        name: 'dev:wait',
-        argv: ['--require-app'],
+        name: 'dev:stop',
+        argv: ['--force'],
       });
-      expect(resolveCommand('dev', ['wait', '--require-app'])).toMatchObject({
+      expect(resolveCommand('dev', ['stop', '--force'])).toMatchObject({
         kind: 'command',
-        name: 'dev:wait',
-        argv: ['--require-app'],
+        name: 'dev:stop',
+        argv: ['--force'],
       });
     });
 
@@ -661,7 +662,7 @@ describe('helpSections', () => {
 describe(suggestCommandNames, () => {
   it.each([
     // The action name on its own: not a typo, a caller that does not know which group owns it.
-    ['wait', ['dev:wait']],
+    ['stop', ['dev:stop', 'runtime:stop']],
     ['sync', ['skills:sync']],
     ['setup', ['agents:setup']],
     ['effective', ['config:effective']],
@@ -693,10 +694,11 @@ describe(suggestCommandNames, () => {
 
 describe(unknownCommandMessage, () => {
   it('names the closest commands', () => {
-    const message = unknownCommandMessage('wait');
+    const message = unknownCommandMessage('stop');
 
-    expect(message).toContain('"exagent wait" is not a command');
-    expect(message).toContain('npx exagent dev:wait');
+    expect(message).toContain('"exagent stop" is not a command');
+    expect(message).toContain('npx exagent dev:stop');
+    expect(message).toContain('npx exagent runtime:stop');
   });
 
   it('says nothing about close names when there are none', () => {
@@ -711,7 +713,7 @@ describe(unknownCommandMessage, () => {
 
       expect(message).toContain(`"exagent ${name}" is not a command`);
       expect(message).toContain('npx exagent dev:logs');
-      expect(message).toContain('npx exagent dev:wait');
+      expect(message).toContain('npx exagent smoke');
       expect(message).toContain('npx exagent runtime:errors');
     }
   });
@@ -723,7 +725,7 @@ describe(unknownCommandSuggestion, () => {
   });
 
   it('falls back to the listing when the answer is a choice', () => {
-    expect(unknownCommandSuggestion('dew')).toBe('npx exagent --help');
+    expect(unknownCommandSuggestion('stop')).toBe('npx exagent --help');
     expect(unknownCommandSuggestion('zzzzzzzz')).toBe('npx exagent --help');
   });
 

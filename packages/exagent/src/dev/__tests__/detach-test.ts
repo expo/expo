@@ -227,7 +227,7 @@ describe(notReadyError, () => {
 
   it(`recovers into the command that reports what the bundler is doing`, () => {
     expect(notReadyError(lock, '/project/.expo/dev.log', readyResult()).suggestedCommand).toBe(
-      'npx exagent dev:wait'
+      'npx exagent smoke'
     );
   });
 });

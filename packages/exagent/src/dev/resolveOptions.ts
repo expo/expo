@@ -203,7 +203,7 @@ function waitReadyWithoutDetach(): CommandError {
     [
       `--wait-ready only means something with --detach, and --detach was not passed.`,
       `Why: without --detach this command runs the dev server in the foreground and does not return until it stops, so there is no moment at which it could report that the bundler is ready.`,
-      `How: pass both ("npx exagent dev --detach --wait-ready"), or wait on a dev server that is already running with "npx exagent dev:wait".`,
+      `How: pass both ("npx exagent dev --detach --wait-ready"), or check a dev server that is already running with "npx exagent smoke".`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx exagent dev --detach --wait-ready';

@@ -44,7 +44,7 @@ const NEXT_ACTION_COMMAND = 'exagent dev';
  * the `runtime-errors` follow-up already says it — `next` naming it too would be the duplication
  * that `status` keeps its follow-ups silent to avoid.
  */
-const VERIFY_COMMAND = 'exagent dev:wait --require-app';
+const VERIFY_COMMAND = 'exagent smoke';
 
 /**
  * The command to name when a dev server is up and nothing is attached to it.

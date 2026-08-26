@@ -62,8 +62,8 @@ describe(renderForInvoker, () => {
   });
 
   it(`rewrites every occurrence in one line`, () => {
-    expect(renderForInvoker('Run npx exagent dev, then npx exagent dev:wait.', 'bunx')).toBe(
-      'Run bunx exagent dev, then bunx exagent dev:wait.'
+    expect(renderForInvoker('Run npx exagent dev, then npx exagent smoke.', 'bunx')).toBe(
+      'Run bunx exagent dev, then bunx exagent smoke.'
     );
   });
 

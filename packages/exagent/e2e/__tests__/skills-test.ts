@@ -302,7 +302,7 @@ describe('exagent', () => {
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('Develop');
     expect(result.all).toContain(
-      'dev, dev:wait, dev:logs, dev:stop, typecheck, start, install,'
+      'dev, dev:logs, dev:stop, typecheck, start, install, status'
     );
     expect(result.all).toContain('Create');
     expect(result.all).toContain('Deployment');

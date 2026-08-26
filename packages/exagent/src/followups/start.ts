@@ -157,9 +157,9 @@ function webFollowUps(input: StartFollowUpInput): FollowUp[] {
   return [
     site,
     {
-      id: 'web-bundle-check',
-      command: 'npx exagent dev:wait --platform web',
-      why: 'Builds the web entry bundle and exits 20 with the file and line when it does not compile, which is the check the browser tab cannot give you.',
+      id: 'web-typecheck',
+      command: 'npx exagent typecheck',
+      why: 'Runs this project\'s own compiler and exits 20 with the file and line of every error, which is the check the browser tab cannot give you.',
     },
     {
       id: 'deploy-web',

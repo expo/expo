@@ -65,7 +65,11 @@ declare module '2g' {
      * One `exagent dev:wait` run: whether the bundler finished, whose bundle it is, and how long
      * the wait took. The command's exit code is the same answer, and this is where the detail is.
      *
-     * @see llp/0005-runtime-loop-tools.rfc.md
+     * Deferred from v1 (2026-08-26): the command is on the reference shelf
+     * (`src/deferred/dev-wait/`), so nothing emits this now. The declaration stays as the schema a
+     * consumer wrote against; `cli:smoke` is what a v1 run of the same gate emits.
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md, llp/0016-v1-scope.rfc.md
      */
     'cli:dev_wait': {
       devServerUrl: string;

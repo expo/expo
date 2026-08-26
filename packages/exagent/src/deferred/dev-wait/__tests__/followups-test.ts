@@ -1,4 +1,6 @@
-import { buildDevWaitFollowUps, type DevWaitFollowUpInput } from '../devWait';
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
+import { buildDevWaitFollowUps, type DevWaitFollowUpInput } from '../followups';
 
 function input(overrides: Partial<DevWaitFollowUpInput> = {}): DevWaitFollowUpInput {
   return {

@@ -8,12 +8,12 @@ describe(extractFlagSpecs, () => {
       at(
         [
           `const WAIT_ARGS = { '--timeout': String, '--json': Boolean, '-h': '--help' };`,
-          `const args = parseArgsOrThrow(WAIT_ARGS, argv, 'dev:wait');`,
+          `const args = parseArgsOrThrow(WAIT_ARGS, argv, 'dev:stop');`,
         ].join('\n')
       ).specs
     ).toEqual([
       {
-        command: 'dev:wait',
+        command: 'dev:stop',
         flags: ['--timeout', '--json', '-h'],
         // `--json` is a `Boolean` and takes no value; `-h` is an alias of one.
         valueFlags: ['--timeout'],
@@ -115,11 +115,11 @@ describe(mergeFlagSpecs, () => {
 
   it(`unions the entry parse and the resolver parse of one command`, () => {
     const merged = mergeFlagSpecs([
-      spec('dev:wait', ['--help', '-h'], true),
-      spec('dev:wait', ['--timeout', '--json']),
+      spec('dev:stop', ['--help', '-h'], true),
+      spec('dev:stop', ['--timeout', '--json']),
     ]);
-    expect(merged.get('dev:wait')).toEqual({
-      command: 'dev:wait',
+    expect(merged.get('dev:stop')).toEqual({
+      command: 'dev:stop',
       flags: ['--help', '-h', '--timeout', '--json'],
       valueFlags: [],
       // One strict parse is enough to make an unknown option an error, whatever the entry did.

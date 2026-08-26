@@ -67,7 +67,7 @@ export interface CommandMention {
   text: string;
   /** The whole string literal it was found in, for the failure message to quote. */
   literal: string;
-  /** The command name, e.g. `dev:wait`. Null when nothing followed the prefix. */
+  /** The command name, e.g. `dev:stop`. Null when nothing followed the prefix. */
   command: string | null;
   /** Everything after the command name, split on whitespace. */
   args: string[];
@@ -79,7 +79,7 @@ export interface CommandMention {
  * Characters that end a mention, because prose resumes at them.
  *
  * The codebase delimits a command inside a sentence with quotes or backticks
- * (`Run "npx exagent dev:wait" for …`), and `chalk` templates delimit with braces, so those are
+ * (`Run "npx exagent dev:stop" for …`), and `chalk` templates delimit with braces, so those are
  * the boundaries. The shell operators are boundaries too: a suggestion may be two commands joined
  * by `&&`, and each half is a command of its own to check rather than a long argument list for the
  * first of them.

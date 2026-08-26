@@ -390,13 +390,13 @@ async function portDemandedError(projectRoot: string, port: number): Promise<Com
         ? `Why: this project's own dev server is already on port ${port}, held by ${holder}. Nothing was started, because there is already one there.`
         : `Why: ${holder} is listening on it, and --port ${port} is a requirement rather than a preference — moving the dev server to another port would leave every URL and every command that names ${port} pointing at nothing.`,
       ours
-        ? `How: use the dev server that is running ("npx exagent dev:wait" to wait for its bundle), or stop it first with "npx exagent dev:stop".`
+        ? `How: use the dev server that is running ("npx exagent smoke" checks its bundle and its app), or stop it first with "npx exagent dev:stop".`
         : `How: free the port with "npx exagent dev:stop --port ${port} --force", which stops it only when it answers as an Expo dev server${listener ? ` and pid ${listener.pid} looks like one` : ''}${free == null ? '' : `, or start on a free port instead with "npx exagent dev --yes --port ${free}"`}. Leaving --port out lets this command pick a free port on its own.`,
     ].join('\n')
   );
   // Never the command that just failed: it would stop in exactly the same place.
   error.suggestedCommand = ours
-    ? 'npx exagent dev:wait'
+    ? 'npx exagent smoke'
     : free == null
       ? `npx exagent dev:stop --port ${port} --force`
       : `npx exagent dev --yes --port ${free}`;

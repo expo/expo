@@ -1,14 +1,16 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
+//
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 // The exit-code table of `dev:wait`, which is the whole point of the command: an agent branches on
 // the code before it reads a word of the output, so "ready", "not yet" and "not a dev server" must
 // never collapse into one number.
 
-import { event } from '../../events';
-import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
-import * as Log from '../../log';
-import { checkEntryBundleAsync, type BundleCheckResult } from '../../runtime/bundleCheck';
-import { discoverDevServerAsync } from '../../runtime/devServer';
-import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../../runtime/waitReady';
+import { event } from '../../../events';
+import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../../exitCodes';
+import * as Log from '../../../log';
+import { checkEntryBundleAsync, type BundleCheckResult } from '../../../runtime/bundleCheck';
+import { discoverDevServerAsync } from '../../../runtime/devServer';
+import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../../../runtime/waitReady';
 import type { DevWaitOptions } from '../resolveWaitOptions';
 import { devWaitAsync } from '../waitAsync';
 

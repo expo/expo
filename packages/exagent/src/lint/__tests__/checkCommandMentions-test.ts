@@ -11,9 +11,9 @@ import { extractCommandMentions, extractSuggestions } from '../commandMentions';
 
 const FLAGS = new Map<string, CommandFlagSpec>([
   [
-    'dev:wait',
+    'dev:stop',
     {
-      command: 'dev:wait',
+      command: 'dev:stop',
       flags: ['--json', '--timeout', '--help'],
       valueFlags: ['--timeout'],
       forwardsUnknownFlags: false,
@@ -55,7 +55,7 @@ describe('rule 1 — the command resolves', () => {
   it(`passes a command, an action, a bare group and a forwarded expo command`, () => {
     expect(
       check(
-        `const x = ['npx exagent dev:wait', 'npx exagent runtime', 'npx exagent prebuild', 'npx exagent add'];`
+        `const x = ['npx exagent dev:stop', 'npx exagent runtime', 'npx exagent prebuild', 'npx exagent add'];`
       )
     ).toEqual([]);
   });
@@ -100,18 +100,18 @@ describe('rule 1 — the command resolves', () => {
 
 describe('rule 2 — the options exist on the command', () => {
   it(`passes an option the command's own parse accepts`, () => {
-    expect(check(`const x = 'npx exagent dev:wait --timeout 90s --json';`)).toEqual([]);
+    expect(check(`const x = 'npx exagent dev:stop --timeout 90s --json';`)).toEqual([]);
   });
 
   it(`catches an option that belongs to another command`, () => {
-    const [problem] = check(`const x = 'npx exagent dev:wait --tail 40';`);
+    const [problem] = check(`const x = 'npx exagent dev:stop --tail 40';`);
     expect(problem?.rule).toBe('unknown-option');
-    expect(problem?.why).toContain('"exagent dev:wait" has no --tail');
+    expect(problem?.why).toContain('"exagent dev:stop" has no --tail');
   });
 
   it(`reads --flag=value as the flag it is`, () => {
-    expect(check(`const x = 'npx exagent dev:wait --timeout=90s';`)).toEqual([]);
-    expect(check(`const x = 'npx exagent dev:wait --tail=40';`)).toHaveLength(1);
+    expect(check(`const x = 'npx exagent dev:stop --timeout=90s';`)).toEqual([]);
+    expect(check(`const x = 'npx exagent dev:stop --tail=40';`)).toHaveLength(1);
   });
 
   it(`says nothing about a command that forwards what it does not own`, () => {
@@ -150,7 +150,7 @@ describe('rule 3 — the arguments have somewhere to go', () => {
   });
 
   it(`says nothing about a command that reads its own arguments`, () => {
-    expect(check(`const x = 'npx exagent dev:wait';`)).toEqual([]);
+    expect(check(`const x = 'npx exagent dev:stop';`)).toEqual([]);
   });
 });
 
@@ -212,7 +212,7 @@ describe('what the check counts', () => {
   it(`reports how much of what it read it was able to answer for`, () => {
     const file = 'src/example.ts';
     const source = [
-      `const a = 'npx exagent dev:wait --json';`,
+      `const a = 'npx exagent dev:stop --json';`,
       'const b = `npx exagent ${command} --help`;',
       `const c = { id: 'x', command: 'npx eas login', why: 'w' };`,
     ].join('\n');

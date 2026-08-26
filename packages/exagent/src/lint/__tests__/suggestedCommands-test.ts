@@ -41,7 +41,6 @@ describe("the suggested-command sweep", () => {
     const named = new Set(sweep.mentions.map((mention) => mention.command));
     for (const command of [
       "dev",
-      "dev:wait",
       "dev:stop",
       "dev:logs",
       "status",
@@ -85,7 +84,6 @@ describe("the option lists the sweep checks against", () => {
         "dev:logs",
         "dev:run",
         "dev:stop",
-        "dev:wait",
         "doctor:check",
         "install",
         "navigate",

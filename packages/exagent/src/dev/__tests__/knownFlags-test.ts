@@ -45,10 +45,10 @@ describe(assertKnownDevFlags, () => {
     expect(error.suggestedCommand).toBe('npx exagent dev --help');
   });
 
-  // The payoff of the sibling table: `--require-app` is a real option of a command a caller
-  // plausibly meant, so the answer is that command rather than "no such option".
+  // The payoff of the sibling table: `--tail` is a real option of a command a caller plausibly
+  // meant, so the answer is that command rather than "no such option".
   it(`names the sibling command when the option exists on one`, () => {
-    expect(() => assertKnownDevFlags(['--require-app'])).toThrow(/dev:wait/);
+    expect(() => assertKnownDevFlags(['--tail'])).toThrow(/dev:logs/);
   });
 
   it(`reads --flag=value as the flag`, () => {

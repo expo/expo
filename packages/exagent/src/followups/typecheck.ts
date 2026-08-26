@@ -20,8 +20,8 @@ export function buildTypeCheckFollowUps({
     return capFollowUps([
       {
         id: 'typecheck-not-run',
-        command: 'npx exagent dev:wait',
-        why: 'Nothing was type-checked, so this proves nothing about the code: the bundle check is the gate that still applies to a project without TypeScript.',
+        command: 'npx exagent smoke',
+        why: 'Nothing was type-checked, so this proves nothing about the code: the bundle check inside the smoke gate is what still applies to a project without TypeScript.',
       },
     ]);
   }
@@ -38,9 +38,9 @@ export function buildTypeCheckFollowUps({
 
   return capFollowUps([
     {
-      id: 'typecheck-dev-wait',
-      command: 'npx exagent dev:wait',
-      why: 'The types are consistent, which is not the same as the project bundling: this builds the entry bundle and reports where it stops.',
+      id: 'typecheck-smoke',
+      command: 'npx exagent smoke',
+      why: 'The types are consistent, which is not the same as the project bundling and running: this builds the entry bundle, opens the app and reports where it stops.',
     },
     {
       id: 'typecheck-runtime-errors',
