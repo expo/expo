@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Warn when defining tasks after the JavaScript bundle has finished loading.
+- Warn when defining tasks after the JavaScript bundle has finished loading. ([#49398](https://github.com/expo/expo/pull/49398) by [@HubertBer](https://github.com/HubertBer))
 
 ### 🐛 Bug fixes
 
