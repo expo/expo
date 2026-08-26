@@ -3,6 +3,8 @@
 // without a dev server, a device, or an EAS account.
 
 import type { ProjectState, StartPlan } from '../project/types';
+import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
+import type { ToolchainStatus } from '../toolchain/types';
 import { capFollowUps, type FollowUp } from './types';
 
 /** Where `expo start` listens when the command line names no port. */
@@ -30,6 +32,15 @@ export interface StartFollowUpInput {
   portKnown?: boolean;
   /** The project has an `eas.json`. */
   easJson: boolean;
+  /**
+   * Whether this machine can build the app itself, when something established it.
+   *
+   * `null` is "nobody asked", which is the honest answer for a run that planned no build: the
+   * probe costs a subprocess and a dev-server run has no reason to pay for one.
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+   */
+  localBuild?: ToolchainStatus | null;
 }
 
 /**
@@ -55,7 +66,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
       command: 'npx exagent runtime:errors',
       why: 'Reads the errors the running app reports; reproduce the problem while it listens.',
     },
-    easFollowUp(input.easJson),
+    buildEasBuildFollowUp(input.easJson, input.localBuild ?? null),
   ]);
 }
 
@@ -124,18 +135,38 @@ function realDeviceFollowUp({ expoGo, lanUrl, portKnown = true }: StartFollowUpI
   };
 }
 
-/** The rung above a device: a cloud build. `eas build` needs an `eas.json` to read a profile. */
-function easFollowUp(easJson: boolean): FollowUp {
+/**
+ * The rung above a device: a build that runs somewhere else.
+ *
+ * Named as a *cloud* build with what a cloud build asks for, because the alternative it is offered
+ * against — `expo run:ios`, `expo run:android` — runs on this machine and asks for something else
+ * entirely, and "build" on its own does not say which of the two is meant.
+ *
+ * When this machine can build locally, the `why` says why the cloud is still worth choosing. That
+ * is the reverse of the usual hint and it is the one a developer with a working Xcode actually
+ * needs: a local build cannot be handed to anyone, and it is signed with what this machine has.
+ *
+ * @see llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+ */
+export function buildEasBuildFollowUp(
+  easJson: boolean,
+  localBuild: ToolchainStatus | null = null
+): FollowUp {
+  const stillWorthIt =
+    localBuild === 'present'
+      ? ` This machine can do a local build itself; the cloud is still the answer when the build has to be signed with credentials this machine does not hold, or handed to somebody else as a downloadable artifact.`
+      : '';
+
   return easJson
     ? {
         id: 'eas-build',
         command: 'npx eas build --profile production',
-        why: 'eas.json is configured, so a production build can be started in the cloud.',
+        why: `eas.json is configured, so a production build can be started ${EAS_WHERE} — a cloud build, which needs ${EAS_REQUIREMENT} rather than Xcode or the Android SDK ${LOCAL_WHERE}.${stillWorthIt}`,
       }
     : {
         id: 'eas-build-configure',
         command: 'npx eas build:configure',
-        why: 'There is no eas.json yet, so EAS Build has to be configured before the first cloud build.',
+        why: `There is no eas.json yet, so EAS Build — the cloud build, which needs ${EAS_REQUIREMENT} rather than Xcode or the Android SDK ${LOCAL_WHERE} — has to be configured before the first one.${stillWorthIt}`,
       };
 }
 
@@ -146,13 +177,26 @@ function easFollowUp(easJson: boolean): FollowUp {
  * is the "state deltas" idea of llp/0009 §Wider ideas.
  */
 export function buildStartPlanFollowUps(plan: StartPlan, state: ProjectState): FollowUp[] {
-  const followups: FollowUp[] = [
-    {
-      id: 'dev',
-      command: 'npx exagent dev',
-      why: 'Runs the plan above, emitting it again first so nothing runs unannounced.',
-    },
-  ];
+  const followups: FollowUp[] = [];
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+  // First, when it applies at all: running the plan is the wrong next command on a machine that
+  // cannot perform its build, and a ladder that led with it would be advising a failure. `unknown`
+  // is not this case — nothing was established, and the plan is still the thing to try.
+  const location = plan.buildLocation;
+  if (location?.runsOn === 'local' && location.status === 'missing') {
+    followups.push({
+      id: 'eas-build-instead',
+      command: location.alternativeCommand!,
+      why: `The plan builds ${LOCAL_WHERE} and this machine does not have ${localTool(location.platform)}, so running it stops at the compiler. This builds the same app ${EAS_WHERE} instead, which needs ${EAS_REQUIREMENT}.`,
+    });
+  }
+
+  followups.push({
+    id: 'dev',
+    command: 'npx exagent dev',
+    why: 'Runs the plan above, emitting it again first so nothing runs unannounced.',
+  });
 
   if (BUILDING_RULES.includes(plan.rule)) {
     followups.push({

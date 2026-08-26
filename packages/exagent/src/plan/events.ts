@@ -2,6 +2,7 @@ import { events } from '2g';
 import type { SerializedError } from '2g';
 
 import type { PlanStep, ProjectTarget } from '../project/types';
+import type { PlanBuildLocation } from '../toolchain/types';
 
 declare module '2g' {
   interface EventRegistry {
@@ -18,6 +19,13 @@ declare module '2g' {
       rule: string;
       steps: PlanStep[];
       reasons: string[];
+      /**
+       * Where the build in this plan runs and whether this machine can do it, or `null` when the
+       * plan builds nothing.
+       *
+       * @see llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+       */
+      buildLocation: PlanBuildLocation | null;
     };
     /**
      * An interactive run was offered a plan with build-class steps and said no, so nothing ran.

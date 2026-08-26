@@ -1,10 +1,26 @@
 import type { ProjectState, StartPlan } from '../../project/types';
+import type { PlanBuildLocation } from '../../toolchain/types';
 import {
+  buildEasBuildFollowUp,
   buildStartFollowUps,
   buildStartPlanFollowUps,
   resolveDevServerPort,
   DEFAULT_DEV_SERVER_PORT,
 } from '../start';
+
+/** The build location a stale plan carries, with whatever the probe answered. */
+function mockBuildLocation(overrides: Partial<PlanBuildLocation> = {}): PlanBuildLocation {
+  return {
+    runsOn: 'local',
+    platform: 'ios',
+    requirement: 'Xcode on this machine',
+    status: null,
+    detail: null,
+    caveats: [],
+    alternativeCommand: 'npx eas build --platform ios --profile development',
+    ...overrides,
+  };
+}
 
 const lanUrl = 'exp://192.168.1.5:8081';
 
@@ -36,8 +52,10 @@ function mockPlan(overrides: Partial<StartPlan> = {}): StartPlan {
         argv: ['expo', 'start', '--go'],
         reason: 'Opens the project in Expo Go.',
         timeClass: 'seconds',
+        runsOn: null,
       },
     ],
+    buildLocation: null,
     ...overrides,
   };
 }
@@ -56,15 +74,16 @@ describe(buildStartFollowUps, () => {
 
   // The EAS rung is still the last one built, and the cap is still what drops it — for either
   // answer to "does this project have an eas.json", and whatever else the ladder holds.
-  it.each([true, false])(`should keep the cloud build off a native ladder (eas.json: %s)`, (
-    easJson
-  ) => {
-    const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson });
+  it.each([true, false])(
+    `should keep the cloud build off a native ladder (eas.json: %s)`,
+    (easJson) => {
+      const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson });
 
-    expect(followups).toHaveLength(3);
-    expect(ids(followups)).not.toContain('eas-build');
-    expect(ids(followups)).not.toContain('eas-build-configure');
-  });
+      expect(followups).toHaveLength(3);
+      expect(ids(followups)).not.toContain('eas-build');
+      expect(ids(followups)).not.toContain('eas-build-configure');
+    }
+  );
 
   it(`should fall back to a tunnel when the host has no LAN address`, () => {
     const followups = buildStartFollowUps({
@@ -113,11 +132,7 @@ describe(buildStartFollowUps, () => {
     it(`should name no URL when nothing reported a port`, () => {
       const followups = buildStartFollowUps({ ...web, webUrl: null });
 
-      expect(ids(followups)).toEqual([
-        'dev-server-port-unknown',
-        'web-bundle-check',
-        'deploy-web',
-      ]);
+      expect(ids(followups)).toEqual(['dev-server-port-unknown', 'web-bundle-check', 'deploy-web']);
       expect(followups.some((followup) => followup.command.startsWith('http://localhost'))).toBe(
         false
       );
@@ -198,6 +213,95 @@ describe(buildStartPlanFollowUps, () => {
 
     expect(followups).toHaveLength(3);
   });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+  describe('a plan this machine cannot build', () => {
+    it(`should lead with the cloud build rather than with the plan that would fail`, () => {
+      const followups = buildStartPlanFollowUps(
+        mockPlan({
+          rule: 'dev-client-stale',
+          buildLocation: mockBuildLocation({
+            status: 'missing',
+            detail: 'xcode-select is not on PATH.',
+          }),
+        }),
+        mockState()
+      );
+
+      expect(ids(followups)).toEqual(['eas-build-instead', 'dev', 'build-freshness']);
+      expect(followups[0]!.command).toBe('npx eas build --platform ios --profile development');
+      // The bare tool name, because the sentence has already said where: "this machine has no
+      // Xcode on this machine" is what the requirement string produces when it is dropped in.
+      expect(followups[0]!.why).toContain('this machine does not have Xcode');
+      expect(followups[0]!.why).toContain('an Expo account');
+    });
+
+    it(`should keep the plan first when the machine can build`, () => {
+      const followups = buildStartPlanFollowUps(
+        mockPlan({
+          rule: 'dev-client-stale',
+          buildLocation: mockBuildLocation({ status: 'present', detail: 'Xcode 16.2.' }),
+        }),
+        mockState()
+      );
+
+      expect(ids(followups)).toEqual(['dev', 'build-freshness']);
+    });
+
+    // Nothing was established, so the plan is still the thing to try: a cloud build offered over
+    // an unread probe is advice built on no evidence at all.
+    it(`should keep the plan first when the probe could not decide`, () => {
+      const followups = buildStartPlanFollowUps(
+        mockPlan({
+          rule: 'dev-client-stale',
+          buildLocation: mockBuildLocation({ status: 'unknown', detail: 'EPERM' }),
+        }),
+        mockState()
+      );
+
+      expect(ids(followups)).not.toContain('eas-build-instead');
+      expect(ids(followups)[0]).toBe('dev');
+    });
+  });
+});
+
+// @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+// The cloud rung is built for every native ladder and dropped by the cap of three, so it is
+// asserted here rather than through `buildStartFollowUps`, which only ever returns the survivors.
+describe(buildEasBuildFollowUp, () => {
+  it(`should name it a cloud build and say what a cloud build needs`, () => {
+    const followup = buildEasBuildFollowUp(true);
+
+    expect(followup.id).toBe('eas-build');
+    expect(followup.why).toContain('cloud build');
+    expect(followup.why).toContain('an Expo account');
+  });
+
+  it(`should say the same of the configure step, which precedes the first one`, () => {
+    const followup = buildEasBuildFollowUp(false);
+
+    expect(followup.id).toBe('eas-build-configure');
+    expect(followup.command).toBe('npx eas build:configure');
+    expect(followup.why).toContain('cloud build');
+    expect(followup.why).toContain('an Expo account');
+  });
+
+  // The reverse hint: the reader has Xcode, so "you can build in the cloud" is not news. What is
+  // news is the two things a local build cannot give them.
+  it(`should say why the cloud is worth it anyway when this machine can build`, () => {
+    const followup = buildEasBuildFollowUp(true, 'present');
+
+    expect(followup.why).toContain('This machine can do a local build itself');
+    expect(followup.why).toContain('credentials this machine does not hold');
+    expect(followup.why).toContain('downloadable artifact');
+  });
+
+  it.each([null, 'missing', 'unknown'] as const)(
+    `should leave the reverse hint out when the local build is %s`,
+    (status) => {
+      expect(buildEasBuildFollowUp(true, status).why).not.toContain('This machine can do a');
+    }
+  );
 });
 
 describe(resolveDevServerPort, () => {

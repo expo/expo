@@ -215,6 +215,77 @@ the lock says so — the message says that instead, because then there is nothin
 One retry per plan. A second collision means the port this CLI picked was taken between the bind
 test and the dev server's own bind, and retrying forever on that is a loop nobody asked for.
 
+## Where a build runs
+
+Decision [confirmed — Kudo, 2026-08-24]. Every build this CLI plans, suggests, or waits on says
+whether it runs **`local`** — on this machine, with this machine's toolchain — or **`eas`** — in the
+cloud on EAS, with an Expo account. Two words, one module, no synonyms.
+
+The gap was never in what the CLI *does*; it was that "build" is one word for two things that want
+different things of the caller. `exagent dev` plans `expo run:ios`, which needs Xcode and about
+fifteen minutes of this machine. `exagent build:wait` attaches to something running in a queue in a
+data centre, which needs an account and nothing else. A reader who has one and not the other cannot
+tell from the word which advice they were just given — and the plan is read *before* anything runs,
+so a caller with no Xcode approved a plan, waited, and met the toolchain as a compiler error many
+minutes in. The answer is not a new capability: `eas build` was always there. It is that the plan
+has to name which of the two it is, and what that one costs.
+
+**The vocabulary is a module, not a convention** [observed — `src/toolchain/runsOn.ts`]. `RunsOn`,
+`LOCAL_WHERE`, `EAS_WHERE`, `EAS_REQUIREMENT`, `localTool`, `localRequirement`, `easBuildCommand`.
+Everything that says any of this — plan steps, the plan table, `dev --help`, `build:wait --help`,
+the `impact` report, five follow-ups — reads its wording from there, so `local` means one thing in
+all of them and the EAS command is spelled one way. Two functions rather than one for the toolchain
+name (`localTool` → `Xcode`, `localRequirement` → `Xcode on this machine`) because a sentence that
+has already said "this machine" must not say it again: the first version of this shipped
+"this machine has no the Android SDK on this machine" in two places at once, which is what one
+string does when it is written for one sentence and pasted into three.
+
+**Per step, and `null` where the question does not apply.** `PlanStep.runsOn` is
+`'local' | 'eas' | null`. `expo prebuild` and `expo run:*` are `local`; `expo start` and
+`expo install` are `null`, not a third value — a dev server does not run "somewhere", it runs here
+and builds nothing, and answering the question anyway would blur the one distinction the key exists
+to draw. Prebuild counts as a build step deliberately: it ends in a `pod install` that wants Xcode's
+command line tools, and a caller who cannot build here needs to know at step 1, not step 2.
+
+**The probe is the caller's, so the decision table stays pure.** `decideStartPlan` is a function of
+*project* state, and "does this machine have Xcode" is a fact about the host, so it is two calls:
+the table returns a plan whose `buildLocation` says what a local build would need (`status: null` —
+nobody asked), and `applyToolchainProbe` folds in what the machine answered. The probe runs only for
+a plan that contains a build, which is the only case with a question in it.
+
+**Three answers, and `unknown` is one of them** [observed — `src/toolchain/detect.ts`]. iOS is
+`xcode-select -p` and then `xcodebuild -version`, and the second is the one that matters: a machine
+with only the Command Line Tools answers the first and refuses the second, and it cannot build an
+app. Android is a *directory*, not a command — `ANDROID_HOME`, `ANDROID_SDK_ROOT`, then the
+installer's default — because Gradle finds the SDK through a path and never through `adb`. This
+machine is why that distinction is written down [observed — live, 2026-08-24]: the SDK is at
+`~/Library/Android/sdk`, no environment variable names it, and `adb` is not on `PATH`. That machine
+can build and cannot run one shell command, so the SDK decides the status and `adb` is reported as a
+**caveat**, with the two lines that would fix the shell. A probe that could not run answers
+`unknown`, never `missing`: nothing was established, and routing a caller to the cloud over a
+toolchain the probe merely could not reach would be worse than the silence it replaced. Cached per
+process; a probe that throws is caught, because a plan that could not be made because a probe failed
+is worse than a plan that says it does not know.
+
+**The plan says it, and does not act on it.** A missing toolchain adds two sentences to the plan's
+reasons, a `Not found: … Instead: npx eas build --platform ios --profile development` line above the
+`Why` list, one `Log.warn` before the confirmation, and an `eas-build-instead` follow-up at the
+*head* of the ladder — the plan's steps are never rewritten. The caller may have an answer this CLI
+cannot see, and a plan that quietly swapped its steps for the cloud would stop being the plan that
+was approved ([[0008-guardrails]]). `unknown` gets none of that except the sentence: a warning about
+a toolchain that is probably installed is noise on every run after the first.
+
+**The reverse hint.** When this machine *can* build, the `eas-build` follow-up says why the cloud is
+still worth choosing — credentials this machine does not hold, and an artifact with a URL somebody
+else can install. That is the hint a developer with a working Xcode actually needs, and it is the
+one nothing was saying. `impact`'s `needs-native-build` answer names both routes for the same
+reason: "you need a native build" is not one instruction, and which route is right depends on what
+the caller has and on what they need out of it.
+
+Shipped in `src/toolchain/` (`runsOn.ts`, `detect.ts`, `planLocation.ts`, `types.ts`), with
+`buildLocation` on `StartPlan`, on the `cli:start_plan` event and in the `--json` payload — present
+and `null` for a plan that builds nothing, so a caller reads one key rather than checking for it.
+
 ## Implemented in v1 as
 
 [observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/status/`, `src/dev/`, `exagent dev [--plan]`) with these deliberate approximations of the table above:

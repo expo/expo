@@ -52,11 +52,17 @@ export function emitStartPlan(
     rule: plan.rule,
     steps: plan.steps,
     reasons: plan.reasons,
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs — the event stream is
+    // the channel a driving agent reads the plan on, and "does this machine have Xcode" is exactly
+    // the sort of thing it would otherwise go and shell out to find.
+    buildLocation: plan.buildLocation,
   });
   if (print === 'none') {
     return;
   }
   // In JSON mode the plan is the only thing on stdout, so `exagent dev --plan --json` can be
   // piped into a parser. Agents that read the JSONL events get the same plan either way.
-  Log.log(print === 'json' ? JSON.stringify({ ...plan, followups }, null, 2) : formatStartPlan(plan));
+  Log.log(
+    print === 'json' ? JSON.stringify({ ...plan, followups }, null, 2) : formatStartPlan(plan)
+  );
 }

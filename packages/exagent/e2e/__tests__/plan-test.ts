@@ -9,6 +9,7 @@ import path from 'node:path';
 
 import {
   executeExagentAsync,
+  installStubBinAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
@@ -22,13 +23,42 @@ type StartPlan = {
     argv: string[];
     reason: string;
     timeClass: 'seconds' | 'a-minute' | 'minutes' | 'many-minutes';
+    runsOn: 'local' | 'eas' | null;
   }[];
   rule: string;
   reasons: string[];
+  buildLocation: {
+    runsOn: 'local' | 'eas';
+    platform: 'ios' | 'android';
+    requirement: string;
+    status: 'present' | 'missing' | 'unknown' | null;
+    detail: string | null;
+    caveats: string[];
+    alternativeCommand: string | null;
+  } | null;
   followups: { id: string; command: string; why: string }[];
 };
 
 const TIME_CLASSES = ['seconds', 'a-minute', 'minutes', 'many-minutes'];
+
+/**
+ * Make this machine look like one without Xcode, whatever it really has.
+ *
+ * A stub `xcode-select` in the directory the e2e runner already puts on `PATH`: the probe shells
+ * out to it exactly as it does to the real one, so this exercises the probe rather than a switch
+ * built for the test. A host that is not macOS answers `missing` before it spawns anything, which
+ * is the same answer by a different route — so the assertions hold on either.
+ */
+async function breakXcodeSelectAsync(projectRoot: string): Promise<void> {
+  const binDir = path.join(projectRoot, '.stub-bin');
+  const stubScript = path.join(binDir, 'xcode-select-stub.js');
+  await fs.promises.mkdir(binDir, { recursive: true });
+  await fs.promises.writeFile(
+    stubScript,
+    "process.stderr.write('xcode-select: error: unable to get active developer directory\\n');\nprocess.exit(2);\n"
+  );
+  await installStubBinAsync(binDir, 'xcode-select', stubScript);
+}
 
 /** Copy a fixture and install both stub bins the plan engine may reach for. */
 async function setupAsync(fixtureName: string): Promise<string> {
@@ -226,6 +256,89 @@ describe('exagent dev --plan', () => {
       }
 
       expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+    });
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+  describe('where the build runs', () => {
+    it('marks every building step local, and carries the requirement in the payload', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.steps.map((step) => [step.id, step.runsOn])).toEqual([
+        ['prebuild', 'local'],
+        ['run', 'local'],
+      ]);
+      expect(plan.buildLocation).toMatchObject({
+        runsOn: 'local',
+        platform: 'ios',
+        requirement: 'Xcode on this machine',
+        alternativeCommand: 'npx eas build --platform ios --profile development',
+      });
+      // The status is this host's own answer and the fixtures cannot decide it, so what is pinned
+      // is that a probe ran at all and answered with one of the three words it may answer with.
+      expect(['present', 'missing', 'unknown']).toContain(plan.buildLocation!.status);
+    });
+
+    it('marks a plan that builds nothing as building nothing', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.steps.map((step) => step.runsOn)).toEqual([null]);
+      // Present and null, rather than absent: a caller reads one key instead of checking for it.
+      expect(Object.keys(plan)).toContain('buildLocation');
+      expect(plan.buildLocation).toBeNull();
+    });
+
+    // The whole point of probing before the plan is printed: the caller learns that this machine
+    // cannot do the build now, not many minutes later at a compiler that will not start.
+    it('names the EAS route up front when this machine has no Xcode', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      await breakXcodeSelectAsync(projectRoot);
+
+      const output = await planTextInAsync(projectRoot, ['--ios']);
+
+      expect(output).toContain('Build: local');
+      expect(output).toContain('Not found');
+      expect(output).toContain('npx eas build --platform ios --profile development');
+      expect(output).toContain('an Expo account');
+      // And the ladder leads with the command that works, not with the plan that would fail.
+      expect(output).toMatch(
+        /Suggested next:\s*\n\s*npx eas build --platform ios --profile development/
+      );
+    });
+
+    it('reports a missing Android SDK the same way, from the directory that is not there', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--plan', '--json', '--android'],
+        { env: { ANDROID_HOME: path.join(projectRoot, 'no-such-android-sdk') } }
+      );
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.buildLocation).toMatchObject({
+        platform: 'android',
+        status: 'missing',
+        alternativeCommand: 'npx eas build --platform android --profile development',
+      });
+      expect(plan.buildLocation!.detail).toContain('ANDROID_HOME');
+      expect(plan.followups[0]!.command).toBe(
+        'npx eas build --platform android --profile development'
+      );
+    });
+
+    it('says in the help which of the two routes each command is', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const dev = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
+      const wait = await executeExagentAsync(projectRoot, ['build:wait', '--help']);
+
+      expect(dev.all).toContain('local build');
+      expect(dev.all).toContain('npx eas build --platform ios --profile development');
+      expect(wait.all).toContain('runs in the cloud');
+      expect(wait.all).toContain('Expo account');
     });
   });
 

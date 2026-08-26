@@ -1,6 +1,8 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md
 // Shared contract for the project-state probe, the Expo Go compatibility check, the
 // post-install impact classifier, and the smart start plan engine. Pure data — no I/O here.
+import type { RunsOn } from '../toolchain/runsOn';
+import type { PlanBuildLocation } from '../toolchain/types';
 import type { FingerprintSource } from './fingerprint';
 
 /** How the app is expected to run during development. */
@@ -66,6 +68,13 @@ export interface PlanStep {
   argv: string[];
   reason: string;
   timeClass: TimeClass;
+  /**
+   * Where this step runs: `local` on this machine, `eas` in the cloud, `null` when it builds
+   * nothing and the question does not apply to it.
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+   */
+  runsOn: RunsOn | null;
 }
 
 export interface StartPlan {
@@ -74,4 +83,12 @@ export interface StartPlan {
   /** Decision-table row that produced this plan, for tests and debugging. */
   rule: string;
   reasons: string[];
+  /**
+   * Where the build in this plan runs and what that place needs, or `null` when the plan builds
+   * nothing. Filled in by `decideStartPlan`; the machine's own answer is folded in afterwards by
+   * `applyToolchainProbe`, so the decision table stays a pure function of probed project state.
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+   */
+  buildLocation: PlanBuildLocation | null;
 }

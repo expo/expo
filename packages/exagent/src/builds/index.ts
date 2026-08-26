@@ -41,7 +41,7 @@ export const exagentBuildWait: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Wait for an EAS build to finish, and exit with what it did`,
+      `Wait for an EAS cloud build to finish, and exit with what it did`,
       chalk`npx exagent build:wait {dim <build-id> [options]}`,
       [
         `--timeout ${DURATION_METAVAR}   Give up after this long. Default: 45m`,
@@ -69,9 +69,15 @@ export const exagentBuildWait: Command = async (argv) => {
         chalk`  Progress goes to the {bold LOG_EVENTS} JSONL stream as {bold cli:build_wait_poll}, so`,
         chalk`  {bold --json} still prints exactly one object on stdout.`,
         '',
-        chalk`  This attaches to a build that already exists — one started by CI, by the dashboard,`,
-        chalk`  or by another agent. To start one and wait on it in the same command, use`,
-        chalk`  {bold npx eas build --wait}. For a workflow run, use {bold npx eas workflow:status <id> --wait}.`,
+        chalk`  {bold This attaches to an EAS build, which runs in the cloud} — one started by CI, by the`,
+        chalk`  dashboard, or by another agent. It needs an Expo account and nothing else: no Xcode,`,
+        chalk`  no Android SDK, and no build of any kind on this machine. To start one and wait on it`,
+        chalk`  in the same command, use {bold npx eas build --wait}. For a workflow run, use`,
+        chalk`  {bold npx eas workflow:status <id> --wait}.`,
+        '',
+        chalk`  It waits on nothing that runs here. A build on this machine — {bold npx exagent dev},`,
+        chalk`  {bold npx expo run:ios} — is a foreground process you already have; there is no id to wait on`,
+        chalk`  and no queue it is in.`,
         '',
       ].join('\n')
     );

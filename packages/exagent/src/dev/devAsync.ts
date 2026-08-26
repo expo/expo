@@ -5,6 +5,7 @@
 
 import { checkpointBeforeAsync } from '../checkpoint/integration';
 import { outputTail } from '../deploy/parseOutput';
+import { EXIT_OUTCOME_FAILED } from '../exitCodes';
 import {
   buildStartPlanFollowUps,
   followUpsEnabled,
@@ -25,7 +26,8 @@ import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { resolveStartFollowUps } from '../start/followUps';
 import { runDevServerAsync, type DevServerRun } from '../start/startAsync';
-import { EXIT_OUTCOME_FAILED } from '../exitCodes';
+import { probePlanBuildLocationAsync } from '../toolchain';
+import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
 import { isInteractive } from '../utils/interactive';
@@ -58,13 +60,19 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   }
 
   const state = await probeProjectStateAsync(projectRoot);
-  const plan = decideStartPlan(state, {
-    platform: options.platform ?? resolveDefaultPlatform(state),
-    // Only the flag the caller typed reaches `expo start`, and only that form opens the app on a
-    // device. The default above says what to *build* for and never appears on a command line.
-    requestedPlatform: options.platform,
-    lastBuild: readLastBuildFingerprints(projectRoot),
-  });
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+  // Two calls, because the decision table is a pure function of *project* state and "can this
+  // machine build for ios?" is a fact about the host. The probe runs only for a plan that builds,
+  // and it cannot fail the run: an unanswerable probe reports `unknown` and the plan stands.
+  const plan = await probePlanBuildLocationAsync(
+    decideStartPlan(state, {
+      platform: options.platform ?? resolveDefaultPlatform(state),
+      // Only the flag the caller typed reaches `expo start`, and only that form opens the app on a
+      // device. The default above says what to *build* for and never appears on a command line.
+      requestedPlatform: options.platform,
+      lastBuild: readLastBuildFingerprints(projectRoot),
+    })
+  );
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command
   // `--plan` stops here, so its follow-ups are about the plan itself and the plan object is the
@@ -89,6 +97,13 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
     print: options.json ? 'none' : 'text',
     followups: [],
   });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+  // On stderr, and before the confirmation, because this is the one thing that decides whether the
+  // plan below is worth starting: a build that cannot run here fails many minutes in, at a compiler
+  // error about a toolchain, and the command that does work is `eas build`. Said out loud even in
+  // `--json` mode, where the plan carrying the same fact is not printed until the run is over.
+  warnUnbuildable(plan);
 
   // The follow-ups of a run are the *dev server's*, and in `--json` mode they are computed after
   // it so they can name the port it actually took. A terminal cannot wait for that: the bundler
@@ -135,6 +150,23 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   }
 
   return run.exitCode;
+}
+
+/**
+ * Warn, once, when the plan builds here and this machine cannot.
+ *
+ * Only for `missing`: `unknown` has established nothing about the machine, and a warning about a
+ * toolchain that is probably installed is noise on every run that follows.
+ */
+function warnUnbuildable(plan: StartPlan): void {
+  const location = plan.buildLocation;
+  if (location?.runsOn !== 'local' || location.status !== 'missing') {
+    return;
+  }
+  const tool = localTool(location.platform);
+  Log.warn(
+    `This plan builds ${LOCAL_WHERE} and this machine does not have ${tool}: ${location.detail} The build step will fail once it reaches the compiler. To build for ${location.platform} without ${tool}, run "${location.alternativeCommand}", which builds ${EAS_WHERE} and needs ${EAS_REQUIREMENT}.`
+  );
 }
 
 /**
@@ -528,6 +560,9 @@ function resolveRunFollowUps(
     expoGo: plan.target === 'expo-go',
     web: plan.target === 'web',
     port,
+    // Whatever the plan's own probe established, and null when it planned no build and probed
+    // nothing. The cloud-build rung reads it to say why the cloud is still worth choosing.
+    localBuild: plan.buildLocation?.status ?? null,
   });
 }
 

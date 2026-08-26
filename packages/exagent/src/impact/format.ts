@@ -4,6 +4,7 @@
 
 import chalk from 'chalk';
 
+import { EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
 import type { ImpactClass, ImpactReport, PlatformImpact } from './types';
 
 /** Width of the label column, matching `status`, `deploy` and `build:wait`. */
@@ -86,7 +87,11 @@ function classLine(impactClass: ImpactClass): string {
         'dev-client-compatible — the installed app still runs this; restart Metro'
       );
     case 'needs-native-build':
-      return chalk.red('needs-native-build — the app has to be built again');
+      // Where, as well as what. "The app has to be built again" left the two routes unnamed, and
+      // they need different things of the caller — see llp/0004 §Where a build runs.
+      return chalk.red(
+        `needs-native-build — the app has to be built again, ${LOCAL_WHERE} or ${EAS_WHERE}`
+      );
   }
 }
 

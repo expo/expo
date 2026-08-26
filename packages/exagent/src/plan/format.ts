@@ -6,6 +6,8 @@
 import chalk from 'chalk';
 
 import type { StartPlan, TimeClass } from '../project/types';
+import { EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE, RUNS_ON_LABELS } from '../toolchain/runsOn';
+import type { PlanBuildLocation } from '../toolchain/types';
 
 const TIME_CLASS_LABELS: Record<TimeClass, string> = {
   seconds: '~seconds',
@@ -29,12 +31,25 @@ export function formatStartPlan(plan: StartPlan): string {
     '',
   ];
 
+  // The time class is padded so the `local` / `eas` column lines up: where a step runs is the
+  // fact a reader scans this table for, and a ragged column is one nobody reads.
+  const timeWidth = Math.max(...plan.steps.map((step) => formatTimeClass(step.timeClass).length));
+
   for (const [index, step] of plan.steps.entries()) {
     const command = commands[index]!.padEnd(commandWidth);
+    const time = formatTimeClass(step.timeClass).padEnd(timeWidth);
+    // A step that builds nothing gets no label rather than a third word: `expo start` does not
+    // run "somewhere", it runs here and builds nothing, and saying `local` would blur the one
+    // distinction this column exists to draw.
+    const where = step.runsOn ? chalk`  {yellow ${RUNS_ON_LABELS[step.runsOn]}}` : '';
     lines.push(
-      chalk`  ${index + 1}. {cyan ${command}}  {dim ${formatTimeClass(step.timeClass)}}`,
+      chalk`  ${index + 1}. {cyan ${command}}  {dim ${time}}${where}`,
       chalk`     {dim ${step.reason}}`
     );
+  }
+
+  if (plan.buildLocation) {
+    lines.push('', `  ${formatBuildLocation(plan.buildLocation)}`);
   }
 
   lines.push('', chalk`  {bold Why}`);
@@ -43,4 +58,29 @@ export function formatStartPlan(plan: StartPlan): string {
   }
 
   return lines.join('\n');
+}
+
+/**
+ * One line saying where this plan's build happens and whether this machine can do it.
+ *
+ * Above the `Why` list rather than inside it: a machine that cannot build is the thing that
+ * decides whether the plan below is worth starting at all, and a reader who stops after the table
+ * has to have met it. The EAS alternative is on the same line for the same reason — the answer to
+ * "I cannot build here" has to arrive with the problem, not a screen later.
+ */
+export function formatBuildLocation(location: PlanBuildLocation): string {
+  const where = location.runsOn === 'local' ? LOCAL_WHERE : EAS_WHERE;
+  const needs = location.runsOn === 'local' ? location.requirement : EAS_REQUIREMENT;
+  const head = chalk`{bold Build:} {yellow ${RUNS_ON_LABELS[location.runsOn]}} — runs ${where}, needs ${needs}.`;
+
+  switch (location.status) {
+    case 'present':
+      return chalk`${head} {green Found}: ${location.detail}`;
+    case 'missing':
+      return chalk`${head} {red Not found}: ${location.detail} {bold Instead:} ${location.alternativeCommand}`;
+    case 'unknown':
+      return chalk`${head} {yellow Not established}: ${location.detail} If it is missing: ${location.alternativeCommand}`;
+    default:
+      return head;
+  }
 }
