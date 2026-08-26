@@ -464,3 +464,149 @@ describe('exagent runtime:stop --cloud', () => {
     expect(easInvocations(projectRoot).some((argv) => argv[0] === 'simulator:exec')).toBe(false);
   });
 });
+
+// The two remaining `--cloud` commands. `navigate` and `runtime:stop` above had suites; these two
+// take the same flag, walk the same ladder through `resolveDeviceAsync`, and had none — so the
+// cloud half of `smoke` and of `runtime:reload` was reachable only by running it against a real
+// billed session. What is asked here is the same three questions: which binary was spawned, with
+// which argv, and what a run with no session is told.
+describe('exagent smoke --cloud', () => {
+  // The device-dependent phases go to the session rather than to this machine's tools. The local
+  // half of this is `smoke-test.ts` ("hands xcrun simctl io the udid and the path"), and the two
+  // have to be checked separately because they cross different process boundaries.
+  it(`photographs the session through its controller, never the local simulator`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+    // The stub has to name *this* project: a dev server serving another one makes `smoke` skip
+    // every phase after `bundler-ready`, and the device phase is the one under test.
+    const stub = await startStubDevServerAsync({ targets: [], projectRoot });
+    try {
+      await executeExagentAsync(
+        projectRoot,
+        ['smoke', '--cloud', '--dev-server-url', stub.url, '--json', '--timeout', '2s'],
+        { reject: false }
+      );
+
+      const invocations = easInvocations(projectRoot);
+      // The session was looked up: this is the cloud ladder rather than the local one.
+      expect(invocations.some((argv) => argv[0] === 'simulator:list')).toBe(true);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  // A gate must not pass on a device it never found. `--cloud` is `required` for `smoke`'s device
+  // phases, so an account with no session is told so rather than quietly falling back here.
+  it(`reports the missing session rather than falling back to this machine`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [], projectRoot });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['smoke', '--cloud', '--dev-server-url', stub.url, '--json', '--timeout', '2s'],
+        { reject: false, env: { STUB_SIM_SESSIONS: '0' } }
+      );
+
+      // Whatever the outcome code, the report is one parseable object and it never claims a pass.
+      expect(result.exitCode).not.toBe(0);
+      expect(() => JSON.parse(result.stdout)).not.toThrow();
+      const report = JSON.parse(result.stdout);
+      expect(report.ok).toBe(false);
+      // The phase that could not run says which device it could not find.
+      const app = report.phases.find((phase: { id: string }) => phase.id === 'app');
+      expect(app.reason).toContain('EAS Simulator session');
+      expect(report.deviceBackend).toBeNull();
+      // And the ladder stays on the backend this run asked for: a suggestion that dropped
+      // `--cloud` would send a host that reached for the cloud to a device it may not have.
+      for (const followup of report.followups as { command: string }[]) {
+        if (/exagent (smoke|navigate)\b/.test(followup.command)) {
+          expect(followup.command).toContain('--cloud');
+        }
+      }
+      // No verb was sent to a session that does not exist.
+      expect(easInvocations(projectRoot).some((argv) => argv[0] === 'simulator:exec')).toBe(false);
+    } finally {
+      await stub.close();
+    }
+  });
+});
+
+describe('exagent runtime:reload --cloud', () => {
+  // The device method of a reload: stop the app on the session's device and open it again. Without
+  // `--cloud` this reaches a local device, and `runtime-reload-test.ts` covers that; with it, the
+  // two verbs have to leave this process as `simulator:exec` calls on the session.
+  it(`drives the session's controller when the dev server cannot reload`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+    // `messageSocket: 'none'` is a dev server that refuses the client command socket, which is what
+    // sends the reload down the device path instead.
+    const stub = await startStubDevServerAsync({ targets: [], messageSocket: 'none' });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        [
+          'runtime:reload',
+          '--cloud',
+          '--dev-server-url',
+          stub.url,
+          '--timeout',
+          '2s',
+          '--json',
+          '--no-followups',
+        ],
+        { reject: false }
+      );
+
+      const report = JSON.parse(result.stdout);
+      // The dev-server method is tried first and refused, so the device method is what ran.
+      expect(report.attempts.map((attempt: { method: string }) => attempt.method)).toEqual([
+        'dev-server',
+        'device',
+      ]);
+      const invocations = easInvocations(projectRoot);
+      expect(invocations.some((argv) => argv[0] === 'simulator:list')).toBe(true);
+      // Never the session itself: a reload closes an app, and `--shutdown` would stop a machine
+      // that bills by the minute and may not be this run's to stop.
+      expect(invocations.some((argv) => argv.includes('--shutdown'))).toBe(false);
+      expect(invocations.some((argv) => argv[0] === 'simulator:stop')).toBe(false);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  it(`says how to start a session when --cloud finds none`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [], messageSocket: 'none' });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        [
+          'runtime:reload',
+          '--cloud',
+          '--dev-server-url',
+          stub.url,
+          '--timeout',
+          '2s',
+          '--json',
+          '--no-followups',
+        ],
+        { reject: false, env: { STUB_SIM_SESSIONS: '0' } }
+      );
+
+      // The one thing a reload must never do on a device it could not find: claim it reloaded.
+      expect(result.exitCode).not.toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(false);
+      expect(report.method).toBeNull();
+      const device = report.attempts.find(
+        (attempt: { method: string }) => attempt.method === 'device'
+      );
+      expect(device.ok).toBe(false);
+      expect(device.reason).toContain('EAS Simulator session');
+      // And no verb was sent to a session that does not exist.
+      expect(easInvocations(projectRoot).some((argv) => argv[0] === 'simulator:exec')).toBe(false);
+    } finally {
+      await stub.close();
+    }
+  });
+});

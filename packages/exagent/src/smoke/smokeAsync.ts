@@ -150,6 +150,10 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
     screenshotPath: run.screenshot.ok ? run.screenshot.path : null,
     route: options.route,
     platform: options.platform,
+    // `required` is `--cloud`; `fallback` is a run that would only reach a session if this machine
+    // had no device, and a ladder must not put a billed session on a line the caller never asked
+    // for (llp/0005 §What the cloud backend can and cannot do).
+    cloud: options.cloud === 'required',
   });
 }
 
