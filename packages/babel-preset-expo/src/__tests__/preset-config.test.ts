@@ -60,7 +60,6 @@ describe('plugin list snapshots', () => {
         "transform-flow-strip-types",
         "transform-typescript",
         "base$0$2$0",
-        "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
         "expo-inline-manifest-plugin",
@@ -88,6 +87,7 @@ describe('plugin list snapshots', () => {
         "transform-destructuring",
         "transform-async-generator-functions",
         "transform-async-to-generator",
+        "transform-object-rest-spread",
         "transform-parameters",
         "transform-react-display-name",
         "transform-runtime",
@@ -213,7 +213,6 @@ describe('plugin list snapshots', () => {
         "transform-flow-enums",
         "transform-flow-strip-types",
         "transform-typescript",
-        "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
         "Rewrite react-native to react-native-web",
@@ -259,7 +258,6 @@ describe('plugin list snapshots', () => {
         "transform-flow-enums",
         "transform-flow-strip-types",
         "transform-typescript",
-        "transform-object-rest-spread",
         "expo-define-globals",
         "expo-minify-platform-select",
         "expo-inline-or-reference-env-vars",
@@ -307,7 +305,6 @@ describe('plugin list snapshots', () => {
         "transform-flow-enums",
         "transform-flow-strip-types",
         "transform-typescript",
-        "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-manifest-plugin",
         "expo-router",
@@ -352,7 +349,6 @@ describe('plugin list snapshots', () => {
         "transform-flow-enums",
         "transform-flow-strip-types",
         "transform-typescript",
-        "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
         "Rewrite react-native to react-native-web",
@@ -400,7 +396,6 @@ describe('plugin list snapshots', () => {
         "transform-flow-strip-types",
         "transform-typescript",
         "base$0$2$0",
-        "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
         "Rewrite react-native to react-native-web",
@@ -436,6 +431,7 @@ describe('plugin list snapshots', () => {
         "transform-optional-chaining",
         "transform-nullish-coalescing-operator",
         "transform-logical-assignment-operators",
+        "transform-object-rest-spread",
         "transform-runtime",
         "transform-export-namespace-from",
         "proposal-export-default-from",
@@ -560,13 +556,23 @@ describe('isDomComponent', () => {
   });
 });
 
-describe('engine-driven plugins', () => {
-  it('adds transform-object-rest-spread for non-hermes engine', () => {
+describe('profile-driven plugins', () => {
+  it('adds transform-object-rest-spread for the hermes-v0 profile', () => {
     const keys = getPluginKeys({ name: 'metro', platform: 'ios', isDev: true });
     expect(keys).toContain('transform-object-rest-spread');
   });
 
-  it('does not add transform-object-rest-spread for hermes engine', () => {
+  it('adds transform-object-rest-spread for the webview profile', () => {
+    const keys = getPluginKeys({
+      name: 'metro',
+      platform: 'web',
+      isDomComponent: true,
+      isDev: true,
+    });
+    expect(keys).toContain('transform-object-rest-spread');
+  });
+
+  it('does not add transform-object-rest-spread for the hermes-v1 profile', () => {
     const keys = getPluginKeys({
       name: 'metro',
       engine: 'hermes',
@@ -574,6 +580,13 @@ describe('engine-driven plugins', () => {
       isDev: true,
     });
     expect(keys).not.toContain('transform-object-rest-spread');
+  });
+
+  it.each([
+    ['web', { name: 'metro', platform: 'web', isDev: true }],
+    ['server', { name: 'metro', platform: 'ios', isServer: true, isDev: true }],
+  ])('does not add transform-object-rest-spread for the modern %s profile', (_name, caller) => {
+    expect(getPluginKeys(caller)).not.toContain('transform-object-rest-spread');
   });
 
   it('adds transform-parameters for default engine (hermes-v0)', () => {
