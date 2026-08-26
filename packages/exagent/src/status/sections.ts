@@ -11,7 +11,7 @@ import { buildConnectUrls, openInPhrase } from '../navigate/connectUrl';
 import { decideExpoGoTarget } from '../navigate/target';
 import { decideStartPlan } from '../plan/decide';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
-import type { ProjectState } from '../project/types';
+import type { ProjectState, StartPlan } from '../project/types';
 import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
 import type {
   DevServerStatus,
@@ -230,12 +230,27 @@ export function buildNextActionStatus(
    *
    * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
    */
-  cloudSession: boolean = false
+  cloudSession: boolean = false,
+  /**
+   * The plan `exagent dev` would make here, backend and all.
+   *
+   * Passed in by `statusAsync`, which resolves it the way `dev` does — the developer's config,
+   * this host, the toolchain probe — so the two commands never disagree about what would happen
+   * next (llp/0015 §What `status` reports). `null` falls back to the plan this project's state
+   * alone implies, which is what a caller with nothing to probe means.
+   */
+  resolvedPlan: StartPlan | null = null
 ): NextActionStatus {
-  const plan = decideStartPlan(state, { platform, lastBuild });
+  const plan = resolvedPlan ?? decideStartPlan(state, { platform, lastBuild });
   const verify = verifyAction(devServer, device, state, scheme, cloudSession);
   if (verify) {
-    return { ...verify, rule: plan.rule, target: plan.target, steps: [] };
+    return {
+      ...verify,
+      rule: plan.rule,
+      target: plan.target,
+      steps: [],
+      buildLocation: plan.buildLocation,
+    };
   }
   return {
     command: NEXT_ACTION_COMMAND,
@@ -243,6 +258,7 @@ export function buildNextActionStatus(
     target: plan.target,
     steps: plan.steps,
     why: null,
+    buildLocation: plan.buildLocation,
   };
 }
 

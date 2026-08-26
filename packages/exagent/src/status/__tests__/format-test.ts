@@ -1,6 +1,7 @@
 import { stripVTControlCharacters } from 'node:util';
 
 import { formatStatusReport } from '../format';
+import type { PlanBuildLocation } from '../../toolchain/types';
 import type { StatusReport } from '../types';
 
 /** The report without color, so assertions never depend on the terminal's color support. */
@@ -58,6 +59,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       rule: 'expo-go',
       target: 'expo-go',
       why: null,
+      buildLocation: null,
       steps: [
         {
           id: 'start',
@@ -348,6 +350,7 @@ describe(formatStatusReport, () => {
         target: 'expo-go',
         steps: [],
         why: 'a dev server is already running, so wait for its bundle',
+        buildLocation: null,
       },
     });
 
@@ -364,6 +367,7 @@ describe(formatStatusReport, () => {
         rule: 'dev-client-stale',
         target: 'dev-client',
         why: null,
+        buildLocation: null,
         steps: [
           {
             id: 'prebuild',
@@ -502,5 +506,96 @@ describe(formatStatusReport, () => {
         'dev server  running on http://127.0.0.1:8081 · via lock · bundler ready · 1 app connected'
       );
     });
+  });
+});
+
+// @ref llp/0015-backend-selection-and-config.rfc.md §What `status` reports
+describe('the build line', () => {
+  /** A build location, as the resolved plan attaches one to `next`. */
+  function buildLocation(overrides: Partial<PlanBuildLocation> = {}): PlanBuildLocation {
+    return {
+      runsOn: 'local',
+      platform: 'ios',
+      requirement: 'Xcode on this machine',
+      status: null,
+      detail: null,
+      caveats: [],
+      alternativeCommand: 'npx eas build --platform ios --profile development',
+      selection: {
+        runsOn: 'local',
+        source: 'default',
+        because: 'this machine has Xcode — Xcode 16.2 at /Applications/Xcode.app.',
+        why: 'Building on this machine: this machine has Xcode — Xcode 16.2 at /Applications/Xcode.app.',
+        doomed: false,
+      },
+      ...overrides,
+    };
+  }
+
+  it(`is left out entirely when the next plan builds nothing`, () => {
+    expect(report(mockReport())).not.toContain('build ');
+  });
+
+  it(`names the place and the cause of a local build`, () => {
+    const rendered = line(
+      mockReport({ next: { ...mockReport().next!, buildLocation: buildLocation() } }),
+      'build'
+    );
+
+    expect(rendered).toContain('local');
+    expect(rendered).toContain('this machine has Xcode');
+    // The place is already the column, so the sentence must not say it a second time.
+    expect(rendered).not.toContain('Building on this machine');
+  });
+
+  it(`names the place and the cause of a cloud build`, () => {
+    const location = buildLocation({
+      runsOn: 'eas',
+      requirement: 'an Expo account',
+      selection: {
+        runsOn: 'eas',
+        source: 'host',
+        because: 'this host runs linux and a ios build needs Xcode, which does not exist for it.',
+        why: 'Building in the cloud on EAS: this host runs linux and a ios build needs Xcode, which does not exist for it.',
+        doomed: false,
+      },
+    });
+    const rendered = line(
+      mockReport({ next: { ...mockReport().next!, buildLocation: location } }),
+      'build'
+    );
+
+    expect(rendered).toContain('eas');
+    expect(rendered).toContain('this host runs linux');
+  });
+
+  it(`still says where the build runs when nothing chose it`, () => {
+    const rendered = line(
+      mockReport({
+        next: { ...mockReport().next!, buildLocation: buildLocation({ selection: null }) },
+      }),
+      'build'
+    );
+
+    expect(rendered).toContain('local');
+    expect(rendered).toContain('needs Xcode on this machine');
+  });
+
+  it(`is printed beside a next action that a running dev server changed`, () => {
+    const rendered = report(
+      mockReport({
+        next: {
+          command: 'exagent dev:wait --require-app',
+          rule: 'dev-client-stale',
+          target: 'dev-client',
+          steps: [],
+          why: 'a dev server is already running, so wait for its bundle',
+          buildLocation: buildLocation({ runsOn: 'eas' }),
+        },
+      })
+    );
+
+    // The project still needs a cloud build; a healthy dev server does not change that.
+    expect(rendered).toContain('eas');
   });
 });

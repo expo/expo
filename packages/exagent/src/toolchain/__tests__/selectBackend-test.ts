@@ -168,8 +168,11 @@ describe('choosing where a build runs', () => {
     expect(choice.runsOn).toBe(row.expected.runsOn);
     expect(choice.source).toBe(row.expected.source);
     expect(choice.doomed).toBe(row.expected.doomed ?? false);
-    // Every choice explains itself, because the plan prints this sentence verbatim.
-    expect(choice.why).not.toBe('');
+    // Every choice explains itself, because the plan prints this sentence verbatim — and the
+    // cause on its own, for the `status` line that has already printed the place.
+    expect(choice.why).toBe(
+      `Building ${row.expected.runsOn === 'eas' ? 'in the cloud on EAS' : 'on this machine'}: ${choice.because}`
+    );
   });
 });
 
@@ -207,7 +210,8 @@ describe('what the reason says', () => {
       configured: 'eas',
       probe: probeOf('ios', 'present'),
     });
-    expect(choice.why).toContain('per exagent config');
+    expect(choice.why).toContain('the exagent config asks for it');
+    expect(choice.why).toContain('"expo.exagent" in package.json');
   });
 
   it(`labels a flag-driven choice as the command line's`, () => {
@@ -229,7 +233,7 @@ describe('what the reason says', () => {
       configured: 'local',
       probe: probeOf('ios', 'missing', { impossible: true }),
     });
-    expect(choice.why).toContain('this host cannot build for ios at all');
+    expect(choice.why).toContain('This host cannot build for ios at all');
   });
 
   it(`offers --eas when the probe could not tell`, () => {

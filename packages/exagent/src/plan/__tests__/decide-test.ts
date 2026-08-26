@@ -43,10 +43,12 @@ function backend(
   runsOn: 'local' | 'eas',
   overrides: Partial<BuildBackendChoice> = {}
 ): BuildBackendChoice {
+  const because = 'this is a test.';
   return {
     runsOn,
     source: runsOn === 'eas' ? 'toolchain' : 'default',
-    why: `Building ${runsOn === 'eas' ? 'in the cloud on EAS' : 'on this machine'}, for this test.`,
+    because,
+    why: `Building ${runsOn === 'eas' ? 'in the cloud on EAS' : 'on this machine'}: ${because}`,
     doomed: false,
     ...overrides,
   };

@@ -18,10 +18,10 @@ import * as Log from '../log';
 import { readProjectSchemeConfig } from '../navigate/deepLink';
 import { readAuthPreflightAsync } from '../needsHuman/preflight';
 import { readLastBuildFingerprints } from '../plan/lastBuild';
-import type { NativePlatform, PlanPlatform } from '../plan/types';
+import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
 import { probeProjectStateAsync } from '../project/probe';
-import type { ProjectState } from '../project/types';
+import type { ProjectState, StartPlan } from '../project/types';
 import {
   discoverDevServerAsync,
   type DevServerDiscovery,
@@ -208,7 +208,13 @@ export async function collectStatusReportAsync(
       devBuildSchemeSync(projectRoot),
       // A file read, not a service call: `status` promises to be instant (`src/device/
       // cloudSimulator.ts` §readCloudSessionIdSync).
-      readCloudSessionIdSync(projectRoot) != null
+      readCloudSessionIdSync(projectRoot) != null,
+      // @ref llp/0015-backend-selection-and-config.rfc.md §What `status` reports
+      // The plan `exagent dev` would make *here* — the developer's config, this host and the
+      // toolchain probe folded in — rather than the one the project's state alone implies. The two
+      // differ on exactly the machines where it matters, and a `status` that reported
+      // "expo run:ios" on a Linux box would be the report disagreeing with the command.
+      await attemptPlanAsync(projectRoot, state, lastBuild, options)
     );
   } else {
     // One cause, one note. The other three sections are left null, and the project line says why.
@@ -246,6 +252,32 @@ function devBuildSchemeSync(projectRoot: string): string | null {
 }
 
 /** The probed project state, plus the name only the project's own `package.json` knows. */
+/**
+ * The plan `exagent dev` would make, or null when it could not be made.
+ *
+ * Null rather than a throw: `status` exits 0 by contract and reports what it could not read, and a
+ * project whose `exagent` config is invalid should still get every other line of the report. The
+ * fallback is the plan the project's own state implies, which is what `buildNextActionStatus`
+ * makes of a null.
+ */
+async function attemptPlanAsync(
+  projectRoot: string,
+  state: ProjectState,
+  lastBuild: LastBuildFingerprints,
+  options: StatusOptions
+): Promise<StartPlan | null> {
+  const { resolveStartPlanAsync } =
+    require('../plan/resolveAsync') as typeof import('../plan/resolveAsync');
+  try {
+    return await resolveStartPlanAsync(projectRoot, state, {
+      platform: options.platform ?? resolveDefaultPlatform(state),
+      lastBuild,
+    });
+  } catch {
+    return null;
+  }
+}
+
 async function readProjectAsync(
   projectRoot: string
 ): Promise<{ state: ProjectState; packageName: string | null }> {

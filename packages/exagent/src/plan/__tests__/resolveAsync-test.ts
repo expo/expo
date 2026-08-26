@@ -172,7 +172,9 @@ describe('the project config', () => {
     const plan = await resolveStartPlanAsync(projectRoot, devClientState(), { platform: 'ios' });
 
     expect(plan.buildLocation).toMatchObject({ runsOn: 'eas', selection: { source: 'config' } });
-    expect(plan.reasons).toContain('Building in the cloud on EAS, per exagent config.');
+    expect(plan.reasons).toContain(
+      'Building in the cloud on EAS: the exagent config asks for it — "expo.exagent" in package.json.'
+    );
   });
 
   it(`asks this machine nothing when it already said "the cloud"`, async () => {

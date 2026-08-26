@@ -30,9 +30,16 @@ export interface BuildBackendChoice {
    * One sentence, in the form the plan prints under `WHY`.
    *
    * Written here rather than by each reader, so `--plan`, `status` and the follow-ups say the
-   * same thing about the same decision.
+   * same thing about the same decision. Always `Building <where>: <because>`.
    */
   why: string;
+  /**
+   * The cause on its own, without the "building here / in the cloud" half.
+   *
+   * For a surface that has already said where — the `status` line, which prints the backend as its
+   * own labelled column, and would otherwise read `build  eas · Building in the cloud on EAS: …`.
+   */
+  because: string;
   /**
    * The chosen backend cannot work on this host, and something said so anyway.
    *
@@ -74,66 +81,62 @@ export function selectBuildBackend({
   const impossible = probe?.impossible === true;
   const tool = localTool(platform);
 
+  /** The clause an explicit choice gains on a host that cannot honour it. */
+  const anyway = impossible ? ` This host cannot build for ${platform} at all — ${probe?.detail}` : '';
+
   if (requested) {
-    return {
-      runsOn: requested,
-      source: 'flag',
-      why:
-        requested === 'eas'
-          ? `Building ${EAS_WHERE}: --eas was passed on the command line.`
-          : `Building ${LOCAL_WHERE}: --local was passed on the command line${impossible ? `, and this host cannot build for ${platform} at all — ${probe?.detail}` : ''}.`,
-      doomed: requested === 'local' && impossible,
-    };
+    return choice(requested, 'flag', `${requested === 'eas' ? '--eas' : '--local'} was passed on the command line.${anyway}`, requested === 'local' && impossible);
   }
 
   if (configured) {
-    return {
-      runsOn: configured,
-      source: 'config',
-      why:
-        configured === 'eas'
-          ? `Building ${EAS_WHERE}, per exagent config.`
-          : `Building ${LOCAL_WHERE}, per exagent config${impossible ? `, and this host cannot build for ${platform} at all — ${probe?.detail}` : ''}.`,
-      doomed: configured === 'local' && impossible,
-    };
+    return choice(
+      configured,
+      'config',
+      `the exagent config asks for it — "expo.exagent" in package.json.${anyway}`,
+      configured === 'local' && impossible
+    );
   }
 
   if (impossible) {
-    return {
-      runsOn: 'eas',
-      source: 'host',
-      // The host is the whole reason, so the host is what the sentence leads with.
-      why: `Building ${EAS_WHERE}: this host runs ${hostPlatform} and a ${platform} build needs ${tool}, which does not exist for it. No install here would change that.`,
-      doomed: false,
-    };
+    // The host is the whole reason, so the host is what the sentence leads with.
+    return choice(
+      'eas',
+      'host',
+      `this host runs ${hostPlatform} and a ${platform} build needs ${tool}, which does not exist for it. No install here would change that.`
+    );
   }
 
   if (probe?.status === 'missing') {
-    return {
-      runsOn: 'eas',
-      source: 'toolchain',
-      why: `Building ${EAS_WHERE}: this machine does not have ${tool} — ${probe.detail} Install it to build here instead.`,
-      doomed: false,
-    };
+    return choice(
+      'eas',
+      'toolchain',
+      `this machine does not have ${tool} — ${probe.detail} Install it to build here instead.`
+    );
   }
 
-  return {
-    runsOn: 'local',
-    source: 'default',
-    why: localWhy(probe, tool),
-    doomed: false,
-  };
+  return choice('local', 'default', localBecause(probe, tool));
+}
+
+/** One choice, with its two spellings kept in step. */
+function choice(
+  runsOn: RunsOn,
+  source: BackendSource,
+  because: string,
+  doomed: boolean = false
+): BuildBackendChoice {
+  const where = runsOn === 'eas' ? EAS_WHERE : LOCAL_WHERE;
+  return { runsOn, source, because, why: `Building ${where}: ${because}`, doomed };
 }
 
 /** Why the build stays here, per what the probe managed to establish. */
-function localWhy(probe: ToolchainProbe | null, tool: string): string {
+function localBecause(probe: ToolchainProbe | null, tool: string): string {
   if (probe?.status === 'present') {
-    return `Building ${LOCAL_WHERE}: this machine has ${tool} — ${probe.detail}`;
+    return `this machine has ${tool} — ${probe.detail}`;
   }
   if (probe?.status === 'unknown') {
     // Deliberately still local. `unknown` is "the probe could not tell", and a plan that moved to
     // a build queue on the strength of that would be acting on nothing.
-    return `Building ${LOCAL_WHERE}: whether this machine has ${tool} could not be established — ${probe.detail} Pass --eas to build in the cloud instead.`;
+    return `whether this machine has ${tool} could not be established — ${probe.detail} Pass --eas to build in the cloud instead.`;
   }
-  return `Building ${LOCAL_WHERE}, which needs ${tool}. Nothing probed this machine for it.`;
+  return `it needs ${tool}, and nothing probed this machine for it.`;
 }
