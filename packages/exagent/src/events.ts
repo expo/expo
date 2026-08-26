@@ -191,8 +191,10 @@ declare module '2g' {
      *
      * Progress belongs here and not on stdout: `--json` prints exactly one object (llp/0006
      * §Output contract), so a wait that printed its polls would break the contract for the sake of
-     * output nobody parses. `queuePosition` and `estimatedWaitTimeLeftSeconds` are what turn
-     * "still going" into an answer, and both are real `BuildFragment` fields.
+     * output nobody parses. `queuePosition` and `estimatedWaitTimeLeftSeconds` are what would turn
+     * "still going" into an answer, and both are real `BuildFragment` fields — but both were
+     * `null` on every poll of a full live wait [observed — 2026-08-26, staging, iOS and Android],
+     * so a consumer must treat them as usually-absent rather than as the progress it reads.
      *
      * @see llp/0010-agent-conventions.rfc.md §Exit codes
      */

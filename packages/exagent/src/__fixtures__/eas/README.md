@@ -31,12 +31,40 @@ Nothing else is altered: keys, casing, ordering and null-ness are as the CLI pri
 | `whoami.txt` | `eas whoami` | The account name is the **first** line; the email, and an `Accounts:` list when the actor belongs to more than their personal account, follow it. See `src/needsHuman/preflight.ts`. |
 | `simulator-availability.json` | `eas simulator:availability --json --non-interactive` | `{ available, accountName }`. The one `simulator:*` payload that can be recorded without starting a session. See `src/device/cloudSimulator.ts`. |
 
-## What could not be recorded, and why
+## The non-terminal statuses, recorded on staging
 
-- **The non-terminal build statuses.** `IN_QUEUE`, `IN_PROGRESS`, `NEW` and `PENDING_CANCEL` are
-  only observable while a build is running, and starting one is a mutating, billable call. The
-  casing of the four recorded here plus the enum's own spelling is what `src/builds/status.ts`
-  rests on; `CANCELED` and `CANCELLED` stay `[inferred]` for the same reason.
+`IN_QUEUE` and `IN_PROGRESS` are only observable while a build is running, which used to make them
+unrecordable: starting a build is a mutating, billable call. **Staging is neither**, so they are
+recorded now [Kudo authorized the staging builds, 2026-08-26].
+
+Captured with `EXPO_STAGING=1`, `eas-cli/22.5.0`, signed in as `kudochien`, against
+`@kudo1/DailyWords-Grok` (project `861a6e66-a6c4-4314-abbf-b52f0bf80cef`) — a different account and
+project from the prod recordings above, because the staging service has its own accounts. Same
+trimming rules.
+
+| File | Command | What it pins |
+| --- | --- | --- |
+| `build-view-in-queue.staging.json` | `eas build:view <id> --json` on a queued iOS simulator build | `IN_QUEUE` is the spelling, `logFiles` is `[]` and `artifacts` is `{}` before the build starts |
+| `build-view-in-progress.staging.json` | the same, on a running Android build | `IN_PROGRESS` is the spelling, and `logFiles` is **populated while the build is still running** — a log is fetchable before there is a result |
+
+Two facts these settle, both of which `src/builds/parseView.ts` rests on:
+
+- **`queuePosition` and `estimatedWaitTimeLeftSeconds` are absent from both.** Not null — absent.
+  They are requested on every query (`graphql/types/Build.js` lists them beside `isForIosSimulator`,
+  which does arrive), and they did not appear on a single one of 47 polls across a ~10-minute
+  `IN_QUEUE` and the `IN_PROGRESS` that followed, on either platform.
+- **No `--json` output of this CLI ever contains a `null`.** `printJsonOnlyOutput` sanitizes every
+  payload first, and the sanitizer **drops each key whose value is null** along with `__typename`
+  [observed — `utils/json.js`: `if (key !== '__typename' && value[key] !== null)`]. So absence is
+  the only way the wire can say "null", and a parser must not try to tell the two apart. This
+  applies to every `eas --json` payload in this directory, not only these two.
+
+`NEW` and `PENDING_CANCEL` are still unrecorded: `NEW` is held for a shorter window than one poll
+caught, and `PENDING_CANCEL` needs a cancellation to land mid-flight. `CANCELED` / `CANCELLED` stay
+`[inferred]`; `src/builds/status.ts` accepts both spellings and treats an unrecognized status as
+non-terminal, so none of the three can hang a wait.
+
+## What could not be recorded, and why
 - **Every other `simulator:*` payload.** `simulator:get`, `simulator:exec` and `simulator:stop` all
   need a live session, and starting one is a mutating, billable call. Their *argv* is confirmed
   against `--help` on 22.4.0 (llp/0005 §The cloud simulator backend); their JSON stays `[inferred]`.
