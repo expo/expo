@@ -59,6 +59,20 @@ class ImageViewWrapperTarget(
   var sourceWidth = -1
 
   /**
+   * The main source height recorded at decode time for the observe `imageLoaded` report, where -1
+   * means the decode was skipped (such as on a cache hit). Unlike [sourceHeight], this is cleared
+   * when the target is reused for a new load, so a stale value is never reported.
+   */
+  var decodeSourceHeight = -1
+
+  /**
+   * The main source width recorded at decode time for the observe `imageLoaded` report, where -1
+   * means the decode was skipped (such as on a cache hit). Unlike [sourceWidth], this is cleared
+   * when the target is reused for a new load, so a stale value is never reported.
+   */
+  var decodeSourceWidth = -1
+
+  /**
    * The placeholder height where -1 means unknown
    */
   var placeholderHeight = -1

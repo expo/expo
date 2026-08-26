@@ -71,6 +71,14 @@ class GlideRequestListener(
 
     val imageWrapper = expoImageViewWrapper.get() ?: return false
     val appContext = imageWrapper.appContext
+    // The drawable may already be downsampled to the view size, so prefer the source dimensions
+    // recorded at decode time; an oversized source would otherwise never measure as oversized.
+    // Cache hits skip decoding and fall back to the drawable size. Captured before the main-queue
+    // hop, because a new load can reuse this target and clear the recorded size (or a new decode
+    // overwrite it) before the coroutine below runs.
+    val wrapperTarget = target as? ImageViewWrapperTarget
+    val sourceWidth = wrapperTarget?.decodeSourceWidth?.takeIf { it > 0 } ?: intrinsicWidth
+    val sourceHeight = wrapperTarget?.decodeSourceHeight?.takeIf { it > 0 } ?: intrinsicHeight
     appContext.mainQueue.launch {
       imageWrapper.onLoad.invoke(
         ImageLoadEvent(
@@ -90,7 +98,7 @@ class GlideRequestListener(
       if (model !is DecodedModel) {
         appContext.registry
           .getModule<ExpoImageModule>()
-          ?.emitImageLoaded(model.toString(), intrinsicWidth, intrinsicHeight)
+          ?.emitImageLoaded(model.toString(), sourceWidth, sourceHeight)
       }
     }
 

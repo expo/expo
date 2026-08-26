@@ -570,6 +570,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
       newTarget.hasSource = sourceToLoad != null
       newTarget.cacheType = ImageCacheType.NONE
+      // Targets alternate between loads; clear the previous load's decode-time source size so a
+      // cache hit (which skips decoding) can't report the dimensions of an earlier image. The
+      // layout-facing sourceWidth/sourceHeight pair is deliberately left alone: the scale-down
+      // transformation matrix reads it, and this reporting fix must not change layout input.
+      newTarget.decodeSourceWidth = -1
+      newTarget.decodeSourceHeight = -1
 
       val downsampleStrategy = createDownsampleStrategy(newTarget)
 
