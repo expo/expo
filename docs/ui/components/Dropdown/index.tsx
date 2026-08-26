@@ -29,7 +29,7 @@ export function Dropdown({
         <div className="bg-danger">
           <Content
             className={mergeClasses(
-              'flex min-w-45 flex-col gap-0.5 rounded-md border border-default bg-default p-1 shadow-md',
+              'flex min-w-45 flex-col gap-1 rounded-xl border border-default bg-default p-2 shadow-md',
               'will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFadeIn',
               className
             )}
