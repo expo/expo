@@ -1,0 +1,18 @@
+{
+  // expo/expo verify profile — LLP 0020 Layer 4 (expo-sandbox-mcp).
+  // Capability fields are enforcement inputs: the agent tool allowlist,
+  // the scoped-token mint body, and which publish steps run.
+  "repo": "expo/expo",
+  "runner": "gha",
+  "fix": "pr",
+  "ghaSandbox": true,
+  "bot": { "login": "expo-bot" },
+  "budgets": { "sandboxes": 2, "builds": 5, "ttlSeconds": 10800 },
+  "phases": { "investigate": 5400, "critic": 900, "revise": 1800 },
+  "pr": {
+    "fork": "expo-bot/expo",
+    "branchPrefix": "verify",
+    "labels": ["ai-review", "agent-authored"],
+    "denylistAdditions": ["^\\.expo-code-review/"]
+  }
+}
