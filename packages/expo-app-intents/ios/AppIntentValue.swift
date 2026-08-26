@@ -6,8 +6,7 @@ public typealias AppIntentParams = [String: AppIntentValue]
 /// A Codable, Sendable JSON value used to persist App Intent params while JS is cold.
 public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLiteral,
   ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByBooleanLiteral,
-  ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByNilLiteral
-{
+  ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByNilLiteral {
   case string(String)
   case int(Int)
   case double(Double)

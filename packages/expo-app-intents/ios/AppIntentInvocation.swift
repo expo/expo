@@ -25,7 +25,7 @@ public struct AppIntentInvocation: Codable, Sendable {
       "id": id,
       "name": name,
       "params": params.mapValues(\.foundationValue),
-      "createdAt": createdAt,
+      "createdAt": createdAt
     ]
   }
 }

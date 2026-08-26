@@ -25,6 +25,13 @@ internal final class AppIntentInvocationStore {
     self.defaults = defaults
   }
 
+  init?(userDefaultsSuiteName: String) {
+    guard let defaults = UserDefaults(suiteName: userDefaultsSuiteName) else {
+      return nil
+    }
+    self.defaults = defaults
+  }
+
   private func storageKey(_ key: String) -> String {
     return "dev.expo.appintents.\(key)"
   }

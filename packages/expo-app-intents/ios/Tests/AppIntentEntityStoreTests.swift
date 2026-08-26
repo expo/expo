@@ -15,7 +15,7 @@ struct AppIntentEntityStoreTests {
   init() throws {
     defaults = try #require(UserDefaults(suiteName: #file))
     defaults.removePersistentDomain(forName: #file)
-    store = AppIntentEntityStore(defaults: defaults)
+    store = AppIntentEntityStore(userDefaultsSuiteName: #file)
   }
 
   @Test
@@ -81,27 +81,28 @@ struct AppIntentEntityStoreTests {
     #expect(readBack.map(\.id) == ["t1"])
   }
 
-  /// `@Field` with a default value makes a field optional at the JavaScript boundary, so
-  /// `setEntityCatalogAsync('dish', [{}])` from untyped JavaScript used to store an entity with an
-  /// empty id and title. `.required` rejects the missing keys instead.
+  /// A non-optional `@Record` property without a default is required at the JavaScript boundary.
   @Test
   func `record requires an id and a title`() throws {
     let appContext = AppContext.create()
 
-    #expect(throws: (any Error).self) {
-      try AppIntentEntityRecord(from: [:], appContext: appContext)
+    #expect(throws: RecordPropertyRequiredException.self) {
+      try AppIntentEntityRecord.from(dictionary: [:], appContext: appContext)
     }
-    #expect(throws: (any Error).self) {
-      try AppIntentEntityRecord(from: ["id": "t1"], appContext: appContext)
+    #expect(throws: RecordPropertyRequiredException.self) {
+      try AppIntentEntityRecord.from(dictionary: ["id": "t1"], appContext: appContext)
     }
-    #expect(throws: (any Error).self) {
-      try AppIntentEntityRecord(from: ["title": "A"], appContext: appContext)
+    #expect(throws: RecordPropertyRequiredException.self) {
+      try AppIntentEntityRecord.from(dictionary: ["title": "A"], appContext: appContext)
     }
-    _ = try AppIntentEntityRecord(from: ["id": "t1", "title": "A"], appContext: appContext)
+    _ = try AppIntentEntityRecord.from(
+      dictionary: ["id": "t1", "title": "A"],
+      appContext: appContext
+    )
   }
 
-  /// `.required` rejects a missing key, but an explicit empty string is just as unresolvable, and so
-  /// is a string made only of whitespace.
+  /// Required record fields reject missing keys, but an explicit empty string is just as
+  /// unresolvable, and so is a string made only of whitespace.
   @Test
   func `setCatalog rejects an empty or blank identifier or title`() async throws {
     for invalid in [
@@ -110,7 +111,7 @@ struct AppIntentEntityStoreTests {
       AppIntentEntityRecord(id: "t1", title: ""),
       AppIntentEntityRecord(id: "t1", title: "\n"),
     ] {
-      await #expect(throws: (any Error).self) {
+      await #expect(throws: AppIntentEntityInvalidFieldException.self) {
         try await store.setCatalog(kind: "trail", entities: [invalid])
       }
     }
@@ -124,7 +125,10 @@ struct AppIntentEntityStoreTests {
   @Test
   func `setCatalog rejects a blank kind`() async throws {
     for blankKind in ["", " ", "\n"] {
-      await #expect(throws: (any Error).self, "expected setCatalog to reject the blank kind '\(blankKind)'") {
+      await #expect(
+        throws: AppIntentEntityCatalogKindException.self,
+        "expected setCatalog to reject the blank kind '\(blankKind)'"
+      ) {
         try await store.setCatalog(
           kind: blankKind,
           entities: [AppIntentEntityRecord(id: "t1", title: "A")]
@@ -136,7 +140,7 @@ struct AppIntentEntityStoreTests {
   /// Two entities with one id cannot both be resolved, so the catalog is ambiguous as a whole.
   @Test
   func `setCatalog rejects duplicate identifiers`() async throws {
-    await #expect(throws: (any Error).self) {
+    await #expect(throws: AppIntentEntityDuplicateIdException.self) {
       try await store.setCatalog(
         kind: "trail",
         entities: [

@@ -26,7 +26,9 @@ struct AppIntentDispatcherTests {
   init() throws {
     defaults = try #require(UserDefaults(suiteName: #file))
     defaults.removePersistentDomain(forName: #file)
-    dispatcher = AppIntentDispatcher(store: AppIntentInvocationStore(defaults: defaults))
+    dispatcher = AppIntentDispatcher(
+      store: try #require(AppIntentInvocationStore(userDefaultsSuiteName: #file))
+    )
   }
 
   @Test
