@@ -5,15 +5,13 @@
  * installs, removals, and reinstalls while the dev server runs must reach
  * Metro's file map without a server restart.
  *
- * The setup mirrors the issue: a published-SDK project owned by a real
- * package manager, a running dev server, then several install-and-import
- * cycles. `expo install` picks the package manager from the lockfile, so the
- * `E2E_INSTALL_PM` environment variable selects the whole toolchain
- * (default bun, like the issue's project).
+ * This suite covers `FallbackWatcher` (Linux and Windows). It skips on
+ * Darwin, where Metro uses `NativeWatcher` — a separate follow-up. After
+ * start it asserts `Using watcher: fallback` so a Watchman/native backend
+ * cannot silently pass.
  *
- * On Linux and Windows the dev server watches files with `FallbackWatcher`.
- * On macOS it uses `NativeWatcher`, which currently loses install events the
- * same way — see the known-issue note below.
+ * `expo install` picks the package manager from the lockfile, so
+ * `E2E_INSTALL_PM` selects the toolchain (default bun, like the issue).
  */
 import fs from 'fs/promises';
 import path from 'path';
@@ -49,12 +47,6 @@ const CYCLES: string[][] = [
 const POLL_TIMEOUT_MS = 45000;
 const POLL_INTERVAL_MS = 3000;
 
-// KNOWN ISSUE (macOS): `NativeWatcher` also loses install events, with what
-// is likely a distinct root cause — intermittently (observed between 0 and 4
-// stale cycles per run), and a restart with zero changes also fixes it
-// there. The intermittency rules out `it.failing`, so the macOS CI job runs
-// this suite with `continue-on-error` instead until that watcher is fixed.
-
 // The dev server only watches files outside CI, and watching is the behavior
 // under test, so remove the CI markers from the server's environment. An
 // `undefined` value removes the variable from the child environment; an empty
@@ -65,7 +57,24 @@ const WATCH_ENV = {
   GITHUB_ACTIONS: undefined,
   BUILD_NUMBER: undefined,
   RUN_ID: undefined,
+  DEBUG: 'Metro:Watcher',
 } as unknown as Record<string, string>;
+
+const describeInstall = process.platform === 'darwin' ? describe.skip : describe;
+
+function createWatchingExpo(): {
+  expo: ReturnType<typeof createExpoStart>;
+  output: string[];
+} {
+  const output: string[] = [];
+  const expo = createExpoStart({
+    env: WATCH_ENV,
+    onOutput: (chunk) => {
+      output.push(chunk);
+    },
+  });
+  return { expo, output };
+}
 
 function appSource(packages: string[]): string {
   const imports = packages.map((name, index) => `import * as installed${index} from '${name}';`);
@@ -137,14 +146,29 @@ async function pollBundle(
   return { ok: false, lastError, text: null };
 }
 
-describe(`installs while the dev server runs (${PM})`, () => {
-  const expo = createExpoStart({ env: WATCH_ENV });
+/** Start Metro and fail if this run is not on FallbackWatcher. */
+async function startAndAssertFallbackWatcher(
+  expo: ReturnType<typeof createExpoStart>,
+  output: string[]
+): Promise<void> {
+  await expo.startAsync();
+  const logs = output.join('');
+  if (!/Using watcher: fallback/.test(logs)) {
+    throw new Error(
+      'This suite covers FallbackWatcher, but the dev server did not log ' +
+        `"Using watcher: fallback". Output:\n${logs.slice(0, 2000)}`
+    );
+  }
+}
+
+describeInstall(`installs while the dev server runs (${PM})`, () => {
+  const { expo, output } = createWatchingExpo();
   let projectRoot: string;
 
   beforeAll(async () => {
     projectRoot = await createProject({});
     expo.options.cwd = projectRoot;
-    await expo.startAsync();
+    await startAndAssertFallbackWatcher(expo, output);
   });
 
   afterAll(async () => {
@@ -187,10 +211,10 @@ describe(`installs while the dev server runs (${PM})`, () => {
 // stores the resolved target paths. `pnpm remove` deletes the link while the
 // store contents linger until pruning, so a removal is legitimately still
 // resolvable and these assertions do not apply.
-const describeRemoval = PM === 'pnpm' ? describe.skip : describe;
+const describeRemoval = process.platform === 'darwin' || PM === 'pnpm' ? describe.skip : describe;
 
 describeRemoval(`removals and reinstalls while the dev server runs (${PM})`, () => {
-  const expo = createExpoStart({ env: WATCH_ENV });
+  const { expo, output } = createWatchingExpo();
   let projectRoot: string;
 
   beforeAll(async () => {
@@ -199,7 +223,7 @@ describeRemoval(`removals and reinstalls while the dev server runs (${PM})`, () 
     projectRoot = await createProject({ 'expo-crypto': '~57.0.0' });
     await fs.writeFile(path.join(projectRoot, 'App.js'), appSource(['expo-crypto']));
     expo.options.cwd = projectRoot;
-    await expo.startAsync();
+    await startAndAssertFallbackWatcher(expo, output);
   });
 
   afterAll(async () => {
