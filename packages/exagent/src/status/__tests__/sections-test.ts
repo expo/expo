@@ -504,7 +504,7 @@ describe(buildLocalDeviceStatus, () => {
     expect(
       buildLocalDeviceStatus({
         state: 'present',
-        device: { platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
+        device: { backend: 'local-ios', platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
         reason: null,
       })
     ).toEqual({

@@ -11,7 +11,7 @@ import { probeLocalDeviceAsync, readLocalDeviceProbe, resetLocalDeviceCache } fr
 
 /** A probe that ran and found something. */
 const found: DeviceProbe = {
-  device: { platform: 'ios', deviceId: 'UDID-1', name: 'iPhone 17' },
+  device: { backend: 'local-ios', platform: 'ios', deviceId: 'UDID-1', name: 'iPhone 17' },
 };
 
 /** A probe that ran and found nothing. */

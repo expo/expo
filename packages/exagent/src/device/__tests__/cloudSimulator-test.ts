@@ -15,6 +15,7 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 
+import { isNeedsHumanError } from '../../utils/errors';
 import {
   ACTIVE_SESSION_STATUS,
   AGENT_DEVICE_SPEC,
@@ -457,8 +458,8 @@ describe(cloudVerbFailedError, () => {
       { what: 'nothing was opened.', how: 'Sign in.' }
     );
 
-    expect(error.needsHuman?.scenario).toBe('eas-login');
-    expect(error.needsHuman?.unattendedEnv).toContain('EXPO_TOKEN');
+    expect(isNeedsHumanError(error) && error.needsHuman.scenario).toBe('eas-login');
+    expect(isNeedsHumanError(error) && error.needsHuman.unattendedEnv).toContain('EXPO_TOKEN');
   });
 
   // A wrapper's backtrace under "What the tool printed" claims the EAS CLI said it, and a reader

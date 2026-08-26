@@ -464,6 +464,64 @@ export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandE
 }
 
 /**
+ * The failure for a session nothing could be established about.
+ *
+ * Deliberately not folded into {@link cloudSessionUnavailableError}: "start a session" is the wrong
+ * instruction for a machine whose EAS CLI could not be asked, and following it would start a second
+ * billed session next to one that may well be running. This is the `unknown` of the probe, which is
+ * the same distinction `DeviceProbe.toolError` draws for `adb` (F49) — a tool that did not answer
+ * has said nothing about the world.
+ */
+export function cloudSessionUnknownError(probe: CloudSessionProbe): CommandError {
+  const error = new CommandError(
+    'CLOUD_SIMULATOR_SESSION_UNKNOWN',
+    [
+      'Whether this project has a running EAS Simulator session could not be established, so nothing was opened on one.',
+      `Why: ${probe.reason ?? 'the EAS CLI gave no answer this command could read'}. ${
+        probe.sessionId
+          ? `${CLOUD_SESSION_ENV_FILE} names session ${probe.sessionId}, and whether that session is still up is exactly what could not be read — so this is not being reported as "no session", which would be an instruction to start a second billed one.`
+          : 'Nothing on this machine could be asked.'
+      }`,
+      `How: run "npx eas simulator:get --json" to see what the CLI says, and check that the "eas" being run is the EAS CLI. Then run this command again, or open the URL elsewhere with "npx exagent navigate <route> --print-url".`,
+    ].join('\n')
+  );
+  error.suggestedCommand = 'npx eas simulator:get --json';
+  return error;
+}
+
+/** The failure for a `--ios`/`--android` that names the platform the session is not. */
+export function cloudPlatformMismatchError(
+  wanted: CloudPlatform,
+  session: CloudPlatform,
+  sessionId: string | null
+): CommandError {
+  const error = new CommandError(
+    'CLOUD_SIMULATOR_PLATFORM_MISMATCH',
+    [
+      `--${wanted} names a platform the running cloud simulator is not, so nothing was opened.`,
+      `Why: an EAS Simulator session is created for one platform and keeps it for its whole life${sessionId ? ` — session ${sessionId} is ${session}` : ''}. There is no second device in it to switch to.`,
+      `How: run this command with --${session} (or with no platform flag, which takes the session's own), or start a ${wanted} session and run it again.`,
+    ].join('\n')
+  );
+  error.suggestedCommand = `npx exagent navigate / --cloud --${session}`;
+  return error;
+}
+
+/** The failure for a live session whose platform the service did not report. */
+export function cloudPlatformUnknownError(sessionId: string | null): CommandError {
+  const error = new CommandError(
+    'CLOUD_SIMULATOR_PLATFORM_UNKNOWN',
+    [
+      `The running cloud simulator did not say which platform it is, so nothing was opened on it.`,
+      `Why: the URL shape, the connect URL and the check for the app attaching afterwards all differ between iOS and Android, and ${sessionId ? `session ${sessionId}` : 'the session'} reported no platform for this command to read. Guessing one would open a link built for the other.`,
+      `How: name it — run this command again with --ios or --android.`,
+    ].join('\n')
+  );
+  error.suggestedCommand = 'npx exagent navigate / --cloud --ios';
+  return error;
+}
+
+/**
  * The failure for a cloud run against a dev server no cloud simulator can reach.
  *
  * The one precondition that differs from every local backend, and the reason it is refused rather

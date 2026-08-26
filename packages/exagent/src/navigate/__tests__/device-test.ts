@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import { vol } from 'memfs';
 
 import {
   parseBootedIosSimulator,
@@ -85,7 +86,7 @@ describe(probeIosSimulatorAsync, () => {
     mockSpawnQueue([{ stdout: BOOTED_SIMCTL_JSON }]);
 
     await expect(probeIosSimulatorAsync()).resolves.toEqual({
-      device: { platform: 'ios', deviceId: 'IOS-1', name: 'iPhone 17' },
+      device: { backend: 'local-ios', platform: 'ios', deviceId: 'IOS-1', name: 'iPhone 17' },
     });
     expect(spawn).toHaveBeenCalledWith(
       'xcrun',
@@ -164,10 +165,26 @@ describe(resolveDeviceAsync, () => {
     mockSpawnQueue([{ stdout: BOOTED_SIMCTL_JSON }]);
 
     await expect(resolveDeviceAsync('ios')).resolves.toEqual({
+      backend: 'local-ios',
       platform: 'ios',
       deviceId: 'IOS-1',
       name: 'iPhone 17',
     });
+  });
+
+  // The cloud backend costs money and spawns an `eas`, so it is on the ladder only for the callers
+  // that put it there. Every `runtime:*` action keeps the old two-backend resolution exactly.
+  it(`never looks for a cloud session unless the caller asked for one`, async () => {
+    mockPlatform('darwin');
+    mockSpawnQueue([
+      { stdout: JSON.stringify({ devices: {} }) },
+      { stdout: 'List of devices attached\n' },
+    ]);
+
+    await resolveDeviceAsync().catch(() => {});
+
+    // Two probes and nothing else: no `eas` was started to find out about a session.
+    expect(spawn).toHaveBeenCalledTimes(2);
   });
 
   it(`should explain how to boot a simulator when --ios finds none`, async () => {
@@ -228,5 +245,135 @@ describe(resolveDeviceAsync, () => {
     expect(error.code).toBe('NO_DEVICE');
     expect(error.message).toContain('--ios');
     expect(error.message).toContain('--android');
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+//
+// The ladder, not the argv: `src/device/__tests__/cloudSimulator-test.ts` pins what is sent to the
+// EAS CLI, and what is pinned here is *when* it is sent and which backend wins.
+describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
+  /** A project with an `eas` to spawn, and optionally a session on record. */
+  function cloudProject(sessionId: string | null): void {
+    vol.fromJSON({
+      '/project/package.json': '{}',
+      '/project/node_modules/.bin/eas': '#!/bin/sh\n',
+      ...(sessionId ? { '/project/.env.eas-simulator': `EAS_SIMULATOR_SESSION_ID=${sessionId}\n` } : {}),
+    });
+  }
+
+  const liveSession = JSON.stringify({ id: 'sess-1', status: 'IN_PROGRESS', platform: 'ios' });
+
+  afterEach(() => vol.reset());
+
+  it(`opens on the cloud session when this machine has no local device`, async () => {
+    mockPlatform('darwin');
+    cloudProject('sess-1');
+    mockSpawnQueue([
+      { stdout: JSON.stringify({ devices: {} }) },
+      { stdout: 'List of devices attached\n' },
+      { stdout: liveSession },
+    ]);
+
+    await expect(
+      resolveDeviceAsync(undefined, { cloud: 'fallback', projectRoot: '/project' })
+    ).resolves.toMatchObject({ backend: 'cloud', platform: 'ios', deviceId: 'sess-1' });
+  });
+
+  // The local device is free, instant, and the one a developer is looking at. A cloud session must
+  // never quietly take a run away from it.
+  it(`prefers the local simulator over a session that is also up`, async () => {
+    mockPlatform('darwin');
+    cloudProject('sess-1');
+    mockSpawnQueue([{ stdout: BOOTED_SIMCTL_JSON }]);
+
+    await expect(
+      resolveDeviceAsync(undefined, { cloud: 'fallback', projectRoot: '/project' })
+    ).resolves.toMatchObject({ backend: 'local-ios' });
+    expect(spawn).toHaveBeenCalledTimes(1);
+  });
+
+  // The gate that keeps the fallback off the hot path: no dotenv, no `eas` subprocess.
+  it(`spawns no eas when the project has never started a session`, async () => {
+    mockPlatform('linux');
+    cloudProject(null);
+    mockSpawnQueue([{ stdout: 'List of devices attached\n' }]);
+
+    const error = await resolveDeviceAsync(undefined, {
+      cloud: 'fallback',
+      projectRoot: '/project',
+    }).catch((e) => e);
+
+    expect(error.code).toBe('NO_DEVICE');
+    expect(spawn).toHaveBeenCalledTimes(1);
+  });
+
+  it(`names a session that is on record and not running, in the failure`, async () => {
+    mockPlatform('linux');
+    cloudProject('sess-1');
+    mockSpawnQueue([
+      { stdout: 'List of devices attached\n' },
+      { stdout: JSON.stringify({ id: 'sess-1', status: 'FINISHED', platform: 'ios' }) },
+    ]);
+
+    const error = await resolveDeviceAsync(undefined, {
+      cloud: 'fallback',
+      projectRoot: '/project',
+    }).catch((e) => e);
+
+    expect(error.message).toContain('EAS Simulator session on record');
+    expect(error.message).toContain('eas simulator:start');
+  });
+
+  // `--cloud` names the device, so no local tool is asked at all.
+  it(`asks no local tool when --cloud named the backend`, async () => {
+    mockPlatform('darwin');
+    cloudProject('sess-1');
+    mockSpawnQueue([{ stdout: liveSession }]);
+
+    await expect(
+      resolveDeviceAsync(undefined, { cloud: 'required', projectRoot: '/project' })
+    ).resolves.toMatchObject({ backend: 'cloud', deviceId: 'sess-1' });
+    expect(spawn).toHaveBeenCalledTimes(1);
+  });
+
+  it(`refuses a platform flag the session is not`, async () => {
+    cloudProject('sess-1');
+    mockSpawnQueue([{ stdout: liveSession }]);
+
+    const error = await resolveDeviceAsync('android', {
+      cloud: 'required',
+      projectRoot: '/project',
+    }).catch((e) => e);
+
+    expect(error.code).toBe('CLOUD_SIMULATOR_PLATFORM_MISMATCH');
+    expect(error.message).toContain('--ios');
+  });
+
+  it(`names how to start a session when --cloud finds none`, async () => {
+    cloudProject(null);
+    mockSpawnQueue([{ stdout: '{"available": true}' }]);
+
+    const error = await resolveDeviceAsync(undefined, {
+      cloud: 'required',
+      projectRoot: '/project',
+    }).catch((e) => e);
+
+    expect(error.code).toBe('NO_CLOUD_SIMULATOR_SESSION');
+    expect(error.message).toContain('eas simulator:start --platform ios --type agent-device');
+  });
+
+  // A tool that did not answer has said nothing, and "start a session" would start a second one.
+  it(`does not claim there is no session when the eas run could not be read`, async () => {
+    cloudProject('sess-1');
+    mockSpawnQueue([{ stdout: '<html>', exitCode: 0 }]);
+
+    const error = await resolveDeviceAsync(undefined, {
+      cloud: 'required',
+      projectRoot: '/project',
+    }).catch((e) => e);
+
+    expect(error.code).toBe('CLOUD_SIMULATOR_SESSION_UNKNOWN');
+    expect(error.message).not.toContain('simulator:start');
   });
 });

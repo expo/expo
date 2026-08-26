@@ -1,8 +1,24 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md
-// Minimal device discovery for deep-link navigation: the first booted iOS simulator, or the
-// first attached Android device. Both are read from the platform tools as subprocesses, so no
-// simulator or emulator library is linked into the CLI.
+// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+// Device discovery for deep-link navigation. Three backends, and the first two are the first booted
+// iOS simulator and the first attached Android device, read from the platform tools as subprocesses
+// so no simulator or emulator library is linked into the CLI.
+//
+// The third is not on this machine at all: an EAS Simulator session, driven through `eas
+// simulator:*` (`src/device/cloudSimulator.ts`). It is opt-in per caller rather than always
+// considered, because it is the only backend that costs money and the only one whose invocations
+// this package has never verified against a live service. `navigate` and `smoke` opt in; every
+// `runtime:*` action that force-stops an app does not, because the controller has no verb for it.
 
+import {
+  cloudPlatformUnknownError,
+  cloudPlatformMismatchError,
+  cloudSessionUnavailableError,
+  cloudSessionUnknownError,
+  probeCloudSessionAsync,
+  readCloudSessionIdSync,
+  type CloudSessionProbe,
+} from '../device/cloudSimulator';
 import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
@@ -10,7 +26,17 @@ import { debugEvent } from './events';
 
 export type NavigatePlatform = 'ios' | 'android';
 
+/**
+ * Which of the three device layers acted.
+ *
+ * Reported rather than inferred from `platform`, because `ios` no longer says where the device is:
+ * a cloud session runs iOS too, and the difference decides whether the dev server has to be
+ * tunnelled, whether `adb reverse` applies, and which command a reader can run by hand.
+ */
+export type DeviceBackend = 'local-ios' | 'local-android' | 'cloud';
+
 export interface NavigateDevice {
+  backend: DeviceBackend;
   platform: NavigatePlatform;
   /** Simulator UDID, or `adb` serial. */
   deviceId: string;
@@ -148,7 +174,12 @@ export async function probeIosSimulatorAsync(): Promise<DeviceProbe> {
 
   debugEvent('device_resolved', { platform: 'ios', deviceId: simulator.udid });
   return {
-    device: { platform: 'ios', deviceId: simulator.udid, name: simulator.name || undefined },
+    device: {
+      backend: 'local-ios',
+      platform: 'ios',
+      deviceId: simulator.udid,
+      name: simulator.name || undefined,
+    },
   };
 }
 
@@ -188,6 +219,7 @@ export async function probeAndroidDeviceAsync(): Promise<DeviceProbe> {
   debugEvent('device_resolved', { platform: 'android', deviceId: device.deviceId });
   return {
     device: {
+      backend: 'local-android',
       platform: 'android',
       deviceId: device.deviceId,
       adb,
@@ -197,18 +229,76 @@ export async function probeAndroidDeviceAsync(): Promise<DeviceProbe> {
 }
 
 /**
+ * Look for a cloud simulator session this project can drive. Never throws: no session is an answer.
+ *
+ * The subprocess is gated on a file: a project that has never started a session has no
+ * `.env.eas-simulator`, and establishing that costs one `stat` rather than one `eas` start-up. That
+ * matters because this runs on the *failure* path of every `navigate` on a machine with no local
+ * device, which is the exact case the whole backend exists for.
+ *
+ * @see src/device/cloudSimulator.ts — where the argv lives, and why it is all [inferred].
+ */
+export async function probeCloudDeviceAsync(
+  projectRoot: string,
+  { skipWhenNoSessionFile = true }: { skipWhenNoSessionFile?: boolean } = {}
+): Promise<{ device: NavigateDevice | null; probe: CloudSessionProbe }> {
+  if (skipWhenNoSessionFile && readCloudSessionIdSync(projectRoot) == null) {
+    return {
+      device: null,
+      probe: {
+        state: 'none',
+        sessionId: null,
+        platform: null,
+        status: null,
+        available: null,
+        reason: `no ${'.env.eas-simulator'} names a session, so this project has not started one`,
+      },
+    };
+  }
+
+  const probe = await probeCloudSessionAsync({ projectRoot });
+  if (probe.state !== 'active' || probe.platform == null || probe.sessionId == null) {
+    // A live session whose platform could not be read is not a device this can be handed: the URL
+    // shape differs per platform. The caller raises `cloudPlatformUnknownError` for it.
+    return { device: null, probe };
+  }
+
+  debugEvent('device_resolved', { platform: probe.platform, deviceId: probe.sessionId });
+  return {
+    device: {
+      backend: 'cloud',
+      platform: probe.platform,
+      deviceId: probe.sessionId,
+      name: 'EAS Simulator session',
+    },
+    probe,
+  };
+}
+
+/**
  * Resolve the device to open the deep link on.
+ *
+ * Three backends and one order. `--cloud` (`cloud: 'required'`) names the cloud session and nothing
+ * else is looked at, because a caller that named a device meant that device. Otherwise a **local**
+ * device wins: it is free, it is instant, and it is what a developer at a keyboard is looking at.
+ * The cloud is the last rung, taken only when the local probes found nothing and this project has a
+ * session on record — which composes with wave 9's answer for that machine: instead of only being
+ * handed the URL, a run with a live session opens it.
  *
  * With no platform flag, macOS prefers a booted iOS simulator and falls back to Android, because
  * an iOS simulator is the device an Expo project on a Mac usually has open. Every other host has
  * no iOS simulator at all, so only Android is checked there.
  *
- * @throws {CommandError} when the requested platform, or neither platform, has a device.
+ * @throws {CommandError} when the requested platform, or no backend at all, has a device.
  */
 export async function resolveDeviceAsync(
   platform?: NavigatePlatform,
-  context: NoDeviceContext = {}
+  context: ResolveDeviceContext = {}
 ): Promise<NavigateDevice> {
+  if (context.cloud === 'required') {
+    return await resolveCloudDeviceAsync(platform, context);
+  }
+
   if (platform === 'ios') {
     const probe = await probeIosSimulatorAsync();
     if (probe.device) {
@@ -217,6 +307,10 @@ export async function resolveDeviceAsync(
     if (probe.toolError) {
       throw probe.toolError;
     }
+    const cloud = await cloudFallbackAsync('ios', context);
+    if (cloud.device) {
+      return cloud.device;
+    }
     throw noDeviceError(
       'NO_IOS_DEVICE',
       [
@@ -224,7 +318,8 @@ export async function resolveDeviceAsync(
         `Why: ${probe.reason}.`,
         'How: boot a simulator (from Xcode, or with "xcrun simctl boot"), start the dev server with "npx exagent dev --detach", then run this command again.',
       ],
-      context
+      context,
+      cloud.probe
     );
   }
 
@@ -238,6 +333,10 @@ export async function resolveDeviceAsync(
     if (probe.toolError) {
       throw probe.toolError;
     }
+    const cloud = await cloudFallbackAsync('android', context);
+    if (cloud.device) {
+      return cloud.device;
+    }
     throw noDeviceError(
       'NO_ANDROID_DEVICE',
       [
@@ -245,7 +344,8 @@ export async function resolveDeviceAsync(
         `Why: ${probe.reason}.`,
         'How: start an emulator or connect a device, check that "adb devices" lists it, then run this command again.',
       ],
-      context
+      context,
+      cloud.probe
     );
   }
 
@@ -257,6 +357,14 @@ export async function resolveDeviceAsync(
   const androidProbe = await probeAndroidDeviceAsync();
   if (androidProbe.device) {
     return androidProbe.device;
+  }
+
+  // The cloud rung, before the tool failure and before the verdict: a machine whose `adb` will not
+  // start is exactly the machine this backend is for, and a session that is up answers the question
+  // whichever platform tool is missing.
+  const cloud = await cloudFallbackAsync(undefined, context);
+  if (cloud.device) {
+    return cloud.device;
   }
 
   // With no platform flag on a host with no simulator, an unrunnable `adb` is the whole reason
@@ -276,16 +384,106 @@ export async function resolveDeviceAsync(
       `Why: ${reasons.join('; ')}.`,
       'How: open the app on a simulator or device (for example with "npx expo run:ios" or "npx expo run:android"), then run this command again. Pass --ios or --android to name the platform to look on.',
     ],
-    context
+    context,
+    cloud.probe
   );
 }
 
-/** What the caller already worked out, for a failure that can offer more than "no device". */
-export interface NoDeviceContext {
+/** How much of the ladder a caller wants: whether the cloud backend is on it, and how. */
+export type CloudPreference =
+  /** `--cloud`: the session is the device, and no local tool is even asked. */
+  | 'required'
+  /** The default for the device-facing commands: local first, cloud when there is none. */
+  | 'fallback'
+  /**
+   * Never. The default, and what every `runtime:*` action that stops an app keeps.
+   *
+   * Deliberate rather than pending: the controller behind a session has verbs for opening a link
+   * and taking a picture, and none for ending one app, so a command whose act is a force-stop has
+   * nothing to fall back *to* (`cloudVerbNotSupportedError`). Silently resolving a cloud device for
+   * it would mean reporting a session teardown as an app that was stopped.
+   */
+  | 'off';
+
+/** What the caller already worked out, and which backends it wants looked at. */
+export interface ResolveDeviceContext {
   /** The URL that was resolved for the route, when the caller had got that far. */
   url?: string | null;
   /** Whether a dev server answered, so the URL is one something could act on now. */
   devServerRunning?: boolean;
+  /** Whether the cloud backend is on this run's ladder. Defaults to `off`. */
+  cloud?: CloudPreference;
+  /** The project whose session is looked for. Required for anything but `off`. */
+  projectRoot?: string;
+}
+
+/**
+ * The cloud rung of the ladder, taken after the local probes found nothing.
+ *
+ * A session on the **other** platform is not this run's device: `--ios` named iOS, and an Android
+ * session cannot open an iOS link. It is still reported, through the probe, so the failure can say
+ * that a session exists and is not the one that was asked for.
+ */
+async function cloudFallbackAsync(
+  platform: NavigatePlatform | undefined,
+  context: ResolveDeviceContext
+): Promise<{ device: NavigateDevice | null; probe: CloudSessionProbe | null }> {
+  if (context.cloud !== 'fallback' || context.projectRoot == null) {
+    return { device: null, probe: null };
+  }
+  const { device, probe } = await probeCloudDeviceAsync(context.projectRoot);
+  const usable = device != null && (platform == null || device.platform === platform);
+  return { device: usable ? device : null, probe };
+}
+
+/**
+ * Resolve the cloud session as the device, for a run that named it.
+ *
+ * Every failure here is about the session rather than about this machine, which is why none of them
+ * reuses {@link noDeviceError}: a caller that passed `--cloud` is not helped by "boot a simulator".
+ */
+async function resolveCloudDeviceAsync(
+  platform: NavigatePlatform | undefined,
+  context: ResolveDeviceContext
+): Promise<NavigateDevice> {
+  if (context.projectRoot == null) {
+    throw new CommandError(
+      'CLOUD_SIMULATOR_UNRESOLVED',
+      'A cloud simulator was asked for and this command did not say which project to look for a session in, which is a bug in this CLI.'
+    );
+  }
+
+  // `skipWhenNoSessionFile: false`: the caller named the backend, so it is worth asking the service
+  // even with no dotenv — that is how "this account has no EAS Simulator" gets its own answer
+  // instead of "this project has not started one".
+  const { device, probe } = await probeCloudDeviceAsync(context.projectRoot, {
+    skipWhenNoSessionFile: false,
+  });
+
+  if (device) {
+    if (platform != null && device.platform !== platform) {
+      throw cloudPlatformMismatchError(platform, device.platform, device.deviceId);
+    }
+    return device;
+  }
+
+  if (probe.state === 'active' && probe.sessionId != null) {
+    // The session is up and did not say what it is. A caller that named a platform has answered
+    // that itself; one that did not is asked, rather than having a URL shape guessed for it.
+    if (platform == null) {
+      throw cloudPlatformUnknownError(probe.sessionId);
+    }
+    return {
+      backend: 'cloud',
+      platform,
+      deviceId: probe.sessionId,
+      name: 'EAS Simulator session',
+    };
+  }
+  if (probe.state === 'unknown' || probe.state === 'active') {
+    throw cloudSessionUnknownError(probe);
+  }
+  throw cloudSessionUnavailableError(probe);
 }
 
 /**
@@ -300,7 +498,12 @@ export interface NoDeviceContext {
  * Deliberately **not** applied to the tool failures above: an unrunnable `adb` or `xcrun` has a
  * headline about this machine's SDK, and burying it under an alternative is friction run 6's F49.
  */
-function noDeviceError(code: string, lines: string[], context: NoDeviceContext): CommandError {
+function noDeviceError(
+  code: string,
+  lines: string[],
+  context: ResolveDeviceContext,
+  cloudProbe: CloudSessionProbe | null = null
+): CommandError {
   const withUrl = context.url
     ? [
         ...lines,
@@ -309,9 +512,29 @@ function noDeviceError(code: string, lines: string[], context: NoDeviceContext):
         }. Open it on a phone, a cloud simulator, or anywhere else that can reach the dev server; "npx exagent navigate <route> --print-url" prints it without looking for a device.`,
       ]
     : lines;
-  const error = new CommandError(code, withUrl.join('\n'));
+
+  // A session on record that this run could not use is the one alternative worth naming above the
+  // URL: it is a device this CLI *can* drive, and the reader is one command away from it. Only when
+  // there is one — a project that has never started a session gets the generic line above and no
+  // advertisement for a paid feature it may not have.
+  const cloudLine = cloudSessionLine(cloudProbe);
+  const error = new CommandError(code, [...withUrl, ...(cloudLine ? [cloudLine] : [])].join('\n'));
   // A caller that has no device does not get one by running the same command again, so the `Try:`
   // is the mode that answers without one.
   error.suggestedCommand = context.url ? 'npx exagent navigate / --print-url' : undefined;
   return error;
+}
+
+/** The `Or:` line for a cloud session this project has on record and this run could not use. */
+function cloudSessionLine(probe: CloudSessionProbe | null): string | null {
+  if (probe == null || probe.state === 'none') {
+    return null;
+  }
+  if (probe.state === 'active') {
+    // Reached when the session is live and is for the *other* platform, or reported none.
+    return `Or: this project has a running EAS Simulator session${
+      probe.platform ? ` (${probe.platform})` : ''
+    }, and it is not the device this run asked for. Run this command again with --cloud and no platform flag to use it.`;
+  }
+  return `Or: this project has an EAS Simulator session on record and it is not usable — ${probe.reason ?? 'the service did not report it as running'}. Start a new one with "npx eas simulator:start --platform ios --type agent-device --non-interactive --name \\"exagent navigate\\"" and pass --cloud.`;
 }
