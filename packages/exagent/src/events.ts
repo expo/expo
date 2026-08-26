@@ -448,6 +448,13 @@ declare module '2g' {
       devServerUrl: string;
       /** Which discovery step produced it: `flag`, `lock`, `log`, `default` or `scan`. */
       devServerSource: string;
+      /**
+       * Which device layer acted: `local-ios`, `local-android`, or `cloud`.
+       *
+       * Next to `platform` rather than folded into it: an EAS Simulator session runs iOS too, and
+       * "the link opened on iOS" no longer says whether the device is on this desk.
+       */
+      deviceBackend: string;
       platform: string;
       deviceId: string;
       exitCode: number | null;

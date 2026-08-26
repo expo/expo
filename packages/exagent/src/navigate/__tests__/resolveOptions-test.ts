@@ -11,6 +11,7 @@ describe(resolveNavigateOptions, () => {
       scheme: undefined,
       appId: undefined,
       printUrl: false,
+      cloud: 'fallback',
       json: false,
       followups: true,
       routeCheck: true,
@@ -40,6 +41,7 @@ describe(resolveNavigateOptions, () => {
       scheme: 'demoapp',
       appId: 'com.example.demo',
       printUrl: true,
+      cloud: 'fallback',
       json: true,
       followups: true,
       routeCheck: false,
@@ -107,5 +109,29 @@ describe(`${resolveNavigateOptions.name} attach wait`, () => {
     expect(() =>
       resolveNavigateOptions(['/', '--attach-timeout', '5s', '--no-wait-attach'])
     ).toThrow(/opposite things/);
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+describe('resolveNavigateOptions and the cloud backend', () => {
+  it(`leaves the cloud as the last rung of the ladder by default`, () => {
+    expect(resolveNavigateOptions(['/']).cloud).toBe('fallback');
+  });
+
+  it(`makes the session the device with --cloud`, () => {
+    expect(resolveNavigateOptions(['/', '--cloud']).cloud).toBe('required');
+  });
+
+  // A session is iOS or Android too, so this pair is not the `--ios`/`--android` pair: naming both
+  // the backend and the platform is a meaningful thing to type.
+  it(`accepts a platform alongside --cloud`, () => {
+    const options = resolveNavigateOptions(['/', '--cloud', '--ios']);
+    expect(options).toMatchObject({ cloud: 'required', platform: 'ios' });
+  });
+
+  it(`refuses --cloud with --print-url, which asks for no device at all`, () => {
+    expect(() => resolveNavigateOptions(['/', '--cloud', '--print-url'])).toThrow(
+      /opposite things/
+    );
   });
 });

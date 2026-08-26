@@ -75,6 +75,17 @@ export interface NavigateResultJson {
    * rather than false, because nothing was asked to connect.
    */
   printUrl: boolean;
+  /**
+   * Which device layer opened the link: `local-ios`, `local-android`, `cloud`, or null.
+   *
+   * Null exactly when nothing was opened, alongside the other device keys. Reported next to
+   * {@link platform} because that no longer says where the device is — an EAS Simulator session
+   * runs iOS too, and the difference decides whether the dev server has to be tunnelled and which
+   * command under `command` a reader can repeat by hand.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   */
+  deviceBackend: string | null;
   platform: string | null;
   deviceId: string | null;
   /** Application id from `--app-id`, or null when it was not passed. */
@@ -149,6 +160,7 @@ export async function navigateAsync(
     devServerUrl: options.devServerUrl,
     routeCheck: options.routeCheck,
     confirmAttachMs: options.attachTimeoutMs,
+    cloud: options.cloud,
   });
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command — `navigate`. Only a link the
@@ -157,6 +169,7 @@ export async function navigateAsync(
   const followups =
     opened.exitCode === 0 && opened.attach.confirmed !== false && followUpsEnabled(wantFollowUps)
       ? buildNavigateFollowUps({
+          backend: opened.deviceBackend,
           platform: opened.platform,
           deviceId: opened.deviceId,
           adbPath: opened.adbPath ?? undefined,
@@ -174,6 +187,7 @@ export async function navigateAsync(
       hostType: opened.hostType,
       connect: opened.connect,
       printUrl: false,
+      deviceBackend: opened.deviceBackend,
       platform: opened.platform,
       deviceId: opened.deviceId,
       appId: opened.appId,
@@ -190,16 +204,22 @@ export async function navigateAsync(
     // below still explains itself, on stderr.
     Log.log(JSON.stringify(report, null, 2));
   } else {
+    // The backend, not only the platform: `Device ios <udid>` reads as a simulator on this desk,
+    // and a run that drove an EAS session has to say so on the line a reader scans.
     const deviceLabel = opened.deviceName
       ? `${opened.deviceName} (${opened.deviceId})`
       : opened.deviceId;
+    const deviceLine =
+      opened.deviceBackend === 'cloud'
+        ? chalk`{bold Device} cloud ${opened.platform} ${deviceLabel}{dim  · an EAS Simulator session, not a device on this machine}`
+        : chalk`{bold Device} ${opened.platform} ${deviceLabel}`;
     Log.log(
       [
         chalk`{bold URL} ${opened.url}`,
         chalk`{dim  ${opened.resolution}}`,
         chalk`{dim  target: ${opened.target}}`,
         chalk`{bold Dev server} ${opened.devServerUrl}{dim  · via ${opened.devServerSource}}`,
-        chalk`{bold Device} ${opened.platform} ${deviceLabel}`,
+        deviceLine,
         // Always a line when a reverse was needed, whether or not it worked: the absence of one is
         // not something a reader can notice, and this is the step F50 was missing entirely.
         ...(opened.reverse?.ran
@@ -326,9 +346,10 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
       hostType: resolved.hostType,
       connect: resolved.connect,
       printUrl: true,
-      // Every key of the shape is present, and the four a device would have filled in are null:
+      // Every key of the shape is present, and the five a device would have filled in are null:
       // a parser reads the same object whether or not anything was opened (llp/0006 §Output
       // contract).
+      deviceBackend: null,
       platform: null,
       deviceId: null,
       appId: options.appId ?? null,

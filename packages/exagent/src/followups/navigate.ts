@@ -2,11 +2,21 @@
 // A deep link that opened is only half an answer: the other half is what the screen now shows and
 // what it threw getting there. Both commands are named for the device that was actually used.
 
+import { AGENT_DEVICE_SPEC } from '../device/cloudSimulator';
 import { openInPhrase } from '../navigate/connectUrl';
-import type { NavigatePlatform } from '../navigate/device';
+import type { DeviceBackend, NavigatePlatform } from '../navigate/device';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface NavigateFollowUpInput {
+  /**
+   * Which device layer opened the link.
+   *
+   * A `Try:` line has to be runnable [llp/0009 §Design], and `xcrun simctl io <session-id>` is not:
+   * a cloud session is not a simulator on this machine, and the screenshot for one is taken through
+   * the EAS CLI. Defaults to the local backend for the platform, which is what every caller that
+   * predates the cloud one means.
+   */
+  backend?: DeviceBackend;
   platform: NavigatePlatform;
   /** Simulator UDID or `adb` serial the link was opened on. */
   deviceId: string;
@@ -103,18 +113,27 @@ export function buildPrintUrlFollowUps({
 }
 
 export function buildNavigateFollowUps({
+  backend,
   platform,
   deviceId,
   adbPath = 'adb',
 }: NavigateFollowUpInput): FollowUp[] {
+  const on = backend ?? (platform === 'ios' ? 'local-ios' : 'local-android');
   return capFollowUps([
     {
       id: 'screenshot',
       command:
-        platform === 'ios'
-          ? `xcrun simctl io ${deviceId} screenshot screen.png`
-          : `${adbPath} -s ${deviceId} exec-out screencap -p > screen.png`,
-      why: 'Captures the screen this route opened, so the change can be checked as it renders.',
+        on === 'cloud'
+          ? // [inferred] — the controller's own verb, run through the session bridge. Never
+            // `xcrun`: there is no simulator on this machine to point it at.
+            `npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} screenshot screen.png`
+          : on === 'local-ios'
+            ? `xcrun simctl io ${deviceId} screenshot screen.png`
+            : `${adbPath} -s ${deviceId} exec-out screencap -p > screen.png`,
+      why:
+        on === 'cloud'
+          ? 'Captures the screen this route opened on the cloud simulator and downloads it here, so the change can be checked as it renders.'
+          : 'Captures the screen this route opened, so the change can be checked as it renders.',
     },
     {
       id: 'runtime-errors',

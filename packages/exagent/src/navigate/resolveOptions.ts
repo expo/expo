@@ -5,7 +5,7 @@
 import { resolveDevServerUrlFlag } from '../runtime/devServer';
 import { parseArgsOrThrow, resolveDuration } from '../utils/args';
 import { CommandError } from '../utils/errors';
-import type { NavigatePlatform } from './device';
+import type { CloudPreference, NavigatePlatform } from './device';
 
 export interface NavigateOptions {
   /** Route path (`/profile/42`) or a full URL (`myapp://profile/42`). */
@@ -38,6 +38,17 @@ export interface NavigateOptions {
    * @see llp/0005-runtime-loop-tools.rfc.md §Resolving a URL without a device
    */
   printUrl: boolean;
+  /**
+   * Which device backends this run may use, decided by `--cloud`.
+   *
+   * `required` when the flag was passed, `fallback` otherwise — so a machine with a local device
+   * behaves exactly as it did, and one with none reaches for an EAS Simulator session instead of
+   * only being told it has no device. Never `off` here: `navigate` is the command the cloud
+   * backend exists for.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   */
+  cloud: CloudPreference;
   /** Print the result as one JSON object instead of the human summary (`--json`). */
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
@@ -73,6 +84,9 @@ const NAVIGATE_ARGS = {
   '--scheme': String,
   '--ios': Boolean,
   '--android': Boolean,
+  // A third backend rather than a third platform, which is why it is not part of the pair above:
+  // a session is iOS or Android too, and `--cloud --ios` is a meaningful thing to type.
+  '--cloud': Boolean,
   '--dev-server-url': String,
   '--app-id': String,
   '--print-url': Boolean,
@@ -113,6 +127,20 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
     );
   }
 
+  // The one flag pair that cannot be read as a refinement of the other: `--print-url` is the mode
+  // that asks for **no** device, and `--cloud` names one. A run that took both would have to
+  // either open the link (ignoring `--print-url`) or not (ignoring `--cloud`).
+  if (args['--cloud'] && args['--print-url']) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--cloud and --print-url ask for opposite things, so this run has no rule for what to do.`,
+        `Why: --cloud says to open the link on an EAS Simulator session, and --print-url says to open nothing and print the URL instead.`,
+        `How: pass one. Use --cloud to drive the session, or --print-url to get the URL and hand it to whatever opens it.`,
+      ].join('\n')
+    );
+  }
+
   if (args['--attach-timeout'] != null && args['--no-wait-attach']) {
     throw new CommandError(
       'BAD_ARGS',
@@ -137,6 +165,7 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
     scheme: args['--scheme'] ? String(args['--scheme']) : undefined,
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
     printUrl: !!args['--print-url'],
+    cloud: args['--cloud'] ? 'required' : 'fallback',
     json: !!args['--json'],
     followups: !args['--no-followups'],
     routeCheck: !args['--no-route-check'],

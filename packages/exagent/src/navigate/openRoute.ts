@@ -12,6 +12,11 @@
 // event, the follow-ups and the two output channels; `smoke` is this function inside a phase.
 
 import {
+  cloudNeedsTunnelError,
+  cloudVerbFailedError,
+  openUrlOnCloudSimulatorAsync,
+} from '../device/cloudSimulator';
+import {
   classifyDevServerHost,
   isTunnelCurrent,
   resolveDevServerReachAsync,
@@ -48,7 +53,13 @@ import {
   resolveDeepLinkUrl,
   type ProjectSchemeConfig,
 } from './deepLink';
-import { resolveDeviceAsync, type NavigateDevice, type NavigatePlatform } from './device';
+import {
+  resolveDeviceAsync,
+  type CloudPreference,
+  type DeviceBackend,
+  type NavigateDevice,
+  type NavigatePlatform,
+} from './device';
 import { debugEvent } from './events';
 import {
   checkRoute,
@@ -94,6 +105,14 @@ export interface OpenRouteOptions {
    * fetch, so a second intent into a stuck instance changes nothing — the process has to go first.
    */
   recoverStuckApp?: boolean;
+  /**
+   * Whether an EAS Simulator session is on this run's device ladder, and how.
+   *
+   * Defaults to `off`, so a caller that says nothing keeps the two local backends exactly.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
+   */
+  cloud?: CloudPreference;
 }
 
 /** Everything the URL alone amounts to: the answer of a run that opens nothing. */
@@ -139,6 +158,14 @@ export interface ResolvedRoute {
 
 /** Everything one open amounts to, with nothing printed. */
 export interface OpenRouteResult extends ResolvedRoute {
+  /**
+   * Which device layer acted: `local-ios`, `local-android`, or `cloud`.
+   *
+   * Reported next to {@link platform} rather than folded into it, because `ios` no longer says
+   * where the device is — a cloud session runs iOS too. It is the fact that decides whether the
+   * command a reader can repeat by hand is `xcrun`, `adb`, or `eas simulator:exec`.
+   */
+  deviceBackend: DeviceBackend;
   platform: NavigatePlatform;
   deviceId: string;
   /** Simulator name, when the platform tool reported one. */
@@ -329,7 +356,19 @@ export async function openRouteAsync(
   const device = await resolveDeviceAsync(platform, {
     url: resolved.url,
     devServerRunning: resolved.devServerReachable,
+    cloud: options.cloud,
+    projectRoot,
   });
+
+  // @ref src/device/cloudSimulator.ts §cloudNeedsTunnelError — refused before anything is opened.
+  // A cloud simulator is on EAS's network, so a `127.0.0.1` or LAN host in the link resolves to
+  // something that is not this machine, exactly as it does on an Android emulator (F50) — and
+  // unlike the emulator there is no `adb reverse` to fix it. Checked here rather than inside the
+  // URL resolver, because it is a fact about the *device*, and the same URL is perfectly good for
+  // the simulator on this desk.
+  if (device.backend === 'cloud' && (resolved.hostType === 'localhost' || resolved.hostType === 'lan')) {
+    throw cloudNeedsTunnelError(resolved.url, resolved.hostType);
+  }
 
   // @ref ./adbReverse — before the link, never after. `exp://127.0.0.1:<port>` means the *device's*
   // loopback, so an emulator resolves it to a port nothing listens on and Expo Go lands on its
@@ -346,12 +385,10 @@ export async function openRouteAsync(
     debugEvent('adb_reverse_failed', { reason: reverse.reason ?? '' });
   }
 
-  const result = await openUrlOnDeviceAsync({
-    platform: device.platform,
-    deviceId: device.deviceId,
+  const result = await openUrlOnBackendAsync(device, {
+    projectRoot,
     url: resolved.url,
     appId,
-    adb: device.adb,
   });
 
   const attach = await confirmAttachAsync({
@@ -368,6 +405,7 @@ export async function openRouteAsync(
     url: resolved.url,
     devServerUrl,
     devServerSource: resolved.devServerSource,
+    deviceBackend: device.backend,
     platform: device.platform,
     deviceId: device.deviceId,
     exitCode: result.exitCode,
@@ -380,6 +418,7 @@ export async function openRouteAsync(
     reverse,
     attach,
     adbPath: device.adb?.bin ?? null,
+    deviceBackend: device.backend,
     platform: device.platform,
     deviceId: device.deviceId,
     deviceName: device.name,
@@ -388,6 +427,51 @@ export async function openRouteAsync(
     exitCode: result.exitCode,
     stdout: result.stdout,
     stderr: result.stderr,
+  };
+}
+
+/**
+ * Open the URL on whichever backend resolved, and report it the same way for all three.
+ *
+ * The two local backends and the cloud one differ in what a non-zero exit *means*, which is why
+ * they are not simply two commands behind one call. `xcrun simctl openurl` exiting non-zero is the
+ * device refusing the link — a fact about the app on it, which `navigate` reports and exits `1`
+ * for. `eas simulator:exec` exiting non-zero is any of: a session that ended mid-run, a signed-out
+ * account, a controller flag this CLI got wrong, or a binary that was never the EAS CLI. None of
+ * those is "the device refused", and reporting them as that would send a reader to reinstall Expo
+ * Go. So the cloud path raises the tool failure instead, with what the tool printed and — for a
+ * signed-out account — the needs-human handoff that makes it exit `7` (llp/0010).
+ */
+async function openUrlOnBackendAsync(
+  device: NavigateDevice,
+  { projectRoot, url, appId }: { projectRoot: string; url: string; appId?: string }
+): Promise<{ command: string; stdout: string; stderr: string; exitCode: number | null }> {
+  if (device.backend !== 'cloud') {
+    return await openUrlOnDeviceAsync({
+      platform: device.platform,
+      deviceId: device.deviceId,
+      url,
+      appId,
+      adb: device.adb,
+    });
+  }
+
+  const result = await openUrlOnCloudSimulatorAsync({
+    projectRoot,
+    url,
+    platform: device.platform,
+  });
+  if (result.spawnError || result.exitCode !== 0) {
+    throw cloudVerbFailedError(result, {
+      what: `${url} was not opened on the cloud simulator.`,
+      how: `Check the session is still running with "npx eas simulator:get --json" — a session that has ended keeps its id in .env.eas-simulator, so the file alone is not proof. Start a new one if it has.`,
+    });
+  }
+  return {
+    command: result.command,
+    stdout: result.stdout,
+    stderr: result.stderr,
+    exitCode: result.exitCode,
   };
 }
 
@@ -519,7 +603,14 @@ async function confirmAttachAsync({
   let targets = await waitAsync(startedAt + budgetMs);
   let recovered = false;
 
-  if (targets === 0 && device.platform === 'android' && options.recoverStuckApp !== false) {
+  // `local-android` and not `android`: the recovery is a force-stop, and the cloud controller has
+  // no verb for one (`cloudVerbNotSupportedError`). Running `adb` against a session id would aim
+  // the SDK at a device that is not on this machine.
+  if (
+    targets === 0 &&
+    device.backend === 'local-android' &&
+    options.recoverStuckApp !== false
+  ) {
     const appId = await resolveStuckAppIdAsync(projectRoot, devServerUrl, device, options.appId);
     const stopped = await stopAppOnDeviceAsync({
       platform: device.platform,

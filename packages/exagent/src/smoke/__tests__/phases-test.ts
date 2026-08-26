@@ -64,6 +64,7 @@ function opened(overrides: Partial<OpenRouteResult> = {}): OpenRouteResult {
     devServerUrl: 'http://127.0.0.1:8081',
     devServerSource: 'lock',
     devServerReachable: true,
+    deviceBackend: 'local-ios',
     hostType: 'localhost',
     connect: [{ target: 'expo-go', label: 'Expo Go', url: 'exp://127.0.0.1:8081' }],
     resolution: 'target app is Expo Go',

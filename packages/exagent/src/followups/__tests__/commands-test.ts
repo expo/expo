@@ -187,6 +187,34 @@ describe(buildStatusFollowUps, () => {
 });
 
 describe(buildNavigateFollowUps, () => {
+  // A `Try:` line has to be runnable, and `xcrun simctl io <session-id>` is not one: a cloud
+  // session is not a simulator on this machine (llp/0005 §The cloud simulator backend).
+  it(`names the controller's screenshot verb for a cloud session, not xcrun`, () => {
+    const followups = buildNavigateFollowUps({
+      backend: 'cloud',
+      platform: 'ios',
+      deviceId: 'sess-1',
+    });
+    const screenshot = followups.find((followup) => followup.id === 'screenshot');
+
+    expect(screenshot?.command).toContain('eas simulator:exec');
+    expect(screenshot?.command).toContain('screenshot screen.png');
+    expect(screenshot?.command).not.toContain('xcrun');
+    expect(screenshot?.command).not.toContain('sess-1');
+  });
+
+  it(`still reads this platform's errors through the dev server, cloud or not`, () => {
+    const followups = buildNavigateFollowUps({
+      backend: 'cloud',
+      platform: 'android',
+      deviceId: 'sess-1',
+    });
+
+    expect(followups.find((followup) => followup.id === 'runtime-errors')?.command).toBe(
+      'npx exagent runtime:errors --android'
+    );
+  });
+
   it(`should offer the simulator screenshot and the runtime loop on iOS`, () => {
     const followups = buildNavigateFollowUps({ platform: 'ios', deviceId: 'IOS-1' });
 
