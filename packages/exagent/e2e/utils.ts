@@ -491,6 +491,16 @@ export type StubDevServerOptions = {
    */
   inspectorSocket?: 'live' | 'none';
   /**
+   * How the inspector socket answers `Runtime.evaluate`, for the commands that ask the app a
+   * question rather than only connecting to it.
+   *
+   * The expression arrives as the CLI sent it, wrapper and all (`src/runtime/promiseSettling.ts`),
+   * so a responder recognises the call it cares about by a marker in the source. Returning
+   * `undefined` answers `{type: "undefined"}`, which is what an expression whose value is nothing
+   * comes back as — and is what the target selector's own probe expects.
+   */
+  inspectorEvaluate?: (expression: string) => unknown;
+  /**
    * Clients `getpeers` reports before any reload. Defaults to one that looks like an iOS app.
    *
    * An empty object is a dev server nothing has connected to, which is the case where there is
@@ -595,6 +605,7 @@ export async function startStubDevServerAsync({
   messagePeers = { 'socket#1': 'role=ios' },
   reloadTargets = 'reconnect',
   targetsAppearWithFile = null,
+  inspectorEvaluate,
 }: StubDevServerOptions = {}): Promise<StubDevServer> {
   let port = 0;
   // Mutable, because a reload changes it: the debugger target list is the evidence a reload is
@@ -710,6 +721,35 @@ export async function startStubDevServerAsync({
   let nextPeerId = 100;
   const messageServer = messageSocket === 'none' ? null : new WebSocketServer({ noServer: true });
   const inspectorServer = inspectorSocket === 'none' ? null : new WebSocketServer({ noServer: true });
+  // A connected app that is asked nothing answers nothing, which is what `live` alone reproduces.
+  // With a responder, the socket also speaks the one CDP method the reading commands send.
+  if (inspectorEvaluate) {
+    inspectorServer?.on('connection', (socket: WebSocket) => {
+      socket.on('message', (data) => {
+        let message: { id?: number; method?: string; params?: { expression?: string } };
+        try {
+          message = JSON.parse(String(data));
+        } catch {
+          return;
+        }
+        if (message.method !== 'Runtime.evaluate') {
+          return;
+        }
+        const value = inspectorEvaluate(message.params?.expression ?? '');
+        socket.send(
+          JSON.stringify({
+            id: message.id,
+            result: {
+              result:
+                value === undefined
+                  ? { type: 'undefined' }
+                  : { type: typeof value === 'object' ? 'object' : typeof value, value },
+            },
+          })
+        );
+      });
+    });
+  }
   messageServer?.on('connection', (socket: WebSocket) => {
     socket.on('message', (data) => {
       if (messageSocket === 'deaf') {
