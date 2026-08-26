@@ -79,8 +79,17 @@ export function formatBuildLocation(location: PlanBuildLocation): string {
   // build raises and is already inside the selection's sentence for a local one. A choice that
   // cannot work here is red, because it is the one line that decides whether to run the plan.
   if (location.selection) {
-    const why = location.selection.why;
-    return location.selection.doomed ? chalk`${head} {red ${why}}` : chalk`${head} {dim ${why}}`;
+    // `because` rather than `why`: the head has already said where the build runs, and the full
+    // sentence would print "runs in the cloud on EAS … Building in the cloud on EAS: …".
+    const chosen = `Chosen because ${location.selection.because}`;
+    const line = location.selection.doomed
+      ? chalk`${head} {red ${chosen}}`
+      : chalk`${head} {dim ${chosen}}`;
+    // A chosen *local* build on a machine the probe found without the toolchain: somebody asked
+    // for this by name, and the thing they have to know is that it stops at the compiler.
+    return location.status === 'missing'
+      ? chalk`${line} {red Not found}: ${location.detail} {bold Instead:} ${location.alternativeCommand}`
+      : line;
   }
 
   switch (location.status) {

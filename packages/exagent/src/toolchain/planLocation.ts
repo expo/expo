@@ -88,9 +88,13 @@ export function applyToolchainProbe(plan: StartPlan, probe: ToolchainProbe): Sta
 
   // A plan that already chose its backend has said all of this once, in the selection's own
   // sentence, which `decideStartPlan` put in the reasons — repeating it here would print the same
-  // fact twice in the same list. The caveats are still worth adding: they are the findings that
-  // did *not* decide anything and do change what happens next.
-  const reasons = buildLocation.selection ? [] : toolchainReasons(applied);
+  // fact twice in the same list. The one exception is a toolchain the probe found **missing**:
+  // with a selection in hand that state is only reachable because a flag or the config asked to
+  // build here anyway, and "this machine does not have it, and here is what does work" is the
+  // sentence that caller most needs. The caveats are always worth adding: they are the findings
+  // that did *not* decide anything and do change what happens next.
+  const reasons =
+    !buildLocation.selection || applied.status === 'missing' ? toolchainReasons(applied) : [];
 
   return {
     ...plan,
