@@ -160,6 +160,13 @@ describe(generateFingerprintAsync, () => {
 
 describe(buildGenerateArgs, () => {
   it(`should generate for the project with no options`, () => {
+    // Not only a default: **no option is sent unless the caller named it**, because the option may
+    // not exist in the CLI the project resolves. `--preset` is in this monorepo's
+    // `@expo/fingerprint` and not in the 0.20.9 a real SDK 57 project installs, which answers
+    // `unknown or unexpected option: --preset` and exits non-zero [observed — live, 2026-08-24],
+    // so a bare argv is what makes this command work against the projects that exist.
+    // @ref llp/0002-testing-and-evals.plan.md §A flag is not shipped until it has run against the
+    // published binary
     expect(buildGenerateArgs(projectRoot)).toEqual(['fingerprint:generate', projectRoot]);
   });
 

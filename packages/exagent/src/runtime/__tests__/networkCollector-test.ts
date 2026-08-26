@@ -109,6 +109,10 @@ describe('CdpNetworkCollector.collectAsync', () => {
 
     expect(requests.map((request) => request.method)).toEqual([
       'Network.enable',
+      // The capability probe, for the reason `CdpNetworkCollector.capability` documents: an
+      // acknowledged `Network.enable` is not a promise of events (llp/0005 §Android, F61).
+      'Log.enable',
+      'Runtime.evaluate',
       'Network.disable',
     ]);
     expect(collected).toEqual([
@@ -345,5 +349,25 @@ describe(classifyNetworkDomainRefusal, () => {
 
   it(`should call an answer it has not seen unknown rather than guessing`, () => {
     expect(classifyNetworkDomainRefusal({ reason: 'something else', rpcCode: -1 })).toBe('unknown');
+  });
+});
+
+// @ref ../networkCollector §NetworkDomainRefusal — friction run 6, F61. `Network.enable` is
+// *acknowledged* by Expo Go for Android and then nothing arrives, so nothing was ever refused and
+// this classification never ran — the empty list stood for "the app made no requests".
+describe(`${classifyNetworkDomainRefusal.name} with nothing refused`, () => {
+  it(`names the acknowledged-then-silent runtime`, () => {
+    expect(classifyNetworkDomainRefusal(null, { debuggerBlind: true })).toBe(
+      'acknowledged-but-blind'
+    );
+  });
+
+  it(`says nothing is wrong when the runtime does carry a debugger`, () => {
+    expect(classifyNetworkDomainRefusal(null, { debuggerBlind: false })).toBe('none');
+  });
+
+  it(`does not claim blindness it has no evidence for`, () => {
+    expect(classifyNetworkDomainRefusal(null, { debuggerBlind: null })).toBe('none');
+    expect(classifyNetworkDomainRefusal(null)).toBe('none');
   });
 });

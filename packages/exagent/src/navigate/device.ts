@@ -3,13 +3,9 @@
 // first attached Android device. Both are read from the platform tools as subprocesses, so no
 // simulator or emulator library is linked into the CLI.
 
-import fs from 'fs';
-import path from 'path';
-
-import { androidSdkDir } from '../toolchain/androidSdk';
+import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
-import { findExecutableOnPath } from '../utils/subprocess';
 import { debugEvent } from './events';
 
 export type NavigatePlatform = 'ios' | 'android';
@@ -20,6 +16,15 @@ export interface NavigateDevice {
   deviceId: string;
   /** Simulator name, when the platform tool reports one. */
   name?: string;
+  /**
+   * The `adb` this device was found with, so every later call uses the same binary.
+   *
+   * Android only. Resolving once and carrying it is what stops a run from finding the SDK for the
+   * device probe and then spawning a bare `adb` for the deep link (`src/device/adb.ts`).
+   */
+  adb?: AdbResolution;
+  /** The device's hardware model, as `adb devices -l` reports it. Android only. */
+  model?: string;
 }
 
 export interface DeviceProbe {
@@ -27,13 +32,13 @@ export interface DeviceProbe {
   /** Why no device was found, for the error message. */
   reason?: string;
   /**
-   * The platform tool could not be run at all, so this probe established nothing.
+   * The device tool itself could not be run, so nothing was asked about devices.
    *
-   * The difference decides whether "no device" may be *claimed*: a `simctl` that ran and listed
-   * nothing proves a machine has no booted simulator, and an `adb` that is not installed proves
-   * nothing about whether a phone is plugged into it (`src/device/localDevice.ts`).
+   * Carried separately from {@link reason} because the two need different headlines: "no device is
+   * attached" is a fact about the machine's devices, and this is a fact about the machine's SDK.
+   * Reporting the first for the second is friction run 6's F49.
    */
-  unavailable?: boolean;
+  toolError?: CommandError;
 }
 
 /**
@@ -63,49 +68,43 @@ export function parseBootedIosSimulator(stdout: string): { udid: string; name: s
   return null;
 }
 
+/** One ready device, as `adb devices -l` describes it. */
+export interface AndroidDeviceLine {
+  deviceId: string;
+  /**
+   * The `model:` field of the long listing, when there is one.
+   *
+   * Kept because it is how a debugger target is tied back to this device: React Native Android
+   * registers itself as `<Build.MODEL> - <release> - API <sdk>` [observed live — 2026-08-25, a
+   * `/json/list` target with `deviceName: "sdk_gphone64_arm64 - 15 - API 35"` for the emulator
+   * `adb devices -l` reported as `model:sdk_gphone64_arm64`]. See `src/runtime/targetPlatform.ts`.
+   */
+  model: string | null;
+}
+
 /**
- * Where `adb` is, preferring `PATH` and falling back to the SDK the build tooling already finds.
+ * Read the ready devices out of `adb devices -l`.
  *
- * The two answers come apart on a machine that installed Android Studio and set nothing:
- * `src/toolchain/detect.ts` reports that SDK as `present` — a Gradle build finds it through
- * `ANDROID_HOME` or `local.properties` — while `adb` is not on `PATH`, so a device probe that only
- * knew `PATH` would report "no Android device" on a machine with the device plugged in. Naming the
- * binary inside the SDK removes that gap; when neither exists, the bare name is returned so the
- * failure still says `adb` rather than a path nobody wrote.
+ * The long listing rather than the short one, because the `model:` field is what lets a debugger
+ * target be matched back to a device. Everything else about the two formats is the same.
  */
-export function resolveAdbPath(): string {
-  if (findExecutableOnPath('adb')) {
-    return 'adb';
-  }
-  const sdkDir = androidSdkDir();
-  if (sdkDir) {
-    const candidate = path.join(
-      sdkDir,
-      'platform-tools',
-      process.platform === 'win32' ? 'adb.exe' : 'adb'
-    );
-    try {
-      if (fs.statSync(candidate).isFile()) {
-        return candidate;
-      }
-    } catch {
-      // Fall through to the bare name.
+export function parseAndroidDevices(stdout: string): AndroidDeviceLine[] {
+  const devices: AndroidDeviceLine[] = [];
+  // The first line is the `List of devices attached` header.
+  for (const line of stdout.split('\n').slice(1)) {
+    const [deviceId, state, ...rest] = line.trim().split(/\s+/);
+    // Devices in any other state (`unauthorized`, `offline`) cannot receive an intent.
+    if (deviceId && state === 'device') {
+      const model = rest.find((field) => field.startsWith('model:'))?.slice('model:'.length);
+      devices.push({ deviceId, model: model || null });
     }
   }
-  return 'adb';
+  return devices;
 }
 
 /** Read the first ready device out of `adb devices`. */
 export function parseFirstAndroidDevice(stdout: string): string | null {
-  // The first line is the `List of devices attached` header.
-  for (const line of stdout.split('\n').slice(1)) {
-    const [deviceId, state] = line.trim().split(/\s+/);
-    // Devices in any other state (`unauthorized`, `offline`) cannot receive an intent.
-    if (deviceId && state === 'device') {
-      return deviceId;
-    }
-  }
-  return null;
+  return parseAndroidDevices(stdout)[0]?.deviceId ?? null;
 }
 
 /** Look for a booted iOS simulator. Never throws: no simulator is an answer. */
@@ -122,7 +121,17 @@ export async function probeIosSimulatorAsync(): Promise<DeviceProbe> {
     return {
       device: null,
       reason: `could not run "xcrun simctl": ${spawnError.message}`,
-      unavailable: true,
+      // The same distinction the Android probe draws (F49): a tool that could not be started has
+      // said nothing about this machine's devices, and a caller that turns "no device" into a
+      // changed suggestion has to be able to tell the two apart (`src/device/localDevice.ts`).
+      toolError: new CommandError(
+        'XCRUN_NOT_RUNNABLE',
+        [
+          `Could not run "xcrun simctl", so no iOS simulator was looked for.`,
+          `Why: ${spawnError.message}`,
+          `How: install Xcode and its command line tools, which provide "xcrun simctl", then run this command again.`,
+        ].join('\n')
+      ),
     };
   }
   if (exitCode !== 0) {
@@ -139,43 +148,52 @@ export async function probeIosSimulatorAsync(): Promise<DeviceProbe> {
 
   debugEvent('device_resolved', { platform: 'ios', deviceId: simulator.udid });
   return {
-    device: {
-      platform: 'ios',
-      deviceId: simulator.udid,
-      name: simulator.name || undefined,
-    },
+    device: { platform: 'ios', deviceId: simulator.udid, name: simulator.name || undefined },
   };
 }
 
-/** Look for an attached Android device or emulator. Never throws: no device is an answer. */
+/**
+ * Look for an attached Android device or emulator. Never throws: no device is an answer.
+ *
+ * An `adb` that could not be started is **not** folded into that answer. It comes back as
+ * {@link DeviceProbe.toolError}, so the caller reports a missing SDK as a missing SDK — the
+ * headline "no Android device or emulator is attached" is only reachable once `adb` has run
+ * (`src/device/adb.ts`, friction run 6's F49).
+ */
 export async function probeAndroidDeviceAsync(): Promise<DeviceProbe> {
-  const adb = resolveAdbPath();
-  const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync(adb, ['devices']);
+  const { stdout, stderr, exitCode, spawnError, adb, notRunnable } = await runAdbAsync([
+    'devices',
+    '-l',
+  ]);
 
-  if (spawnError) {
+  if (notRunnable) {
     return {
       device: null,
-      reason: `could not run "${adb}": ${spawnError.message}`,
-      unavailable: true,
+      reason: `"adb" could not be run (${spawnError?.message ?? 'no reason given'}), so no device was looked for`,
+      toolError: adbNotRunnableError(adb, spawnError?.message ?? 'the process did not start'),
     };
   }
   if (exitCode !== 0) {
     return {
       device: null,
-      reason: `"adb devices" failed: ${stderr.trim() || `exit code ${exitCode}`}`,
+      reason: `"${adb.bin} devices -l" failed: ${stderr.trim() || `exit code ${exitCode}`}`,
     };
   }
 
-  const deviceId = parseFirstAndroidDevice(stdout);
-  if (!deviceId) {
-    return {
-      device: null,
-      reason: 'no Android device or emulator is attached',
-    };
+  const device = parseAndroidDevices(stdout)[0];
+  if (!device) {
+    return { device: null, reason: 'no Android device or emulator is attached' };
   }
 
-  debugEvent('device_resolved', { platform: 'android', deviceId });
-  return { device: { platform: 'android', deviceId } };
+  debugEvent('device_resolved', { platform: 'android', deviceId: device.deviceId });
+  return {
+    device: {
+      platform: 'android',
+      deviceId: device.deviceId,
+      adb,
+      model: device.model ?? undefined,
+    },
+  };
 }
 
 /**
@@ -196,6 +214,9 @@ export async function resolveDeviceAsync(
     if (probe.device) {
       return probe.device;
     }
+    if (probe.toolError) {
+      throw probe.toolError;
+    }
     throw noDeviceError(
       'NO_IOS_DEVICE',
       [
@@ -211,6 +232,11 @@ export async function resolveDeviceAsync(
     const probe = await probeAndroidDeviceAsync();
     if (probe.device) {
       return probe.device;
+    }
+    // The tool, not the devices. Raised as its own failure so the reader is not sent to boot an
+    // emulator they already have running (F49).
+    if (probe.toolError) {
+      throw probe.toolError;
     }
     throw noDeviceError(
       'NO_ANDROID_DEVICE',
@@ -231,6 +257,12 @@ export async function resolveDeviceAsync(
   const androidProbe = await probeAndroidDeviceAsync();
   if (androidProbe.device) {
     return androidProbe.device;
+  }
+
+  // With no platform flag on a host with no simulator, an unrunnable `adb` is the whole reason
+  // nothing was found, and saying "no booted device" would hide it.
+  if (androidProbe.toolError && iosProbe == null) {
+    throw androidProbe.toolError;
   }
 
   const reasons = [
@@ -264,6 +296,9 @@ export interface NoDeviceContext {
  * own, and every `navigate` it ran stopped here [observed — 2026-08-24]. The URL was resolved a
  * step earlier and thrown away with the error, and the URL is exactly what an external opener
  * needs. So it is named, and so is the flag that prints it without asking for a device at all.
+ *
+ * Deliberately **not** applied to the tool failures above: an unrunnable `adb` or `xcrun` has a
+ * headline about this machine's SDK, and burying it under an alternative is friction run 6's F49.
  */
 function noDeviceError(code: string, lines: string[], context: NoDeviceContext): CommandError {
   const withUrl = context.url

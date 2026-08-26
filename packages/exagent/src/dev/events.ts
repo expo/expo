@@ -13,6 +13,10 @@ declare module '2g' {
     'dev:detach_spawn': { logFile: string; argv: string[] };
     'dev:stop_lock_read': { held: boolean; pid: number | null };
     'dev:stop_signalled': { pid: number; signal: string; ok: boolean };
+    // The three checks, separately, because the conclusion is drawn from the first two and the
+    // third is the one that used to be able to overrule them (llp/0005 §A port number is not one
+    // listener). A reader of the stream can see which of them the verdict came from.
+    'dev:stop_outcome': { processGone: boolean; lockGone: boolean; portFree: boolean };
     'dev:stop_done': { stopped: boolean; pid: number | null; reason: string | null };
   }
 }

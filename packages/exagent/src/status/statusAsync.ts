@@ -26,6 +26,7 @@ import {
   type DevServerDiscovery,
   type DevServerProbe,
 } from '../runtime/devServer';
+import { probeTargetLivenessAsync } from '../runtime/targetLiveness';
 import { waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { getAllAgents, getPersistedAgentIdsAsync } from '../skills/agents';
 import { discoverSkillsAsync } from '../skills/discovery';
@@ -107,6 +108,8 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     expoGoCompatible: report.expoGo?.compatible ?? null,
     devServerRunning: report.devServer?.running ?? false,
     appsConnected: report.devServer?.appsConnected ?? 0,
+    appsListed: report.devServer?.appsListed ?? 0,
+    appsStale: report.devServer?.appsStale ?? 0,
     devServerHostType: report.devServer?.hostType ?? null,
     tunnelUrl: report.devServer?.tunnelUrl ?? null,
     localDevice: report.device?.state ?? 'unknown',
@@ -278,13 +281,23 @@ async function probeDevServerStatusAsync(
       projectRootMatched: null,
     });
   }
-  const [readiness, reach] = await Promise.all([
+  // The listing is not the count (F56): a page an app left behind stays in `/json/list`, and every
+  // runtime command a reader runs next would refuse it. One handshake per target, in parallel.
+  const [readiness, liveness, reach] = await Promise.all([
     readDevServerReadinessAsync(projectRoot, discovery, options),
-    // What the dev server printed about where a device reaches it, and whether the tunnel behind
-    // that address is still up (`src/dev/advertisedUrl.ts`). One file read and one lock probe.
+    probeTargetLivenessAsync(discovery.targets),
+    // What the dev server printed about where a *device* reaches it (`src/dev/advertisedUrl.ts`).
+    // One file read and one lock probe, and the answer the `url` above cannot give: a tunnelled run
+    // listens on `127.0.0.1` and is reached at its tunnel host.
     resolveDevServerReachAsync(projectRoot),
   ]);
-  return buildDevServerStatus(discovery.devServerUrl, discovery, readiness, reach);
+  return buildDevServerStatus(
+    discovery.devServerUrl,
+    discovery,
+    readiness,
+    { live: liveness.live, stale: liveness.stale.length },
+    reach
+  );
 }
 
 /**

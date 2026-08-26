@@ -160,6 +160,11 @@ describe('exagent dev:stop', () => {
       'lockHeld',
       'pid',
       'port',
+      // The two facts the conclusion is drawn from, and in that order of authority: the process
+      // this command signalled, and the port number it was using (F48-10, llp/0005 §A port number
+      // is not one listener).
+      'portStillAnswering',
+      'processStillRunning',
       'reason',
       'signal',
       'stopped',

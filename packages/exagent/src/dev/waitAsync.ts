@@ -13,7 +13,11 @@ import { event } from '../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import { buildDevWaitFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
-import { checkEntryBundleAsync, type BundleCheckResult } from '../runtime/bundleCheck';
+import {
+  checkEntryBundleAsync,
+  resolveBundleCheckPlatformsAsync,
+  type BundleCheckResult,
+} from '../runtime/bundleCheck';
 import { discoverDevServerAsync, howToNameTheDevServer } from '../runtime/devServer';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { CommandError } from '../utils/errors';
@@ -70,15 +74,36 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
   // the whole command was reporting green on a build an agent had just broken. Skipped for a dev
   // server that is not this project's: building *their* entry bundle answers nothing about this
   // code, and it would spend the caller's whole budget doing it.
-  const bundle =
-    options.bundleCheck && readiness.ready && readiness.projectRootMatched !== false
-      ? await checkEntryBundleAsync(discovery.devServerUrl, {
-          platform: options.platform,
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Android — friction run 6, F53. Which platform to build
+  // for is a question about the *app*, and this command used to answer it with a fixed default: an
+  // Android-only break with an iOS app also attached was reported as "compiles for ios".
+  const { platforms: bundlePlatforms, source: bundlePlatformSource } =
+    await resolveBundleCheckPlatformsAsync(
+      options.platformExplicit ? options.platform : null,
+      discovery.targets,
+      options.platform
+    );
+
+  const bundles: BundleCheckResult[] = [];
+  if (options.bundleCheck && readiness.ready && readiness.projectRootMatched !== false) {
+    for (const platform of bundlePlatforms) {
+      bundles.push(
+        await checkEntryBundleAsync(discovery.devServerUrl, {
+          platform,
           timeoutMs: remainingMs(),
           // So the file the bundler names is reported the same way whichever platform answered.
           projectRoot,
         })
-      : null;
+      );
+    }
+  }
+  // A broken bundle decides the run whichever platform it was found on, which is the whole reason
+  // more than one is built: the exit code has to be about the app that is broken.
+  const bundle =
+    bundles.find((entry) => entry.outcome === 'broken') ??
+    bundles.find((entry) => entry.outcome === 'timeout') ??
+    bundles[0] ??
+    null;
   if (bundle?.outcome === 'timeout') {
     timedOut = true;
   }
@@ -90,6 +115,10 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
   if (options.requireApp && readiness.ready && bundle?.outcome !== 'broken' && !timedOut) {
     const attached = await waitForAppConnectionAsync(discovery.devServerUrl, {
       timeoutMs: remainingMs(),
+      // Scoped when the caller named a native platform: `--require-app --platform android` used to
+      // be satisfied by the iOS simulator attached to the same dev server (F51).
+      platform:
+        options.platformExplicit && options.platform !== 'web' ? options.platform : undefined,
     });
     appsConnected = attached.appsConnected;
     timedOut = attached.timedOut;
@@ -109,6 +138,8 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
     requireApp: options.requireApp,
     bundleCheck: options.bundleCheck,
     bundle,
+    bundles,
+    bundlePlatformSource,
     ...(readiness.reason ? { reason: readiness.reason } : {}),
   };
 

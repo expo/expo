@@ -3595,6 +3595,9 @@ importers:
       prompts:
         specifier: ^2.3.2
         version: 2.4.2
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
       ws:
         specifier: ^8.12.1
         version: 8.19.0

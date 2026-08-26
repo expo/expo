@@ -110,6 +110,11 @@ describe('CdpRuntimeErrorCollector.collectAsync', () => {
 
     expect(requests.map((request) => request.method)).toEqual([
       'Runtime.enable',
+      // Two openings for the capability probe, not for the window: `Log.enable` is where a runtime
+      // with no CDP debugger announces itself, and the evaluate is the second, independent way of
+      // learning the same thing (llp/0005 §Android, F52).
+      'Log.enable',
+      'Runtime.evaluate',
       'Runtime.disable',
     ]);
     expect(errors).toHaveLength(2);

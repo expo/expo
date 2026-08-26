@@ -10,6 +10,7 @@ import type {
   BundleCheckError,
   BundleCheckPlatform,
   BundleCheckResult,
+  BundlePlatformSource,
 } from '../runtime/bundleCheck';
 import type { DevServerSource } from '../runtime/devServer';
 
@@ -65,8 +66,24 @@ export interface DevWaitResult {
    * checked" for both is what made a declined check read as a clean one [friction run 5, F48-7].
    */
   bundleCheck: boolean;
-  /** What building the project's entry bundle answered, or null when it was not attempted. */
+  /**
+   * What building the project's entry bundle answered, or null when it was not attempted.
+   *
+   * The **decisive** one when more than one platform was checked: a broken bundle wins, because
+   * that is what the exit code is about. {@link bundles} holds every answer.
+   */
   bundle: BundleCheckResult | null;
+  /**
+   * Every platform that was checked, in the order they were.
+   *
+   * More than one only when no `--platform` was named and the dev server has apps on more than one
+   * platform. That is friction run 6's F53: with an Android-only break and an iOS app also
+   * connected, a run with no flag checked the fixed iOS default and reported "compiles for ios"
+   * while the Android app was on a red screen.
+   */
+  bundles?: BundleCheckResult[];
+  /** Where the checked platform came from, so a reader can tell a default from a decision. */
+  bundlePlatformSource?: BundlePlatformSource;
   /** Why the wait did not end in a ready bundler. Absent when it did. */
   reason?: string;
 }
@@ -121,6 +138,10 @@ export interface DevWaitResultJson {
   timedOut: boolean;
   source: DevServerSource;
   bundle: DevWaitBundleJson;
+  /** Every platform whose entry bundle was built, in the order they were. */
+  bundlePlatforms: BundleCheckPlatform[];
+  /** Where those platforms came from: a flag, the connected apps, or this command's default. */
+  bundlePlatformSource: BundlePlatformSource;
   followups: FollowUp[];
 }
 
@@ -179,6 +200,10 @@ export function devWaitResultToJson(
     timedOut: result.timedOut,
     source: result.source,
     bundle: bundleToJson(result.bundle, { skippedByFlag: !result.bundleCheck }),
+    bundlePlatforms: (result.bundles ?? (result.bundle ? [result.bundle] : [])).map(
+      (bundle) => bundle.platform
+    ),
+    bundlePlatformSource: result.bundlePlatformSource ?? 'default',
     followups,
   };
 }
@@ -227,7 +252,7 @@ export function formatDevWaitResult(result: DevWaitResult): string {
     row('dev server', `${result.devServerUrl}${SEPARATOR}${chalk.dim(`via ${result.source}`)}`),
     row('bundler', bundlerValue(result)),
     row('project', projectValue(result)),
-    row('bundle', bundleValue(result.bundle, result.bundleCheck)),
+    row('bundle', bundleValue(result)),
     row('apps', appsValue(result)),
     ...bundleErrorLines(result.bundle),
   ].join('\n');
@@ -271,20 +296,42 @@ function projectValue(result: DevWaitResult): string {
  * The only line of this report that is about the *project*: every other one is about the dev
  * server, which can be perfectly healthy while the code it is serving does not compile.
  */
-function bundleValue(bundle: BundleCheckResult | null, requested: boolean): string {
+function bundleValue(result: DevWaitResult): string {
+  const bundle = result.bundle;
   if (bundle == null) {
     // The two ways of having no answer, told apart. A caller that passed `--no-bundle-check` gets
     // the flag named back, so the line reads as their own decision rather than as a clean result;
     // a check that never ran keeps the plainer wording, because there is no flag to blame.
-    return requested ? chalk.dim('not checked') : chalk.dim('skipped (--no-bundle-check)');
+    return result.bundleCheck ? chalk.dim('not checked') : chalk.dim('skipped (--no-bundle-check)');
   }
+  // Every platform that was checked, not only the decisive one: "compiles for ios" printed while
+  // an Android app was on a red screen is exactly what F53 recorded, and the second platform is the
+  // only thing on this line that would have said so.
+  const others = (result.bundles ?? []).filter((entry) => entry !== bundle);
+  const alsoClause = others.length
+    ? chalk.dim(
+        ` · also ${others
+          .map(
+            (entry) =>
+              `${entry.outcome === 'ok' ? 'compiles' : entry.outcome} for ${entry.platform}`
+          )
+          .join(', ')}`
+      )
+    : '';
+  const sourceClause =
+    result.bundlePlatformSource === 'connected-app'
+      ? chalk.dim(' · the platform the connected app is on')
+      : result.bundlePlatformSource === 'default'
+        ? chalk.dim(" · this command's default, because nothing named a platform")
+        : '';
+
   switch (bundle.outcome) {
     case 'ok':
-      return `${chalk.green('compiles')} for ${bundle.platform}`;
+      return `${chalk.green('compiles')} for ${bundle.platform}${alsoClause}${sourceClause}`;
     case 'broken':
-      return `${chalk.red('does not compile')} for ${bundle.platform}`;
+      return `${chalk.red('does not compile')} for ${bundle.platform}${alsoClause}${sourceClause}`;
     case 'timeout':
-      return chalk.yellow(`still building for ${bundle.platform} (timed out)`);
+      return chalk.yellow(`still building for ${bundle.platform} (timed out)`) + alsoClause;
     default:
       return chalk.dim(`unknown${bundle.reason ? ` (${bundle.reason})` : ''}`);
   }

@@ -153,6 +153,8 @@ describe('exagent runtime:reload', () => {
         'appsReconnected',
         'attempts',
         'bundle',
+        'bundlePlatformSource',
+        'bundlePlatforms',
         'devServerSource',
         'devServerUrl',
         'deviceId',

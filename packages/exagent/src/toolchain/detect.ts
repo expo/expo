@@ -3,12 +3,13 @@
 // none at all for Android, cached for the life of the process, and wrapped so that nothing here can
 // stop a plan being made: a probe that throws answers `unknown`, which reads as "not established".
 
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import type { NativePlatform } from '../plan/types';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import { findExecutableOnPath } from '../utils/subprocess';
-import { defaultAndroidSdkDir, directoryExistsSync, namedAndroidSdk } from './androidSdk';
 import { localRequirement } from './runsOn';
 import type { ToolchainProbe } from './types';
 
@@ -20,6 +21,9 @@ import type { ToolchainProbe } from './types';
  * holding up for it — the answer is `unknown`, which says exactly that.
  */
 const PROBE_TIMEOUT_MS = 5_000;
+
+/** Environment variables the Android tooling reads, in the order it reads them. */
+const ANDROID_SDK_ENV_VARS = ['ANDROID_HOME', 'ANDROID_SDK_ROOT'] as const;
 
 /**
  * One probe per platform per process.
@@ -144,7 +148,9 @@ async function detectXcodeAsync(): Promise<ToolchainProbe> {
  */
 function detectAndroidSdk(): ToolchainProbe {
   const requirement = localRequirement('android');
-  const named = namedAndroidSdk();
+  const named = ANDROID_SDK_ENV_VARS.map((name) => ({ name, value: readEnv(name) })).find(
+    (entry) => entry.value
+  );
   const sdkDir = named?.value ?? defaultAndroidSdkDir();
   const from = named ? `${named.name} names it` : 'the default install location';
 
@@ -184,6 +190,36 @@ function detectAndroidSdk(): ToolchainProbe {
     requirement,
     caveats,
   };
+}
+
+/** Where the Android Studio installer puts the SDK, per host. */
+function defaultAndroidSdkDir(): string {
+  const home = os.homedir();
+  if (process.platform === 'darwin') {
+    return path.join(home, 'Library', 'Android', 'sdk');
+  }
+  if (process.platform === 'win32') {
+    return path.join(
+      process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local'),
+      'Android',
+      'Sdk'
+    );
+  }
+  return path.join(home, 'Android', 'Sdk');
+}
+
+/** An environment variable that is set to something, treating an empty value as unset. */
+function readEnv(name: string): string | null {
+  const value = process.env[name];
+  return value && value.trim() ? value.trim() : null;
+}
+
+function directoryExistsSync(dir: string): boolean {
+  try {
+    return fs.statSync(dir).isDirectory();
+  } catch {
+    return false;
+  }
 }
 
 /** The first line worth quoting from a tool's output, or an empty string. */

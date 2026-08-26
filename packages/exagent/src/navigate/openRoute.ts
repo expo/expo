@@ -26,8 +26,20 @@ import {
   readProjectPackageJsonAsync,
 } from '../project/nodeModules';
 import { readProjectRoutesAsync } from '../project/routes';
-import { discoverDevServerAsync, type DevServerSource } from '../runtime/devServer';
+import { readConfiguredAppId, resolveAppId } from '../runtime/appId';
+import { stopAppOnDeviceAsync } from '../runtime/appProcess';
+import {
+  discoverDevServerAsync,
+  probeDevServerAsync,
+  type DevServerSource,
+} from '../runtime/devServer';
+import {
+  buildDeviceNameIndexAsync,
+  buildDeviceNameIndexIfNeededAsync,
+  scopeTargets,
+} from '../runtime/targetPlatform';
 import { CommandError } from '../utils/errors';
+import { reverseLoopbackPortAsync, type ReverseResult } from './adbReverse';
 import { buildConnectUrls, type ConnectUrl } from './connectUrl';
 import {
   isFullUrlRoute,
@@ -36,7 +48,7 @@ import {
   resolveDeepLinkUrl,
   type ProjectSchemeConfig,
 } from './deepLink';
-import { resolveDeviceAsync, type NavigatePlatform } from './device';
+import { resolveDeviceAsync, type NavigateDevice, type NavigatePlatform } from './device';
 import { debugEvent } from './events';
 import {
   checkRoute,
@@ -66,6 +78,22 @@ export interface OpenRouteOptions {
    * running rather than always `navigate` (friction run 5).
    */
   command?: RouteCommand;
+  /**
+   * How long to wait for an app on this platform to register a debugger target, in milliseconds.
+   *
+   * Zero — the default — opens the link and reports what the device tool said, which is what a
+   * caller with a connection phase of its own (`smoke`) wants. `navigate` passes a budget, because
+   * `am start` exiting 0 says only that the *intent* was delivered: the Android run this exists for
+   * landed on Expo Go's error screen and reported success [friction run 6, F50].
+   */
+  confirmAttachMs?: number;
+  /**
+   * Stop the app and open the link again when the first one did not attach.
+   *
+   * Only reached on Android, and only once. Expo Go's `ErrorActivity` does not retry the manifest
+   * fetch, so a second intent into a stuck instance changes nothing — the process has to go first.
+   */
+  recoverStuckApp?: boolean;
 }
 
 /** Everything the URL alone amounts to: the answer of a run that opens nothing. */
@@ -93,8 +121,6 @@ export interface ResolvedRoute {
    * which carries no host at all: it reaches whatever dev server the app was launched against.
    */
   hostType: DevServerHostType | null;
-  /** Whether the route was checked against the project's routes, and what the check said. */
-  routeCheck: RouteCheckJson;
   /**
    * How to point an app at this dev server, one entry per application that could be meant.
    *
@@ -107,6 +133,8 @@ export interface ResolvedRoute {
    * @see ./connectUrl.ts
    */
   connect: ConnectUrl[];
+  /** Whether the route was checked against the project's routes, and what the check said. */
+  routeCheck: RouteCheckJson;
 }
 
 /** Everything one open amounts to, with nothing printed. */
@@ -123,21 +151,46 @@ export interface OpenRouteResult extends ResolvedRoute {
   /** What the device tool wrote, for a caller that reports it. */
   stdout: string;
   stderr: string;
+  /** The `adb` binary that was run, so a follow-up names a command this machine can run (F49). */
+  adbPath: string | null;
+  /**
+   * What `adb reverse` did before the link, or null on a platform that needs none.
+   *
+   * @see ./adbReverse — why an Android link to a dev server on this machine cannot work without it.
+   */
+  reverse: ReverseResult | null;
+  /** Whether an app of this platform was seen to attach afterwards. */
+  attach: AttachCheck;
+}
+
+/** Whether the app was seen to connect to the dev server after the link was opened. */
+export interface AttachCheck {
+  /** Whether this run looked at all. False when the caller asked for no wait. */
+  checked: boolean;
+  /**
+   * An app on this platform holds a debugger target on this dev server.
+   *
+   * Null exactly when {@link checked} is false. **Never assumed**: a link that was delivered and an
+   * app that is running are different facts, and reporting the first as the second is F50.
+   */
+  confirmed: boolean | null;
+  /** How long the wait took, in milliseconds. */
+  waitedMs: number;
+  /** How many debugger targets this platform had when the wait ended. */
+  targets: number;
+  /** Whether the app was stopped and the link opened a second time. */
+  recovered: boolean;
+  /** Why it is not confirmed, or null when it is. */
+  reason: string | null;
 }
 
 /**
- * Everything a deep link needs except the device: the route check, the dev server, the Expo Go
- * decision, and the URL itself.
+ * Resolve a deep link for a route and open it on a device.
  *
- * Split out from {@link openRouteAsync} for `navigate --print-url`, whose whole point is that the
- * device the app runs on may not be one this machine can drive — a cloud simulator, a phone, a
- * teammate. Extracting the half that needs no device is what lets the two modes answer *the same
- * URL*: a second composition of these steps is a second place for the findings of llp/0005 to be
- * forgotten, which is the reason this file exists at all.
- *
- * @throws {CommandError} `ROUTE_NOT_FOUND` for a route the project has not got, and
- * `DEEP_LINK_UNRESOLVED` for a named dev server that does not answer or a project with no
- * resolvable scheme.
+ * @throws {CommandError} `ROUTE_NOT_FOUND` for a route the project has not got, checked before
+ * anything is opened; `DEEP_LINK_UNRESOLVED` for a named dev server that does not answer or a
+ * project with no resolvable scheme; and whatever {@link resolveDeviceAsync} throws when there is
+ * no device.
  */
 export async function resolveRouteUrlAsync(
   projectRoot: string,
@@ -191,16 +244,29 @@ export async function resolveRouteUrlAsync(
     'expo-dev-client'
   );
 
+  // Scoped to the platform that was named, for the reason every other reading command is (F51):
+  // a dev server with an iOS simulator already attached would otherwise decide an `--android` run's
+  // target app from the simulator's registration. Nothing on the named platform leaves the decision
+  // to the project's own shape, which is the honest fallback. The index costs no subprocess unless
+  // a target cannot be placed by its app id, which Expo Go always can.
+  const decisionTargets = platform
+    ? scopeTargets(
+        devServer.targets,
+        platform,
+        await buildDeviceNameIndexIfNeededAsync(devServer.targets)
+      ).matched
+    : devServer.targets;
+
   const target = decideExpoGoTarget({
     appIdOverride: appId,
-    targetAppIds: devServer.targets.map((item) => item.appId).filter(Boolean),
+    targetAppIds: decisionTargets.map((item) => item.appId).filter(Boolean),
     hasNativeDirs: nativeDirs.ios || nativeDirs.android,
     usesDevClient,
   });
   debugEvent('target_decided', target);
 
-  // Only a tunnel that is *current* changes the URL: a host read out of a log whose tunnel has
-  // since died is worse than the LAN address, because it looks like it should work.
+  // Only a tunnel that is *current* changes the URL: a host read out of a log whose dev server has
+  // since stopped is worse than the LAN address, because it looks like it should work.
   const tunnelHost = isTunnelCurrent(reach) ? (reach.advertised?.host ?? null) : null;
 
   const resolved = resolveDeepLinkUrl({
@@ -231,7 +297,6 @@ export async function resolveRouteUrlAsync(
     target: target.reason,
     isExpoGo: target.isExpoGo,
     hostType: resolved.host ? classifyDevServerHost(hostnameOf(resolved.host)) : null,
-    routeCheck,
     // Built from the host a *device* uses — the tunnel's when there is one — rather than from the
     // route URL, because a development build's route URL carries no host at all.
     connect: buildConnectUrls({
@@ -241,6 +306,97 @@ export async function resolveRouteUrlAsync(
       isExpoGo: target.isExpoGo,
       certain: target.certain,
     }),
+    routeCheck,
+  };
+}
+
+/**
+ * Resolve a deep link for a route and open it on a device.
+ *
+ * @throws {CommandError} whatever {@link resolveRouteUrlAsync} throws, and whatever
+ * {@link resolveDeviceAsync} throws when this machine has no device to open the link on.
+ */
+export async function openRouteAsync(
+  projectRoot: string,
+  options: OpenRouteOptions
+): Promise<OpenRouteResult> {
+  const { platform, appId } = options;
+  const resolved = await resolveRouteUrlAsync(projectRoot, options);
+  const devServerUrl = resolved.devServerUrl;
+
+  // The URL is known by now, so a machine with no device is told what to do with it rather than
+  // only that it has none: an agent driving a cloud simulator has somewhere else to open it.
+  const device = await resolveDeviceAsync(platform, {
+    url: resolved.url,
+    devServerRunning: resolved.devServerReachable,
+  });
+
+  // @ref ./adbReverse — before the link, never after. `exp://127.0.0.1:<port>` means the *device's*
+  // loopback, so an emulator resolves it to a port nothing listens on and Expo Go lands on its
+  // error screen with `am start` having exited 0 (F50).
+  const reverse =
+    device.platform === 'android' && device.adb != null
+      ? await reverseLoopbackPortAsync({
+          adb: device.adb,
+          deviceId: device.deviceId,
+          url: resolved.url,
+        })
+      : null;
+  if (reverse?.ok === false) {
+    debugEvent('adb_reverse_failed', { reason: reverse.reason ?? '' });
+  }
+
+  const result = await openUrlOnDeviceAsync({
+    platform: device.platform,
+    deviceId: device.deviceId,
+    url: resolved.url,
+    appId,
+    adb: device.adb,
+  });
+
+  const attach = await confirmAttachAsync({
+    projectRoot,
+    options,
+    device,
+    devServerUrl,
+    url: resolved.url,
+    openedOk: result.exitCode === 0,
+  });
+
+  cliEvent('navigate', {
+    route: resolved.route,
+    url: resolved.url,
+    devServerUrl,
+    devServerSource: resolved.devServerSource,
+    platform: device.platform,
+    deviceId: device.deviceId,
+    exitCode: result.exitCode,
+    reversedPort: reverse?.port ?? null,
+    attached: attach.confirmed,
+  });
+
+  return {
+    ...resolved,
+    reverse,
+    attach,
+    adbPath: device.adb?.bin ?? null,
+    platform: device.platform,
+    deviceId: device.deviceId,
+    deviceName: device.name,
+    appId: appId ?? null,
+    command: result.command,
+    exitCode: result.exitCode,
+    stdout: result.stdout,
+    stderr: result.stderr,
+  };
+}
+
+/** The reach of a dev server the caller named: their host, and nothing this project knows. */
+async function namedDevServerReach(): Promise<DevServerReach> {
+  return {
+    advertised: null,
+    running: false,
+    reason: '--dev-server-url named the dev server, so its host is the one that was used',
   };
 }
 
@@ -291,62 +447,132 @@ function hostnameOf(host: string): string {
   return lastColon > 0 && !host.includes(']') ? host.slice(0, lastColon) : host;
 }
 
+/** How often the debugger target list is re-read while the attach wait runs. */
+const ATTACH_POLL_MS = 500;
+
 /**
- * Resolve a deep link for a route and open it on a device.
+ * Wait for an app on this platform to hold a debugger target, and recover a stuck one once.
  *
- * @throws {CommandError} whatever {@link resolveRouteUrlAsync} throws, and whatever
- * {@link resolveDeviceAsync} throws when this machine has no device to open the link on.
+ * "The device took the intent" and "the app is running this project" are different facts, and the
+ * whole of F50 is the first having been reported as the second. What proves the second is a
+ * debugger target **on this platform** — scoped, because a dev server with an iOS simulator already
+ * attached would otherwise confirm an Android link from the simulator's target
+ * (`src/runtime/targetPlatform.ts`).
+ *
+ * The recovery is one force-stop and one fresh link, and only on Android: Expo Go's error screen
+ * keeps the process alive and does not retry the manifest fetch, so a second intent into it changes
+ * nothing. Automatic rather than suggested, because the state it clears is one this command caused.
  */
-export async function openRouteAsync(
-  projectRoot: string,
-  options: OpenRouteOptions
-): Promise<OpenRouteResult> {
-  const { appId, platform } = options;
-  const resolved = await resolveRouteUrlAsync(projectRoot, options);
+async function confirmAttachAsync({
+  projectRoot,
+  options,
+  device,
+  devServerUrl,
+  url,
+  openedOk,
+}: {
+  projectRoot: string;
+  options: OpenRouteOptions;
+  device: NavigateDevice;
+  devServerUrl: string;
+  url: string;
+  openedOk: boolean;
+}): Promise<AttachCheck> {
+  const budgetMs = options.confirmAttachMs ?? 0;
+  if (budgetMs <= 0) {
+    return {
+      checked: false,
+      confirmed: null,
+      waitedMs: 0,
+      targets: 0,
+      recovered: false,
+      reason: 'this run did not wait for the app to attach',
+    };
+  }
+  if (!openedOk) {
+    return {
+      checked: false,
+      confirmed: null,
+      waitedMs: 0,
+      targets: 0,
+      recovered: false,
+      reason: 'the device refused the deep link, so nothing was opened to wait for',
+    };
+  }
 
-  // The URL is known by now, so a machine with no device is told what to do with it rather than
-  // only that it has none: an agent driving a cloud simulator has somewhere else to open it.
-  const device = await resolveDeviceAsync(platform, {
-    url: resolved.url,
-    devServerRunning: resolved.devServerReachable,
-  });
-  const result = await openUrlOnDeviceAsync({
-    platform: device.platform,
-    deviceId: device.deviceId,
-    url: resolved.url,
-    appId,
-  });
+  const startedAt = Date.now();
+  const index = await buildDeviceNameIndexAsync();
+  const countAsync = async (): Promise<number> => {
+    const probe = await probeDevServerAsync(devServerUrl);
+    return probe.reachable ? scopeTargets(probe.targets, device.platform, index).matched.length : 0;
+  };
+  const waitAsync = async (deadline: number): Promise<number> => {
+    for (;;) {
+      const count = await countAsync();
+      if (count > 0 || Date.now() >= deadline) {
+        return count;
+      }
+      await new Promise((resolve) => setTimeout(resolve, ATTACH_POLL_MS));
+    }
+  };
 
-  cliEvent('navigate', {
-    route: resolved.route,
-    url: resolved.url,
-    devServerUrl: resolved.devServerUrl,
-    devServerSource: resolved.devServerSource,
-    platform: device.platform,
-    deviceId: device.deviceId,
-    exitCode: result.exitCode,
-  });
+  let targets = await waitAsync(startedAt + budgetMs);
+  let recovered = false;
 
+  if (targets === 0 && device.platform === 'android' && options.recoverStuckApp !== false) {
+    const appId = await resolveStuckAppIdAsync(projectRoot, devServerUrl, device, options.appId);
+    const stopped = await stopAppOnDeviceAsync({
+      platform: device.platform,
+      deviceId: device.deviceId,
+      appId,
+      adb: device.adb,
+    });
+    debugEvent('attach_recovery', { appId, stopped: stopped.ok });
+    if (stopped.ok) {
+      recovered = true;
+      const again = await openUrlOnDeviceAsync({
+        platform: device.platform,
+        deviceId: device.deviceId,
+        url,
+        appId: options.appId,
+        adb: device.adb,
+      });
+      if (again.exitCode === 0) {
+        targets = await waitAsync(Date.now() + budgetMs);
+      }
+    }
+  }
+
+  const waitedMs = Date.now() - startedAt;
   return {
-    ...resolved,
-    platform: device.platform,
-    deviceId: device.deviceId,
-    deviceName: device.name,
-    appId: appId ?? null,
-    command: result.command,
-    exitCode: result.exitCode,
-    stdout: result.stdout,
-    stderr: result.stderr,
+    checked: true,
+    confirmed: targets > 0,
+    waitedMs,
+    targets,
+    recovered,
+    reason:
+      targets > 0
+        ? null
+        : `no ${device.platform} app registered a debugger target on ${devServerUrl} within ${waitedMs}ms${
+            recovered ? ', including after the app was stopped and the link opened again' : ''
+          }`,
   };
 }
 
-/** The reach of a dev server the caller named: their host, and nothing this project knows. */
-async function namedDevServerReach(): Promise<DevServerReach> {
-  return {
-    advertised: null,
-    running: false,
-    reason: '--dev-server-url named the dev server, so its host is the one that was used',
-  };
+/** The application id to force-stop, resolved the way `runtime:stop` resolves it. */
+async function resolveStuckAppIdAsync(
+  projectRoot: string,
+  devServerUrl: string,
+  device: NavigateDevice,
+  appIdOverride?: string
+): Promise<string> {
+  const probe = await probeDevServerAsync(devServerUrl);
+  return resolveAppId({
+    platform: device.platform,
+    appIdOverride,
+    targetAppIds: probe.targets.map((target) => target.appId).filter(Boolean),
+    configured: readConfiguredAppId(projectRoot, device.platform),
+  }).appId;
 }
 
 /** The failure for a `--dev-server-url` that named a dev server nothing answers on. */

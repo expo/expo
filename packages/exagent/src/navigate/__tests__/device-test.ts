@@ -114,10 +114,39 @@ describe(probeAndroidDeviceAsync, () => {
   it(`should return the first attached device`, async () => {
     mockSpawnQueue([{ stdout: ADB_DEVICES.join('\n') }]);
 
-    await expect(probeAndroidDeviceAsync()).resolves.toEqual({
-      device: { platform: 'android', deviceId: 'emulator-5554' },
-    });
-    expect(spawn).toHaveBeenCalledWith('adb', ['devices'], expect.anything());
+    const probe = await probeAndroidDeviceAsync();
+
+    expect(probe.device).toMatchObject({ platform: 'android', deviceId: 'emulator-5554' });
+    // The resolution travels with the device, so every later `adb` call spawns the same binary
+    // (`src/device/adb.ts`, F49).
+    expect(probe.device?.adb?.bin).toBeTruthy();
+    // The long listing, because its `model:` field is what ties a debugger target back to this
+    // device (`src/runtime/targetPlatform.ts`).
+    expect(spawn).toHaveBeenCalledWith(
+      expect.stringMatching(/adb(\.exe)?$/),
+      ['devices', '-l'],
+      expect.anything()
+    );
+  });
+
+  it(`should report an unrunnable adb as a tool failure rather than as a missing device`, async () => {
+    jest.mocked(spawn).mockImplementation((() => {
+      const child = Object.assign(new EventEmitter(), {
+        stdout: new EventEmitter(),
+        stderr: new EventEmitter(),
+      });
+      process.nextTick(() =>
+        child.emit('error', Object.assign(new Error('spawn adb ENOENT'), { code: 'ENOENT' }))
+      );
+      return child as any;
+    }) as any);
+
+    const probe = await probeAndroidDeviceAsync();
+
+    expect(probe.device).toBeNull();
+    expect(probe.toolError?.code).toBe('ADB_NOT_RUNNABLE');
+    // The headline a reader gets must not send them to boot a device they already have (F49).
+    expect(probe.reason).not.toMatch(/no android device/i);
   });
 
   it(`should report no device when none is attached`, async () => {

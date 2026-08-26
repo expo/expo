@@ -59,11 +59,40 @@ let originalFetch: typeof fetch | undefined;
 let killed: { pid: number; signal: string }[] = [];
 let killSpy: jest.SpyInstance;
 
+/**
+ * Processes that exist on this fake machine.
+ *
+ * Empty by default, so a pid nothing added is a pid that is gone — which is the state after a
+ * signal that worked, and the state the ordinary stop is asserted against. A test that needs a
+ * process to survive its signal puts the pid in here and clears {@link signalKills}.
+ */
+let livePids = new Set<number>();
+
+/** Whether a signal ends the process it is delivered to. */
+let signalKills = true;
+
 beforeEach(() => {
   originalFetch = globalThis.fetch;
   killed = [];
-  killSpy = jest.spyOn(process, 'kill').mockImplementation(((pid: number, signal: string) => {
-    killed.push({ pid, signal });
+  livePids = new Set();
+  signalKills = true;
+  killSpy = jest.spyOn(process, 'kill').mockImplementation(((
+    pid: number,
+    signal: string | number
+  ) => {
+    // Signal 0 is the existence check `isProcessAlive` uses, and delivers nothing.
+    if (signal === 0) {
+      if (!livePids.has(pid)) {
+        const error: NodeJS.ErrnoException = new Error('kill ESRCH');
+        error.code = 'ESRCH';
+        throw error;
+      }
+      return true;
+    }
+    killed.push({ pid, signal: String(signal) });
+    if (signalKills) {
+      livePids.delete(pid);
+    }
     return true;
   }) as never);
   jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -119,6 +148,8 @@ describe(devStopAsync, () => {
       'lockHeld',
       'pid',
       'port',
+      'portStillAnswering',
+      'processStillRunning',
       'reason',
       'signal',
       'stopped',
@@ -127,21 +158,83 @@ describe(devStopAsync, () => {
     ]);
   });
 
-  // Both have to go quiet. The lock can be released while Metro is still closing its listener, and
-  // a holder that dies without releasing leaves a socket file nothing answers on.
-  it(`should keep waiting while the port still answers`, async () => {
-    jest.mocked(readDevServerLockAsync).mockResolvedValue(null as never);
-    // The first call is the initial read, which must find a lock for the signal path.
-    jest
-      .mocked(readDevServerLockAsync)
-      .mockResolvedValueOnce(lock() as never)
-      .mockResolvedValue(null as never);
-    mockPort({ answering: true });
+  // @ref llp/0005-runtime-loop-tools.rfc.md §A port number is not one listener — friction run 5,
+  // F48-10. The pid answers "did my signal work"; the port answers "is that number in use", and
+  // only the first is what this command was asked about.
+  describe('the pid is the evidence, and the port is not', () => {
+    it(`should keep waiting while the process it signalled is still running`, async () => {
+      jest
+        .mocked(readDevServerLockAsync)
+        .mockResolvedValueOnce(lock() as never)
+        .mockResolvedValue(null as never);
+      mockPort({ answering: true });
+      livePids.add(4242);
+      signalKills = false;
 
-    await expect(devStopAsync(projectRoot, options({ timeoutMs: 200 }))).resolves.toBe(
-      EXIT_OUTCOME_FAILED
-    );
-    expect(JSON.parse(printed())).toMatchObject({ stopped: false, reason: 'still-running' });
+      await expect(devStopAsync(projectRoot, options({ timeoutMs: 200 }))).resolves.toBe(
+        EXIT_OUTCOME_FAILED
+      );
+      expect(JSON.parse(printed())).toMatchObject({
+        stopped: false,
+        reason: 'still-running',
+        processStillRunning: true,
+      });
+      expect(printedErrors()).toContain('SIGKILL');
+    });
+
+    // The split-stack case, and every other "something else has that port number" case with it:
+    // the checks here are over 127.0.0.1, so a dev server on ::1 and a stranger on 127.0.0.1 share
+    // a port and neither sees the other. This used to be exit 20 about a process already gone.
+    it(`should report it stopped when the process is gone and the port still answers`, async () => {
+      jest
+        .mocked(readDevServerLockAsync)
+        .mockResolvedValueOnce(lock() as never)
+        .mockResolvedValue(null as never);
+      mockPort({ answering: true });
+
+      await expect(devStopAsync(projectRoot, options({ timeoutMs: 200 }))).resolves.toBe(EXIT_OK);
+      expect(JSON.parse(printed())).toMatchObject({
+        stopped: true,
+        processStillRunning: false,
+        portStillAnswering: true,
+        reason: null,
+      });
+    });
+
+    it(`should say whose listener the port is not, rather than leaving the contradiction`, async () => {
+      jest
+        .mocked(readDevServerLockAsync)
+        .mockResolvedValueOnce(lock() as never)
+        .mockResolvedValue(null as never);
+      mockPort({ answering: true });
+
+      await devStopAsync(projectRoot, options({ timeoutMs: 200, json: false, followups: true }));
+
+      expect(printed()).toContain('still answering, by something else');
+      expect(printed()).toContain('::1');
+      // The rung comes first, because it is what settles which listener that is.
+      expect(printed()).toContain('npx exagent dev:stop --port 8081');
+    });
+
+    // The other half of "the pid is primary": the signal worked, and what did not go away is the
+    // project's own lock. `--signal SIGKILL` has nothing left to signal, so it must not be offered.
+    it(`should not offer SIGKILL when the pid is gone and the lock still answers`, async () => {
+      jest.mocked(readDevServerLockAsync).mockResolvedValue(lock() as never);
+      mockPort({ answering: false });
+
+      await expect(devStopAsync(projectRoot, options({ timeoutMs: 200 }))).resolves.toBe(
+        EXIT_OUTCOME_FAILED
+      );
+      expect(JSON.parse(printed())).toMatchObject({
+        stopped: false,
+        reason: 'still-running',
+        processStillRunning: false,
+      });
+      // Named to be ruled out, never offered: the recovery is the other dev server.
+      expect(printedErrors()).toContain('SIGKILL has nothing left to signal');
+      expect(printedErrors()).not.toContain('which the process cannot decline');
+      expect(printedErrors()).toContain('npx exagent status --json');
+    });
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §Exit codes. The end state the caller asked for is the

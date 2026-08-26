@@ -1,4 +1,4 @@
-import { resolveNavigateOptions } from '../resolveOptions';
+import { DEFAULT_ATTACH_TIMEOUT_MS, resolveNavigateOptions } from '../resolveOptions';
 
 describe(resolveNavigateOptions, () => {
   // Null, not 8081: an unnamed dev server is one still to be found, which is what lets the command
@@ -14,6 +14,7 @@ describe(resolveNavigateOptions, () => {
       json: false,
       followups: true,
       routeCheck: true,
+      attachTimeoutMs: DEFAULT_ATTACH_TIMEOUT_MS,
     });
   });
 
@@ -42,6 +43,7 @@ describe(resolveNavigateOptions, () => {
       json: true,
       followups: true,
       routeCheck: false,
+      attachTimeoutMs: DEFAULT_ATTACH_TIMEOUT_MS,
     });
   });
 
@@ -82,5 +84,28 @@ describe(resolveNavigateOptions, () => {
 
   it(`should reject an unknown flag`, () => {
     expect(() => resolveNavigateOptions(['/', '--platform', 'ios'])).toThrow(/--platform/);
+  });
+});
+
+// @ref ./adbReverse, ./openRoute — friction run 6, F50. The device tool exiting 0 says the intent
+// was delivered and nothing about whether the app loaded, so the wait is on by default and opting
+// out of it is explicit.
+describe(`${resolveNavigateOptions.name} attach wait`, () => {
+  it(`waits for the app by default`, () => {
+    expect(resolveNavigateOptions(['/']).attachTimeoutMs).toBe(DEFAULT_ATTACH_TIMEOUT_MS);
+  });
+
+  it(`takes a budget from --attach-timeout`, () => {
+    expect(resolveNavigateOptions(['/', '--attach-timeout', '90s']).attachTimeoutMs).toBe(90_000);
+  });
+
+  it(`waits for nothing with --no-wait-attach`, () => {
+    expect(resolveNavigateOptions(['/', '--no-wait-attach']).attachTimeoutMs).toBe(0);
+  });
+
+  it(`refuses a budget and a refusal to wait at once`, () => {
+    expect(() =>
+      resolveNavigateOptions(['/', '--attach-timeout', '5s', '--no-wait-attach'])
+    ).toThrow(/opposite things/);
   });
 });

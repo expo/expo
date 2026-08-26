@@ -17,8 +17,12 @@ import { probeAndroidDeviceAsync, probeIosSimulatorAsync } from '../navigate/dev
 import { openRouteAsync } from '../navigate/openRoute';
 import { checkEntryBundleAsync } from '../runtime/bundleCheck';
 import { CdpClient, isMethodNotFoundError } from '../runtime/cdpClient';
-import { discoverDevServerAsync } from '../runtime/devServer';
+import { discoverDevServerAsync, probeDevServerAsync } from '../runtime/devServer';
 import { CdpRuntimeErrorCollector } from '../runtime/runtimeErrorCollector';
+import {
+  buildDeviceNameIndexIfNeededAsync,
+  type DeviceNameIndex,
+} from '../runtime/targetPlatform';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { formatSmokeResult, smokeResultToJson } from './format';
 import {
@@ -44,6 +48,9 @@ const LIVENESS_EXPRESSION = '1';
 
 /** How long the liveness evaluation gets before it is called unanswered. */
 const LIVENESS_TIMEOUT_MS = 5_000;
+
+/** How often the target list is re-read while the run waits for the app to stop re-registering. */
+const TARGET_SETTLE_POLL_MS = 500;
 
 /**
  * The command line `--start` runs `exagent dev` with.
@@ -142,6 +149,7 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
     screenshotTaken: run.screenshot.ok,
     screenshotPath: run.screenshot.ok ? run.screenshot.path : null,
     route: options.route,
+    platform: options.platform,
   });
 }
 
@@ -178,6 +186,15 @@ function explainOutcome(run: SmokeRun): string {
  * findings behind them to be forgotten.
  */
 function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
+  // Built once and shared by every phase that reads a target, so no two phases can disagree about
+  // which app this run is about (F51). Built lazily: a run that fails at the dev-server phase never
+  // spawns a device tool for it.
+  let deviceIndex: Promise<DeviceNameIndex> | null = null;
+  const indexAsync = (devServerUrl: string) =>
+    (deviceIndex ??= probeDevServerAsync(devServerUrl).then((probe) =>
+      buildDeviceNameIndexIfNeededAsync(probe.targets)
+    ));
+
   return {
     discoverDevServer: (explicitUrl) =>
       discoverDevServerAsync(explicitUrl ?? undefined, {
@@ -226,8 +243,15 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         projectRoot,
       }),
 
-    waitForAppConnection: (devServerUrl, timeoutMs) =>
-      waitForAppConnectionAsync(devServerUrl, { timeoutMs }),
+    // Scoped to this run's platform: a `smoke --android` that counted the iOS simulator already
+    // attached to this dev server would go on to read that simulator's runtime, and report the
+    // verdict as Android's [friction run 6, F51].
+    waitForAppConnection: async (devServerUrl, timeoutMs) =>
+      waitForAppConnectionAsync(devServerUrl, {
+        timeoutMs,
+        platform: options.platform,
+        deviceIndex: await indexAsync(devServerUrl),
+      }),
 
     probeDevice: async () => {
       const probe =
@@ -250,7 +274,11 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
 
     evaluate: async (devServerUrl) => {
       try {
-        await new CdpClient({ metroUrl: devServerUrl }).evaluateAsync(LIVENESS_EXPRESSION, {
+        await new CdpClient({
+          metroUrl: devServerUrl,
+          platform: options.platform,
+          deviceIndex: await indexAsync(devServerUrl),
+        }).evaluateAsync(LIVENESS_EXPRESSION, {
           awaitPromise: false,
           timeoutMs: LIVENESS_TIMEOUT_MS,
         });
@@ -278,6 +306,8 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         const records = await new CdpRuntimeErrorCollector({
           metroUrl: devServerUrl,
           durationMs: windowMs,
+          platform: options.platform,
+          deviceIndex: await indexAsync(devServerUrl),
         }).collectAsync();
         return { ok: true, records, reason: null };
       } catch (error: unknown) {
@@ -288,6 +318,29 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
           records: [],
           reason: `the app could not be watched (${error instanceof Error ? firstLine(error.message) : String(error)})`,
         };
+      }
+    },
+
+    // @ref ./phases §SCREENSHOT_SETTLE_MS — friction run 6, F57. Nothing over this protocol says
+    // "rendered", so what is waited for is the app having stopped re-registering: two reads of the
+    // dev server's target list that name the same ids. A relaunching app changes them.
+    waitForStableTargets: async (devServerUrl, timeoutMs) => {
+      const deadline = Date.now() + timeoutMs;
+      let previous: string | null = null;
+      for (;;) {
+        const probe = await probeDevServerAsync(devServerUrl);
+        const ids = probe.targets
+          .map((target) => target.id)
+          .sort()
+          .join(',');
+        if (previous != null && ids === previous && ids !== '') {
+          return { stable: true };
+        }
+        previous = ids;
+        if (Date.now() + TARGET_SETTLE_POLL_MS >= deadline) {
+          return { stable: false };
+        }
+        await new Promise((resolve) => setTimeout(resolve, TARGET_SETTLE_POLL_MS));
       }
     },
 

@@ -116,6 +116,15 @@ function devServerLine(devServer: DevServerStatus): string {
     bundlerFact(devServer.ready),
     `${devServer.appsConnected} ${apps} connected`,
   ];
+  // Named, never silently dropped: the count above is smaller than the dev server's own list, and
+  // a reader comparing this line with `/json/list` has to be told why (F56).
+  if (devServer.appsStale > 0) {
+    facts.push(
+      chalk.yellow(
+        `${devServer.appsStale} stale ${pluralize(devServer.appsStale, 'target', 'targets')} still listed`
+      )
+    );
+  }
   // Only worth a word when it is the bad answer: a dev server that proved it serves this project
   // is what the reader already assumed.
   if (devServer.projectRootMatched === false) {

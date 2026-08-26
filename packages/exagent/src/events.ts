@@ -115,8 +115,17 @@ declare module '2g' {
       sdkVersion: string | null;
       expoGoCompatible: boolean | null;
       devServerRunning: boolean;
-      /** Debugger targets the dev server reported, i.e. apps connected to it. */
+      /**
+       * Apps connected whose debugger socket still opens, which is what a runtime command can read.
+       *
+       * Not the length of `/json/list` [friction run 6, F56]: a page an app left behind stays in
+       * that list, and this used to count it while every runtime command refused it.
+       */
       appsConnected: number;
+      /** Targets the dev server listed, live or not. */
+      appsListed: number;
+      /** Of those, the ones nothing answered on. */
+      appsStale: number;
       /** How a device off this machine reaches it: `tunnel`, `lan`, `localhost`, or null. */
       devServerHostType: string | null;
       /** The tunnel origin while it is current, null otherwise. */
@@ -442,6 +451,15 @@ declare module '2g' {
       platform: string;
       deviceId: string;
       exitCode: number | null;
+      /** The device port forwarded to this machine before the link, or null when none was. */
+      reversedPort: number | null;
+      /**
+       * Whether an app on this platform was seen to attach afterwards, or null when no wait ran.
+       *
+       * The field that separates "the intent was delivered" from "the app is running the project"
+       * (llp/0005 §Android, F50). `exitCode` only ever answered the first.
+       */
+      attached: boolean | null;
     };
     /**
      * A route resolved to a URL with nothing opened (`navigate --print-url`).

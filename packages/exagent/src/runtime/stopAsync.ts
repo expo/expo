@@ -95,6 +95,8 @@ export async function runtimeStopAsync(
     platform: device.platform,
     deviceId: device.deviceId,
     appId: resolved.appId,
+    // The same `adb` the device probe found, so this never falls back to a bare name (F49).
+    adb: device.adb,
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §An `--app-id` nobody is running — friction run 4, F42.

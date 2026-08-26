@@ -46,6 +46,13 @@ export interface DevWaitOptions {
   bundleCheck: boolean;
   /** Platform to build the entry bundle for (`--platform`). */
   platform: BundleCheckPlatform;
+  /**
+   * Whether the caller actually named that platform.
+   *
+   * The difference between an answer and a default, and what lets a run with no flag build for the
+   * platform the connected app is on instead of for a fixed one (llp/0005 §Android, F53).
+   */
+  platformExplicit: boolean;
   /** Print the result as one JSON object instead of labelled lines. */
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
@@ -109,6 +116,7 @@ export function resolveDevWaitOptions(argv: string[]): DevWaitOptions {
     requireApp: !!args['--require-app'],
     bundleCheck: !args['--no-bundle-check'],
     platform,
+    platformExplicit: args['--platform'] != null,
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };

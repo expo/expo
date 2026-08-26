@@ -10,6 +10,15 @@ export interface NavigateFollowUpInput {
   platform: NavigatePlatform;
   /** Simulator UDID or `adb` serial the link was opened on. */
   deviceId: string;
+  /**
+   * The `adb` that was actually run, when one was.
+   *
+   * A `Try:` line has to be runnable [llp/0009 §Design], and a bare `adb` is not on a machine whose
+   * SDK was never put on `PATH` — which is the machine this whole Android round was about
+   * (`src/device/adb.ts`, F49). Absent means the bare name, which is what a caller with no
+   * resolution has.
+   */
+  adbPath?: string;
 }
 
 export interface PrintUrlFollowUpInput {
@@ -19,6 +28,15 @@ export interface PrintUrlFollowUpInput {
   hostType: string | null;
   /** How to point an app at this dev server, one entry per application that could be meant. */
   connect?: { target: string; url: string; label: string }[];
+  /**
+   * The platform the caller named, when it named one.
+   *
+   * Carried into `runtime:errors` for the same reason an opened link carries it: a machine with an
+   * iOS simulator and an Android emulator on one dev server reads whichever target is listed first
+   * otherwise (F51, F54). Absent when the caller named none — and then nothing may be claimed about
+   * which platform the app is on, because `--print-url` opened nothing to find out.
+   */
+  platform?: NavigatePlatform;
 }
 
 /**
@@ -38,6 +56,7 @@ export function buildPrintUrlFollowUps({
   url,
   hostType,
   connect = [],
+  platform,
 }: PrintUrlFollowUpInput): FollowUp[] {
   const followups: FollowUp[] = [];
 
@@ -76,27 +95,35 @@ export function buildPrintUrlFollowUps({
 
   followups.push({
     id: 'runtime-errors',
-    command: 'npx exagent runtime:errors',
+    command: platform ? `npx exagent runtime:errors --${platform}` : 'npx exagent runtime:errors',
     why: 'Once something opens the URL and the app attaches, this reads what it throws.',
   });
 
   return capFollowUps(followups);
 }
 
-export function buildNavigateFollowUps({ platform, deviceId }: NavigateFollowUpInput): FollowUp[] {
+export function buildNavigateFollowUps({
+  platform,
+  deviceId,
+  adbPath = 'adb',
+}: NavigateFollowUpInput): FollowUp[] {
   return capFollowUps([
     {
       id: 'screenshot',
       command:
         platform === 'ios'
           ? `xcrun simctl io ${deviceId} screenshot screen.png`
-          : `adb -s ${deviceId} exec-out screencap -p > screen.png`,
+          : `${adbPath} -s ${deviceId} exec-out screencap -p > screen.png`,
       why: 'Captures the screen this route opened, so the change can be checked as it renders.',
     },
     {
       id: 'runtime-errors',
-      command: 'npx exagent runtime:errors',
-      why: 'Reads the errors the app reported while rendering this route.',
+      // The platform this link was opened on, carried into the next command. Without it, a machine
+      // with both an iOS simulator and an Android emulator attached to one dev server reads
+      // whichever target the dev server lists first — which after `navigate --android` was the
+      // simulator [friction run 6, F54 and F51].
+      command: `npx exagent runtime:errors --${platform}`,
+      why: `Reads the errors the app on this ${platform} device reported while rendering this route.`,
     },
   ]);
 }

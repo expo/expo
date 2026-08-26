@@ -37,10 +37,21 @@ export interface SmokeFollowUpInput {
   screenshotPath: string | null;
   /** The route the run was about, for a re-run that keeps it. */
   route: string | null;
+  /**
+   * The platform the run was about.
+   *
+   * Carried into every command these follow-ups suggest, because a re-run that drops it is a
+   * different run: `smoke --android` failing suggested `npx exagent smoke`, which on a Mac reads
+   * the iOS simulator [friction run 6, F58].
+   */
+  platform: 'ios' | 'android';
 }
 
 export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   const sameRoute = input.route == null ? '' : ` --route ${input.route}`;
+  // The flag first, so a reader sees what the command is about before what it opens.
+  const same = ` --${input.platform}${sameRoute}`;
+  const otherPlatform = input.platform === 'android' ? 'ios' : 'android';
 
   // No dev server, and this run was not allowed to start one. The one thing to do is the thing
   // `--start` would have done, spelled as the command that does it without blocking the shell.
@@ -55,7 +66,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
       },
       {
         id: 'smoke-start',
-        command: `npx exagent smoke --start${sameRoute}`,
+        command: `npx exagent smoke --start${same}`,
         why: 'Runs the same gate and starts the dev server itself when there is none.',
       },
     ]);
@@ -83,7 +94,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
       },
       {
         id: 'smoke-again',
-        command: `npx exagent smoke${sameRoute}`,
+        command: `npx exagent smoke${same}`,
         why: 'The dev server rebuilds on save, so this is the gate to run again once the file parses.',
       },
     ]);
@@ -93,12 +104,12 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'navigate',
-        command: `npx exagent navigate ${input.route ?? '/'}`,
+        command: `npx exagent navigate ${input.route ?? '/'} --${input.platform}`,
         why: 'No app is connected to the dev server, and this is what opens one on a booted device.',
       },
       {
         id: 'smoke-again',
-        command: `npx exagent smoke${sameRoute}`,
+        command: `npx exagent smoke${same}`,
         why: 'Runs the same gate once the app is on screen.',
       },
     ]);
@@ -109,14 +120,20 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   if (input.runtimeSupported === false) {
     return capFollowUps([
       {
-        id: 'dev-build',
-        command: 'npx exagent dev --plan --android',
-        why: 'Expo Go for Android ships a JavaScript engine with no Chrome DevTools Protocol debugger, so nothing here can read what the app throws. This prints what a development build would take.',
+        id: 'runtime-errors',
+        // @ref ../runtime/runtimeAsync — friction run 6, F52 and F55. This used to be
+        // `npx exagent dev --plan --android` under the sentence "this prints what a development
+        // build would take", which is **not what that command prints** for a project Expo Go can
+        // still serve: the plan engine answers `expo start --android` for it and only reaches the
+        // development-build path when a native module makes Expo Go incompatible
+        // (`src/plan/decide.ts`). What does help is the command that can still see the errors.
+        command: 'npx exagent runtime:errors --android --duration 5s',
+        why: "This runtime reports nothing over the debugger, so that command falls back to the dev server's own log, which does carry the app's errors — with a code frame. It needs a dev server started with --detach.",
       },
       {
-        id: 'smoke-ios',
-        command: `npx exagent smoke --ios${sameRoute}`,
-        why: 'Expo Go on iOS carries a debuggable engine, so the same gate answers there.',
+        id: 'smoke-other-platform',
+        command: `npx exagent smoke --${otherPlatform}${sameRoute}`,
+        why: `Expo Go on ${otherPlatform === 'ios' ? 'iOS' : 'Android'} was measured to answer the debugger, so the same gate has a runtime to read there [observed — 2026-08-25].`,
       },
     ]);
   }
@@ -125,12 +142,12 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'runtime-reload',
-        command: 'npx exagent runtime:reload',
+        command: `npx exagent runtime:reload --${input.platform}`,
         why: 'An error window is a property of the app’s session and the session outlives a fix, so reload before believing a second reading.',
       },
       {
         id: 'runtime-errors',
-        command: 'npx exagent runtime:errors --duration 5s --json',
+        command: `npx exagent runtime:errors --${input.platform} --duration 5s --json`,
         why: 'Prints the same records with their whole symbolicated stacks, which is more than this summary shows.',
       },
       ...(input.screenshotPath
@@ -165,14 +182,14 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   } else if (input.outcome !== 'passed') {
     passed.push({
       id: 'smoke-again',
-      command: `npx exagent smoke${sameRoute}`,
+      command: `npx exagent smoke${same}`,
       why: 'Nothing was shown to be wrong and nothing was proved right; this runs the same gate again.',
     });
   }
   if (!input.screenshotTaken && input.outcome === 'passed') {
     passed.push({
       id: 'runtime-errors',
-      command: 'npx exagent runtime:errors --duration 10s --fail-on-error',
+      command: `npx exagent runtime:errors --${input.platform} --duration 10s --fail-on-error`,
       why: 'This window was short and only catches what happens while it is open, so a longer one covers more of the app settling.',
     });
   }

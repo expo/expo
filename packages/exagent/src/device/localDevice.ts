@@ -13,6 +13,11 @@
 // reported nothing. A tool that is not installed establishes nothing — a Linux machine with no
 // `adb` is not a machine with no device — and that case answers `unknown`, which leaves every
 // ladder exactly as it was.
+//
+// That distinction is the device probe's own: `DeviceProbe.toolError` is set exactly when the tool
+// could not be started, and it is the same fact friction run 6's F49 exists for — "no Android
+// device or emulator is attached" must never be printed for a missing SDK (`src/device/adb.ts`).
+// One signal, read by the failure message there and by the suggestion ladders here.
 
 import {
   probeAndroidDeviceAsync,
@@ -103,7 +108,7 @@ export function readLocalDeviceProbe(probes: DeviceProbe[]): LocalDeviceProbe {
     return { state: 'present', device: found.device, reason: null };
   }
 
-  const answered = probes.filter((probe) => !probe.unavailable);
+  const answered = probes.filter((probe) => probe.toolError == null);
   const reason = probes
     .map((probe) => probe.reason)
     .filter(Boolean)

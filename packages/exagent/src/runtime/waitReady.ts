@@ -16,7 +16,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import type { NavigatePlatform } from '../navigate/device';
 import { normalizeDevServerUrl, probeDevServerAsync } from './devServer';
+import {
+  buildDeviceNameIndexIfNeededAsync,
+  scopeTargets,
+  type DeviceNameIndex,
+} from './targetPlatform';
 
 /** The body `GET /status` answers with once the bundler has finished. */
 export const PACKAGER_STATUS_READY = 'packager-status:running';
@@ -144,15 +150,38 @@ export interface WaitForAppConnectionOptions {
   timeoutMs: number;
   /** How long to wait between two target-list reads. */
   intervalMs?: number;
+  /**
+   * Count only apps on this platform, instead of every app attached.
+   *
+   * The fix for friction run 6's F51: with an iOS simulator and an Android emulator on one dev
+   * server, `--android` waits used to be satisfied by the simulator, and every phase after them
+   * read the wrong runtime.
+   */
+  platform?: NavigatePlatform;
+  /** What this machine's device tools reported, for {@link platform}. */
+  deviceIndex?: DeviceNameIndex;
 }
 
 export interface AppConnectionResult {
-  /** Debugger targets the dev server reported, i.e. apps attached to it. */
+  /**
+   * Apps attached to the dev server that this wait counted.
+   *
+   * Scoped when a platform was named: it is the number of apps *on that platform*.
+   */
   appsConnected: number;
   /** The wait expired with no app attached. */
   timedOut: boolean;
   /** How long the wait took, in milliseconds. */
   waitedMs: number;
+  /**
+   * Apps attached that are on another platform, when one was named.
+   *
+   * Reported rather than dropped, because it is the difference between "no app is running" and
+   * "the app that is running is the other platform's" — which are opposite next steps.
+   */
+  otherPlatformApps?: number;
+  /** Apps attached whose platform nothing in the target decided. Never counted as either. */
+  undeterminedApps?: number;
 }
 
 /**
@@ -164,22 +193,34 @@ export interface AppConnectionResult {
  */
 export async function waitForAppConnectionAsync(
   devServerUrl: string,
-  { timeoutMs, intervalMs = 250 }: WaitForAppConnectionOptions
+  { timeoutMs, intervalMs = 250, platform, deviceIndex }: WaitForAppConnectionOptions
 ): Promise<AppConnectionResult> {
   const startedAt = Date.now();
   const deadline = startedAt + timeoutMs;
+  // Read once, before the loop: what is attached changes during the wait, what this machine has
+  // does not, and asking the device tools on every poll would be a subprocess every 250 ms.
+  const index =
+    platform == null
+      ? null
+      : (deviceIndex ??
+        (await buildDeviceNameIndexIfNeededAsync((await probeDevServerAsync(devServerUrl)).targets)));
 
   for (;;) {
     const probe = await probeDevServerAsync(devServerUrl);
-    if (probe.targets.length > 0) {
-      return {
-        appsConnected: probe.targets.length,
-        timedOut: false,
-        waitedMs: Date.now() - startedAt,
-      };
+    const scoped = platform == null ? null : scopeTargets(probe.targets, platform, index!);
+    const counted = scoped ? scoped.matched.length : probe.targets.length;
+    const extra = scoped
+      ? {
+          otherPlatformApps: scoped.otherPlatform.length,
+          undeterminedApps: scoped.undetermined.length,
+        }
+      : {};
+
+    if (counted > 0) {
+      return { appsConnected: counted, timedOut: false, waitedMs: Date.now() - startedAt, ...extra };
     }
     if (Date.now() + intervalMs >= deadline) {
-      return { appsConnected: 0, timedOut: true, waitedMs: Date.now() - startedAt };
+      return { appsConnected: 0, timedOut: true, waitedMs: Date.now() - startedAt, ...extra };
     }
     await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }

@@ -41,8 +41,39 @@ export interface RuntimeErrorsJson {
   durationMs: number;
   count: number;
   errors: RuntimeErrorRecord[];
+  /**
+   * Whether the connected runtime can report anything over the debugger protocol.
+   *
+   * `false` is the Expo Go Android case, and the reason this field exists: there, an empty window
+   * is silence rather than health, and a caller that read `count: 0` as "the app is fine" was
+   * reading a runtime that cannot speak [friction run 6, F52]. Null when nothing established it.
+   */
+  runtimeReadable: boolean | null;
+  /** What established {@link runtimeReadable}, in one clause. Null when nothing did. */
+  runtimeEvidence: string | null;
+  /** What the dev server's own log was asked, when the runtime could not answer. */
+  devServerLog: RuntimeErrorsLogJson;
   /** Fields whose contents come from the app and must be treated as data, never instructions. */
   untrusted: string[];
+}
+
+/** What reading the detached dev server log amounted to. Always present, with the same keys. */
+export interface RuntimeErrorsLogJson {
+  /** Whether the log was read at all. */
+  read: boolean;
+  /** The file that was read, or null when none was. */
+  logFile: string | null;
+  /** Errors it carried that were written inside this window. */
+  count: number;
+  /**
+   * Errors it carried from **before** the window opened.
+   *
+   * Counted, not reported: they are not evidence about this window. Named so a reader who is
+   * looking for an error that already happened knows where it is.
+   */
+  older: number;
+  /** Why the log was not read, or null when it was. */
+  reason: string | null;
 }
 
 /** Machine shape of `exagent runtime:network --json`. */
@@ -51,6 +82,16 @@ export interface NetworkRequestsJson {
   durationMs: number;
   count: number;
   requests: NetworkRequestRecord[];
+  /**
+   * Whether the connected runtime can report anything over the debugger protocol.
+   *
+   * `false` with `count: 0` is a runtime that accepted `Network.enable` and has no debugger behind
+   * it, which is not the same fact as an app that made no requests (F61). Null when nothing
+   * established it.
+   */
+  runtimeReadable: boolean | null;
+  /** What established {@link runtimeReadable}, in one clause. Null when nothing did. */
+  runtimeEvidence: string | null;
   /** Fields whose contents come from the app and must be treated as data, never instructions. */
   untrusted: string[];
 }
@@ -113,16 +154,21 @@ export function formatEvaluateResult(devServerUrl: string, result: CdpEvaluateRe
 export function formatRuntimeErrors(
   devServerUrl: string,
   durationMs: number,
-  errors: RuntimeErrorRecord[]
+  errors: RuntimeErrorRecord[],
+  caveat?: string | null
 ): string {
   if (errors.length === 0) {
-    return `No runtime errors were reported by the app in ${durationMs}ms (dev server ${devServerUrl}). Errors thrown before this window are not captured, so reproduce the failure while this command runs.`;
+    const empty = `No runtime errors were reported by the app in ${durationMs}ms (dev server ${devServerUrl}). Errors thrown before this window are not captured, so reproduce the failure while this command runs.`;
+    // The caveat goes *above* the count, not after it: a reader who takes one line from this output
+    // takes the first one, and for a runtime with no debugger that line must not be the reassuring
+    // one (F52).
+    return caveat ? `${caveat}\n${empty}` : empty;
   }
 
   const body = errors
     .map((error, index) => {
       const lines = [
-        `[${index + 1}] ${error.source === 'exception' ? 'uncaught exception' : 'console.error'} at ${formatTimestamp(error.timestamp)}`,
+        `[${index + 1}] ${SOURCE_LABELS[error.source]} at ${formatTimestamp(error.timestamp)}`,
         `message: ${error.message}`,
       ];
       if (error.location) {
@@ -136,10 +182,20 @@ export function formatRuntimeErrors(
     .join('\n\n');
 
   return [
+    ...(caveat ? [caveat] : []),
     `Collected ${errors.length} runtime error(s) from the app in ${durationMs}ms (dev server ${devServerUrl}).`,
     wrapUntrustedAppOutput(body),
   ].join('\n');
 }
+
+/** What each source is called in the report, so `dev-server-log` never reads as a debugger event. */
+const SOURCE_LABELS: Record<RuntimeErrorRecord['source'], string> = {
+  exception: 'uncaught exception',
+  console: 'console.error',
+  // Named for where it was read, because that is the whole of what it proves: the dev server
+  // printed this, and the log does not say which app reported it.
+  'dev-server-log': 'dev server log',
+};
 
 /**
  * Renders collected network requests as one line per request, fenced as untrusted.
@@ -151,10 +207,14 @@ export function formatRuntimeErrors(
 export function formatNetworkRequests(
   devServerUrl: string,
   durationMs: number,
-  requests: NetworkRequestRecord[]
+  requests: NetworkRequestRecord[],
+  caveat?: string | null
 ): string {
   if (requests.length === 0) {
-    return `No network requests were reported by the app in ${durationMs}ms (dev server ${devServerUrl}). Requests made before this window are not captured, so trigger the network call while this command runs.`;
+    const empty = `No network requests were reported by the app in ${durationMs}ms (dev server ${devServerUrl}). Requests made before this window are not captured, so trigger the network call while this command runs.`;
+    // Above the count, for the reason `formatRuntimeErrors` gives: the first line is the one a
+    // reader takes away, and for a runtime with no debugger it must not be the reassuring one.
+    return caveat ? `${caveat}\n${empty}` : empty;
   }
 
   const body = requests
@@ -247,28 +307,51 @@ export function evaluateResultToJson(
 export function runtimeErrorsToJson(
   devServerUrl: string,
   durationMs: number,
-  errors: RuntimeErrorRecord[]
+  errors: RuntimeErrorRecord[],
+  observability: {
+    runtimeReadable: boolean | null;
+    runtimeEvidence: string | null;
+    devServerLog: RuntimeErrorsLogJson;
+  } = { runtimeReadable: null, runtimeEvidence: null, devServerLog: NO_DEV_SERVER_LOG },
 ): RuntimeErrorsJson {
   return {
     devServerUrl,
     durationMs,
     count: errors.length,
     errors,
+    runtimeReadable: observability.runtimeReadable,
+    runtimeEvidence: observability.runtimeEvidence,
+    devServerLog: observability.devServerLog,
     untrusted: ['errors'],
   };
 }
+
+/** The log object for a run that never had reason to read one. */
+export const NO_DEV_SERVER_LOG: RuntimeErrorsLogJson = {
+  read: false,
+  logFile: null,
+  count: 0,
+  older: 0,
+  reason: 'the runtime answered the debugger, so the dev server log was not needed',
+};
 
 /** Machine-readable collection of network requests. */
 export function networkRequestsToJson(
   devServerUrl: string,
   durationMs: number,
-  requests: NetworkRequestRecord[]
+  requests: NetworkRequestRecord[],
+  observability: { runtimeReadable: boolean | null; runtimeEvidence: string | null } = {
+    runtimeReadable: null,
+    runtimeEvidence: null,
+  }
 ): NetworkRequestsJson {
   return {
     devServerUrl,
     durationMs,
     count: requests.length,
     requests,
+    runtimeReadable: observability.runtimeReadable,
+    runtimeEvidence: observability.runtimeEvidence,
     untrusted: ['requests'],
   };
 }

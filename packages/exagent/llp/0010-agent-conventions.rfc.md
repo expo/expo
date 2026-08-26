@@ -273,6 +273,17 @@ Only `errors` has it. `runtime:network`'s failed requests are something it repor
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
 
+**Amendment — a runtime that cannot answer is `22`, not `0`** [observed — friction run 6 (Android),
+2026-08-24; settled in [[0005-runtime-loop-tools]] §Android]. "The default stays `0` whatever it
+collects" was written when every runtime this CLI talks to could report something. Expo Go for
+Android cannot: it acknowledges `Runtime.enable` and sends nothing, so its empty window is not
+"nothing happened while I watched" — it is _no observation_, and `--fail-on-error` exiting `0` on it
+reports health that nothing established. So on a runtime that announced it carries no debugger, and
+where no dev server log could be read instead, `--fail-on-error` exits `22`: nothing was shown to be
+wrong and nothing was proved right. When a log **was** read the window is a real observation and `0`
+stands, and without the flag the command still exits `0` and prints the caveat — the flag is what
+says a caller is gating on this.
+
 ### The fourth: `typecheck`, and the gate the other three could not be
 
 [observed — 2026-08-23, `src/typecheck/`] `exagent typecheck` is the fourth command in the band, and

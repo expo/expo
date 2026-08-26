@@ -77,6 +77,17 @@ function opened(overrides: Partial<OpenRouteResult> = {}): OpenRouteResult {
     stderr: '',
     routeCheck: { checked: true, ok: true, matched: '/', routeCount: 4, reason: null },
     isExpoGo: true,
+    // `smoke` has an app-connection phase of its own, so its opens never wait for one.
+    adbPath: null,
+    reverse: null,
+    attach: {
+      checked: false,
+      confirmed: null,
+      waitedMs: 0,
+      targets: 0,
+      recovered: false,
+      reason: 'this run did not wait for the app to attach',
+    },
     ...overrides,
   };
 }
@@ -120,6 +131,8 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
   return {
     discoverDevServer: async () => discovery(),
     startDevServer: async () => ({ ok: true, devServerUrl: 'http://127.0.0.1:8081', reason: null }),
+    // Settled by default: the wait before the picture has its own cases (F57).
+    waitForStableTargets: async () => ({ stable: true }),
     waitForBundlerReady: async () => ({
       ready: true,
       projectRootMatched: true,
@@ -771,5 +784,39 @@ describe(smokeExitCode, () => {
   ])(`exits %#, which is code %i`, async (overrides, code) => {
     const run = await runSmokePhasesAsync(deps(overrides as Partial<SmokeDeps>), options());
     expect(smokeExitCode(run.outcome)).toBe(code);
+  });
+});
+
+// @ref ../phases §SCREENSHOT_SETTLE_MS — friction run 6, F57. A run that opened the app itself
+// photographed it while it was still loading, so the picture the gate hands back — the half of
+// "does it work" that no exit code answers — was of a splash screen.
+describe(`${runSmokePhasesAsync.name} and the picture it takes`, () => {
+  it(`waits for the app to stop re-registering when this run opened it`, async () => {
+    const waits: number[] = [];
+    await runSmokePhasesAsync(
+      deps({
+        // Nothing attached at first, so the run opens the app itself.
+        waitForAppConnection: jest
+          .fn()
+          .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+          .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 1 }),
+        waitForStableTargets: async (_url, timeoutMs) => {
+          waits.push(timeoutMs);
+          return { stable: true };
+        },
+      }),
+      options()
+    );
+
+    expect(waits).toHaveLength(1);
+    expect(waits[0]).toBeGreaterThan(0);
+  });
+
+  it(`does not spend the wait on an app that was already attached`, async () => {
+    const waitForStableTargets = jest.fn(async () => ({ stable: true }));
+
+    await runSmokePhasesAsync(deps({ waitForStableTargets }), options());
+
+    expect(waitForStableTargets).not.toHaveBeenCalled();
   });
 });

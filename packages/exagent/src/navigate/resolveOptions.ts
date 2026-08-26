@@ -3,7 +3,7 @@
 // anything a user can get wrong.
 
 import { resolveDevServerUrlFlag } from '../runtime/devServer';
-import { parseArgsOrThrow } from '../utils/args';
+import { parseArgsOrThrow, resolveDuration } from '../utils/args';
 import { CommandError } from '../utils/errors';
 import type { NavigatePlatform } from './device';
 
@@ -51,7 +51,23 @@ export interface NavigateOptions {
    * do not describe must still be able to open a link.
    */
   routeCheck: boolean;
+  /**
+   * How long to wait for the app to attach to the dev server afterwards, in milliseconds.
+   *
+   * Zero when `--no-wait-attach` was passed, which reduces this command to what it used to be:
+   * deliver the intent and report the device tool's exit code. That was exit 0 for an app sitting
+   * on Expo Go's error screen [friction run 6, F50], which is why waiting is the default.
+   */
+  attachTimeoutMs: number;
 }
+
+/**
+ * How long the app gets to register a debugger target after the link, when nothing says otherwise.
+ *
+ * Generous, because it contains a cold bundle download on a device: live on an Android emulator the
+ * first attach after a force-stop took about 20 s [observed — 2026-08-25, notesapp on SDK 57].
+ */
+export const DEFAULT_ATTACH_TIMEOUT_MS = 45_000;
 
 const NAVIGATE_ARGS = {
   '--scheme': String,
@@ -60,6 +76,8 @@ const NAVIGATE_ARGS = {
   '--dev-server-url': String,
   '--app-id': String,
   '--print-url': Boolean,
+  '--attach-timeout': String,
+  '--no-wait-attach': Boolean,
   '--json': Boolean,
   '--no-followups': Boolean,
   '--no-route-check': Boolean,
@@ -95,8 +113,24 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
     );
   }
 
+  if (args['--attach-timeout'] != null && args['--no-wait-attach']) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--attach-timeout and --no-wait-attach ask for opposite things, so this run has no rule for what to do.`,
+        `Why: --attach-timeout says how long to wait for the app to connect, and --no-wait-attach says not to wait at all.`,
+        `How: pass one. Use --attach-timeout ${args['--attach-timeout']} to change the budget, or --no-wait-attach to report only what the device tool said.`,
+      ].join('\n')
+    );
+  }
+
   return {
     route: positional[0]!,
+    attachTimeoutMs: args['--no-wait-attach']
+      ? 0
+      : resolveDuration(args['--attach-timeout'], '--attach-timeout', DEFAULT_ATTACH_TIMEOUT_MS, {
+          allowZero: false,
+        }),
     devServerUrl:
       args['--dev-server-url'] == null ? null : resolveDevServerUrlFlag(args['--dev-server-url']),
     platform: args['--ios'] ? 'ios' : args['--android'] ? 'android' : undefined,

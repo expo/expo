@@ -22,6 +22,8 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
     screenshotTaken: true,
     screenshotPath: '/project/.expo/exagent/smoke.png',
     route: null,
+    // Named, always: a re-run that drops the platform is a different run (F58).
+    platform: 'ios',
     ...overrides,
   };
 }
@@ -61,7 +63,7 @@ describe(buildSmokeFollowUps, () => {
 
   it(`offers --start to a run that was attach-only`, () => {
     expect(commands({ devServerFound: false, start: false })).toContain(
-      'npx exagent smoke --start'
+      'npx exagent smoke --start --ios'
     );
   });
 
@@ -83,24 +85,51 @@ describe(buildSmokeFollowUps, () => {
   });
 
   it(`answers no connected app with the command that opens one`, () => {
+    // With the platform on it: `navigate` with no flag prefers a booted iOS simulator on a Mac,
+    // which after `smoke --android` is the wrong device (F58).
     expect(commands({ appsConnected: 0, outcome: 'inconclusive' })[0]).toBe(
-      'npx exagent navigate /'
+      'npx exagent navigate / --ios'
+    );
+    expect(commands({ appsConnected: 0, outcome: 'inconclusive', platform: 'android' })[0]).toBe(
+      'npx exagent navigate / --android'
     );
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §Android pass. This never changes for this app on
   // this platform, so a caller told to look again would loop forever.
   it(`never suggests re-running for a runtime that has no debugger`, () => {
-    const suggested = commands({ runtimeSupported: false, outcome: 'inconclusive' });
+    const suggested = commands({
+      runtimeSupported: false,
+      outcome: 'inconclusive',
+      platform: 'android',
+    });
 
     expect(suggested).not.toContain('npx exagent smoke');
-    expect(suggested.some((command) => command.includes('--ios'))).toBe(true);
+    // The other platform, which was measured to answer — not the same one again.
+    expect(suggested.some((command) => command.includes('smoke --ios'))).toBe(true);
+  });
+
+  // @ref ../smoke — friction run 6, F55. This used to suggest `npx exagent dev --plan --android`
+  // under "this prints what a development build would take". For a project Expo Go can still
+  // serve, that command prints the **Expo Go** path: the plan engine only reaches the
+  // development-build steps when a native module makes Expo Go incompatible (`src/plan/decide.ts`).
+  it(`does not claim that dev --plan prints a development build`, () => {
+    const followups = buildSmokeFollowUps(
+      input({ runtimeSupported: false, outcome: 'inconclusive', platform: 'android' })
+    );
+
+    expect(followups.map((followup) => followup.command)).not.toContain(
+      'npx exagent dev --plan --android'
+    );
+    expect(followups.map((followup) => followup.why).join(' ')).not.toContain(
+      'what a development build would take'
+    );
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §Peer churn — an error window is a property of the
   // app's session and the session outlives a fix, so a reload leads.
   it(`leads a non-empty window with the reload`, () => {
-    expect(commands({ failing: 1, outcome: 'failed' })[0]).toBe('npx exagent runtime:reload');
+    expect(commands({ failing: 1, outcome: 'failed' })[0]).toBe('npx exagent runtime:reload --ios');
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §The fourth: `typecheck`. Nothing threw and the bundle
@@ -119,10 +148,10 @@ describe(buildSmokeFollowUps, () => {
 
   it(`keeps the route on a re-run it suggests`, () => {
     expect(commands({ devServerFound: false, route: '/notes' })).toContain(
-      'npx exagent smoke --start --route /notes'
+      'npx exagent smoke --start --ios --route /notes'
     );
     expect(commands({ bundleBroken: true, outcome: 'failed', route: '/notes' })).toContain(
-      'npx exagent smoke --route /notes'
+      'npx exagent smoke --ios --route /notes'
     );
   });
 });

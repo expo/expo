@@ -6,8 +6,10 @@
 // user reads names the missing piece instead of the socket error it caused.
 
 import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../devLock';
+import type { NavigatePlatform } from '../navigate/device';
 import { CommandError } from '../utils/errors';
 import type { CdpTarget } from './cdpClient';
+import type { DeviceNameIndex } from './targetPlatform';
 
 export { readLastLoggedDevServerPort };
 
@@ -326,17 +328,30 @@ export interface RequireConnectedAppOptions {
   retryMs?: number;
   /** Whether the caller named the dev server, with `--dev-server-url` or `--port`. */
   explicit?: boolean;
+  /**
+   * Require an app on this platform, instead of any app.
+   *
+   * @ref ./targetPlatform — friction run 6's F51. A command told `--android` must not be answered
+   * by the iOS simulator that happens to be attached to the same dev server, and "no Android app is
+   * connected while an iOS one is" needs a different sentence from "nothing is connected".
+   */
+  platform?: NavigatePlatform;
+  /** What this machine's device tools reported, for {@link platform}. */
+  deviceIndex?: DeviceNameIndex;
 }
 
 /**
  * Resolve the debugger targets of a dev server that has an app connected to it.
  *
+ * With a platform, the targets that come back are that platform's alone, and a dev server whose
+ * only apps are on another platform fails rather than handing back somebody else's runtime.
+ *
  * @throws {CommandError} `NO_DEV_SERVER` when nothing answers, `NO_APP_CONNECTED` when the dev
- * server runs but reports no debugger target.
+ * server runs but reports no debugger target this command may read.
  */
 export async function requireConnectedAppAsync(
   devServerUrl: string,
-  { explicit = false, retryMs = 0 }: RequireConnectedAppOptions = {}
+  { explicit = false, retryMs = 0, platform, deviceIndex }: RequireConnectedAppOptions = {}
 ): Promise<CdpTarget[]> {
   const url = normalizeDevServerUrl(devServerUrl);
   let probe = await probeDevServerAsync(url);
@@ -390,5 +405,54 @@ export async function requireConnectedAppAsync(
     throw error;
   }
 
-  return probe.targets;
+  if (platform == null) {
+    return probe.targets;
+  }
+
+  const { buildDeviceNameIndexIfNeededAsync, scopeTargets } =
+    require('./targetPlatform') as typeof import('./targetPlatform');
+  const scoped = scopeTargets(
+    probe.targets,
+    platform,
+    deviceIndex ?? (await buildDeviceNameIndexIfNeededAsync(probe.targets))
+  );
+  if (scoped.matched.length > 0) {
+    return scoped.matched;
+  }
+  throw noAppOnPlatformError(url, platform, scoped);
+}
+
+/**
+ * The failure for a dev server whose apps are all on some other platform, or unreadable.
+ *
+ * Two shapes, because the next steps differ. Apps on another platform means `--android` was asked
+ * of a machine running the iOS app, and the fix is to open the Android one. Apps nobody could place
+ * means the evidence ran out, and the honest answer is to say which evidence and stop — the whole
+ * of F51 was this command answering from a runtime it had not identified.
+ */
+function noAppOnPlatformError(
+  url: string,
+  platform: NavigatePlatform,
+  scoped: { otherPlatform: { platform: NavigatePlatform }[]; undetermined: unknown[] }
+): CommandError {
+  const others = scoped.otherPlatform.map((entry) => entry.platform);
+  const uniqueOthers = [...new Set(others)];
+
+  const error = new CommandError(
+    'NO_APP_CONNECTED',
+    uniqueOthers.length > 0
+      ? [
+          `No ${platform} app is connected to the Expo dev server at ${url}, so there is nothing on ${platform} to read.`,
+          `Why: its debugger target list names ${others.length} app${others.length === 1 ? '' : 's'}, and ${others.length === 1 ? 'it is' : 'they are'} on ${uniqueOthers.join(' and ')}${scoped.undetermined.length > 0 ? `, plus ${scoped.undetermined.length} whose platform nothing in the target names` : ''}. Reading one of those would answer a question about ${uniqueOthers[0]} while reporting it as ${platform}.`,
+          `How: open the app on ${platform} with "npx exagent navigate / --${platform}", then run this command again. Drop --${platform} to read whichever app is connected.`,
+        ].join('\n')
+      : [
+          `No app connected to the Expo dev server at ${url} could be shown to be running on ${platform}.`,
+          `Why: its debugger target list names ${scoped.undetermined.length} app${scoped.undetermined.length === 1 ? '' : 's'}, and nothing in ${scoped.undetermined.length === 1 ? 'its target' : 'their targets'} says which platform ${scoped.undetermined.length === 1 ? 'it is' : 'they are'} on — the dev server does not label them, so this is read from the device name and the app id. A development build on a physical device can look like this.`,
+          `How: drop --${platform} to read the app that is connected, which is the honest command when only one is. To have the platform recognised, connect the device this machine's device tools can see ("adb devices -l", "xcrun simctl list devices booted").`,
+        ].join('\n')
+  );
+  error.suggestedCommand =
+    uniqueOthers.length > 0 ? `npx exagent navigate / --${platform}` : 'npx exagent status --json';
+  return error;
 }

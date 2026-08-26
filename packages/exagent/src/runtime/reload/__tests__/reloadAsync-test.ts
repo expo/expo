@@ -306,6 +306,8 @@ describe(reloadAsync, () => {
       'appsReconnected',
       'attempts',
       'bundle',
+      'bundlePlatformSource',
+      'bundlePlatforms',
       'devServerSource',
       'devServerUrl',
       'deviceId',
@@ -618,5 +620,42 @@ describe(reloadAsync, () => {
     const error = await reloadAsync(projectRoot, options({ route: '/nope' })).catch((e) => e);
     expect(error.code).toBe('ROUTE_NOT_FOUND');
     expect(connectMessageSocketAsync).not.toHaveBeenCalled();
+  });
+});
+
+// @ref ../../bundleCheck — friction run 6, F53. With an Android-only break and no platform flag,
+// this command built the **iOS** bundle, passed the gate, and reloaded the Android app onto the
+// bundle that does not compile — reporting `Bundle compiles · for ios` while doing it.
+describe(`${reloadAsync.name} and the platform it checks the bundle for`, () => {
+  const ANDROID_TARGET = {
+    id: 'android-1',
+    appId: 'host.exp.exponent',
+    deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+    webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=android&page=1',
+  };
+
+  it(`asks the dev server for the platform the connected app is on`, async () => {
+    const platformsAsked: string[] = [];
+    const server = mockDevServer([ANDROID_TARGET]);
+    // Record the `expo-platform` header of every manifest request the check makes.
+    const inner = globalThis.fetch;
+    globalThis.fetch = (async (input: unknown, init?: any) => {
+      const header = init?.headers?.['expo-platform'];
+      if (header) {
+        platformsAsked.push(String(header));
+      }
+      return await (inner as any)(input, init);
+    }) as unknown as typeof fetch;
+
+    const { socket } = fakeSocket([{ 'socket#1': 'role=android' }, { 'socket#4': 'role=android' }], () =>
+      server.listing([{ ...ANDROID_TARGET, id: 'android-2' }])
+    );
+    mockConnect(socket);
+
+    await reloadAsync(projectRoot, options({ json: true }));
+
+    expect(platformsAsked).toEqual(['android']);
+    expect(JSON.parse(printed()).bundlePlatformSource).toBe('connected-app');
+    expect(JSON.parse(printed()).bundlePlatforms).toEqual(['android']);
   });
 });

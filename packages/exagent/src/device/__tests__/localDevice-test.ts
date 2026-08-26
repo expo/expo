@@ -6,6 +6,7 @@
 // device.
 
 import type { DeviceProbe } from '../../navigate/device';
+import { CommandError } from '../../utils/errors';
 import { probeLocalDeviceAsync, readLocalDeviceProbe, resetLocalDeviceCache } from '../localDevice';
 
 /** A probe that ran and found something. */
@@ -19,11 +20,16 @@ const none: DeviceProbe = {
   reason: 'no booted iOS simulator was found',
 };
 
-/** A probe whose tool is not installed, which establishes nothing about the machine. */
+/**
+ * A probe whose tool is not installed, which establishes nothing about the machine.
+ *
+ * `toolError` is the device probe's own signal for it, and the same one the failure message uses
+ * to avoid reporting a missing SDK as a missing device (`src/device/adb.ts`, friction run 6's F49).
+ */
 const unrunnable: DeviceProbe = {
   device: null,
   reason: 'could not run "adb": spawn adb ENOENT',
-  unavailable: true,
+  toolError: new CommandError('ADB_NOT_RUNNABLE', 'adb could not be run'),
 };
 
 describe(readLocalDeviceProbe, () => {

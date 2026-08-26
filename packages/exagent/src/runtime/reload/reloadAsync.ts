@@ -37,7 +37,12 @@ import {
 } from '../../project/nodeModules';
 import { readProjectRoutesAsync } from '../../project/routes';
 import { bundleToJson, type DevWaitBundleJson } from '../../dev/waitFormat';
-import { checkEntryBundleAsync, DEFAULT_BUNDLE_CHECK_PLATFORM } from '../bundleCheck';
+import {
+  checkEntryBundleAsync,
+  resolveBundleCheckPlatformsAsync,
+  type BundleCheckResult,
+  type BundlePlatformSource,
+} from '../bundleCheck';
 import {
   discoverDevServerAsync,
   howToNameTheDevServer,
@@ -120,6 +125,15 @@ export interface ReloadResultJson {
    * (llp/0010 §The reload gate). `ok: false` is the one answer that stops the command.
    */
   bundle: DevWaitBundleJson;
+  /** Every platform whose entry bundle was built, in the order they were. */
+  bundlePlatforms: string[];
+  /**
+   * Where those platforms came from: a flag, the connected apps, or this command's default.
+   *
+   * @ref ../bundleCheck — friction run 6, F53. The reason it is reported: `for ios` printed by a
+   * run that had never asked which app it was reloading read exactly like an answer.
+   */
+  bundlePlatformSource: BundlePlatformSource;
   /** Route the app was sent to afterwards, or null when none was asked for. */
   route: string | null;
   /** Whether that route was checked against the project's routes. */
@@ -193,13 +207,32 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   // bundle again, so reloading onto a bundle that does not compile puts the app back on the red
   // screen it is already showing — and the old command reported `Reloaded yes` for exactly that.
   const remainingMs = () => Math.max(0, options.timeoutMs - (Date.now() - startedAt));
-  const bundle = options.bundleCheck
-    ? await checkEntryBundleAsync(devServerUrl, {
-        platform: options.platform ?? DEFAULT_BUNDLE_CHECK_PLATFORM,
-        timeoutMs: remainingMs(),
-        projectRoot,
-      })
-    : null;
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Android — friction run 6, F53. Which platform to build
+  // for is a question about the app being reloaded, and this used to answer it with a host-free
+  // default: with an Android-only break and both apps attached, a `runtime:reload` with no flag
+  // checked the **iOS** bundle, passed, and reloaded the Android app onto the broken one.
+  const { platforms: bundlePlatforms, source: bundlePlatformSource } =
+    await resolveBundleCheckPlatformsAsync(options.platform ?? null, devServer.targets);
+  const bundles: BundleCheckResult[] = [];
+  if (options.bundleCheck) {
+    for (const platform of bundlePlatforms) {
+      bundles.push(
+        await checkEntryBundleAsync(devServerUrl, {
+          platform,
+          timeoutMs: remainingMs(),
+          projectRoot,
+        })
+      );
+    }
+  }
+  // A broken bundle decides the reload whichever platform it was found on: reloading onto it is
+  // exactly what this gate exists to stop.
+  const bundle =
+    bundles.find((entry) => entry.outcome === 'broken') ??
+    bundles.find((entry) => entry.outcome === 'timeout') ??
+    bundles[0] ??
+    null;
   // `unknown` passes, the way it does for `dev:wait`: a dev server that answered nothing this CLI
   // understands has not shown the project to be broken, and a refusal there would stop a reload
   // that would have worked and name no fix.
@@ -292,9 +325,12 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   const followups =
     followUpsEnabled(wantFollowUps) && exitCode === EXIT_OK
       ? buildReloadFollowUps({
-          platform: device?.platform ?? null,
+          // The session's platform when no device was resolved: the dev-server method never looks
+          // for one, and a run told `--android` still has to hand back Android commands (F54).
+          platform: device?.platform ?? options.platform ?? null,
           deviceId: device?.deviceId ?? null,
           route,
+          adbPath: device?.adb?.bin,
         })
       : [];
 
@@ -309,6 +345,8 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     // The same flag as `dev:wait`'s, so the reason a null bundle carries is the same sentence
     // whichever command asked the question (llp/0010 §The reload gate).
     bundle: bundleToJson(bundle, { skippedByFlag: !options.bundleCheck }),
+    bundlePlatforms: bundles.map((entry) => entry.platform),
+    bundlePlatformSource,
     route,
     routeCheck,
     url: landing?.url ?? null,
@@ -454,6 +492,7 @@ async function reloadOnDeviceAsync(
     platform: device.platform,
     deviceId: device.deviceId,
     appId,
+    adb: device.adb,
   });
   if (!stopped.ok) {
     return {
@@ -580,9 +619,18 @@ function printHumanReport(report: ReloadResultJson, options: ReloadOptions): voi
   // F48-7: `runtime:reload --no-bundle-check` printed no Bundle line at all, while a checked run
   // printed `Bundle compiles · for ios`]. A reader cannot notice a line that is not there.
   if (report.bundle.ok != null) {
+    // Which platforms, and where they came from: a run that checked a default it was never told to
+    // use has to say so, or `for ios` reads as a fact about the app it just reloaded (F53).
+    const others = report.bundlePlatforms.filter((name) => name !== report.bundle.platform);
     lines.push(
       chalk`{bold Bundle} ${report.bundle.ok ? chalk.green('compiles') : chalk.red('does not compile')}${
         report.bundle.platform ? chalk`{dim  · for ${report.bundle.platform}}` : ''
+      }${others.length ? chalk`{dim  · also checked ${others.join(', ')}}` : ''}${
+        report.bundlePlatformSource === 'connected-app'
+          ? chalk`{dim  · the platform the connected app is on}`
+          : report.bundlePlatformSource === 'default'
+            ? chalk`{dim  · a default, because nothing named a platform and no connected app could be placed}`
+            : ''
       }`
     );
   } else if (!options.bundleCheck) {

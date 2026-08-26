@@ -9,6 +9,8 @@ import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import path from 'node:path';
 
+import { WebSocketServer } from 'ws';
+
 import {
   executeExagentAsync,
   holdDevLockAsync,
@@ -103,21 +105,47 @@ async function setupAsync(fixtureName: string): Promise<string> {
 }
 
 /** A dev server double that answers the debugger target list, and the port it listens on. */
-async function startDevServerDoubleAsync(targets: unknown[]): Promise<{
-  server: Server;
-  url: string;
-}> {
+async function startDevServerDoubleAsync(
+  targets: unknown[],
+  /**
+   * Whether the debugger sockets the targets point at accept a connection.
+   *
+   * `live` is a connected app; `stale` is a page the dev server still lists with nothing behind it,
+   * which is what an app that was force-stopped leaves and what `status` used to count as an app
+   * (llp/0005 §Android, F56).
+   */
+  inspector: 'live' | 'stale' = 'live'
+): Promise<{ server: Server; url: string }> {
+  let port = 0;
   const server = createServer((request, response) => {
     if (request.url === '/json/list') {
       response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify(targets));
+      // On this double's own port, the way a real dev server publishes its debugger URLs: a
+      // fixture URL with no port is one nothing can connect to.
+      response.end(
+        JSON.stringify(
+          targets.map((target) => ({
+            ...(target as Record<string, unknown>),
+            webSocketDebuggerUrl: `ws://127.0.0.1:${port}/inspector/debug?device=1&page=1`,
+          }))
+        )
+      );
       return;
     }
     response.writeHead(404).end();
   });
 
+  const inspectorServer = inspector === 'live' ? new WebSocketServer({ noServer: true }) : null;
+  server.on('upgrade', (request, socket, head) => {
+    if (inspectorServer && (request.url ?? '').split('?')[0] === '/inspector/debug') {
+      inspectorServer.handleUpgrade(request, socket as never, head, () => {});
+      return;
+    }
+    socket.destroy();
+  });
+
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-  const { port } = server.address() as AddressInfo;
+  port = (server.address() as AddressInfo).port;
   return { server, url: `http://127.0.0.1:${port}` };
 }
 
@@ -470,6 +498,8 @@ describe('exagent status', () => {
         url: devServer.url,
         running: true,
         appsConnected: 1,
+        appsListed: 1,
+        appsStale: 0,
         // The double answers the target list and 404s everything else, so it is reachable and its
         // bundler is not ready — which is exactly what a port that is not Metro looks like.
         source: 'flag',
@@ -498,6 +528,8 @@ describe('exagent status', () => {
           url: stub.url,
           running: true,
           appsConnected: 1,
+          appsListed: 1,
+          appsStale: 0,
           source: 'flag',
           ready: true,
           projectRootMatched: true,
@@ -658,6 +690,8 @@ describe('exagent status', () => {
           url: devServer.url,
           running: true,
           appsConnected: 1,
+          appsListed: 1,
+          appsStale: 0,
           source: 'lock',
           ready: false,
           projectRootMatched: null,

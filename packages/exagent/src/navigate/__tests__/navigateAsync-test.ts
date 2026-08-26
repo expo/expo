@@ -98,6 +98,9 @@ function options(overrides: Partial<NavigateOptions> = {}): NavigateOptions {
     json: false,
     followups: true,
     routeCheck: true,
+    // No wait by default in this table: these cases are about the URL and the device command, and
+    // a real attach wait would need a dev server to poll. The wait has its own cases below.
+    attachTimeoutMs: 0,
     ...overrides,
   };
 }
@@ -348,6 +351,12 @@ describe(navigateAsync, () => {
       platform: 'ios',
       deviceId: 'IOS-1',
       appId: null,
+      // Null rather than false: this run passed --no-wait-attach, so nothing looked
+      // (llp/0005 §Android, F50).
+      attached: null,
+      attachWaitedMs: 0,
+      attachRecovered: false,
+      reversedPort: null,
       command: 'xcrun simctl openurl IOS-1 exp://127.0.0.1:8081/--/profile/42',
       exitCode: 0,
       routeCheck: {
@@ -365,7 +374,7 @@ describe(navigateAsync, () => {
         },
         {
           id: 'runtime-errors',
-          command: 'npx exagent runtime:errors',
+          command: 'npx exagent runtime:errors --ios',
           why: expect.any(String),
         },
       ],
@@ -386,6 +395,9 @@ describe(navigateAsync, () => {
 
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'appId',
+      'attachRecovered',
+      'attachWaitedMs',
+      'attached',
       'command',
       'connect',
       'devServerSource',
@@ -397,6 +409,7 @@ describe(navigateAsync, () => {
       'platform',
       'printUrl',
       'resolution',
+      'reversedPort',
       'route',
       'routeCheck',
       'target',
@@ -744,6 +757,57 @@ describe(navigateAsync, () => {
       expect(printed()).toContain('open in the development build');
     });
 
+    // @ref llp/0005-runtime-loop-tools.rfc.md §The dev server does not label its targets
+    //
+    // The Android round's F51, applied to the target-app decision: a dev server with an iOS Expo Go
+    // already attached would otherwise decide an `--android` run's URL shape from the simulator's
+    // registration. Scoped, nothing is connected on the platform that was named, so the project's
+    // own shape decides — and this project depends on `expo-dev-client`.
+    it(`decides the URL shape from the platform that was named, not the other one`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({
+          name: 'demo',
+          dependencies: { 'expo-dev-client': '~6.0.0' },
+        }),
+        [`${projectRoot}/node_modules/expo-dev-client/package.json`]: JSON.stringify({
+          name: 'expo-dev-client',
+        }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      // Expo Go, on iOS — placed by its app id alone, so no device tool is spawned to know that.
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await navigateAsync(
+        projectRoot,
+        options({ platform: 'android', printUrl: true, json: true })
+      );
+
+      const report = JSON.parse(printed());
+      expect(report.url).toBe('demoapp://profile/42');
+      expect(report.target).toContain('expo-dev-client');
+      expect(report.connect[0].target).toBe('dev-build');
+    });
+
+    // The same dev server, with no platform named: the iOS Expo Go target is the only evidence
+    // there is, and it still decides.
+    it(`reads every connected app when no platform was named`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({
+          name: 'demo',
+          dependencies: { 'expo-dev-client': '~6.0.0' },
+        }),
+        [`${projectRoot}/node_modules/expo-dev-client/package.json`]: JSON.stringify({
+          name: 'expo-dev-client',
+        }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      mockDevServer([EXPO_GO_TARGET]);
+
+      await navigateAsync(projectRoot, options({ printUrl: true, json: true }));
+
+      expect(JSON.parse(printed()).url).toBe('exp://127.0.0.1:8081/--/profile/42');
+    });
+
     // Nothing connected, no dev-client dependency, and a native directory checked in: that project
     // has a build of its own and may still be opened in Expo Go. Two applications, two URLs.
     it(`prints both forms, labelled, when nothing established which app is running`, async () => {
@@ -795,7 +859,10 @@ describe(navigateAsync, () => {
       expect(report.hostType).toBeNull();
     });
 
-    it(`keeps the four device keys and fills them with null`, async () => {
+    // Everything downstream of the device is absent, and says so in its own vocabulary: the device
+    // keys are null, no port was reversed, and `attached` is null rather than false — nothing was
+    // waited for, which is not the same as nothing having connected (F50).
+    it(`keeps every key and empties the ones a device would have filled`, async () => {
       mockExpoGoProject();
       mockDevServer([EXPO_GO_TARGET]);
 
@@ -808,9 +875,16 @@ describe(navigateAsync, () => {
         deviceId: null,
         command: null,
         exitCode: null,
+        reversedPort: null,
+        attached: null,
+        attachWaitedMs: 0,
+        attachRecovered: false,
       });
       expect(Object.keys(report).sort()).toEqual([
         'appId',
+        'attachRecovered',
+        'attachWaitedMs',
+        'attached',
         'command',
         'connect',
         'devServerSource',
@@ -822,6 +896,7 @@ describe(navigateAsync, () => {
         'platform',
         'printUrl',
         'resolution',
+        'reversedPort',
         'route',
         'routeCheck',
         'target',
@@ -864,5 +939,91 @@ describe(navigateAsync, () => {
         suggestedCommand: 'npx exagent navigate / --print-url',
       });
     });
+  });
+});
+
+// @ref ../adbReverse, llp/0005 §Android — friction run 6, F50. `am start` exits 0 for an intent
+// that lands on Expo Go's error screen, so the device tool's exit code was never evidence that the
+// app had loaded, and this command reported success for exactly that.
+describe(`${navigateAsync.name} on Android`, () => {
+  /** An Expo Go project whose dev server answers with the given targets, on 8081. */
+  function mockExpoGoProject() {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+      [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+    });
+  }
+
+  const ANDROID_TARGET = {
+    id: 'a1',
+    appId: 'host.exp.exponent',
+    deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+    webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=a1&page=1',
+  };
+
+  it(`reverses the dev server's port onto the device before opening the link`, async () => {
+    mockExpoGoProject();
+    mockDevServer([ANDROID_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES }, // adb devices -l
+      { stdout: '8081' }, //      adb reverse
+      { stdout: 'Starting: Intent' }, // am start
+      { stdout: '' }, //          simctl list (device index)
+      { stdout: ADB_DEVICES }, //  adb devices -l (device index)
+    ]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 1_000 }))
+    ).resolves.toBe(0);
+
+    // Second call, before the intent: a link opened first would load against a port nothing on the
+    // device listens on.
+    expect(spawnedArgv(1)).toEqual([
+      'adb',
+      '-s',
+      'emulator-5554',
+      'reverse',
+      'tcp:8081',
+      'tcp:8081',
+    ]);
+    expect(spawnedArgv(2)).toContain('am');
+  });
+
+  it(`exits 22 when the link was delivered and no Android app ever connected`, async () => {
+    mockExpoGoProject();
+    // An iOS app is connected, and this run is about Android: the wrong platform's target must
+    // never confirm this link (F51).
+    mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+      { stdout: '' }, // force-stop
+      { stdout: 'Starting: Intent' }, // the second link
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 50 }))
+    ).resolves.toBe(22);
+
+    const said = jest.mocked(console.error).mock.calls.flat().join('\n');
+    expect(said).toContain('no android app connected');
+    expect(said).toContain('accepted the intent and nothing more');
+  });
+
+  it(`reports the attach it did not check when --no-wait-attach was passed`, async () => {
+    mockExpoGoProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue([{ stdout: ADB_DEVICES }, { stdout: '8081' }, { stdout: 'Starting: Intent' }]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 0, json: true }))
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(printed()).attached).toBeNull();
   });
 });

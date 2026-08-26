@@ -8,6 +8,7 @@
 import chalk from 'chalk';
 
 import { event as cliEvent } from '../events';
+import { EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import {
   buildNavigateFollowUps,
   buildPrintUrlFollowUps,
@@ -18,7 +19,7 @@ import {
 import * as Log from '../log';
 import type { DevServerSource } from '../runtime/devServer';
 import { openInPhrase } from './connectUrl';
-import { openRouteAsync, resolveRouteUrlAsync } from './openRoute';
+import { openRouteAsync, resolveRouteUrlAsync, type OpenRouteResult } from './openRoute';
 import type { NavigateOptions } from './resolveOptions';
 import type { RouteCheckJson } from './routeCheck';
 
@@ -69,7 +70,9 @@ export interface NavigateResultJson {
   /**
    * Whether the run only resolved the URL (`--print-url`), so no device was asked for.
    *
-   * The four device fields below are null exactly when this is true.
+   * Everything downstream of the device is absent exactly when this is true: the four device
+   * fields below are null, no port was reversed, and nothing was waited for — `attached` is null
+   * rather than false, because nothing was asked to connect.
    */
   printUrl: boolean;
   platform: string | null;
@@ -87,6 +90,25 @@ export interface NavigateResultJson {
    * never reaches this object.
    */
   routeCheck: RouteCheckJson;
+  /**
+   * The port forwarded onto the device before the link, or null when none needed to be.
+   *
+   * Android only, and the fix for F50: `exp://127.0.0.1:<port>` means the *device's* loopback, so
+   * without this an emulator loads the link against a port nothing listens on.
+   */
+  reversedPort: number | null;
+  /**
+   * Whether an app on this platform was seen to connect to the dev server afterwards.
+   *
+   * `null` when this run did not wait (`--no-wait-attach`). **This, not {@link exitCode}, is what
+   * says the app is running the project**: `am start` exits 0 for an intent that lands on Expo Go's
+   * error screen.
+   */
+  attached: boolean | null;
+  /** How long the wait for that took, in milliseconds. */
+  attachWaitedMs: number;
+  /** Whether the app had to be stopped and the link opened again to get there. */
+  attachRecovered: boolean;
   /**
    * State-aware next actions, empty when the device refused the link or they are suppressed.
    *
@@ -126,14 +148,19 @@ export async function navigateAsync(
     appId,
     devServerUrl: options.devServerUrl,
     routeCheck: options.routeCheck,
+    confirmAttachMs: options.attachTimeoutMs,
   });
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command — `navigate`. Only a link the
   // device accepted has a screen to capture, so a refusal carries no follow-up: its own what/why/
   // how below is the next step.
   const followups =
-    opened.exitCode === 0 && followUpsEnabled(wantFollowUps)
-      ? buildNavigateFollowUps({ platform: opened.platform, deviceId: opened.deviceId })
+    opened.exitCode === 0 && opened.attach.confirmed !== false && followUpsEnabled(wantFollowUps)
+      ? buildNavigateFollowUps({
+          platform: opened.platform,
+          deviceId: opened.deviceId,
+          adbPath: opened.adbPath ?? undefined,
+        })
       : [];
 
   if (json) {
@@ -153,6 +180,10 @@ export async function navigateAsync(
       command: opened.command,
       exitCode: opened.exitCode,
       routeCheck: opened.routeCheck,
+      reversedPort: opened.reverse?.ok ? opened.reverse.port : null,
+      attached: opened.attach.confirmed,
+      attachWaitedMs: opened.attach.waitedMs,
+      attachRecovered: opened.attach.recovered,
       followups,
     };
     // The object is the whole of stdout, so the output can be piped into a parser. The failure
@@ -169,7 +200,32 @@ export async function navigateAsync(
         chalk`{dim  target: ${opened.target}}`,
         chalk`{bold Dev server} ${opened.devServerUrl}{dim  · via ${opened.devServerSource}}`,
         chalk`{bold Device} ${opened.platform} ${deviceLabel}`,
+        // Always a line when a reverse was needed, whether or not it worked: the absence of one is
+        // not something a reader can notice, and this is the step F50 was missing entirely.
+        ...(opened.reverse?.ran
+          ? [
+              chalk`{bold Port} ${
+                opened.reverse.ok
+                  ? chalk.green(`reversed tcp:${opened.reverse.port}`)
+                  : chalk.red(`not reversed · ${opened.reverse.reason}`)
+              }{dim  · ${opened.reverse.command}}`,
+            ]
+          : []),
         chalk`{dim  ${opened.command}}`,
+        chalk`{bold App} ${
+          opened.attach.confirmed === true
+            ? chalk.green('attached') +
+              chalk.dim(
+                ` · ${opened.attach.targets} ${opened.platform} debugger ${
+                  opened.attach.targets === 1 ? 'target' : 'targets'
+                } after ${opened.attach.waitedMs}ms${
+                  opened.attach.recovered ? ', after a restart' : ''
+                }`
+              )
+            : opened.attach.confirmed === false
+              ? chalk.red('not attached') + chalk.dim(` · ${opened.attach.reason}`)
+              : chalk.dim(`not checked · ${opened.attach.reason}`)
+        }`,
         chalk`{bold Route} ${
           opened.routeCheck.ok
             ? `${opened.routeCheck.matched}${chalk.dim(
@@ -202,6 +258,16 @@ export async function navigateAsync(
   // rather than added to it: `command` says how to read it again.
   if (!json && opened.stdout.trim()) {
     Log.log(chalk.dim(opened.stdout.trim()));
+  }
+
+  // @ref llp/0010-agent-conventions.rfc.md §Exit codes — `22`, "nothing was shown to be wrong and
+  // nothing was proved right". The link was delivered and no app came back, which is exactly that:
+  // the device may still be loading a cold bundle, and it may be sitting on an error screen. What
+  // it is not is a success, which is what exit 0 said here [friction run 6, F50].
+  if (opened.attach.confirmed === false) {
+    Log.error(attachNotConfirmed(opened, options));
+    reportFollowUps('navigate', followups, { json });
+    return EXIT_OUTCOME_TIMEOUT;
   }
 
   // Last, so the `Suggested next:` section is the last thing in the terminal, after what the device said.
@@ -269,6 +335,14 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
       command: null,
       exitCode: null,
       routeCheck: resolved.routeCheck,
+      // Nothing was opened, so nothing downstream of the device happened. `adb reverse` belongs to
+      // opening a loopback link on an Android device (F50) and this run opened none; `attached` is
+      // null rather than false for the same reason it is null under `--no-wait-attach` — nothing
+      // was waited for, which is not the same as nothing having connected.
+      reversedPort: null,
+      attached: null,
+      attachWaitedMs: 0,
+      attachRecovered: false,
       followups,
     };
     Log.log(JSON.stringify(report, null, 2));
@@ -332,4 +406,26 @@ function reachLine(hostType: string | null): string {
   return chalk.dim(
     'unknown · nothing captured what the dev server advertised, so the host above is where it listens on this machine'
   );
+}
+
+/** The what / why / how for a link that was delivered and produced no connected app. */
+function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): string {
+  const reverseClause =
+    opened.reverse?.ran && opened.reverse.ok === false
+      ? ` The port forward this link needs did not go in either (${opened.reverse.reason}), so the app had no route back to this machine at all.`
+      : opened.reverse?.ok
+        ? ` The dev server's port was forwarded onto the device first, so the app could reach it.`
+        : '';
+
+  return [
+    chalk.red(
+      `The link was opened on the device, and no ${opened.platform} app connected to ${opened.devServerUrl} within ${opened.attach.waitedMs}ms.`
+    ),
+    `Why: "${opened.command}" exited 0, which says the device accepted the intent and nothing more — an app that fails to load its bundle sits on an error screen having accepted one.${reverseClause}${
+      opened.attach.recovered
+        ? ' The app was stopped and the link opened a second time, and that did not attach either.'
+        : ''
+    }`,
+    `How: look at what the dev server was asked for with "npx exagent dev:logs", and at the screen with "npx exagent smoke --platform ${opened.platform} --no-route-check". A first bundle on a cold device can take longer than this wait — raise it with --attach-timeout 90s. Pass --no-wait-attach to report only what the device tool said, which is what this command used to do.`,
+  ].join('\n');
 }

@@ -146,25 +146,48 @@ export function buildDevServerStatus(
   url: string,
   probe: DevServerProbe,
   readiness: DevServerReadiness,
+  /**
+   * What a liveness probe of the listed targets found, when one was run.
+   *
+   * Optional so the pure section stays testable without a socket; a caller that skips it gets the
+   * old behaviour — the listing counted as connected — and says so by having nothing to report.
+   */
+  liveness?: { live: number; stale: number },
   reach: DevServerReach | null = null
 ): DevServerStatus {
   const running = probe.reachable;
-  // A tunnel URL is reported only while every part of it holds — see `isTunnelCurrent`. A dev
-  // server that is down cannot be reached at its tunnel either, whatever the log still says.
+  // A tunnel URL is reported only while both parts hold — see `isTunnelCurrent`. A dev server that
+  // is down cannot be reached at its tunnel either, whatever the log still says.
   const tunnelUrl =
     reach && running && isTunnelCurrent({ ...reach, running: true })
       ? (reach.advertised?.url ?? null)
       : null;
-
-  const status: DevServerStatus = {
-    url,
-    running,
-    appsConnected: running ? probe.targets.length : 0,
-    ...readiness,
+  const reachFields = {
     hostType: reach?.advertised?.hostType ?? null,
     tunnelUrl,
   };
-  return running || !probe.reason ? status : { ...status, reason: probe.reason };
+
+  if (running) {
+    return {
+      url,
+      running: true,
+      appsConnected: liveness?.live ?? probe.targets.length,
+      appsListed: probe.targets.length,
+      appsStale: liveness?.stale ?? 0,
+      ...readiness,
+      ...reachFields,
+    };
+  }
+  const status: DevServerStatus = {
+    url,
+    running: false,
+    appsConnected: 0,
+    appsListed: 0,
+    appsStale: 0,
+    ...readiness,
+    ...reachFields,
+  };
+  return probe.reason ? { ...status, reason: probe.reason } : status;
 }
 
 /** The device section: what this machine has to open an app on. */

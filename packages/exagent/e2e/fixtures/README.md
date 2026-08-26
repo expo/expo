@@ -11,6 +11,22 @@ repository root otherwise ignores.
 `setupFixtureAsync()` (see `../utils.ts`) copies a fixture to a temporary directory per test and
 installs the stub `expo` bin into it, so no test mutates the checked-in files.
 
+## What a stub proves, and what it cannot
+
+A stub accepts whatever it was written to accept, so a passing e2e test proves the **shape** of an
+invocation — that `exagent` sends these arguments, in this order, and reads the answer — and never
+its **availability** in the CLI a user's project actually resolves. The two look identical in a
+green test and are not the same question.
+
+So: **a flag verified against this monorepo's source must also be run once against the published
+binary** (`npx <package>@latest`, in a project outside this repository) before it ships. The
+monorepo is ahead of the registry, and `--preset` is what that costs — an option of
+`@expo/fingerprint`'s CLI here and not in the 0.20.9 a real SDK 57 project installs, which answered
+`unknown or unexpected option: --preset` and exited non-zero [observed — live, 2026-08-24]. Every
+`exagent impact` test passed throughout. `llp/0002` §A flag is not shipped until it has run against
+the published binary is the rule; `src/lint/foreignFlags.ts` pins the list of flags it applies to,
+so adding one is a visible diff.
+
 ## The matrix
 
 | Fixture                | Native state                | Expo Go      | Purpose                                                             |

@@ -28,6 +28,8 @@ declare module '2g' {
     'runtime:cdp_eval_unwrapped': { reason: string };
     /** The app kept a settled value nobody read, because the cleanup after a timeout failed. */
     'runtime:cdp_promise_release_failed': { reason: string };
+    /** How many listed debugger targets still answered a handshake (`./targetLiveness.ts`). */
+    'runtime:target_liveness': { listed: number; stale: number };
     /**
      * The dev server did not map a stack, so the raw bundle frames are reported instead.
      *
