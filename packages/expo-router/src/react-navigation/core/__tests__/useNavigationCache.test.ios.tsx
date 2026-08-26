@@ -2,10 +2,7 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { RoutingIntent } from '../../../global-state/routingQueue';
-import {
-  RoutingQueueApiContext,
-  RoutingQueueProvider,
-} from '../../../global-state/routingQueueContext';
+import { RoutingQueueApiContext } from '../../../global-state/routingQueueContext';
 import {
   CommonActions,
   type NavigationState,
@@ -324,16 +321,14 @@ test('ignores dispatches from a preloaded stack screen until it is promoted', ()
   }
 
   render(
-    <RoutingQueueProvider>
+    <BaseNavigationContainer ref={ref}>
       <CaptureEnqueue>
-        <BaseNavigationContainer ref={ref}>
-          <TestNavigator>
-            <Screen name="first">{() => null}</Screen>
-            <Screen name="second" component={TestScreen} />
-          </TestNavigator>
-        </BaseNavigationContainer>
+        <TestNavigator>
+          <Screen name="first">{() => null}</Screen>
+          <Screen name="second" component={TestScreen} />
+        </TestNavigator>
       </CaptureEnqueue>
-    </RoutingQueueProvider>
+    </BaseNavigationContainer>
   );
 
   act(() => ref.current?.dispatch(CommonActions.preload('second')));

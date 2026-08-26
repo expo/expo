@@ -2,7 +2,7 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
-import { routingQueue } from '../../../global-state/routingQueue';
+import { RoutingQueueProvider } from '../../../global-state/routingQueueContext';
 import {
   CommonActions,
   type DefaultRouterOptions,
@@ -28,7 +28,6 @@ jest.mock('nanoid/non-secure', () => {
 
 beforeEach(() => {
   MockRouterKey.current = 0;
-  routingQueue.queue = [];
 
   require('nanoid/non-secure').__key = 0;
 });
@@ -135,12 +134,15 @@ test('preserves a complete initial state by identity', () => {
   }
 
   render(
-    <RawBaseNavigationContainer ref={ref} initialState={initialState}>
-      <Stack>
-        <Screen name="home">{() => null}</Screen>
-      </Stack>
-    </RawBaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    <RoutingQueueProvider>
+      <RouterRegistryProvider>
+        <RawBaseNavigationContainer ref={ref} initialState={initialState}>
+          <Stack>
+            <Screen name="home">{() => null}</Screen>
+          </Stack>
+        </RawBaseNavigationContainer>
+      </RouterRegistryProvider>
+    </RoutingQueueProvider>
   );
 
   expect(ref.current?.getRootState()).toBe(initialState);
@@ -201,19 +203,21 @@ test('handle dispatching with ref', () => {
   };
 
   const element = (
-    <RouterRegistryProvider>
-      <RawBaseNavigationContainer
-        ref={ref}
-        initialState={initialState}
-        onStateChange={onStateChange}>
-        <RootNavigator>
-          <Screen name="foo">{() => null}</Screen>
-          <Screen name="foo2">{() => null}</Screen>
-          <Screen name="bar">{() => null}</Screen>
-          <Screen name="baz">{() => null}</Screen>
-        </RootNavigator>
-      </RawBaseNavigationContainer>
-    </RouterRegistryProvider>
+    <RoutingQueueProvider>
+      <RouterRegistryProvider>
+        <RawBaseNavigationContainer
+          ref={ref}
+          initialState={initialState}
+          onStateChange={onStateChange}>
+          <RootNavigator>
+            <Screen name="foo">{() => null}</Screen>
+            <Screen name="foo2">{() => null}</Screen>
+            <Screen name="bar">{() => null}</Screen>
+            <Screen name="baz">{() => null}</Screen>
+          </RootNavigator>
+        </RawBaseNavigationContainer>
+      </RouterRegistryProvider>
+    </RoutingQueueProvider>
   );
 
   render(element).update(element);
@@ -949,80 +953,6 @@ test.skip('invokes the unhandled action listener with the unhandled action', () 
     },
     type: 'NAVIGATE',
   });
-});
-
-test('logs an error when a sibling root container drains the shared routing queue', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  const onStateChange = jest.fn();
-
-  render(
-    <>
-      <BaseNavigationContainer>
-        <TestNavigator>
-          <Screen name="foo">{() => null}</Screen>
-          <Screen name="bar">{() => null}</Screen>
-        </TestNavigator>
-      </BaseNavigationContainer>
-      <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
-        <TestNavigator>
-          <Screen name="qux">{() => null}</Screen>
-          <Screen name="lex">{() => null}</Screen>
-        </TestNavigator>
-      </BaseNavigationContainer>
-    </>
-  );
-
-  act(() => {
-    ref.current?.navigate('lex');
-  });
-
-  expect(onStateChange).toHaveBeenCalledWith({
-    index: 1,
-    key: 'navigator-7',
-    routeNames: ['qux', 'lex'],
-    routes: [
-      { key: 'qux-6', name: 'qux' },
-      { key: 'lex-0', name: 'lex', params: undefined },
-    ],
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-  });
-
-  expect(ref.current?.getRootState()).toEqual({
-    index: 1,
-    key: 'navigator-7',
-    routeNames: ['qux', 'lex'],
-    routes: [
-      { key: 'qux-6', name: 'qux' },
-      { key: 'lex-0', name: 'lex', params: undefined },
-    ],
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-  });
-
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(
-    [
-      'Looks like you have multiple navigation containers consuming the shared imperative routing queue. Only one container will receive queued actions. Make sure that:',
-      "- You don't have multiple NavigationContainers in the app",
-      '- Only a single instance of the root component is rendered',
-    ].join('\n')
-  );
-  error.mockRestore();
 });
 
 test('warns for duplicate route names nested inside each other', () => {

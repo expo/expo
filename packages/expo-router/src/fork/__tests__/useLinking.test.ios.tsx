@@ -3,12 +3,11 @@ import { act, type RenderAPI } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
-import { routingQueue } from '../../global-state/routingQueue';
 import { store, storeRef as mockStoreRef } from '../../global-state/store';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
 import { NavigationContainer } from '../NavigationContainer';
 import { useLinking } from '../useLinking';
-import { render, renderHook } from './__fixtures__/store';
+import { getPendingIntents, render, renderHook } from './__fixtures__/store';
 
 let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
 
@@ -24,7 +23,6 @@ function getParsedHomeState() {
 }
 
 beforeEach(() => {
-  routingQueue.queue = [];
   mockStoreRef.current.routeNode = node('root', [node('home', [node('[id]')])]);
   mockStoreRef.current.state = undefined;
 });
@@ -62,7 +60,7 @@ test('queues an incoming deep link using its extracted app path', () => {
   act(() => listener?.('example://home?from=link'));
 
   expect(getStateFromPath).toHaveBeenCalledWith('home?from=link', undefined, []);
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'NAVIGATE_TO_HREF',
       payload: {
@@ -103,7 +101,7 @@ test('reports an incoming deep link using its extracted app path', () => {
   act(() => listener?.('myapp://foo/bar'));
 
   expect(onUnhandledLinking).toHaveBeenCalledWith('/foo/bar');
-  expect(routingQueue.queue[0]).toMatchObject({
+  expect(getPendingIntents()[0]).toMatchObject({
     payload: { href: '/foo/bar' },
   });
 });
@@ -183,7 +181,7 @@ test('resubscribes on re-render and cleans up the previous subscription', () => 
   expect(subscribe).toHaveBeenCalledTimes(2);
   expect(unsubscribes[0]).toHaveBeenCalledTimes(1);
   expect(unsubscribes[1]).not.toHaveBeenCalled();
-  expect(routingQueue.queue).toMatchObject([
+  expect(getPendingIntents()).toMatchObject([
     { type: 'NAVIGATE_TO_HREF', payload: { href: '/home' } },
   ]);
 });

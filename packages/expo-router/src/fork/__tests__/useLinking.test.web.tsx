@@ -6,7 +6,6 @@ import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import { completeParsedState } from '../../global-state/createSeededNavigationState';
 import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
 import { RouterRegistryProvider } from '../../global-state/routerRegistry';
-import { routingQueue } from '../../global-state/routingQueue';
 import { storeRef as mockStoreRef } from '../../global-state/store';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { getStateFromPath } from '../../link/linking';
@@ -19,7 +18,7 @@ import { getMockConfig } from '../../testing-library/mock-config';
 import { NavigationContainer } from '../NavigationContainer';
 import { createMemoryHistory } from '../createMemoryHistory';
 import { useLinking } from '../useLinking';
-import { render } from './__fixtures__/store';
+import { getPendingIntents, render } from './__fixtures__/store';
 
 jest.mock('../createMemoryHistory');
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;
@@ -47,7 +46,6 @@ function EmptyScreen() {
 beforeEach(() => {
   mockStoreRef.current.state = undefined;
   mockStoreRef.current.routeNode = null;
-  routingQueue.queue = [];
   jest.mocked(getRootStackRouteNames).mockReturnValue(['home']);
   jest.mocked(createMemoryHistory).mockReturnValue(history);
   Object.defineProperty(globalThis, 'location', {
@@ -107,7 +105,7 @@ test('queues forward history navigation', () => {
   emitPopState('/forward', 4);
 
   expect(getStateFromPath).toHaveBeenCalledWith('/forward', undefined, []);
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'NAVIGATE_TO_HREF',
       payload: { href: '/forward', options: { event: 'NAVIGATE' } },
@@ -134,7 +132,7 @@ test('restores saved history state without parsing its path', () => {
   emitPopState('/saved', 3);
 
   expect(getStateFromPath).not.toHaveBeenCalled();
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'ACTION',
       payload: {
@@ -156,7 +154,7 @@ test('restores state parsed from a history path', () => {
   emitPopState('/parsed', 2);
 
   expect(getStateFromPath).toHaveBeenCalledWith('/parsed', undefined, []);
-  const parsedIntent = routingQueue.queue[0];
+  const parsedIntent = getPendingIntents()[0];
   expect(parsedIntent).toMatchObject({
     type: 'ACTION',
     payload: { action: { type: 'RESET', target: expect.any(String) } },
@@ -184,7 +182,7 @@ test('restores initial state when a history path cannot be parsed', () => {
   emitPopState('/invalid', 1);
 
   expect(getStateFromPath).toHaveBeenCalledWith('/invalid', undefined, []);
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'ACTION',
       payload: { action: { type: 'RESET', payload: initialState, target: 'root' } },
@@ -239,7 +237,7 @@ test('keeps the current route group when parsing a popstate path', () => {
   act(() => historyListener?.());
 
   expect(parsePath).toHaveBeenCalledWith('/shared', config, ['(b)', 'other']);
-  expect(routingQueue.queue).toEqual([
+  expect(getPendingIntents()).toEqual([
     {
       type: 'NAVIGATE_TO_HREF',
       payload: { href: '/shared', options: { event: 'NAVIGATE' } },

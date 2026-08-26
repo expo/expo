@@ -35,34 +35,3 @@ export type RoutingIntent =
       metadata?: RoutingIntentMetadata;
       onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
     };
-
-/** Queue used by the module-level `router` when no React context is available. */
-export const routingQueue = {
-  queue: [] as RoutingIntent[],
-  subscribers: new Set<() => void>(),
-  subscribe(callback: () => void) {
-    routingQueue.subscribers.add(callback);
-    return () => {
-      routingQueue.subscribers.delete(callback);
-    };
-  },
-  snapshot() {
-    return routingQueue.queue;
-  },
-  add(intent: RoutingIntent) {
-    routingQueue.queue = [...routingQueue.queue, intent];
-    for (const callback of routingQueue.subscribers) {
-      callback();
-    }
-  },
-  drain(snapshot: RoutingIntent[]) {
-    if (snapshot !== routingQueue.queue) {
-      return [];
-    }
-    routingQueue.queue = [];
-    for (const callback of routingQueue.subscribers) {
-      callback();
-    }
-    return snapshot;
-  },
-};

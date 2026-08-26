@@ -17,6 +17,21 @@ import { Tabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link';
 import { renderRouter, screen } from '../testing-library';
 
+it('throws when navigating before the first render finishes', () => {
+  expect(() =>
+    renderRouter({
+      index: function MyIndexRoute() {
+        router.push('/profile/test-name');
+        return <Text testID="index">Press me</Text>;
+      },
+      '/profile/[name]': function MyRoute() {
+        const { name } = useGlobalSearchParams();
+        return <Text testID="profile-name">{name}</Text>;
+      },
+    })
+  ).toThrow('The imperative router is unavailable before the first render has finished.');
+});
+
 it('should respect `unstable_settings', () => {
   const render = (options: any = {}) =>
     renderRouter(
@@ -121,23 +136,6 @@ describe('hooks only', () => {
 });
 
 describe('imperative only', () => {
-  // The navigation action is offloaded until the navigation tree is ready.
-  it('can navigate before navigation is ready', async () => {
-    renderRouter({
-      index: function MyIndexRoute() {
-        router.push('/profile/test-name');
-        return <Text testID="index">Press me</Text>;
-      },
-      '/profile/[name]': function MyRoute() {
-        const { name } = useGlobalSearchParams();
-        return <Text testID="profile-name">{name}</Text>;
-      },
-    });
-
-    expect(screen.queryByTestId('index')).toBeNull();
-    expect(screen.getByTestId('profile-name')).toBeOnTheScreen();
-  });
-
   it('can handle navigation between routes', async () => {
     renderRouter({
       index: function MyIndexRoute() {
