@@ -188,8 +188,6 @@ switch (resolution.kind) {
   }
 
   case 'passthrough':
-    import('./passthrough').then((i) =>
-      i.exagentExpoPassthrough(resolution.command)(resolution.argv)
-    );
+    import('./passthrough').then((i) => i.exagentPassthrough(resolution.command)(resolution.argv));
     break;
 }

@@ -90,6 +90,7 @@ describe('the flags this CLI writes onto a command line', () => {
         "--type  src/config/introspectAsync.ts",
         "--type  src/impact/runtimeVersion.ts",
         "--verbose  src/doctor/checkAsync.ts",
+        "--version  src/passthrough/auth.ts",
         "--wait-ready  src/smoke/smokeAsync.ts",
         "--yes  src/new/createExpo.ts",
         "--yes  src/smoke/smokeAsync.ts",
