@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useEffect } from 'react';
+import React, { use, useEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
@@ -41,7 +41,6 @@ import {
   type RouteProp,
   type RouteSource,
   type ScreenListeners,
-  useStateForPath,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import type { UnknownOutputParams } from './types';
@@ -324,21 +323,21 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       getState(): NavigationState | undefined;
     };
   }) {
-    const stateForPath = useStateForPath();
+    const routeInfo = useCurrentRouteInfo();
     const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
     const isRouteType = value.type === 'route';
-    const resolvedLoaderPath = React.useMemo(() => {
+    const resolvedLoaderPath = useMemo(() => {
       if (!isRouteType || isGuarded) {
         return null;
       }
       // NOTE(@hassankhan): `RouteNode` does not expose whether its module has a loader without
       // eagerly loading it. Static loader metadata would let loader-free routes skip this work.
-      return resolveLoaderPath(getContextKey(value.contextKey), stateForPath);
-    }, [isGuarded, isRouteType, stateForPath]);
+      return resolveLoaderPath(getContextKey(value.contextKey), routeInfo);
+    }, [isGuarded, isRouteType, routeInfo]);
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'

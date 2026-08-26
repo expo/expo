@@ -9,7 +9,7 @@ import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../loaders/readLoaderData';
 import { resolveLoaderPath } from '../loaders/resolveLoaderPath';
 import { fetchLoader } from '../loaders/utils';
-import { useStateForPath } from '../react-navigation/native';
+import { useCurrentRouteInfo } from './useCurrentRouteInfo';
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
@@ -38,12 +38,12 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
 
   const { client, store } = ctx;
 
-  const stateForPath = useStateForPath();
+  const routeInfo = useCurrentRouteInfo();
   const contextKey = useContextKey();
 
   const resolvedPath = useMemo(
-    () => resolveLoaderPath(contextKey, stateForPath),
-    [contextKey, stateForPath]
+    () => resolveLoaderPath(contextKey, routeInfo),
+    [contextKey, routeInfo]
   );
 
   // Loader data stays in the shared Suspense store; local state only invalidates this reader.
