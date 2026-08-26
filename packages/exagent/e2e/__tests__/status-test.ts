@@ -53,6 +53,20 @@ type StatusReport = {
     projectRootMatched: boolean | null;
     reason?: string;
   } | null;
+  builds: {
+    askedEas: boolean;
+    platforms: {
+      platform: 'ios' | 'android';
+      state: 'found' | 'none' | 'unknown';
+      fingerprintHash: string | null;
+      buildId: string | null;
+      createdAt: string | null;
+      buildProfile: string | null;
+      buildUrl: string | null;
+      source: 'cache' | 'eas' | null;
+      reason: string | null;
+    }[];
+  } | null;
   skills: { agentIds: string[] | null; discovered: number; linked: number } | null;
   auth: {
     loggedIn: boolean | null;
@@ -91,6 +105,9 @@ type StatusReport = {
 
 /** The hash the stub `@expo/fingerprint` bin of `dev-client-fresh-app` prints. */
 const FIXTURE_FINGERPRINT_HASH = '0f1e2d3c4b5a69788796a5b4c3d2e1f001234567';
+
+/** File the stub `eas` bin appends one JSON line to per invocation. */
+const STUB_EAS_LOG_NAME = 'stub-eas-invocations.jsonl';
 
 /** One debugger target, the shape `expo start` reports for a connected app. */
 const CDP_TARGET = {
@@ -168,14 +185,16 @@ async function getUnusedDevServerUrlAsync(): Promise<string> {
  * Every call points the dev-server probe at a port nothing listens on, so the report never
  * depends on a Metro instance the developer happens to be running.
  */
-async function reportInAsync(projectRoot: string, args: string[] = []): Promise<StatusReport> {
-  const result = await executeExagentAsync(projectRoot, [
-    'status',
-    '--json',
-    '--dev-server-url',
-    await getUnusedDevServerUrlAsync(),
-    ...args,
-  ]);
+async function reportInAsync(
+  projectRoot: string,
+  args: string[] = [],
+  env: Record<string, string> = {}
+): Promise<StatusReport> {
+  const result = await executeExagentAsync(
+    projectRoot,
+    ['status', '--json', '--dev-server-url', await getUnusedDevServerUrlAsync(), ...args],
+    { env }
+  );
 
   expect(result.exitCode).toBe(0);
   return JSON.parse(result.stdout);
@@ -259,6 +278,7 @@ describe('exagent status', () => {
         'project',
         'expoGo',
         'freshness',
+        'builds',
         'devServer',
         'device',
         'skills',
@@ -451,6 +471,303 @@ describe('exagent status', () => {
       expect(report.freshness?.hash).toBeNull();
       expect(report.freshness?.error).toBeTruthy();
       expect(report.errors).toEqual({});
+    });
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
+  //
+  // Three states, and one cost. The cost is the design: a default run must not spawn `eas
+  // build:list` at all, and a cached answer must not spawn it either. Both are pinned by counting
+  // what crossed the process boundary, because a section that quietly grew a network call would
+  // pass every assertion about its *answer*.
+  describe('the EAS build lookup', () => {
+    /** The per-platform hashes the stub prints, which is what an EAS build carries. */
+    const IOS_HASH = 'aaaa1111bbbb2222cccc3333dddd4444eeee5555';
+    const ANDROID_HASH = 'ffff6666eeee7777dddd8888cccc9999bbbb0000';
+    const BUILD_ID = '21d7d434-6495-4e74-b8c7-68ecd0dff489';
+
+    /** One finished build, in the shape the recorded `build:list` payload has. */
+    const FINISHED_BUILD = {
+      id: BUILD_ID,
+      status: 'FINISHED',
+      platform: 'IOS',
+      buildProfile: 'simulator',
+      createdAt: '2026-08-19T17:37:12.674Z',
+      artifacts: { buildUrl: 'https://expo.dev/artifacts/eas/abc.tar.gz' },
+    };
+
+    /**
+     * A `fingerprint` bin that answers a different hash per platform, the way the real one does.
+     *
+     * This is the fact the whole design turns on, and the fixture's own stub cannot show it: the
+     * project hash covers both platforms and is not a hash any build carries. Live, on one working
+     * tree: `031f6b0c…` for the project and `8ce1acfb…` for iOS [observed — apps/observe-tester,
+     * 2026-08-26].
+     */
+    const STUB_FINGERPRINT = `#!/usr/bin/env node
+'use strict';
+const args = process.argv.slice(2);
+const platform = args.includes('--platform') ? args[args.indexOf('--platform') + 1] : null;
+const hash = platform === 'ios'
+  ? ${JSON.stringify(IOS_HASH)}
+  : platform === 'android'
+    ? ${JSON.stringify(ANDROID_HASH)}
+    : (process.env.STUB_FINGERPRINT_HASH || ${JSON.stringify(FIXTURE_FINGERPRINT_HASH)});
+process.stdout.write(JSON.stringify({ hash, sources: [] }) + '\\n');
+`;
+
+    /**
+     * An `eas` bin answering both commands `status` may reach for, recording every invocation.
+     *
+     * - STUB_EAS_USER: the account `whoami` names (default `e2e-user`)
+     * - STUB_EAS_BUILD_LIST: the JSON `build:list` prints (default `[]`, i.e. no build)
+     * - STUB_EAS_BUILD_LIST_STDOUT / STUB_EAS_BUILD_LIST_EXIT: a refusal, on the stream the real
+     *   CLI puts it on
+     */
+    const STUB_EAS = `#!/usr/bin/env node
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const args = process.argv.slice(2);
+fs.appendFileSync(
+  path.join(process.cwd(), ${JSON.stringify(STUB_EAS_LOG_NAME)}),
+  JSON.stringify({ args }) + '\\n'
+);
+if (args[0] === 'whoami') {
+  process.stdout.write((process.env.STUB_EAS_USER || 'e2e-user') + '\\n');
+  process.exit(0);
+}
+if (args[0] === 'build:list') {
+  const exitCode = Number(process.env.STUB_EAS_BUILD_LIST_EXIT || 0);
+  if (exitCode !== 0) {
+    process.stdout.write((process.env.STUB_EAS_BUILD_LIST_STDOUT || 'refused') + '\\n');
+    process.stderr.write('    Error: build:list command failed.\\n');
+    process.exit(exitCode);
+  }
+  process.stdout.write((process.env.STUB_EAS_BUILD_LIST || '[]') + '\\n');
+  process.exit(0);
+}
+process.stderr.write('stub eas: unexpected command ' + args[0] + '\\n');
+process.exit(1);
+`;
+
+    /** Copy the fixture and install both stubs over the ones `setupAsync` put there. */
+    async function setupWithEasAsync(fixture = 'dev-client-fresh-app'): Promise<string> {
+      const projectRoot = await setupAsync(fixture);
+      const binDir = path.join(projectRoot, '.stub-bin');
+      await fs.promises.mkdir(binDir, { recursive: true });
+
+      const fingerprintStub = path.join(binDir, 'fingerprint-platform-stub.js');
+      await fs.promises.writeFile(fingerprintStub, STUB_FINGERPRINT);
+      const easStub = path.join(binDir, 'eas-builds-stub.js');
+      await fs.promises.writeFile(easStub, STUB_EAS);
+
+      for (const dir of [binDir, path.join(projectRoot, 'node_modules', '.bin')]) {
+        await installStubBinAsync(dir, 'fingerprint', fingerprintStub);
+        await installStubBinAsync(dir, 'eas', easStub);
+      }
+      return projectRoot;
+    }
+
+    /** The commands the stub `eas` was asked for, in order. */
+    function easCommands(projectRoot: string): string[] {
+      const logPath = path.join(projectRoot, STUB_EAS_LOG_NAME);
+      if (!fs.existsSync(logPath)) {
+        return [];
+      }
+      return fs
+        .readFileSync(logPath, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => (JSON.parse(line) as { args: string[] }).args[0]!);
+    }
+
+    function iosOf(report: StatusReport) {
+      return report.builds!.platforms.find((platform) => platform.platform === 'ios')!;
+    }
+
+    it('reports both platforms as unknown by default, and never calls eas build:list', async () => {
+      const projectRoot = await setupWithEasAsync();
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(report.builds?.askedEas).toBe(false);
+      expect(report.builds?.platforms.map((platform) => platform.state)).toEqual([
+        'unknown',
+        'unknown',
+      ]);
+      expect(iosOf(report).reason).toContain('--builds');
+      // The auth section still asks `whoami`; the lookup asks nothing. That is the whole promise.
+      expect(easCommands(projectRoot)).toEqual(['whoami']);
+    });
+
+    it('leaves the eas build line out of the human report of a default run', async () => {
+      const projectRoot = await setupWithEasAsync();
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).not.toContain('eas build');
+    });
+
+    it('asks EAS about the per-platform fingerprint with --builds, and reports the hit', async () => {
+      const projectRoot = await setupWithEasAsync();
+
+      const report = await reportInAsync(projectRoot, ['--builds'], {
+        STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
+      });
+
+      expect(report.builds?.askedEas).toBe(true);
+      expect(iosOf(report)).toMatchObject({
+        state: 'found',
+        source: 'eas',
+        buildId: BUILD_ID,
+        buildProfile: 'simulator',
+        createdAt: '2026-08-19T17:37:12.674Z',
+        buildUrl: 'https://expo.dev/artifacts/eas/abc.tar.gz',
+        // The per-platform hash, not `freshness.hash`, which is the project's and is unchanged.
+        fingerprintHash: IOS_HASH,
+      });
+      expect(report.freshness?.hash).toBe(FIXTURE_FINGERPRINT_HASH);
+      expect(
+        report.builds!.platforms.find((platform) => platform.platform === 'android')
+          ?.fingerprintHash
+      ).toBe(ANDROID_HASH);
+    });
+
+    it('pins the argv of the lookup that crossed the process boundary', async () => {
+      const projectRoot = await setupWithEasAsync();
+      await reportInAsync(projectRoot, ['--builds']);
+
+      const invocations = fs
+        .readFileSync(path.join(projectRoot, STUB_EAS_LOG_NAME), 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => (JSON.parse(line) as { args: string[] }).args);
+
+      expect(invocations).toContainEqual([
+        'build:list',
+        '--platform',
+        'ios',
+        '--fingerprint-hash',
+        IOS_HASH,
+        '--status',
+        'finished',
+        '--limit',
+        '1',
+        '--json',
+        '--non-interactive',
+      ]);
+    });
+
+    // The other half of the decision: a hit is written against the *project* fingerprint, so the
+    // next run answers it for free. A cache that still spawned would be no cache at all.
+    it('answers a second run from the cache, spawning no lookup at all', async () => {
+      const projectRoot = await setupWithEasAsync();
+      await reportInAsync(projectRoot, ['--builds'], {
+        STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
+      });
+      await fs.promises.rm(path.join(projectRoot, STUB_EAS_LOG_NAME));
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(iosOf(report)).toMatchObject({ state: 'found', source: 'cache', buildId: BUILD_ID });
+      expect(easCommands(projectRoot)).toEqual(['whoami']);
+    });
+
+    it('stops trusting the cached answer once the project fingerprint moves', async () => {
+      const projectRoot = await setupWithEasAsync();
+      await reportInAsync(projectRoot, ['--builds'], {
+        STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
+      });
+
+      const report = await reportInAsync(projectRoot, [], {
+        STUB_FINGERPRINT_HASH: 'aaaabbbbccccddddeeeeffff0000111122223333',
+      });
+
+      expect(iosOf(report).state).toBe('unknown');
+    });
+
+    it('reports none when EAS answered and has no build for the fingerprint', async () => {
+      const projectRoot = await setupWithEasAsync();
+
+      const report = await reportInAsync(projectRoot, ['--builds']);
+
+      expect(iosOf(report)).toMatchObject({ state: 'none', source: 'eas', reason: expect.any(String) });
+    });
+
+    // The live case: `notesapp` has no EAS link, and the CLI refuses on stdout with exit 1.
+    it('reports a project with no EAS link as unknown, and still exits 0', async () => {
+      const projectRoot = await setupWithEasAsync();
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--json', '--builds', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        {
+          env: {
+            STUB_EAS_BUILD_LIST_EXIT: '1',
+            STUB_EAS_BUILD_LIST_STDOUT:
+              'EAS project not configured. This command cannot configure it in non-interactive mode.',
+          },
+        }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report: StatusReport = JSON.parse(result.stdout);
+      expect(iosOf(report)).toMatchObject({
+        state: 'unknown',
+        reason: 'EAS project not configured. This command cannot configure it in non-interactive mode.',
+      });
+      expect(report.errors).toEqual({});
+    });
+
+    // The auth section already answered this, so the lookup asks nobody a second time.
+    it('reports a signed-out machine as unknown without calling eas build:list', async () => {
+      const projectRoot = await setupWithEasAsync();
+      await fs.promises.writeFile(
+        path.join(projectRoot, '.stub-bin', 'eas-builds-stub.js'),
+        `#!/usr/bin/env node
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+fs.appendFileSync(
+  path.join(process.cwd(), ${JSON.stringify(STUB_EAS_LOG_NAME)}),
+  JSON.stringify({ args: process.argv.slice(2) }) + '\\n'
+);
+process.stderr.write('Not logged in\\n');
+process.exit(1);
+`
+      );
+
+      const report = await reportInAsync(projectRoot, ['--builds']);
+
+      expect(report.auth?.loggedIn).toBe(false);
+      expect(iosOf(report)).toMatchObject({ state: 'unknown' });
+      expect(iosOf(report).reason).toContain('not signed in');
+      expect(easCommands(projectRoot)).toEqual(['whoami']);
+    });
+
+    it('names the download command on the human line and in the follow-ups when the build is stale', async () => {
+      const projectRoot = await setupWithEasAsync();
+      const env = {
+        STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
+        // The project's own recorded build no longer matches, so a rebuild was the alternative.
+        STUB_FINGERPRINT_HASH: 'aaaabbbbccccddddeeeeffff0000111122223333',
+      };
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--builds', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env }
+      );
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('eas build');
+      expect(result.stdout).toContain(`npx eas build:download --build-id ${BUILD_ID}`);
+
+      const report = await reportInAsync(projectRoot, ['--builds'], env);
+      expect(report.followups.map((followup) => followup.id)).toContain('status-cached-build');
     });
   });
 
