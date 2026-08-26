@@ -37,6 +37,8 @@
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
 - [iOS] Resolve the key window from the foregrounded scene in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed a stack overflow crash when converting to JavaScript a `Convertible` value that keeps the default `convertResult` implementation, such as `CMTime`. The value now converts to `undefined` and logs a warning. ([#48266](https://github.com/expo/expo/pull/48266) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Measure hosted React Native views where SwiftUI placed them, instead of at their Yoga box. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Measure hosted React Native views where Jetpack Compose placed them, instead of at their Yoga box. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

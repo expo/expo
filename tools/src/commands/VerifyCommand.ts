@@ -1,7 +1,9 @@
 /**
  * Dispatch expo/expo's `/verify` workflow quietly.
  *
- *   et verify                  dashboard
+ *   et verify                  status (in flight, recent, fork)
+ *   et verify status           same
+ *   et verify dispatch 48780   same as `et verify 48780`
  *   et verify 48780            fix mode follows the comment path (issue yes, PR no)
  *   et verify '#48780'         same; quote the # or the shell eats it
  *   et verify https://github.com/expo/expo/issues/48780
@@ -9,6 +11,7 @@
  *   et verify 48780 --no-fix   force report-only
  *   et verify 48780 --retry    update the thread's previous findings comment in place
  *   et verify 48780 --watch    dispatch, then follow it until it finishes
+ *   et verify 48780 --runner eas   run on EAS Workflows instead of GHA
  *
  * Why this exists rather than commenting `/verify` on the thread: the comment
  * path posts an eyes reaction and a "started" comment, and on a failure a
@@ -18,28 +21,35 @@
  *
  * The command keeps its own argument grammar (subcommands + flags), so it is
  * registered with allowUnknownOption and parses the raw argv itself.
+ *
+ * Since the @expo/verify engine cutover (expo-sandbox-mcp LLP 0020), dispatch,
+ * status, and ls are thin delegations to `npx @expo/verify` running against this
+ * repo's .expo-agents/verify/ profile — the engine is where run resolution and dispatch
+ * live now, shared by every repo that adopts it. Only `roundup` (expo policy:
+ * emoji conventions, verify/ branch scoping, cost tables) still runs here.
  */
 
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 // Used only by `roundup --include-costs` (transcript artifacts land in a
 // temp dir on their way through unzip).
-import { mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+import { getExpoRepositoryRootDir } from '../Directories';
 
 const REPO = 'expo/expo';
-const FORK = 'expo-bot/expo';
-// @ref LLP 0009#cross-repository-rollout — quiet dispatch follows the shared workflow rename.
-const WORKFLOW = 'agent-commands.yml';
-const SYNC_WORKFLOW = 'sync-expo-bot-fork.yml';
-
+// Quiet dispatch targets the thin @expo/verify runner (expo-sandbox-mcp
+// LLP 0020 P1c cutover). The comment path (/verify in a thread) still runs
+// agent-commands.yml until the gate ports into the engine; to dispatch the
+// legacy pipeline manually: gh workflow run agent-commands.yml -f target=N.
+const WORKFLOW = 'verify.yml';
 const HELP = `verify — dispatch expo/expo's /verify workflow without commenting on the thread
 
-  et verify                    dashboard (in progress, recent, fork)
-  et verify dash               same
+  et verify                    status (in flight, recent, fork)
+  et verify status             same
+  et verify dispatch <n>       same as \`et verify <n>\`
   et verify <n>                issue or PR number (also '#<n>' — quote it — or an expo/expo issue/PR URL)
   et verify <n> --fix          force a fix pull request attempt
   et verify <n> --no-fix       force report-only
@@ -48,6 +58,8 @@ const HELP = `verify — dispatch expo/expo's /verify workflow without commentin
                             (falls back to a new comment if none exists;
                             same flag works in comments: "/verify --retry")
   et verify <n> --watch        follow the run until it finishes
+  et verify <n> --runner eas   run on EAS Workflows instead of GitHub Actions
+                            (the engine's --runner; also --dry-run for a shadow run)
   et verify <n> --model fable  override the agent model for this run
                             (fable/opus/sonnet/haiku, or a full claude-* id;
                             default: the workflow's VERIFY_MODEL var, else opus)
@@ -55,154 +67,34 @@ const HELP = `verify — dispatch expo/expo's /verify workflow without commentin
                             --sonnet, --haiku; same flags work in comments:
                             "/verify --fable")
   et verify ls                 what is in flight, and which issue/PR each run is for
-  et verify ls --status success [--limit 10]
-                            finished runs in that state (see verify ls --help)
   et verify roundup            digest of recent agent activity (commands, PRs, comments)
   et verify roundup --period day|week|month|all [--limit n]
                             span for the digest (default week; see verify roundup --help)
 
 Posts nothing to the thread until the findings themselves.`;
 
-// Four-wide capacity. Since 2026-08-14 the workflow enforces it with a FIFO
-// admission step, not per-slot concurrency groups; the modulo "slot" in the
-// logs is only a label. SLOTS mirrors VERIFY_SLOTS/CAP in agent-commands.yml
-// and sizes the dashboard's lane row.
-const SLOTS = 4;
-
-// Jobs are matched by DISPLAY name, which is what the jobs API returns. Both
-// spellings, because a rename does not rewrite history: the workflow's jobs
-// were called "slot" and "verify" until 2026-08-12, and `verify ls` recaps
-// finished runs, so dropping the old names would blank the target and slot on
-// every run from before the rename.
-// @ref LLP 0009#cross-repository-rollout — job names are a cross-repo contract.
-const SLOT_JOB = new Set(['Assign queue slot', 'slot']);
-const COMMAND_JOB = new Set(['Agent command', 'verify']);
-/** Live `status` values vs finished `conclusion` values that `gh run list -s` accepts. */
-const LS_LIVE = new Set(['queued', 'in_progress', 'waiting', 'requested', 'pending']);
-const LS_DONE = new Set([
-  'completed',
-  'success',
-  'failure',
-  'cancelled',
-  'skipped',
-  'timed_out',
-  'action_required',
-  'neutral',
-  'stale',
-  'startup_failure',
-]);
-
-function normalizeLsStatus(raw: string): string {
-  const s = raw.toLowerCase().replace(/-/g, '_');
-  if (s === 'failed' || s === 'fail') return 'failure';
-  if (s === 'canceled') return 'cancelled';
-  if (s === 'running') return 'in_progress';
-  if (s === 'timeout') return 'timed_out';
-  return s;
-}
-
-type LsOpts = { limit: number; status: string | null };
-
-function parseLsArgs(argv: string[]): LsOpts {
-  let limit: number | null = null;
-  let status: string | null = null;
-  for (let i = 0; i < argv.length; i++) {
-    const a = argv[i]!;
-    const eq = a.indexOf('=');
-    const flag = eq === -1 ? a : a.slice(0, eq);
-    const inline = eq === -1 ? undefined : a.slice(eq + 1);
-    const take = (name: string): string => {
-      const v = inline ?? argv[++i];
-      if (v === undefined || v.startsWith('-')) die(`\`${name}\` needs a value (try --help)`);
-      return v;
-    };
-    if (flag === '--limit' || flag === '-L') {
-      const raw = take(flag);
-      if (!/^\d+$/.test(raw) || Number(raw) < 1) die(`'${raw}' is not a positive number`);
-      limit = Number(raw);
-    } else if (flag === '--status' || flag === '-s') {
-      const raw = take(flag);
-      const norm = normalizeLsStatus(raw);
-      if (!LS_LIVE.has(norm) && !LS_DONE.has(norm)) {
-        die(`unknown status '${raw}' (try --help)`);
-      }
-      status = norm;
-    } else if (a.startsWith('-')) {
-      die(`unknown flag: ${a} (try --help)`);
-    } else {
-      die(`unexpected argument: ${a} (try --help)`);
-    }
-  }
-  return { limit: limit ?? 20, status };
-}
-
-type Run = {
-  databaseId: number;
-  status: string;
-  conclusion: string | null;
-  createdAt: string;
-  updatedAt: string;
-  event: string;
-  displayTitle: string;
-};
-
 const LS_HELP = `verify ls — verifications currently running or queued
 
-  et verify ls
-  et verify ls --limit 10
-  et verify ls --status success
-  et verify ls -L 5 -s failure
+  et verify ls                 one line per in-flight run: state, age, title, URL
 
-  ● in progress  22m  #46039  issue  [expo-image] iOS: <Image> does not…
-    ↳ Run verification (12/21) · 22m in step · slot 3 · @brentvatne · run 31546334281
+The title carries the target ("verify #48780 — actor") for runs dispatched
+since the @expo/verify cutover; older runs show the bare workflow name.
 
-  ● running · ◌ queued          elapsed is since the run was created
-  #number                       the issue or PR being verified (clickable)
-  ↳ step (n/total)              where the verify job has got to, and how
-                                long it has been on that step
-  slot k                        which concurrency slot it holds
-  @user                         who kicked the run off (dispatch or comment)
+Capacity is enforced server-side now: the scoped-token mint holds one slot
+per target (a second dispatch for a target with a run in flight is refused)
+and caps runs deployment-wide, sized to the sandbox pool. There is no
+per-slot concurrency group anymore. Runs appear here within seconds of
+dispatch; \`et verify status\` shows recent finished runs too.`;
 
-  --limit, -L <n>               how many runs to show (default 20).
-  --status, -s <state>          only runs in that state. Live: queued,
-                                in_progress, waiting, requested, pending.
-                                Finished: success, failure, cancelled, skipped,
-                                timed_out, action_required, neutral, stale,
-                                startup_failure, completed. Hyphens and
-                                running/failed/canceled/timeout are accepted.
-                                Bare \`verify ls\` is in-flight only; pass
-                                --status success (or failure, …) for a recap.
-
-SLOTS. GitHub Actions has no "at most N concurrent" setting — a concurrency
-group runs exactly ONE job at a time. So there are ${SLOTS} groups, and a run is
-assigned one by target number modulo ${SLOTS}. That is what caps verifications at
-${SLOTS} at once, which matters because each run holds two sandboxes against a
-20-sandbox E2B account.
-
-The header shows occupancy, bold for busy. Two consequences worth knowing:
-
-  · Assignment is by NUMBER, not availability, so a run can queue while a
-    slot sits idle — two issues sharing a remainder wait on each other even
-    when there is capacity. The upside is that one issue always maps to one
-    slot, so a second /verify on it serialises behind the first instead of
-    racing it for the same sandboxes.
-
-  · A group holds at most ONE pending run. A third arrival into a busy slot
-    cancels the one already waiting. Nothing is spent — a dropped pending run
-    never started — but it is not an unbounded queue, and under a burst some
-    dispatches are dropped rather than delayed.`;
-
-const DASH_HELP = `verify dashboard — one screen to see if verification is healthy
+const STATUS_HELP = `verify status — one screen to see if verification is healthy
 
   et verify
-  et verify dash
-  et verify d | dashboard
+  et verify status
 
 Shows every run still in flight (and any that are queued), a tally plus the
 latest finished runs (skipped comment-gate jobs hidden), how far
 expo-bot/expo is behind expo/expo main, and the last fork-sync job if that
-workflow exists. For a longer recap use \`verify ls --status success\`
-(or failure, …).`;
+workflow exists. In flight and recent runs come from the engine (\`verify status\`).`;
 
 const ROUNDUP_HELP = `verify roundup — digest of recent agent activity on ${REPO}
 
@@ -900,14 +792,6 @@ async function showRoundup({ period, limit, json, costs }: RoundupOpts): Promise
   );
 }
 
-type Job = {
-  name: string;
-  id: number;
-  status: string;
-  conclusion: string | null;
-  steps: { name: string; status: string; started_at: string | null }[];
-};
-
 /**
  * OSC 8 hyperlink — what `terminal-link` does, without the dependency.
  * Terminals that do not understand the escape simply render the label, so
@@ -926,46 +810,10 @@ function clip(text: string, max: number): string {
   return text.length <= max ? text : `${text.slice(0, max - 1).trimEnd()}…`;
 }
 
-/** Word-wrap plain text. Wrap before styling — a half-open OSC 8 leaks the rest of the line. */
-function wrapText(text: string, width: number): string[] {
-  if (width < 1) return [text];
-  if (text.length <= width) return [text];
-  const lines: string[] = [];
-  let rest = text.trim();
-  while (rest.length > width) {
-    let cut = rest.lastIndexOf(' ', width);
-    if (cut < 1) cut = width;
-    lines.push(rest.slice(0, cut).trimEnd());
-    rest = rest.slice(cut).trimStart();
-  }
-  if (rest) lines.push(rest);
-  return lines.length > 0 ? lines : [text];
-}
-
 function die(message: string): never {
   spinner?.stop();
   console.error(`verify: ${message}`);
   process.exit(1);
-}
-
-/** Accept 48780, #48780, or https://github.com/expo/expo/issues/48780 (pull/ too). */
-function parseTarget(raw: string): string {
-  const s = raw.trim();
-  const url = s.match(
-    /^(?:https?:\/\/)?(?:www\.)?github\.com\/([^/]+)\/([^/]+)\/(?:issues|pulls?)\/(\d+)(?:[/?#].*)?$/i
-  );
-  if (url) {
-    const nwo = `${url[1]}/${url[2]}`;
-    if (nwo.toLowerCase() !== REPO.toLowerCase()) {
-      die(`that URL is ${nwo}#${url[3]}; this command only dispatches ${REPO}`);
-    }
-    return url[3]!;
-  }
-  const n = s.replace(/^#/, '');
-  if (!/^\d+$/.test(n)) {
-    die(`'${raw}' is not an issue/PR number or an ${REPO} URL (try --help)`);
-  }
-  return n;
 }
 
 /**
@@ -1037,178 +885,6 @@ async function run(...cmd: string[]): Promise<string> {
   }
 }
 
-const RUN_JSON = 'databaseId,status,conclusion,createdAt,updatedAt,event,displayTitle';
-
-async function listRuns(
-  limit: number,
-  status?: string,
-  workflow = WORKFLOW,
-  event?: string
-): Promise<Run[]> {
-  const cmd = [
-    'gh',
-    'run',
-    'list',
-    '--repo',
-    REPO,
-    '--workflow',
-    workflow,
-    '--limit',
-    String(limit),
-    '--json',
-    RUN_JSON,
-  ];
-  if (status) cmd.push('--status', status);
-  if (event) cmd.push('--event', event);
-  const raw = await run(...cmd).catch((e) =>
-    die(`could not list runs: ${e instanceof Error ? e.message : e}`)
-  );
-  return JSON.parse(raw) as Run[];
-}
-
-const COMMENT_DONE = ['success', 'failure', 'cancelled', 'timed_out'] as const;
-
-/** Recent verify commands only. GitHub lists by created-at, has no
- *  updated-at order, and filters by exactly one status per request. So:
- *  no status → in-flight runs only, one fetch per live status (exact, so
- *  a fresh completed run can never crowd an old live run out of the
- *  limit); `completed` → the dispatch stream plus comment *outcomes*
- *  (not `completed`, which is almost all skip-gates); any other status →
- *  both event streams for that status. Merged by last update. */
-async function listVerifyRuns(limit: number, status?: string): Promise<Run[]> {
-  const fetches: Promise<Run[]>[] = [];
-  if (!status) {
-    for (const s of LS_LIVE) fetches.push(listRuns(limit, s));
-  } else if (status === 'completed') {
-    fetches.push(listRuns(limit, status, WORKFLOW, 'workflow_dispatch'));
-    for (const s of COMMENT_DONE) fetches.push(listRuns(limit, s, WORKFLOW, 'issue_comment'));
-  } else {
-    fetches.push(listRuns(limit, status, WORKFLOW, 'workflow_dispatch'));
-    fetches.push(listRuns(limit, status, WORKFLOW, 'issue_comment'));
-  }
-  const batches = await Promise.all(fetches);
-  const byId = new Map<number, Run>();
-  for (const r of batches.flat()) byId.set(r.databaseId, r);
-  return [...byId.values()]
-    .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
-    .slice(0, limit);
-}
-
-type Resolved = Run & {
-  target: string | null;
-  slot: string | null;
-  what: string;
-  kind: 'PR' | 'issue' | null;
-  title: string;
-  mins: number;
-  step: string | null;
-  stepMins: number | null;
-  /** Command-job result when we have it. The workflow is continue-on-error
-   *  so salvage/upload can run; `gh run list` then reports the run as
-   *  success even when the agent job failed. */
-  outcome: string | null;
-  actor: string | null;
-};
-
-async function resolveRun(r: Run): Promise<Resolved> {
-  let target: string | null = null;
-  let slot: string | null = null;
-  let step: string | null = null;
-  let stepMins: number | null = null;
-  let commandConclusion: string | null = null;
-  let actor: string | null = null;
-  try {
-    const [jobsRaw, who] = await Promise.all([
-      run(
-        'gh',
-        'api',
-        `repos/${REPO}/actions/runs/${r.databaseId}/jobs`,
-        '--jq',
-        '[.jobs[] | {name, id, status, conclusion, steps: [.steps[] | {name, status, started_at}]}]'
-      ),
-      run(
-        'gh',
-        'api',
-        `repos/${REPO}/actions/runs/${r.databaseId}`,
-        '--jq',
-        '.triggering_actor.login // .actor.login // empty'
-      ).catch(() => ''),
-    ]);
-    actor = who || null;
-    const jobs = JSON.parse(jobsRaw) as Job[];
-    const vj = jobs.find((x) => COMMAND_JOB.has(x.name));
-    commandConclusion = vj?.conclusion ?? null;
-    const cur = vj?.steps.find((x) => x.status === 'in_progress');
-    if (cur) {
-      const idx = vj!.steps.findIndex((x) => x.name === cur.name) + 1;
-      step = `${cur.name} (${idx}/${vj!.steps.length})`;
-      if (cur.started_at) stepMins = Math.round((Date.now() - Date.parse(cur.started_at)) / 60000);
-    }
-    const slotJob = jobs.find((j) => SLOT_JOB.has(j.name) && j.status === 'completed');
-    if (slotJob) {
-      const log = await run('gh', 'api', `repos/${REPO}/actions/jobs/${slotJob.id}/logs`);
-      const m = log.match(/target (\d+) -> slot (\d+)/);
-      if (m) {
-        target = m[1]!;
-        slot = m[2]!;
-      }
-    }
-  } catch {
-    /* fall through to unknown */
-  }
-
-  let kind: 'PR' | 'issue' | null = null;
-  let title = '';
-  if (target) {
-    try {
-      const meta = JSON.parse(
-        await run(
-          'gh',
-          'api',
-          `repos/${REPO}/issues/${target}`,
-          '--jq',
-          '{isPR: (.pull_request != null), title}'
-        )
-      ) as { isPR: boolean; title: string };
-      kind = meta.isPR ? 'PR' : 'issue';
-      title = meta.title;
-    } catch {
-      /* leave blank; the caller falls back to displayTitle */
-    }
-  }
-  const what = kind ? `${kind === 'PR' ? 'PR   ' : 'issue'}  ${clip(title, 58)}` : '';
-  const end = r.status === 'completed' ? Date.parse(r.updatedAt) : Date.now();
-  const mins = Math.round((end - Date.parse(r.createdAt)) / 60000);
-  const outcome =
-    commandConclusion === 'failure' ||
-    commandConclusion === 'timed_out' ||
-    commandConclusion === 'cancelled' ||
-    commandConclusion === 'startup_failure'
-      ? commandConclusion
-      : r.conclusion;
-  return { ...r, target, slot, what, kind, title, mins, step, stepMins, outcome, actor };
-}
-
-/** Newest run id for the workflow, or null when there are none yet. */
-async function latestRunId(): Promise<string | null> {
-  const id = await run(
-    'gh',
-    'run',
-    'list',
-    '--repo',
-    REPO,
-    '--workflow',
-    WORKFLOW,
-    '--limit',
-    '1',
-    '--json',
-    'databaseId',
-    '--jq',
-    '.[0].databaseId // empty'
-  ).catch(() => '');
-  return id || null;
-}
-
 /** Colour when stdout is a TTY, or FORCE_COLOR=1. Honours NO_COLOR. */
 const USE_COLOR =
   process.env.NO_COLOR !== '1' &&
@@ -1232,7 +908,7 @@ export default (program: Command) => {
     .command('verify [args...]')
     .allowUnknownOption()
     .description(
-      "Dispatch expo/expo's /verify workflow quietly, or inspect verification runs (dash / ls / roundup)."
+      "Dispatch expo/expo's /verify workflow quietly, or inspect verification runs (status / ls / roundup)."
     )
     .on('--help', () => {
       console.log();
@@ -1254,8 +930,40 @@ async function actionAsync(): Promise<void> {
 function contextHelp(argv: string[]): string {
   if (argv.includes('ls') || argv.includes('list')) return LS_HELP;
   if (argv.includes('roundup')) return ROUNDUP_HELP;
-  if (argv.includes('d') || argv.includes('dash') || argv.includes('dashboard')) return DASH_HELP;
+  if (argv.includes('status')) return STATUS_HELP;
   return HELP;
+}
+
+// The engine that owns dispatch/status/ls now: @expo/verify, pinned to the
+// same version the repo's verify.yml runs (expo-sandbox-mcp LLP 0020 / the
+// engine's LLP 0001). et verify keeps its entry point and grammar; these
+// subcommands exec the engine with the repo's .expo-agents/verify/ profile. roundup
+// stays native here — it is expo policy (emoji conventions, branch scoping,
+// cost tables) the engine has not absorbed yet.
+const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.9.1';
+
+async function delegateToEngine(engineArgs: string[]): Promise<never> {
+  // The profile's home is .expo-agents/verify/ (engine 0.9.0); the engine itself
+  // falls back to a legacy .verify/, and so does this.
+  const root = getExpoRepositoryRootDir();
+  const configDir =
+    ['.expo-agents/verify', '.verify']
+      .map((dir) => join(root, dir))
+      .find((dir) => existsSync(join(dir, 'config.jsonc'))) ?? join(root, '.expo-agents/verify');
+  const result = await spawnAsync(
+    'npx',
+    [
+      '--yes',
+      '-p',
+      `@expo/verify@${ENGINE_VERSION}`,
+      'verify',
+      ...engineArgs,
+      '--config-dir',
+      configDir,
+    ],
+    { stdio: 'inherit' }
+  ).catch((error: { status?: number }) => ({ status: error.status ?? 1 }));
+  process.exit(result.status ?? 0);
 }
 
 async function main(args: string[]): Promise<void> {
@@ -1268,8 +976,7 @@ async function main(args: string[]): Promise<void> {
       console.log(LS_HELP);
       return;
     }
-    await listInFlight(parseLsArgs(args.slice(1)));
-    return;
+    await delegateToEngine(['ls']);
   }
 
   if (args[0] === 'roundup') {
@@ -1281,21 +988,19 @@ async function main(args: string[]): Promise<void> {
     return;
   }
 
-  if (args[0] === 'd' || args[0] === 'dash' || args[0] === 'dashboard') {
+  if (args[0] === 'status') {
     if (wantsHelp) {
-      console.log(DASH_HELP);
+      console.log(STATUS_HELP);
       return;
     }
     if (args.slice(1).some((a) => a !== '-h' && a !== '--help')) {
-      die('dashboard takes no extra arguments (try --help)');
+      die('status takes no extra arguments (try --help)');
     }
-    await showDashboard();
-    return;
+    await delegateToEngine(['status']);
   }
 
   if (args.length === 0) {
-    await showDashboard();
-    return;
+    await delegateToEngine(['status']);
   }
 
   if (wantsHelp) {
@@ -1303,611 +1008,15 @@ async function main(args: string[]): Promise<void> {
     return;
   }
 
-  await dispatchAsync(args);
-}
-
-function ageMins(iso: string): number {
-  return Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
+  // Dispatch grammar is identical between et verify and the engine
+  // (target forms, --fix/--no-fix, --retry, --watch, --model/shorthands),
+  // so argv passes through; the engine's target parser refuses non-expo
+  // URLs exactly as parseTarget() did. `et verify dispatch <n>` and
+  // `et verify <n>` are the same command.
+  const dispatchArgs = args[0] === 'dispatch' ? args.slice(1) : args;
+  await delegateToEngine(['dispatch', ...dispatchArgs]);
 }
 
 function paint(code: string, s: string): string {
   return USE_COLOR ? `\x1b[${code}m${s}\x1b[0m` : s;
-}
-
-/** Visible columns, ignoring CSI colour and OSC 8 hyperlinks. */
-function visibleWidth(s: string): number {
-  return s.replace(/\x1b\]8;;[^\x07]*\x07/g, '').replace(/\x1b\[[0-9;]*m/g, '').length;
-}
-
-function padVisible(s: string, width: number): string {
-  const w = visibleWidth(s);
-  if (w === width) return s;
-  if (w < width) return s + ' '.repeat(width - w);
-  return clipVisible(s, width);
-}
-
-function padStartVisible(s: string, width: number): string {
-  const w = visibleWidth(s);
-  if (w === width) return s;
-  if (w < width) return ' '.repeat(width - w) + s;
-  return clipVisible(s, width);
-}
-
-function clipVisible(s: string, width: number): string {
-  if (visibleWidth(s) <= width) return s;
-  // Strip markup, clip the readable text — wrapping a half-open OSC 8 would
-  // leak the rest of the line as a link.
-  const plain = s.replace(/\x1b\]8;;[^\x07]*\x07/g, '').replace(/\x1b\[[0-9;]*m/g, '');
-  return clip(plain, width);
-}
-
-/** OSC 8 when the terminal can use it; never dumps the URL into the layout. */
-function href(label: string, url: string): string {
-  if (process.stdout.isTTY !== true) return label;
-  return `\x1b]8;;${url}\x07${label}\x1b]8;;\x07`;
-}
-
-function dashIssue(target: string | null): string {
-  if (!target) return ui.mute('#?');
-  return href(`#${target}`, `https://github.com/${REPO}/issues/${target}`);
-}
-
-function dashRun(label: string, id: number): string {
-  return href(label, `https://github.com/${REPO}/actions/runs/${id}`);
-}
-
-function actorLink(login: string | null, width = 16): string {
-  const raw = login ? `@${login}` : '—';
-  const label = clip(raw, width);
-  const painted = login ? href(ui.mute(label), `https://github.com/${login}`) : ui.mute(label);
-  return padVisible(painted, width);
-}
-
-function fmtAge(mins: number): string {
-  if (mins < 1) return '<1m';
-  if (mins < 60) return `${mins}m`;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  // Always `2h05m` so a column of mixed hours lines up; `2h` would
-  // collapse to a different width than `2h25m`.
-  return `${h}h${String(m).padStart(2, '0')}m`;
-}
-
-/** Ceiling to a short window label: `47m`, `6h`, `2d`. */
-function fmtSpan(mins: number): string {
-  if (mins < 60) return `${Math.max(1, mins)}m`;
-  const h = Math.ceil(mins / 60);
-  if (h < 48) return `${h}h`;
-  return `${Math.ceil(h / 24)}d`;
-}
-
-function parseStep(step: string | null): { name: string; at: number; of: number } | null {
-  if (!step) return null;
-  const m = step.match(/^(.*) \((\d+)\/(\d+)\)$/);
-  if (!m) return { name: step, at: 0, of: 0 };
-  return { name: m[1]!, at: Number(m[2]), of: Number(m[3]) };
-}
-
-/** Thin track. Filled units use the supplied painter. */
-function track(filled: number, total: number, width: number, ink: (s: string) => string): string {
-  if (total <= 0) return ui.faint('─'.repeat(width));
-  const n = Math.max(0, Math.min(width, Math.round((filled / total) * width)));
-  return ink('━'.repeat(n)) + ui.faint('─'.repeat(width - n));
-}
-
-function dashWidth(): number {
-  const cols = process.stdout.columns ?? 80;
-  // Leave 2 columns for the indent so an 80-wide tty does not wrap the box.
-  // script(1) and some CI ttys report a toy width; don't collapse the card.
-  const usable = (cols < 60 ? 72 : Math.min(84, cols)) - 2;
-  return Math.max(54, usable);
-}
-
-type ForkInfo =
-  | { kind: 'even' }
-  | { kind: 'behind'; n: number }
-  | { kind: 'ahead'; n: number }
-  | { kind: 'diverged'; behind: number; ahead: number }
-  | { kind: 'unknown' };
-
-type SyncInfo =
-  | { kind: 'ok' | 'fail' | 'running'; mins: number; id: number; label: string }
-  | { kind: 'none' }
-  | { kind: 'missing' };
-
-async function showDashboard(): Promise<void> {
-  const spin = new Spinner();
-  spin.start('assembling dashboard');
-
-  const [liveRaw, doneRaw, fork, sync] = await Promise.all([
-    listVerifyRuns(30),
-    listVerifyRuns(20, 'completed'),
-    (async (): Promise<ForkInfo> => {
-      try {
-        const cmp = JSON.parse(
-          await run(
-            'gh',
-            'api',
-            `repos/${REPO}/compare/main...expo-bot:main`,
-            '--jq',
-            '{ahead_by,behind_by}'
-          )
-        ) as { ahead_by: number; behind_by: number };
-        if (cmp.behind_by === 0 && cmp.ahead_by === 0) return { kind: 'even' };
-        if (cmp.behind_by > 0 && cmp.ahead_by > 0) {
-          return { kind: 'diverged', behind: cmp.behind_by, ahead: cmp.ahead_by };
-        }
-        if (cmp.behind_by > 0) return { kind: 'behind', n: cmp.behind_by };
-        return { kind: 'ahead', n: cmp.ahead_by };
-      } catch {
-        return { kind: 'unknown' };
-      }
-    })(),
-    (async (): Promise<SyncInfo> => {
-      try {
-        const rows = JSON.parse(
-          await run(
-            'gh',
-            'run',
-            'list',
-            '--repo',
-            REPO,
-            '--workflow',
-            SYNC_WORKFLOW,
-            '--limit',
-            '1',
-            '--json',
-            'status,conclusion,updatedAt,databaseId'
-          )
-        ) as {
-          status: string;
-          conclusion: string | null;
-          updatedAt: string;
-          databaseId: number;
-        }[];
-        const s = rows[0];
-        if (!s) return { kind: 'none' };
-        const mins = ageMins(s.updatedAt);
-        if (s.status !== 'completed') {
-          return { kind: 'running', mins, id: s.databaseId, label: s.status.replace('_', ' ') };
-        }
-        const fail =
-          s.conclusion === 'failure' ||
-          s.conclusion === 'timed_out' ||
-          s.conclusion === 'startup_failure';
-        return {
-          kind: fail ? 'fail' : 'ok',
-          mins,
-          id: s.databaseId,
-          label: s.conclusion ?? 'done',
-        };
-      } catch {
-        return { kind: 'missing' };
-      }
-    })(),
-  ]);
-
-  // Titles need a resolve; the tally bar can stay on the unresolved rest.
-  const preview = doneRaw.slice(0, 8);
-  spin.set(
-    `resolving ${liveRaw.length + preview.length} run${liveRaw.length + preview.length === 1 ? '' : 's'}`
-  );
-  const [live, recent] = await Promise.all([
-    Promise.all(liveRaw.map(resolveRun)),
-    Promise.all(preview.map(resolveRun)),
-  ]);
-
-  const counts = { success: 0, failure: 0, cancelled: 0, other: 0 };
-  const seen = new Map(recent.map((r) => [r.databaseId, r.outcome]));
-  for (const r of doneRaw) {
-    const c = seen.get(r.databaseId) ?? r.conclusion;
-    if (c === 'success') counts.success++;
-    else if (c === 'failure' || c === 'timed_out' || c === 'startup_failure') {
-      counts.failure++;
-    } else if (c === 'cancelled') counts.cancelled++;
-    else counts.other++;
-  }
-
-  spin.stop();
-  renderDashboard({ live, done: doneRaw, recent, counts, fork, sync });
-}
-
-function forkLine(fork: ForkInfo): string {
-  switch (fork.kind) {
-    case 'even':
-      return ui.ok('even with main');
-    case 'behind':
-      return ui.bad(`${fork.n} behind main`);
-    case 'ahead':
-      return ui.warn(`${fork.n} ahead of main`);
-    case 'diverged':
-      return ui.bad(`${fork.behind} behind, ${fork.ahead} ahead`);
-    case 'unknown':
-      return ui.mute('unknown');
-  }
-}
-
-function syncLine(sync: SyncInfo): string {
-  switch (sync.kind) {
-    case 'ok':
-      return `${dashRun(ui.ok('ok'), sync.id)}  ${ui.mute(`${fmtAge(sync.mins)} ago`)}`;
-    case 'fail':
-      return `${dashRun(ui.bad(sync.label), sync.id)}  ${ui.mute(`${fmtAge(sync.mins)} ago`)}`;
-    case 'running':
-      return `${dashRun(ui.warn(sync.label), sync.id)}  ${ui.mute(fmtAge(sync.mins))}`;
-    case 'none':
-      return ui.mute('no runs yet');
-    case 'missing':
-      return ui.mute('not on main');
-  }
-}
-
-function renderDashboard(d: {
-  live: Resolved[];
-  done: Run[];
-  recent: Resolved[];
-  counts: { success: number; failure: number; cancelled: number; other: number };
-  fork: ForkInfo;
-  sync: SyncInfo;
-}): void {
-  const boxW = dashWidth();
-  const inner = boxW - 4; // │␠ … ␠│
-  const indent = '  ';
-
-  // No target yet = slot job has not spoken (or never will: a findings
-  // comment retriggers this workflow and skip-exits). Those flash as
-  // `#?` + the issue title and look like a third verify.
-  const known = d.live.filter((r) => r.target);
-  const running = known.filter((r) => r.status === 'in_progress');
-  const queued = known.filter((r) => r.status !== 'in_progress');
-  const ordered = [
-    ...running.sort((a, b) => b.mins - a.mins),
-    ...queued.sort((a, b) => b.mins - a.mins),
-  ];
-
-  const card: string[] = [];
-  if (ordered.length === 0) {
-    card.push(ui.faint('none'));
-  }
-  for (const r of ordered) {
-    const live = r.status === 'in_progress';
-    const runUrl = `https://github.com/${REPO}/actions/runs/${r.databaseId}`;
-    const dot = href(live ? ui.ok('●') : ui.warn('◌'), runUrl);
-    const who = ui.accent(dashIssue(r.target));
-    const run = dashRun(ui.accent(String(r.databaseId)), r.databaseId);
-    const age = ui.mute(fmtAge(r.mins).padStart(4));
-    const parsed = parseStep(r.step);
-    let progress = live ? ui.faint('starting…') : ui.warn('queued');
-    if (live && parsed && parsed.of > 0) {
-      const bar = track(parsed.at, parsed.of, 10, ui.ok);
-      progress = `${bar}  ${ui.mute(`${parsed.at}/${parsed.of}`)}`;
-    }
-    card.push(`${dot}  ${padVisible(who, 7)}  ${run}  ${actorLink(r.actor)}  ${age}  ${progress}`);
-    const label = r.title || r.what || r.displayTitle;
-    if (label) {
-      for (const part of wrapText(label, inner - 3)) {
-        card.push(`   ${href(ui.mute(part), runUrl)}`);
-      }
-    }
-  }
-
-  const capBits = [
-    running.length ? `${running.length} running` : null,
-    queued.length ? `${queued.length} queued` : null,
-  ].filter((x): x is string => x !== null);
-  const cap = capBits.length ? `in progress:  ${capBits.join(' · ')}` : 'in progress:';
-  const rule = Math.max(1, boxW - 5 - visibleWidth(cap));
-  const row = (line: string): string =>
-    `${indent}${ui.faint('│ ')}${padVisible(line, inner)}${ui.faint(' │')}`;
-  console.log();
-  console.log(
-    `${indent}${ui.faint('╭─ ')}${ui.mute(cap)}${ui.faint(' ' + '─'.repeat(rule) + '╮')}`
-  );
-  console.log(row(''));
-  for (const line of card) console.log(row(line));
-  console.log(row(''));
-  const keyW = Math.max(visibleWidth(FORK), 4);
-  const foot = [
-    `${ui.mute(FORK.padEnd(keyW))}  ${forkLine(d.fork)}`,
-    `${ui.mute('sync'.padEnd(keyW))}  ${syncLine(d.sync)}`,
-  ];
-  console.log(`${indent}${ui.faint('├' + '─'.repeat(boxW - 2) + '┤')}`);
-  console.log(row(''));
-  for (const line of foot) console.log(row(line));
-  console.log(row(''));
-  console.log(`${indent}${ui.faint('╰' + '─'.repeat(boxW - 2) + '╯')}`);
-
-  if (d.done.length > 0) {
-    console.log();
-    const bits = [
-      d.counts.success ? ui.ok(`${d.counts.success} passed`) : null,
-      d.counts.failure ? ui.bad(`${d.counts.failure} failed`) : null,
-      d.counts.cancelled ? ui.mute(`${d.counts.cancelled} cancelled`) : null,
-      d.counts.other ? ui.warn(`${d.counts.other} other`) : null,
-    ].filter((x): x is string => x !== null);
-    const oldest = d.done[d.done.length - 1];
-    const span = oldest ? fmtSpan(ageMins(oldest.updatedAt)) : null;
-    const recentRows = d.recent.filter((r) => r.target);
-    const recentLine = (
-      mark: string,
-      issue: string,
-      run: string,
-      actor: string,
-      ago: string,
-      took: string,
-      title: string
-    ): string =>
-      `${indent}${mark}  ${padVisible(issue, 7)}  ${padVisible(run, 11)}  ${padVisible(actor, 16)}  ${padStartVisible(ago, 6)}  ${padStartVisible(took, 6)}  ${title}`;
-    const capLeft = `${indent}${ui.mute(span ? `recent · ${span}` : 'recent')}`;
-    const capRight = bits.join(ui.faint(' · '));
-    const capGap = Math.max(
-      2,
-      boxW + indent.length - visibleWidth(capLeft) - visibleWidth(capRight)
-    );
-    console.log(`${capLeft}${' '.repeat(capGap)}${capRight}`);
-    console.log();
-    if (recentRows.length > 0) {
-      console.log(ui.faint(recentLine(' ', 'issue', 'run', 'by', 'ago', 'took', 'title')));
-      for (const r of recentRows) {
-        const mark =
-          r.outcome === 'success'
-            ? ui.ok('✓')
-            : r.outcome === 'cancelled'
-              ? ui.mute('⊘')
-              : ui.bad('✗');
-        const runUrl = `https://github.com/${REPO}/actions/runs/${r.databaseId}`;
-        const glyph = href(mark, runUrl);
-        const label = r.title || r.what || r.displayTitle;
-        const prefix = recentLine(
-          glyph,
-          ui.accent(dashIssue(r.target)),
-          dashRun(ui.accent(String(r.databaseId)), r.databaseId),
-          actorLink(r.actor),
-          ui.mute(fmtAge(ageMins(r.updatedAt))),
-          ui.mute(fmtAge(r.mins)),
-          ''
-        );
-        const room = Math.max(12, boxW + indent.length - visibleWidth(prefix));
-        console.log(prefix + href(ui.mute(clip(label, room)), runUrl));
-      }
-    }
-  }
-
-  console.log();
-}
-
-/**
- * What is currently running or queued, and what each run is for.
- *
- * A run does not advertise its target: `issue_comment` runs carry the issue
- * TITLE in display_title and dispatched runs carry the workflow name, and
- * neither exposes the number. The slot job does — it echoes
- * "target <n> -> slot <k>" — and it finishes in seconds while the command job
- * is still going, so its log is readable for the whole life of the run. That
- * is the only reliable source, so a run whose slot job has not finished yet is
- * reported honestly as unknown rather than guessed at from the title.
- */
-async function listInFlight(opts: LsOpts): Promise<void> {
-  const spin = new Spinner();
-  spin.start('looking for verification runs');
-  const selected = await listVerifyRuns(opts.limit, opts.status ?? undefined);
-  const live = !opts.status || LS_LIVE.has(opts.status);
-
-  if (selected.length === 0) {
-    spin.stop(
-      opts.status ? `no verification runs with status ${opts.status}` : 'no verifications in flight'
-    );
-    return;
-  }
-
-  spin.set(`resolving ${selected.length} run${selected.length === 1 ? '' : 's'}`);
-  const resolved = await Promise.all(selected.map(resolveRun));
-
-  spin.stop();
-  if (live) {
-    const busy = new Set(resolved.map((r) => r.slot).filter(Boolean));
-    console.log(
-      `${resolved.length} in flight · slots ${[...Array(SLOTS).keys()]
-        .map((i) => (busy.has(String(i)) ? `\x1b[1m${i}\x1b[0m` : `\x1b[2m${i}\x1b[0m`))
-        .join(' ')} (bold = busy)\n`
-    );
-  } else {
-    console.log(`\x1b[2m${opts.status}\x1b[0m`);
-  }
-
-  // Longest-running first when watching live work: the run most likely to
-  // need attention — or to be near its 150-minute cap — is at the top.
-  const rows = live ? resolved.sort((a, b) => b.mins - a.mins) : resolved;
-  for (const r of rows) {
-    const age = `${r.mins}m`.padStart(4);
-    // GitHub redirects /issues/<n> to the pull request when the number is one,
-    // so a single URL shape works for both.
-    const who = r.target
-      ? link(`#${r.target}`, `https://github.com/${REPO}/issues/${r.target}`)
-      : '#?????';
-    const runLink = link(
-      `run ${r.databaseId}`,
-      `https://github.com/${REPO}/actions/runs/${r.databaseId}`
-    );
-    if (live) {
-      const mark = r.status === 'in_progress' ? '●' : '◌';
-      console.log(
-        `  ${mark} ${r.status.replace('_', ' ').padEnd(11)} ${age}  ${who}  ${r.what || clip(r.displayTitle, 58)}`
-      );
-      const detail = r.step
-        ? `${r.step}${r.stepMins !== null ? ` · ${r.stepMins}m in step` : ''}`
-        : 'waiting for a free slot';
-      const by = r.actor ? ` · ${link(`@${r.actor}`, `https://github.com/${r.actor}`)}` : '';
-      console.log(`    \x1b[2m↳ ${detail} · slot ${r.slot ?? '?'}${by} · ${runLink}\x1b[0m`);
-    } else {
-      const mark =
-        r.outcome === 'success'
-          ? '\x1b[32m✓\x1b[0m'
-          : r.outcome === 'cancelled'
-            ? '\x1b[2m⊘\x1b[0m'
-            : '\x1b[31m✗\x1b[0m';
-      const by = r.actor ? link(`@${r.actor}`, `https://github.com/${r.actor}`) : '';
-      console.log(
-        `  ${mark} ${(r.outcome ?? '?').padEnd(11)} ${age}  ${who}  ${r.what || clip(r.displayTitle, 58)}`
-      );
-      console.log(`    \x1b[2m↳ ${by ? `${by} · ` : ''}${runLink}\x1b[0m`);
-    }
-  }
-}
-
-// Short names for the models people actually type; anything already shaped
-// like a full id passes through so new releases need no code change here.
-const MODEL_ALIASES: Record<string, string> = {
-  fable: 'claude-fable-5',
-  opus: 'claude-opus-5',
-  sonnet: 'claude-sonnet-5',
-  haiku: 'claude-haiku-4-5-20251001',
-};
-
-function resolveModel(name: string): string {
-  const alias = MODEL_ALIASES[name.toLowerCase()];
-  if (alias !== undefined) return alias;
-  if (name.startsWith('claude-')) return name;
-  die(`unknown model: ${name} (use ${Object.keys(MODEL_ALIASES).join('/')} or a full claude-* id)`);
-}
-
-async function dispatchAsync(args: string[]): Promise<void> {
-  let target = '';
-  // auto matches the comment path: an issue gets a fix attempt, a pull request
-  // does not. Passing false here instead would mean `et verify <issue>` silently
-  // behaved differently from commenting `/verify` on that same issue.
-  let fix: 'auto' | 'yes' | 'no' = 'auto';
-  let watch = false;
-  let retry = false;
-  let model: string | undefined;
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === undefined) continue;
-    if (arg === '--fix') fix = 'yes';
-    else if (arg === '--no-fix') fix = 'no';
-    else if (arg === '--retry') retry = true;
-    else if (arg === '--watch') watch = true;
-    else if (arg === '--model') {
-      const value = args[++i];
-      if (value === undefined) die('--model needs a value (try --help)');
-      model = resolveModel(value);
-    } else if (arg.startsWith('--model=')) {
-      model = resolveModel(arg.slice('--model='.length));
-    } else if (MODEL_ALIASES[arg.slice(2)] !== undefined) {
-      // Per-model shorthand, mirroring the comment path: --fable, --opus, …
-      model = MODEL_ALIASES[arg.slice(2)];
-    } else if (arg.startsWith('-')) die(`unknown flag: ${arg} (try --help)`);
-    else target = parseTarget(arg);
-  }
-
-  if (!target) die('need an issue or pull request number (try --help)');
-
-  spinner = new Spinner();
-
-  // Fail with something actionable rather than a dispatch that vanishes.
-  spinner.start('checking gh auth');
-  try {
-    await run('gh', 'auth', 'status');
-  } catch {
-    die('gh is not installed or not authenticated (try: gh auth login)');
-  }
-
-  spinner.set(`looking up ${REPO}#${target}`);
-  let title: string;
-  try {
-    title = await run(
-      'gh',
-      'issue',
-      'view',
-      target,
-      '-R',
-      REPO,
-      '--json',
-      'title,state',
-      '--jq',
-      '"\\(.title)  [\\(.state)]"'
-    );
-  } catch {
-    die(`${REPO}#${target} not found, or you cannot see it`);
-  }
-
-  spinner.stop();
-  console.log(`→ ${REPO}#${target}  ${title}`);
-  console.log(
-    `  fix mode: ${fix}${model !== undefined ? ` · model: ${model}` : ''}${retry ? ' · retry: update previous findings comment' : ''} · quiet: no comments until findings`
-  );
-
-  // gh gives no run id back from a dispatch, so remember what was newest first.
-  spinner.start('dispatching the workflow');
-  const before = await latestRunId();
-
-  try {
-    await run(
-      'gh',
-      'workflow',
-      'run',
-      WORKFLOW,
-      '--repo',
-      REPO,
-      '-f',
-      `target=${target}`,
-      '-f',
-      `fix=${fix}`,
-      // Only when asked: an older workflow without the input rejects it.
-      ...(model !== undefined ? ['-f', `model=${model}`] : []),
-      ...(retry ? ['-f', 'retry=true'] : [])
-    );
-  } catch (e) {
-    die(
-      `dispatch failed: ${e instanceof Error ? e.message : String(e)}\n` +
-        '  (the workflow_dispatch trigger has to be on the default branch' +
-        (model !== undefined
-          ? ", and --model needs the workflow's `model` input to be on main"
-          : '') +
-        ')'
-    );
-  }
-
-  // GitHub takes a few seconds to materialise the run, so this wait is the
-  // normal case rather than a symptom — say so, or it reads as a hang.
-  spinner.set('dispatched · waiting for GitHub to start the run');
-  let runId: string | null = null;
-  for (let i = 0; i < 20 && !runId; i++) {
-    await sleep(3000);
-    const candidate = await latestRunId();
-    if (candidate && candidate !== before) runId = candidate;
-  }
-
-  if (!runId) {
-    spinner.stop(
-      `  dispatched, but no new run appeared within 60s — check\n` +
-        `  https://github.com/${REPO}/actions/workflows/${WORKFLOW}`
-    );
-    return;
-  }
-
-  const url = `https://github.com/${REPO}/actions/runs/${runId}`;
-  spinner.stop(`  ✓ running · ${url}`);
-
-  if (watch) {
-    // --exit-status makes gh exit non-zero on a failed run; that is information,
-    // not a reason to stop, so it is swallowed and the outcome printed instead.
-    await run('gh', 'run', 'watch', runId, '--repo', REPO, '--exit-status').catch(() => {});
-    const conclusion = await run(
-      'gh',
-      'api',
-      `repos/${REPO}/actions/runs/${runId}`,
-      '--jq',
-      '.conclusion'
-    ).catch(() => 'unknown');
-    console.log(`\nrun ${conclusion}`);
-    const last = await run(
-      'gh',
-      'api',
-      `repos/${REPO}/issues/${target}/comments`,
-      '--jq',
-      '.[-1] | "  \\(.user.login): \\(.body[0:300])"'
-    ).catch(() => '  (could not read comments)');
-    console.log(`latest comment on #${target}:\n${last}`);
-  }
 }

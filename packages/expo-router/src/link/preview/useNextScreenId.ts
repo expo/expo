@@ -16,10 +16,7 @@ export function useNextScreenId(): [
   const router = useRouter();
   const routeInfo = useRouteInfo();
   const store = use(StoreContext);
-  if (!store) {
-    throw new Error('useNextScreenId must be rendered inside ExpoRoot.');
-  }
-  const { navigationRef } = store;
+  const navigationRef = store?.navigationRef;
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);
@@ -33,14 +30,14 @@ export function useNextScreenId(): [
           currentHref.current,
           state,
           routeInfo,
-          store.linking
+          store?.linking
         );
         const routeKey = preloadedRoute?.key;
         const tabPathFromRootState = getTabPathFromRootStateByHref(
           currentHref.current,
           state,
           routeInfo,
-          store.linking
+          store?.linking
         );
         // Without this timeout react-native does not have enough time to mount the new screen
         // and thus it will not be found on the native side
@@ -60,7 +57,7 @@ export function useNextScreenId(): [
 
   useEffect(() => {
     // When screen is prefetched, then the root state is updated with the preloaded route.
-    return navigationRef.addListener('state', onNavigationStateChange);
+    return navigationRef?.addListener('state', onNavigationStateChange);
   }, [navigationRef]);
 
   const prefetch = useCallback(

@@ -4,6 +4,8 @@ sidebar_title: Errors
 description: Record JavaScript errors from your app and investigate symbolicated stack traces in the EAS Observe dashboard.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
 > **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Source maps for EAS Update, native crash reporting, and more are still to come.
 
 The `expo-observe` library records JavaScript errors from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
@@ -110,6 +112,12 @@ The source code embedded in the source map (`sourcesContent`) is removed before 
 ## View errors
 
 Open your project and navigate to [**Observe > Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors). The page lists the errors recorded in the selected time range. Click an error to see its stack trace and details.
+
+<ContentSpotlight
+  alt="The Errors page of the EAS Observe dashboard, showing the crash-free sessions chart and the list of distinct errors."
+  src="/static/images/expo-observe/observe-errors-light.webp"
+  darkSrc="/static/images/expo-observe/observe-errors-dark.webp"
+/>
 
 ## Still to come
 

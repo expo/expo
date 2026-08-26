@@ -1,0 +1,123 @@
+# Thin adapter only — all logic lives in @expo/verify (LLP 0020). Customize
+# through the profile dir (.expo-agents/verify/, which is also this EAS
+# project's directory) and dispatch inputs. VERIFY_VERSION is an EAS env var on
+# this project (no vars. context exists); the :? guard fails loudly instead
+# of expanding to `npx @expo/verify@ ci`.
+#
+# P4 spike facts this file depends on: no gh on the worker (installed in the
+# first step), Node defaults to 18 (tools.node below), the hard job cap is
+# 120 minutes — the engine's watchdog reserves the salvage tail under it.
+# The run's name is this static field (EAS has no per-run title); the
+# run's identity — target, mode, outcome — travels as job outputs, which
+# the run page shows and `verify status` reads.
+name: verify (agent investigation)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        type: string
+        required: true
+      fix:
+        type: choice
+        options: ["auto", "yes", "no"]
+        default: auto
+      retry:
+        type: boolean
+        default: false
+      actor:
+        type: string
+        required: true
+      dry_run:
+        type: boolean
+        default: false
+      # `model` intentionally absent: comment-forwarded dispatches never carry it.
+
+# No concurrency block: EAS groups cancel, never queue. Per-target
+# serialization is server-enforced at token mint (LLP 0020 Layer 1).
+
+defaults:
+  tools:
+    node: 24
+
+jobs:
+  verify:
+    runs_on: linux-large
+    environment: production
+    # Job outputs are a map from STEP outputs; the run step (id: run) emits
+    # them with set-output, and they appear on the run page / in the API.
+    outputs:
+      target: ${{ steps.run.outputs.target }}
+      mode: ${{ steps.run.outputs.mode }}
+      fix: ${{ steps.run.outputs.fix }}
+      dry_run: ${{ steps.run.outputs.dry_run }}
+      actor: ${{ steps.run.outputs.actor }}
+      outcome: ${{ steps.run.outputs.outcome }}
+    env:
+      VERIFY_TARGET: ${{ inputs.target }}
+      VERIFY_FIX: ${{ inputs.fix }}
+      # Boolean inputs must be coerced: EAS job env values are strings, and a
+      # raw boolean fails job-parameter validation ("Invalid input") — a
+      # server-side check the local validator does not run. P4 spike 2.
+      VERIFY_RETRY: ${{ inputs.retry && 'true' || 'false' }}
+      VERIFY_ACTOR: ${{ inputs.actor }}
+      VERIFY_DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+    steps:
+      - uses: eas/checkout # the uploaded profile dir; the engine clones the
+                           # target, and target code executes only in sandboxes
+      - name: Install gh and the Claude Code CLI
+        # Tarball install: the worker has no gh and sudo is not assumed
+        # (P4 spike: user `expo`, HOME=/home/expo).
+        run: |
+          GH_V=2.98.0
+          curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_V}/gh_${GH_V}_linux_amd64.tar.gz" | tar -xz -C "$HOME"
+          mkdir -p "$HOME/bin" && mv "$HOME/gh_${GH_V}_linux_amd64/bin/gh" "$HOME/bin/gh"
+          echo "$HOME/bin" >> "$GITHUB_PATH" 2>/dev/null || export PATH="$HOME/bin:$PATH"
+          "$HOME/bin/gh" --version
+          npm install -g @anthropic-ai/claude-code@2.1.229
+      - name: Guard profile and credential env
+        run: npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify verify-config
+      # Token custody across steps: the environment's variables (including
+      # the parent EXPO_SANDBOX_MCP_TOKEN) are baked into every step's env on
+      # EAS — a step can blank a value but not withhold it. So the parent is
+      # USED here and in the revoke step, and BLANKED on the run step: the
+      # agent's step never holds it, only the scoped token in a 0600 file.
+      - name: Mint scoped token
+        env:
+          VERIFY_MCP_CONFIG: "~/.verify/mcp.json"
+        run: npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify mint
+      - name: Run verify
+        id: run
+        outputs: [target, mode, fix, dry_run, actor, outcome]
+        env:
+          VERIFY_MCP_CONFIG: "~/.verify/mcp.json"
+          EXPO_SANDBOX_MCP_TOKEN: "" # blanked: the engine treats empty as unset
+        run: |
+          export PATH="$HOME/bin:$PATH"
+          if [ "$VERIFY_DRY_RUN" = "true" ]; then
+            npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify run --dry-run
+          else
+            npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify run
+          fi
+      - name: Revoke scoped token
+        if: ${{ always() }} # releases the per-target verify slot; TTL is the backstop
+        env:
+          VERIFY_MCP_CONFIG: "~/.verify/mcp.json"
+        run: npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify revoke
+      - name: Collect run log
+        # .verify-out sits at the root on a checkout run, or inside the
+        # engine's clone (.verify-target/) on an upload run; gather either.
+        if: ${{ always() }}
+        run: |
+          mkdir -p verify-run-log
+          for d in .verify-out .verify-target/.verify-out; do
+            [ -d "$d" ] && cp -R "$d"/. verify-run-log/ || true
+          done
+          ls verify-run-log
+      - name: Upload run log
+        if: ${{ always() }} # CLI failures; the hard VM kill is the watchdog's job
+        uses: eas/upload_artifact
+        with:
+          type: other
+          name: verify-run-log
+          path: verify-run-log

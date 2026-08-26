@@ -112,6 +112,7 @@ export const TabsStateContext = createContext<TabsContextValue['state']>({
   history: [],
   index: -1,
   key: '',
+  routeKeySeq: 0,
   stale: false,
   routeNames: [],
   routes: [],

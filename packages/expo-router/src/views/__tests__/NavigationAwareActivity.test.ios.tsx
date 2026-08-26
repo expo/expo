@@ -5,13 +5,7 @@ import { router } from '../../imperative-api';
 import JSStack from '../../layouts/JSStack';
 import Stack from '../../layouts/Stack';
 import Tabs from '../../layouts/Tabs';
-import {
-  CommonActions,
-  useIsFocused,
-  useNavigation,
-  useRoute,
-} from '../../react-navigation/native';
-import { createStackNavigator, type StackScreenProps } from '../../react-navigation/stack';
+import { CommonActions, useNavigation, useRoute } from '../../react-navigation/native';
 import { renderRouter } from '../../testing-library';
 import {
   NavigationAwareActivity,
@@ -218,48 +212,13 @@ test('cleans up effects while preserving local state', async () => {
   expect(renderedValues.at(-1)).toBe(1);
 });
 
-test('retains nested navigator state while hidden', () => {
-  type NestedParamList = { one: undefined; two: undefined };
-  const NestedStack = createStackNavigator<NestedParamList>();
-  let focusedNestedRoute: keyof NestedParamList | undefined;
-  let navigateNested = () => {};
-
-  function NestedRoute({ navigation, route }: StackScreenProps<NestedParamList>) {
-    navigateNested = () => navigation.navigate('two');
-    if (useIsFocused()) {
-      focusedNestedRoute = route.name;
-    }
-    return null;
-  }
-
-  renderRouter({
-    _layout: () => <JSStack />,
-    index: () => (
-      <NavigationAwareActivity hideWhenNestedAtLevel={1}>
-        <NestedStack.Navigator>
-          <NestedStack.Screen name="one" component={NestedRoute} />
-          <NestedStack.Screen name="two" component={NestedRoute} />
-        </NestedStack.Navigator>
-      </NavigationAwareActivity>
-    ),
-    b: EmptyScreen,
-  });
-
-  act(navigateNested);
-  expect(focusedNestedRoute).toBe('two');
-  act(() => router.push('/b'));
-  act(() => router.back());
-
-  expect(focusedNestedRoute).toBe('two');
-});
-
 test('throws outside a screen', () => {
   expect(() => render(<NavigationAwareActivity>content</NavigationAwareActivity>)).toThrow(
     'NavigationAwareActivity must be rendered inside a screen component.'
   );
 });
 
-test('throws in a layout', () => {
+test('throws when wrapping a layout navigator', () => {
   expect(() =>
     renderRouter({
       _layout: () => (

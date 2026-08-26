@@ -10,7 +10,7 @@ import type { ReactNavigationState, StoreRedirects } from './types';
 export type StoreContextValue = {
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   linking: ExpoLinkingOptions | undefined;
-  initialState: ReactNavigationState | undefined;
+  state: ReactNavigationState | undefined;
   rootComponent: ComponentType<any>;
   routeNode: RouteNode | null;
   redirects: StoreRedirects[];
