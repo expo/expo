@@ -105,11 +105,20 @@ function buildsLine(builds: BuildsStatus): string {
   const found = builds.platforms.filter((platform) => platform.state === 'found');
   const facts = builds.platforms.map((platform) => {
     if (platform.state === 'found') {
-      const details = [platform.buildProfile, platform.createdAt].filter(Boolean).join(', ');
+      // The day, not the instant: which build it is comes from the id below, and a millisecond
+      // precision timestamp on a status line is six characters of noise. `--json` keeps it whole.
+      const details = [platform.buildProfile, platform.createdAt?.slice(0, 10)]
+        .filter(Boolean)
+        .join(', ');
       return `${platform.platform}: ${chalk.green('finished build')}${details ? ` (${details})` : ''}`;
     }
-    const state = platform.state === 'none' ? chalk.dim('none') : chalk.yellow('unknown');
-    return `${platform.platform}: ${state}${platform.reason ? chalk.dim(` (${summarize(platform.reason)})`) : ''}`;
+    // A `none` needs no gloss: the word is the whole answer, and printing "EAS has no finished
+    // build made from this fingerprint" beside it twice says it three times. An `unknown` is the
+    // opposite — the reason is the only thing that makes it worth a line.
+    if (platform.state === 'none') {
+      return `${platform.platform}: ${chalk.dim('none')}`;
+    }
+    return `${platform.platform}: ${chalk.yellow('unknown')}${platform.reason ? chalk.dim(` (${summarize(platform.reason)})`) : ''}`;
   });
 
   // One command, for the first platform that has one: a line cannot carry two, and the `--json`

@@ -111,11 +111,9 @@ async function readPlatformAsync(
   }
 
   if (!options.lookUp) {
-    return unknown(
-      platform,
-      null,
-      'EAS was not asked — pass --builds, which costs one fingerprint run and one network call'
-    );
+    // Short on purpose: this is the reason on every platform of every default run, and the cost it
+    // is short about is spelled out in `status --help`, which is where somebody weighing it looks.
+    return unknown(platform, null, 'EAS was not asked — pass --builds');
   }
   if (options.auth?.loggedIn === false) {
     // The answer is already in the report. A second probe would spend a second to be told the
