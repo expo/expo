@@ -32,8 +32,11 @@ const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout
 
 const REPO = 'expo/expo';
 const FORK = 'expo-bot/expo';
-// @ref LLP 0009#cross-repository-rollout — quiet dispatch follows the shared workflow rename.
-const WORKFLOW = 'agent-commands.yml';
+// Quiet dispatch targets the thin @expo/verify runner (expo-sandbox-mcp
+// LLP 0020 P1c cutover). The comment path (/verify in a thread) still runs
+// agent-commands.yml until the gate ports into the engine; to dispatch the
+// legacy pipeline manually: gh workflow run agent-commands.yml -f target=N.
+const WORKFLOW = 'verify.yml';
 const SYNC_WORKFLOW = 'sync-expo-bot-fork.yml';
 
 const HELP = `verify — dispatch expo/expo's /verify workflow without commenting on the thread
