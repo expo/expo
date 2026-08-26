@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix picking a video terminating apps that ship no `NSPhotoLibraryUsageDescription` by only taking the `PHAssetResourceManager` fast path when photo library read access has already been granted. ([#49362](https://github.com/expo/expo/pull/49362) by [@OlegBezr](https://github.com/OlegBezr))
+
 ### 💡 Others
 
 ## 57.0.13 — 2026-08-24
