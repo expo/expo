@@ -96,11 +96,13 @@ describe('the flags this CLI writes onto a command line', () => {
         "-Fpc  src/dev/portListener.ts",
         "-ano  src/dev/portListener.ts",
         "-j  src/navigate/device.ts",
+        "-j  src/runtime/targetPlatform.ts",
         "-m  src/checkpoint/git.ts",
         "-nP  src/dev/portListener.ts",
         "-p  src/device/screenshot.ts",
         "-p  src/toolchain/detect.ts",
         "-s  src/device/screenshot.ts",
+        "-s  src/navigate/adbReverse.ts",
         "-sTCP:LISTEN  src/dev/portListener.ts",
         "-version  src/toolchain/detect.ts",
       ]
