@@ -9,8 +9,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { adbNotRunnableError, resolveAdb, type AdbResolution } from '../device/adb';
+import {
+  buildCloudOpenUrlArgs,
+  easCliMissingError,
+  openUrlOnCloudSimulatorAsync,
+} from '../device/cloudSimulator';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
+import type { DeviceBackend } from './device';
 
 /**
  * The path an Expo Go deep link must carry to reach the **root** route of a loaded app.
@@ -299,6 +305,18 @@ export interface BuildOpenUrlCommandParams {
    * still opens the link (F49).
    */
   adb?: AdbResolution;
+  /**
+   * Which device layer this link is opened on. Defaults to the local one for the platform.
+   *
+   * `cloud` sends the controller's `open` verb through `eas simulator:exec`: the device is not on
+   * this machine, so `simctl` and `adb` have nothing to aim at. `navigate` has its own richer cloud
+   * path with the tunnel check in front of it (`./openRoute`); this branch is for the callers that
+   * open a link **after** that check has already passed — `runtime:reload`'s device fallback and
+   * the attach recovery (llp/0005 §What the cloud backend can and cannot do).
+   */
+  backend?: DeviceBackend;
+  /** The project whose session is driven. Required for `cloud`, ignored otherwise. */
+  projectRoot?: string;
 }
 
 /**
@@ -314,7 +332,12 @@ export function buildOpenUrlCommand({
   url,
   appId,
   adb,
+  backend,
 }: BuildOpenUrlCommandParams): OpenUrlCommand {
+  if (backend === 'cloud') {
+    const args = buildCloudOpenUrlArgs({ url, platform });
+    return { bin: 'eas', args, display: ['eas', ...args].join(' ') };
+  }
   const command: OpenUrlCommand =
     platform === 'ios'
       ? { bin: 'xcrun', args: ['simctl', 'openurl', deviceId, url], display: '' }
@@ -357,6 +380,32 @@ export async function openUrlOnDeviceAsync(
   params: BuildOpenUrlCommandParams
 ): Promise<OpenUrlResult> {
   const { bin, args, display } = buildOpenUrlCommand(params);
+
+  if (params.backend === 'cloud') {
+    if (params.projectRoot == null) {
+      throw new CommandError(
+        'CLOUD_SIMULATOR_UNRESOLVED',
+        'A cloud simulator link was opened and this command did not say which project to find the session in, which is a bug in this CLI.'
+      );
+    }
+    const result = await openUrlOnCloudSimulatorAsync({
+      projectRoot: params.projectRoot,
+      url: params.url,
+      platform: params.platform,
+    });
+    // A `simulator:exec` that could not start at all is the EAS CLI missing, which is a
+    // `CommandError` for the same reason a missing `simctl` is: no output can explain it.
+    if (result.spawnError) {
+      throw easCliMissingError();
+    }
+    return {
+      command: display,
+      stdout: result.stdout,
+      stderr: result.stderr,
+      exitCode: result.exitCode,
+    };
+  }
+
   const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync(bin, args);
 
   if (spawnError) {

@@ -5,6 +5,7 @@ describe(resolveReloadOptions, () => {
     expect(resolveReloadOptions([])).toEqual({
       route: null,
       method: 'auto',
+      cloud: false,
       devServerUrl: null,
       platform: undefined,
       scheme: undefined,
@@ -40,6 +41,7 @@ describe(resolveReloadOptions, () => {
       ])
     ).toEqual({
       route: '/notes',
+      cloud: false,
       method: 'device',
       devServerUrl: 'http://192.168.1.10:8081',
       platform: 'android',
@@ -86,3 +88,21 @@ function expectThrow(run: () => unknown): any {
   }
   throw new Error('Expected the call to throw, but it returned');
 }
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do
+describe('resolveReloadOptions and the cloud backend', () => {
+  // Only the device method changes: the dev-server broadcast already reaches a cloud session,
+  // which has to be attached to this dev server through a tunnel to be running the bundle at all.
+  it(`names the cloud backend for the device method`, () => {
+    expect(resolveReloadOptions(['--cloud']).cloud).toBe(true);
+    expect(resolveReloadOptions([]).cloud).toBe(false);
+  });
+
+  it(`takes a platform alongside it, because a session is iOS or Android too`, () => {
+    expect(resolveReloadOptions(['--cloud', '--ios', '--method', 'device'])).toMatchObject({
+      cloud: true,
+      platform: 'ios',
+      method: 'device',
+    });
+  });
+});

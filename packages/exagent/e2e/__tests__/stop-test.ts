@@ -284,6 +284,7 @@ describe('exagent runtime:stop', () => {
         'bundleIdSource',
         'command',
         'connectedAppIds',
+        'deviceBackend',
         'deviceId',
         'followups',
         'platform',

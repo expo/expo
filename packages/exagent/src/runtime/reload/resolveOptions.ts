@@ -32,6 +32,18 @@ export interface ReloadOptions {
   devServerUrl: string | null;
   /** Platform to reload on. Undefined means "whichever device is booted". */
   platform?: NavigatePlatform;
+  /**
+   * `--cloud`: the device method acts on this project's EAS Simulator session.
+   *
+   * Only the **device** method changes. The dev-server broadcast reaches a cloud session already —
+   * it goes out over this dev server's own client command socket, and a cloud session has to reach
+   * that dev server through a tunnel to be running the bundle at all (llp/0005 §A cloud simulator
+   * requires a tunnel). So this flag is about the fallback: the force-stop and the relaunch.
+   *
+   * `required` and never `fallback`: a session bills by the minute, so the flag is the only way a
+   * reload reaches one.
+   */
+  cloud: boolean;
   /** Application id to stop, for the device method. Undefined means "decide from the project". */
   appId?: string;
   /** URL scheme for the route's deep link, instead of the one in app.json. */
@@ -60,6 +72,9 @@ const RELOAD_ARGS = {
   '--scheme': String,
   '--ios': Boolean,
   '--android': Boolean,
+  // @ref llp/0005 §What the cloud backend can and cannot do. The device method is a force-stop and
+  // a relaunch, and the controller has both — `close <app-id>` and `open <url>`.
+  '--cloud': Boolean,
   '--dev-server-url': String,
   // Sugar for the URL above (llp/0005 §The dev server a caller names).
   '--port': String,
@@ -105,6 +120,7 @@ export function resolveReloadOptions(argv: string[]): ReloadOptions {
     platform: resolveDevicePlatform(args, 'runtime:reload', {
       bothHint: 'run the command twice, once per device.',
     }),
+    cloud: !!args['--cloud'],
     scheme: args['--scheme'] ? String(args['--scheme']) : undefined,
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
     timeoutMs: resolveDuration(args['--timeout'], '--timeout', DEFAULT_RELOAD_TIMEOUT_MS, {
