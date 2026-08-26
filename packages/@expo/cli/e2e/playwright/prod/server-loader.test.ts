@@ -165,6 +165,18 @@ test.describe('server loaders in production', () => {
 
   test('navigates from route without loader to route with loader', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
+    // TEMP-DEBUG: print the hidden cause of React error #520 in CI
+    page.on('console', (m) => console.log(`[browser:${m.type()}] ${m.text()}`));
+    page.on('pageerror', (e) => console.log(`[pageerror] ${e.message}\n${e.stack}`));
+    await page.addInitScript(() => {
+      window.addEventListener('error', (e: any) => {
+        const c = e.error?.cause;
+        console.log(`CAUSE message=${c?.message} stack=${c?.stack}`);
+      });
+      window.addEventListener('unhandledrejection', (e: any) => {
+        console.log(`UNHANDLED ${e.reason?.message} ${e.reason?.stack}`);
+      });
+    });
 
     const url = new URL(expoServe.url.href);
     url.pathname = '/no-loader';
