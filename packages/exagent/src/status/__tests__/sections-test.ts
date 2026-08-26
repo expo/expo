@@ -1,3 +1,4 @@
+import * as network from '../../followups/network';
 import type { LastBuildFingerprints } from '../../plan/types';
 import type { ProjectState } from '../../project/types';
 import type { DevServerProbe } from '../../runtime/devServer';
@@ -5,12 +6,13 @@ import {
   buildDevServerStatus,
   buildExpoGoStatus,
   buildFreshnessStatus,
+  buildLocalDeviceStatus,
   buildNextActionStatus,
   buildProjectStatus,
   resolveDefaultPlatform,
   type DevServerReadiness,
 } from '../sections';
-import type { DevServerStatus } from '../types';
+import type { DevServerStatus, LocalDeviceStatus } from '../types';
 
 const projectRoot = '/project';
 
@@ -164,6 +166,9 @@ describe(buildDevServerStatus, () => {
       source: 'default',
       ready: true,
       projectRootMatched: true,
+      hostType: null,
+      tunnelUrl: null,
+      tunnelExpired: null,
     });
   });
 
@@ -177,6 +182,9 @@ describe(buildDevServerStatus, () => {
       source: 'default',
       ready: true,
       projectRootMatched: true,
+      hostType: null,
+      tunnelUrl: null,
+      tunnelExpired: null,
     });
   });
 
@@ -192,6 +200,9 @@ describe(buildDevServerStatus, () => {
       source: 'default',
       ready: null,
       projectRootMatched: null,
+      hostType: null,
+      tunnelUrl: null,
+      tunnelExpired: null,
       reason: 'fetch failed',
     });
   });
@@ -260,6 +271,9 @@ describe(buildNextActionStatus, () => {
         source: 'lock',
         ready: true,
         projectRootMatched: true,
+        hostType: null,
+        tunnelUrl: null,
+        tunnelExpired: null,
         ...overrides,
       };
     }
@@ -319,6 +333,97 @@ describe(buildNextActionStatus, () => {
       expect(next.steps[0]!.argv).toEqual(['expo', 'start', '--go']);
     });
 
+    // @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
+    //
+    // `exagent navigate /` drives a **local** simulator or an attached device. A dogfood session
+    // drove Expo Go on a *cloud* simulator through a tunnel, from a machine with neither, and this
+    // line told it to run `navigate` for two hours [observed — 2026-08-24].
+    describe('with no local device to open the app on', () => {
+      const absent: LocalDeviceStatus = {
+        state: 'absent',
+        platform: null,
+        deviceId: null,
+        name: null,
+        reason: 'no booted iOS simulator was found',
+      };
+
+      // `clearMocks` empties the calls but keeps the implementation, and this host's real LAN
+      // address must not leak into the next test.
+      afterEach(() => jest.restoreAllMocks());
+
+      it(`names the tunnel URL instead of a command that needs a device`, () => {
+        const next = buildNextActionStatus(
+          mockState(),
+          {},
+          'ios',
+          devServerStatus({ hostType: 'tunnel', tunnelUrl: 'http://abc.boltexpo.dev' }),
+          absent
+        );
+
+        expect(next.command).toBe('exp://abc.boltexpo.dev');
+        expect(next.why).toContain('no booted simulator or attached device');
+        expect(next.why).toContain('tunnel host');
+      });
+
+      it(`names this host's LAN URL when the run has no tunnel`, () => {
+        jest.spyOn(network, 'resolveLanHost').mockReturnValue('192.168.1.233');
+
+        const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus(), absent);
+
+        expect(next.command).toBe('exp://192.168.1.233:8099');
+        expect(next.why).toContain('local network');
+      });
+
+      // No LAN address, so there is no URL this report can vouch for — and the command that can
+      // work one out needs no device either.
+      it(`falls back to the mode that resolves a URL without a device`, () => {
+        jest.spyOn(network, 'resolveLanHost').mockReturnValue(null);
+
+        const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus(), absent);
+
+        expect(next.command).toBe('exagent navigate / --print-url');
+      });
+
+      // A development build's URL is its scheme, which lives in the project config rather than in
+      // this report; the command that reads it is the one that gets named.
+      it(`hands a development build to the command that knows its scheme`, () => {
+        jest.spyOn(network, 'resolveLanHost').mockReturnValue('192.168.1.233');
+
+        const next = buildNextActionStatus(
+          mockState({ usesDevClient: true }),
+          {},
+          'ios',
+          devServerStatus({ hostType: 'tunnel', tunnelUrl: 'http://abc.boltexpo.dev' }),
+          absent
+        );
+
+        expect(next.command).toBe('exagent navigate / --print-url');
+      });
+
+      // The rule that keeps this from breaking a working machine: a probe that could not run
+      // establishes nothing, so the ladder is left exactly as it was.
+      it(`keeps navigate when the probe could not establish anything`, () => {
+        const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus(), {
+          ...absent,
+          state: 'unknown',
+        });
+
+        expect(next.command).toBe('exagent navigate /');
+      });
+
+      it(`keeps navigate when a device is there`, () => {
+        const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus(), {
+          state: 'present',
+          platform: 'ios',
+          deviceId: 'SIM-1',
+          name: 'iPhone 17',
+          reason: null,
+        });
+
+        expect(next.command).toBe('exagent navigate /');
+      });
+    });
+
     it(`should keep the plan when nothing answered`, () => {
       const next = buildNextActionStatus(
         mockState(),
@@ -353,5 +458,35 @@ describe(resolveDefaultPlatform, () => {
     mockPlatform('linux');
 
     expect(resolveDefaultPlatform(mockState())).toBe('android');
+  });
+});
+
+describe(buildLocalDeviceStatus, () => {
+  it(`names the device that was found`, () => {
+    expect(
+      buildLocalDeviceStatus({
+        state: 'present',
+        device: { platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
+        reason: null,
+      })
+    ).toEqual({
+      state: 'present',
+      platform: 'ios',
+      deviceId: 'SIM-1',
+      name: 'iPhone 17',
+      reason: null,
+    });
+  });
+
+  it(`carries the reason of a machine with none`, () => {
+    expect(
+      buildLocalDeviceStatus({ state: 'absent', device: null, reason: 'no booted iOS simulator' })
+    ).toEqual({
+      state: 'absent',
+      platform: null,
+      deviceId: null,
+      name: null,
+      reason: 'no booted iOS simulator',
+    });
   });
 });

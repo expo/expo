@@ -326,3 +326,54 @@ describe(resolveDevServerPort, () => {
     }
   );
 });
+
+// @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
+describe(`${buildStartFollowUps.name} — a tunnelled run, and a machine with no device`, () => {
+  const base = { expoGo: true, web: false, lanUrl, easJson: true };
+
+  // The LAN URL is not merely unhelpful for a tunnelled run, it is wrong: `--tunnel` is asked for
+  // by somebody whose device is not on this network, and that is the URL a dogfood session handed
+  // a cloud simulator [observed — 2026-08-24].
+  it(`never names the LAN URL when the run was asked for a tunnel`, () => {
+    const followups = buildStartFollowUps({ ...base, tunnel: true });
+
+    expect(followups.map((followup) => followup.command)).not.toContain(lanUrl);
+    expect(ids(followups)).toContain('real-device-tunnel');
+    expect(followups.find((followup) => followup.id === 'real-device-tunnel')!.command).toBe(
+      'npx exagent navigate / --print-url'
+    );
+  });
+
+  it(`says why the tunnel host cannot be named yet`, () => {
+    const rung = buildStartFollowUps({ ...base, tunnel: true }).find(
+      (followup) => followup.id === 'real-device-tunnel'
+    )!;
+
+    expect(rung.why).toContain('only known once it is up');
+  });
+
+  it(`still names the LAN URL for a run with no tunnel`, () => {
+    expect(buildStartFollowUps(base).map((followup) => followup.command)).toContain(lanUrl);
+  });
+
+  it(`drops the deep-link rung on a machine with no device`, () => {
+    const followups = buildStartFollowUps({ ...base, localDevice: 'absent' });
+
+    expect(ids(followups)).not.toContain('open-app');
+    // The URL a device elsewhere can use takes its place, first.
+    expect(followups[0]!.command).toBe(lanUrl);
+    expect(followups[0]!.why).toContain('no booted simulator and no attached device');
+  });
+
+  // The rule that keeps a working machine working: a probe that could not run establishes nothing.
+  it.each(['unknown', 'present'] as const)(`keeps the deep-link rung for %s`, (localDevice) => {
+    expect(ids(buildStartFollowUps({ ...base, localDevice }))).toContain('open-app');
+  });
+
+  it(`leads a tunnelled run with no device with the URL command`, () => {
+    const followups = buildStartFollowUps({ ...base, tunnel: true, localDevice: 'absent' });
+
+    expect(followups[0]!.command).toBe('npx exagent navigate / --print-url');
+    expect(followups[0]!.why).toContain('no booted simulator and no attached device');
+  });
+});

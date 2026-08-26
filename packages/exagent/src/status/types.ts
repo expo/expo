@@ -2,6 +2,8 @@
 // The shape of the status report: one object with a section per question the command answers.
 // Pure data, so the human formatter and the `--json` output describe exactly the same facts.
 
+import type { DevServerHostType, TunnelFailure } from '../dev/advertisedUrl';
+import type { LocalDeviceState } from '../device/localDevice';
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
 import type { DevServerSource } from '../runtime/devServer';
@@ -82,8 +84,43 @@ export interface DevServerStatus {
    * port this one was looked for on.
    */
   projectRootMatched: boolean | null;
+  /**
+   * How a device **off this machine** reaches this dev server, per what the dev server printed.
+   *
+   * `localhost` and `lan` say the URL above is the only address there is, and neither is usable
+   * from a cloud simulator. `tunnel` is the one that is. Null when nothing captured the line — a
+   * dev server started in a terminal writes it there and nowhere this can read.
+   *
+   * @see src/dev/advertisedUrl.ts
+   */
+  hostType: DevServerHostType | null;
+  /**
+   * The tunnel origin, and only while it is still current.
+   *
+   * Null the moment any of three things is false: the run had no tunnel, the dev server is not
+   * running, or the captured log says the tunnel died after the URL was printed. Reporting a dead
+   * tunnel's URL as this project's address is the failure this field exists to avoid — a dogfood
+   * session followed one for an hour [observed — 2026-08-24].
+   */
+  tunnelUrl: string | null;
+  /** The line that says the tunnel is gone, quoted, or null while it is up. */
+  tunnelExpired: TunnelFailure | null;
   /** Why the dev server did not answer. */
   reason?: string;
+}
+
+/** What this machine has to open an app on, as the status report carries it. */
+export interface LocalDeviceStatus {
+  /** `present`, `absent`, or `unknown` when no platform tool could be run. */
+  state: LocalDeviceState;
+  /** Platform of the device that was found, or null. */
+  platform: string | null;
+  /** Simulator UDID or `adb` serial of the device that was found, or null. */
+  deviceId: string | null;
+  /** Simulator name, when the platform tool reported one. */
+  name: string | null;
+  /** Why the state is what it is. Null when a device was found. */
+  reason: string | null;
 }
 
 export interface SkillsStatus {
@@ -140,6 +177,7 @@ export type StatusSectionName =
   | 'expoGo'
   | 'freshness'
   | 'devServer'
+  | 'device'
   | 'skills'
   | 'auth'
   | 'next';
@@ -155,6 +193,14 @@ export interface StatusReport {
   expoGo: ExpoGoStatus | null;
   freshness: FreshnessStatus | null;
   devServer: DevServerStatus | null;
+  /**
+   * Whether this machine has a device to open the app on.
+   *
+   * The fact every "open the app" suggestion assumed and none of them checked: a dogfood session
+   * drove Expo Go on a **cloud** simulator from a laptop with no local one, and `next` kept
+   * offering `exagent navigate /` [observed — 2026-08-24].
+   */
+  device: LocalDeviceStatus | null;
   skills: SkillsStatus | null;
   auth: AuthStatus | null;
   next: NextActionStatus | null;

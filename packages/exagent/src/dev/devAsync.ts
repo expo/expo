@@ -24,7 +24,7 @@ import { isPlatformFlag } from '../plan/platformFlags';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
-import { resolveStartFollowUps } from '../start/followUps';
+import { resolveStartFollowUpsAsync } from '../start/followUps';
 import { runDevServerAsync, type DevServerRun } from '../start/startAsync';
 import { probePlanBuildLocationAsync } from '../toolchain';
 import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
@@ -109,7 +109,7 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   // it so they can name the port it actually took. A terminal cannot wait for that: the bundler
   // takes the screen and anything printed afterwards scrolls away with its output.
   if (!options.json) {
-    reportFollowUps('dev', resolveRunFollowUps(projectRoot, plan, options, null), {});
+    reportFollowUps('dev', await resolveRunFollowUpsAsync(projectRoot, plan, options, null), {});
   }
 
   // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run — the plan was printed above, so the
@@ -144,7 +144,7 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
 
   if (options.json) {
     // One object, when the run is over and there is something true to say about it.
-    const followups = resolveRunFollowUps(projectRoot, plan, options, run.devServer);
+    const followups = await resolveRunFollowUpsAsync(projectRoot, plan, options, run.devServer);
     reportFollowUps('dev', followups, { json: true });
     Log.log(JSON.stringify({ ...plan, followups }, null, 2));
   }
@@ -542,12 +542,12 @@ function planStepFailedError(
  * command came to tell an agent to open a *different project's* app
  * [observed — friction run, 2026-08-23].
  */
-function resolveRunFollowUps(
+async function resolveRunFollowUpsAsync(
   projectRoot: string,
   plan: StartPlan,
   options: DevOptions,
   devServer: DevServerRun | null
-): FollowUp[] {
+): Promise<FollowUp[]> {
   const port = devServer
     ? // After the run: what the dev server reported, and nothing when it reported nothing.
       devServer.port && devServer.port.source !== 'default'
@@ -556,7 +556,7 @@ function resolveRunFollowUps(
     : // Before it: the flag, or the port `expo start` uses when none is named.
       resolveDevServerPort(options.expoArgs);
 
-  return resolveStartFollowUps(projectRoot, options, {
+  return await resolveStartFollowUpsAsync(projectRoot, options, {
     expoGo: plan.target === 'expo-go',
     web: plan.target === 'web',
     port,

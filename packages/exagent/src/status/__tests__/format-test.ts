@@ -39,6 +39,16 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       source: 'lock',
       ready: true,
       projectRootMatched: true,
+      hostType: null,
+      tunnelUrl: null,
+      tunnelExpired: null,
+    },
+    device: {
+      state: 'present',
+      platform: 'ios',
+      deviceId: 'SIM-1',
+      name: 'iPhone 17',
+      reason: null,
     },
     skills: { agentIds: ['claude-code'], discovered: 3, linked: 3 },
     auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
@@ -79,12 +89,13 @@ describe(formatStatusReport, () => {
   it(`should print one line per section, like git status`, () => {
     const lines = report(mockReport()).split('\n');
 
-    expect(lines).toHaveLength(7);
+    expect(lines).toHaveLength(8);
     expect(lines.map((text) => text.split(/\s{2,}/)[0])).toEqual([
       'project',
       'expo go',
       'freshness',
       'dev server',
+      'device',
       'skills',
       'auth',
       'next',
@@ -227,6 +238,9 @@ describe(formatStatusReport, () => {
         source: 'default',
         ready: true,
         projectRootMatched: null,
+        hostType: null,
+        tunnelUrl: null,
+        tunnelExpired: null,
       },
     });
 
@@ -243,6 +257,9 @@ describe(formatStatusReport, () => {
         source: 'default',
         ready: null,
         projectRootMatched: true,
+        hostType: null,
+        tunnelUrl: null,
+        tunnelExpired: null,
       },
     });
 
@@ -259,6 +276,9 @@ describe(formatStatusReport, () => {
         source: 'scan',
         ready: true,
         projectRootMatched: false,
+        hostType: null,
+        tunnelUrl: null,
+        tunnelExpired: null,
       },
     });
 
@@ -275,6 +295,9 @@ describe(formatStatusReport, () => {
         source: 'default',
         ready: null,
         projectRootMatched: null,
+        hostType: null,
+        tunnelUrl: null,
+        tunnelExpired: null,
         reason: 'fetch failed',
       },
     });
@@ -375,5 +398,144 @@ describe(formatStatusReport, () => {
     const report = mockReport({ devServer: null });
 
     expect(line(report, 'dev server')).toContain('unavailable');
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+  describe('the skills line', () => {
+    it(`is left out when there is no agent and no skill to report`, () => {
+      const value = mockReport({ skills: { agentIds: null, discovered: 0, linked: 0 } });
+
+      expect(report(value)).not.toContain('skills');
+      // The seven lines that are facts about the project stay.
+      expect(report(value).split('\n')).toHaveLength(7);
+    });
+
+    it(`stays for an agent that was selected, however few skills there are`, () => {
+      const value = mockReport({ skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 } });
+
+      expect(line(value, 'skills')).toContain('no skills discovered');
+    });
+
+    it(`stays for a project that ships skills, with no agent selected`, () => {
+      const value = mockReport({ skills: { agentIds: null, discovered: 2, linked: 0 } });
+
+      expect(line(value, 'skills')).toContain('2 skills discovered');
+    });
+
+    // A section that could not be read has a reason worth printing either way.
+    it(`stays when the section could not be read`, () => {
+      const value = mockReport({
+        skills: null,
+        errors: { skills: 'autolinking is not installed' },
+      });
+
+      expect(line(value, 'skills')).toContain('unavailable');
+    });
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
+  describe('the device line', () => {
+    it(`names the simulator that is booted`, () => {
+      expect(line(mockReport(), 'device')).toContain('iPhone 17 (SIM-1)');
+    });
+
+    it(`says none, and why, for a machine with no device`, () => {
+      const value = mockReport({
+        device: {
+          state: 'absent',
+          platform: null,
+          deviceId: null,
+          name: null,
+          reason: 'no booted iOS simulator was found',
+        },
+      });
+
+      expect(line(value, 'device')).toContain('none');
+      expect(line(value, 'device')).toContain('no booted iOS simulator was found');
+    });
+
+    // Never rounded down to "none": a probe that could not run has shown nothing.
+    it(`says unknown when no platform tool could answer`, () => {
+      const value = mockReport({
+        device: {
+          state: 'unknown',
+          platform: null,
+          deviceId: null,
+          name: null,
+          reason: 'could not run "adb"',
+        },
+      });
+
+      expect(line(value, 'device')).toContain('unknown');
+      expect(line(value, 'device')).not.toContain('none');
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Where a device reaches the dev server
+  describe('the dev server line, tunnelled', () => {
+    it(`names the tunnel, which the listen address does not contain`, () => {
+      const value = mockReport({
+        devServer: {
+          url: 'http://127.0.0.1:8081',
+          running: true,
+          appsConnected: 0,
+          source: 'lock',
+          ready: true,
+          projectRootMatched: true,
+          hostType: 'tunnel',
+          tunnelUrl: 'http://abc.boltexpo.dev',
+          tunnelExpired: null,
+        },
+      });
+
+      expect(line(value, 'dev server')).toContain('tunnel http://abc.boltexpo.dev');
+    });
+
+    // The failure the whole tunnel reading exists for: a stale `Waiting on` line kept a dogfood
+    // session pointing a cloud simulator at a host that had stopped resolving.
+    it(`says the tunnel expired, and how to bring one back`, () => {
+      const value = mockReport({
+        devServer: {
+          url: 'http://127.0.0.1:8081',
+          running: true,
+          appsConnected: 0,
+          source: 'lock',
+          ready: true,
+          projectRootMatched: true,
+          hostType: 'tunnel',
+          tunnelUrl: null,
+          tunnelExpired: { signature: 'handshake', line: 'Unexpected server response: 409' },
+        },
+      });
+
+      expect(line(value, 'dev server')).toContain('tunnel expired');
+      expect(line(value, 'dev server')).toContain('npx exagent dev --detach --tunnel');
+      expect(line(value, 'dev server')).not.toContain('boltexpo.dev');
+    });
+
+    it(`keeps the expired note on a dev server that is down too`, () => {
+      const value = mockReport({
+        devServer: {
+          url: 'http://127.0.0.1:8081',
+          running: false,
+          appsConnected: 0,
+          source: 'lock',
+          ready: null,
+          projectRootMatched: null,
+          hostType: 'tunnel',
+          tunnelUrl: null,
+          tunnelExpired: { signature: 'dns', line: 'getaddrinfo ENOTFOUND abc.boltexpo.dev' },
+        },
+      });
+
+      expect(line(value, 'dev server')).toContain('not running');
+      expect(line(value, 'dev server')).toContain('tunnel expired');
+    });
+
+    it(`says nothing extra for a plain local run`, () => {
+      expect(line(mockReport(), 'dev server')).toBe(
+        'dev server  running on http://127.0.0.1:8081 · via lock · bundler ready · 1 app connected'
+      );
+    });
   });
 });

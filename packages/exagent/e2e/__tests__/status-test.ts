@@ -213,7 +213,7 @@ describe('exagent status', () => {
       expect(result.stdout).toContain('freshness');
       expect(result.stdout).toContain('dev server');
       expect(result.stdout).toContain('not running');
-      expect(result.stdout).toContain('skills');
+      expect(result.stdout).toContain('device');
       expect(result.stdout).toContain('next');
       expect(result.stdout).toContain('expo-go');
     });
@@ -226,6 +226,7 @@ describe('exagent status', () => {
         'expoGo',
         'freshness',
         'devServer',
+        'device',
         'skills',
         'auth',
         'next',
@@ -474,6 +475,9 @@ describe('exagent status', () => {
         source: 'flag',
         ready: false,
         projectRootMatched: null,
+        hostType: null,
+        tunnelUrl: null,
+        tunnelExpired: null,
       });
     });
 
@@ -498,6 +502,9 @@ describe('exagent status', () => {
           source: 'flag',
           ready: true,
           projectRootMatched: true,
+          hostType: null,
+          tunnelUrl: null,
+          tunnelExpired: null,
         });
       } finally {
         await stub.close();
@@ -656,6 +663,9 @@ describe('exagent status', () => {
           source: 'lock',
           ready: false,
           projectRootMatched: null,
+          hostType: null,
+          tunnelUrl: null,
+          tunnelExpired: null,
         });
       } finally {
         releaseLock();

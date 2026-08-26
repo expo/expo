@@ -117,6 +117,14 @@ declare module '2g' {
       devServerRunning: boolean;
       /** Debugger targets the dev server reported, i.e. apps connected to it. */
       appsConnected: number;
+      /** How a device off this machine reaches it: `tunnel`, `lan`, `localhost`, or null. */
+      devServerHostType: string | null;
+      /** The tunnel origin while it is current, null otherwise. */
+      tunnelUrl: string | null;
+      /** Whether the captured log says the tunnel died after its URL was printed. */
+      tunnelExpired: boolean;
+      /** Whether this machine has a device to open the app on: `present`, `absent`, `unknown`. */
+      localDevice: string;
       freshness: { ios: string | null; android: string | null };
       skillsDiscovered: number;
       skillsLinked: number;

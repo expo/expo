@@ -9,6 +9,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import { resolveDevServerReachAsync } from '../dev/advertisedUrl';
+import { probeLocalDeviceAsync } from '../device/localDevice';
 import { event } from '../events';
 import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
@@ -32,6 +34,7 @@ import {
   buildDevServerStatus,
   buildExpoGoStatus,
   buildFreshnessStatus,
+  buildLocalDeviceStatus,
   buildNextActionStatus,
   buildProjectStatus,
   resolveDefaultPlatform,
@@ -41,6 +44,7 @@ import type {
   AuthStatus,
   DevServerStatus,
   FreshnessState,
+  LocalDeviceStatus,
   SkillsStatus,
   StatusReport,
   StatusSectionName,
@@ -62,6 +66,15 @@ export const DEV_SERVER_PROBE_TIMEOUT_MS = 1500;
  */
 export const DEV_SERVER_READY_PROBE_TIMEOUT_MS = 400;
 
+/**
+ * How long the local-device probe may take.
+ *
+ * Two subprocesses, both of which answer in tens of milliseconds on a warm machine. The budget is
+ * for the cold one — a first `xcrun simctl` after an Xcode update — and expiring costs the report
+ * an answer rather than the command its promptness.
+ */
+export const DEVICE_PROBE_TIMEOUT_MS = 2500;
+
 export interface StatusOptions {
   /** Explicit --dev-server-url; null lets the probe scan the ports `expo start` uses. */
   devServerUrl: string | null;
@@ -73,6 +86,8 @@ export interface StatusOptions {
   devServerTimeoutMs?: number;
   /** Overrides {@link DEV_SERVER_READY_PROBE_TIMEOUT_MS}, for tests. */
   devServerReadyTimeoutMs?: number;
+  /** Overrides {@link DEVICE_PROBE_TIMEOUT_MS}, for tests. */
+  deviceProbeTimeoutMs?: number;
   /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
   followups?: boolean;
 }
@@ -91,6 +106,10 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     expoGoCompatible: report.expoGo?.compatible ?? null,
     devServerRunning: report.devServer?.running ?? false,
     appsConnected: report.devServer?.appsConnected ?? 0,
+    devServerHostType: report.devServer?.hostType ?? null,
+    tunnelUrl: report.devServer?.tunnelUrl ?? null,
+    tunnelExpired: report.devServer?.tunnelExpired != null,
+    localDevice: report.device?.state ?? 'unknown',
     freshness: { ios: freshnessOf(report, 'ios'), android: freshnessOf(report, 'android') },
     skillsDiscovered: report.skills?.discovered ?? 0,
     skillsLinked: report.skills?.linked ?? 0,
@@ -116,9 +135,10 @@ export async function collectStatusReportAsync(
   projectRoot: string,
   options: StatusOptions
 ): Promise<StatusReport> {
-  const [project, devServer, skills, auth] = await Promise.all([
+  const [project, devServer, device, skills, auth] = await Promise.all([
     attemptAsync(() => readProjectAsync(projectRoot)),
     attemptAsync(() => probeDevServerStatusAsync(projectRoot, options)),
+    attemptAsync(() => readLocalDeviceStatusAsync(options)),
     attemptAsync(() => readSkillsStatusAsync(projectRoot)),
     attemptAsync<AuthStatus>(() => readAuthPreflightAsync(projectRoot)),
   ]);
@@ -129,6 +149,7 @@ export async function collectStatusReportAsync(
     expoGo: null,
     freshness: null,
     devServer: null,
+    device: null,
     skills: null,
     auth: null,
     next: null,
@@ -142,6 +163,15 @@ export async function collectStatusReportAsync(
     report.devServer = devServer.value;
   } else {
     errors.devServer = devServer.error;
+  }
+
+  // Read before `next` too, and for the same reason: a machine with no device to open the app on
+  // makes `exagent navigate /` the wrong advice however healthy the dev server is
+  // (`buildNextActionStatus`).
+  if ('value' in device) {
+    report.device = device.value;
+  } else {
+    errors.device = device.error;
   }
 
   if ('value' in project) {
@@ -166,7 +196,8 @@ export async function collectStatusReportAsync(
       state,
       lastBuild,
       options.platform ?? resolveDefaultPlatform(state),
-      report.devServer
+      report.devServer,
+      report.device
     );
   } else {
     // One cause, one note. The other three sections are left null, and the project line says why.
@@ -230,10 +261,32 @@ async function probeDevServerStatusAsync(
       projectRootMatched: null,
     });
   }
-  return buildDevServerStatus(
-    discovery.devServerUrl,
-    discovery,
-    await readDevServerReadinessAsync(projectRoot, discovery, options)
+  const [readiness, reach] = await Promise.all([
+    readDevServerReadinessAsync(projectRoot, discovery, options),
+    // What the dev server printed about where a device reaches it, and whether the tunnel behind
+    // that address is still up (`src/dev/advertisedUrl.ts`). One file read and one lock probe.
+    resolveDevServerReachAsync(projectRoot),
+  ]);
+  return buildDevServerStatus(discovery.devServerUrl, discovery, readiness, reach);
+}
+
+/**
+ * Whether this machine has a device to open the app on, within a budget status can afford.
+ *
+ * The probe spawns `xcrun simctl` and `adb`, and status promises to be instant, so it is raced
+ * against a short deadline. The deadline expiring reports `unknown` rather than `absent` — the same
+ * rule the probe itself follows, because a suggestion turned off on the strength of a slow
+ * subprocess would be the mistake this exists to fix, backwards.
+ */
+async function readLocalDeviceStatusAsync(options: StatusOptions): Promise<LocalDeviceStatus> {
+  const timeoutMs = options.deviceProbeTimeoutMs ?? DEVICE_PROBE_TIMEOUT_MS;
+  const probe = await raceWithTimeoutAsync(probeLocalDeviceAsync(), timeoutMs);
+  return buildLocalDeviceStatus(
+    probe ?? {
+      state: 'unknown',
+      device: null,
+      reason: `no platform tool answered within ${timeoutMs}ms`,
+    }
   );
 }
 

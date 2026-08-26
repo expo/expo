@@ -9,6 +9,7 @@ import type {
   DevServerStatus,
   ExpoGoStatus,
   FreshnessStatus,
+  LocalDeviceStatus,
   NextActionStatus,
   ProjectStatus,
   SkillsStatus,
@@ -32,10 +33,28 @@ export function formatStatusReport(report: StatusReport): string {
     row('expo go', report.expoGo, expoGoLine, report, 'expoGo'),
     row('freshness', report.freshness, freshnessLine, report, 'freshness'),
     row('dev server', report.devServer, devServerLine, report, 'devServer'),
-    row('skills', report.skills, skillsLine, report, 'skills'),
+    row('device', report.device, deviceLine, report, 'device'),
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+    // The one section that can have nothing to say at all. A project whose dependencies ship no
+    // skills, read by somebody who has selected no agent, produced `no agent selected · no skills
+    // discovered` — a line about two things that are not there, on a report whose other six lines
+    // are facts about the project [observed — dogfood, 2026-08-24]. The section stays in `--json`,
+    // where a key that is always present is the contract (llp/0006 §Output contract).
+    ...(hasSkillsToReport(report)
+      ? [row('skills', report.skills, skillsLine, report, 'skills')]
+      : []),
     row('auth', report.auth, authLine, report, 'auth'),
     row('next', report.next, nextLine, report, 'next'),
   ].join('\n');
+}
+
+/** Whether the skills line would say anything: an agent is selected, or a skill was found. */
+function hasSkillsToReport(report: StatusReport): boolean {
+  // A section that could not be read has a reason worth printing, whatever it would have said.
+  if (report.skills == null) {
+    return true;
+  }
+  return !!report.skills.agentIds?.length || report.skills.discovered > 0;
 }
 
 /** One labelled line, or the note that explains why the section is missing. */
@@ -88,7 +107,12 @@ function freshnessLine(freshness: FreshnessStatus): string {
 
 function devServerLine(devServer: DevServerStatus): string {
   if (!devServer.running) {
-    return `${chalk.dim('not running')} (${devServer.url})`;
+    const stopped = [`${chalk.dim('not running')} (${devServer.url})`];
+    // The tunnel note survives the dev server, because it is the answer to why nothing works.
+    if (devServer.tunnelExpired) {
+      stopped.push(chalk.yellow('tunnel expired'));
+    }
+    return stopped.join(SEPARATOR);
   }
   const apps = pluralize(devServer.appsConnected, 'app', 'apps');
   const facts = [
@@ -102,7 +126,53 @@ function devServerLine(devServer: DevServerStatus): string {
   if (devServer.projectRootMatched === false) {
     facts.push(chalk.yellow('serves another project'));
   }
+  const reach = reachFact(devServer);
+  if (reach) {
+    facts.push(reach);
+  }
   return facts.join(SEPARATOR);
+}
+
+/**
+ * Where a device off this machine reaches the dev server, when that is not the `url` above.
+ *
+ * A word only when it adds one. `http://127.0.0.1:8081` already says "this machine", and a LAN
+ * address already says "this network", so the two cases worth a fact are a tunnel — an address the
+ * line above does not contain at all — and a tunnel that is gone. Reporting only the listen address
+ * of a tunnelled run is what left a dogfood session pointing a cloud simulator at `127.0.0.1`
+ * [observed — 2026-08-24]; `hostType` rides along in `--json` for a reader that wants all three.
+ */
+function reachFact(devServer: DevServerStatus): string | null {
+  if (devServer.tunnelExpired) {
+    return chalk.yellow(
+      `tunnel expired — restart with "npx exagent dev --detach --tunnel" (${devServer.tunnelExpired.line})`
+    );
+  }
+  return devServer.tunnelUrl ? `${chalk.green('tunnel')} ${devServer.tunnelUrl}` : null;
+}
+
+/**
+ * What this machine has to open the app on.
+ *
+ * Its own line because it changes what every other suggestion is worth. `unknown` is never rounded
+ * down to "none": a machine whose platform tools could not be run has not been shown to have no
+ * device, and the difference is what keeps `navigate` on the ladder where it belongs.
+ */
+function deviceLine(device: LocalDeviceStatus): string {
+  if (device.state === 'present') {
+    const label = device.name ? `${device.name} (${device.deviceId})` : device.deviceId;
+    return [chalk.green(device.platform ?? 'device'), label ?? ''].filter(Boolean).join(' ');
+  }
+  if (device.state === 'absent') {
+    return [
+      chalk.yellow('none'),
+      chalk.dim(device.reason ?? 'no booted simulator and no attached device'),
+    ].join(SEPARATOR);
+  }
+  return [
+    chalk.yellow('unknown'),
+    chalk.dim(device.reason ?? 'no platform tool could answer'),
+  ].join(SEPARATOR);
 }
 
 /**

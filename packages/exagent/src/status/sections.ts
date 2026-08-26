@@ -4,6 +4,10 @@
 
 import path from 'path';
 
+import { expoGoUrlForHost, isTunnelCurrent, type DevServerReach } from '../dev/advertisedUrl';
+import type { LocalDeviceProbe } from '../device/localDevice';
+import { resolveLanHost } from '../followups/network';
+import { decideExpoGoTarget } from '../navigate/target';
 import { decideStartPlan } from '../plan/decide';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
 import type { ProjectState } from '../project/types';
@@ -12,6 +16,7 @@ import type {
   DevServerStatus,
   ExpoGoStatus,
   FreshnessStatus,
+  LocalDeviceStatus,
   NextActionStatus,
   PlatformFreshness,
   ProjectStatus,
@@ -47,6 +52,14 @@ const VERIFY_COMMAND = 'exagent dev:wait --require-app';
  * This is the command that changes the state the wait is waiting for.
  */
 const OPEN_APP_COMMAND = 'exagent navigate /';
+
+/**
+ * The command to name when there is no local device to open the app on and no URL to hand over.
+ *
+ * It resolves the URL the way `navigate` would — the scheme of a development build, the Expo Go
+ * host, the tunnel — and opens nothing, which is the only part of `navigate` that needs a device.
+ */
+const PRINT_URL_COMMAND = 'exagent navigate / --print-url';
 
 /** What the project is: name, SDK, and how its native side is produced. */
 export function buildProjectStatus(state: ProjectState, packageName: string | null): ProjectStatus {
@@ -119,17 +132,52 @@ export interface DevServerReadiness {
   projectRootMatched: boolean | null;
 }
 
-/** Whether a dev server answers, how many apps are connected to it, and whether it is ready. */
+/**
+ * Whether a dev server answers, how many apps are connected to it, whether it is ready, and where
+ * a device off this machine can reach it.
+ *
+ * The last of those is read from what the dev server printed rather than from the URL it listens
+ * on, and the two can differ by the whole point: a tunnelled run listens on `127.0.0.1` and is
+ * reachable at `<session>.boltexpo.dev`, and only the second is an address a phone or a cloud
+ * simulator can use.
+ */
 export function buildDevServerStatus(
   url: string,
   probe: DevServerProbe,
-  readiness: DevServerReadiness
+  readiness: DevServerReadiness,
+  reach: DevServerReach | null = null
 ): DevServerStatus {
-  if (probe.reachable) {
-    return { url, running: true, appsConnected: probe.targets.length, ...readiness };
-  }
-  const status: DevServerStatus = { url, running: false, appsConnected: 0, ...readiness };
-  return probe.reason ? { ...status, reason: probe.reason } : status;
+  const running = probe.reachable;
+  // A tunnel URL is reported only while every part of it holds — see `isTunnelCurrent`. A dev
+  // server that is down cannot be reached at its tunnel either, whatever the log still says.
+  const tunnelUrl =
+    reach && running && isTunnelCurrent({ ...reach, running: true })
+      ? (reach.advertised?.url ?? null)
+      : null;
+
+  const status: DevServerStatus = {
+    url,
+    running,
+    appsConnected: running ? probe.targets.length : 0,
+    ...readiness,
+    hostType: reach?.advertised?.hostType ?? null,
+    tunnelUrl,
+    // Kept even when the dev server is down: "the tunnel expired" is the answer to why nothing
+    // works, and it does not stop being the answer when the process it took down is gone too.
+    tunnelExpired: reach?.tunnelFailure ?? null,
+  };
+  return running || !probe.reason ? status : { ...status, reason: probe.reason };
+}
+
+/** The device section: what this machine has to open an app on. */
+export function buildLocalDeviceStatus(probe: LocalDeviceProbe): LocalDeviceStatus {
+  return {
+    state: probe.state,
+    platform: probe.device?.platform ?? null,
+    deviceId: probe.device?.deviceId ?? null,
+    name: probe.device?.name ?? null,
+    reason: probe.reason,
+  };
 }
 
 /**
@@ -148,10 +196,11 @@ export function buildNextActionStatus(
   state: ProjectState,
   lastBuild: LastBuildFingerprints,
   platform: PlanPlatform,
-  devServer: DevServerStatus | null
+  devServer: DevServerStatus | null,
+  device: LocalDeviceStatus | null = null
 ): NextActionStatus {
   const plan = decideStartPlan(state, { platform, lastBuild });
-  const verify = verifyAction(devServer);
+  const verify = verifyAction(devServer, device, state);
   if (verify) {
     return { ...verify, rule: plan.rule, target: plan.target, steps: [] };
   }
@@ -165,7 +214,11 @@ export function buildNextActionStatus(
 }
 
 /** The command and the reason for a dev server this project can already use, or null. */
-function verifyAction(devServer: DevServerStatus | null): { command: string; why: string } | null {
+function verifyAction(
+  devServer: DevServerStatus | null,
+  device: LocalDeviceStatus | null,
+  state: ProjectState
+): { command: string; why: string } | null {
   if (!devServer?.running || devServer.projectRootMatched === false) {
     return null;
   }
@@ -175,10 +228,96 @@ function verifyAction(devServer: DevServerStatus | null): { command: string; why
       why: 'a dev server is running with an app connected, so check that its bundle builds instead of starting a second server',
     };
   }
+
+  // @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
+  // `navigate` drives a **local** simulator or an attached device, and a machine with neither has
+  // been told to run it for as long as this line has existed. On the run that found this, the
+  // device was a *cloud* simulator reached over a tunnel, so the useful answer is not a command at
+  // all: it is the URL something else opens [observed — 2026-08-24].
+  //
+  // `absent` only, never `unknown`: a probe that could not run establishes nothing, and turning a
+  // working suggestion off on the strength of a missing `adb` would be the same mistake backwards.
+  if (device?.state === 'absent') {
+    return noLocalDeviceAction(devServer, state);
+  }
+
   return {
     command: OPEN_APP_COMMAND,
     why: 'a dev server is running and no app is connected to it, so this opens one on a booted device — waiting for an app to attach would run out, because nothing else here starts one',
   };
+}
+
+/**
+ * What to do when a dev server is up, nothing is attached, and this machine has no device.
+ *
+ * The answer is an address rather than a command whenever one can be named, because the thing that
+ * has to happen next happens somewhere else. Which address depends on the target: an Expo Go
+ * project has a URL this report can build from the dev server's own host, and a development build
+ * has a scheme that is read from the project config — so that one is handed to the command which
+ * reads it, in the mode that needs no device.
+ */
+function noLocalDeviceAction(
+  devServer: DevServerStatus,
+  state: ProjectState
+): { command: string; why: string } {
+  const noDevice =
+    'no dev server client is attached and this machine has no booted simulator or attached device, so nothing here can open the app';
+
+  const target = decideExpoGoTarget({
+    // Zero apps are connected — that is the branch this is in — so the dev server has nothing to
+    // say about which app it would be.
+    targetAppIds: [],
+    hasNativeDirs: state.nativeDirs.ios || state.nativeDirs.android,
+    usesDevClient: state.usesDevClient,
+  });
+
+  const host = devServer.tunnelUrl
+    ? hostOf(devServer.tunnelUrl)
+    : lanHostForPort(portOf(devServer.url));
+
+  if (target.isExpoGo && host) {
+    return {
+      command: expoGoUrlForHost(host),
+      why: `${noDevice} — open this URL on your device or cloud simulator instead${
+        devServer.tunnelUrl
+          ? ' (it is the tunnel host, which is reachable from any network)'
+          : ' (it is this host on the local network, so the device has to be on it; restart with --tunnel for one that is not)'
+      }`,
+    };
+  }
+
+  return {
+    command: PRINT_URL_COMMAND,
+    why: `${noDevice} — this prints the URL to open elsewhere, without looking for a device${
+      target.isExpoGo ? ', because this host reports no address a device could use' : ''
+    }`,
+  };
+}
+
+function hostOf(url: string): string | null {
+  try {
+    return new URL(url).host || null;
+  } catch {
+    return null;
+  }
+}
+
+function portOf(url: string): number | null {
+  try {
+    const port = Number(new URL(url).port);
+    return Number.isInteger(port) && port > 0 ? port : null;
+  } catch {
+    return null;
+  }
+}
+
+/** `<lan ip>:<port>`, or null when this host has no LAN address or the port is unknown. */
+function lanHostForPort(port: number | null): string | null {
+  if (port == null) {
+    return null;
+  }
+  const host = resolveLanHost();
+  return host ? `${host}:${port}` : null;
 }
 
 /**

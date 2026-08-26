@@ -2,6 +2,7 @@
 // Pure builders: the caller passes what it already probed, so every branch is unit-testable
 // without a dev server, a device, or an EAS account.
 
+import type { LocalDeviceState } from '../device/localDevice';
 import type { ProjectState, StartPlan } from '../project/types';
 import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
 import type { ToolchainStatus } from '../toolchain/types';
@@ -20,6 +21,25 @@ export interface StartFollowUpInput {
   web: boolean;
   /** `exp://<lan ip>:<port>`, or null when this host has no LAN address. */
   lanUrl: string | null;
+  /**
+   * The run was asked for a tunnel, so the dev server's address is a tunnel host.
+   *
+   * Known from the command line, and it has to be: the tunnel host itself is not known until the
+   * dev server has come up, which is seconds after these lines are printed. What it changes is that
+   * naming the LAN URL here would be *wrong* rather than merely unhelpful — the whole point of the
+   * flag is a device that is not on this network, and `exp://192.168.x.x:8081` is unreachable from
+   * one [observed — dogfood, 2026-08-24: a cloud simulator, given exactly that].
+   */
+  tunnel?: boolean;
+  /**
+   * Whether this machine has a device to open the app on, when a probe established it.
+   *
+   * `absent` is the only value that changes the ladder, and it drops the rung that deep-links a
+   * local simulator. `unknown` — a probe that could not run — leaves everything as it was.
+   *
+   * @see src/device/localDevice.ts
+   */
+  localDevice?: LocalDeviceState;
   /** `http://localhost:<port>`, the page a browser opens. Null when no port can be vouched for. */
   webUrl?: string | null;
   /**
@@ -52,14 +72,25 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
     return capFollowUps(webFollowUps(input));
   }
 
+  // @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
+  // Normally first, because it is the one step between "the dev server is up" and anything
+  // verifiable, and the only one no other command does: a dev server serves a bundle and opens
+  // nothing. Left out entirely on a machine with no device, where it is an instruction to run
+  // something that cannot work — `simctl` and `adb` drive a *local* simulator or an attached
+  // device, and the run that found this had neither [observed — dogfood, 2026-08-24].
+  const openApp: FollowUp[] =
+    input.localDevice === 'absent'
+      ? []
+      : [
+          {
+            id: 'open-app',
+            command: 'npx exagent navigate /',
+            why: 'The dev server is up but opens nothing, so this deep-links the app onto the booted simulator or the attached device.',
+          },
+        ];
+
   return capFollowUps([
-    // First, because it is the one step between "the dev server is up" and anything verifiable,
-    // and the only one no other command does: a dev server serves a bundle and opens nothing.
-    {
-      id: 'open-app',
-      command: 'npx exagent navigate /',
-      why: 'The dev server is up but opens nothing, so this deep-links the app onto the booted simulator or the attached device.',
-    },
+    ...openApp,
     realDeviceFollowUp(input),
     {
       id: 'runtime-errors',
@@ -109,7 +140,29 @@ function webFollowUps(input: StartFollowUpInput): FollowUp[] {
 }
 
 /** How to reach the dev server from a phone, which is the one thing a terminal cannot show. */
-function realDeviceFollowUp({ expoGo, lanUrl, portKnown = true }: StartFollowUpInput): FollowUp {
+function realDeviceFollowUp({
+  expoGo,
+  lanUrl,
+  portKnown = true,
+  tunnel = false,
+  localDevice = 'unknown',
+}: StartFollowUpInput): FollowUp {
+  const noLocalDevice =
+    localDevice === 'absent'
+      ? 'This machine has no booted simulator and no attached device, so nothing here can open the app. '
+      : '';
+
+  // A tunnelled run first, because it is the case where the LAN URL below would be *wrong* rather
+  // than merely one option: the tunnel host is not known until the dev server comes up, seconds
+  // after this line is printed, so what is named is the command that reads it back.
+  if (tunnel) {
+    return {
+      id: 'real-device-tunnel',
+      command: 'npx exagent navigate / --print-url',
+      why: `${noLocalDevice}This run tunnels the dev server, so its address is a tunnel host rather than this machine's — and the tunnel host is only known once it is up. This prints the exp:// link to open on a phone, a cloud simulator, or anywhere else.`,
+    };
+  }
+
   if (!portKnown) {
     // Naming a URL here would be a guess about which process holds the default port, and a wrong
     // guess sends a device into another project's app and reports it as success.
@@ -123,15 +176,15 @@ function realDeviceFollowUp({ expoGo, lanUrl, portKnown = true }: StartFollowUpI
     return {
       id: 'real-device',
       command: lanUrl,
-      why: 'Open this URL in Expo Go on a phone on the same network to run the app on a real device.',
+      why: `${noLocalDevice}Open this URL in Expo Go on a phone on the same network to run the app on a real device. A device that is not on this network — a cloud simulator — needs "npx exagent dev --detach --tunnel" instead.`,
     };
   }
   return {
     id: 'real-device-tunnel',
     command: 'npx exagent start --tunnel',
     why: expoGo
-      ? 'This host reports no LAN address, so a phone reaches the dev server through a tunnel.'
-      : 'A development build on a phone needs a dev server URL it can reach; a tunnel serves one from any network.',
+      ? `${noLocalDevice}This host reports no LAN address, so a phone reaches the dev server through a tunnel.`
+      : `${noLocalDevice}A development build on a phone needs a dev server URL it can reach; a tunnel serves one from any network.`,
   };
 }
 

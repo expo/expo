@@ -378,7 +378,12 @@ export async function requireConnectedAppAsync(
         // Not "press i in the dev server's terminal": a dev server this CLI started with --detach
         // has no terminal to press a key in, and a driving agent has no keyboard for one that has
         // [friction run 5, F48-5]. `navigate` is the command that does the same thing.
-        `How: open the app on a device or simulator with "npx exagent navigate /", wait for the bundle to finish loading with "npx exagent dev:wait --require-app", then run this command again.`,
+        //
+        // The second half is for the device this machine cannot drive. `navigate` opens a *local*
+        // simulator or an attached device, and a dogfood session ran Expo Go on a cloud simulator
+        // through a tunnel with neither [observed — 2026-08-24]; `--print-url` is the same
+        // resolution with the opening left to whatever can do it.
+        `How: open the app on a device or simulator with "npx exagent navigate /" — or, when the device is a phone or a cloud simulator this machine cannot drive, get the URL to open on it with "npx exagent navigate / --print-url". Then wait for the bundle to finish loading with "npx exagent dev:wait --require-app" and run this command again.`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent navigate /';

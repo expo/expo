@@ -114,6 +114,9 @@ describe(collectStatusReportAsync, () => {
       source: 'default',
       ready: true,
       projectRootMatched: true,
+      hostType: null,
+      tunnelUrl: null,
+      tunnelExpired: null,
     });
     expect(report.skills).toEqual({ agentIds: ['claude-code'], discovered: 1, linked: 1 });
     expect(report.next?.rule).toBe('expo-go');
@@ -189,6 +192,9 @@ describe(collectStatusReportAsync, () => {
       source: 'default',
       ready: null,
       projectRootMatched: null,
+      hostType: null,
+      tunnelUrl: null,
+      tunnelExpired: null,
       reason: 'fetch failed',
     });
     // Nothing answered, so nothing was asked about readiness either.
@@ -379,6 +385,7 @@ describe(printStatusAsync, () => {
       'expoGo',
       'freshness',
       'devServer',
+      'device',
       'skills',
       'auth',
       'next',
@@ -396,6 +403,7 @@ describe(printStatusAsync, () => {
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
       'auth',
       'devServer',
+      'device',
       'errors',
       'expoGo',
       'followups',
@@ -417,6 +425,7 @@ describe(printStatusAsync, () => {
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
       'auth',
       'devServer',
+      'device',
       'errors',
       'expoGo',
       'followups',
@@ -448,6 +457,10 @@ describe(printStatusAsync, () => {
       expoGoCompatible: true,
       devServerRunning: true,
       appsConnected: 1,
+      devServerHostType: null,
+      tunnelUrl: null,
+      tunnelExpired: false,
+      localDevice: 'unknown',
       freshness: { ios: 'stale', android: 'stale' },
       skillsDiscovered: 0,
       skillsLinked: 0,

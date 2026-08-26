@@ -13,8 +13,26 @@ jest.mock('../../log');
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn(), spawnExpoAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({ autoSyncSkillsAsync: jest.fn() }));
 jest.mock('../../devLock', () => ({ holdDevServerLockAsync: jest.fn() }));
+// The ladder asks whether this machine has a device to open the app on (llp/0009 §Device-aware
+// ladders). Mocked, because a unit test must not depend on whether a simulator happens to be
+// booted on the machine running it — and `unknown` is the answer that leaves every rung as it was.
+jest.mock('../../device/localDevice', () => ({
+  probeLocalDeviceAsync: jest.fn(async () => ({ state: 'unknown', device: null, reason: null })),
+}));
 
 const projectRoot = '/project';
+
+/**
+ * Let the follow-up ladder settle without advancing the clock.
+ *
+ * The ladder now awaits one bounded probe before it is printed, so the line that used to be
+ * synchronous is one microtask away. What the tests below assert is unchanged: everything is
+ * printed *before the subprocess exists*, which is the property that matters — nothing printed
+ * after Metro starts streaming survives in a terminal.
+ */
+async function settleFollowUps(): Promise<void> {
+  await jest.advanceTimersByTimeAsync(0);
+}
 
 /** Everything the wrapper printed before handing the terminal to `expo start`. */
 function printed(): string {
@@ -68,6 +86,7 @@ describe(startAsync, () => {
   it(`should run expo start with the forwarded arguments`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions(['--web']));
+    await settleFollowUps();
 
     expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['start', '--web']);
 
@@ -78,6 +97,7 @@ describe(startAsync, () => {
   it(`should not sync skills before the idle delay elapses`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions([]));
+    await settleFollowUps();
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS - 1);
     expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
@@ -89,6 +109,7 @@ describe(startAsync, () => {
   it(`should sync skills after the idle delay while the dev server runs`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions([]));
+    await settleFollowUps();
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS);
     expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot, { silent: false });
@@ -100,6 +121,7 @@ describe(startAsync, () => {
   it(`should not sync skills with --no-agent-skills`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions(['--no-agent-skills']));
+    await settleFollowUps();
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS * 2);
     expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
@@ -112,6 +134,7 @@ describe(startAsync, () => {
   it(`should print the follow-ups before handing the terminal to expo start`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions([]));
+    await settleFollowUps();
 
     // Printed synchronously, before the subprocess exists: nothing printed after Metro starts
     // streaming survives in a terminal a person or an agent reads.
@@ -128,6 +151,7 @@ describe(startAsync, () => {
   it(`should offer a tunnel instead of an exp:// URL for a development build`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions(['--dev-client']));
+    await settleFollowUps();
 
     expect(printed()).toContain('npx exagent start --tunnel');
     expect(printed()).not.toContain('exp://');
@@ -145,6 +169,7 @@ describe(startAsync, () => {
     });
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions([]));
+    await settleFollowUps();
 
     expect(printed()).toContain('npx exagent start --tunnel');
     expect(printed()).not.toContain('exp://');
@@ -159,6 +184,7 @@ describe(startAsync, () => {
   it(`should lead a web run with the site URL, not a native cloud build`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions(['--web', '--port', '8134']));
+    await settleFollowUps();
 
     expect(printed()).toContain('http://localhost:8134');
     expect(printed()).toContain('npx exagent dev:wait --platform web');
@@ -172,6 +198,7 @@ describe(startAsync, () => {
   it(`should leave out the device hint when only the web bundle is served`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions(['--web']));
+    await settleFollowUps();
 
     expect(printed()).toContain('Suggested next:');
     expect(printed()).not.toContain('exp://');
@@ -184,6 +211,7 @@ describe(startAsync, () => {
   it(`should print nothing with --no-followups`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions(['--no-followups']));
+    await settleFollowUps();
 
     expect(Log.log).not.toHaveBeenCalled();
     // The flag is exagent's own, so `expo start` never sees it.
@@ -196,6 +224,7 @@ describe(startAsync, () => {
   it(`should cancel the pending sync when the dev server exits early`, async () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions([]));
+    await settleFollowUps();
 
     end(1);
     await expect(promise).resolves.toBe(1);

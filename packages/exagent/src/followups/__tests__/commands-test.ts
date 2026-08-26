@@ -30,6 +30,16 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       source: 'default',
       ready: null,
       projectRootMatched: null,
+      hostType: null,
+      tunnelUrl: null,
+      tunnelExpired: null,
+    },
+    device: {
+      state: 'present',
+      platform: 'ios',
+      deviceId: 'SIM-1',
+      name: 'iPhone 17',
+      reason: null,
     },
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
     auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
@@ -55,6 +65,9 @@ describe(buildStatusFollowUps, () => {
           source: 'default',
           ready: true,
           projectRootMatched: true,
+          hostType: null,
+          tunnelUrl: null,
+          tunnelExpired: null,
         },
       })
     );
@@ -73,6 +86,9 @@ describe(buildStatusFollowUps, () => {
           source: 'default',
           ready: true,
           projectRootMatched: true,
+          hostType: null,
+          tunnelUrl: null,
+          tunnelExpired: null,
         },
       })
     );
@@ -138,6 +154,9 @@ describe(buildStatusFollowUps, () => {
           source: 'default',
           ready: true,
           projectRootMatched: true,
+          hostType: null,
+          tunnelUrl: null,
+          tunnelExpired: null,
         },
         skills: { agentIds: ['claude-code'], discovered: 3, linked: 0 },
         expoGo: { compatible: false, reasonCount: 1 },

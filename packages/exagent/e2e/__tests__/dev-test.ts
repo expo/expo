@@ -346,11 +346,9 @@ describe('exagent dev', () => {
     it('is refused before anything runs, with the --json envelope', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(
-        projectRoot,
-        ['dev', '--yes', '--json', '--bogus'],
-        { reject: false }
-      );
+      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json', '--bogus'], {
+        reject: false,
+      });
 
       expect(result.exitCode).toBe(1);
       const { error } = JSON.parse(result.stdout);
@@ -397,9 +395,13 @@ describe('exagent dev', () => {
     it('leads a web run with the site URL and the web bundle check', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--web', '--port', '8124'], {
-        env: { STUB_EXPO_DEV_SERVER_PORT: '8124' },
-      });
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--json', '--web', '--port', '8124'],
+        {
+          env: { STUB_EXPO_DEV_SERVER_PORT: '8124' },
+        }
+      );
 
       expect(result.exitCode).toBe(0);
       const followups = JSON.parse(result.stdout).followups as { id: string; command: string }[];

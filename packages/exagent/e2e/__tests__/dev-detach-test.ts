@@ -186,11 +186,9 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const first = await executeExagentAsync(
-        projectRoot,
-        ['dev', '--detach', '--yes', '--json'],
-        { env: detachEnv(projectRoot, 8397) }
-      );
+      const first = await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+        env: detachEnv(projectRoot, 8397),
+      });
       const firstPid = JSON.parse(first.stdout).pid;
 
       const second = await executeExagentAsync(
@@ -214,11 +212,9 @@ describe('exagent dev --detach', () => {
   // The counterpart of the finding: `dev:stop` has to reach a process this shell never owned.
   it('is stopped by dev:stop, which takes the whole tree with it', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const started = await executeExagentAsync(
-      projectRoot,
-      ['dev', '--detach', '--yes', '--json'],
-      { env: detachEnv(projectRoot, 8395) }
-    );
+    const started = await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+      env: detachEnv(projectRoot, 8395),
+    });
     const { pid } = JSON.parse(started.stdout);
 
     const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json'], {
@@ -269,7 +265,10 @@ describe('exagent dev:logs', () => {
       });
       // The stub prints its start line as soon as it runs; the file is written by the child.
       await waitForAsync(
-        () => (fs.readFileSync(path.join(projectRoot, LOG_PATH), 'utf8') || '').includes('stub_expo_start'),
+        () =>
+          (fs.readFileSync(path.join(projectRoot, LOG_PATH), 'utf8') || '').includes(
+            'stub_expo_start'
+          ),
         5000
       );
 

@@ -386,12 +386,10 @@ describe('skills --json reports', () => {
       agents: [claudeAgent],
       source: 'cache',
     });
-    jest
-      .mocked(syncSkillLinksAsync)
-      .mockResolvedValueOnce({
-        created: ['.claude/skills/my-skill'],
-        pruned: ['.claude/skills/x'],
-      });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({
+      created: ['.claude/skills/my-skill'],
+      pruned: ['.claude/skills/x'],
+    });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false, json: true });
 

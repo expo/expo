@@ -31,6 +31,11 @@ jest.mock('../../start/startAsync', () => ({ runDevServerAsync: jest.fn() }));
 // steps inherit the terminal, and nothing about their output is this command's business. The
 // runs nobody is watching get their own block at the end of the file.
 jest.mock('../../utils/interactive', () => ({ isInteractive: jest.fn(() => true) }));
+// A unit test must not depend on whether the machine running it has a simulator booted
+// (llp/0009 §Device-aware ladders); `unknown` leaves every rung of the ladder as it was.
+jest.mock('../../device/localDevice', () => ({
+  probeLocalDeviceAsync: jest.fn(async () => ({ state: 'unknown', device: null, reason: null })),
+}));
 // The follow-ups of a run are reported rather than embedded in the emitted plan, so this is where
 // a test reads them. The real reporter still runs, so the `Suggested next:` section is real too.
 jest.mock('../../followups', () => {

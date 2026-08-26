@@ -5,7 +5,7 @@ import { autoSyncSkillsAsync } from '../skills/skillsAsync';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
 import type { SubprocessOutput } from '../utils/subprocess';
-import { resolveStartFollowUps } from './followUps';
+import { resolveStartFollowUpsAsync } from './followUps';
 import type { StartOptions } from './resolveOptions';
 
 /** How long to wait after spawning `expo start` before syncing skills. */
@@ -40,7 +40,7 @@ export async function startAsync(projectRoot: string, options: StartOptions): Pr
   // development build; anything else means Expo Go.
   reportFollowUps(
     'start',
-    resolveStartFollowUps(projectRoot, options, {
+    await resolveStartFollowUpsAsync(projectRoot, options, {
       expoGo: !options.expoArgs.includes('--dev-client') && !dependsOnDevClientSync(projectRoot),
       web: options.platform === 'web',
     })
