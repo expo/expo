@@ -198,7 +198,14 @@ export function isActiveSessionStatus(status: string | null): boolean {
   return status != null && status.trim().toUpperCase() === ACTIVE_SESSION_STATUS;
 }
 
-/** Whether `simulator:availability --json` said the account has the feature. [inferred] */
+/**
+ * Whether `simulator:availability --json` said the account has the feature.
+ *
+ * [observed — 2026-08-26, eas-cli 22.4.0, recorded in
+ * `src/__fixtures__/eas/simulator-availability.json`]. The payload carries an `accountName`
+ * alongside `available`, which this deliberately ignores: the question is whether the feature is
+ * there, and *whose* account answered is not this function's to report.
+ */
 export function parseAvailabilityJson(stdout: string): boolean | null {
   try {
     const parsed: unknown = JSON.parse(stdout.trim());

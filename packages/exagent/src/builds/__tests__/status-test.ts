@@ -4,6 +4,7 @@ import {
   EXIT_OUTCOME_FAILED,
   EXIT_OUTCOME_TIMEOUT,
 } from '../../exitCodes';
+import recordedView from '../../__fixtures__/eas/build-view.json';
 import { exitCodeForOutcome, normalizeStatus, resolveTerminalStatus } from '../status';
 
 describe(normalizeStatus, () => {
@@ -32,6 +33,17 @@ describe(normalizeStatus, () => {
 });
 
 describe(resolveTerminalStatus, () => {
+  // The casing the table normalizes *into* was a defensive guess until a signed-in machine could
+  // ask. It is `SCREAMING_SNAKE`, and this reads it off the recorded payload rather than off a
+  // string written here — see `src/__fixtures__/eas/README.md`.
+  it(`ends the wait on the status a real build:view printed`, () => {
+    expect(recordedView.status).toBe('FINISHED');
+    expect(resolveTerminalStatus(recordedView.status)).toEqual({
+      outcome: 'finished',
+      exitCode: EXIT_OK,
+    });
+  });
+
   it(`ends the wait on a finished build, with the success code`, () => {
     for (const spelling of ['FINISHED', 'finished', 'Finished']) {
       expect(resolveTerminalStatus(spelling)).toEqual({

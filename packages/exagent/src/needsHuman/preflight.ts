@@ -12,7 +12,6 @@
 import { resolveEasCliOrThrow } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { looksLikeWrapperCrash } from '../utils/wrapperCrash';
-import { lastNonEmptyLine } from './detect';
 
 /** Who the Expo CLI family acts as on this machine. */
 export interface AuthPreflight {
@@ -113,10 +112,37 @@ function fromTokenAlone(): AuthPreflight {
 /**
  * The account name out of `eas whoami`.
  *
- * The last line with anything on it, because the CLI may print a notice above its answer, and
- * anything that does not look like one name is not one.
+ * The **first** line that looks like one name, not the last. `eas whoami` prints the name, then the
+ * email, then — for an actor belonging to more than their own personal account — a blank line,
+ * `Accounts:`, and one `• <name> (Role: <role>)` per account [observed — the recorded payload in
+ * `src/__fixtures__/eas/whoami.txt`, and `eas-cli/build/commands/account/view.js`, 22.4.0]. So the
+ * last line of a real signed-in machine's answer is a role, and reading it reported `user: null`
+ * for every account that is on a team.
+ *
+ * Scanning forward for the first line that *looks like* a name rather than taking line one keeps
+ * what the previous rule was for: a notice printed above the answer has spaces in it, fails the
+ * shape test, and is skipped. The email matches the shape too, but it comes second, so the name
+ * still wins.
+ *
+ * The `(authenticated using EXPO_TOKEN)` note the CLI appends when the session came from the
+ * variable is dropped: it says how the account was reached, not which account it is.
  */
 function parseUser(stdout: string): string | null {
-  const line = lastNonEmptyLine(stdout)?.trim();
-  return line && /^[\w.@+-]+$/.test(line) ? line : null;
+  for (const raw of stdout.split('\n')) {
+    // Everything below this belongs to the account list, and every line of it is a role.
+    if (raw.trim() === ACCOUNT_LIST_HEADING) {
+      return null;
+    }
+    const line = raw.trim().replace(EXPO_TOKEN_NOTE, '').trim();
+    if (line && /^[\w.@+-]+$/.test(line)) {
+      return line;
+    }
+  }
+  return null;
 }
+
+/** The line `eas whoami` prints above the account list, and the end of anything worth reading. */
+const ACCOUNT_LIST_HEADING = 'Accounts:';
+
+/** How `eas whoami` notes that the session came from the variable rather than from a login. */
+const EXPO_TOKEN_NOTE = /\s*\(authenticated using EXPO_TOKEN\)$/;

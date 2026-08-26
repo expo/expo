@@ -190,15 +190,30 @@ exactly one platform, and which one is a fact about the build rather than a ques
 looping the platforms — would have spawned the identical command twice and reported one answer as
 two.
 
-**The `--json` shape of `fingerprint:compare` is unverified** [inferred — 2026-08-24]. eas-cli
-depends on `@expo/fingerprint`, so its diff is very likely the same `FingerprintDiffItem[]`, but no
-run against a real account has confirmed it. The parser is written accordingly: it looks for that
-shape at the top level and under `diff`, `fingerprintDiff`, `differences` and `changes`; recognition
-requires the `op` field, so it is a recognition and not a hope; and a payload it cannot read
-degrades to the two hashes with a caveat carrying the payload's tail, the way
-`src/deploy/parseOutput.ts` reports a parse that missed. The command still exits 0. **Verify against
-one real run and delete the guessing** — the caveat text is what a person who hits it should paste
-back.
+**`fingerprint:compare --json` does not print a diff** [observed — 2026-08-26, eas-cli 22.4.0,
+signed in; recorded in `src/__fixtures__/eas/fingerprint-compare.json`]. It prints
+`{ fingerprint1, fingerprint2 }`, each a whole `{ hash, sources }`. For `--build-id`, `fingerprint1`
+is the build's fingerprint and `fingerprint2` is the one it computed from the working directory;
+for two positional hashes it is the same shape with the same ordering. The guess this section
+recorded — that eas-cli depends on `@expo/fingerprint`, so the payload would be a
+`FingerprintDiffItem[]` — **was wrong**, and against the real service the parser found neither a
+diff nor a hash under any of the keys it tried, so `impact --build <id>` answered with a caveat
+carrying a megabyte of payload and nothing else. That is worse than the failure this design
+anticipated: the fallback preserved "whether", and here even "whether" was lost, because the hashes
+were not where the fallback looked either.
+
+Resolution: **the diff is produced locally.** The payload carries both sides' `sources`, which is
+exactly what `fingerprint:diff` takes, so `compareWithEasBuildAsync` hands the pair to the
+project's own fingerprint CLI — the same call the `last-build` mode already makes. The two hashes
+are the server's answer to "did anything change" and the diff is a local elaboration of it, so a
+diff that could not be produced (no `@expo/fingerprint` in the project) costs the detail and not
+the verdict: `fingerprintChanged` still comes from the hashes, and the failure rides along as a
+caveat.
+
+The older guesses stay in the parser as fallbacks, and the tail-carrying caveat stays behind them.
+Not because the shape is still in doubt, but because it is another CLI's payload across a process
+boundary: a shape that moves again should degrade to "whether" rather than to nothing, which is the
+lesson this round actually taught.
 
 **`git-refs` (`--base <ref>`) is not implemented**, and says so rather than approximating: exit 1,
 `IMPACT_MODE_UNAVAILABLE`. Materializing a ref means a linked work tree borrowing *this* tree's
@@ -369,7 +384,8 @@ and on `ota.safe`, not on wording.
 
 ## Open questions
 
-1. The `--json` shape of `eas fingerprint:compare`, above. One real run retires the guessing.
+1. ~~The `--json` shape of `eas fingerprint:compare`.~~ **Answered** [observed — 2026-08-26]: it is
+   a pair of whole fingerprints and the diff is this CLI's to produce. See above.
 2. `--base <ref>`, which needs either `@expo/fingerprint --git-ref` or an honest `--reinstall`.
    Neither is free, and `--build` covers the common case.
 3. Whether `status` should gain a `Try: npx exagent impact` rung. The two do not overlap — `status`

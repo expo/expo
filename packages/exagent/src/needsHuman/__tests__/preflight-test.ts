@@ -1,9 +1,20 @@
 import { vol } from 'memfs';
+import path from 'path';
 
 import * as subprocess from '../../utils/subprocess';
 import { readAuthPreflightAsync, resetAuthPreflightCache } from '../preflight';
 
 const projectRoot = '/project';
+
+/**
+ * What `eas whoami` printed on a real signed-in machine.
+ *
+ * Read off the real filesystem, because this suite mocks `fs` with memfs and the fixture is a
+ * recording rather than a fake — see `src/__fixtures__/eas/README.md` for its provenance.
+ */
+const recordedWhoami = jest
+  .requireActual<typeof import('fs')>('fs')
+  .readFileSync(path.join(__dirname, '../../__fixtures__/eas/whoami.txt'), 'utf8');
 
 /** Answer the one `eas whoami` run of a preflight. */
 function mockWhoami(result: Partial<subprocess.SubprocessResult>) {
@@ -35,12 +46,37 @@ describe(readAuthPreflightAsync, () => {
     });
   });
 
-  it('reads the answer out of the last line the CLI printed', async () => {
+  it('skips a notice printed above the answer', async () => {
     withProjectEas();
     mockWhoami({ exitCode: 0, stdout: 'A new version of eas-cli is available\nkudo@expo.dev\n' });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({
       user: 'kudo@expo.dev',
+    });
+  });
+
+  // The case that made the parser wrong: on a machine belonging to more than a personal account,
+  // `eas whoami` prints an account list *below* the name, so the last line is a role and not a
+  // user. Recorded from the published CLI — see `src/__fixtures__/eas/README.md`.
+  it('reads the name above the account list of a multi-account actor', async () => {
+    withProjectEas();
+    mockWhoami({ exitCode: 0, stdout: recordedWhoami });
+
+    await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
+      loggedIn: true,
+      user: 'kudochien',
+      source: 'eas whoami',
+    });
+  });
+
+  // `eas-cli/build/commands/account/view.js` appends this when the session came from the variable
+  // [observed — 22.4.0]. The account is still the account; the suffix is a note about how.
+  it('reads the name out from under the EXPO_TOKEN note', async () => {
+    withProjectEas();
+    mockWhoami({ exitCode: 0, stdout: 'ci-robot (authenticated using EXPO_TOKEN)\n' });
+
+    await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({
+      user: 'ci-robot',
     });
   });
 
