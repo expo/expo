@@ -14,6 +14,7 @@ import { probeLocalDeviceAsync } from '../device/localDevice';
 import { event } from '../events';
 import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
+import { readProjectSchemeConfig } from '../navigate/deepLink';
 import { readAuthPreflightAsync } from '../needsHuman/preflight';
 import { readLastBuildFingerprints } from '../plan/lastBuild';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
@@ -196,7 +197,11 @@ export async function collectStatusReportAsync(
       lastBuild,
       options.platform ?? resolveDefaultPlatform(state),
       report.devServer,
-      report.device
+      report.device,
+      // The scheme a development build of this project registers, read the same way the deep link
+      // reads it: `exp://` is the Expo Go form only, and a development build's connect URL takes
+      // the app's own scheme (`src/navigate/connectUrl.ts`).
+      devBuildSchemeSync(projectRoot)
     );
   } else {
     // One cause, one note. The other three sections are left null, and the project line says why.
@@ -218,6 +223,19 @@ export async function collectStatusReportAsync(
   }
 
   return report;
+}
+
+/**
+ * The URL scheme a development build of this project registers, or null.
+ *
+ * The precedence of the deep link itself: the `scheme` field of the static app config, then the
+ * `exp+<slug>` default a managed development build registers. One file read, statically — a dynamic
+ * `app.config.js` is never evaluated (llp/0001 §Constraints item 5), so such a project reports null
+ * and the report names the command that can be given `--scheme` instead.
+ */
+function devBuildSchemeSync(projectRoot: string): string | null {
+  const config = readProjectSchemeConfig(projectRoot);
+  return config.scheme ?? (config.slug ? `exp+${config.slug}` : null);
 }
 
 /** The probed project state, plus the name only the project's own `package.json` knows. */

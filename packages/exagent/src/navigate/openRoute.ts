@@ -28,11 +28,13 @@ import {
 import { readProjectRoutesAsync } from '../project/routes';
 import { discoverDevServerAsync, type DevServerSource } from '../runtime/devServer';
 import { CommandError } from '../utils/errors';
+import { buildConnectUrls, type ConnectUrl } from './connectUrl';
 import {
   isFullUrlRoute,
   openUrlOnDeviceAsync,
   readProjectSchemeConfig,
   resolveDeepLinkUrl,
+  type ProjectSchemeConfig,
 } from './deepLink';
 import { resolveDeviceAsync, type NavigatePlatform } from './device';
 import { debugEvent } from './events';
@@ -93,6 +95,18 @@ export interface ResolvedRoute {
   hostType: DevServerHostType | null;
   /** Whether the route was checked against the project's routes, and what the check said. */
   routeCheck: RouteCheckJson;
+  /**
+   * How to point an app at this dev server, one entry per application that could be meant.
+   *
+   * A *different* URL from {@link url}: that one navigates an app already loaded against a dev
+   * server, and these get it loaded. `exp://<host>` is the Expo Go form and
+   * `<scheme>://expo-development-client/?url=…` the development build's, and they are not
+   * interchangeable — so two entries appear when nothing established which application is running,
+   * and none when there is no dev server to point at.
+   *
+   * @see ./connectUrl.ts
+   */
+  connect: ConnectUrl[];
 }
 
 /** Everything one open amounts to, with nothing printed. */
@@ -218,7 +232,56 @@ export async function resolveRouteUrlAsync(
     isExpoGo: target.isExpoGo,
     hostType: resolved.host ? classifyDevServerHost(hostnameOf(resolved.host)) : null,
     routeCheck,
+    // Built from the host a *device* uses — the tunnel's when there is one — rather than from the
+    // route URL, because a development build's route URL carries no host at all.
+    connect: buildConnectUrls({
+      host: devServer.reachable ? (tunnelHost ?? hostnameWithPort(devServerUrl)) : null,
+      hostType: tunnelHost ? 'tunnel' : hostTypeOfDevServer(devServerUrl),
+      scheme: devBuildScheme(scheme, config),
+      isExpoGo: target.isExpoGo,
+      certain: target.certain,
+    }),
   };
+}
+
+/**
+ * The scheme a development build of this project registers.
+ *
+ * The same precedence the deep link itself uses: `--scheme` wins, then the `scheme` field of the
+ * app config, then the `exp+<slug>` default a managed development build registers. Null when the
+ * project declares none of them, and then no development-build URL is offered rather than one with
+ * a hole in it.
+ */
+function devBuildScheme(
+  schemeOverride: string | undefined,
+  config: ProjectSchemeConfig
+): string | null {
+  const override = schemeOverride?.trim();
+  if (override) {
+    return override.replace(/:\/*$/, '');
+  }
+  if (config.scheme) {
+    return config.scheme;
+  }
+  return config.slug ? `exp+${config.slug}` : null;
+}
+
+/** `host[:port]` of a dev server origin, or null when it cannot be parsed. */
+function hostnameWithPort(devServerUrl: string): string | null {
+  try {
+    return new URL(devServerUrl).host || null;
+  } catch {
+    return null;
+  }
+}
+
+/** How a device off this machine reaches a dev server origin. */
+function hostTypeOfDevServer(devServerUrl: string): DevServerHostType | null {
+  try {
+    return classifyDevServerHost(new URL(devServerUrl).hostname);
+  } catch {
+    return null;
+  }
 }
 
 /** The name part of a `host[:port]`, which is what a host classification is about. */

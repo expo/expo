@@ -10,8 +10,11 @@ import {
   followUpsEnabled,
   resolveDevServerPort,
   resolveExpoGoLanUrl,
+  resolveLanHost,
   type FollowUp,
 } from '../followups';
+import { devClientConnectUrl } from '../navigate/connectUrl';
+import { readProjectSchemeConfig } from '../navigate/deepLink';
 import type { ToolchainStatus } from '../toolchain/types';
 
 export interface StartTargetHint {
@@ -79,12 +82,17 @@ export async function resolveStartFollowUpsAsync(
   const port = 'port' in hint ? hint.port : resolveDevServerPort(options.expoArgs);
   // A web run has no device in it at all, so the probe is not worth even a bounded wait.
   const localDevice = web ? 'unknown' : await probeLocalDeviceWithinBudgetAsync();
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+  // `exp://` is the Expo Go form only. A development build opens its own scheme, so a run that
+  // targets one gets the dev launcher's URL rather than a link for an app it is not.
+  const lan = web || port == null ? null : resolveLanConnectUrl(projectRoot, expoGo, port);
 
   return buildStartFollowUps({
     expoGo,
     web,
     portKnown: port != null,
-    lanUrl: expoGo && port != null ? resolveExpoGoLanUrl(port) : null,
+    lanUrl: lan?.url ?? null,
+    lanUrlLabel: lan?.label,
     // `localhost` rather than the LAN address: this is the URL on the machine the dev server runs
     // on, and it is what `expo start --web` opens itself.
     webUrl: web && port != null ? `http://localhost:${port}` : null,
@@ -93,6 +101,34 @@ export async function resolveStartFollowUpsAsync(
     easJson: easJsonExistsSync(projectRoot),
     localBuild: hint.localBuild ?? null,
   });
+}
+
+/**
+ * The URL a device on this network opens, and what opens it.
+ *
+ * Null when this host reports no LAN address, or when a development build's scheme cannot be read
+ * from the static app config — a line with a hole in it is not a suggestion, and the ladder falls
+ * through to the tunnel rung instead.
+ */
+function resolveLanConnectUrl(
+  projectRoot: string,
+  expoGo: boolean,
+  port: number
+): { url: string; label: string } | null {
+  if (expoGo) {
+    const url = resolveExpoGoLanUrl(port);
+    return url ? { url, label: 'Expo Go' } : null;
+  }
+
+  const host = resolveLanHost();
+  const config = readProjectSchemeConfig(projectRoot);
+  const scheme = config.scheme ?? (config.slug ? `exp+${config.slug}` : null);
+  return host && scheme
+    ? {
+        url: devClientConnectUrl(scheme, `${host}:${port}`, 'lan'),
+        label: 'your development build',
+      }
+    : null;
 }
 
 /** The probe, or `unknown` when it takes longer than a dev-server banner may wait. */

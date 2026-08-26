@@ -4,9 +4,10 @@
 
 import path from 'path';
 
-import { expoGoUrlForHost, isTunnelCurrent, type DevServerReach } from '../dev/advertisedUrl';
+import { isTunnelCurrent, type DevServerReach } from '../dev/advertisedUrl';
 import type { LocalDeviceProbe } from '../device/localDevice';
 import { resolveLanHost } from '../followups/network';
+import { buildConnectUrls, openInPhrase } from '../navigate/connectUrl';
 import { decideExpoGoTarget } from '../navigate/target';
 import { decideStartPlan } from '../plan/decide';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
@@ -194,10 +195,11 @@ export function buildNextActionStatus(
   lastBuild: LastBuildFingerprints,
   platform: PlanPlatform,
   devServer: DevServerStatus | null,
-  device: LocalDeviceStatus | null = null
+  device: LocalDeviceStatus | null = null,
+  scheme: string | null = null
 ): NextActionStatus {
   const plan = decideStartPlan(state, { platform, lastBuild });
-  const verify = verifyAction(devServer, device, state);
+  const verify = verifyAction(devServer, device, state, scheme);
   if (verify) {
     return { ...verify, rule: plan.rule, target: plan.target, steps: [] };
   }
@@ -214,7 +216,8 @@ export function buildNextActionStatus(
 function verifyAction(
   devServer: DevServerStatus | null,
   device: LocalDeviceStatus | null,
-  state: ProjectState
+  state: ProjectState,
+  scheme: string | null
 ): { command: string; why: string } | null {
   if (!devServer?.running || devServer.projectRootMatched === false) {
     return null;
@@ -235,7 +238,7 @@ function verifyAction(
   // `absent` only, never `unknown`: a probe that could not run establishes nothing, and turning a
   // working suggestion off on the strength of a missing `adb` would be the same mistake backwards.
   if (device?.state === 'absent') {
-    return noLocalDeviceAction(devServer, state);
+    return noLocalDeviceAction(devServer, state, scheme);
   }
 
   return {
@@ -247,15 +250,17 @@ function verifyAction(
 /**
  * What to do when a dev server is up, nothing is attached, and this machine has no device.
  *
- * The answer is an address rather than a command whenever one can be named, because the thing that
- * has to happen next happens somewhere else. Which address depends on the target: an Expo Go
- * project has a URL this report can build from the dev server's own host, and a development build
- * has a scheme that is read from the project config — so that one is handed to the command which
- * reads it, in the mode that needs no device.
+ * The answer is an **address** rather than a command whenever one can be named, because the thing
+ * that has to happen next happens somewhere else. Which address depends on the application, and
+ * they are not interchangeable: `exp://<host>` is the Expo Go form, and a development build takes
+ * its own scheme (`<scheme>://expo-development-client/?url=…`). When nothing established which of
+ * the two is running, this line names neither — one line cannot carry a labelled pair, so it names
+ * the command that prints both [decided — Kudo, 2026-08-26].
  */
 function noLocalDeviceAction(
   devServer: DevServerStatus,
-  state: ProjectState
+  state: ProjectState,
+  scheme: string | null
 ): { command: string; why: string } {
   const noDevice =
     'no dev server client is attached and this machine has no booted simulator or attached device, so nothing here can open the app';
@@ -268,15 +273,21 @@ function noLocalDeviceAction(
     usesDevClient: state.usesDevClient,
   });
 
-  const host = devServer.tunnelUrl
-    ? hostOf(devServer.tunnelUrl)
-    : lanHostForPort(portOf(devServer.url));
+  const tunnelHost = devServer.tunnelUrl ? hostOf(devServer.tunnelUrl) : null;
+  const connect = buildConnectUrls({
+    host: tunnelHost ?? lanHostForPort(portOf(devServer.url)),
+    hostType: tunnelHost ? 'tunnel' : 'lan',
+    scheme,
+    isExpoGo: target.isExpoGo,
+    certain: target.certain,
+  });
 
-  if (target.isExpoGo && host) {
+  if (connect.length === 1) {
+    const [only] = connect;
     return {
-      command: expoGoUrlForHost(host),
-      why: `${noDevice} — open this URL on your device or cloud simulator instead${
-        devServer.tunnelUrl
+      command: only!.url,
+      why: `${noDevice} — open this URL in ${openInPhrase(only!.target)} on your device or cloud simulator instead${
+        tunnelHost
           ? ' (it is the tunnel host, which is reachable from any network)'
           : ' (it is this host on the local network, so the device has to be on it; restart with --tunnel for one that is not)'
       }`,
@@ -286,7 +297,9 @@ function noLocalDeviceAction(
   return {
     command: PRINT_URL_COMMAND,
     why: `${noDevice} — this prints the URL to open elsewhere, without looking for a device${
-      target.isExpoGo ? ', because this host reports no address a device could use' : ''
+      connect.length > 1
+        ? ', and it prints one per app because nothing established whether Expo Go or a development build is running'
+        : ', because this host reports no address a device could use'
     }`,
   };
 }

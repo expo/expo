@@ -61,3 +61,45 @@ describe(decideExpoGoTarget, () => {
     expect(decideExpoGoTarget(input({ usesDevClient: true })).isExpoGo).toBe(false);
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+//
+// `certain` decides whether a connect URL may be printed as one line. `exp://<host>` is the Expo Go
+// form and `<scheme>://expo-development-client/?url=…` is the development build's; they are not
+// interchangeable, so a branch that guesses prints both.
+describe(`${decideExpoGoTarget.name} — how sure it is`, () => {
+  const nothingConnected = { targetAppIds: [], hasNativeDirs: false, usesDevClient: false };
+
+  it.each([
+    ['--app-id naming Expo Go', { ...nothingConnected, appIdOverride: 'host.exp.Exponent' }],
+    [
+      '--app-id naming a development build',
+      { ...nothingConnected, appIdOverride: 'com.example.app' },
+    ],
+    [
+      'an app connected to the dev server',
+      { ...nothingConnected, targetAppIds: ['com.example.app'] },
+    ],
+    ['the expo-dev-client dependency', { ...nothingConnected, usesDevClient: true }],
+    ['a project with no dev-build machinery at all', nothingConnected],
+  ])(`is certain from %s`, (_name, input) => {
+    expect(decideExpoGoTarget(input).certain).toBe(true);
+  });
+
+  // The one branch that guesses: a bare project has a build of its own and may still be opened in
+  // Expo Go, and nothing here can tell which happened.
+  it(`is uncertain from a checked-in native directory alone`, () => {
+    const decision = decideExpoGoTarget({ ...nothingConnected, hasNativeDirs: true });
+
+    expect(decision.certain).toBe(false);
+    expect(decision.isExpoGo).toBe(false);
+    expect(decision.reason).toContain('does not rule Expo Go out');
+  });
+
+  // The dependency outranks the directory, and it settles the question.
+  it(`is certain when the project both has native directories and depends on the dev client`, () => {
+    expect(
+      decideExpoGoTarget({ ...nothingConnected, hasNativeDirs: true, usesDevClient: true }).certain
+    ).toBe(true);
+  });
+});

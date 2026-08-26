@@ -19,8 +19,17 @@ export interface StartFollowUpInput {
   expoGo: boolean;
   /** The run only serves a web bundle, so no phone or simulator is involved. */
   web: boolean;
-  /** `exp://<lan ip>:<port>`, or null when this host has no LAN address. */
+  /**
+   * The URL that points the app at this dev server from a device on the same network, or null.
+   *
+   * Per application, and they are not interchangeable: `exp://<lan ip>:<port>` is the **Expo Go**
+   * form, and a development build takes its own scheme
+   * (`<scheme>://expo-development-client/?url=…`). The caller resolves which — it knows whether the
+   * run is a `--dev-client` one — so this builder is handed the URL rather than the ingredients.
+   */
   lanUrl: string | null;
+  /** What opens {@link lanUrl}, for a line that has to say which app it means. */
+  lanUrlLabel?: string;
   /**
    * The run was asked for a tunnel, so the dev server's address is a tunnel host.
    *
@@ -143,10 +152,12 @@ function webFollowUps(input: StartFollowUpInput): FollowUp[] {
 function realDeviceFollowUp({
   expoGo,
   lanUrl,
+  lanUrlLabel = 'Expo Go',
   portKnown = true,
   tunnel = false,
   localDevice = 'unknown',
 }: StartFollowUpInput): FollowUp {
+  const label = lanUrlLabel;
   const noLocalDevice =
     localDevice === 'absent'
       ? 'This machine has no booted simulator and no attached device, so nothing here can open the app. '
@@ -172,11 +183,11 @@ function realDeviceFollowUp({
       why: 'The dev server did not report a port, so no URL can be named for it — status says which dev server this project actually has. Pass --port to decide it up front.',
     };
   }
-  if (expoGo && lanUrl) {
+  if (lanUrl) {
     return {
       id: 'real-device',
       command: lanUrl,
-      why: `${noLocalDevice}Open this URL in Expo Go on a phone on the same network to run the app on a real device. A device that is not on this network — a cloud simulator — needs "npx exagent dev --detach --tunnel" instead.`,
+      why: `${noLocalDevice}Open this URL in ${label} on a phone on the same network to run the app on a real device. A device that is not on this network — a cloud simulator — needs "npx exagent dev --detach --tunnel" instead.`,
     };
   }
   return {

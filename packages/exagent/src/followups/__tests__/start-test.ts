@@ -98,11 +98,36 @@ describe(buildStartFollowUps, () => {
     expect(followups[1]!.why).toContain('no LAN address');
   });
 
-  it(`should offer a tunnel for a development build, which needs no exp:// URL`, () => {
-    const followups = buildStartFollowUps({ expoGo: false, web: false, lanUrl, easJson: true });
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+  // `exp://` is the Expo Go form only, so the caller resolves which URL a device opens and this
+  // builder is handed it. A development build with no URL to name falls through to the tunnel.
+  it(`should offer a tunnel for a development build with no URL to name`, () => {
+    const followups = buildStartFollowUps({
+      expoGo: false,
+      web: false,
+      lanUrl: null,
+      easJson: true,
+    });
 
     expect(ids(followups)).toEqual(['open-app', 'real-device-tunnel', 'runtime-errors']);
     expect(followups[1]!.why).toContain('development build');
+  });
+
+  it(`should name the development build's own URL, and say which app opens it`, () => {
+    const devClientUrl = 'myapp://expo-development-client/?url=http%3A%2F%2F192.168.1.5%3A8081';
+    const followups = buildStartFollowUps({
+      expoGo: false,
+      web: false,
+      lanUrl: devClientUrl,
+      lanUrlLabel: 'your development build',
+      easJson: true,
+    });
+
+    expect(ids(followups)).toEqual(['open-app', 'real-device', 'runtime-errors']);
+    expect(followups[1]!.command).toBe(devClientUrl);
+    expect(followups[1]!.why).toContain('your development build');
+    // Never the other app's form.
+    expect(followups[1]!.command).not.toContain('exp://');
   });
 
   // A browser needs no simulator and no phone, so neither the open step nor the device hint is

@@ -394,6 +394,60 @@ one that ended up in the link — a `127.0.0.1` URL under `tunnel · reachable f
 instruction to open a local address on a device somewhere else [observed — live, 2026-08-25]. One
 fact, read off the thing it describes.
 
+## Pointing an app at this dev server
+
+Decision [confirmed — Kudo, 2026-08-26]. `exp://<host>` is the **Expo Go** form and nothing else.
+Every URL this CLI prints resolves which application is meant first, and a development build gets
+its own scheme.
+
+The gap. `resolveDeepLinkUrl` already refused to build an `exp://` link for a development build —
+it produced `<scheme>://<route>` — so no wrong URL was ever printed. What was missing is the other
+half: `<scheme>://<route>` navigates an app that is **already loaded against a dev server**, and
+nothing this CLI printed said how to get it loaded. `status.next` on a machine with no device
+deferred to `navigate / --print-url`, and that answered `myapp://` — an app opening on whatever it
+last loaded, which is not this dev server.
+
+**The shape, pinned against the launcher that parses it** [observed —
+`packages/expo-dev-launcher`, 2026-08-26]:
+
+```
+<scheme>://expo-development-client/?url=<url-encoded dev server origin>
+```
+
+`EXDevLauncherURLHelper.isDevLauncherURL` is exactly `url.host == "expo-development-client"`; the
+dev server URL rides in the `url` query parameter and `exp://` inside it is rewritten to `http`;
+`DevLauncherURLHelper.kt` reads it identically on Android; and the launcher's own Swift test spells
+one out as `scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081`. `@expo/cli` builds
+the same string in `UrlCreator.constructDevClientUrl`, and from it comes one detail worth copying:
+the origin inside `url` is **https** when the dev server's host type is a tunnel, because a tunnel
+terminates TLS — the plain-HTTP origin the dev server prints for itself is not what a device off the
+network should be given.
+
+The scheme is the deep link's own precedence: `--scheme`, then the `scheme` field of the static app
+config, then the `exp+<slug>` default a managed development build registers. A project that declares
+none of them gets **no** development-build URL rather than one with a hole in it.
+
+**A connect URL is not a route link**, and both are printed. `navigate --print-url` keeps the route
+URL as its `URL` line — that is what the command was asked for — and adds a `Connect` line, plus a
+`connect` array in `--json`. The rung order follows: for a development build the connect URL is
+first, because the route link cannot go anywhere until something is loaded.
+
+### When it cannot be told which app, both — labelled
+
+The target-app resolution is the deep link's, unchanged in order: `--app-id`, then the app connected
+to the dev server, then the project. What is new is that the decision now reports **how it was
+reached**, because a guess between two applications must not be printed as one URL.
+
+`certain` is false in exactly one branch: nothing connected, no `--app-id`, no `expo-dev-client`
+dependency, and a native directory checked in. Such a project has a build of its own *and* can still
+be opened in Expo Go, and nothing here can tell which happened. Every other branch has something
+that settles it — the flag, the connected app, the dependency, or the absence of any dev-build
+machinery at all. That branch prints both forms, labelled, Expo Go first because it needs nothing
+installed.
+
+`status.next` cannot carry a labelled pair on one line, so where it would have to it names
+`exagent navigate / --print-url` instead, which prints both.
+
 ## Resolving a URL without a device
 
 Decision [confirmed — Kudo, 2026-08-25]. `exagent navigate <route> --print-url` resolves everything

@@ -380,20 +380,54 @@ describe(buildNextActionStatus, () => {
         expect(next.command).toBe('exagent navigate / --print-url');
       });
 
-      // A development build's URL is its scheme, which lives in the project config rather than in
-      // this report; the command that reads it is the one that gets named.
-      it(`hands a development build to the command that knows its scheme`, () => {
-        jest.spyOn(network, 'resolveLanHost').mockReturnValue('192.168.1.233');
-
+      // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+      // `exp://` is the Expo Go form only. A development build opens its own scheme, and the URL
+      // that points it at a dev server is the dev launcher's own shape.
+      it(`names the app's own scheme for a development build`, () => {
         const next = buildNextActionStatus(
           mockState({ usesDevClient: true }),
           {},
           'ios',
           devServerStatus({ hostType: 'tunnel', tunnelUrl: 'http://abc.boltexpo.dev' }),
-          absent
+          absent,
+          'myapp'
+        );
+
+        expect(next.command).toBe(
+          'myapp://expo-development-client/?url=https%3A%2F%2Fabc.boltexpo.dev'
+        );
+        expect(next.why).toContain('development build');
+      });
+
+      // A project whose scheme cannot be read statically — a dynamic `app.config.js` — has no
+      // development-build URL this report can name, and the command that can be given `--scheme` is
+      // the honest answer.
+      it(`hands a development build with no readable scheme to the print-url command`, () => {
+        const next = buildNextActionStatus(
+          mockState({ usesDevClient: true }),
+          {},
+          'ios',
+          devServerStatus({ hostType: 'tunnel', tunnelUrl: 'http://abc.boltexpo.dev' }),
+          absent,
+          null
         );
 
         expect(next.command).toBe('exagent navigate / --print-url');
+      });
+
+      // Two applications could be meant, and one line cannot carry a labelled pair.
+      it(`names the command that prints both when nothing established which app is running`, () => {
+        const next = buildNextActionStatus(
+          mockState({ nativeDirs: { ios: true, android: false } }),
+          {},
+          'ios',
+          devServerStatus({ hostType: 'tunnel', tunnelUrl: 'http://abc.boltexpo.dev' }),
+          absent,
+          'myapp'
+        );
+
+        expect(next.command).toBe('exagent navigate / --print-url');
+        expect(next.why).toContain('nothing established');
       });
 
       // The rule that keeps this from breaking a working machine: a probe that could not run

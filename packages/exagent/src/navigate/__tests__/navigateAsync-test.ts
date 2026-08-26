@@ -343,6 +343,7 @@ describe(navigateAsync, () => {
       resolution: expect.stringContaining('Expo Go'),
       target: expect.stringContaining('Expo Go'),
       hostType: 'localhost',
+      connect: [{ target: 'expo-go', label: 'Expo Go', url: 'exp://127.0.0.1:8081' }],
       printUrl: false,
       platform: 'ios',
       deviceId: 'IOS-1',
@@ -386,6 +387,7 @@ describe(navigateAsync, () => {
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'appId',
       'command',
+      'connect',
       'devServerSource',
       'devServerUrl',
       'deviceId',
@@ -696,6 +698,90 @@ describe(navigateAsync, () => {
       expect(JSON.parse(printed())).toMatchObject({ hostType: 'tunnel' });
     });
 
+    // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+    //
+    // `exp://` is the Expo Go form only. A development build's route link carries no host, so on
+    // its own it points at no dev server — the connect URL is the dev launcher's own shape, and it
+    // is what has to be opened first.
+    it(`names the dev launcher URL for a development build, in the app's own scheme`, async () => {
+      mockExpoGoProject();
+      mockDevServer([{ id: '1', appId: 'com.example.demo' }]);
+
+      await navigateAsync(projectRoot, options({ printUrl: true, json: true }));
+
+      const report = JSON.parse(printed());
+      expect(report.url).toBe('demoapp://profile/42');
+      expect(report.connect).toEqual([
+        {
+          target: 'dev-build',
+          label: 'development build',
+          url: 'demoapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081',
+        },
+      ]);
+      // Never the other app's form.
+      expect(JSON.stringify(report.connect)).not.toContain('exp://');
+    });
+
+    it(`carries the tunnel host into the dev launcher URL, over https`, async () => {
+      mockExpoGoProject();
+      mockTunnelledRun('znakdiwe5j2n5o0.boltexpo.dev');
+      mockDevServer([{ id: '1', appId: 'com.example.demo' }]);
+
+      await navigateAsync(projectRoot, options({ devServerUrl: null, printUrl: true, json: true }));
+
+      expect(JSON.parse(printed()).connect[0].url).toBe(
+        'demoapp://expo-development-client/?url=https%3A%2F%2Fznakdiwe5j2n5o0.boltexpo.dev'
+      );
+    });
+
+    it(`names the connect URL as the first thing to open, above the route link`, async () => {
+      mockExpoGoProject();
+      mockDevServer([{ id: '1', appId: 'com.example.demo' }]);
+
+      await navigateAsync(projectRoot, options({ printUrl: true }));
+
+      expect(printed()).toContain('demoapp://expo-development-client/?url=');
+      expect(printed()).toContain('open in the development build');
+    });
+
+    // Nothing connected, no dev-client dependency, and a native directory checked in: that project
+    // has a build of its own and may still be opened in Expo Go. Two applications, two URLs.
+    it(`prints both forms, labelled, when nothing established which app is running`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+        [`${projectRoot}/ios/demo.xcodeproj/project.pbxproj`]: '// native project',
+      });
+      mockDevServer([]);
+
+      await navigateAsync(projectRoot, options({ printUrl: true, json: true }));
+
+      const report = JSON.parse(printed());
+      expect(report.connect).toEqual([
+        { target: 'expo-go', label: 'Expo Go', url: 'exp://127.0.0.1:8081' },
+        {
+          target: 'dev-build',
+          label: 'development build',
+          url: 'demoapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081',
+        },
+      ]);
+    });
+
+    it(`labels both forms in the human report rather than guessing one`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+        [`${projectRoot}/ios/demo.xcodeproj/project.pbxproj`]: '// native project',
+      });
+      mockDevServer([]);
+
+      await navigateAsync(projectRoot, options({ printUrl: true }));
+
+      expect(printed()).toContain('could not be established, so both');
+      expect(printed()).toContain('Expo Go');
+      expect(printed()).toContain('development build');
+    });
+
     // A development build's URL carries no dev server host at all: it reaches whatever the app was
     // launched against, and claiming a reach for it would be a claim this command cannot make.
     it(`reports no host type for a development build's scheme URL`, async () => {
@@ -726,6 +812,7 @@ describe(navigateAsync, () => {
       expect(Object.keys(report).sort()).toEqual([
         'appId',
         'command',
+        'connect',
         'devServerSource',
         'devServerUrl',
         'deviceId',

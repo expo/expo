@@ -2,6 +2,7 @@
 // A deep link that opened is only half an answer: the other half is what the screen now shows and
 // what it threw getting there. Both commands are named for the device that was actually used.
 
+import { openInPhrase } from '../navigate/connectUrl';
 import type { NavigatePlatform } from '../navigate/device';
 import { capFollowUps, type FollowUp } from './types';
 
@@ -12,31 +13,56 @@ export interface NavigateFollowUpInput {
 }
 
 export interface PrintUrlFollowUpInput {
-  /** The URL that was resolved. */
+  /** The URL that was resolved for the route. */
   url: string;
   /** What kind of host the URL carries: `tunnel`, `lan`, `localhost`, or null. */
   hostType: string | null;
+  /** How to point an app at this dev server, one entry per application that could be meant. */
+  connect?: { target: string; url: string; label: string }[];
 }
 
 /**
  * What to do with a URL nothing opened.
  *
- * The URL itself is the first rung, because opening it is the next step and this command's whole
- * output is the thing to paste. What follows depends on where the URL can be used from: a host only
- * this machine can reach is the one case where the answer is a different dev server rather than a
- * different opener, and saying so here is cheaper than a cloud simulator timing out on it.
+ * The first rung is the URL that has to be opened **next**, and which one that is depends on the
+ * app. For Expo Go with a route, the route URL already carries the dev server host, so it is both
+ * the connect link and the destination. For a development build it is not: `<scheme>://<route>`
+ * navigates an app that is already loaded, and the app has to be pointed at this dev server first
+ * with `<scheme>://expo-development-client/?url=…` — so that goes first and the route link follows.
+ *
+ * A ladder names one command per rung, so when two applications could be meant it names the first
+ * and says where the other is: the labelled pair is printed above it, and rides in `connect` of
+ * `--json`.
  */
-export function buildPrintUrlFollowUps({ url, hostType }: PrintUrlFollowUpInput): FollowUp[] {
-  const followups: FollowUp[] = [
-    {
-      id: 'open-url',
-      command: url,
-      why:
-        hostType === 'tunnel'
-          ? 'Open this URL on the device that runs the app — a phone, a cloud simulator, anywhere with a network.'
-          : 'Open this URL on the device that runs the app; nothing was opened here.',
-    },
-  ];
+export function buildPrintUrlFollowUps({
+  url,
+  hostType,
+  connect = [],
+}: PrintUrlFollowUpInput): FollowUp[] {
+  const followups: FollowUp[] = [];
+
+  const connectFirst = connect.filter((entry) => entry.url !== url);
+  if (connectFirst.length > 0) {
+    const [first, ...rest] = connectFirst;
+    followups.push({
+      id: 'connect-url',
+      command: first!.url,
+      why: `Open this on the device that runs the app: it points ${openInPhrase(first!.target)} at this dev server, which has to happen before the route link below can go anywhere.${
+        rest.length
+          ? ` Which app is running could not be established, so ${openInPhrase(rest[0]!.target)}'s URL is printed above and carried in "connect".`
+          : ''
+      }`,
+    });
+  }
+
+  followups.push({
+    id: 'open-url',
+    command: url,
+    why:
+      hostType === 'tunnel'
+        ? 'Open this URL on the device that runs the app — a phone, a cloud simulator, anywhere with a network.'
+        : 'Open this URL on the device that runs the app; nothing was opened here.',
+  });
 
   if (hostType === 'localhost' || hostType === 'lan') {
     followups.push({

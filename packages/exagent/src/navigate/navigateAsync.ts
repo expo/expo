@@ -17,6 +17,7 @@ import {
 } from '../followups';
 import * as Log from '../log';
 import type { DevServerSource } from '../runtime/devServer';
+import { openInPhrase } from './connectUrl';
 import { openRouteAsync, resolveRouteUrlAsync } from './openRoute';
 import type { NavigateOptions } from './resolveOptions';
 import type { RouteCheckJson } from './routeCheck';
@@ -56,6 +57,15 @@ export interface NavigateResultJson {
    * carries no host at all.
    */
   hostType: string | null;
+  /**
+   * How to point an app at this dev server, one entry per application that could be meant.
+   *
+   * A different URL from {@link url}: that one navigates an app already loaded against a dev
+   * server, and these get it loaded. `exp://<host>` is the **Expo Go** form; a development build
+   * takes its own scheme, `<scheme>://expo-development-client/?url=…`. Two entries when nothing
+   * established which application is running, none when no dev server answered.
+   */
+  connect: { target: string; url: string; label: string }[];
   /**
    * Whether the run only resolved the URL (`--print-url`), so no device was asked for.
    *
@@ -135,6 +145,7 @@ export async function navigateAsync(
       resolution: opened.resolution,
       target: opened.target,
       hostType: opened.hostType,
+      connect: opened.connect,
       printUrl: false,
       platform: opened.platform,
       deviceId: opened.deviceId,
@@ -223,7 +234,11 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
   });
 
   const followups = followUpsEnabled(wantFollowUps)
-    ? buildPrintUrlFollowUps({ url: resolved.url, hostType: resolved.hostType })
+    ? buildPrintUrlFollowUps({
+        url: resolved.url,
+        hostType: resolved.hostType,
+        connect: resolved.connect,
+      })
     : [];
 
   cliEvent('navigate_url', {
@@ -243,6 +258,7 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
       resolution: resolved.resolution,
       target: resolved.target,
       hostType: resolved.hostType,
+      connect: resolved.connect,
       printUrl: true,
       // Every key of the shape is present, and the four a device would have filled in are null:
       // a parser reads the same object whether or not anything was opened (llp/0006 §Output
@@ -265,6 +281,7 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
         chalk`{dim  target: ${resolved.target}}`,
         chalk`{bold Dev server} ${resolved.devServerUrl}{dim  · via ${resolved.devServerSource}}`,
         chalk`{bold Reach} ${reachLine(resolved.hostType)}`,
+        ...connectLines(resolved.connect),
         chalk`{bold Device} {dim nothing was opened — --print-url resolves the URL only}`,
       ].join('\n')
     );
@@ -272,6 +289,31 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
 
   reportFollowUps('navigate', followups, { json });
   return 0;
+}
+
+/**
+ * The lines that say how to point an app at this dev server.
+ *
+ * Printed when they add something the `URL` line does not. For Expo Go with a route they do not:
+ * the route URL already carries the host, and repeating it under another label reads as two places
+ * to go. For a development build they always do — its route URL carries no host at all, so nothing
+ * above says which dev server it would reach. Two labelled lines when nothing established which
+ * application is running, because a guess between two applications is not one URL.
+ */
+function connectLines(connect: { target: string; url: string; label: string }[]): string[] {
+  const worthPrinting = connect.length > 1 || connect.some((entry) => entry.target !== 'expo-go');
+  if (!worthPrinting) {
+    return [];
+  }
+  if (connect.length === 1) {
+    return [
+      chalk`{bold Connect} ${connect[0]!.url}{dim  · open in ${openInPhrase(connect[0]!.target)}}`,
+    ];
+  }
+  return [
+    chalk`{bold Connect} {dim which app is running could not be established, so both:}`,
+    ...connect.map((entry) => chalk`{dim  ${entry.label.padEnd(18)}}${entry.url}`),
+  ];
 }
 
 /** What the host in the URL means for anything that is not this machine. */
