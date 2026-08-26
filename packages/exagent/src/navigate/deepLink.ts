@@ -8,6 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { adbNotRunnableError, resolveAdb, type AdbResolution } from '../device/adb';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 
@@ -250,6 +251,14 @@ export interface BuildOpenUrlCommandParams {
   url: string;
   /** Android only: scopes the intent to one package to skip the chooser dialog. */
   appId?: string;
+  /**
+   * The `adb` to spawn, as `src/device/adb.ts` resolved it.
+   *
+   * Absent means the bare name, which keeps the pure command table readable; a live run passes the
+   * resolution the device probe made, so a machine with the SDK installed and nothing on `PATH`
+   * still opens the link (F49).
+   */
+  adb?: AdbResolution;
 }
 
 /**
@@ -264,12 +273,13 @@ export function buildOpenUrlCommand({
   deviceId,
   url,
   appId,
+  adb,
 }: BuildOpenUrlCommandParams): OpenUrlCommand {
   const command: OpenUrlCommand =
     platform === 'ios'
       ? { bin: 'xcrun', args: ['simctl', 'openurl', deviceId, url], display: '' }
       : {
-          bin: 'adb',
+          bin: adb?.bin ?? 'adb',
           args: [
             '-s',
             deviceId,
@@ -310,14 +320,17 @@ export async function openUrlOnDeviceAsync(
   const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync(bin, args);
 
   if (spawnError) {
+    if (params.platform === 'android') {
+      // One message for an `adb` that will not start, wherever the spawn was attempted from: it
+      // names every place that was looked and the variable that adds another (`src/device/adb.ts`).
+      throw adbNotRunnableError(params.adb ?? resolveAdb(), spawnError.message);
+    }
     throw new CommandError(
       'DEVICE_TOOL_MISSING',
       [
         `Could not run "${bin}", so the deep link was not opened on the device.`,
         `Why: ${spawnError.message}`,
-        params.platform === 'ios'
-          ? `How: install Xcode and its command line tools, which provide "xcrun simctl", then run this command again.`
-          : `How: install the Android SDK platform tools, which provide "adb", and make sure they are on PATH, then run this command again.`,
+        `How: install Xcode and its command line tools, which provide "xcrun simctl", then run this command again.`,
       ].join('\n')
     );
   }

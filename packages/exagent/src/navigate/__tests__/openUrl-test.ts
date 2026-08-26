@@ -112,7 +112,7 @@ describe(openUrlOnDeviceAsync, () => {
     expect(result.stdout).toContain('Starting: Intent');
   });
 
-  it(`should report a missing device tool with an install hint`, async () => {
+  it(`should report an adb that could not be started as a tool failure, not a device failure`, async () => {
     const child = mockSpawn();
 
     const promise = openUrlOnDeviceAsync({
@@ -124,7 +124,26 @@ describe(openUrlOnDeviceAsync, () => {
 
     const error = await promise.catch((e) => e);
 
+    // One error for an unrunnable `adb` wherever it is spawned from (`src/device/adb.ts`, F49):
+    // it names every place that was looked and the variable that adds another.
+    expect(error.code).toBe('ADB_NOT_RUNNABLE');
+    expect(error.message).toContain('"adb" could not be run');
+    expect(error.message).toContain('ANDROID_HOME');
+  });
+
+  it(`should report a missing simctl with an install hint`, async () => {
+    const child = mockSpawn();
+
+    const promise = openUrlOnDeviceAsync({
+      platform: 'ios',
+      deviceId: 'SIM-1',
+      url: 'demoapp://profile/42',
+    });
+    child.emit('error', Object.assign(new Error('spawn xcrun ENOENT'), { code: 'ENOENT' }));
+
+    const error = await promise.catch((e) => e);
+
     expect(error.code).toBe('DEVICE_TOOL_MISSING');
-    expect(error.message).toContain('adb');
+    expect(error.message).toContain('xcrun simctl');
   });
 });

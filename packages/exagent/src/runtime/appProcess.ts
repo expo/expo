@@ -8,6 +8,7 @@
 // against under 1 s live), it needs the platform tools, and it needs to know the application id,
 // none of which the broadcast needs.
 
+import { resolveAdb, type AdbResolution } from '../device/adb';
 import type { NavigatePlatform } from '../navigate/device';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 
@@ -24,20 +25,25 @@ export interface StopAppCommand {
  * iOS: `simctl terminate`, which ends the process without uninstalling it. Android:
  * `am force-stop`, which is the same thing under another name.
  */
+export interface StopAppParams {
+  platform: NavigatePlatform;
+  deviceId: string;
+  appId: string;
+  /** The `adb` to spawn, as `src/device/adb.ts` resolved it. Absent means the bare name. */
+  adb?: AdbResolution;
+}
+
 export function buildStopAppCommand({
   platform,
   deviceId,
   appId,
-}: {
-  platform: NavigatePlatform;
-  deviceId: string;
-  appId: string;
-}): StopAppCommand {
+  adb,
+}: StopAppParams): StopAppCommand {
   const command: StopAppCommand =
     platform === 'ios'
       ? { bin: 'xcrun', args: ['simctl', 'terminate', deviceId, appId], display: '' }
       : {
-          bin: 'adb',
+          bin: adb?.bin ?? 'adb',
           args: ['-s', deviceId, 'shell', 'am', 'force-stop', appId],
           display: '',
         };
@@ -68,12 +74,10 @@ export interface StopAppResult {
  * the caller has to weigh against what it is trying to do — and "it was not running" is not a
  * failure of a reload whose next step starts it.
  */
-export async function stopAppOnDeviceAsync(params: {
-  platform: NavigatePlatform;
-  deviceId: string;
-  appId: string;
-}): Promise<StopAppResult> {
-  const { bin, args, display } = buildStopAppCommand(params);
+export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopAppResult> {
+  // Resolved here when the caller has none, for the same reason the screenshot does it (F49).
+  const adb = params.adb ?? (params.platform === 'android' ? resolveAdb() : undefined);
+  const { bin, args, display } = buildStopAppCommand({ ...params, adb });
   const { stderr, stdout, exitCode, spawnError } = await spawnCaptureAsync(bin, args);
 
   if (spawnError) {
@@ -81,7 +85,10 @@ export async function stopAppOnDeviceAsync(params: {
       command: display,
       ok: false,
       wasAlreadyStopped: false,
-      reason: `could not run "${bin}": ${spawnError.message}`,
+      reason:
+        params.platform === 'android'
+          ? `could not run "${bin}": ${spawnError.message}. Set ANDROID_HOME to the Android SDK root, or put its platform-tools on PATH.`
+          : `could not run "${bin}": ${spawnError.message}`,
     };
   }
   // `simctl terminate` exits non-zero when the app was not running, which is the state this

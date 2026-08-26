@@ -454,6 +454,7 @@ async function reloadOnDeviceAsync(
     platform: device.platform,
     deviceId: device.deviceId,
     appId,
+    adb: device.adb,
   });
   if (!stopped.ok) {
     return {

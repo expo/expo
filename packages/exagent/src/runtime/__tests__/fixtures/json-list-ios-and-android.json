@@ -1,0 +1,38 @@
+[
+  {
+    "id": "8a9d07af8de41c33169a1f0bdd7a4ff1f8c064d1-1",
+    "title": "host.exp.Exponent (iPhone 17 Pro)",
+    "description": "React Native Bridgeless [C++ connection]",
+    "appId": "host.exp.Exponent",
+    "type": "node",
+    "devtoolsFrontendUrl": "/debugger-frontend/rn_fusebox.html?ws=%2Finspector%2Fdebug%3Fdevice%3D8a9d07af8de41c33169a1f0bdd7a4ff1f8c064d1%26page%3D1&sources.hide_add_folder=true&unstable_enableNetworkPanel=true",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:8250/inspector/debug?device=8a9d07af8de41c33169a1f0bdd7a4ff1f8c064d1&page=1",
+    "deviceName": "iPhone 17 Pro",
+    "reactNative": {
+      "logicalDeviceId": "8a9d07af8de41c33169a1f0bdd7a4ff1f8c064d1",
+      "capabilities": {
+        "nativePageReloads": true,
+        "nativeSourceCodeFetching": false,
+        "supportsMultipleDebuggers": true
+      }
+    }
+  },
+  {
+    "id": "b409712d96a7a29b9bddaf21b2adce65178b0c22-1",
+    "title": "host.exp.exponent (Google sdk_gphone64_arm64)",
+    "description": "React Native Bridgeless [C++ connection]",
+    "appId": "host.exp.exponent",
+    "type": "node",
+    "devtoolsFrontendUrl": "/debugger-frontend/rn_fusebox.html?ws=%2Finspector%2Fdebug%3Fdevice%3Db409712d96a7a29b9bddaf21b2adce65178b0c22%26page%3D1&sources.hide_add_folder=true&unstable_enableNetworkPanel=true",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:8250/inspector/debug?device=b409712d96a7a29b9bddaf21b2adce65178b0c22&page=1",
+    "deviceName": "sdk_gphone64_arm64 - 15 - API 35",
+    "reactNative": {
+      "logicalDeviceId": "b409712d96a7a29b9bddaf21b2adce65178b0c22",
+      "capabilities": {
+        "nativePageReloads": true,
+        "nativeSourceCodeFetching": false,
+        "supportsMultipleDebuggers": true
+      }
+    }
+  }
+]
