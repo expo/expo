@@ -35,6 +35,7 @@ import {
   type CdpTarget,
 } from './cdpClient';
 import { debugEvent } from './events';
+import { readNoCdpAnnouncement, type RuntimeDebuggerCapability } from './runtimeErrorCollector';
 
 /** A single HTTP request the running app made, with the answer it got. */
 export interface NetworkRequestRecord {
@@ -114,6 +115,17 @@ export class CdpNetworkCollector {
   public readonly name = 'cdp-network';
   private clientWebSocketDebuggerUrl?: string;
 
+  /**
+   * What the runtime said about its own debugger, filled in by {@link collectAsync}.
+   *
+   * The field this collector needs most, and the one it did not have. `Network.enable` **succeeds**
+   * on Expo Go for Android and then nothing arrives [observed — 2026-08-25, live: `{"result":{},
+   * "id":3}` and no `Network.requestWillBeSent` ever], so the empty list this resolved with looked
+   * exactly like an app that made no requests (F61). See
+   * {@link import('./runtimeErrorCollector').RuntimeDebuggerCapability}.
+   */
+  public capability: RuntimeDebuggerCapability = { blind: null, evidence: null };
+
   constructor(private readonly config: CdpNetworkCollectorConfig) {}
 
   get metadata(): Record<string, unknown> {
@@ -140,7 +152,13 @@ export class CdpNetworkCollector {
       timeoutMs = 2000,
     } = this.config;
 
-    const client = new CdpClient({ metroUrl, targetSelector, createWebSocket });
+    const client = new CdpClient({
+      metroUrl,
+      targetSelector,
+      createWebSocket,
+      platform: this.config.platform,
+      deviceIndex: this.config.deviceIndex,
+    });
     const ws: WebSocket = await client.createWebSocketAsync();
     this.clientWebSocketDebuggerUrl = client.getWebSocketDebuggerUrl();
 
@@ -148,6 +166,13 @@ export class CdpNetworkCollector {
     const records = new Map<string, NetworkRequestRecord>();
     let requestId = 0;
     let enableRequestId = 0;
+    let capabilityRequestId = 0;
+    this.capability = { blind: null, evidence: null };
+    const sawEvidence = (blind: boolean, evidence: string) => {
+      if (this.capability.blind == null || (blind && !this.capability.blind)) {
+        this.capability = { blind, evidence };
+      }
+    };
 
     return new Promise<NetworkRequestRecord[]>((resolve, reject) => {
       let settled = false;
@@ -180,6 +205,18 @@ export class CdpNetworkCollector {
 
         enableRequestId = ++requestId;
         ws.send(JSON.stringify({ id: enableRequestId, method: 'Network.enable' }));
+        // The same capability probe the error collector runs, for the same reason: an
+        // acknowledgement is not a promise of events, and only these two answers tell an app that
+        // made no requests from a runtime that cannot report them (F61).
+        ws.send(JSON.stringify({ id: ++requestId, method: 'Log.enable' }));
+        capabilityRequestId = ++requestId;
+        ws.send(
+          JSON.stringify({
+            id: capabilityRequestId,
+            method: 'Runtime.evaluate',
+            params: { expression: '1', returnByValue: true },
+          })
+        );
 
         collectionHandle = setTimeout(() => {
           settle(() => {
@@ -207,6 +244,19 @@ export class CdpNetworkCollector {
       ws.on('message', (data) => {
         try {
           const message: CdpMessage = JSON.parse(data.toString());
+
+          const announced = readNoCdpAnnouncement(message);
+          if (announced) {
+            sawEvidence(true, announced);
+          }
+          if (message.id === capabilityRequestId && capabilityRequestId > 0) {
+            sawEvidence(
+              message.error?.code === RPC_METHOD_NOT_FOUND,
+              message.error?.code === RPC_METHOD_NOT_FOUND
+                ? `the runtime answered Runtime.evaluate with "method not found" (${RPC_METHOD_NOT_FOUND})`
+                : `the runtime answered Runtime.evaluate, so it does carry a debugger`
+            );
+          }
 
           // The only reply this collector reads is the one to `Network.enable`: an error there
           // means the domain is missing, which is the difference between "no traffic" and
@@ -379,16 +429,42 @@ export type NetworkDomainRefusal =
   | 'multiple-hosts'
   /** The runtime carries no handler for the method. */
   | 'not-implemented'
+  /**
+   * The domain was **acknowledged** and the runtime has no debugger behind it.
+   *
+   * The third case, and the one that was missing [observed — 2026-08-25, Expo Go on an Android
+   * emulator: `Network.enable` answered `{"result":{}}` and no network event ever followed, while
+   * `Runtime.evaluate` answered `-32601` and `Log.entryAdded` said the engine "does not support
+   * debugging over the Chrome DevTools Protocol"]. Nothing refused anything, so the old
+   * classification never ran at all and `runtime:network` printed an empty list with exit 0 for an
+   * app that was making requests (F61).
+   */
+  | 'acknowledged-but-blind'
+  /** Nothing refused the domain, and the runtime does answer the debugger. */
+  | 'none'
   /** The runtime refused for a reason this CLI has not seen. */
   | 'unknown';
 
 /** The message React Native sends when more than one host is registered [observed — RN 0.86]. */
 const MULTIPLE_HOSTS_MESSAGE = 'multiple React Native hosts are registered';
 
-/** Classify a refusal of `Network.enable` by what the runtime actually answered. */
+/**
+ * Classify what happened to `Network.enable` by what the runtime actually answered.
+ *
+ * @param error the refusal, or **null** when the call was acknowledged. Null is a real input rather
+ * than a missing one: an acknowledgement followed by silence is its own outcome, and treating it as
+ * "no refusal, therefore fine" is what let an empty request list stand for a runtime that cannot
+ * report requests at all.
+ * @param context.debuggerBlind what the runtime said about carrying a debugger at all
+ * ({@link CdpNetworkCollector.capability}).
+ */
 export function classifyNetworkDomainRefusal(
-  error: Pick<NetworkDomainUnavailableError, 'reason' | 'rpcCode'>
+  error: Pick<NetworkDomainUnavailableError, 'reason' | 'rpcCode'> | null,
+  context: { debuggerBlind?: boolean | null } = {}
 ): NetworkDomainRefusal {
+  if (error == null) {
+    return context.debuggerBlind === true ? 'acknowledged-but-blind' : 'none';
+  }
   if (error.reason.includes(MULTIPLE_HOSTS_MESSAGE)) {
     return 'multiple-hosts';
   }

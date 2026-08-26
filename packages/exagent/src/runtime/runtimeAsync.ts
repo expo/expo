@@ -3,8 +3,9 @@
 // for errors, and print the answer. This is the step that turns "I think the fix works" into
 // "I read the value out of the running app".
 
+import type { DevServerLogEntry } from '../dev/logErrors';
 import { event } from '../events';
-import { EXIT_OUTCOME_FAILED } from '../exitCodes';
+import { EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import {
   buildRuntimeErrorsFollowUps,
   buildRuntimeNetworkFollowUps,
@@ -35,6 +36,8 @@ import {
   formatRuntimeErrors,
   networkRequestsToJson,
   runtimeErrorsToJson,
+  NO_DEV_SERVER_LOG,
+  type RuntimeErrorsLogJson,
 } from './format';
 import {
   CdpNetworkCollector,
@@ -245,15 +248,21 @@ export async function runtimeErrorsAsync(
     deviceIndex,
   });
 
+  // Marked before the window opens, so the log read below is bounded the same way the debugger
+  // window is: a log is cumulative, and reporting all of it as "what happened while I watched"
+  // would be the same overclaim the empty window was, pointed the other way.
+  const logMark = markDevServerLog(context.projectRoot ?? null);
+
   let errors: RuntimeErrorRecord[];
+  const collector = new CdpRuntimeErrorCollector({
+    metroUrl: devServerUrl,
+    durationMs,
+    targetRetryMs: APP_RECONNECT_GRACE_MS,
+    platform: options.platform,
+    deviceIndex,
+  });
   try {
-    errors = await new CdpRuntimeErrorCollector({
-      metroUrl: devServerUrl,
-      durationMs,
-      targetRetryMs: APP_RECONNECT_GRACE_MS,
-      platform: options.platform,
-      deviceIndex,
-    }).collectAsync();
+    errors = await collector.collectAsync();
   } catch (error: unknown) {
     throw new CommandError(
       'RUNTIME_ERRORS_FAILED',
@@ -266,6 +275,20 @@ export async function runtimeErrorsAsync(
   }
 
   errors = await symbolicateRuntimeErrorsAsync(errors, devServerUrl, context.projectRoot ?? null);
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Android — friction run 6, F52. When the runtime has no
+  // debugger, the debugger window is silence and the dev server's own log is where the app's errors
+  // actually are. Read only then: on a runtime that answers, the log would add a second, unlabelled
+  // copy of what the window already reported.
+  // `?? ` rather than a bare read: a collector that established nothing — an injected fake, a
+  // socket that closed before the probe answered — has not shown the runtime to be blind.
+  const capability = collector.capability ?? { blind: null, evidence: null };
+  const blind = capability.blind === true;
+  const logRead = blind
+    ? readDevServerLogWindow(context.projectRoot ?? null, logMark)
+    : { json: NO_DEV_SERVER_LOG, entries: [] };
+  const log = logRead.json;
+  errors = [...errors, ...logRecordsOf(logRead.entries)];
 
   event('runtime_errors', {
     devServerUrl,
@@ -281,16 +304,25 @@ export async function runtimeErrorsAsync(
     ? buildRuntimeErrorsFollowUps({ count: errors.length, durationMs })
     : [];
 
+  const caveat = blind ? blindRuntimeCaveat(capability.evidence, log) : null;
+
   if (json) {
     Log.log(
       JSON.stringify(
-        { ...runtimeErrorsToJson(devServerUrl, durationMs, errors), followups },
+        {
+          ...runtimeErrorsToJson(devServerUrl, durationMs, errors, {
+            runtimeReadable: capability.blind == null ? null : !blind,
+            runtimeEvidence: capability.evidence,
+            devServerLog: log,
+          }),
+          followups,
+        },
         null,
         2
       )
     );
   } else {
-    Log.log(formatRuntimeErrors(devServerUrl, durationMs, errors));
+    Log.log(formatRuntimeErrors(devServerUrl, durationMs, errors, caveat));
   }
   reportFollowUps('runtime:errors', followups, { json });
 
@@ -298,7 +330,97 @@ export async function runtimeErrorsAsync(
   // and a window that catches nothing is the common case. `--fail-on-error` is the opt-in for a
   // caller using this as a gate, which is what `dev:wait` is by default — the two differ because
   // an empty window here means "nothing happened while I watched", not "the app is healthy".
-  return failOnError && errors.length > 0 ? EXIT_OUTCOME_FAILED : 0;
+  if (failOnError && errors.length > 0) {
+    return EXIT_OUTCOME_FAILED;
+  }
+  // ...and an empty window on a runtime with no debugger is not even that. It is *no observation*,
+  // so a gate must not read it as a pass. `22` is llp/0010's code for "nothing was shown to be
+  // wrong and nothing was proved right", which is exactly this — and it differs from llp/0010's
+  // earlier reading of `runtime:errors` as always-0-unless-caught, which was written before any
+  // runtime that cannot answer had been seen (llp/0005 §Android records the change).
+  if (failOnError && blind && !log.read) {
+    Log.error(inconclusiveWindowError(devServerUrl, capability.evidence, log));
+    return EXIT_OUTCOME_TIMEOUT;
+  }
+  return 0;
+}
+
+/** The line that has to sit above an empty window from a runtime that cannot report anything. */
+function blindRuntimeCaveat(evidence: string | null, log: RuntimeErrorsLogJson): string {
+  const readClause = log.read
+    ? ` The errors below marked "dev server log" were read from ${log.logFile} instead, which is where this app's errors do arrive${log.older > 0 ? `; ${log.older} more were already in that log before this window opened` : ''}.`
+    : ` ${log.reason ?? 'No dev server log was available to read instead.'}`;
+  return `CAVEAT: this runtime cannot report errors over the debugger protocol, so an empty window from it means nothing about the app. Why: ${evidence ?? 'it answered no debugger call'}.${readClause}`;
+}
+
+/** The what / why / how for a gate that was given no observation to gate on. */
+function inconclusiveWindowError(
+  devServerUrl: string,
+  evidence: string | null,
+  log: RuntimeErrorsLogJson
+): string {
+  return [
+    `--fail-on-error has nothing to judge: the runtime connected to ${devServerUrl} reports no errors, whatever the app does.`,
+    `Why: ${evidence ?? 'the runtime answered no debugger call'}. Expo Go for Android ships a JavaScript engine with no Chrome DevTools Protocol debugger, so it acknowledges the calls that open this window and then sends nothing. Exiting 0 here would report health that nothing observed. ${log.reason ?? ''}`.trim(),
+    `How: start the dev server detached ("npx exagent dev --detach"), which captures its log — this command reads the app's errors out of it when the runtime cannot answer. Or open the app in a development build, or on iOS, either of which carries a debuggable engine.`,
+  ].join('\n');
+}
+
+/** How many lines the detached log had before the window opened, or null when there is none. */
+function markDevServerLog(projectRoot: string | null): number | null {
+  if (projectRoot == null) {
+    return null;
+  }
+  const { readDetachedLogSync } = require('../dev/logFile') as typeof import('../dev/logFile');
+  return readDetachedLogSync(projectRoot, 0)?.totalLines ?? null;
+}
+
+/** The errors the detached dev server log gained during the window. */
+function readDevServerLogWindow(
+  projectRoot: string | null,
+  mark: number | null
+): { json: RuntimeErrorsLogJson; entries: DevServerLogEntry[] } {
+  if (projectRoot == null) {
+    return {
+      json: { ...NO_DEV_SERVER_LOG, reason: 'this command was not run inside a project' },
+      entries: [],
+    };
+  }
+  const { detachedLogPath, readDetachedLogSync } =
+    require('../dev/logFile') as typeof import('../dev/logFile');
+  const { readDevServerLogErrors } = require('../dev/logErrors') as typeof import('../dev/logErrors');
+
+  // The whole file: `tail` is a display cap, and the mark below is what bounds the window.
+  const read = readDetachedLogSync(projectRoot, Number.MAX_SAFE_INTEGER);
+  if (read == null) {
+    return {
+      json: {
+        ...NO_DEV_SERVER_LOG,
+        logFile: detachedLogPath(projectRoot),
+        reason: `this project has no detached dev server log (${detachedLogPath(projectRoot)}), so there was nowhere else to read the app's errors from — start the dev server with "npx exagent dev --detach" to get one`,
+      },
+      entries: [],
+    };
+  }
+
+  const { errors, older } = readDevServerLogErrors(read.lines, mark ?? 0);
+  return {
+    json: { read: true, logFile: read.logFile, count: errors.length, older, reason: null },
+    entries: errors,
+  };
+}
+
+/** The log's entries as error records, labelled for what they are. */
+function logRecordsOf(entries: DevServerLogEntry[]): RuntimeErrorRecord[] {
+  return entries.map((entry) => ({
+    source: 'dev-server-log' as const,
+    timestamp: Date.now(),
+    message: entry.message,
+    stack: entry.details || undefined,
+    // The dev server prints these for errors and nothing else, so they are errors — but there is
+    // no structured stack behind them, which is why `frames` stays absent.
+    isError: true,
+  }));
 }
 
 /**
@@ -355,13 +477,14 @@ export async function runtimeNetworkAsync(
   });
 
   let requests: NetworkRequestRecord[];
+  const collector = new CdpNetworkCollector({
+    metroUrl: devServerUrl,
+    durationMs,
+    platform: options.platform,
+    deviceIndex,
+  });
   try {
-    requests = await new CdpNetworkCollector({
-      metroUrl: devServerUrl,
-      durationMs,
-      platform: options.platform,
-      deviceIndex,
-    }).collectAsync();
+    requests = await collector.collectAsync();
   } catch (error: unknown) {
     if (error instanceof NetworkDomainUnavailableError) {
       throw networkDomainUnavailableError(devServerUrl, error, targets);
@@ -375,6 +498,13 @@ export async function runtimeNetworkAsync(
       ].join('\n')
     );
   }
+
+  // @ref ./networkCollector — friction run 6, F61. `Network.enable` is acknowledged by a runtime
+  // with no debugger behind it, so nothing was ever thrown here and the empty list read as "the app
+  // made no requests". The classification now has a name for that, and it is printed.
+  const silence = classifyNetworkDomainRefusal(null, {
+    debuggerBlind: collector.capability?.blind,
+  });
 
   const failedCount = countFailedRequests(requests);
   const pendingCount = countPendingRequests(requests);
@@ -398,13 +528,29 @@ export async function runtimeNetworkAsync(
   if (json) {
     Log.log(
       JSON.stringify(
-        { ...networkRequestsToJson(devServerUrl, durationMs, requests), followups },
+        {
+          ...networkRequestsToJson(devServerUrl, durationMs, requests, {
+            runtimeReadable:
+              collector.capability?.blind == null ? null : !collector.capability.blind,
+            runtimeEvidence: collector.capability?.evidence ?? null,
+          }),
+          followups,
+        },
         null,
         2
       )
     );
   } else {
-    Log.log(formatNetworkRequests(devServerUrl, durationMs, requests));
+    Log.log(
+      formatNetworkRequests(
+        devServerUrl,
+        durationMs,
+        requests,
+        silence === 'acknowledged-but-blind'
+          ? `CAVEAT: this runtime accepted Network.enable and carries no debugger behind it, so an empty list means nothing about what the app requested. Why: ${collector.capability?.evidence ?? 'it answered no debugger call'}. Read the app's errors with "npx exagent runtime:errors" — that command falls back to the dev server's own log — or open the app on iOS or in a development build.`
+          : null
+      )
+    );
   }
   reportFollowUps('runtime:network', followups, { json });
 

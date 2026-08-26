@@ -283,6 +283,15 @@ describe(runtimeErrorsToJson, () => {
       durationMs: 2000,
       count: 1,
       errors,
+      runtimeReadable: null,
+      runtimeEvidence: null,
+      devServerLog: {
+        read: false,
+        logFile: null,
+        count: 0,
+        older: 0,
+        reason: 'the runtime answered the debugger, so the dev server log was not needed',
+      },
       untrusted: ['errors'],
     });
   });
@@ -297,6 +306,8 @@ describe(networkRequestsToJson, () => {
       durationMs: 5000,
       count: 1,
       requests,
+      runtimeReadable: null,
+      runtimeEvidence: null,
       untrusted: ['requests'],
     });
   });

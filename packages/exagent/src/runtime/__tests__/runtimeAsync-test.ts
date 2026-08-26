@@ -433,6 +433,15 @@ describe(runtimeErrorsAsync, () => {
       durationMs: 2000,
       count: 0,
       errors: [],
+      runtimeReadable: null,
+      runtimeEvidence: null,
+      devServerLog: {
+        read: false,
+        logFile: null,
+        count: 0,
+        older: 0,
+        reason: 'the runtime answered the debugger, so the dev server log was not needed',
+      },
       untrusted: ['errors'],
       followups: [
         {
@@ -461,10 +470,13 @@ describe(runtimeErrorsAsync, () => {
     expect(console.log).toHaveBeenCalledTimes(1);
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'count',
+      'devServerLog',
       'devServerUrl',
       'durationMs',
       'errors',
       'followups',
+      'runtimeEvidence',
+      'runtimeReadable',
       'untrusted',
     ]);
   });
@@ -572,6 +584,8 @@ describe(runtimeNetworkAsync, () => {
       durationMs: 5000,
       count: 1,
       requests: [REQUEST],
+      runtimeReadable: null,
+      runtimeEvidence: null,
       untrusted: ['requests'],
       followups: [
         {
@@ -597,6 +611,8 @@ describe(runtimeNetworkAsync, () => {
       'durationMs',
       'followups',
       'requests',
+      'runtimeEvidence',
+      'runtimeReadable',
       'untrusted',
     ]);
   });
@@ -723,5 +739,60 @@ describe('network panel flag', () => {
     expect(
       targetAdvertisesNetworkPanel({ devtoolsFrontendUrl: '/x?unstable_enableNetworkPanel=true' })
     ).toBe(true);
+  });
+});
+
+// @ref ../runtimeErrorCollector, ../../dev/logErrors — friction run 6, F52. Expo Go for Android
+// acknowledges `Runtime.enable` and then sends nothing, so this command reported an empty window,
+// exit 0, for an app on a red screen — and `--fail-on-error` called that health.
+describe(`${runtimeErrorsAsync.name} on a runtime with no debugger`, () => {
+  /** A collector that answers with nothing and says why nothing is all it can answer with. */
+  function mockBlindCollect(records: any[] = []) {
+    const collectAsync = jest.fn(async () => records);
+    jest.mocked(CdpRuntimeErrorCollector).mockImplementation(
+      () =>
+        ({
+          collectAsync,
+          capability: {
+            blind: true,
+            evidence: 'the runtime answered Runtime.evaluate with "method not found" (-32601)',
+          },
+        }) as any
+    );
+    return collectAsync;
+  }
+
+  it(`puts a caveat above the empty window instead of reporting it as quiet`, async () => {
+    mockBlindCollect();
+
+    await runtimeErrorsAsync(errorsOptions);
+
+    const said = printed();
+    // Above, not after: a reader who takes one line takes the first one.
+    expect(said.indexOf('CAVEAT')).toBeLessThan(said.indexOf('No runtime errors'));
+    expect(said).toContain('cannot report errors over the debugger protocol');
+    expect(said).toContain('method not found');
+  });
+
+  it(`exits 22 rather than 0 when --fail-on-error has nothing to judge`, async () => {
+    mockBlindCollect();
+    const complaints = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(runtimeErrorsAsync({ ...errorsOptions, failOnError: true })).resolves.toBe(22);
+
+    expect(complaints.mock.calls.flat().join('\n')).toContain('has nothing to judge');
+  });
+
+  it(`reports the runtime as unreadable in the machine shape`, async () => {
+    mockBlindCollect();
+
+    await runtimeErrorsAsync({ ...errorsOptions, json: true });
+
+    const report = JSON.parse(printed());
+    expect(report.runtimeReadable).toBe(false);
+    expect(report.runtimeEvidence).toContain('method not found');
+    expect(report.devServerLog.read).toBe(false);
+    // No project root was given, so there is no log to read — said, not left blank.
+    expect(report.devServerLog.reason).toContain('not run inside a project');
   });
 });
