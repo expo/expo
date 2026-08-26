@@ -71,10 +71,20 @@ jobs:
           else
             npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify run
           fi
+      - name: Collect run log
+        # .verify-out sits at the root on a checkout run, or inside the
+        # engine's clone (.verify-target/) on an upload run; gather either.
+        if: ${{ always() }}
+        run: |
+          mkdir -p verify-run-log
+          for d in .verify-out .verify-target/.verify-out; do
+            [ -d "$d" ] && cp -R "$d"/. verify-run-log/ || true
+          done
+          ls verify-run-log
       - name: Upload run log
         if: ${{ always() }} # CLI failures; the hard VM kill is the watchdog's job
         uses: eas/upload_artifact
         with:
           type: other
           name: verify-run-log
-          path: .verify-out
+          path: verify-run-log
