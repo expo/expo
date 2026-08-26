@@ -165,6 +165,40 @@ const styles = StyleSheet.create({
 
 The `Roboto Flex` entry in the example above is a variable font: one file that holds many faces. You select a face with the `fontWeight` and `fontStyle` style props. Variable fonts also work with [`useFonts`](#usefonts). To learn more, see [Variable fonts](/develop/user-interface/fonts/#variable-fonts) in the Fonts guide.
 
+### Multiple weights and styles
+
+To load several static font files (for example regular, bold, and italic cuts) under a single `fontFamily` name, pass `useFonts` an array of [`FontFamilyDefinition`](#fontfamilydefinition)s instead of a map:
+
+```tsx
+const [loaded, error] = useFonts([
+  {
+    fontFamily: 'Inter',
+    fontDefinitions: [
+      { path: require('./assets/fonts/Inter-Regular.otf'), weight: 400 },
+      { path: require('./assets/fonts/Inter-Italic.otf'), weight: 400, style: 'italic' },
+      { path: require('./assets/fonts/Inter-Bold.otf'), weight: 700 },
+    ],
+  },
+]);
+```
+
+Then select the loaded face with the `fontWeight` and `fontStyle` style props:
+
+```tsx
+<Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
+<Text style={{ fontFamily: 'Inter', fontWeight: '400', fontStyle: 'italic' }}>Inter Italic</Text>
+```
+
+Declare every face of a family in one call. A `fontFamily` loads once, so a later `loadAsync` or `useFonts` call for a name that is already loaded adds no faces to it. This also applies across the two call styles: after `useFonts({ Inter: regular })`, passing an array for `Inter` loads nothing more.
+
+Declare `weight` and `style` on every face. Web needs both values, and explicit values keep the three platforms in agreement.
+
+Platform notes:
+
+- **Android** uses the declared `weight` and `style` values, and falls back to the values in the font file when not declared. A declared `weight` pins a variable font face to that one weight, and Android synthesizes the others. Below API 29 (Android 10), only the default face loads, chosen by the declared values (closest to weight 400, upright); fonts embedded with the [config plugin](#configuration-in-app-config) use Android's XML font resources and do not have this limit.
+- **iOS** matches faces by the weight and style metadata embedded in the font files. It does not use the declared `weight` and `style` values for matching. It uses them only to pick the family's default face when a file carries no readable metadata.
+- **Web** generates one CSS `@font-face` rule per face, with the declared `weight` and `style` values. CSS cannot read the metadata inside a font file, so a face that declares no `style` renders as upright. Two faces of one family that leave the same values undeclared produce the same CSS rule, and the browser then chooses between them.
+
 ## API
 
 ```js
