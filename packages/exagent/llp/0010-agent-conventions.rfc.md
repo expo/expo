@@ -464,6 +464,14 @@ Three details:
   same shape — an empty window from a runtime that cannot report. The two failures need different
   fixes, which is what earns the second code: `20` means change the code or raise the assertion,
   `22` means give the gate something to measure.
+
+  Decision [confirmed — Kudo's delegate, 2026-08-26]: this is the rule for **every** gate-shaped
+  flag, not a local choice. Any `--assert`- or `--fail-on-*`-shaped flag this CLI grows — the
+  planned `credentials:status --assert` included — answers a measured failure with `20` and an
+  unmeasurable state with `22`, and carries the distinction in its payload as well
+  (`assertion.actual: null` beside the reason). One convention across the gates is the point: a
+  caller branching on a gate's exit must get the same answer to the same situation from every
+  command that offers one.
 - **The class is not the OTA verdict**, and neither is derived from the other. That split is the
   normative part of [[0011-impact-and-freshness]] and the reason it is a document rather than a
   paragraph here: a fingerprint answers "does the native binary differ" and OTA safety is a
