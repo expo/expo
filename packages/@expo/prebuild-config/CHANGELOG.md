@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the prebuild testing-library test failing when jest runs with colors enabled (interactive terminals): assert on the matcher failure message with ANSI escape codes stripped. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))

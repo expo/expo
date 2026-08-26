@@ -60,6 +60,7 @@
     "@expo/config-plugins": "workspace:~",
     "@expo/config-types": "workspace:^",
     "@expo/json-file": "workspace:^",
+    "@expo/platforms": "workspace:^",
     "@expo/require-utils": "workspace:^",
     "deepmerge": "^4.3.1",
     "getenv": "^2.0.0",
