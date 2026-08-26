@@ -53,7 +53,13 @@ final class LinearGradientLayer: CALayer {
   override func display() {
     super.display()
 
-    if colors.isEmpty || bounds.size.width.isZero || bounds.size.height.isZero {
+    let size = bounds.size
+    // Layout churn (e.g. recycled list cells) can briefly leave the layer with
+    // NaN or negative bounds, which pass the isZero check but trap in
+    // UIGraphicsBeginImageContextWithOptions on iOS 17+.
+    guard !colors.isEmpty,
+      size.width.isFinite, size.width > 0,
+      size.height.isFinite, size.height > 0 else {
       return
     }
     let hasAlpha = colors.reduce(false) { result, color in
@@ -69,22 +75,15 @@ final class LinearGradientLayer: CALayer {
 
   #if !os(macOS)
   private func setLayerContents(hasAlpha: Bool) {
-    UIGraphicsBeginImageContextWithOptions(bounds.size, !hasAlpha, 0.0)
-
-    guard let contextRef = UIGraphicsGetCurrentContext() else {
-      return
-    }
-
-    draw(in: contextRef)
-
-    guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-      return
+    let format = UIGraphicsImageRendererFormat.preferred()
+    format.opaque = !hasAlpha
+    let renderer = UIGraphicsImageRenderer(size: bounds.size, format: format)
+    let image = renderer.image { context in
+      draw(in: context.cgContext)
     }
 
     self.contents = image.cgImage
     self.contentsScale = image.scale
-
-    UIGraphicsEndImageContext()
   }
   #else
   private func setLayerContentsMacOS(hasAlpha: Bool) {
