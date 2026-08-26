@@ -1,11 +1,11 @@
 # 0014: Driving the app from the debugger — spike notes
 
 **Type:** Notes (Spike)
-**Status:** Draft — spike record, not a design of record. Nothing here is implemented.
+**Status:** Draft — spike record, not a design of record. **Implemented** in `src/runtime/interact/` as of 2026-08-26; what was built, and the eight things this record left open, are in [[0018-interaction-commands]].
 **Systems:** proposed `exagent runtime:tree` / `runtime:tap` / `runtime:type`; `src/runtime/cdpClient.ts`; `src/runtime/promiseSettling.ts`; fixtures in `src/runtime/__tests__/fixtures/spike-view-tree/`
 **Author:** Tuft agent (spike run for Kudo)
 **Date:** 2026-08-24
-**Related:** [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]]
+**Related:** [[0018-interaction-commands]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0016-v1-scope]]
 
 ## What this is
 

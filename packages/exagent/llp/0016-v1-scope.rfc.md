@@ -5,13 +5,20 @@
 **Systems:** the command registry (`src/commandRegistry.ts`); the reference shelf (`src/deferred/`); the suggested-command lint (`src/lint/`); `--help`; `README.md`; the `AGENTS.md` managed block (`src/agents/content.ts`)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-26
-**Related:** [[0017-deferred-commands]], [[0006-agent-native-cli-surface]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0012-build-explain]]
+**Related:** [[0017-deferred-commands]], [[0006-agent-native-cli-surface]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0012-build-explain]], [[0014-interaction-spike]], [[0018-interaction-commands]]
 
 ## Summary
 
 Decision [confirmed — Kudo, 2026-08-26]: **cut the surface down to what a person can be handed and asked to try.** Twenty-odd commands had accumulated, each with a reason, and the reasons were individually good. What none of them answered is the question a first release asks: which of these does an agent reach for, and which are a second way to do something it already has?
 
 So: **five areas deferred, two renamed, everything else unchanged.** Nothing here has ever been published — the whole surface is one unreleased cycle — so no user is losing a command. What is being decided is what the first one contains.
+
+**One addition since** [confirmed — Kudo, 2026-08-26]: `runtime:tree`, `runtime:tap` and
+`runtime:type`. They are not a widening of the narrowing — they are the commands
+`plans/cluster-a-runtime-verify.md` gated on a live spike, and the spike came back GO
+([[0014-interaction-spike]]). Driving the app is a capability the v1 surface otherwise has no
+answer for at all: `navigate` opens a route and `runtime:eval` reads state, and nothing between them
+presses a button. They ship marked experimental, on the same rule as `smoke`.
 
 ## The decision table
 
@@ -26,6 +33,7 @@ So: **five areas deferred, two renamed, everything else unchanged.** Nothing her
 | `start`                        | **keep**                          | `expo start` and nothing else                                           |
 | `navigate` (+`--print-url`, `--cloud`) | **keep**                  | the only way to open a route on a device                                |
 | `runtime:eval` / `:errors` / `:reload` / `:stop` | **keep**         | the runtime loop, cloud flags included                                  |
+| `runtime:tree` / `:tap` / `:type` | **added**, marked experimental | driving the app, gated on a live spike and taken after it returned GO ([[0014-interaction-spike]], [[0018-interaction-commands]]) |
 | `smoke`                        | **keep**, marked experimental     | the whole gate in one command                                           |
 | `deploy` (all platforms)       | **keep**                          | shipping, web and native                                                |
 | `login` / `logout` / `whoami` / `register` | **keep**              | forwarded, with the EAS fallback of [[0006-agent-native-cli-surface]]   |
@@ -84,7 +92,11 @@ Two commands read something a project produced and ran nothing. Both sat under a
 
 New registry attribute [confirmed — Kudo, 2026-08-26]: a `CommandAction` or a `TopLevelCommand` may carry `unstable: true`. `--help` prints an `[experimental]` tag on that command's own line, and one footnote per section that has any: *experimental commands may change or vanish*.
 
-It is on three commands — `inspect:build-log`, `inspect:config-plugins` and `smoke` — and on **no group**. That is the whole design decision. Marking `inspect` would say something about the stable actions that join it later, which is the opposite of what is meant: the group is the durable idea, and the two commands in it today are the guesses. `smoke` is the same shape from the other end — the name is not going anywhere, and which of its eight phases belong in one command is what a first release is for finding out.
+It is on six commands — `inspect:build-log`, `inspect:config-plugins`, `smoke`, and the three
+interaction commands `runtime:tree`, `runtime:tap` and `runtime:type` — and on **no group**. That is the whole design decision. Marking `inspect` would say something about the stable actions that join it later, which is the opposite of what is meant: the group is the durable idea, and the two commands in it today are the guesses. `smoke` is the same shape from the other end — the name is not going anywhere, and which of its eight phases belong in one command is what a first release is for finding out. The three interaction
+commands are a third shape again: the mechanism under them is proved, and proved against **one app,
+on one runtime, on one day** ([[0018-interaction-commands]] §Why these ship experimental), so the
+names are settled and the projection and the `--verify` diff are the guesses.
 
 `true` or absent, never `false`: a command that is not marked is the ordinary case, and `unstable: false` beside twenty entries with nothing would read as a claim somebody made rather than as the default.
 
@@ -97,4 +109,4 @@ It is on three commands — `inspect:build-log`, `inspect:config-plugins` and `s
 
 ## Testing
 
-Unchanged in kind, smaller in count: 2757 unit tests over 152 suites and 396 e2e tests over 22, from 3179 / 473 before — the difference is the suites that moved to the shelf with their code. The tier-0 eval scenario `dev-wait-no-dev-server` was replaced by `smoke-no-dev-server`, which asks the same thing of the command that answers it now. The suggested-command lint is the regression test for the narrowing itself: it fails on any string that names a command the registry no longer has.
+Unchanged in kind, smaller in count: 2757 unit tests over 152 suites and 396 e2e tests over 22, from 3179 / 473 before — the difference is the suites that moved to the shelf with their code. Adding the three interaction commands took it to **2876 unit tests over 156 suites and 411 e2e over 23** [observed — 2026-08-26]. The tier-0 eval scenario `dev-wait-no-dev-server` was replaced by `smoke-no-dev-server`, which asks the same thing of the command that answers it now. The suggested-command lint is the regression test for the narrowing itself: it fails on any string that names a command the registry no longer has.
