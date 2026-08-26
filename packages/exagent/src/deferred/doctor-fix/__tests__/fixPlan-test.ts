@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 /* eslint-env jest */
 // @ref llp/0013-doctor-fix.rfc.md §Planning
 // The planner over memfs fixtures: a CNG project with no native directories, a bare one with both,

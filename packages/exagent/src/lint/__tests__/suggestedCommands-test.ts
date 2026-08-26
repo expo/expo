@@ -94,7 +94,6 @@ describe("the option lists the sweep checks against", () => {
         "dev:stop",
         "dev:wait",
         "doctor:check",
-        "doctor:fix",
         "install",
         "navigate",
         "new",

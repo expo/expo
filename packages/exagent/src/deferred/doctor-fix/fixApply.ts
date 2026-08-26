@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md §Applying
 // Run a plan that was already printed. One event per step, one result per step, and a stop at the
 // first failure.
@@ -10,9 +12,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { event } from '../events';
-import { spawnExpoAsync } from '../utils/expoCli';
-import { spawnSubprocessAsync } from '../utils/subprocess';
+import { event } from '../../events';
+import { spawnExpoAsync } from '../../utils/expoCli';
+import { spawnSubprocessAsync } from '../../utils/subprocess';
 import { rejectUnsafeTarget } from './fixSafety';
 import { unsafePathError, type FixPlan } from './fixPlan';
 import type { FixStep, FixStepResult } from './fixTypes';

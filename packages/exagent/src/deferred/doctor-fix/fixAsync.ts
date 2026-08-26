@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md
 // The whole of one `doctor:fix` run: plan, print, ask, snapshot, apply, report.
 //
@@ -7,13 +9,13 @@
 
 import chalk from 'chalk';
 
-import { checkpointBeforeAsync } from '../checkpoint/integration';
-import { event } from '../events';
-import { EXIT_OK, EXIT_OUTCOME_FAILED } from '../exitCodes';
-import { buildDoctorFixFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
-import * as Log from '../log';
-import { isInteractive } from '../utils/interactive';
-import { confirmAsync } from '../utils/prompts';
+import { checkpointBeforeAsync } from '../../checkpoint/integration';
+import { event } from '../../events';
+import { EXIT_OK, EXIT_OUTCOME_FAILED } from '../../exitCodes';
+import { buildDoctorFixFollowUps, followUpsEnabled, reportFollowUps } from '../../followups';
+import * as Log from '../../log';
+import { isInteractive } from '../../utils/interactive';
+import { confirmAsync } from '../../utils/prompts';
 import { applyFixAsync } from './fixApply';
 import { formatFixPlan, formatFixResults } from './fixFormat';
 import { planFixAsync } from './fixPlan';

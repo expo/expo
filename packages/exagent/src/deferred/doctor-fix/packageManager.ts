@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md §Reinstalling
 // Which package manager puts `node_modules` back, read from the lockfile the project already has.
 //
@@ -8,7 +10,7 @@
 
 import path from 'path';
 
-import { fileExistsSync } from '../utils/dir';
+import { fileExistsSync } from '../../utils/dir';
 import type { FixPackageManager } from './fixTypes';
 
 /**

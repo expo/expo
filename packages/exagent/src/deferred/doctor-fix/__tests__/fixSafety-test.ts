@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 /* eslint-env jest */
 // @ref llp/0013-doctor-fix.rfc.md §Path safety
 // The one predicate every target passes through, as a table. This is the test that matters most in

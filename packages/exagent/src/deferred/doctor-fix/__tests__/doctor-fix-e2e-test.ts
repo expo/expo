@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 /* eslint-env jest */
 // @ref llp/0013-doctor-fix.rfc.md
 // `doctor:fix` through the published bin, against planted caches in a temporary project and a
@@ -10,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, installStubBinAsync, setupFixtureAsync, stubExpoEnv } from '../utils';
+import { executeExagentAsync, installStubBinAsync, setupFixtureAsync, stubExpoEnv } from '../../../../e2e/utils';
 
 /** The shape `doctor:fix --json` prints, per `src/doctor/fixTypes.ts`. */
 type FixPayload = {

@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md §Path safety
 // The one predicate every target of `doctor:fix` passes through, on the way into the plan and
 // again on the way into `rm`.
@@ -11,7 +13,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { isPathInside } from '../utils/dir';
+import { isPathInside } from '../../utils/dir';
 import type { FixScope } from './fixTypes';
 
 /** What the predicate needs to know about the machine and about the step that named the target. */

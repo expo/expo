@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md §Planning
 // Turn the tier table into the plan for one project on one machine: which steps this project has,
 // which of their targets exist, how big they are, and in what order they would run.
@@ -10,10 +12,10 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { dirtyTrackedPathsAsync } from '../checkpoint/git';
-import { directoryExistsSync, fileExistsSync } from '../utils/dir';
-import { CommandError } from '../utils/errors';
-import { findExecutableOnPath } from '../utils/subprocess';
+import { dirtyTrackedPathsAsync } from '../../checkpoint/git';
+import { directoryExistsSync, fileExistsSync } from '../../utils/dir';
+import { CommandError } from '../../utils/errors';
+import { findExecutableOnPath } from '../../utils/subprocess';
 import { rejectUnsafeTarget, type TargetSafetyContext } from './fixSafety';
 import {
   stepsForTier,

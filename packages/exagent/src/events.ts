@@ -314,6 +314,10 @@ declare module '2g' {
     /**
      * The plan one `exagent doctor:fix` run built, emitted before anything is applied.
      *
+     * Deferred from v1 (2026-08-26): the fix half of `doctor` is on the reference shelf
+     * (`src/deferred/doctor-fix/`), so nothing emits this now. The declaration stays as the schema
+     * a consumer wrote against. See llp/0016 and llp/0013.
+     *
      * Ids and counts only: the targets are absolute paths on the user's machine, and the plan is
      * printed in full on the command's own output where the caller asked for it.
      *
@@ -333,6 +337,8 @@ declare module '2g' {
     };
     /**
      * One step of an applied `doctor:fix` plan, emitted as it finishes.
+     *
+     * Deferred from v1 (2026-08-26), with `cli:doctor_fix_plan` above.
      *
      * @see llp/0013-doctor-fix.rfc.md
      */

@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md
 // The shape of a `doctor:fix` plan. Pure data — no I/O here.
 //
@@ -7,8 +9,8 @@
 // it read two. What it adds is what a reset has and a start plan does not: the paths a step
 // deletes, the scope those paths belong to, and what comes back afterwards.
 
-import type { FollowUp } from '../followups/types';
-import type { TimeClass } from '../project/types';
+import type { FollowUp } from '../../followups/types';
+import type { TimeClass } from '../../project/types';
 
 /**
  * How much a run is allowed to destroy. Cumulative: `moderate` includes every `safe` step, and

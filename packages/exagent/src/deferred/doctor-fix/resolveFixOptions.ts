@@ -1,10 +1,12 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md §Command spec
 // The two flag values `doctor:fix` reads, as pure functions. A value this command does not
 // understand is a `BAD_ARGS` naming the ones it does — never a silent fallback to the default,
 // which is how `--tier moderate` typed as `--tier moderatte` becomes a safe run that reported
 // success (llp/0006 §Errors are prompts).
 
-import { CommandError } from '../utils/errors';
+import { CommandError } from '../../utils/errors';
 import type { NativePlatform } from './fixSteps';
 import { FIX_TIERS, type FixTier } from './fixTypes';
 

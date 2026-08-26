@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0013-doctor-fix.rfc.md §The tier table
 // What `doctor:fix` may reset, as data. One entry per step: which tier admits it, what it deletes,
 // what puts it back, and what it costs.
@@ -9,7 +11,7 @@
 import { createHash } from 'crypto';
 import path from 'path';
 
-import type { TimeClass } from '../project/types';
+import type { TimeClass } from '../../project/types';
 import type { FixPhase, FixScope, FixStepKind, FixTier } from './fixTypes';
 import { installArgv } from './packageManager';
 

@@ -1,11 +1,31 @@
 # 0013: `doctor:fix` — A Deterministic Cache and Build-State Reset
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Deferred — reference (2026-08-26)
 **Systems:** `exagent doctor:fix` (`src/doctor/fix.ts`, `fixAsync.ts`, `fixPlan.ts`, `fixApply.ts`, `fixSteps.ts`, `fixSafety.ts`, `fixFormat.ts`, `fixTypes.ts`, `packageManager.ts`, `resolveFixOptions.ts`); `src/checkpoint/git.ts`; `src/followups/doctor.ts`; the JSONL event registry
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-24
-**Related:** [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0004-smart-start-and-project-state]], [[0009-smart-followups]]
+**Related:** [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0004-smart-start-and-project-state]], [[0009-smart-followups]], [[0016-v1-scope]]
+
+> **Status:** Deferred — reference (2026-08-26)
+>
+> `doctor:fix` is out of the v1 surface. Its code is on the reference shelf at
+> `src/deferred/doctor-fix/`, imported by nothing; `doctor` / `doctor:check` ship unchanged and are
+> still the v1 answer to "what is wrong with this project".
+>
+> **Why:** the split this document opens with — expo-doctor diagnoses, `exagent` acts — is real, but
+> only the diagnosing half earns a place in a first surface. What `doctor:fix` deletes is caches and
+> build state, and every one of them is something an agent can delete with the tool it already has:
+> `rm -rf node_modules && npx expo prebuild --clean` is one line an agent writes without help. The
+> command's value is the *table* and the safety rules around it, which is worth shipping — later,
+> once the surface it sits in is settled — rather than shipping a deleting command in a first
+> release for the sake of completeness.
+>
+> **Re-entry criteria:** the v1 surface has been used enough to say which resets agents actually
+> reach for, and a tier table can be cut down to those; and the checkpoint question is answered,
+> because this command's whole subject is gitignored and no checkpoint holds it
+> ([[0008-guardrails]] §Deleting what a checkpoint cannot hold). It returns as an action of the
+> `doctor` group, with the dry-run default unchanged.
 
 ## Summary
 

@@ -1,3 +1,5 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — `label value` lines first, then
 // one block per step. A plan is read to decide whether to run it, so every step says what it costs
 // (size, time class) and what puts it back on the same screen as what it deletes.

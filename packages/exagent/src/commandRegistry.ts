@@ -164,16 +164,12 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     },
   },
   doctor: {
-    summary: 'Diagnose the project with expo-doctor, and reset its caches',
+    summary: 'Diagnose the project with expo-doctor',
     defaultAction: 'check',
     actions: {
       check: {
         summary: 'Run the expo-doctor checks and normalize the report',
         load: () => import('./doctor').then((i) => i.exagentDoctorCheck),
-      },
-      fix: {
-        summary: 'Reset caches and build state. Dry run unless --apply',
-        load: () => import('./doctor/fix').then((i) => i.exagentDoctorFix),
       },
     },
   },
@@ -436,11 +432,6 @@ export const helpSections: HelpSection[] = [
     title: 'Inspect the project',
     commands: ['config:effective', 'doctor'],
     note: 'exagent config (bare) is expo config; only config:effective is this CLI',
-  },
-  {
-    title: 'Reset a project that has gone stale',
-    commands: ['doctor:fix'],
-    note: 'Dry run by default: it prints what it would delete, and --apply is what deletes it.',
   },
   { title: 'Create', commands: ['new'] },
   {

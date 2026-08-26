@@ -1,7 +1,9 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 /* eslint-env jest */
 // @ref llp/0013-doctor-fix.rfc.md §Follow-ups
-import type { FixPlanPayload, FixStep, FixStepResult, FixTier } from '../../doctor/fixTypes';
-import { buildDoctorFixFollowUps } from '../doctor';
+import type { FixPlanPayload, FixStep, FixStepResult, FixTier } from '../fixTypes';
+import { buildDoctorFixFollowUps } from '../followups';
 
 function step(id: string): FixStep {
   return {

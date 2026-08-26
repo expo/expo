@@ -139,7 +139,8 @@ export async function resolveWorkTreeAsync(projectRoot: string): Promise<GitWork
  * `--untracked-files=no` is the whole point: a native directory is full of build output that is
  * *supposed* to be untracked, so counting `??` entries would report every project as dirty. What
  * this answers is "does the user have work here that nobody has recorded", which is the question
- * `doctor:fix` has to ask before it deletes inside `ios/` or `android/`.
+ * `doctor:fix` had to ask before it deleted inside `ios/` or `android/` (deferred out of v1,
+ * llp/0016).
  *
  * A project outside git, or a git that cannot run, answers `[]`: nothing has been *shown* to be at
  * risk, and refusing on an unanswerable question would stop the command on every project without a

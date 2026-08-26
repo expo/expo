@@ -1,7 +1,9 @@
+// Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0013
+//
 import chalk from 'chalk';
 
-import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import type { Command } from '../../types';
+import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
 export const exagentDoctorFix: Command = async (argv) => {
   const args = assertWithOptionsArgs(
