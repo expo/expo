@@ -940,7 +940,7 @@ function contextHelp(argv: string[]): string {
 // subcommands exec the engine with the repo's .verify/ profile. roundup
 // stays native here — it is expo policy (emoji conventions, branch scoping,
 // cost tables) the engine has not absorbed yet.
-const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.5.1';
+const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.6.0';
 
 async function delegateToEngine(engineArgs: string[]): Promise<never> {
   const configDir = join(getExpoRepositoryRootDir(), '.verify');
