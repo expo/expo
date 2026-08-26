@@ -5,7 +5,7 @@
 **Systems:** the e2e tier (`e2e/`); the EAS-backed call sites (`src/dev/devAsync.ts`, `src/impact/buildCache.ts`, `src/impact/compare.ts`, `src/status/easBuilds.ts`, `src/device/cloudSimulator.ts`, `src/passthrough/auth.ts`, `src/deploy/`); the follow-up ladders (`src/followups/`)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-26
-**Related:** [[0002-testing-and-evals]], [[0015-backend-selection-and-config]], [[0016-v1-scope]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]]
+**Related:** [[0002-testing-and-evals]], [[0015-backend-selection-and-config]], [[0016-v1-scope]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]]
 
 ## Summary
 
