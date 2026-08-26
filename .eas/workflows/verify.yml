@@ -6,7 +6,10 @@
 # P4 spike facts this file depends on: no gh on the worker (installed in the
 # first step), Node defaults to 18 (tools.node below), the hard job cap is
 # 120 minutes — the engine's watchdog reserves the salvage tail under it.
-name: verify
+# The run's name is this static field (EAS has no per-run title); the
+# run's identity — target, mode, outcome — travels as job outputs, which
+# the run page shows and `verify status` reads.
+name: verify (agent investigation)
 
 on:
   workflow_dispatch:
@@ -40,6 +43,15 @@ jobs:
   verify:
     runs_on: linux-large
     environment: production
+    # Job outputs are a map from STEP outputs; the run step (id: run) emits
+    # them with set-output, and they appear on the run page / in the API.
+    outputs:
+      target: ${{ steps.run.outputs.target }}
+      mode: ${{ steps.run.outputs.mode }}
+      fix: ${{ steps.run.outputs.fix }}
+      dry_run: ${{ steps.run.outputs.dry_run }}
+      actor: ${{ steps.run.outputs.actor }}
+      outcome: ${{ steps.run.outputs.outcome }}
     env:
       VERIFY_TARGET: ${{ inputs.target }}
       VERIFY_FIX: ${{ inputs.fix }}
@@ -63,6 +75,8 @@ jobs:
           "$HOME/bin/gh" --version
           npm install -g @anthropic-ai/claude-code@2.1.229
       - name: Guard, then run
+        id: run
+        outputs: [target, mode, fix, dry_run, actor, outcome]
         run: |
           npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify verify-config
           export PATH="$HOME/bin:$PATH"
