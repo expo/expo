@@ -1,7 +1,9 @@
 /**
  * Dispatch expo/expo's `/verify` workflow quietly.
  *
- *   et verify                  dashboard
+ *   et verify                  status (in flight, recent, fork)
+ *   et verify status           same
+ *   et verify dispatch 48780   same as `et verify 48780`
  *   et verify 48780            fix mode follows the comment path (issue yes, PR no)
  *   et verify '#48780'         same; quote the # or the shell eats it
  *   et verify https://github.com/expo/expo/issues/48780
@@ -20,7 +22,7 @@
  * registered with allowUnknownOption and parses the raw argv itself.
  *
  * Since the @expo/verify engine cutover (expo-sandbox-mcp LLP 0020), dispatch,
- * dash, and ls are thin delegations to `npx @expo/verify` running against this
+ * status, and ls are thin delegations to `npx @expo/verify` running against this
  * repo's .verify/ profile — the engine is where run resolution and dispatch
  * live now, shared by every repo that adopts it. Only `roundup` (expo policy:
  * emoji conventions, verify/ branch scoping, cost tables) still runs here.
@@ -44,8 +46,9 @@ const REPO = 'expo/expo';
 const WORKFLOW = 'verify.yml';
 const HELP = `verify — dispatch expo/expo's /verify workflow without commenting on the thread
 
-  et verify                    dashboard (in progress, recent, fork)
-  et verify dash               same
+  et verify                    status (in flight, recent, fork)
+  et verify status             same
+  et verify dispatch <n>       same as \`et verify <n>\`
   et verify <n>                issue or PR number (also '#<n>' — quote it — or an expo/expo issue/PR URL)
   et verify <n> --fix          force a fix pull request attempt
   et verify <n> --no-fix       force report-only
@@ -78,19 +81,17 @@ Capacity is enforced server-side now: the scoped-token mint holds one slot
 per target (a second dispatch for a target with a run in flight is refused)
 and caps runs deployment-wide, sized to the sandbox pool. There is no
 per-slot concurrency group anymore. Runs appear here within seconds of
-dispatch; the dashboard (plain et verify) shows recent finished runs too.`;
+dispatch; \`et verify status\` shows recent finished runs too.`;
 
-const DASH_HELP = `verify dashboard — one screen to see if verification is healthy
+const STATUS_HELP = `verify status — one screen to see if verification is healthy
 
   et verify
-  et verify dash
-  et verify d | dashboard
+  et verify status
 
 Shows every run still in flight (and any that are queued), a tally plus the
 latest finished runs (skipped comment-gate jobs hidden), how far
 expo-bot/expo is behind expo/expo main, and the last fork-sync job if that
-workflow exists. For a longer recap use \`verify ls --status success\`
-(or failure, …).`;
+workflow exists. In flight and recent runs come from the engine (\`verify status\`).`;
 
 const ROUNDUP_HELP = `verify roundup — digest of recent agent activity on ${REPO}
 
@@ -904,7 +905,7 @@ export default (program: Command) => {
     .command('verify [args...]')
     .allowUnknownOption()
     .description(
-      "Dispatch expo/expo's /verify workflow quietly, or inspect verification runs (dash / ls / roundup)."
+      "Dispatch expo/expo's /verify workflow quietly, or inspect verification runs (status / ls / roundup)."
     )
     .on('--help', () => {
       console.log();
@@ -926,7 +927,7 @@ async function actionAsync(): Promise<void> {
 function contextHelp(argv: string[]): string {
   if (argv.includes('ls') || argv.includes('list')) return LS_HELP;
   if (argv.includes('roundup')) return ROUNDUP_HELP;
-  if (argv.includes('d') || argv.includes('dash') || argv.includes('dashboard')) return DASH_HELP;
+  if (argv.includes('status')) return STATUS_HELP;
   return HELP;
 }
 
@@ -970,13 +971,13 @@ async function main(args: string[]): Promise<void> {
     return;
   }
 
-  if (args[0] === 'd' || args[0] === 'dash' || args[0] === 'dashboard') {
+  if (args[0] === 'status') {
     if (wantsHelp) {
-      console.log(DASH_HELP);
+      console.log(STATUS_HELP);
       return;
     }
     if (args.slice(1).some((a) => a !== '-h' && a !== '--help')) {
-      die('dashboard takes no extra arguments (try --help)');
+      die('status takes no extra arguments (try --help)');
     }
     await delegateToEngine(['status']);
   }
@@ -993,8 +994,10 @@ async function main(args: string[]): Promise<void> {
   // Dispatch grammar is identical between et verify and the engine
   // (target forms, --fix/--no-fix, --retry, --watch, --model/shorthands),
   // so argv passes through; the engine's target parser refuses non-expo
-  // URLs exactly as parseTarget() did.
-  await delegateToEngine(['dispatch', ...args]);
+  // URLs exactly as parseTarget() did. `et verify dispatch <n>` and
+  // `et verify <n>` are the same command.
+  const dispatchArgs = args[0] === 'dispatch' ? args.slice(1) : args;
+  await delegateToEngine(['dispatch', ...dispatchArgs]);
 }
 
 function paint(code: string, s: string): string {
