@@ -9,16 +9,29 @@ export interface NavigateFollowUpInput {
   platform: NavigatePlatform;
   /** Simulator UDID or `adb` serial the link was opened on. */
   deviceId: string;
+  /**
+   * The `adb` that was actually run, when one was.
+   *
+   * A `Try:` line has to be runnable [llp/0009 §Design], and a bare `adb` is not on a machine whose
+   * SDK was never put on `PATH` — which is the machine this whole Android round was about
+   * (`src/device/adb.ts`, F49). Absent means the bare name, which is what a caller with no
+   * resolution has.
+   */
+  adbPath?: string;
 }
 
-export function buildNavigateFollowUps({ platform, deviceId }: NavigateFollowUpInput): FollowUp[] {
+export function buildNavigateFollowUps({
+  platform,
+  deviceId,
+  adbPath = 'adb',
+}: NavigateFollowUpInput): FollowUp[] {
   return capFollowUps([
     {
       id: 'screenshot',
       command:
         platform === 'ios'
           ? `xcrun simctl io ${deviceId} screenshot screen.png`
-          : `adb -s ${deviceId} exec-out screencap -p > screen.png`,
+          : `${adbPath} -s ${deviceId} exec-out screencap -p > screen.png`,
       why: 'Captures the screen this route opened, so the change can be checked as it renders.',
     },
     {

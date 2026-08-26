@@ -75,6 +75,7 @@ function opened(overrides: Partial<OpenRouteResult> = {}): OpenRouteResult {
     routeCheck: { checked: true, ok: true, matched: '/', routeCount: 4, reason: null },
     isExpoGo: true,
     // `smoke` has an app-connection phase of its own, so its opens never wait for one.
+    adbPath: null,
     reverse: null,
     attach: {
       checked: false,

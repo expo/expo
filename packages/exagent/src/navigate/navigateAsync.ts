@@ -123,7 +123,11 @@ export async function navigateAsync(
   // how below is the next step.
   const followups =
     opened.exitCode === 0 && opened.attach.confirmed !== false && followUpsEnabled(wantFollowUps)
-      ? buildNavigateFollowUps({ platform: opened.platform, deviceId: opened.deviceId })
+      ? buildNavigateFollowUps({
+          platform: opened.platform,
+          deviceId: opened.deviceId,
+          adbPath: opened.adbPath ?? undefined,
+        })
       : [];
 
   if (json) {

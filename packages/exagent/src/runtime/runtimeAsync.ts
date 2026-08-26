@@ -353,7 +353,7 @@ export async function runtimeErrorsAsync(
 /** The line that has to sit above an empty window from a runtime that cannot report anything. */
 function blindRuntimeCaveat(evidence: string | null, log: RuntimeErrorsLogJson): string {
   const readClause = log.read
-    ? ` The errors below marked "dev server log" were read from ${log.logFile} instead, which is where this app's errors do arrive${log.older > 0 ? `; ${log.older} more were already in that log before this window opened` : ''}.`
+    ? ` The errors below marked "dev server log" were read from ${log.logFile} instead, which is where this app's errors do arrive${log.older > 0 ? `; ${log.older} more ${log.older === 1 ? 'was' : 'were'} already in that log before this window opened` : ''}.`
     : ` ${log.reason ?? 'No dev server log was available to read instead.'}`;
   return `CAVEAT: this runtime cannot report errors over the debugger protocol, so an empty window from it means nothing about the app. Why: ${evidence ?? 'it answered no debugger call'}.${readClause}`;
 }

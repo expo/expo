@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
+**Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
 **Related:** [[0001-agentic-cli-on-expo-cli]]
@@ -60,7 +60,15 @@ The classification is by the runtime's own answer (`classifyNetworkDomainRefusal
 
 **Android pass** [observed — 2026-08-22, headless emulator + Expo Go 57 APK]: `navigate --android` works end-to-end (adb reverse + `exp://` deep link, screenshot-confirmed). Hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]) — `Runtime.enable`/`Network.enable` merely ack; no evaluate, no console/network capture. The target selector no longer drops such targets (skip only on transport failure; -32601 targets rank behind answering ones), `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`, and errors/network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
 
-Still open: Android capture via a dev build, distinguishing "no traffic" from silently-unsupported Network domain (an enable-ack proves nothing), performance probe, cross-platform sweep.
+> **Correction — the `adb reverse` in that sentence was done by hand** [observed — friction run 6
+> (Android), 2026-08-24]. The 2026-08-22 pass reversed the port at the shell before running
+> `navigate --android`, and the parenthesis above reads as though the command did it. It did not:
+> `exagent` never ran `adb reverse` anywhere, and a run without the manual step landed Expo Go on
+> `ErrorActivity` with `am start` exiting 0 and the command exiting 0. See §Android below, which is
+> where everything this section got wrong or half-right is settled.
+
+Still open: Android capture via a dev build, performance probe, cross-platform sweep. ("No traffic"
+versus a silently-unsupported Network domain is settled below, in §Android.)
 
 ## Reloading the app
 
@@ -673,6 +681,185 @@ different port than the one it was asked about.
 | Dev server stopped, no `--start` | exit `20` at `dev-server`, follow-ups naming `dev --detach` and `smoke --start` |
 | `--start` from nothing | exit `0` in 11.4 s, `started: true`, dev server on 8081, app opened, PNG taken |
 | `--start --port 8210 --route /notes` | exit `0` in 11.3 s, dev server on **8210**, `source: flag`, screenshot on `/notes` |
+
+## Android
+
+Everything in this document above was designed against iOS and read on iOS. The first Android
+friction round [observed — friction run 6, 2026-08-24] found that four of the things it takes for
+granted are **properties of the iOS simulator**, not of the runtime loop, and the commands were
+reporting the iOS answer whatever they were pointed at. The findings and what they settled:
+
+### The device's loopback is not this machine's
+
+`exp://127.0.0.1:<port>` names the loopback of whatever resolves it. On an emulator that is the
+emulator, so the manifest fetch reaches a port nothing listens on, Expo Go shows `ErrorActivity`,
+and `adb shell am start` still exits **0** — it delivered the intent, which is all it claims.
+`navigate --android` therefore reported success for an app showing an error screen [F50].
+
+`adb reverse tcp:<port> tcp:<port>` is the missing step, and it is what `expo start --android` runs
+before it opens anything [reference — `@expo/cli` `src/start/platforms/android/adbReverse.ts`;
+reimplemented as a subprocess in `src/navigate/adbReverse.ts`, per [[0001-agentic-cli-on-expo-cli]]
+§Constraints item 5]. It runs **before** the link, only for a loopback host — a dev server on the
+LAN or behind a tunnel is already reachable, and reversing its port would point the device at
+itself — and a refusal is reported rather than fatal, because the link that follows is what turns
+"the reverse failed" into a failure a reader can see.
+
+### An exit code from a device tool is not an app that is running
+
+The same finding's other half. `navigate` now waits for an app **on this platform** to register a
+debugger target, and reports `App attached` or exits `22` with what it did and did not see. A stuck
+Expo Go is force-stopped and the link opened once more before that verdict, because `ErrorActivity`
+does not retry the manifest fetch — a second intent into a stuck instance changes nothing, so the
+recovery has to end the process. `--no-wait-attach` is the way back to the old behaviour, and it
+reports `attached: null` rather than `true`.
+
+Live [observed — 2026-08-25, notesapp on SDK 57, Expo Go on `tuft-pixel`, port 8250]:
+`Port reversed tcp:8250` then `App attached · 1 android debugger target after 2103ms`, with the
+emulator on `/notes` (screenshot `friction/run-android/verify-01-navigate-notes.png`).
+
+### The dev server does not label its targets, so the platform is inferred
+
+`/json/list` is where every reading command decides what to talk to, and **nothing in it names a
+platform**. Two live targets on one dev server, side by side [observed — 2026-08-25; the payload is
+committed at `src/runtime/__tests__/fixtures/json-list-ios-and-android.json`]:
+
+| field | iOS | Android |
+| --- | --- | --- |
+| `appId` | `host.exp.Exponent` | `host.exp.exponent` |
+| `deviceName` | `iPhone 17 Pro` | `sdk_gphone64_arm64 - 15 - API 35` |
+| `title` | `host.exp.Exponent (iPhone 17 Pro)` | `host.exp.exponent (Google sdk_gphone64_arm64)` |
+| `description` | `React Native Bridgeless [C++ connection]` | *identical* |
+| `type`, `reactNative.capabilities` | — | *identical* |
+
+So `--android` scoped the deep link and nothing else: `smoke --android` opened the app on the
+emulator and then earned its verdict from the **simulator's** runtime [F51]. `src/runtime/
+targetPlatform.ts` infers the platform instead, strongest evidence first — a device name this
+machine's own device tools just reported (`simctl list devices booted`, `adb devices -l`), then
+React Native Android's `<model> - <release> - API <sdk>` device-name shape
+[`AndroidInfoHelpers.getFriendlyDeviceName`], then Expo Go's two app ids, which differ by one
+capital letter. **A target none of them place is `null` and is never counted as either**: a run that
+cannot tell what it is talking to says so.
+
+The scoping reaches `requireConnectedAppAsync`, `waitForAppConnectionAsync` and the `CdpClient`'s
+target selection, so `runtime:eval`/`errors`/`network` (which now take `--ios`/`--android`/
+`--platform`), `dev:wait --require-app` and every phase of `smoke` read the platform they were told
+about. Live proof, one dev server, both apps attached, same route, same minute
+[observed — 2026-08-25]: `smoke --android` → `22 inconclusive, runtimeSupported: false`;
+`smoke --ios` → `0 passed, runtimeSupported: true`.
+
+### The platform default must not answer for the other platform
+
+`runtime:reload` and `dev:wait` built the entry bundle for a fixed default (iOS). With an
+Android-only break — a `.android.ts` file that does not parse beside an `.ios.ts` that does — a
+no-flag `runtime:reload` checked iOS, passed, and reloaded the **Android** app onto the bundle that
+does not compile, printing `Bundle compiles · for ios` while doing it [F53].
+
+The platform is now derived from the apps that are actually connected
+(`resolveBundleCheckPlatformsAsync`): a named `--platform` wins, one connected platform is that
+platform, **two are both**, and nothing connected leaves the fixed default with the report saying
+that it is a default. A broken bundle decides the run whichever platform it was found on. Live
+[observed — 2026-08-25, both apps attached, `src/lib/probe.android.ts` a syntax error]:
+`Bundle does not compile · for android · also checked ios · the platform the connected app is on`,
+exit 20; `dev:wait` with no flag the same way.
+
+### The CDP-less runtime, corrected
+
+The §Android pass note above is right that Expo Go for Android has no CDP debugger and wrong about
+what that looks like on the wire. Measured method by method [observed — 2026-08-25, Expo Go 57 on
+`tuft-pixel`, against the same app on an iPhone 17 Pro simulator]:
+
+| method | Expo Go Android | Expo Go iOS |
+| --- | --- | --- |
+| `Runtime.enable` | `{}` — and `Runtime.executionContextCreated` and a `consoleAPICalled` NOTE do arrive | `{}` |
+| `Log.enable` | `{}` | `{}` |
+| `Network.enable` | `{}` | `{}` |
+| `Debugger.enable` | `{}` | `{}`, with `Debugger.scriptParsed` for every script |
+| `Console.enable` | `-32601` | `-32601` (`"Unsupported method 'Console.enable'"`) |
+| `Runtime.evaluate` | `-32601` (message: the method name) | `{"result":{"type":"number","value":1}}` |
+| `Log.entryAdded` | `Debugger integration: Android Bridgeless (ReactHostImpl)`, then `warning`: `The current JavaScript engine, HermesRuntime[RNBridgeless], does not support debugging over the Chrome DevTools Protocol.` | `Debugger integration: iOS Bridgeless` only |
+
+Two corrections to what this document said [F61]. It is **not** true that Android "answers every
+method" with `-32601` — four of the six above are acknowledged, and the ack is what made an empty
+window look like a healthy app. And `Network.enable` succeeding is the *normal* Android case, so
+`classifyNetworkDomainRefusal` never ran there at all: it only ever saw refusals. It now takes
+`null` for "nothing refused anything" plus what the runtime said about carrying a debugger, and has
+a name for the third case — `acknowledged-but-blind`.
+
+Both collectors probe the runtime as they open their window: `Log.enable` for the announcement, and
+one `Runtime.evaluate` of `1` for the code. The verdict is a field on the collector
+(`RuntimeDebuggerCapability`), so a caller can qualify what it is about to print.
+
+### Reading Android errors anyway
+
+The same round found that the information was never missing — only the channel was. The error the
+debugger could not report was in `dev:logs` the whole time, symbolicated, with a code frame [F52].
+So `runtime:errors` falls back to the detached dev server's own log when, and only when, the runtime
+announced that it cannot answer: the window is bounded by a line mark taken before it opens, the
+records are labelled `source: 'dev-server-log'`, and the caveat sits **above** the count rather than
+after it.
+
+Its limits are stated in `src/dev/logErrors.ts` and printed with the result: the log does not name
+the platform (Expo's logger only prefixes when the app is not bridgeless, and every modern app is),
+and there is no structured stack behind a record — what there is, is the file and line the dev
+server already resolved. Errors that were in the log *before* the window are counted and named, not
+reported as this window's.
+
+Live [observed — 2026-08-25]: with `throw new Error('boom from HomeScreen — F52 live check')` and a
+`runtime:reload --android` inside the window, `runtime:errors --android --fail-on-error` exited
+**20** with the message, the code frame and `HomeScreen (src/app/index.tsx:33:18)` — the first time
+this CLI has reported an Android app's error at all.
+
+### `--fail-on-error` on a runtime that cannot answer: exit 22, not 0
+
+Recorded here because it **changes** what §Implemented in v1 as says about `runtime:errors`
+("stays 0 whatever it collects; `--fail-on-error` exits 20 on a non-empty window"), and
+[[0010-agent-conventions]] §Exit codes with it. That rule was written before any runtime that
+cannot answer had been seen. On one, an empty window is not "nothing happened while I watched", it
+is *no observation*, and exiting 0 reports health that nothing established.
+
+So: when the runtime is blind **and** no dev server log could be read, `--fail-on-error` exits
+`22` — llp/0010's code for "nothing was shown to be wrong and nothing was proved right" — with the
+what/why/how naming `dev --detach` as the thing that would give it a log to read. When a log *was*
+read, the window is a real observation and 0 stands. Without `--fail-on-error` the command still
+exits 0 and prints the caveat: the flag is what says a caller is gating on this.
+
+### `adb` is not on `PATH` on a normal machine
+
+Every Android step is `adb` in a subprocess, and all of them spawned the bare name. On a machine
+with the SDK installed the normal way and `platform-tools` never added to `PATH`, the first one to
+fail is the device probe — so the CLI reported **"no Android device or emulator is attached"** for a
+running emulator [F49]. `src/device/adb.ts` resolves `ANDROID_HOME`, then `ANDROID_SDK_ROOT`, then
+`PATH`, then this platform's default install location, and every `adb` call site takes the
+resolution the device probe made. `PATH` sits above the default location and below the environment
+variables, which is one step off `@expo/cli`'s order and deliberate: an `adb` somebody put on `PATH`
+is a choice, and the default location is this CLI guessing.
+
+The second half is separate and matters more: **a tool failure is never reported as a device
+failure**. `ADB_NOT_RUNNABLE` names every place that was looked and the variable that adds another,
+and the "no device" message is only reachable once `adb` has run and answered.
+
+### Smaller things the same round settled
+
+- **Follow-ups keep the platform.** `smoke --android` failing suggested `npx exagent smoke`, which
+  on a Mac reads the simulator [F58]; every command a follow-up names now carries the flag the run
+  had, and `navigate`'s screenshot line carries the `adb` that was actually run rather than a bare
+  name this machine cannot execute [F54].
+- **`dev --plan` does not print a development build plan** for a project Expo Go can still serve —
+  the plan engine reaches those steps only when a native module makes Expo Go incompatible
+  (`src/plan/decide.ts`). Two messages claimed it did [F55]; they now name what actually helps.
+- **`status` counts what can be talked to.** `/json/list` is a list of registrations, and a page an
+  app left behind stays in it — so `status` said `1 app connected` while every runtime command
+  answered `No target found` [F56]. It opens one debugger socket per listed target and reports
+  `appsConnected`, `appsListed` and `appsStale`. (Verified by unit and e2e tests; the live emulator
+  dropped its stale target within about two seconds, so this session could not reproduce the window
+  the friction run hit.)
+- **`smoke` waits before it photographs.** A run that opened the app itself photographed it
+  mid-load [F57]. Nothing over this protocol says "rendered", so what is waited for is the honest
+  neighbouring fact: two reads of the target list that name the same ids, bounded, and only for a
+  run that put the app there.
+- **`impact` and `checkpoint` agreed about git all along.** Both resolve the work tree the same way;
+  what differed was that a `git status` which *failed* borrowed the sentence written for a project
+  with no repository [F60]. `listChangedFilesAsync` now returns which of the two happened.
 
 ## Testing
 

@@ -105,6 +105,8 @@ export interface OpenRouteResult {
   routeCheck: RouteCheckJson;
   /** Whether the target app was decided to be Expo Go. */
   isExpoGo: boolean;
+  /** The `adb` binary that was run, so a follow-up names a command this machine can run (F49). */
+  adbPath: string | null;
   /**
    * What `adb reverse` did before the link, or null on a platform that needs none.
    *
@@ -260,6 +262,7 @@ export async function openRouteAsync(
   return {
     reverse,
     attach,
+    adbPath: device.adb?.bin ?? null,
     route,
     url: resolved.url,
     devServerUrl,
