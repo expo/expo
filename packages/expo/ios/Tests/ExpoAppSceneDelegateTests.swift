@@ -54,6 +54,13 @@ struct ExpoAppSceneDelegateTests {
   func `returns nil launch options without a URL or user activity`() {
     #expect(ExpoAppSceneDelegate.launchOptions(url: nil, userActivity: nil) == nil)
   }
+
+  @Test
+  @MainActor
+  func `forwards scene URLs unchanged by default`() {
+    let url = URL(string: "https://expo.dev/link")!
+    #expect(ExpoAppSceneDelegate().transformURL(url) == url)
+  }
 }
 
 #endif
