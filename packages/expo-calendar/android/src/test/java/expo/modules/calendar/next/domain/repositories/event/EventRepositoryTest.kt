@@ -23,6 +23,7 @@ import expo.modules.kotlin.types.ValueOrUndefined
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
@@ -657,6 +658,61 @@ class EventRepositoryTest {
 
     // Then
     Assert.assertFalse(result)
+  }
+
+  // endregion
+
+  // region markDirty
+
+  @Test
+  fun `given an event, when markDirty, then rewrites its start date through the plain URI`() = runTest {
+    // Given
+    val uriSlot = slot<Uri>()
+    val valuesSlot = slot<ContentValues>()
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(CalendarContract.Events.DTSTART to 1_000_000L)
+    )
+    every { contentResolver.update(capture(uriSlot), capture(valuesSlot), any(), any()) } returns 1
+
+    // When
+    val result = repository.markDirty(EventId(42L))
+
+    // Then
+    // Writing the start date back unchanged is what makes the provider set `dirty`; the update
+    // must not claim to come from a sync adapter, or the flag would stay at 0.
+    Assert.assertTrue(result)
+    Assert.assertEquals("42", uriSlot.captured.lastPathSegment)
+    Assert.assertNull(uriSlot.captured.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
+    Assert.assertEquals(1_000_000L, valuesSlot.captured.getAsLong(CalendarContract.Events.DTSTART).toLong())
+    Assert.assertEquals(1, valuesSlot.captured.size())
+  }
+
+  @Test
+  fun `given a missing event, when markDirty, then returns false without updating`() = runTest {
+    // Given
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns emptyCursor()
+
+    // When
+    val result = repository.markDirty(EventId(42L))
+
+    // Then
+    Assert.assertFalse(result)
+    verify(exactly = 0) { contentResolver.update(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `given an event without a start date, when markDirty, then returns false without updating`() = runTest {
+    // Given
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(CalendarContract.Events.DTSTART to null)
+    )
+
+    // When
+    val result = repository.markDirty(EventId(42L))
+
+    // Then
+    Assert.assertFalse(result)
+    verify(exactly = 0) { contentResolver.update(any(), any(), any(), any()) }
   }
 
   // endregion
