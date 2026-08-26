@@ -73,6 +73,16 @@ export function formatBuildLocation(location: PlanBuildLocation): string {
   const needs = location.runsOn === 'local' ? location.requirement : EAS_REQUIREMENT;
   const head = chalk`{bold Build:} {yellow ${RUNS_ON_LABELS[location.runsOn]}} — runs ${where}, needs ${needs}.`;
 
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The selection
+  // When something *chose* this backend, why it chose it is the line: the probe's own `Found` /
+  // `Not found` answers below describe this machine's toolchain, which is not the question a cloud
+  // build raises and is already inside the selection's sentence for a local one. A choice that
+  // cannot work here is red, because it is the one line that decides whether to run the plan.
+  if (location.selection) {
+    const why = location.selection.why;
+    return location.selection.doomed ? chalk`${head} {red ${why}}` : chalk`${head} {dim ${why}}`;
+  }
+
   switch (location.status) {
     case 'present':
       return chalk`${head} {green Found}: ${location.detail}`;

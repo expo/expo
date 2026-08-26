@@ -18,6 +18,7 @@ function mockBuildLocation(overrides: Partial<PlanBuildLocation> = {}): PlanBuil
     detail: null,
     caveats: [],
     alternativeCommand: 'npx eas build --platform ios --profile development',
+    selection: null,
     ...overrides,
   };
 }

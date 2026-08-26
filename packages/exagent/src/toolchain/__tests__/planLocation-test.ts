@@ -46,6 +46,7 @@ function probe(overrides: Partial<ToolchainProbe> = {}): ToolchainProbe {
     detail: 'Xcode 16.2 at /Applications/Xcode.app/Contents/Developer.',
     requirement: 'Xcode on this machine',
     caveats: [],
+    impossible: false,
     ...overrides,
   };
 }

@@ -65,6 +65,7 @@ async function runProbeAsync(platform: NativePlatform): Promise<ToolchainProbe> 
       detail: `The ${platform} toolchain could not be probed: ${error?.message ?? String(error)}`,
       requirement: localRequirement(platform),
       caveats: [],
+      impossible: false,
     };
   }
 }
@@ -87,6 +88,9 @@ async function detectXcodeAsync(): Promise<ToolchainProbe> {
       detail: `An iOS build needs macOS with Xcode, and this machine runs ${process.platform}.`,
       requirement,
       caveats: [],
+      // Not "you have not installed Xcode": Xcode does not exist for this host, so no install
+      // here can change the answer and the only route to an iOS build is the cloud.
+      impossible: true,
     };
   }
 
@@ -100,6 +104,7 @@ async function detectXcodeAsync(): Promise<ToolchainProbe> {
       detail: `xcode-select is not on PATH, so no Xcode installation could be found (${selected.spawnError.code ?? selected.spawnError.message}).`,
       requirement,
       caveats: [],
+      impossible: false,
     };
   }
 
@@ -111,6 +116,7 @@ async function detectXcodeAsync(): Promise<ToolchainProbe> {
       detail: `xcode-select names no active developer directory: ${firstLine(selected.stderr) || `it exited ${selected.exitCode}`}`,
       requirement,
       caveats: [],
+      impossible: false,
     };
   }
 
@@ -125,6 +131,7 @@ async function detectXcodeAsync(): Promise<ToolchainProbe> {
       detail: `xcode-select points at ${developerDir} and xcodebuild does not run there, so this machine has the Command Line Tools rather than Xcode${said ? `: ${said}` : '.'}`,
       requirement,
       caveats: [],
+      impossible: false,
     };
   }
 
@@ -134,6 +141,7 @@ async function detectXcodeAsync(): Promise<ToolchainProbe> {
     detail: `${firstLine(version.stdout) || 'Xcode'} at ${developerDir}.`,
     requirement,
     caveats: [],
+    impossible: false,
   };
 }
 
@@ -163,6 +171,7 @@ function detectAndroidSdk(): ToolchainProbe {
         : `No Android SDK found: ANDROID_HOME and ANDROID_SDK_ROOT are unset, and the default location (${sdkDir}) does not exist.`,
       requirement,
       caveats: [],
+      impossible: false,
     };
   }
 
@@ -189,6 +198,7 @@ function detectAndroidSdk(): ToolchainProbe {
     detail: `Android SDK at ${sdkDir} (${from}).`,
     requirement,
     caveats,
+    impossible: false,
   };
 }
 

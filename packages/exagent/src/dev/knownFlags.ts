@@ -23,8 +23,15 @@ import { unknownOptionError } from '../utils/unknownOption';
  *
  * `--port` is deliberately *not* here: it is an `expo start` option that this command also reads
  * (`resolveDevOptions`), so it belongs to the list below and is forwarded as well as acted on.
+ *
+ * `--go` and `--dev-client` are not here either, and for the same reason: they are `expo start`'s
+ * own, and this command *also* reads them as the run target the plan aims at (llp/0015 §The run
+ * target). Two flags rather than two new names — `expo start --go` already means "run this in Expo
+ * Go", which is exactly what the preference says.
  */
 export const DEV_OWN_FLAGS: readonly string[] = [
+  '--eas',
+  '--local',
   '--no-agent-skills',
   '--no-followups',
   '--no-checkpoint',

@@ -4,6 +4,7 @@
 
 import type { NativePlatform } from '../plan/types';
 import type { RunsOn } from './runsOn';
+import type { BuildBackendChoice } from './selectBackend';
 
 /**
  * What the probe established about one platform's local toolchain.
@@ -31,6 +32,18 @@ export interface ToolchainProbe {
    * will find and a tool of it that the shell will not, for instance.
    */
   caveats: string[];
+  /**
+   * Nothing anyone installs on *this host* could turn {@link status} into `present`.
+   *
+   * Only iOS on a machine that is not macOS, today. It is a separate field rather than a fourth
+   * `status`, because it answers a different question: `missing` says what is on the disk, and
+   * this says whether the disk is the problem. The two want opposite advice — "install Xcode" is
+   * the answer to one and an insult to the other — and every existing reader of `status` keeps
+   * working without knowing this field exists.
+   *
+   * @see llp/0015-backend-selection-and-config.rfc.md §Impossible is not missing
+   */
+  impossible: boolean;
 }
 
 /**
@@ -51,4 +64,13 @@ export interface PlanBuildLocation {
   caveats: string[];
   /** The build that runs somewhere else, ready to paste. Null when this build already runs there. */
   alternativeCommand: string | null;
+  /**
+   * What chose {@link runsOn}, and the sentence that says why.
+   *
+   * `null` for a plan made without a selection — the shape this key had before backends were
+   * chosen at all, kept so a caller may read one key rather than checking for it.
+   *
+   * @see llp/0015-backend-selection-and-config.rfc.md §The selection
+   */
+  selection: BuildBackendChoice | null;
 }

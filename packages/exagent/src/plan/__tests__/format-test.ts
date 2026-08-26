@@ -28,6 +28,7 @@ const plan: StartPlan = {
     status: 'present',
     detail: 'Xcode 16.2 at /Applications/Xcode.app/Contents/Developer.',
     caveats: [],
+    selection: null,
     alternativeCommand: 'npx eas build --platform ios --profile development',
   },
 };
