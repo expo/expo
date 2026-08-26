@@ -78,6 +78,7 @@
 
 ### 💡 Others
 
+- Base `useNavigationState` on global state. ([#49381](https://github.com/expo/expo/pull/49381) by [@jakub-agent](https://github.com/jakub-agent))
 - Move Expo Router store values into React context. ([#49218](https://github.com/expo/expo/pull/49218) by [@Ubax](https://github.com/Ubax))
 - Remove the ignored `linking.enabled` option. ([#49103](https://github.com/expo/expo/pull/49103) by [@Ubax](https://github.com/Ubax))
 - Build the complete initial navigation state from a deep link. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
