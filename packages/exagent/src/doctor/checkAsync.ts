@@ -7,6 +7,7 @@ import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
 import { fileExistsSync } from '../utils/dir';
+import { resolvePackageRunner } from '../utils/packageRunner';
 import { CommandError } from '../utils/errors';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { parseDoctorOutput } from './parseDoctorOutput';
@@ -43,9 +44,10 @@ export function resolveExpoDoctorCli(projectRoot: string): ExpoDoctorCli {
   if (fileExistsSync(localBin)) {
     return { command: localBin, args: [] };
   }
+  // The runner the caller reached this CLI through, so a Bun project stays on Bun (`packageRunner`).
   // On Windows npm ships `npx` as a batch file, which `resolveSpawnTarget` starts through a shell.
-  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  return { command: npx, args: ['expo-doctor'] };
+  const { command } = resolvePackageRunner();
+  return { command, args: ['expo-doctor'] };
 }
 
 /**

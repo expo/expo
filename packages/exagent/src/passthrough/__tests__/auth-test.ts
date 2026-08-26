@@ -91,9 +91,10 @@ describe(resolveAuthCliAsync, () => {
 
     await expect(resolveAuthCliAsync(projectRoot, { pathEnv: pathDir })).resolves.toEqual({
       tool: 'eas',
-      source: 'npx-eas',
+      source: 'runner-eas',
       command: 'npx',
       prefixArgs: ['eas-cli@latest'],
+      runner: 'npx',
     });
   });
 
@@ -107,12 +108,13 @@ describe(resolveAuthCliAsync, () => {
     });
   });
 
-  it(`should fall back to npx when nothing is installed anywhere`, async () => {
+  it(`should fall back to the package runner when nothing is installed anywhere`, async () => {
     await expect(resolveAuthCliAsync(projectRoot, { pathEnv: '' })).resolves.toEqual({
       tool: 'eas',
-      source: 'npx-eas',
+      source: 'runner-eas',
       command: 'npx',
       prefixArgs: ['eas-cli@latest'],
+      runner: 'npx',
     });
   });
 
@@ -177,11 +179,22 @@ describe(authCliLabel, () => {
     expect(
       authCliLabel({
         tool: 'eas',
-        source: 'npx-eas',
+        source: 'runner-eas',
         command: 'npx',
         prefixArgs: ['eas-cli@latest'],
+        runner: 'npx',
       })
     ).toBe('npx eas-cli@latest');
+    // The runner is named, not the path it was found at.
+    expect(
+      authCliLabel({
+        tool: 'eas',
+        source: 'runner-eas',
+        command: '/opt/homebrew/bin/bunx',
+        prefixArgs: ['eas-cli@latest'],
+        runner: 'bunx',
+      })
+    ).toBe('bunx eas-cli@latest');
     expect(
       authCliLabel({ tool: 'eas', source: 'project-eas', command: easBin, prefixArgs: [] })
     ).toBe(easBin);
