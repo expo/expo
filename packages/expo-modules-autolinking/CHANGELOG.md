@@ -51,6 +51,8 @@
 
 - Skip React Native libraries whose podspec does not declare the target platform when resolving `react-native-config` for `macos` and `tvos`. Codegen and Metro consume that config too, so libraries the Podfile was already filtering out no longer end up in the generated third-party components provider, where their missing classes crashed the app on first render. ([#50571](https://github.com/expo/expo/pull/50571) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
+- Source platform identity data (react-native host package names, Apple-family membership) from `@expo/platforms` instead of local switches. No behavior change. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+
 ## 58.0.3 — 2026-09-21
 
 ### 💡 Others
