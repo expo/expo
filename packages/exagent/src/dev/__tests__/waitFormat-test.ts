@@ -89,6 +89,10 @@ describe(devWaitResultToJson, () => {
         error: null,
         reason: 'the entry bundle check was not run',
       },
+      // @ref ../waitAsync — friction run 6, F53. Which platform the bundle was built for is a
+      // fact about the run, and where that platform came from decides how much it is worth.
+      bundlePlatforms: [],
+      bundlePlatformSource: 'default',
       followups: [],
     });
   });

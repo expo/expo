@@ -1,4 +1,10 @@
-import { parseStatusZ } from '../changedFiles';
+import { resolveWorkTreeAsync, runGitAsync } from '../../checkpoint/git';
+import { listChangedFilesAsync, parseStatusZ } from '../changedFiles';
+
+jest.mock('../../checkpoint/git', () => ({
+  resolveWorkTreeAsync: jest.fn(),
+  runGitAsync: jest.fn(),
+}));
 
 describe(parseStatusZ, () => {
   it(`should read nothing out of an empty status`, () => {
@@ -39,5 +45,31 @@ describe(parseStatusZ, () => {
 
   it(`should skip a record with a status and no path`, () => {
     expect(parseStatusZ(' M \0 M a.ts\0')).toEqual(['a.ts']);
+  });
+});
+
+// @ref ../changedFiles — friction run 6, F60. `impact` printed "This project is not in a git work
+// tree" for a project `checkpoint` had just snapshotted from the same directory. Both resolve the
+// work tree the same way; the difference was that a failed `git status` borrowed the sentence
+// written for a project with no repository at all.
+describe(`${listChangedFilesAsync.name} and the two ways it has no answer`, () => {
+  it(`says the project has no work tree when git says so`, async () => {
+    jest.mocked(resolveWorkTreeAsync).mockResolvedValue(null);
+
+    const result = await listChangedFilesAsync('/project');
+
+    expect(result.gap).toBe('not-a-work-tree');
+    expect(result.files).toBeNull();
+  });
+
+  it(`does not claim there is no work tree when there is one and git failed`, async () => {
+    jest.mocked(resolveWorkTreeAsync).mockResolvedValue({ toplevel: '/repo', prefix: 'app' });
+    jest.mocked(runGitAsync).mockRejectedValue(new Error('fatal: bad object HEAD'));
+
+    const result = await listChangedFilesAsync('/repo/app');
+
+    expect(result.gap).toBe('git-failed');
+    expect(result.detail).toContain('/repo');
+    expect(result.detail).toContain('bad object HEAD');
   });
 });

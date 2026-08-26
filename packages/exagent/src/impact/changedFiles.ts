@@ -9,18 +9,43 @@
 import { resolveWorkTreeAsync, runGitAsync } from '../checkpoint/git';
 
 /**
+ * Why the file-level view has no answer.
+ *
+ * Two causes, and telling them apart is the whole of friction run 6's F60: `impact` printed
+ * "This project is not in a git work tree" for a project `checkpoint` had just snapshotted from the
+ * same directory. Both commands resolve the work tree the same way ({@link resolveWorkTreeAsync});
+ * what differed was that a `git status` that *failed* was reported with the sentence written for a
+ * project that has no repository at all.
+ */
+export type ChangedFilesGap =
+  /** `git rev-parse --is-inside-work-tree` said no, or git could not be started. */
+  | 'not-a-work-tree'
+  /** The work tree resolved, and the `git status` that follows did not. */
+  | 'git-failed';
+
+/** The file-level view, or why there is none. */
+export type ChangedFilesResult =
+  | { files: string[]; gap: null; detail: null }
+  | { files: null; gap: ChangedFilesGap; detail: string };
+
+/**
  * The paths git reports as changed in the working tree, relative to the project root.
  *
  * `git status --porcelain` rather than `git diff --name-only`, because a file that is new and not
  * yet staged is exactly the change a caller is asking about, and `diff` does not list it.
  * Untracked files count; ignored ones do not, which is what keeps `node_modules` out.
  *
- * @returns the changed paths, or `null` when the project is not in a git work tree or git failed.
+ * @returns the changed paths, or the reason there are none to report — never both, and never one
+ * reason wearing the other's sentence (F60).
  */
-export async function listChangedFilesAsync(projectRoot: string): Promise<string[] | null> {
+export async function listChangedFilesAsync(projectRoot: string): Promise<ChangedFilesResult> {
   const worktree = await resolveWorkTreeAsync(projectRoot);
   if (!worktree) {
-    return null;
+    return {
+      files: null,
+      gap: 'not-a-work-tree',
+      detail: `git reported that ${projectRoot} is not inside a work tree`,
+    };
   }
 
   let output: string;
@@ -30,11 +55,17 @@ export async function listChangedFilesAsync(projectRoot: string): Promise<string
     output = await runGitAsync(['status', '--porcelain', '-z', '--untracked-files=all', '.'], {
       cwd: projectRoot,
     });
-  } catch {
-    return null;
+  } catch (error: unknown) {
+    return {
+      files: null,
+      gap: 'git-failed',
+      // The work tree resolved, so this is git failing at the second step — a sentence about a
+      // project with no repository would be false here, and it is what used to be printed.
+      detail: `the work tree at ${worktree.toplevel} resolved, and "git status" in it failed: ${error instanceof Error ? error.message : String(error)}`,
+    };
   }
 
-  return parseStatusZ(output);
+  return { files: parseStatusZ(output), gap: null, detail: null };
 }
 
 /**

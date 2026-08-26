@@ -97,6 +97,9 @@ function options(overrides: Partial<NavigateOptions> = {}): NavigateOptions {
     json: false,
     followups: true,
     routeCheck: true,
+    // No wait by default in this table: these cases are about the URL and the device command, and
+    // a real attach wait would need a dev server to poll. The wait has its own cases below.
+    attachTimeoutMs: 0,
     ...overrides,
   };
 }
@@ -344,6 +347,12 @@ describe(navigateAsync, () => {
       platform: 'ios',
       deviceId: 'IOS-1',
       appId: null,
+      // Null rather than false: this run passed --no-wait-attach, so nothing looked
+      // (llp/0005 §Android, F50).
+      attached: null,
+      attachWaitedMs: 0,
+      attachRecovered: false,
+      reversedPort: null,
       command: 'xcrun simctl openurl IOS-1 exp://127.0.0.1:8081/--/profile/42',
       exitCode: 0,
       routeCheck: {
@@ -361,7 +370,7 @@ describe(navigateAsync, () => {
         },
         {
           id: 'runtime-errors',
-          command: 'npx exagent runtime:errors',
+          command: 'npx exagent runtime:errors --ios',
           why: expect.any(String),
         },
       ],
@@ -382,6 +391,9 @@ describe(navigateAsync, () => {
 
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'appId',
+      'attachRecovered',
+      'attachWaitedMs',
+      'attached',
       'command',
       'devServerSource',
       'devServerUrl',
@@ -390,6 +402,7 @@ describe(navigateAsync, () => {
       'followups',
       'platform',
       'resolution',
+      'reversedPort',
       'route',
       'routeCheck',
       'target',
@@ -630,5 +643,91 @@ describe(navigateAsync, () => {
         reason: expect.stringContaining('full URL'),
       });
     });
+  });
+});
+
+// @ref ../adbReverse, llp/0005 §Android — friction run 6, F50. `am start` exits 0 for an intent
+// that lands on Expo Go's error screen, so the device tool's exit code was never evidence that the
+// app had loaded, and this command reported success for exactly that.
+describe(`${navigateAsync.name} on Android`, () => {
+  /** An Expo Go project whose dev server answers with the given targets, on 8081. */
+  function mockExpoGoProject() {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+      [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+    });
+  }
+
+  const ANDROID_TARGET = {
+    id: 'a1',
+    appId: 'host.exp.exponent',
+    deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+    webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=a1&page=1',
+  };
+
+  it(`reverses the dev server's port onto the device before opening the link`, async () => {
+    mockExpoGoProject();
+    mockDevServer([ANDROID_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES }, // adb devices -l
+      { stdout: '8081' }, //      adb reverse
+      { stdout: 'Starting: Intent' }, // am start
+      { stdout: '' }, //          simctl list (device index)
+      { stdout: ADB_DEVICES }, //  adb devices -l (device index)
+    ]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 1_000 }))
+    ).resolves.toBe(0);
+
+    // Second call, before the intent: a link opened first would load against a port nothing on the
+    // device listens on.
+    expect(spawnedArgv(1)).toEqual([
+      'adb',
+      '-s',
+      'emulator-5554',
+      'reverse',
+      'tcp:8081',
+      'tcp:8081',
+    ]);
+    expect(spawnedArgv(2)).toContain('am');
+  });
+
+  it(`exits 22 when the link was delivered and no Android app ever connected`, async () => {
+    mockExpoGoProject();
+    // An iOS app is connected, and this run is about Android: the wrong platform's target must
+    // never confirm this link (F51).
+    mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+      { stdout: '' }, // force-stop
+      { stdout: 'Starting: Intent' }, // the second link
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 50 }))
+    ).resolves.toBe(22);
+
+    const said = jest.mocked(console.error).mock.calls.flat().join('\n');
+    expect(said).toContain('no android app connected');
+    expect(said).toContain('accepted the intent and nothing more');
+  });
+
+  it(`reports the attach it did not check when --no-wait-attach was passed`, async () => {
+    mockExpoGoProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue([{ stdout: ADB_DEVICES }, { stdout: '8081' }, { stdout: 'Starting: Intent' }]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 0, json: true }))
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(printed()).attached).toBeNull();
   });
 });

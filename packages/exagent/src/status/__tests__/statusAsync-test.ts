@@ -8,6 +8,7 @@ import { readLastBuildFingerprints } from '../../plan/lastBuild';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
 import { discoverDevServerAsync } from '../../runtime/devServer';
+import { probeTargetLivenessAsync } from '../../runtime/targetLiveness';
 import { waitForBundlerReadyAsync } from '../../runtime/waitReady';
 import { getPersistedAgentIdsAsync } from '../../skills/agents';
 import { discoverSkillsAsync } from '../../skills/discovery';
@@ -22,6 +23,15 @@ jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
 jest.mock('../../plan/lastBuild', () => ({ readLastBuildFingerprints: jest.fn(() => ({})) }));
 jest.mock('../../runtime/devServer', () => ({ discoverDevServerAsync: jest.fn() }));
 jest.mock('../../runtime/waitReady', () => ({ waitForBundlerReadyAsync: jest.fn() }));
+// The liveness probe opens one debugger socket per listed target (F56). These tests are about the
+// report; the probe has its own suite. Every listed target answers unless a case says otherwise.
+jest.mock('../../runtime/targetLiveness', () => ({
+  probeTargetLivenessAsync: jest.fn(async (targets: unknown[]) => ({
+    listed: targets.length,
+    live: targets.length,
+    stale: [],
+  })),
+}));
 // The preflight spawns `eas whoami`; these tests are about the report, not about the machine the
 // suite happens to run on.
 jest.mock('../../needsHuman/preflight', () => ({ readAuthPreflightAsync: jest.fn() }));
@@ -111,6 +121,8 @@ describe(collectStatusReportAsync, () => {
       url: devServerUrl,
       running: true,
       appsConnected: 1,
+      appsListed: 1,
+      appsStale: 0,
       source: 'default',
       ready: true,
       projectRootMatched: true,
@@ -186,6 +198,8 @@ describe(collectStatusReportAsync, () => {
       url: devServerUrl,
       running: false,
       appsConnected: 0,
+      appsListed: 0,
+      appsStale: 0,
       source: 'default',
       ready: null,
       projectRootMatched: null,
@@ -448,6 +462,8 @@ describe(printStatusAsync, () => {
       expoGoCompatible: true,
       devServerRunning: true,
       appsConnected: 1,
+      appsListed: 1,
+      appsStale: 0,
       freshness: { ios: 'stale', android: 'stale' },
       skillsDiscovered: 0,
       skillsLinked: 0,
@@ -522,5 +538,35 @@ describe(printStatusAsync, () => {
       expect(JSON.parse(output()).followups).toEqual([]);
       expect(event).not.toHaveBeenCalledWith('followups', expect.anything());
     });
+  });
+});
+
+// @ref ../../runtime/targetLiveness — friction run 6, F56. `/json/list` is a list of
+// registrations: a page an app left behind when it was force-stopped stays in it, so this command
+// reported `1 app connected` while every runtime command answered `No target found`.
+describe(`${collectStatusReportAsync.name} and stale debugger targets`, () => {
+  it(`counts the targets that still answer, and names the ones that do not`, async () => {
+    jest.mocked(discoverDevServerAsync).mockResolvedValue({
+      reachable: true,
+      targets: [{ id: 'live' } as any, { id: 'stale' } as any],
+      devServerUrl,
+      source: 'lock',
+      discovered: true,
+    });
+    jest.mocked(waitForBundlerReadyAsync).mockResolvedValue({
+      ready: true,
+      projectRootMatched: true,
+      reportedProjectRoot: projectRoot,
+      timedOut: false,
+      waitedMs: 1,
+    });
+    jest
+      .mocked(probeTargetLivenessAsync)
+      .mockResolvedValue({ listed: 2, live: 1, stale: [{ id: 'stale' } as any] });
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.devServer).toMatchObject({ appsConnected: 1, appsListed: 2, appsStale: 1 });
+    expect(formatStatusReport(report)).toContain('1 stale target still listed');
   });
 });

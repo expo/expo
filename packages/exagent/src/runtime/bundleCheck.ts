@@ -32,6 +32,7 @@
 
 import { stripVTControlCharacters } from 'util';
 
+import type { CdpTarget } from './cdpClient';
 import { normalizeDevServerUrl } from './devServer';
 
 /** Platforms the bundle can be built for. The same set `expo-platform` accepts. */
@@ -48,6 +49,53 @@ export type BundleCheckPlatform = (typeof BUNDLE_CHECK_PLATFORMS)[number];
  * project can build for iOS; a project that deliberately cannot takes `--platform`.
  */
 export const DEFAULT_BUNDLE_CHECK_PLATFORM: BundleCheckPlatform = 'ios';
+
+/**
+ * How the platform (or platforms) a check built for was decided.
+ *
+ * `default` is the honest label for "nothing decided it". It is reported rather than hidden,
+ * because friction run 6's F53 was that fixed default being printed as though it were an answer
+ * about the running app: an Android-only break, an iOS app also attached, and
+ * `Bundle compiles · for ios` under a reload that put the Android app back on a red screen.
+ */
+export type BundlePlatformSource =
+  /** The caller named it. */
+  | 'flag'
+  /** It is the platform (or platforms) of the apps connected to the dev server. */
+  | 'connected-app'
+  /** Nothing named one and no connected app could be placed, so {@link DEFAULT_BUNDLE_CHECK_PLATFORM} stands. */
+  | 'default';
+
+/**
+ * Which platforms to build the entry bundle for.
+ *
+ * A named platform is used as named, always: the caller was specific. With none, the connected apps
+ * decide — one platform is that platform, and **two are both**, because a project with a
+ * `.android.ts` sibling of a broken file compiles for one and not the other, and answering for one
+ * of two running apps is how a red screen went unreported (F53). With nothing connected, or nothing
+ * that can be placed, the fixed default stands and the caller is told that it is a default.
+ *
+ * @param named the platform the caller named, or null when they named none.
+ * @param targets the dev server's debugger targets, as `/json/list` reported them.
+ */
+export async function resolveBundleCheckPlatformsAsync(
+  named: BundleCheckPlatform | null,
+  targets: CdpTarget[],
+  fallback: BundleCheckPlatform = DEFAULT_BUNDLE_CHECK_PLATFORM
+): Promise<{ platforms: BundleCheckPlatform[]; source: BundlePlatformSource }> {
+  if (named != null) {
+    return { platforms: [named], source: 'flag' };
+  }
+  const { buildDeviceNameIndexIfNeededAsync, platformsOfTargets } =
+    require('./targetPlatform') as typeof import('./targetPlatform');
+  const { platforms } = platformsOfTargets(
+    targets,
+    await buildDeviceNameIndexIfNeededAsync(targets)
+  );
+  return platforms.length > 0
+    ? { platforms, source: 'connected-app' }
+    : { platforms: [fallback], source: 'default' };
+}
 
 /** What the bundler reported, reshaped into the fields worth acting on. */
 export interface BundleCheckError {

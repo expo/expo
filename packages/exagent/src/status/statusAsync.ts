@@ -28,6 +28,7 @@ import { getAllAgents, getPersistedAgentIdsAsync } from '../skills/agents';
 import { discoverSkillsAsync } from '../skills/discovery';
 import type { DiscoveredSkill } from '../skills/types';
 import { formatStatusReport } from './format';
+import { probeTargetLivenessAsync } from '../runtime/targetLiveness';
 import {
   buildDevServerStatus,
   buildExpoGoStatus,
@@ -91,6 +92,8 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     expoGoCompatible: report.expoGo?.compatible ?? null,
     devServerRunning: report.devServer?.running ?? false,
     appsConnected: report.devServer?.appsConnected ?? 0,
+    appsListed: report.devServer?.appsListed ?? 0,
+    appsStale: report.devServer?.appsStale ?? 0,
     freshness: { ios: freshnessOf(report, 'ios'), android: freshnessOf(report, 'android') },
     skillsDiscovered: report.skills?.discovered ?? 0,
     skillsLinked: report.skills?.linked ?? 0,
@@ -230,11 +233,16 @@ async function probeDevServerStatusAsync(
       projectRootMatched: null,
     });
   }
-  return buildDevServerStatus(
-    discovery.devServerUrl,
-    discovery,
-    await readDevServerReadinessAsync(projectRoot, discovery, options)
-  );
+  // The listing is not the count (F56): a page an app left behind stays in `/json/list`, and every
+  // runtime command a reader runs next would refuse it. One handshake per target, in parallel.
+  const [readiness, liveness] = await Promise.all([
+    readDevServerReadinessAsync(projectRoot, discovery, options),
+    probeTargetLivenessAsync(discovery.targets),
+  ]);
+  return buildDevServerStatus(discovery.devServerUrl, discovery, readiness, {
+    live: liveness.live,
+    stale: liveness.stale.length,
+  });
 }
 
 /**

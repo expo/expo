@@ -1,0 +1,35 @@
+Starting project at /Users/bonsai/.config/tuft/sessions/1787500752.816299/friction/run3/notesapp
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Starting Metro Bundler
+
+Waiting on http://localhost:8250
+
+Logs for your project will appear below.
+Android Bundled 1546ms node_modules/expo-router/entry.js (1635 modules)
+iOS Bundled 409ms node_modules/expo-router/entry.js (1404 modules)
+Android Bundled 33ms node_modules/expo-router/entry.js (1 module)
+ ERROR  [Error: boom from HomeScreen] 
+
+Code: index.tsx
+  31 |
+  32 | export default function HomeScreen() {
+> 33 |   throw new Error('boom from HomeScreen');
+     |                  ^
+  34 |   return (
+  35 |     <ThemedView style={styles.container}>
+  36 |       <SafeAreaView style={styles.safeArea}>
+Call Stack
+  HomeScreen (src/app/index.tsx:33:18) 
+
+Code: app-tabs.tsx
+  35 |         />
+  36 |       </NativeTabs.Trigger>
+> 37 |     </NativeTabs>
+     |                  ^
+  38 |   );
+  39 | }
+  40 |
+Call Stack
+  AppTabs (src/components/app-tabs.tsx:37:18)
+  TabLayout (src/app/_layout.tsx:15:18)

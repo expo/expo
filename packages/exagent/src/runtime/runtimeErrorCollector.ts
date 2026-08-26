@@ -7,7 +7,7 @@
 import type CdpMessageType from 'devtools-protocol';
 import { type WebSocket } from 'ws';
 
-import { CdpClient, type CdpClientOptions } from './cdpClient';
+import { CdpClient, RPC_METHOD_NOT_FOUND, type CdpClientOptions } from './cdpClient';
 import {
   cdpStackFrames,
   formatCdpConsoleArgs,
@@ -25,9 +25,16 @@ import {
 /** A single runtime error reported by the running app. */
 export interface RuntimeErrorRecord {
   /**
-   * Where the error came from: an uncaught exception (the red screen) or a `console.error` call.
+   * Where the error came from.
+   *
+   * `exception` and `console` are the two debugger channels. `dev-server-log` is not a debugger
+   * channel at all: it is a line the **dev server** printed, read back out of the detached log
+   * (`src/dev/logErrors.ts`). It exists because Expo Go for Android has no CDP debugger, so the two
+   * channels above are silent there while the dev server's log carries the same error, symbolicated
+   * and with a code frame [friction run 6, F52]. A record from that source has no structured stack
+   * and does not say which platform reported it — the log does not label one.
    */
-  source: 'exception' | 'console';
+  source: 'exception' | 'console' | 'dev-server-log';
 
   /** Epoch timestamp in milliseconds, as the runtime reported it. */
   timestamp: number;
@@ -100,7 +107,45 @@ interface CdpMessage {
   id?: number;
   method?: string;
   params?: any;
+  error?: { message?: string; code?: number };
 }
+
+/**
+ * What the runtime said, itself, about being able to answer a debugger at all.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Android — friction run 6, F52 and F61.
+ *
+ * Expo Go for Android **acknowledges** the calls that open a window and then sends nothing: live,
+ * `Runtime.enable` and `Network.enable` both answered `{}` and no app event ever followed
+ * [observed — 2026-08-25, Expo Go on an Android emulator, SDK 57]. So an empty window there is not
+ * evidence of a healthy app; it is the runtime having no debugger. Two things say so out loud, and
+ * both are recorded because either alone could change between versions:
+ *
+ *  - `Runtime.evaluate` answers `-32601` (`Console.enable` too; `Runtime.enable`, `Log.enable`,
+ *    `Network.enable` and `Debugger.enable` all answer `{}`);
+ *  - `Log.entryAdded` carries `"The current JavaScript engine, HermesRuntime[RNBridgeless], does
+ *    not support debugging over the Chrome DevTools Protocol."`
+ *
+ * On iOS the same probe answers `{"result":{"result":{"type":"number","value":1}}}` and the log
+ * entry is absent, so this is a live distinction rather than a platform assumption.
+ */
+export interface RuntimeDebuggerCapability {
+  /**
+   * The runtime cannot report anything over this protocol, so an empty window proves nothing.
+   *
+   * Null when the probe did not finish — a socket that closed early, a window of zero.
+   */
+  blind: boolean | null;
+  /** One clause naming what said so, for a report that has to justify a caveat. */
+  evidence: string | null;
+}
+
+/** The sentence the runtime uses to announce that it has no CDP debugger. */
+export const NO_CDP_DEBUGGER_ANNOUNCEMENT =
+  'does not support debugging over the Chrome DevTools Protocol';
+
+/** The expression the capability probe evaluates. Nothing about the app: only "does this answer". */
+const CAPABILITY_EXPRESSION = '1';
 
 /**
  * Collects runtime errors from the running app over a time window, over the debugger protocol.
@@ -111,6 +156,14 @@ interface CdpMessage {
 export class CdpRuntimeErrorCollector {
   public readonly name = 'cdp-runtime-errors';
   private clientWebSocketDebuggerUrl?: string;
+
+  /**
+   * What the runtime said about its own debugger, filled in by {@link collectAsync}.
+   *
+   * A field rather than part of the return value, so every existing caller keeps its signature and
+   * a caller that has to qualify an empty window can ask (F52).
+   */
+  public capability: RuntimeDebuggerCapability = { blind: null, evidence: null };
 
   constructor(private readonly config: CdpRuntimeErrorCollectorConfig) {}
 
@@ -142,6 +195,16 @@ export class CdpRuntimeErrorCollector {
 
     const errors: RuntimeErrorRecord[] = [];
     let requestId = 0;
+    let capabilityRequestId = 0;
+    // Starts as "answers the debugger" and is only ever moved by something the runtime said, so a
+    // socket that closes early leaves `null` rather than an unearned verdict in either direction.
+    this.capability = { blind: null, evidence: null };
+    const sawEvidence = (blind: boolean, evidence: string) => {
+      // The first answer wins, so a later `{}` cannot erase a `-32601`.
+      if (this.capability.blind == null || (blind && !this.capability.blind)) {
+        this.capability = { blind, evidence };
+      }
+    };
 
     return new Promise<RuntimeErrorRecord[]>((resolve, reject) => {
       let settled = false;
@@ -173,6 +236,19 @@ export class CdpRuntimeErrorCollector {
         clearTimeout(timeoutHandle);
 
         ws.send(JSON.stringify({ id: ++requestId, method: 'Runtime.enable' }));
+        // Two more openings, both for the capability probe rather than for the window. `Log.enable`
+        // is where the runtime announces that it has no CDP debugger, and the evaluate is the
+        // second, independent way of learning the same thing (F52). Neither adds an error record:
+        // `parseRuntimeErrorMessage` only reads `Runtime.exceptionThrown` and `consoleAPICalled`.
+        ws.send(JSON.stringify({ id: ++requestId, method: 'Log.enable' }));
+        capabilityRequestId = ++requestId;
+        ws.send(
+          JSON.stringify({
+            id: capabilityRequestId,
+            method: 'Runtime.evaluate',
+            params: { expression: CAPABILITY_EXPRESSION, returnByValue: true },
+          })
+        );
 
         collectionHandle = setTimeout(() => {
           settle(() => {
@@ -200,6 +276,22 @@ export class CdpRuntimeErrorCollector {
       ws.on('message', (data) => {
         try {
           const message: CdpMessage = JSON.parse(data.toString());
+
+          // The runtime announcing itself, which is the clearest of the two signals: it is a
+          // sentence written by the engine about the engine.
+          const announced = readNoCdpAnnouncement(message);
+          if (announced) {
+            sawEvidence(true, announced);
+          }
+          if (message.id === capabilityRequestId && capabilityRequestId > 0) {
+            sawEvidence(
+              message.error?.code === RPC_METHOD_NOT_FOUND,
+              message.error?.code === RPC_METHOD_NOT_FOUND
+                ? `the runtime answered Runtime.evaluate with "method not found" (${RPC_METHOD_NOT_FOUND})`
+                : `the runtime answered Runtime.evaluate, so it does carry a debugger`
+            );
+          }
+
           const record = parseRuntimeErrorMessage(message);
           if (record) {
             errors.push(record);
@@ -212,6 +304,24 @@ export class CdpRuntimeErrorCollector {
       });
     });
   }
+}
+
+/**
+ * The runtime's own announcement that it has no CDP debugger, or null.
+ *
+ * It arrives on `Log.entryAdded` as a `warning`, in italics
+ * [observed — 2026-08-25: `"The current JavaScript engine, [3mHermesRuntime[RNBridgeless][23m,
+ * does not support debugging over the Chrome DevTools Protocol."`], so the text is matched on the
+ * part that carries no formatting and no engine name.
+ */
+export function readNoCdpAnnouncement(message: CdpMessage): string | null {
+  if (message.method !== 'Log.entryAdded') {
+    return null;
+  }
+  const text = message.params?.entry?.text;
+  return typeof text === 'string' && text.includes(NO_CDP_DEBUGGER_ANNOUNCEMENT)
+    ? `the runtime announced over Log.entryAdded that it "${NO_CDP_DEBUGGER_ANNOUNCEMENT}"`
+    : null;
 }
 
 const ERROR_CONSOLE_TYPES = new Set(['error', 'assert']);

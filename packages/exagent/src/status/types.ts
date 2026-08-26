@@ -62,8 +62,20 @@ export interface DevServerStatus {
   /** The dev server that was probed, default or `--dev-server-url`. */
   url: string;
   running: boolean;
-  /** Debugger targets the dev server reported, i.e. apps connected to it. */
+  /**
+   * Apps connected to the dev server **whose debugger socket still opens**.
+   *
+   * Not the length of `/json/list` [friction run 6, F56]. That list holds registrations, and a page
+   * left behind by an app that was force-stopped stays in it — so this command reported `1 app
+   * connected` while every runtime command answered `No target found`. Both were counting honestly;
+   * they were counting different things. This one counts what can be talked to, which is what every
+   * command a reader runs next needs.
+   */
   appsConnected: number;
+  /** Targets the dev server listed, live or not. Equal to {@link appsConnected} in the normal case. */
+  appsListed: number;
+  /** Of those, the ones nothing answered on. Reported so the difference above is never silent. */
+  appsStale: number;
   /** Which step of discovery produced {@link url}, e.g. the project's lock or a port scan. */
   source: DevServerSource;
   /**

@@ -19,6 +19,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { resolveAdb, type AdbResolution } from './adb';
 import { resolveSpawnTarget } from '../utils/windowsShim';
 
 /** Platforms a screenshot can be taken on: the two with a device tool this CLI already spawns. */
@@ -45,6 +46,13 @@ export interface BuildScreenshotCommandParams {
   deviceId: string;
   /** Where the PNG is to end up. */
   filePath: string;
+  /**
+   * The `adb` to spawn, as `./adb.ts` resolved it. Absent means the bare name.
+   *
+   * A screenshot on a machine with the SDK installed and nothing on `PATH` used to report
+   * `"adb" could not be run` and hand back no picture (F49); this is what stops that.
+   */
+  adb?: AdbResolution;
 }
 
 /**
@@ -58,6 +66,7 @@ export function buildScreenshotCommand({
   platform,
   deviceId,
   filePath,
+  adb,
 }: BuildScreenshotCommandParams): ScreenshotCommand {
   if (platform === 'ios') {
     const args = ['simctl', 'io', deviceId, 'screenshot', filePath];
@@ -65,8 +74,9 @@ export function buildScreenshotCommand({
   }
   // `exec-out` rather than `shell`: `adb shell` runs the command through a pty, which rewrites
   // `\n` as `\r\n` and corrupts every PNG it carries. `exec-out` is the raw stream.
+  const bin = adb?.bin ?? 'adb';
   const args = ['-s', deviceId, 'exec-out', 'screencap', '-p'];
-  return { bin: 'adb', args, output: 'stdout', display: `adb ${args.join(' ')} > ${filePath}` };
+  return { bin, args, output: 'stdout', display: `${bin} ${args.join(' ')} > ${filePath}` };
 }
 
 export interface ScreenshotResult {
@@ -112,8 +122,11 @@ export async function captureScreenshotAsync({
   deviceId,
   filePath,
   timeoutMs = SCREENSHOT_TIMEOUT_MS,
+  // Resolved here when the caller has none, so this never spawns a bare `adb` on a machine whose
+  // SDK is where the SDK normally is (F49).
+  adb = platform === 'android' ? resolveAdb() : undefined,
 }: CaptureScreenshotParams): Promise<ScreenshotResult> {
-  const command = buildScreenshotCommand({ platform, deviceId, filePath });
+  const command = buildScreenshotCommand({ platform, deviceId, filePath, adb });
   const base: ScreenshotResult = {
     path: filePath,
     ok: false,
@@ -143,7 +156,10 @@ export async function captureScreenshotAsync({
   if (run.spawnError) {
     return {
       ...base,
-      reason: `"${command.bin}" could not be run (${run.spawnError}), so nothing captured the screen`,
+      reason:
+        platform === 'android' && adb
+          ? `"${command.bin}" could not be run (${run.spawnError}), so nothing captured the screen — set ANDROID_HOME to the Android SDK root, or put its platform-tools on PATH`
+          : `"${command.bin}" could not be run (${run.spawnError}), so nothing captured the screen`,
     };
   }
   if (run.exitCode !== 0) {
