@@ -1,0 +1,9 @@
+kudochien
+kudo@csie.io
+
+Accounts:
+• kudochien (Role: Owner)
+• notbrent (Role: Viewer)
+• expo (Role: Admin)
+• community (Role: Developer)
+• expo-ci (Role: Admin)

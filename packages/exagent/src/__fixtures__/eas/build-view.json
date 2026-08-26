@@ -1,0 +1,58 @@
+{
+  "id": "21d7d434-6495-4e74-b8c7-68ecd0dff489",
+  "status": "FINISHED",
+  "platform": "IOS",
+  "artifacts": {
+    "buildUrl": "https://expo.dev/artifacts/eas/5Vp655cVSBw5b2skPcFkmj6GpGWEA3m16Bv-d9P2its.tar.gz",
+    "xcodeBuildLogsUrl": "https://storage.googleapis.com/eas-workflows-production/logs/5310c5f2-8ab4-4d5e-8f53-a5c90aa9594a/21d7d434-6495-4e74-b8c7-68ecd0dff489/2026-08-19T17%3A37%3A19Z-21d7d434-6495-4e74-b8c7-68ecd0dff489-xcode.txt?<signed-query-trimmed>",
+    "applicationArchiveUrl": "https://expo.dev/artifacts/eas/5Vp655cVSBw5b2skPcFkmj6GpGWEA3m16Bv-d9P2its.tar.gz"
+  },
+  "fingerprint": {
+    "id": "01a01b19-3834-7cb4-aa0e-a629c2ef0fd2",
+    "hash": "780787df6bf4487623fb422f7e020974dc98c4a9"
+  },
+  "initiatingActor": {
+    "id": "d49ca60a-9835-46b8-8fd6-9b4d0a486fa8",
+    "displayName": "mustafaexpo"
+  },
+  "logFiles": [
+    "https://storage.googleapis.com/eas-workflows-production/logs/5310c5f2-8ab4-4d5e-8f53-a5c90aa9594a/21d7d434-6495-4e74-b8c7-68ecd0dff489/2026-08-19T17%3A37%3A19Z-21d7d434-6495-4e74-b8c7-68ecd0dff489-xcode.txt?<signed-query-trimmed>",
+    "https://storage.googleapis.com/eas-workflows-production/logs/5310c5f2-8ab4-4d5e-8f53-a5c90aa9594a/21d7d434-6495-4e74-b8c7-68ecd0dff489/2026-08-19T17%3A37%3A19Z-ea844f25-2898-4b41-82a6-711f2178b272.txt?<signed-query-trimmed>"
+  ],
+  "app": {
+    "id": "5310c5f2-8ab4-4d5e-8f53-a5c90aa9594a",
+    "name": "Observe",
+    "slug": "observability",
+    "ownerAccount": {
+      "id": "ca05650c-b861-4e89-8e11-5bf5e19d101c",
+      "name": "expo"
+    }
+  },
+  "updateChannel": {
+    "id": "019dcf44-aaea-7cfd-82d6-d37cf7c8958b",
+    "name": "production"
+  },
+  "distribution": "INTERNAL",
+  "buildProfile": "simulator",
+  "appIdentifier": "dev.expo.observe.demo",
+  "sdkVersion": "57.0.0",
+  "appVersion": "1.0.0",
+  "appBuildVersion": "43",
+  "runtime": {
+    "id": "019c425d-27fc-7ec6-9c92-77954c5828db",
+    "version": "1.0.0"
+  },
+  "gitCommitHash": "3a998bb75baeeb63aa47fd2a1563eecbd64175c9",
+  "gitCommitMessage": "[ios][autolinking] Fix ccache build settings for targets not integrated with CocoaPods (#47596)",
+  "priority": "HIGH",
+  "createdAt": "2026-08-19T17:37:12.674Z",
+  "updatedAt": "2026-08-19T17:49:16.966Z",
+  "completedAt": "2026-08-19T17:49:16.494Z",
+  "expirationDate": "2026-11-17T17:37:12.749Z",
+  "isForIosSimulator": true,
+  "metrics": {
+    "buildWaitTime": 4688,
+    "buildQueueTime": 26451,
+    "buildDuration": 692681
+  }
+}
