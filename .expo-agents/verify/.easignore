@@ -1,9 +1,5 @@
-# Written by verify init: upload only the verify files for an EAS run.
-*
-!.verify
-!.verify/**
-!.eas
-!.eas/**
-!app.json
-!eas.json
-!package.json
+# Written by verify init. The profile dir IS the EAS project dir: an EAS run
+# uploads only this directory (the engine clones the target repo itself).
+.verify-out/
+.verify-target/
+node_modules/

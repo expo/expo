@@ -1,5 +1,6 @@
 # Thin adapter only — all logic lives in @expo/verify (LLP 0020). Customize
-# through .verify/ and dispatch inputs. VERIFY_VERSION is an EAS env var on
+# through the profile dir (.expo-agents/verify/, which is also this EAS
+# project's directory) and dispatch inputs. VERIFY_VERSION is an EAS env var on
 # this project (no vars. context exists); the :? guard fails loudly instead
 # of expanding to `npx @expo/verify@ ci`.
 #
@@ -62,8 +63,8 @@ jobs:
       VERIFY_ACTOR: ${{ inputs.actor }}
       VERIFY_DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
     steps:
-      - uses: eas/checkout # the COMPANION repo; the engine clones the target,
-                           # and target code executes only in sandboxes
+      - uses: eas/checkout # the uploaded profile dir; the engine clones the
+                           # target, and target code executes only in sandboxes
       - name: Install gh and the Claude Code CLI
         # Tarball install: the worker has no gh and sudo is not assumed
         # (P4 spike: user `expo`, HOME=/home/expo).
