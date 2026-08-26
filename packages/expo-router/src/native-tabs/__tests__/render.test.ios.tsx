@@ -292,6 +292,7 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
+    // TODO(@ubax): when ROUTE_NAMES_CHANGED is reworked check if this can be reduced
     expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
