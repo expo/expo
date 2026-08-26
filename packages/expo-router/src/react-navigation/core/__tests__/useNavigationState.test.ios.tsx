@@ -162,6 +162,69 @@ test('updates a memoized consumer', () => {
   expect(callback).toHaveBeenLastCalledWith(1);
 });
 
+test('keeps filtered state stable when the container rerenders', () => {
+  const TestRouter = (options: any) => {
+    const router = MockRouter(options);
+
+    return {
+      ...router,
+      getStateForAction(state: NavigationState, action: any) {
+        if (action.type === 'ROUTE_NAMES_CHANGED') {
+          return null;
+        }
+
+        return router.getStateForAction(state, action, options);
+      },
+    };
+  };
+
+  const TestNavigator = (props: any): any => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(TestRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  const callback = jest.fn();
+
+  const Test = React.memo(() => {
+    callback(useNavigationState((state) => state));
+
+    return null;
+  });
+
+  const initialState = {
+    stale: false as const,
+    routeKeySeq: 0,
+    key: 'root',
+    index: 0,
+    routeNames: ['first', 'hidden'],
+    routes: [
+      { key: 'first-0', name: 'first' },
+      { key: 'hidden-0', name: 'hidden' },
+    ],
+  };
+
+  const App = (_props: { value: string }) => (
+    <BaseNavigationContainer initialState={initialState}>
+      <TestNavigator>
+        <Screen name="first" component={Test} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  const root = render(<App value="first" />);
+
+  expect(callback).toHaveBeenCalledTimes(1);
+
+  root.update(<App value="second" />);
+
+  expect(callback).toHaveBeenCalledTimes(1);
+});
+
 test('gets the correct value if selector changes', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);

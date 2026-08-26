@@ -352,7 +352,7 @@ export function useNavigationBuilder<
   const state = React.useMemo(
     () => router.getStateForDeclaredRoutes(committedState, routeNames),
     [committedState, routeNamesKey, router]
-  ) as State;
+  );
   // TODO(@ubax): Check whether this ref can be safely removed.
   const stateKeyRef = React.useRef(committedState.key);
 

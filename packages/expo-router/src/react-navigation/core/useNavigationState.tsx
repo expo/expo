@@ -19,6 +19,7 @@ export function useNavigationState<ParamList extends ParamListBase, T>(
     throw new Error("Couldn't get the navigation state. Is your component inside a navigator?");
   }
 
+  // TODO(@ubax): Restore selector equality bail-outs and stable result identity without a subscription.
   // @ts-expect-error: this is unsafe, but needed to make the generic work
   return selector(state);
 }
