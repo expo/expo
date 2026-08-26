@@ -106,7 +106,7 @@ export const entries: ExpoItemType[] = [
   },
   {
     label: 'Project fingerprints',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/distribution',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/fingerprints',
     Icon: Fingerprint03DuotoneIcon,
   },
   {
