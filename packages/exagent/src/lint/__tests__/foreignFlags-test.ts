@@ -99,8 +99,10 @@ describe('the flags this CLI writes onto a command line', () => {
         "-m  src/checkpoint/git.ts",
         "-nP  src/dev/portListener.ts",
         "-p  src/device/screenshot.ts",
+        "-p  src/toolchain/detect.ts",
         "-s  src/device/screenshot.ts",
         "-sTCP:LISTEN  src/dev/portListener.ts",
+        "-version  src/toolchain/detect.ts",
       ]
     `);
   });
