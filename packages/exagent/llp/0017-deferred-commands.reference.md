@@ -413,7 +413,9 @@ Per [[0009-smart-followups]]. A dry run with steps offers `doctor:fix --tier <th
 
 ### Testing
 
-Per [[0002-testing-and-evals]].
+Per [[0002-testing-and-evals]]. All of it moved to `src/deferred/doctor-fix/__tests__/` with the
+code and **is not run** — jest's `testPathIgnorePatterns` names the shelf. What follows is what the
+suites asserted when they last ran, 2026-08-26.
 
 Unit — `rejectUnsafeTarget` against the full table over memfs, including the symlinked-root case the live run found; the step table's invariants (unique ids, one way to act per kind, exactly three machine-wide steps, a reason and a recovery on every row); the four ordering rules on every tier; the Windows- and Linux-filtered table; `metroFileMapPrefixes` pinned against a hash verified live; `planFixAsync` over memfs fixtures (CNG, bare, a project with no caches, each tier); `detectPackageManager` against each of the five lockfiles, none, a monorepo, and a two-lockfile tie; the flag resolvers; the follow-up builder.
 
