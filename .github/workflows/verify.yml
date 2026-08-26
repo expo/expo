@@ -106,6 +106,7 @@ jobs:
             .verify-out/findings.md
             .verify-out/review.md
             .verify-out/final-comment.md
+            .verify-out/final-comment-args.json
             .verify-out/partial-findings.md
             .verify-out/denied-writes.txt
             .verify-out/publish-plan.json
