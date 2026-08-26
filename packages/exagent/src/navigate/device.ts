@@ -251,6 +251,7 @@ export async function probeCloudDeviceAsync(
         platform: null,
         status: null,
         available: null,
+        failure: null,
         reason: `no ${'.env.eas-simulator'} names a session, so this project has not started one`,
       },
     };

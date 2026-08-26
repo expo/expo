@@ -27,6 +27,7 @@ import {
   captureCloudScreenshotAsync,
   cloudNeedsTunnelError,
   cloudSessionUnavailableError,
+  cloudSessionUnknownError,
   cloudVerbFailedError,
   cloudVerbNotSupportedError,
   isActiveSessionStatus,
@@ -388,6 +389,7 @@ describe(cloudSessionUnavailableError, () => {
     platform: null,
     status: null,
     available: null,
+    failure: null,
     reason: 'no .env.eas-simulator names a session',
   };
 
@@ -495,5 +497,43 @@ describe(cloudVerbNotSupportedError, () => {
     expect(error.code).toBe('CLOUD_SIMULATOR_UNSUPPORTED');
     expect(error.message).toContain('ends the whole session');
     expect(error.message).toContain('npx exagent navigate / --cloud');
+  });
+});
+
+describe(`${cloudSessionUnknownError.name} and the signed-out account`, () => {
+  const probe = {
+    state: 'unknown' as const,
+    sessionId: 'sess-1',
+    platform: null,
+    status: null,
+    available: null,
+    reason: 'the EAS CLI would not answer',
+  };
+
+  it(`never tells a reader to start a session it could not rule out`, () => {
+    const error = cloudSessionUnknownError({ ...probe, failure: null });
+
+    expect(error.code).toBe('CLOUD_SIMULATOR_SESSION_UNKNOWN');
+    expect(error.message).not.toContain('simulator:start');
+    expect(error.message).toContain('sess-1');
+  });
+
+  // A signed-out account stops the *question* about the session exactly as it stops the answer,
+  // and both are a login rather than a broken CLI (llp/0010 §Needs-human protocol).
+  it(`hands a signed-out account to a person`, () => {
+    const error = cloudSessionUnknownError({
+      ...probe,
+      failure: {
+        command: 'eas simulator:get --id sess-1 --json',
+        stdout: '',
+        stderr:
+          'An Expo user account is required. Either log in with "eas login" or set the EXPO_TOKEN environment variable.',
+        exitCode: 1,
+        spawnError: null,
+        binPath: '/usr/local/bin/eas',
+      },
+    });
+
+    expect(isNeedsHumanError(error) && error.needsHuman.scenario).toBe('eas-login');
   });
 });

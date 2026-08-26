@@ -456,6 +456,7 @@ describe('exagent smoke', () => {
         'appsConnected',
         'bundle',
         'devServerUrl',
+        'deviceBackend',
         'deviceId',
         'durationMs',
         'errors',

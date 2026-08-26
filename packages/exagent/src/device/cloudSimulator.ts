@@ -233,6 +233,15 @@ export interface CloudSessionProbe {
   reason: string | null;
   /** Whether the account has EAS Simulator at all, when it was worth asking. Null when it was not. */
   available: boolean | null;
+  /**
+   * The EAS CLI run that failed, when one did.
+   *
+   * Kept so the failure raised for this probe can run the same layer-3 classification a device verb
+   * does: a signed-out account is a step only a person can complete whether it was found while
+   * *driving* the session or while *asking about* it, and answering the second with exit `1` would
+   * hand an agent a broken-tool story for a login (llp/0010 §Needs-human protocol).
+   */
+  failure: CloudRunResult | null;
 }
 
 /** Where the session dotenv lives for a project. */
@@ -308,6 +317,7 @@ export async function probeCloudSessionAsync({
       platform: null,
       status: null,
       available: null,
+      failure: null,
       reason:
         'no "eas" binary was found in node_modules/.bin or on PATH, so nothing could be asked about a cloud simulator session',
     };
@@ -318,6 +328,12 @@ export async function probeCloudSessionAsync({
     // No id on disk. Whether that is "start one" or "this account has none" is worth one read-only
     // request, and only this branch pays for it.
     const availability = await runEasAsync(cli, buildAvailabilityArgs(), { projectRoot, timeoutMs });
+    // A check that stopped because nobody is signed in has established nothing about the account's
+    // access — and the next step for it is a person, not a session. Answered as `unknown` with the
+    // run attached, so the caller raises the handoff rather than "this project has no session".
+    if (needsHumanFor(availability)) {
+      return { ...unknownSession('', 'no Expo account is signed in'), sessionId: null, failure: availability };
+    }
     const available = availability.spawnError ? null : parseAvailabilityJson(availability.stdout);
     return {
       state: 'none',
@@ -325,6 +341,7 @@ export async function probeCloudSessionAsync({
       platform: null,
       status: null,
       available,
+      failure: null,
       reason:
         available === false
           ? 'EAS Simulator is not enabled on this account, so no session can be started for this project'
@@ -345,12 +362,15 @@ export async function probeCloudSessionAsync({
     );
   }
   if (result.exitCode !== 0) {
-    return unknownSession(
-      sessionId,
-      `"${result.command}" exited ${result.exitCode ?? 'on a signal'}${
-        firstLine(result.stderr) ? `: ${firstLine(result.stderr)}` : ''
-      }`
-    );
+    return {
+      ...unknownSession(
+        sessionId,
+        `"${result.command}" exited ${result.exitCode ?? 'on a signal'}${
+          firstLine(result.stderr) ? `: ${firstLine(result.stderr)}` : ''
+        }`
+      ),
+      failure: result,
+    };
   }
 
   const session = parseSessionJson(result.stdout);
@@ -364,6 +384,7 @@ export async function probeCloudSessionAsync({
       platform: session.platform,
       status: session.status,
       available: true,
+      failure: null,
       reason: `session ${session.id ?? sessionId} is ${session.status ?? 'in an unreported state'}, not ${ACTIVE_SESSION_STATUS}`,
     };
   }
@@ -374,6 +395,7 @@ export async function probeCloudSessionAsync({
     platform: session.platform,
     status: session.status,
     available: true,
+    failure: null,
     reason: null,
   };
 }
@@ -486,7 +508,21 @@ export function cloudSessionUnknownError(probe: CloudSessionProbe): CommandError
     ].join('\n')
   );
   error.suggestedCommand = 'npx eas simulator:get --json';
-  return error;
+
+  // The same layer-3 hand-off a device verb does. A signed-out account stops the *question* about
+  // the session exactly as it stops the answer, and both are a login rather than a broken CLI.
+  const needsHuman =
+    probe.failure &&
+    classifySubprocessFailure({
+      tool: 'eas',
+      invocation: probe.failure.command,
+      exitCode: probe.failure.exitCode,
+      stdout: probe.failure.stdout,
+      stderr: probe.failure.stderr,
+    });
+  return needsHuman
+    ? needsHumanErrorFrom(needsHuman, { code: error.code, message: error.message })
+    : error;
 }
 
 /** The failure for a `--ios`/`--android` that names the platform the session is not. */
@@ -636,12 +672,26 @@ export function easCliMissingError(): CommandError {
 function unknownSession(sessionId: string, reason: string): CloudSessionProbe {
   return {
     state: 'unknown',
-    sessionId,
+    sessionId: sessionId || null,
     platform: null,
     status: null,
     available: null,
+    failure: null,
     reason,
   };
+}
+
+/** Whether a failed EAS CLI run is a step only a person can complete. */
+function needsHumanFor(result: CloudRunResult): boolean {
+  return (
+    classifySubprocessFailure({
+      tool: 'eas',
+      invocation: result.command,
+      exitCode: result.exitCode,
+      stdout: result.stdout,
+      stderr: result.stderr,
+    }) != null
+  );
 }
 
 function normalizePlatform(value: string | null): CloudPlatform | null {
