@@ -19,6 +19,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
   private let queue = DispatchQueue(label: "expo.screenorientationregistry", attributes: .concurrent)
+  private let notificationQueue = DispatchQueue(label: "expo.screenorientationregistry.notifications")
   @objc
   public var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
@@ -201,23 +202,23 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called at the end of the screen orientation change. Notifies the controllers about the orientation change.
    */
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
-    queue.sync(flags: .barrier) {
+    let controllers = queue.sync(flags: .barrier) {
       // Write with the barrier:
       if self.currentScreenOrientation != newScreenOrientation {
         // Only change if necessary, to prevent listeners from re-calling this method.
         self.currentScreenOrientation = newScreenOrientation
       }
+      return self.orientationControllers
     }
-    queue.async {
-      // Read without the barrier:
-      for controller in self.orientationControllers {
+    notificationQueue.async {
+      for controller in controllers {
         controller.screenOrientationDidChange(newScreenOrientation)
       }
     }
   }
 
   public func registerController(_ controller: ScreenOrientationController) {
-    queue.sync {
+    queue.sync(flags: .barrier) {
       self.orientationControllers.append(controller)
     }
   }
@@ -225,7 +226,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public func unregisterController(_ controller: ScreenOrientationController) {
     let controllerIdentifier = ObjectIdentifier(controller)
 
-    queue.sync {
+    queue.sync(flags: .barrier) {
       self.controllerInterfaceMasks.removeValue(forKey: controllerIdentifier)
       self.orientationControllers.removeAll(where: { $0 === controller })
     }
