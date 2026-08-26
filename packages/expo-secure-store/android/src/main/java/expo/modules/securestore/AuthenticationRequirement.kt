@@ -10,7 +10,7 @@ internal fun normalizeAuthenticationRequirement(value: Any?): String? {
     null, JSONObject.NULL -> null
     is Boolean -> if (value) AUTHENTICATION_METHOD_BIOMETRY else null
     is String -> when (value) {
-      "", "false" -> null
+      "", "false", "none" -> null
       "true", AUTHENTICATION_METHOD_BIOMETRY -> AUTHENTICATION_METHOD_BIOMETRY
       AUTHENTICATION_METHOD_DEVICE_CREDENTIALS -> AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
       else -> throw InvalidAuthenticationOptionException(value)

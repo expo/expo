@@ -9,6 +9,7 @@
 - Add an Android-only `requireConfirmation` option for authenticated reads and writes. ([#48556](https://github.com/expo/expo/pull/48556) by [@skylarbarrera](https://github.com/skylarbarrera))
 - Add `canUseDeviceCredentialsAuthentication` function. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
 - Add `requireAuthentication: 'deviceCredentials'` for device credential fallback (on Android, requires API 30+). Authenticated entries written on Android are not backward compatible with older versions and may be deleted after a downgrade. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
+- Add `requireAuthentication: 'none'` and deprecate boolean values for `requireAuthentication` - `true` and `false` still work but log a deprecation warning. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
 
 ### 🐛 Bug fixes
 

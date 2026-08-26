@@ -207,7 +207,7 @@ open class SecureStoreModule : Module() {
         // Invalidated keys will block writing even though it's not possible to re-validate them
         // so we remove them before saving.
         val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
-        removeKeyFromKeystore(alias, options.keychainService)
+        removeKeyFromKeystore(alias, options.keychainService, options.authenticationRequirement)
       }
 
       /* Android API 23+ supports storing symmetric keys in the keystore and on older Android
@@ -273,12 +273,12 @@ open class SecureStoreModule : Module() {
     }
   }
 
-  private fun removeKeyFromKeystore(keyStoreAlias: String, keychainService: String) {
+  private fun removeKeyFromKeystore(keyStoreAlias: String, keychainService: String, invalidatedAuthenticationRequirement: String?) {
     keyStore.deleteEntry(keyStoreAlias)
-    removeAllEntriesUnderKeychainService(keychainService)
+    removeAllEntriesUnderKeychainService(keychainService, invalidatedAuthenticationRequirement)
   }
 
-  private fun removeAllEntriesUnderKeychainService(keychainService: String) {
+  private fun removeAllEntriesUnderKeychainService(keychainService: String, invalidatedAuthenticationRequirement: String?) {
     val sharedPreferences = getSharedPreferences()
     val allEntries: Map<String, *> = sharedPreferences.all
 
@@ -296,9 +296,10 @@ open class SecureStoreModule : Module() {
         jsonEntry.opt(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
       )
 
-      // Entries which don't require authentication use separate keychains which can't be invalidated,
-      // so we shouldn't delete them.
-      if (requireAuthentication != null && keychainService == entryKeychainService) {
+      // Each authentication mode uses its own keystore alias, so only entries encrypted with the
+      // invalidated alias become unreadable. Entries using other modes (or no authentication)
+      // are still decryptable and must be kept.
+      if (requireAuthentication != null && requireAuthentication == invalidatedAuthenticationRequirement && keychainService == entryKeychainService) {
         sharedPreferences.edit().remove(key).apply()
         Log.w(TAG, "Removing entry: $key due to the encryption key being deleted")
       }

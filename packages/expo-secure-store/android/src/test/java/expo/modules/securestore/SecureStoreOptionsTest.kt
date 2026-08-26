@@ -26,6 +26,13 @@ class SecureStoreOptionsTest {
   }
 
   @Test
+  fun `none is treated as no authentication`() {
+    val options = SecureStoreOptions(requireAuthentication = requireAuthenticationOf("none"))
+
+    assertFalse(options.isAuthenticationRequired)
+  }
+
+  @Test
   fun `write prompt uses the current authentication options`() {
     val options = SecureStoreOptions(
       requireAuthentication = requireAuthenticationOf(true),

@@ -50,7 +50,7 @@ function SecureStoreView() {
     SecureStore.canUseBiometricAuthentication();
 
   const authMode = React.useMemo(() => {
-    if (!requireAuth) return false;
+    if (!requireAuth) return 'none';
     return forceDeviceFallback || canUseFallback ? 'deviceCredentials' : 'biometry';
   }, [requireAuth, canUseFallback, forceDeviceFallback]);
 
@@ -58,7 +58,7 @@ function SecureStoreView() {
     () => ({
       keychainService: service,
       requireAuthentication: authMode,
-      authenticationPrompt: authMode ? 'Authenticate' : undefined,
+      authenticationPrompt: authMode === 'none' ? undefined : 'Authenticate',
       ...(Platform.OS === 'android' ? { requireConfirmation } : {}),
     }),
     [authMode, requireConfirmation, service]

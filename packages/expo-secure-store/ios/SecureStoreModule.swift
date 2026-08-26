@@ -102,11 +102,10 @@ public final class SecureStoreModule: Module {
     if authenticationRequirement == nil {
       setItemQuery[kSecAttrAccessible as String] = accessibility
     } else {
-      let isDeviceCredentialsRequired = authenticationRequirement == "deviceCredentials"
-      let requiresFaceIDUsageDescription =
-        !isDeviceCredentialsRequired || canUseBiometricAuthentication()
-      if requiresFaceIDUsageDescription {
-        guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
+      // NSFaceIDUsageDescription is only needed when the authentication prompt can use Face ID.
+      // Touch ID and passcode-only devices don't require the plist entry.
+      if isFaceIDAvailable() {
+        guard Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] is String else {
           throw MissingPlistKeyException()
         }
       }
@@ -156,9 +155,8 @@ public final class SecureStoreModule: Module {
 
     if status == errSecSuccess {
       return true
-    } else {
-      throw KeyChainException(status)
     }
+    throw KeyChainException(status)
   }
 
   private func searchKeyChain(with key: String, options: SecureStoreOptions, serviceSuffix: String? = nil) throws -> Data? {
@@ -252,6 +250,18 @@ public final class SecureStoreModule: Module {
       return nil
     }
     return key
+  }
+
+  private func isFaceIDAvailable() -> Bool {
+    #if os(tvOS)
+    return false
+    #else
+    let context = LAContext()
+    var error: NSError?
+    // biometryType is only valid after calling canEvaluatePolicy, even if the evaluation fails.
+    _ = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
+    return context.biometryType == .faceID
+    #endif
   }
 
   private func canUseBiometricAuthentication() -> Bool {
