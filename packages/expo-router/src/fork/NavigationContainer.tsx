@@ -199,6 +199,7 @@ function NavigationContainerInner(
 
 const NavigationContainerContent = React.forwardRef(NavigationContainerInner);
 
+// TODO(@ubax): Remove this component once we require single container in the whole app
 function NavigationContainerWithQueue(
   props: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>

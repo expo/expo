@@ -2,13 +2,8 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RoutingQueueDrainer } from '../RoutingQueueDrainer';
-import { routingQueue, type RoutingIntent } from '../routingQueue';
+import type { RoutingIntent } from '../routingQueue';
 import { RoutingQueueProvider, useEnqueueRoutingIntent } from '../routingQueueContext';
-
-beforeEach(() => {
-  routingQueue.queue = [];
-  routingQueue.subscribers.clear();
-});
 
 function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
@@ -116,19 +111,27 @@ it('does not process a batch twice in Strict Mode', () => {
   const processIntent = jest.fn();
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
-  function Tree() {
+  function CaptureEnqueue() {
     enqueue = useEnqueueRoutingIntent();
-    return <RoutingQueueDrainer ready processIntent={processIntent} />;
+    return null;
   }
 
-  render(
+  const result = render(
     <React.StrictMode>
       <RoutingQueueProvider>
-        <Tree />
+        <CaptureEnqueue />
       </RoutingQueueProvider>
     </React.StrictMode>
   );
   act(() => enqueue(actionIntent('TEST')));
+  result.rerender(
+    <React.StrictMode>
+      <RoutingQueueProvider>
+        <CaptureEnqueue />
+        <RoutingQueueDrainer ready processIntent={processIntent} />
+      </RoutingQueueProvider>
+    </React.StrictMode>
+  );
 
   expect(processIntent).toHaveBeenCalledTimes(1);
 });

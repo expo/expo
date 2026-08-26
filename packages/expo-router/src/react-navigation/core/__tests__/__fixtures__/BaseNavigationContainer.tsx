@@ -2,6 +2,7 @@ import * as React from 'react';
 import { nanoid } from 'nanoid/non-secure';
 
 import { RouterRegistryProvider } from '../../../../global-state/routerRegistry';
+import { RoutingQueueProvider } from '../../../../global-state/routingQueueContext';
 import type { NavigationState, ParamListBase, PartialState } from '../../../routers';
 import type { NavigationContainerRef } from '../../types';
 import { BaseNavigationContainer as BaseNavigationContainerImpl } from '../../BaseNavigationContainer';
@@ -141,12 +142,14 @@ export function BaseNavigationContainer(props: Props) {
   );
 
   return (
-    <RouterRegistryProvider>
-      <BaseNavigationContainerImpl
-        {...rest}
-        ref={setRef}
-        initialState={completeState(rest.initialState, rest.children)}
-      />
-    </RouterRegistryProvider>
+    <RoutingQueueProvider>
+      <RouterRegistryProvider>
+        <BaseNavigationContainerImpl
+          {...rest}
+          ref={setRef}
+          initialState={completeState(rest.initialState, rest.children)}
+        />
+      </RouterRegistryProvider>
+    </RoutingQueueProvider>
   );
 }

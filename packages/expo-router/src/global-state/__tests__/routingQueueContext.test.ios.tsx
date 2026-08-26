@@ -1,7 +1,8 @@
 import { act, render } from '@testing-library/react-native';
 import { use, type ContextType } from 'react';
 
-import { routingQueue, type RoutingIntent } from '../routingQueue';
+import { router } from '../router';
+import type { RoutingIntent } from '../routingQueue';
 import {
   PendingIntentsContext,
   RoutingQueueApiContext,
@@ -13,9 +14,52 @@ function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
 }
 
-beforeEach(() => {
-  routingQueue.queue = [];
-  routingQueue.subscribers.clear();
+it('installs the module-level router after the provider commits', () => {
+  let pending: RoutingIntent[] = [];
+
+  function Consumer() {
+    pending = use(PendingIntentsContext);
+    return null;
+  }
+
+  expect(() => router.push('/test')).toThrow('first render');
+
+  render(
+    <RoutingQueueProvider>
+      <Consumer />
+    </RoutingQueueProvider>
+  );
+  act(() => router.push('/test'));
+
+  expect(pending).toEqual([
+    {
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/test', options: { event: 'PUSH' } },
+    },
+  ]);
+});
+
+it('restores the throwing router after the provider unmounts', () => {
+  const { unmount } = render(<RoutingQueueProvider />);
+
+  expect(() => act(() => router.push('/test'))).not.toThrow();
+  unmount();
+
+  expect(() => router.push('/test')).toThrow('first render');
+});
+
+it('warns when a second root binds the imperative router', () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  const firstRoot = render(<RoutingQueueProvider />);
+  const secondRoot = render(<RoutingQueueProvider />);
+
+  expect(error).toHaveBeenCalledTimes(1);
+  expect(error).toHaveBeenCalledWith(expect.stringContaining('multiple'));
+
+  secondRoot.unmount();
+  firstRoot.unmount();
+  error.mockRestore();
 });
 
 it('preserves enqueue order and drains on the following render', () => {
@@ -115,56 +159,14 @@ it('does not re-render producers when the queue changes', () => {
   expect(producerRender).toHaveBeenCalledTimes(1);
 });
 
-it('throws without a provider', () => {
-  function Consumer() {
-    useEnqueueRoutingIntent();
-    return null;
-  }
-
-  expect(() => render(<Consumer />)).toThrow('Routing queue is unavailable');
-});
-
-it('forwards module queue intents into the context queue', () => {
-  let pending: RoutingIntent[] = [];
+it('throws when enqueue is called without a provider', () => {
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
   function Consumer() {
-    pending = use(PendingIntentsContext);
+    enqueue = useEnqueueRoutingIntent();
     return null;
   }
 
-  render(
-    <RoutingQueueProvider>
-      <Consumer />
-    </RoutingQueueProvider>
-  );
-  act(() => routingQueue.add(actionIntent('TEST')));
-
-  expect(pending).toEqual([actionIntent('TEST')]);
-  expect(routingQueue.snapshot()).toEqual([]);
-});
-
-it('warns for multiple bridges and forwards through only one', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
-  const queues: RoutingIntent[][] = [[], []];
-
-  function Consumer({ index }: { index: number }) {
-    queues[index] = use(PendingIntentsContext);
-    return null;
-  }
-
-  render(
-    <>
-      <RoutingQueueProvider>
-        <Consumer index={0} />
-      </RoutingQueueProvider>
-      <RoutingQueueProvider>
-        <Consumer index={1} />
-      </RoutingQueueProvider>
-    </>
-  );
-  act(() => routingQueue.add(actionIntent('TEST')));
-
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(queues).toEqual([[actionIntent('TEST')], []]);
-  error.mockRestore();
+  expect(() => render(<Consumer />)).not.toThrow();
+  expect(() => enqueue(actionIntent('TEST'))).toThrow('ExpoRoot');
 });

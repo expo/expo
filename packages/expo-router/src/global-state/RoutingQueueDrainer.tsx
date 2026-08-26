@@ -13,11 +13,15 @@ type Props = {
 export function RoutingQueueDrainer({ ready, processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
   const { dequeue } = React.use(RoutingQueueApiContext)!;
+  const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
-    if (!ready || intents.length === 0) {
+    if (!ready || intents.length === 0 || lastProcessed.current === intents) {
       return;
     }
+    // Strict Mode re-runs the mount effect with the same array before `dequeue` updates state.
+    lastProcessed.current = intents;
+    dequeue(intents);
     for (const intent of intents) {
       // Only catches errors thrown while dispatching. The navigation reducer runs
       // during the next render, so errors from it surface there, not here.
@@ -36,7 +40,6 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
         );
       }
     }
-    dequeue(intents);
   }, [dequeue, intents, processIntent, ready]);
 
   return null;

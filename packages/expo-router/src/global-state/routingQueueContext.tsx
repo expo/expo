@@ -1,19 +1,18 @@
 'use client';
 
-import {
-  createContext,
-  use,
-  useEffect,
-  useMemo,
-  useState,
-  useSyncExternalStore,
-  type PropsWithChildren,
-} from 'react';
+import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
 
-import { routingQueue, type RoutingIntent } from './routingQueue';
+import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
+import { createImperativeRouter, router, unboundRouter } from './router';
+import type { RoutingIntent } from './routingQueue';
 
 const EMPTY: RoutingIntent[] = [];
-const bridges: symbol[] = [];
+let boundBridges = 0;
+const throwMissingRoutingQueue = () => {
+  throw new Error(
+    'Attempted to navigate from a component rendered outside the Expo Router root. Render the component inside `ExpoRoot`. If this happened inside `ExpoRoot`, please report a bug at https://github.com/expo/expo/issues.'
+  );
+};
 
 export type RoutingQueueApi = {
   enqueue: (intent: RoutingIntent) => void;
@@ -48,26 +47,14 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
 export function useEnqueueRoutingIntent() {
   const api = use(RoutingQueueApiContext);
   if (api === undefined) {
-    throw new Error(
-      'Routing queue is unavailable. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
-    );
+    return throwMissingRoutingQueue;
   }
   return api.enqueue;
 }
 
 function ImperativeRoutingQueueBridge({ enqueue }: Pick<RoutingQueueApi, 'enqueue'>) {
-  const intents = useSyncExternalStore(
-    routingQueue.subscribe,
-    routingQueue.snapshot,
-    routingQueue.snapshot
-  );
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      return undefined;
-    }
-
-    if (bridges.length) {
+  useClientLayoutEffect(() => {
+    if (__DEV__ && boundBridges > 0) {
       console.error(
         [
           'Looks like you have multiple navigation containers consuming the shared imperative routing queue. Only one container will receive queued actions. Make sure that:',
@@ -77,25 +64,15 @@ function ImperativeRoutingQueueBridge({ enqueue }: Pick<RoutingQueueApi, 'enqueu
       );
     }
 
-    const bridge = Symbol();
-    bridges.push(bridge);
+    boundBridges++;
+    // The exported router identity must stay stable, so the bridge mutates it in place.
+    Object.assign(router, createImperativeRouter(enqueue));
 
     return () => {
-      const index = bridges.indexOf(bridge);
-      if (index > -1) {
-        bridges.splice(index, 1);
-      }
+      boundBridges--;
+      Object.assign(router, unboundRouter);
     };
-  }, []);
-
-  useEffect(() => {
-    if (intents.length === 0) {
-      return;
-    }
-    for (const intent of routingQueue.drain(intents)) {
-      enqueue(intent);
-    }
-  }, [enqueue, intents]);
+  }, [enqueue]);
 
   return null;
 }

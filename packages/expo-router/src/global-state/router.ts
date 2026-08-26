@@ -13,7 +13,7 @@ import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
-import { routingQueue, type RoutingIntent } from './routingQueue';
+import type { RoutingIntent } from './routingQueue';
 import { store } from './store';
 import type { LinkToOptions, NavigationOptions } from './types';
 
@@ -261,7 +261,7 @@ export type ImperativeRouter = {
   /**
    * Prefetch a screen in the background before navigating to it
    */
-  prefetch: (name: Href) => void;
+  prefetch: (href: Href, options?: NavigationOptions) => void;
 };
 
 /**
@@ -285,13 +285,44 @@ export function createImperativeRouter(enqueue: (intent: RoutingIntent) => void)
     goBack: () => goBackImpl(enqueue),
     canGoBack,
     reload,
-    prefetch: (href) => prefetchImpl(enqueue, href),
+    prefetch: (href, options) => prefetchImpl(enqueue, href, options),
     setParams: setParams as ImperativeRouter['setParams'],
     linkTo: (href, options) => linkToImpl(enqueue, href, options),
   };
 }
 
-export const router = createImperativeRouter(routingQueue.add);
+const throwBeforeFirstRender = () => {
+  throw new Error('The imperative router is unavailable before the first render has finished.');
+};
 
-export const { navigate, push, dismiss, dismissAll, dismissTo, replace, goBack, prefetch, linkTo } =
-  router;
+export const unboundRouter: InternalRouter = {
+  navigate: throwBeforeFirstRender,
+  push: throwBeforeFirstRender,
+  dismiss: throwBeforeFirstRender,
+  dismissAll: throwBeforeFirstRender,
+  dismissTo: throwBeforeFirstRender,
+  canDismiss: throwBeforeFirstRender,
+  replace: throwBeforeFirstRender,
+  back: throwBeforeFirstRender,
+  goBack: throwBeforeFirstRender,
+  canGoBack: throwBeforeFirstRender,
+  reload: throwBeforeFirstRender,
+  prefetch: throwBeforeFirstRender,
+  setParams: throwBeforeFirstRender,
+  linkTo: throwBeforeFirstRender,
+};
+
+export const router: InternalRouter = { ...unboundRouter };
+
+export const navigate = (...args: Parameters<InternalRouter['navigate']>) =>
+  router.navigate(...args);
+export const push = (...args: Parameters<InternalRouter['push']>) => router.push(...args);
+export const dismiss = (...args: Parameters<InternalRouter['dismiss']>) => router.dismiss(...args);
+export const dismissAll = () => router.dismissAll();
+export const dismissTo = (...args: Parameters<InternalRouter['dismissTo']>) =>
+  router.dismissTo(...args);
+export const replace = (...args: Parameters<InternalRouter['replace']>) => router.replace(...args);
+export const goBack = () => router.goBack();
+export const prefetch = (...args: Parameters<InternalRouter['prefetch']>) =>
+  router.prefetch(...args);
+export const linkTo = (...args: Parameters<InternalRouter['linkTo']>) => router.linkTo(...args);
