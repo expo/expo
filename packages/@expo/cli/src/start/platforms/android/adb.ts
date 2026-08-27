@@ -332,10 +332,14 @@ export async function getAttachedDevicesAsync({
           AbortSignal.timeout(probeWaitLimitMs),
         ]);
         hostProbe = await probeAdbHostVersionAsync(endpoint, probeSignal);
-      } catch {
-        hostProbe = {
-          kind: 'connection-failure',
-        };
+      } catch (probeError) {
+        if (signal?.aborted && probeError === signal.reason) {
+          throw probeError;
+        } else if (!operationSignal.aborted) {
+          hostProbe = {
+            kind: 'connection-failure',
+          };
+        }
       }
     }
     throw new CommandError('ADB_DISCOVERY', formatAdbDiscoveryError(error, endpoint, hostProbe));
