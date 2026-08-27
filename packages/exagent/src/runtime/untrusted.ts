@@ -19,6 +19,17 @@ export function wrapUntrustedAppOutput(text: string): string {
   return [UNTRUSTED_OUTPUT_BEGIN, neutralizeMarkers(text), UNTRUSTED_OUTPUT_END].join('\n');
 }
 
+/**
+ * The same neutralization, for output that is *streamed* rather than collected.
+ *
+ * A tool whose bytes reach the terminal as they arrive cannot be wrapped after the fact, so the
+ * caller prints the markers around the run and hands this in as the per-line filter — otherwise the
+ * content could forge the end marker and pass the rest of itself off as trusted command output.
+ */
+export function neutralizeUntrustedMarkers(line: string): string {
+  return neutralizeMarkers(line);
+}
+
 function neutralizeMarkers(text: string): string {
   return text
     .replaceAll(UNTRUSTED_OUTPUT_BEGIN, '--- (escaped) BEGIN UNTRUSTED APP OUTPUT ---')

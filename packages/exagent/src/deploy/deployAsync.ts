@@ -17,6 +17,12 @@ import {
   listDependencyNames,
   readProjectPackageJsonAsync,
 } from '../project/nodeModules';
+import {
+  neutralizeUntrustedMarkers,
+  UNTRUSTED_OUTPUT_BEGIN,
+  UNTRUSTED_OUTPUT_END,
+  wrapUntrustedAppOutput,
+} from '../runtime/untrusted';
 import { resolveEasCliOrThrow, type EasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { spawnExpoAsync } from '../utils/expoCli';
@@ -28,6 +34,7 @@ import {
   wrapperCrashDetail,
   type WrapperCrashTool,
 } from '../utils/wrapperCrash';
+import { classifyEasDeployFailure } from './easFailure';
 import { debugEvent, event } from './events';
 import { launchProjectAsync } from './launchAsync';
 import { resolveCreateLaunchCli } from './launchCli';
@@ -241,38 +248,164 @@ async function deployWebAsync(
     throw handoffOr(error, exported, 'expo', EXPORT_COMMAND);
   }
 
-  const deployed = await spawnSubprocessAsync(easCli.command, ['deploy', '--non-interactive'], {
-    cwd: projectRoot,
-    output,
-    promptGuard: true,
-  });
+  const upload = await uploadToEasHostingAsync(projectRoot, easCli, output);
+  const deployed = upload.result;
   if (deployed.spawnError) {
-    throw easCliUnavailable(easCli.command, deployed.spawnError);
+    throw easCliUnavailable(upload.command, deployed.spawnError);
   }
   const outputText = `${deployed.stdout}${deployed.stderr}`;
   if (deployed.exitCode !== 0 || deployed.promptHang) {
-    // The check names the binary that actually ran. `npx eas-cli whoami` would download and ask a
-    // *different* program than the one that just failed, so a healthy answer from it would prove
-    // nothing about this run [observed — friction run, 2026-08-23].
-    const whoami = checkBinaryCommand(easCli.command, ['whoami']);
-    const error = new CommandError(
-      'EAS_DEPLOY_FAILED',
-      [
-        `The export was built, but EAS Hosting did not accept it (${howItStopped('eas deploy', deployed)}).`,
-        `Why: the upload ran non-interactively, so anything that needs an answer — most often an account that is not signed in — fails instead of prompting.`,
-        `How: check who that CLI is acting as with "${whoami}"; for a headless machine, set EXPO_TOKEN to an access token from expo.dev instead of signing in.`,
-        fence(deployed, output, { tool: 'eas', binPath: easCli.command }),
-      ]
-        .filter(Boolean)
-        .join('\n')
-    );
-    error.suggestedCommand = whoami;
-    throw handoffOr(error, deployed, 'eas', DEPLOY_COMMAND);
+    throw handoffOr(easDeployFailed(upload, output), deployed, 'eas', DEPLOY_COMMAND);
   }
 
   const url = parseDeploymentUrl(outputText);
   event('web', { url, exportDir: EXPORT_DIR });
   return { url, exportDir: EXPORT_DIR, outputTail: outputTail(outputText, OUTPUT_TAIL_LINES) };
+}
+
+/** One `eas deploy` run: what ran, and what it did. */
+interface EasUpload {
+  /** The executable that ran. */
+  command: string;
+  /** How to write that invocation in a message, e.g. `npx eas-cli@latest`. */
+  label: string;
+  /** Arguments before `deploy`, which is the package name in the runner form. */
+  prefixArgs: string[];
+  result: Awaited<ReturnType<typeof spawnSubprocessAsync>>;
+  /**
+   * The `eas` this project resolves to was not the EAS CLI, so this run used a runner instead.
+   *
+   * Reported because it changes what every sentence about the failure should say: the binary the
+   * machine has under that name is broken, and no advice about accounts applies to it.
+   */
+  afterWrapperCrash: boolean;
+}
+
+/**
+ * Upload the export, and route around an `eas` that is not the EAS CLI.
+ *
+ * The resolved binary is whatever this machine has under the name `eas` — a wrapper, a shim, a
+ * stale link (llp/0001 §Constraints). `deploy` used to stop there, print the shim's Rust panic and
+ * hand back a `Try:` line that ran the same broken file again [observed — friction run 7, F67]. The
+ * fallback the auth commands already use is the answer: a run that never was the CLI uploaded
+ * nothing, so retrying it through `<runner> eas-cli@latest` is safe, and it is the only rung left.
+ *
+ * @ref llp/0021-stop-and-readiness-honesty.rfc.md §Route around a binary that is not the CLI
+ */
+async function uploadToEasHostingAsync(
+  projectRoot: string,
+  easCli: EasCli,
+  output: CapturedOutput
+): Promise<EasUpload> {
+  const run = (command: string, prefixArgs: string[]) =>
+    withFencedOutputAsync(output, () =>
+      spawnSubprocessAsync(command, [...prefixArgs, 'deploy', '--non-interactive'], {
+        cwd: projectRoot,
+        output,
+        promptGuard: true,
+        // So the tool's own bytes cannot forge the end of the block printed around them.
+        printFilter: neutralizeUntrustedMarkers,
+      })
+    );
+
+  const first = await run(easCli.command, []);
+  if (first.spawnError || !looksLikeWrapperCrash({ tool: 'eas', ...first })) {
+    return {
+      command: easCli.command,
+      label: easCli.command,
+      prefixArgs: [],
+      result: first,
+      afterWrapperCrash: false,
+    };
+  }
+
+  const { resolvePackageRunner } =
+    require('../utils/packageRunner') as typeof import('../utils/packageRunner');
+  const runner = resolvePackageRunner();
+  Log.error(
+    [
+      `The "eas" this project resolves to (${easCli.command}) did not run as the EAS CLI: it exited with code ${first.exitCode} and printed nothing an eas run would print.`,
+      `Trying ${runner.runner} ${EAS_CLI_PACKAGE} instead. Nothing was uploaded by the run that failed.`,
+    ].join('\n')
+  );
+  const retried = await run(runner.command, [EAS_CLI_PACKAGE]);
+  return {
+    command: runner.command,
+    label: String(runner.runner),
+    prefixArgs: [EAS_CLI_PACKAGE],
+    result: retried,
+    afterWrapperCrash: true,
+  };
+}
+
+/** The package the wrapper-crash fallback runs, pinned to a name rather than to a version. */
+const EAS_CLI_PACKAGE = 'eas-cli@latest';
+
+/**
+ * The error for an upload that did not happen.
+ *
+ * The `Why:` comes from the CLI's own sentence when it said something stable, and only falls back
+ * to the old guess when it did not — labelled as a guess (`easFailure.ts`, S2). The `Try:` never
+ * names a binary this run has already concluded is not the CLI (F67).
+ */
+function easDeployFailed(upload: EasUpload, output: CapturedOutput): CommandError {
+  const { result } = upload;
+  const cause = classifyEasDeployFailure(`${result.stdout}${result.stderr}`);
+  // A command against the binary that actually ran, which is what a reader has to reproduce —
+  // except after a wrapper crash, where the binary that ran is the runner and naming it is the
+  // whole point.
+  const whoami = cause?.command ?? checkBinaryCommand(upload.command, [...upload.prefixArgs, 'whoami']);
+  const stillNotTheCli = looksLikeWrapperCrash({ tool: 'eas', ...result });
+
+  const error = new CommandError(
+    'EAS_DEPLOY_FAILED',
+    [
+      `The export was built, but EAS Hosting did not accept it (${howItStopped('eas deploy', result)}).`,
+      upload.afterWrapperCrash
+        ? `Note: the "eas" this project resolves to is not the EAS CLI, so this ran ${upload.label} ${EAS_CLI_PACKAGE} instead. What follows is about that run.`
+        : '',
+      cause
+        ? `Why: ${cause.why}`
+        : `Why: the upload ran non-interactively, so anything that needs an answer fails instead of prompting. The EAS CLI printed nothing this version recognises, so this is a guess — the output below is the answer.`,
+      cause
+        ? `How: ${cause.how}`
+        : stillNotTheCli
+          ? `How: what ran under the name "eas" is not the EAS CLI, so nothing about accounts applies to it. Look at that file, and reach the real CLI with "npx ${EAS_CLI_PACKAGE} whoami".`
+          : `How: check who that CLI is acting as with "${whoami}"; for a headless machine, set EXPO_TOKEN to an access token from expo.dev instead of signing in.`,
+      fence(result, output, { tool: 'eas', binPath: upload.command }),
+    ]
+      .filter(Boolean)
+      .join('\n')
+  );
+  // Never the broken binary: running it again reproduces the panic, which is the recovery this
+  // command had been handing back (F67).
+  error.suggestedCommand = cause?.command ?? (stillNotTheCli ? `npx ${EAS_CLI_PACKAGE} whoami` : whoami);
+  return error;
+}
+
+/**
+ * Run something that streams another program's output, with the stream fenced.
+ *
+ * Guardrails apply to a tool's bytes as much as to an app's: the shim's Rust panic reached the
+ * terminal ahead of anything this CLI said, unmarked, and an agent reading it had no way to tell
+ * the two apart [observed — friction run 7, F67]. In the capturing modes there is nothing to fence
+ * here — `fence()` marks what goes into the message instead.
+ *
+ * @ref llp/0008-guardrails.rfc.md §Untrusted-content marking
+ */
+async function withFencedOutputAsync<T>(
+  output: CapturedOutput,
+  run: () => Promise<T>
+): Promise<T> {
+  if (output !== 'tee' && output !== 'capture-stdout') {
+    return await run();
+  }
+  Log.error(UNTRUSTED_OUTPUT_BEGIN);
+  try {
+    return await run();
+  } finally {
+    Log.error(UNTRUSTED_OUTPUT_END);
+  }
 }
 
 /**
@@ -334,7 +467,9 @@ function fence(
     return undefined;
   }
   const tail = outputTail(`${result.stdout}${result.stderr}`, OUTPUT_TAIL_LINES);
-  return tail ? `\nWhat the tool printed:\n${tail}` : undefined;
+  // Fenced: these are another program's bytes, and a reader — a person or an agent — has to be able
+  // to tell them from this CLI's own sentences (llp/0008 §Untrusted-content marking).
+  return tail ? `\nWhat the tool printed:\n${wrapUntrustedAppOutput(tail)}` : undefined;
 }
 
 function expoCliUnavailable(command: string, spawnError: NodeJS.ErrnoException): CommandError {

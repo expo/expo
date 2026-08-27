@@ -815,6 +815,25 @@ describe('the eas build line', () => {
     expect(rendered).toContain('EAS project not configured.');
   });
 
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §A note nobody reads is not a note — live
+  // staging, S9. The clipped end of this sentence is the clause that says what to do.
+  it(`prints a reason too long for the line under it, rather than clipping it`, () => {
+    const reason =
+      'the eas at /Users/somebody/.tuft-bin/eas exited 101 and printed nothing an eas run would print, so it may not be the real CLI — check that file';
+
+    const rendered = report(
+      mockReport({
+        builds: {
+          askedEas: true,
+          platforms: [{ ...notAskedAndroid, platform: 'ios', reason }],
+        },
+      })
+    );
+
+    expect(rendered).toContain(reason);
+    expect(rendered).not.toContain('…');
+  });
+
   it(`prints the section note when the section could not be read at all`, () => {
     const rendered = line(
       mockReport({ builds: null, errors: { builds: 'the record is unreadable' } }),

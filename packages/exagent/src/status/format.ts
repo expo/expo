@@ -290,7 +290,12 @@ function buildsLine(builds: BuildsStatus): string {
     if (platform.state === 'none') {
       return `${platform.platform}: ${chalk.dim('none')}`;
     }
-    return `${platform.platform}: ${chalk.yellow('unknown')}${platform.reason ? chalk.dim(` (${summarize(platform.reason)})`) : ''}`;
+    // A reason too long for this line is printed under it rather than clipped: the actionable half
+    // of "the eas at … exited 101 and printed nothing an eas run would print, so it may not be the
+    // real CLI — check that file" is the last clause, and that is the clause a width cut removed
+    // [observed — live staging, S9].
+    const inline = platform.reason && !isLongReason(platform.reason) ? ` (${platform.reason})` : '';
+    return `${platform.platform}: ${chalk.yellow('unknown')}${chalk.dim(inline)}`;
   });
 
   // One command, for the first platform that has one: a line cannot carry two, and the `--json`
@@ -299,7 +304,21 @@ function buildsLine(builds: BuildsStatus): string {
   if (first?.buildId) {
     facts.push(chalk.cyan(`npx eas build:download --build-id ${first.buildId}`));
   }
-  return facts.join(SEPARATOR);
+
+  const lines = [facts.join(SEPARATOR)];
+  for (const platform of builds.platforms) {
+    if (platform.state === 'unknown' && platform.reason && isLongReason(platform.reason)) {
+      lines.push(
+        `${' '.repeat(LABEL_WIDTH)}${chalk.dim(`${platform.platform}: ${platform.reason}`)}`
+      );
+    }
+  }
+  return lines.join('\n');
+}
+
+/** Whether a reason is too long to ride on the line it belongs to. */
+function isLongReason(reason: string): boolean {
+  return reason.length > ERROR_MAX_LENGTH || reason.includes('\n');
 }
 
 /** Whether the skills line would say anything: an agent is selected, or a skill was found. */
