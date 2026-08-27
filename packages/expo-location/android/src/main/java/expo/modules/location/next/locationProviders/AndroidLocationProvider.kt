@@ -11,11 +11,12 @@ import android.os.CancellationSignal
 import android.os.Looper
 import android.provider.Settings
 import androidx.core.location.LocationListenerCompat
+import expo.modules.location.next.GetCurrentPositionOptions
+import expo.modules.location.next.LocationPriority
 import expo.modules.location.next.LocationProvider
-import expo.modules.location.next.PositionWatchHandle
-import expo.modules.location.next.PausableWatchSession
 import expo.modules.location.next.Position
 import expo.modules.location.next.ProviderResult
+import expo.modules.location.next.WatchPositionParameters
 import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -23,6 +24,18 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+
+fun LocationPriority.toProvider(): String {
+  return when (this) {
+    LocationPriority.HIGH_ACCURACY, LocationPriority.BALANCED_POWER_ACCURACY -> {
+      if (Build.VERSION.SDK_INT >= 31) {
+        LocationManager.FUSED_PROVIDER
+      } else LocationManager.GPS_PROVIDER
+    }
+    LocationPriority.LOW_POWER -> LocationManager.NETWORK_PROVIDER
+    LocationPriority.PASSIVE -> LocationManager.PASSIVE_PROVIDER
+  }
+}
 
 public const val SETTINGS_REQUEST_CODE = 1492
 class AndroidLocationProvider(private val context: Context): LocationProvider {
@@ -33,13 +46,10 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
   }
 
   @SuppressLint("MissingPermission")
-  override suspend fun getCurrentPosition(): ProviderResult<Position> {
-    // TODO(@HubertBer) Add options
-    val provider = LocationManager.GPS_PROVIDER
+  override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
+    val provider = options.priority.toProvider()
     val locationResult: Location? =
-      withTimeoutOrNull(
-      90_000L,
-      ){
+      withTimeoutOrNull(options.timeout) {
         suspendCancellableCoroutine { continuation ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           val signal = CancellationSignal()
@@ -75,36 +85,8 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
   }
 
 
-  override fun watchPosition(): ProviderResult<PositionWatchHandle> {
-    val watchSession = PausableWatchSession { onPosition: (Position) -> Unit ->
-      val provider = LocationManager.GPS_PROVIDER
-      return@PausableWatchSession object: WatchSession, LocationListenerCompat {
-        @SuppressLint("MissingPermission")
-        override fun startUpdates() {
-          locationManager.requestLocationUpdates(provider, 1000L, 0f, this, Looper.getMainLooper())
-        }
-
-        override fun stopUpdates() {
-          locationManager.removeUpdates(this)
-        }
-
-        override fun onLocationChanged(location: Location) {
-          onPosition(location.toPosition())
-        }
-      }
-    }
-    val locationWatchHandle = PositionWatchHandle(watchSession)
-    return ProviderResult.Success(locationWatchHandle)
-  }
-
-  override suspend fun getLastKnownPosition(): Position? {
-    return locationManager.getProviders(true).mapNotNull {
-      try {
-        locationManager.getLastKnownLocation(it)
-      } catch (e: SecurityException) {
-        null
-      }
-    }.maxByOrNull { it.time }?.toPosition()
+  override fun watchPosition(): ProviderResult<WatchSession> {
+    return ProviderResult.Success(AndroidWatchSession(locationManager))
   }
 
   // On plain android we can only move user to settings.
@@ -118,5 +100,27 @@ class AndroidLocationProvider(private val context: Context): LocationProvider {
       }
     }
     return ProviderResult.Success(enabled)
+  }
+}
+
+private class AndroidWatchSession(
+  private val locationManager: LocationManager
+): WatchSession {
+  private var listener: LocationListenerCompat? = null
+
+  @SuppressLint("MissingPermission")
+  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit) {
+    val listener = object: LocationListenerCompat {
+      override fun onLocationChanged(location: Location) {
+        onPosition(location.toPosition())
+      }
+    }
+    this.listener = listener
+    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, parameters.interval.inWholeMilliseconds, 0f, listener, Looper.getMainLooper())
+  }
+
+  override fun stopUpdates() {
+    listener?.let { locationManager.removeUpdates(it) }
+    listener = null
   }
 }

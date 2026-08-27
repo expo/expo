@@ -14,11 +14,12 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.location.next.GetCurrentPositionOptions
+import expo.modules.location.next.LocationPriority
 import expo.modules.location.next.LocationProvider
-import expo.modules.location.next.PositionWatchHandle
-import expo.modules.location.next.PausableWatchSession
 import expo.modules.location.next.Position
 import expo.modules.location.next.ProviderResult
+import expo.modules.location.next.WatchPositionParameters
 import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -47,7 +48,12 @@ import kotlin.coroutines.resume
 // 5. JS surface: regenerate types / add `Huawei()` to the LocationProvider statics (also in the
 //    Swift skeleton to keep the surfaces mirrored) + an NCL provider button.
 
-private const val CURRENT_POSITION_TIMEOUT_MS = 90_000L
+fun LocationPriority.toHmsPriority(): Int = when (this) {
+  LocationPriority.HIGH_ACCURACY -> LocationRequest.PRIORITY_HIGH_ACCURACY
+  LocationPriority.BALANCED_POWER_ACCURACY -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+  LocationPriority.LOW_POWER -> LocationRequest.PRIORITY_LOW_POWER
+  LocationPriority.PASSIVE -> LocationRequest.PRIORITY_NO_POWER
+}
 
 class HuaweiLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient
@@ -60,12 +66,12 @@ class HuaweiLocationProvider(
   // path in AndroidLocationProvider, and like there the fix may never come (e.g. indoors),
   // hence the timeout.
   @SuppressLint("MissingPermission")
-  override suspend fun getCurrentPosition(): ProviderResult<Position> {
+  override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
     val request = LocationRequest.create()
-      .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+      .setPriority(options.priority.toHmsPriority())
       .setNumUpdates(1)
 
-    val location: Location? = withTimeoutOrNull(CURRENT_POSITION_TIMEOUT_MS) {
+    val location: Location? = withTimeoutOrNull(options.timeout) {
       suspendCancellableCoroutine { continuation ->
         val callback = object: LocationCallback() {
           override fun onLocationResult(result: LocationResult) {
@@ -94,52 +100,40 @@ class HuaweiLocationProvider(
     return ProviderResult.Success(location.toPosition())
   }
 
-  override fun watchPosition(): ProviderResult<PositionWatchHandle> {
-    val locationRequest = LocationRequest.create()
-      .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-      .setInterval(200L)
-      .setSmallestDisplacement(0f)
-
-    val watchSession = PausableWatchSession { onPosition: (Position) -> Unit ->
-      return@PausableWatchSession object: WatchSession, LocationCallback() {
-        @SuppressLint("MissingPermission")
-        override fun startUpdates() {
-          fusedLocationProvider.requestLocationUpdates(locationRequest, this, Looper.getMainLooper())
-        }
-
-        override fun stopUpdates() {
-          fusedLocationProvider.removeLocationUpdates(this)
-        }
-
-        override fun onLocationResult(locationResult: LocationResult) {
-          locationResult.lastLocation?.let {
-            onPosition(it.toPosition())
-          }
-        }
-      }
-    }
-    val locationWatchHandle = PositionWatchHandle(watchSession)
-    return ProviderResult.Success(locationWatchHandle)
+  override fun watchPosition(): ProviderResult<WatchSession> {
+    return ProviderResult.Success(HmsWatchSession(fusedLocationProvider))
   }
 
   override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
     return ProviderResult.Unavailable
   }
+}
+
+private class HmsWatchSession(
+  private val fusedLocationProvider: FusedLocationProviderClient
+): WatchSession {
+  private var callback: LocationCallback? = null
 
   @SuppressLint("MissingPermission")
-  override suspend fun getLastKnownPosition(): Position? {
-    val location: Location? = suspendCancellableCoroutine { continuation ->
-      try {
-        fusedLocationProvider
-          .lastLocation
-          .addOnSuccessListener { location -> continuation.resume(location) }
-          .addOnFailureListener { continuation.resume(null) }
-          .addOnCanceledListener { continuation.resume(null) }
-      } catch (e: SecurityException) {
-        continuation.resume(null)
+  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit) {
+    val locationRequest = LocationRequest.create()
+      .setPriority(parameters.priority.toHmsPriority())
+      .setInterval(parameters.interval.inWholeMilliseconds)
+      .setMaxWaitTime(parameters.maxUpdateDelay.inWholeMilliseconds)
+    val callback = object: LocationCallback() {
+      override fun onLocationResult(locationResult: LocationResult) {
+        locationResult.lastLocation?.let {
+          onPosition(it.toPosition())
+        }
       }
     }
-    return location?.toPosition()
+    this.callback = callback
+    fusedLocationProvider.requestLocationUpdates(locationRequest, callback, Looper.getMainLooper())
+  }
+
+  override fun stopUpdates() {
+    callback?.let { fusedLocationProvider.removeLocationUpdates(it) }
+    callback = null
   }
 }
 
