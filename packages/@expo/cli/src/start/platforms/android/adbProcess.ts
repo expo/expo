@@ -97,6 +97,20 @@ export const runAdbDeviceMutationAsync = (
     signal
   );
 
+export const runBoundedAdbDeviceMutationAsync = (
+  command: string,
+  args: string[],
+  operation: string,
+  waitLimitMs: number,
+  signal?: AbortSignal
+): Promise<spawnAsync.SpawnResult> =>
+  runAdbProcessAsync(
+    command,
+    args,
+    { operation, phase: 'device-service', hasSideEffects: true, waitLimitMs },
+    signal
+  );
+
 interface AdbProcessParams {
   operation: string;
   phase: AdbProcessPhase;
