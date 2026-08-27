@@ -330,6 +330,33 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
 }
 
+async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing agent discovery redirects ---');
+
+  const api = await fetch(`${BASE_URL}/api`, { redirect: 'manual' });
+  const apiLocation = api.headers.get('location') ?? '';
+
+  if (api.status !== 301 || !apiLocation.includes('/versions/latest')) {
+    throw new Error(
+      `Expected /api to redirect to /versions/latest, got: HTTP ${api.status} -> ${apiLocation}`
+    );
+  }
+  console.log('✓ /api redirects to the API reference');
+
+  const developers = await fetch(`${BASE_URL}/developers`, { redirect: 'manual' });
+  const developersLocation = developers.headers.get('location') ?? '';
+
+  if (
+    developers.status !== 301 ||
+    !(developersLocation === '/' || developersLocation === `${BASE_URL}/`)
+  ) {
+    throw new Error(
+      `Expected /developers to redirect to /, got: HTTP ${developers.status} -> ${developersLocation}`
+    );
+  }
+  console.log('✓ /developers redirects to the docs home');
+}
+
 async function testHtmlNotFoundAsync(): Promise<void> {
   console.log('\n--- Testing HTML 404 responses ---');
 
@@ -354,6 +381,7 @@ async function mainAsync(): Promise<void> {
     await testMarkdownNotFoundAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
+    await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
 
     console.log('\n=== All tests passed! ===');
