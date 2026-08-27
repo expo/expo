@@ -78,7 +78,8 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   protected async attemptToStartAsync(): Promise<AndroidDebugBridge.Device | null> {
     // Only detached AVD inventory entries may enter the emulator launch path
     if (this.device.isLaunchable) {
-      this.device = await startDeviceAsync(this.device);
+      const attachedDevice = await AndroidDebugBridge.isDeviceBootedAsync(this.device);
+      this.device = attachedDevice ?? (await startDeviceAsync(this.device));
     } else {
       this.assertDeviceStateIsUsable(this.device);
       const attachedDevice = await AndroidDebugBridge.isDeviceBootedAsync(this.device);
@@ -105,7 +106,9 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
 
     if (this.device.isAuthorized === false) {
       AndroidDebugBridge.logUnauthorized(this.device);
-      return null;
+      throw this.createDeviceStateError(
+        new Error(`Device ${this.device.pid ?? this.device.name} is unauthorized.`)
+      );
     }
 
     return this.device;
@@ -133,6 +136,9 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   }
 
   private async mapDeviceOperationError(error: unknown): Promise<never> {
+    if (error instanceof CommandError) {
+      throw error;
+    }
     if (isAdbDeviceDisconnectedError(error)) {
       throw new CommandError('ADB_DEVICE_DISCONNECTED', formatAdbDeviceError(error, this.device));
     }
@@ -181,7 +187,6 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
         AndroidDebugBridge.uninstallAsync(this.device, { appId }, signal)
       );
     } catch (e) {
-      if (e instanceof CommandError && e.code.startsWith('ADB_')) throw e;
       Log.error(
         `Could not uninstall app "${appId}" from your device, please uninstall it manually and try again.`
       );
@@ -198,7 +203,11 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
         AndroidDebugBridge.launchActivityAsync(this.device, { launchActivity, url }, signal)
       );
     } catch (error: any) {
-      if (error instanceof CommandError && error.code.startsWith('ADB_')) {
+      if (
+        error instanceof CommandError &&
+        error.code.startsWith('ADB_') &&
+        error.code !== 'ADB_DEVICE_OPERATION'
+      ) {
         throw error;
       }
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${this.name}".`;
