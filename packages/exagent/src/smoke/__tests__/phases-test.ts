@@ -178,6 +178,43 @@ describe(runSmokePhasesAsync, () => {
     expect(run.screenshot.ok).toBe(true);
   });
 
+  // @ref llp/0021-honest-reports.rfc.md §The device a run used, in the field that names it — F98,
+  // the second live-cloud run.
+  //
+  // A healthy app opens nothing: the `app` phase finds it already connected and the `route` phase
+  // is skipped, so the two steps that used to set these fields never run. The device was still
+  // found and still photographed — the screenshot phase resolves one of its own — and a report that
+  // left `deviceBackend` null said "no device was involved" over a run that had used a billed cloud
+  // session for its picture [observed — live cloud, 2026-08-27: `deviceBackend: null` beside
+  // `screenshot.command: "eas simulator:exec … screenshot"` and a 64 KB PNG].
+  it(`names the device it photographed, even when it opened nothing`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        probeDevice: async () => ({ deviceId: 'sess-live', backend: 'cloud' as const, reason: null }),
+        captureScreenshot: async () => screenshot({ deviceId: 'sess-live' }),
+      }),
+      options({ cloud: 'required' })
+    );
+
+    expect(statusOf(run, 'route')).toBe('skipped');
+    expect(run.deviceBackend).toBe('cloud');
+    expect(run.deviceId).toBe('sess-live');
+  });
+
+  // The other side of it: a run that found no device to photograph has no device to name, and
+  // inventing one would be worse than the null this keeps.
+  it(`names no device when there was none to find`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        probeDevice: async () => ({ deviceId: null, backend: null, reason: 'no booted device' }),
+      }),
+      options()
+    );
+
+    expect(run.deviceBackend).toBeNull();
+    expect(run.deviceId).toBeNull();
+  });
+
   // The property that makes the phase list readable at all.
   // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate — observed live, 2026-08-24. Every
   // phase has to be about the *same* dev server. `navigate` finds its own, so a run that had
@@ -725,7 +762,11 @@ describe(runSmokePhasesAsync, () => {
       // The backend travels with the device: the picture is taken through a different tool for
       // each, and the phase that takes it must not guess.
       expect(captureScreenshot).toHaveBeenCalledWith('SIM-9', 'local-ios');
-      expect(run.deviceId).toBeNull();
+      // And it travels back out. This used to assert `null` — the device the screenshot phase found
+      // was reported nowhere but inside the screenshot — and live that read as "no device was
+      // involved" over a run that had driven a billed cloud session (F98).
+      expect(run.deviceId).toBe('SIM-9');
+      expect(run.deviceBackend).toBe('local-ios');
       expect(run.screenshot.deviceId).toBe('SIM-9');
     });
   });

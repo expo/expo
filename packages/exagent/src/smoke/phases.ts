@@ -484,7 +484,7 @@ export async function runSmokePhasesAsync(
     // No app, so no runtime and no window — but there may still be a device, and a picture of
     // whatever is on it is the most useful thing left to hand back.
     skipRest('route', 'no app is connected, so there was nothing to read', 'screenshot');
-    const screenshot = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
+    const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
       devServerUrl,
       // The run opened the app in this phase, so whatever is on screen may still be loading.
       relaunched: appOpenedByThisRun,
@@ -492,10 +492,10 @@ export async function runSmokePhasesAsync(
     });
     return done(appPhase.status === 'failed' ? 'failed' : 'inconclusive', {
       ...withApp,
-      deviceId,
-      deviceBackend,
+      deviceId: captured.deviceId,
+      deviceBackend: captured.deviceBackend,
       routeCheck,
-      screenshot,
+      screenshot: captured.screenshot,
       durationMs: deps.now() - startedAt,
     });
   }
@@ -537,17 +537,17 @@ export async function runSmokePhasesAsync(
         'the route was not opened, so the app is not on the screen under test',
         'screenshot'
       );
-      const screenshot = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
+      const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
         devServerUrl,
         relaunched: true,
         remainingMs: remaining(),
       });
       return done('failed', {
         ...withApp,
-        deviceId,
-        deviceBackend,
+        deviceId: captured.deviceId,
+        deviceBackend: captured.deviceBackend,
         routeCheck,
-        screenshot,
+        screenshot: captured.screenshot,
         durationMs: deps.now() - startedAt,
       });
     }
@@ -612,7 +612,7 @@ export async function runSmokePhasesAsync(
 
   // ---- Phase 8: the picture -----------------------------------------------------------------
 
-  const screenshot = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
+  const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
     devServerUrl,
     // Only when this run put the app there: an app that was already attached and on screen has
     // nothing left to settle, and the wait would be dead time in the common case.
@@ -626,14 +626,26 @@ export async function runSmokePhasesAsync(
   return done(threw ? 'failed' : runtime.ok && collected.ok ? 'passed' : 'inconclusive', {
     ...withApp,
     routeCheck,
-    deviceId,
-    deviceBackend,
+    deviceId: captured.deviceId,
+    deviceBackend: captured.deviceBackend,
     runtimeSupported: runtime.unsupported ? false : runtime.ok ? true : null,
     windowMs: options.windowMs,
     errors: collected.records,
-    screenshot,
+    screenshot: captured.screenshot,
     durationMs: deps.now() - startedAt,
   });
+}
+
+/**
+ * The picture, and the device it was taken on.
+ *
+ * The device travels with it because the screenshot phase is the one step that resolves a device of
+ * its own — every other phase either has one already or does not need one (F98).
+ */
+interface CaptureOutcome {
+  screenshot: ScreenshotResult;
+  deviceId: string | null;
+  deviceBackend: DeviceBackend | null;
 }
 
 /**
@@ -651,7 +663,7 @@ async function captureIfPossible(
   deviceBackend: DeviceBackend | null,
   phases: SmokePhase[],
   settle: { devServerUrl: string; relaunched: boolean; remainingMs: number }
-): Promise<ScreenshotResult> {
+): Promise<CaptureOutcome> {
   const at = deps.now();
   const push = (status: SmokePhaseStatus, reason: string | null) =>
     phases.push({ id: 'screenshot', status, ms: deps.now() - at, reason });
@@ -659,7 +671,7 @@ async function captureIfPossible(
   if (!options.screenshot) {
     const skipped = noScreenshot('no screenshot was taken (--no-screenshot)');
     push('skipped', skipped.reason);
-    return skipped;
+    return { screenshot: skipped, deviceId, deviceBackend };
   }
 
   let device = deviceId;
@@ -672,7 +684,9 @@ async function captureIfPossible(
         `no screenshot was taken: ${probe.reason ?? 'no booted device was found to photograph'}`
       );
       push('skipped', skipped.reason);
-      return skipped;
+      // Null, not the probe's backend: nothing was found, so there is no device for the run to name
+      // and a backend on its own would say a device was used.
+      return { screenshot: skipped, deviceId: null, deviceBackend: null };
     }
     device = probe.deviceId;
   }
@@ -687,7 +701,13 @@ async function captureIfPossible(
 
   const result = await deps.captureScreenshot(device, backend);
   push(result.ok ? 'ok' : 'skipped', result.ok ? null : result.reason);
-  return result;
+  // Handed back, and this is F98. A healthy app opens nothing — the `app` phase finds it already
+  // connected and the `route` phase is skipped — so before this the two steps that set the run's
+  // device fields never ran, and a run that had photographed a **billed cloud session** reported
+  // `deviceBackend: null` next to the `eas simulator:exec … screenshot` that took the picture
+  // [observed — live cloud, 2026-08-27]. The device a run used is a fact of the run, whichever phase
+  // found it.
+  return { screenshot: result, deviceId: device, deviceBackend: backend };
 }
 
 /** The bundler's own error, as one sentence with the location in it. */

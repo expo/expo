@@ -235,7 +235,12 @@ describe('exagent runtime:reload', () => {
     }
   });
 
-  it('reports no reload when nothing reconnected after the broadcast', async () => {
+  // @ref llp/0005-runtime-loop-tools.rfc.md §A broadcast that was delivered is a mechanism that ran
+  // — F97. `22`, and it used to be `20`. The socket named a client and the frame went out to it, so
+  // a mechanism *ran*; what is missing is its proof. `20` said "nothing ran", which sent the run
+  // past the two observations that answer this exact state and cost a live cloud reload 8.9 s of a
+  // 180 s budget [observed — 2026-08-27].
+  it('reports an unproved reload when nothing reconnected after the broadcast', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({
       targets: [EXPO_GO_TARGET],
@@ -250,8 +255,12 @@ describe('exagent runtime:reload', () => {
         { env: stubExpoEnv(projectRoot), reject: false }
       );
 
-      expect(result.exitCode).toBe(20);
-      expect(JSON.parse(result.stdout).attempts[0]!.reason).toContain('did not act on it');
+      expect(result.exitCode).toBe(22);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.attempts[0]!.reason).toContain('did not act on it');
+      // Unproved, and never claimed: the label stays null and `reloaded` stays false.
+      expect(report.reloaded).toBe(false);
+      expect(report.verifiedBy).toBeNull();
     } finally {
       releaseLock();
       await stub.close();

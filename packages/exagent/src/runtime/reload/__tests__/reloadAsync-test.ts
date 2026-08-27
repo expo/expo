@@ -628,6 +628,38 @@ describe(reloadAsync, () => {
     expect(JSON.parse(printed())).toMatchObject({ reloaded: true, appsConnected: 0 });
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §A broadcast that was delivered is a mechanism that ran
+  // — F97, the second live-cloud run.
+  //
+  // The socket held a client, the frame went out, and the peer list did not move inside the churn
+  // window. That is one fact — the *proof* is missing — and the run used to read it as a second:
+  // that no mechanism ran at all. So it exited `20` with `method: null`, and skipped the two
+  // observations that exist for exactly this state: nothing watched the dev server's output, because
+  // "no mechanism ran, so there was nothing to watch for" [observed — live cloud, 2026-08-27:
+  // `commandSocketClients: 1`, the broadcast sent, exit 20 in 8.9 s of a 180 s budget].
+  //
+  // A delivered frame is a mechanism. What it is not is a reload, and `verifiedBy` stays null until
+  // something is observed — which is `22`, not `20`.
+  it(`treats a broadcast that reached a client as a mechanism, and looks for the proof`, async () => {
+    writeProject();
+    // A client, throughout: the same peer id before and after, so the churn window closes empty.
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }]).socket);
+    mockDevServer([EXPO_GO_TARGET]);
+
+    await expect(reloadAsync(projectRoot, options({ timeoutMs: 300, json: true }))).resolves.toBe(
+      EXIT_OUTCOME_TIMEOUT
+    );
+    const report = JSON.parse(printed());
+    expect(report.method).toBe('dev-server');
+    // Never a proof off a frame that was accepted by a socket: F95's rule, unchanged.
+    expect(report.verifiedBy).toBeNull();
+    expect(report.reloaded).toBe(false);
+    // And the observations ran, which is the whole point — this said "no mechanism ran, so there
+    // was nothing to watch for" while a reload may well have been in flight.
+    expect(report.bundlesAfterReload.observed).toBe(false);
+    expect(report.bundlesAfterReload.reason).not.toContain('no mechanism ran');
+  });
+
   it(`should refuse to reload onto a dev server that is not there`, async () => {
     writeProject();
     mockDevServer(null);
@@ -1550,8 +1582,12 @@ describe('the verification payload', () => {
     mockDevServer([EXPO_GO_TARGET]);
     mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }, {}]).socket);
 
+    // `22`, not `20`, and that moved with F97: the frame **was** delivered to a client this socket
+    // had named, so a mechanism ran and its proof is what is missing. The label this test is about
+    // is still refused — which is the whole assertion below — and the exit code now says "look
+    // again" instead of "nothing ran".
     await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 900 }))).resolves.toBe(
-      EXIT_OUTCOME_FAILED
+      EXIT_OUTCOME_TIMEOUT
     );
     const report: ReloadResultJson = JSON.parse(printed());
     expectVerificationIsBacked(report);

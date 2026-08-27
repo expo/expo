@@ -8,7 +8,8 @@
 //
 // Every expectation in this file comes from wave 19's live run rather than from the type definitions:
 // `wave19-live/` holds the JSON each assertion below was written against, and the sequence it proved is
-// the sequence `beforeAll` performs. Three facts from that run decide the whole shape of this suite:
+// the sequence `beforeAll` performs. Four facts decide the whole shape of this suite — the first three
+// from that run, the fourth from this suite's own first live run:
 //
 //  1. **The dev server needs a public origin, and a tunnel is not how it gets one here.**
 //     `exp://127.0.0.1:<port>` names the loopback of the machine that opens it, and that machine is in
@@ -30,6 +31,14 @@
 //     because the two disagree exactly here — an app bundling over a proxy is in the debugger list and
 //     holds **zero** clients on the command socket, so a broadcast reaches nobody. The `dev-server`
 //     attempt is therefore *not tried* on a cloud session, with a reason that says so.
+//  4. **A session started bare has an app that has never launched, and that is not the same thing as
+//     a session with an app on it.** `--expo-go` installs and launches Expo Go; nothing has opened
+//     the *project* in it. The first `exp://` URL then goes to the **system**, which asks
+//     "Open in 'Expo Go'?" — and nobody is there [S10; and this suite's own first run,
+//     2026-08-27: `navigate --cloud` exit 22 after 60.9 s, then two 180 s reloads with zero bundles
+//     served]. So the session is started with `--open-url`, which is the runner opening the URL in
+//     the app it just launched. Wave 19's working session was in exactly that state before any
+//     exagent command touched it.
 //
 // What this suite still may not assert: `attached`. S11 — a cloud simulator registers zero CDP targets
 // over both the local and the proxy origin — so `navigate --cloud` asserts the link was opened and
@@ -264,7 +273,25 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
       );
     }
 
-    // The session, with `--expo-go`. `eas simulator`, not `eas simulator:start` — see fact 2.
+    // The session, with `--expo-go` **and `--open-url`**. `eas simulator`, not
+    // `eas simulator:start` — see fact 2.
+    //
+    // `--open-url` is fact 4, and the first live-cloud run is what taught it. A session started bare
+    // comes up with Expo Go installed and **never launched**, so the first thing to send it an
+    // `exp://` URL hands that URL to the *system* — and iOS answers with "Open in 'Expo Go'?", a
+    // modal nothing on an unattended device presses [S10; and live, 2026-08-27: `navigate --cloud`
+    // exit 22 after 60.9 s with the `open` verb having exited 0, then two 180 s reloads that served
+    // no bundle]. Wave 19's session, the one that reached exit 0, had Expo Go launched *before* any
+    // URL reached it (`wave19-live/12-open-session.json`, `open host.exp.Exponent`), and the flag is
+    // the EAS runner's own way to arrive in that state: "Expo or development-client URL to open in
+    // the installed application **after it launches**" [observed — `eas simulator --help`,
+    // eas-cli@latest, 2026-08-27].
+    //
+    // So the session comes up with the project already loaded, which is what the rest of this suite
+    // is about — a reload of an app that is running, not a first launch. The CLI's own answer to the
+    // dialog is not what is relied on here: `navigate --cloud` reads and accepts it
+    // (`src/navigate/openRoute.ts §resolveOpenDialogAsync`), and this harness gets the session into
+    // the state a person following the `eas-simulator` skill would have.
     const started = await easAsync('simulator-start', [
       'simulator',
       '--platform',
@@ -272,6 +299,8 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
       '--type',
       'agent-device',
       '--expo-go',
+      '--open-url',
+      `exp://${publicHost}`,
       '--non-interactive',
       '--name',
       'exagent-live',
@@ -328,10 +357,29 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     expect([0, 22]).toContain(result.exitCode);
     if (result.exitCode === 22) {
       expect(report.attached).toBe(false);
+      // And when nothing attached, the run has to have **looked at the screen** before saying so.
+      // S10 is the cause this exit code hid for two rounds: the link went to the system, iOS asked
+      // "Open in 'Expo Go'?", and the modal was the whole story. `attachAlert` is that look, and it
+      // carries which of the three states it found. `found: false` is the expected one here — the
+      // session was started with `--open-url`, so Expo Go was already running when the link arrived.
+      expect(report.attachAlert).not.toBeNull();
+      expect(report.attachAlert.checked).toBe(true);
+      expect(typeof report.attachAlert.reason).toBe('string');
     }
   });
 
-  it('runtime:reload --cloud relaunches the app and proves it on the dev server', async () => {
+  // @ref llp/0005-runtime-loop-tools.rfc.md §One ladder, chosen by the command socket.
+  //
+  // **What this asserts is the ladder, not a rung**, and that is a correction the first two live runs
+  // between them forced. Written against wave 19 it pinned `method: 'device'` — the relaunch —
+  // because wave 19's session held **zero** clients on the dev server's command socket and the
+  // broadcast reached nobody. With the session started on the project (fact 4), the same command
+  // reported `appsConnected: 1` and `commandSocketClients: 1`: the app registers on that socket
+  // through the proxy after all [observed — live cloud, 2026-08-27]. So the rung a cloud session
+  // takes is not a constant, and a test that pinned one was asserting the state of one session.
+  //
+  // What is invariant is the rule: the socket picks the rung, and whichever ran has to prove itself.
+  it('runtime:reload --cloud reloads the app and proves it, on whichever rung the socket picked', async () => {
     const result = await runLiveEasAsync(
       run,
       projectRoot,
@@ -341,33 +389,36 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     expectExit(result, 0);
     const report = parseJson(result);
 
-    // Wave 19's contract, field by field, against `wave19-live/22-reload4.json`.
     expect(report.reloaded).toBe(true);
-    expect(report.method).toBe('device');
-    // The third proof, and the only one a cloud simulator leaves: the dev server was seen to serve a
-    // bundle after the relaunch. Not peer churn — there is no client — and not a fresh debugger target,
-    // because S11 means there is no target at all.
-    expect(report.verifiedBy).toBe('dev-server-bundle');
-    expect(report.bundlesAfterReload.observed).toBe(true);
-    expect(report.bundlesAfterReload.count).toBeGreaterThan(0);
-    expect(report.bundlesAfterReload.line).toContain('Bundled');
+    // Never a bare success: `reloaded` is `verifiedBy != null` by construction, and this asserts the
+    // label is one of the three that can show its own evidence (F95).
+    expect(['message-socket-peers', 'app-relaunch', 'fresh-debugger-target', 'dev-server-bundle'])
+      .toContain(report.verifiedBy);
     expect(report.bundle.ok).toBe(true);
     expect(report.bundle.url).toContain(publicHost);
 
-    // The two lists, reported side by side because they disagree here (llp/0005 §Two lists, one
+    // The two lists, reported side by side because they can disagree here (llp/0005 §Two lists, one
     // question). `commandSocketClients` has to be a number rather than null: "nobody asked" and "nobody
     // is registered" are the two answers this field exists to keep apart.
     expect(typeof report.commandSocketClients).toBe('number');
 
-    // The dev-server broadcast is skipped on a cloud session, and the skip carries its reason. A run
-    // that quietly tried it and reported 0 clients as a reload is what wave 19 fixed.
+    // The rung, and the one fact that picked it. This is the assertion that would have caught wave
+    // 19's premise going stale: it reads the socket count out of the same report.
     const attempts = Object.fromEntries(report.attempts.map((a: any) => [a.method, a]));
-    expect(attempts['dev-server'].ok).toBe(false);
-    expect(attempts['dev-server'].reason).toContain('not tried');
-    expect(attempts.device.ok).toBe(true);
-    // The relaunch is two verbs, and the reason names both — that is the mechanism, quoted.
-    expect(attempts.device.reason).toContain('--relaunch');
-    expect(attempts.device.reason).toContain('open');
+    if (report.commandSocketClients > 0) {
+      expect(report.method).toBe('dev-server');
+      expect(attempts['dev-server']).toBeTruthy();
+    } else {
+      expect(report.method).toBe('device');
+      // Rung 1 ran and had nobody to broadcast to, and the attempt says so rather than being skipped
+      // on the strength of `--cloud` — wave 21's correction.
+      expect(attempts['dev-server'].ok).toBe(false);
+      expect(attempts['dev-server'].reason).toContain('nothing to broadcast to');
+      expect(attempts.device.ok).toBe(true);
+      // The cloud relaunch is two verbs, and the reason names both — that is the mechanism, quoted.
+      expect(attempts.device.reason).toContain('--relaunch');
+      expect(attempts.device.reason).toContain('open');
+    }
   });
 
   it('runtime:reload --cloud --route puts the app on the route it names', async () => {
