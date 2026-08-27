@@ -155,6 +155,18 @@ never `0`, because `1` is "fix the call" and the fix is to start a dev server or
 `22` rule of llp/0010 §The sixth (a gate that cannot measure must not pass) is about a gate whose
 window *opened* and observed nothing, which is a different state and still `22`.
 
+**Live evidence** [observed — 2026-08-27, friction/run7/tapapp, SDK 57 in Expo Go, iPhone 17 Pro
+`C159CF99-…`, port 8631]. The three states, in order:
+
+| State | What every reading command answered |
+| --- | --- |
+| Nothing listening on the port | exit **1**, `NO_DEV_SERVER`, `data.devServerReachable: false`, the ladder naming `dev --detach` then `navigate /` — `runtime:eval`, `runtime:errors`, `runtime:tree`, `runtime:tap`, `runtime:reload`, identical |
+| Dev server up, no app | exit **1**, `NO_APP_CONNECTED`, `data.devServerReachable: true`, `debuggerTargets: 0` — `eval`, `errors --fail-on-error`, `tree`, `type`, identical. `runtime:reload` did not refuse: it started the app (§One ladder) |
+| Dev server with the app | `eval "1+1"` → `2`, exit 0; `tree` → focused screen `index`, exit 0; `errors --fail-on-error` → `count: 0`, `runtimeReadable: true`, exit 0 |
+
+`runtime:errors` is the one that takes visibly longer to refuse — about 3.5 s — and that is its
+reconnect grace period spending itself before it reports an empty list, which is the trade F39 bought.
+
 ## Reloading the app
 
 Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:reload` puts the running app back on the
@@ -522,6 +534,24 @@ before, reached from a different direction.
 from `/json/list` and came back is a new connection even under an id it used before — and it is
 [inferred] until something watches a live relaunch closely enough to say so. It is written down here
 rather than built, because a proof this command reports as `reloaded` has to be one that was seen.
+
+**Live evidence** [observed — 2026-08-27, friction/run7/tapapp, SDK 57 in Expo Go, iPhone 17 Pro
+`C159CF99-…`, dev server detached on port 8631]:
+
+| Case | Result |
+| --- | --- |
+| Nothing connected, `runtime:reload --ios` | exit **0** in 3.3 s, rung 2 on the local device, `verifiedBy: app-relaunch`, `appsReconnected: 1`. Rung 1's attempt: `no app is connected to the dev server, so there is nothing to broadcast to` |
+| App connected, `runtime:reload` | exit **0** in 813 ms, rung 1 chosen off `commandSocketClients: 2`, `appsReconnected: 0`, `bundlesAfterReload: iOS Bundled 40ms node_modules/expo-router/entry.js (1 module)` |
+| Five `reload` → `runtime:errors --fail-on-error` rounds back to back | rounds 1–4 exit `0`/`0` in 301–333 ms, **three of them with `appsReconnected: 0`** — proved by the bundle line alone. Round 5, after five reloads inside two seconds, exit `22` after the full 30 s with neither observation, and `runtime:errors` then exit `1`, `NO_APP_CONNECTED`: the app had gone and both commands said so |
+| Recovery from that state, `runtime:reload --ios` | exit **0** in 2.9 s via rung 2, `appsReconnected: 1` |
+| `runtime:stop --ios` | exit **0**, `wasRunning: true`, `connectedAppIds: ["host.exp.Exponent"]` |
+
+Two things in that table are the wave's own result. The three rounds with `appsReconnected: 0` **were
+exit 22 before it** — the local path never read the log, so a reload the dev server had just served a
+bundle for was reported as inconclusive — and the printed `reload` → `runtime:errors` chain stayed
+green across all four, which is the F39 risk the abort could have reintroduced answered by
+measurement rather than by argument (`runtime:errors` retries target selection for
+`APP_RECONNECT_GRACE_MS`, which is what absorbs it).
 
 ### Live evidence
 
