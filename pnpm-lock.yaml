@@ -219,6 +219,9 @@ importers:
       expo-web-browser:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
+      expo-widgets:
+        specifier: workspace:*
+        version: link:../../packages/expo-widgets
       lottie-react-native:
         specifier: ^7.3.8
         version: 7.3.8(@lottiefiles/dotlottie-react@0.13.5(react@19.2.3))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -1075,6 +1078,9 @@ importers:
       expo-web-browser:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
+      expo-widgets:
+        specifier: workspace:*
+        version: link:../../packages/expo-widgets
       fbemitter:
         specifier: ^2.1.1
         version: 2.1.1

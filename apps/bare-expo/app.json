@@ -117,6 +117,29 @@
           "experimentalLauncherActivity": true
         }
       ],
+      [
+        "expo-widgets",
+        {
+          "enableAndroid": true,
+          "groupIdentifier": "group.dev.expo.Payments",
+          "widgets": [
+            {
+              "name": "BareExpoCounterWidget",
+              "displayName": "Bare Expo Counter",
+              "description": "Tests snapshot updates and interactive widget buttons",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium"],
+                "initialLayout": "../native-component-list/src/screens/Widgets/CounterWidget.ios.tsx"
+              },
+              "android": {
+                "targetCellWidth": 3,
+                "targetCellHeight": 2,
+                "initialLayout": "../native-component-list/src/screens/Widgets/CounterWidget.android.tsx"
+              }
+            }
+          ]
+        }
+      ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
     ],

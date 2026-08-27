@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="expo_widgets_names">
+    <item>BareExpoCounterWidget</item>
+  </string-array>
+  <string name="bare_expo_counter_widget_display_name">Bare Expo Counter</string>
+  <string name="bare_expo_counter_widget_description">Tests snapshot updates and interactive widget buttons</string>
+</resources>
