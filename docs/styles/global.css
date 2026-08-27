@@ -142,7 +142,7 @@ details > summary::-webkit-details-marker {
 /* Tippy */
 
 div.tippy-box {
-  @apply rounded-md;
+  @apply rounded-lg;
   transform: translateY(6px);
 }
 
@@ -151,7 +151,7 @@ div.tippy-box {
 }
 
 .tippy-box[data-theme~='expo'] .tippy-content {
-  @apply bg-palette-black text-palette-white rounded-md px-4 py-3 text-sm;
+  @apply bg-palette-black text-palette-white rounded-lg px-4 py-3 text-sm;
   line-height: 1.525;
 }
 
