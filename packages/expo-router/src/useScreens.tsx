@@ -4,7 +4,6 @@ import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
-  findRouteNodeByName,
   getValidInitialRouteName,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
@@ -12,7 +11,6 @@ import {
   sortRoutesWithInitial,
   useRouteNode,
 } from './Route';
-import { store } from './global-state/store';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
@@ -30,7 +28,7 @@ import {
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
-  useStateForPath,
+  CommonActions,
   type DescriptorRouteProp,
   type EventConsumer,
   type EventMapBase,
@@ -109,7 +107,9 @@ function getSortedChildren<
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
       }
-      const match = findRouteNodeByName(entries, name);
+      const match = entries.find(
+        (route) => route.route === name || route.route === `${name}/index`
+      );
       if (!match) {
         console.warn(
           `[Layout children]: No route named "${name}" exists in nested children:`,
@@ -319,7 +319,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       getState(): NavigationState | undefined;
     };
   }) {
-    const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
@@ -335,34 +334,16 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused && !isGuarded) {
-      const state = navigation.getState();
-      const isLeaf = !(state && 'state' in state.routes[state.index]!);
-      if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
-    }
-
-    useEffect(
-      () =>
-        navigation.addListener('focus', () => {
-          const state = navigation.getState();
-          const isLeaf = !(state && 'state' in state.routes[state.index]!);
-          // Because setFocusedState caches the route info, this call will only trigger rerenders
-          // if the component itself didn’t rerender and the route info changed.
-          // Otherwise, the update from the `if` above will handle it,
-          // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath && !isGuarded) store.setFocusedState(stateForPath);
-        }),
-      [navigation, isGuarded]
-    );
-
     useEffect(() => {
       return navigation.addListener('transitionEnd', (e) => {
         if (!e?.data?.closing) {
           // When navigating to a screen, remove the no animation param to re-enable animations
           // Otherwise the navigation back would also have no animation
           if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
-            navigation.replaceParams(
-              removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
+            navigation.dispatchSync(
+              CommonActions.replaceParams(
+                removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])!
+              )
             );
           }
         }

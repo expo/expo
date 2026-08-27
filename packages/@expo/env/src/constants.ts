@@ -6,7 +6,7 @@ const platform = os.platform();
 const safeKeys = new Set(process.env.EXPO_UNSAFE_DOTENV_KEYS?.split(',').filter((x) => !!x));
 
 export function isUnsafeAllowedEnvKey(name: string): boolean {
-  return safeKeys.has(name);
+  return name !== '__EXPO_CONFIG_MODE' && safeKeys.has(name);
 }
 
 export function isIgnoredEnvKey(name: string) {
@@ -14,7 +14,7 @@ export function isIgnoredEnvKey(name: string) {
     return true;
   } else if (platform === 'linux' && name.startsWith('LD_')) {
     return true;
-  } else if (safeKeys.has(name)) {
+  } else if (isUnsafeAllowedEnvKey(name)) {
     return false;
   }
 

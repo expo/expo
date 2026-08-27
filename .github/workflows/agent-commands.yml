@@ -876,7 +876,7 @@ jobs:
           scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
             -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
             -H 'Content-Type: application/json' \
-            -d "{\"sandboxBudget\":2,\"buildBudget\":5,\"ttlSeconds\":10800,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"agent-command-${GITHUB_RUN_ID}\"}" \
+            -d "{\"sandboxBudget\":2,\"buildBudget\":5,\"ttlSeconds\":10800,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"optInTools\":[\"create_gha_sandbox\"],\"name\":\"agent-command-${GITHUB_RUN_ID}\"}" \
             | jq -r '.token // empty')
           if [ -z "$scoped" ]; then
             echo "::error::Could not mint a scoped sandbox token"

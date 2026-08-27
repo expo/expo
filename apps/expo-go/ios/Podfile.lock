@@ -45,6 +45,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - ExpoAgeRange (57.0.2):
+    - ExpoModulesCore
+  - ExpoAppleAuthentication (57.0.1):
+    - ExpoModulesCore
   - ExpoAsset (57.0.8):
     - ExpoModulesCore
   - ExpoAudio (57.0.3):
@@ -114,6 +118,8 @@ PODS:
     - ExpoModulesCore
   - ExpoLinking (57.0.4):
     - ExpoModulesCore
+  - ExpoLivePhoto (57.0.1):
+    - ExpoModulesCore
   - ExpoLocalAuthentication (57.0.2):
     - ExpoModulesCore
   - ExpoLocalization (57.0.1):
@@ -127,6 +133,8 @@ PODS:
   - ExpoMediaLibrary (57.0.3):
     - ExpoModulesCore
     - React-Core
+  - ExpoMeshGradient (57.0.1):
+    - ExpoModulesCore
   - ExpoModulesCore (57.0.8):
     - boost
     - DoubleConversion
@@ -3989,6 +3997,8 @@ DEPENDENCIES:
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
+  - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
+  - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -4018,12 +4028,14 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
+  - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoLocation (from `../../../packages/expo-location/ios`)
   - "ExpoLogBox (from `../../../packages/@expo/log-box`)"
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
+  - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
@@ -4221,6 +4233,10 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-manifests/ios"
   Expo:
     :path: "../../../packages/expo"
+  ExpoAgeRange:
+    :path: "../../../packages/expo-age-range/ios"
+  ExpoAppleAuthentication:
+    :path: "../../../packages/expo-apple-authentication/ios"
   ExpoAsset:
     :path: "../../../packages/expo-asset/ios"
   ExpoAudio:
@@ -4279,6 +4295,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-linear-gradient/ios"
   ExpoLinking:
     :path: "../../../packages/expo-linking/ios"
+  ExpoLivePhoto:
+    :path: "../../../packages/expo-live-photo/ios"
   ExpoLocalAuthentication:
     :path: "../../../packages/expo-local-authentication/ios"
   ExpoLocalization:
@@ -4291,6 +4309,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-mail-composer/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
+  ExpoMeshGradient:
+    :path: "../../../packages/expo-mesh-gradient/ios"
   ExpoModulesCore:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
@@ -4553,10 +4573,12 @@ SPEC CHECKSUMS:
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 81f44ce9f07ec3d01606507213d21510a5f97388
   EXApplication: bbd517d50878ca1d121fb3843392beb210181e28
-  EXConstants: 5efe6122eecac2d970aa50a2a502ecc6ce4b7564
+  EXConstants: 5bac5be939128b162bcddc7686b9234e40be106c
   EXJSONUtils: 7a1683cfa2cbe6d11fca97097d51a496755b0287
   EXManifests: f9888c0bf5aaa6ddb7e3d4b224d6d54ac4ca84a4
   Expo: 3f63bd27f754689bab053910280cbeae79256b4e
+  ExpoAgeRange: f30bef82f1a99c097e28f50ed41ca04d5e1cab1c
+  ExpoAppleAuthentication: 97d113f0f2680067e6e76d3c9249e7e1fc026b42
   ExpoAsset: a76534cf7b762978861dd31708308496c676166f
   ExpoAudio: 34f5940d49071f1c5f9d8c5f78e67045b0fbcb5a
   ExpoBackgroundFetch: b681657b37b294b56a02fceec4af17aebd187cee
@@ -4586,12 +4608,14 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: c26f14275017370cc8a4b7b43a0e23361f2053a5
   ExpoLinearGradient: 903b3f5fe566c666ff78b2599add51d094483613
   ExpoLinking: 5a796f9284535c0349537a844dd40680229b7fcb
+  ExpoLivePhoto: 383719af5c54875f877b6ab97fc098974f0e1c86
   ExpoLocalAuthentication: 96989637e567a10cdeabe61e5c6026d30c0dc53f
   ExpoLocalization: 659243b03b3a3e9589793cee2f728a899e181329
   ExpoLocation: ad64144374a840dd365274b309dbbbb253a1e44e
   ExpoLogBox: 6bb73c341aca22e699bd4da6cc61afc844e1a648
   ExpoMailComposer: 101933dc6bdb4d7a46495d1dd87420365325adb9
   ExpoMediaLibrary: e0829ae4fe90dc8bcd5ec13250ba6503aebbbc94
+  ExpoMeshGradient: ade33604a92081a2deda41c6107e7d080493012d
   ExpoModulesCore: cf741394007fb2754ae09817e3f32bd117202d28
   ExpoModulesJSI: b20fefa4cdd9097e7e6b715466d1900b8c5d4711
   ExpoModulesWorklets: 6b240031daa3de4df791588fc78236637ff602f6
@@ -4607,7 +4631,7 @@ SPEC CHECKSUMS:
   ExpoSharing: dcf5cb459c99f344aabf126b171eb61d2e49276f
   ExpoSMS: ac35f6c85b72ee5b18a7c6bb06550fbd4a683775
   ExpoSpeech: 0e90904e2af5d6f166d4d2ffbdab535686597938
-  ExpoSQLite: 7ea4f5b0ebd0b6f15927c2349db7624a5abf6beb
+  ExpoSQLite: 73ec3c3dd0c5e8c6592c341edf00efa6271c51a8
   ExpoStoreReview: 2a0f6b8e04112aea2f6e3e1cb84109d78f4d041f
   ExpoSymbols: 7c7c7bd3c52f0b6dcbba6e8af4088b0dc1ea7d29
   ExpoSystemUI: ff3142b323ae7b4d11dc0b1dc4acfa30d92be7dc
@@ -4631,11 +4655,11 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
-  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
+  glog: 0456694f3aaf09460b660ea327cfc11defbeea4c
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 349ded4feea539299cee22cb680b0d50402116e5
+  hermes-engine: 1aac0336ab06465103e89322838baf2911318c89
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4645,7 +4669,7 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  RCT-Folly: 36c4f904fb6cd0219dcb76b94e9502d2a72fab0b
+  RCT-Folly: 121436bcc4611f6bde5c09bf35f0a7a82cef1969
   RCTDeprecation: debcd5d989dc39edd50d61566b56e96da1c167b0
   RCTRequired: f06ef156c6b0244ac76aa51ef2e830a1a13004c8
   RCTSwiftUI: 04eac825e818fb067564bed44b20308916085563

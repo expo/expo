@@ -94,5 +94,17 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   }
 
   const result = readLoaderData<LoaderFunctionResult<T>>(ctx, resolvedPath, fetchLoader);
-  return result instanceof Promise ? use(result) : result;
+  // React can replay a suspended render once its promise settles. The store then holds the
+  // settled value, so the replay must still call `use()`, or React throws "Update hook called
+  // on initial render" for every hook after this one. A fulfilled thenable makes React reuse
+  // the original promise without suspending.
+  return use(result instanceof Promise ? result : fulfilled(result));
+}
+
+function fulfilled<T>(value: T): PromiseLike<T> {
+  return {
+    status: 'fulfilled',
+    value,
+    then: (onFulfilled) => Promise.resolve(value).then(onFulfilled),
+  } as PromiseLike<T>; // `status` and `value` are the React thenable extensions, not part of `PromiseLike`.
 }

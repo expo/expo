@@ -4,6 +4,7 @@ import { emitDomDismiss, emitDomDismissAll, emitDomGoBack } from '../../domCompo
 import {
   canDismiss,
   canGoBack,
+  createImperativeRouter,
   dismiss,
   dismissAll,
   dismissTo,
@@ -14,9 +15,9 @@ import {
   push,
   reload,
   replace,
+  router,
   setParams,
 } from '../router';
-import { routingQueue } from '../routingQueue';
 import { store } from '../store';
 
 jest.mock('../store', () => ({
@@ -36,12 +37,6 @@ jest.mock('../store', () => ({
     linking: { getStateFromPath: jest.fn(), config: {} },
     getRouteInfo: jest.fn(() => ({ pathname: '/', segments: [], params: {} })),
     redirects: [],
-  },
-}));
-
-jest.mock('../routingQueue', () => ({
-  routingQueue: {
-    add: jest.fn(),
   },
 }));
 
@@ -65,14 +60,19 @@ jest.mock('../../link/href', () => ({
   resolveHref: jest.fn((href: any) => (typeof href === 'string' ? href : href.pathname || '/')),
 }));
 
-const mockAdd = routingQueue.add as jest.Mock;
+const mockAdd = jest.fn();
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;
-
 beforeEach(() => {
   jest.clearAllMocks();
   (store as any).state = undefined;
+});
+
+it('throws before the module-level router is installed', () => {
+  expect(() => navigate('/first')).toThrow('first render');
+
+  Object.assign(router, createImperativeRouter(mockAdd));
 });
 
 describe('canDismiss', () => {
@@ -181,11 +181,11 @@ describe('canDismiss', () => {
 });
 
 describe('linkTo', () => {
-  it('enqueues ROUTER_LINK action with href and options for normal paths', () => {
+  it('enqueues NAVIGATE_TO_HREF intent with href and options for normal paths', () => {
     linkTo('/home', { event: 'NAVIGATE' });
 
     expect(mockAdd).toHaveBeenCalledWith({
-      type: 'ROUTER_LINK',
+      type: 'NAVIGATE_TO_HREF',
       payload: {
         href: '/home',
         options: { event: 'NAVIGATE' },
@@ -207,38 +207,24 @@ describe('linkTo', () => {
   });
 
   // https://linear.app/expo/issue/ENG-20200/investigate-why-navigationrefgoback-is-called-when-href-is-or
-  it('calls navigationRef.goBack() for .. href', () => {
+  it('queues GO_BACK for .. href', () => {
     linkTo('..');
 
-    expect(store.navigationRef.current!.goBack).toHaveBeenCalled();
-    expect(mockAdd).not.toHaveBeenCalled();
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+    });
+    expect(store.navigationRef.current!.goBack).not.toHaveBeenCalled();
   });
 
-  // https://linear.app/expo/issue/ENG-20200/investigate-why-navigationrefgoback-is-called-when-href-is-or
-  it('calls navigationRef.goBack() for ../ href', () => {
+  it('queues GO_BACK for ../ href', () => {
     linkTo('../');
 
-    expect(store.navigationRef.current!.goBack).toHaveBeenCalled();
-  });
-
-  it('throws when navigationRef is null for .. href', () => {
-    const originalCurrent = store.navigationRef.current;
-    (store.navigationRef as any).current = null;
-
-    expect(() => linkTo('..')).toThrow(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-    );
-
-    (store.navigationRef as any).current = originalCurrent;
-  });
-
-  it('throws when store.linking is falsy for .. href', () => {
-    const originalLinking = (store as any).linking;
-    Object.defineProperty(store, 'linking', { value: null, configurable: true });
-
-    expect(() => linkTo('..')).toThrow('Attempted to link to route when no routes are present');
-
-    Object.defineProperty(store, 'linking', { value: originalLinking, configurable: true });
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+    });
+    expect(store.navigationRef.current!.goBack).not.toHaveBeenCalled();
   });
 
   it('resolves object hrefs via resolveHref', () => {
@@ -246,7 +232,7 @@ describe('linkTo', () => {
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'ROUTER_LINK',
+        type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
           href: '/profile',
         }),
@@ -256,12 +242,12 @@ describe('linkTo', () => {
 });
 
 describe('router action functions', () => {
-  it('navigate enqueues ROUTER_LINK action with NAVIGATE event', () => {
+  it('navigate enqueues NAVIGATE_TO_HREF intent with NAVIGATE event', () => {
     navigate('/path');
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'ROUTER_LINK',
+        type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
           options: expect.objectContaining({ event: 'NAVIGATE' }),
         }),
@@ -269,12 +255,12 @@ describe('router action functions', () => {
     );
   });
 
-  it('push enqueues ROUTER_LINK action with PUSH event', () => {
+  it('push enqueues NAVIGATE_TO_HREF intent with PUSH event', () => {
     push('/path');
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'ROUTER_LINK',
+        type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
           options: expect.objectContaining({ event: 'PUSH' }),
         }),
@@ -282,12 +268,12 @@ describe('router action functions', () => {
     );
   });
 
-  it('replace enqueues ROUTER_LINK action with REPLACE event', () => {
+  it('replace enqueues NAVIGATE_TO_HREF intent with REPLACE event', () => {
     replace('/path');
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'ROUTER_LINK',
+        type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
           options: expect.objectContaining({ event: 'REPLACE' }),
         }),
@@ -295,25 +281,25 @@ describe('router action functions', () => {
     );
   });
 
-  it('prefetch enqueues ROUTER_LINK action with PRELOAD event', () => {
-    prefetch('/path');
+  it('prefetch enqueues NAVIGATE_TO_HREF intent with PRELOAD event', () => {
+    prefetch('/path', { withAnchor: true });
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'ROUTER_LINK',
+        type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
-          options: expect.objectContaining({ event: 'PRELOAD' }),
+          options: expect.objectContaining({ event: 'PRELOAD', withAnchor: true }),
         }),
       })
     );
   });
 
-  it('dismissTo enqueues ROUTER_LINK action with POP_TO event', () => {
+  it('dismissTo enqueues NAVIGATE_TO_HREF intent with POP_TO event', () => {
     dismissTo('/path');
 
     expect(mockAdd).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'ROUTER_LINK',
+        type: 'NAVIGATE_TO_HREF',
         payload: expect.objectContaining({
           options: expect.objectContaining({ event: 'POP_TO' }),
         }),
@@ -321,29 +307,41 @@ describe('router action functions', () => {
     );
   });
 
-  it('dismiss(2) enqueues POP action with count 2', () => {
+  it('dismiss(2) enqueues a POP action with count 2', () => {
     dismiss(2);
 
-    expect(mockAdd).toHaveBeenCalledWith({ type: 'POP', payload: { count: 2 } });
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP', payload: { count: 2 } } },
+    });
   });
 
   it('dismiss() defaults count to 1', () => {
     dismiss();
 
-    expect(mockAdd).toHaveBeenCalledWith({ type: 'POP', payload: { count: 1 } });
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP', payload: { count: 1 } } },
+    });
   });
 
-  it('dismissAll enqueues POP_TO_TOP', () => {
+  it('dismissAll enqueues a POP_TO_TOP action', () => {
     dismissAll();
 
-    expect(mockAdd).toHaveBeenCalledWith({ type: 'POP_TO_TOP' });
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP_TO_TOP' } },
+    });
   });
 
-  it('goBack checks navigation readiness and enqueues GO_BACK', () => {
+  it('goBack enqueues GO_BACK without requiring the container to be ready', () => {
     goBack();
 
-    expect(store.navigationRef.isReady).toHaveBeenCalled();
-    expect(mockAdd).toHaveBeenCalledWith({ type: 'GO_BACK' });
+    expect(store.navigationRef.isReady).not.toHaveBeenCalled();
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+    });
   });
 
   it('reload throws not implemented', () => {

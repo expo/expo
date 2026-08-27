@@ -1,7 +1,14 @@
-import { screen, act, waitFor, fireEvent, render } from '@testing-library/react-native';
+import {
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+  render as renderWithoutQueue,
+} from '@testing-library/react-native';
 import React from 'react';
 import { Button, Platform, Text, View } from 'react-native';
 
+import { RoutingQueueProvider } from '../../global-state/routingQueueContext';
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
@@ -18,6 +25,10 @@ import {
   type NativeLinkPreviewProps,
   NativeLinkPreview,
 } from '../preview/native';
+
+function render(element: React.ReactElement) {
+  return renderWithoutQueue(element, { wrapper: RoutingQueueProvider });
+}
 
 // Render and observe the props of the Link component.
 
@@ -389,11 +400,13 @@ describe('singular', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -430,15 +443,17 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
+                path: '/apple',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
   });
@@ -527,11 +542,13 @@ test('can dynamically route using singular function', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 
@@ -586,15 +603,17 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
+              path: '/apple?id=1',
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -616,7 +635,6 @@ describe('prefetch', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -625,7 +643,6 @@ describe('prefetch', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                params: undefined,
                 path: '/',
               },
               {
@@ -635,12 +652,13 @@ describe('prefetch', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
+      routeKeySeq: expect.any(Number),
     });
   });
 
@@ -665,18 +683,18 @@ describe('prefetch', () => {
     // Guarded routes stay registered in the navigator, so the prefetch preloads
     // the route like any other. Its content still renders nothing while guarded.
     const innerState = result.getRouterState()?.routes[0]?.state;
-    if (innerState?.type !== 'stack') {
+    if (!innerState) {
       throw new Error('Expected a stack navigator');
     }
+    // The complete initial state stays typeless until this navigator dispatches an action.
     expect((innerState as StackNavigationState<ParamListBase>).routes).toEqual([
       {
-        key: expect.stringMatching(/^index-/),
+        key: expect.stringMatching(/^index:/),
         name: 'index',
-        params: undefined,
         path: '/',
       },
       {
-        key: expect.stringMatching(/^test-/),
+        key: expect.stringMatching(/^test:/),
         name: 'test',
         params: {},
       },
@@ -1054,6 +1072,16 @@ describe('Preview', () => {
     };
   });
   describe('multiple preloaded paths with the same name', () => {
+    let warn: jest.SpiedFunction<typeof console.warn>;
+
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
     it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
@@ -1091,7 +1119,8 @@ describe('Preview', () => {
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       // Initial render, onWillPreviewOpen, setTimeout from prefetch
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
+      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB:[-\w]+/);
+      expect(warn).not.toHaveBeenCalled();
     });
     it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
@@ -1137,7 +1166,8 @@ describe('Preview', () => {
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(
         NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB\/\[xyz\]-[-\w]+/);
+      ).toMatch(/slotB\/\[xyz\]:[-\w]+/);
+      expect(warn).not.toHaveBeenCalled();
     });
   });
   describe('external links in preview', () => {
