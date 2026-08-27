@@ -18,11 +18,13 @@ it(`asserts no devices are available`, async () => {
   expect(listAvdsAsync).toHaveBeenCalled();
 });
 
-it('preserves AVD inventory tool failures', async () => {
+it('adds device setup guidance to AVD inventory tool failures', async () => {
   jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([]);
   jest.mocked(listAvdsAsync).mockRejectedValueOnce(new Error('emulator -list-avds failed'));
 
-  await expect(getDevicesAsync()).rejects.toThrow('emulator -list-avds failed');
+  await expect(getDevicesAsync()).rejects.toThrow(
+    /No Android connected device found[\s\S]*emulator -list-avds failed[\s\S]*Connect a device or create an emulator/
+  );
 });
 
 it('preserves attached devices when AVD inventory is unavailable', async () => {
