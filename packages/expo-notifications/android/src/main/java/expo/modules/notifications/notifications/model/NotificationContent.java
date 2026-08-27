@@ -44,6 +44,9 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
   private boolean mAutoDismiss;
   private String mCategoryId;
   private boolean mSticky;
+  // Written last in writeObject/readObject so Java-serialized payloads persisted before this
+  // field existed still deserialize (readObject catches the OptionalDataException). Keep it last.
+  private String mGroup;
 
   protected NotificationContent() {
   }
@@ -134,6 +137,11 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     return mCategoryId;
   }
   
+  @Nullable
+  public String getGroup() {
+    return mGroup;
+  }
+
   public boolean isSticky() {
     return mSticky;
   }
@@ -165,6 +173,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     mAutoDismiss = in.readByte() == 1;
     mCategoryId = in.readString();
     mSticky = in.readByte() == 1;
+    mGroup = in.readString();
   }
 
   @Override
@@ -183,6 +192,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
     dest.writeString(mCategoryId);
     dest.writeByte((byte) (mSticky ? 1 : 0));
+    dest.writeString(mGroup);
   }
 
   //                                           EXPONOTIFCONTENT02
@@ -210,6 +220,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     out.writeByte(mAutoDismiss ? 1 : 0);
     out.writeObject(mCategoryId != null ? mCategoryId.toString() : null);
     out.writeByte(mSticky ? 1 : 0);
+    out.writeObject(mGroup);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -257,6 +268,11 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
       mCategoryId = new String(categoryIdString);
     }
     mSticky = in.readByte() == 1;
+    try {
+      mGroup = (String) in.readObject();
+    } catch (java.io.OptionalDataException | java.io.EOFException e) {
+      // Backward compatibility: old serialized data won't have this field
+    }
   }
 
   private void readObjectNoData() throws ObjectStreamException {
@@ -351,6 +367,11 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     
     public Builder setSticky(boolean sticky) {
       content.mSticky = sticky;
+      return this;
+    }
+
+    public Builder setGroup(String group) {
+      content.mGroup = group;
       return this;
     }
 

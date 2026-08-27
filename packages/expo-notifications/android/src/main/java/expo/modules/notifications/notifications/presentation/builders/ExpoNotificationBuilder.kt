@@ -114,6 +114,12 @@ open class ExpoNotificationBuilder(
 
     applySoundsAndVibrations(content, builder)
 
+    content.group?.let {
+      builder.setGroup(it)
+      // Swiping a grouped notification away may orphan its group summary — trigger a cleanup
+      builder.setDeleteIntent(NotificationsService.createGroupedNotificationDeletedIntent(context))
+    }
+
     if (content.body != null) {
       // Add body - JSON data - to extras
       val extras = builder.extras
