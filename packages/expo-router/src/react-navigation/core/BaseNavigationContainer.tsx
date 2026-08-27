@@ -133,6 +133,8 @@ function BaseNavigationContainerInner({
 
   const dispatchSync = useLatestCallback((action: NavigationAction) => {
     // TODO(@ubax): Throw if this is called from a `removePrevented` callback.
+    // TODO(@ubax): Review urgent dispatches interleaved with pending navigation transitions. React
+    // rebases the queued actions, but intermediate state can reflect only the urgent action.
     handleAction(action);
   });
 
