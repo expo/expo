@@ -38,6 +38,10 @@ import ExpoModulesCore
 #endif
   }
 
+  @objc public func stopServerDiscovery() {
+    viewModel.stopServerDiscovery()
+  }
+
   @objc public func resetHostingController() {
 #if !os(macOS)
     if let hostingController {
