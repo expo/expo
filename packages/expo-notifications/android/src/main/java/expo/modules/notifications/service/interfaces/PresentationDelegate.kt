@@ -8,4 +8,6 @@ interface PresentationDelegate {
   fun getAllPresentedNotifications(): Collection<Notification>
   fun dismissNotifications(identifiers: Collection<String>)
   fun dismissAllNotifications()
+
+  fun removeOrphanedGroupSummaries() {}
 }
