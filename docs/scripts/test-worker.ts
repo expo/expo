@@ -161,6 +161,17 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
     throw new Error(`Expected Content-Type text/markdown, got: ${mdContentType}`);
   }
   console.log('✓ Accept: text/markdown request returns correct Content-Type');
+
+  if (!varyTokens(mdResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept, got: ${mdResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request returns Vary: Accept');
+}
+
+function varyTokens(response: Response): string[] {
+  return (response.headers.get('vary') ?? '').split(',').map(token => token.trim().toLowerCase());
 }
 
 async function testMarkdownNotFoundAsync(): Promise<void> {
@@ -175,6 +186,13 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
     throw new Error(`Expected 404 for missing .md, got: HTTP ${missingMd.status}`);
   }
   console.log('✓ Missing .md file returns 404');
+
+  if (!varyTokens(missingMd).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the markdown 404, got: ${missingMd.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Markdown 404 response includes Vary: Accept');
 
   // Nonexistent page should also 404
   const notFound = await fetch(`${BASE_URL}/nonexistent-page`, {

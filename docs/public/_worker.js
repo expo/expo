@@ -40,12 +40,13 @@ export default {
             status: 200,
             headers: {
               "Content-Type": "text/markdown; charset=utf-8",
+              Vary: "Accept",
             },
           });
         }
       }
 
-      return new Response("Not found\n", { status: 404 });
+      return new Response("Not found\n", { status: 404, headers: { Vary: "Accept" } });
     }
 
     return env.ASSETS.fetch(request);
