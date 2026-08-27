@@ -150,6 +150,9 @@ importers:
       expo-background-fetch:
         specifier: workspace:*
         version: link:../../packages/expo-background-fetch
+      expo-blur:
+        specifier: workspace:*
+        version: link:../../packages/expo-blur
       expo-brownfield:
         specifier: workspace:*
         version: link:../../packages/expo-brownfield

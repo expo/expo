@@ -105,7 +105,11 @@ public:
         snode->getProps());
       auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
 
-      if (style.alignSelf() != facebook::yoga::Align::FlexStart) {
+      // Only the alignment nobody chose. `style` is a valid attribute on every Expo view through
+      // React Native's base view config, so a caller can set `alignSelf` and mean it.
+      auto const alignSelf = style.alignSelf();
+
+      if (alignSelf == facebook::yoga::Align::Auto || alignSelf == facebook::yoga::Align::Stretch) {
         style.setAlignSelf(facebook::yoga::Align::FlexStart);
         snode->updateYogaProps();
       }
