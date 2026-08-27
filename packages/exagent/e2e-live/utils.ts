@@ -96,11 +96,30 @@ export class LiveRun {
     run: () => Promise<void> | void;
   }[] = [];
 
+  /**
+   * Paths only. Nothing is created and nothing is checked here, and that is the point.
+   *
+   * A `LiveRun` is constructed in the `describe` body, which jest evaluates **even for a suite it is
+   * about to skip** — so a constructor that made directories left two empty ones behind on every run
+   * of a gated suite, and `afterAll` was never going to remove them because it never ran [observed —
+   * 2026-08-27, three orphaned `live-cloud-*` directories from three skipped runs]. {@link prepare} is
+   * called from `beforeAll`, which only a suite that is actually running reaches.
+   */
   constructor(suite: string) {
     this.suite = suite;
     const id = `${suite}-${stamp()}`;
     this.tempDir = path.join(liveTempRoot, id);
     this.artifactsDir = path.join(__dirname, '.artifacts', id);
+  }
+
+  /**
+   * Make this run's directories and check where they are. Call once, from `beforeAll`.
+   *
+   * The git check lives here rather than in the constructor for a second reason beyond the one above:
+   * a throw from a `describe` body is reported by jest as a module-load failure with no test names
+   * attached, and a throw from `beforeAll` is reported as this suite failing — which is what it is.
+   */
+  prepare(): void {
     fs.mkdirSync(this.tempDir, { recursive: true });
     fs.mkdirSync(this.artifactsDir, { recursive: true });
     this.assertOutsideGitRepository();

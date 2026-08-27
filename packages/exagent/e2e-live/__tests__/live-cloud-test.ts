@@ -123,6 +123,7 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
   }
 
   beforeAll(async () => {
+    run.prepare();
     port = await findFreePortAsync();
 
     const created = await runLiveEasAsync(

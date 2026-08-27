@@ -74,6 +74,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
   const labSource = fs.readFileSync(path.join(fixturesDir, 'lab', 'lab.tsx'), 'utf8');
 
   beforeAll(async () => {
+    run.prepare();
     PORT = await findFreePortAsync();
 
     // `exagent new` is the first command under test and the setup for every command after it, so it

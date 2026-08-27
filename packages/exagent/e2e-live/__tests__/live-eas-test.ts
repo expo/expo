@@ -64,6 +64,7 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
   let deployProjectRoot = '';
 
   beforeAll(async () => {
+    run.prepare();
     // The read-side project: a copy of an EAS-linked project with finished builds on staging. APFS
     // clones make this instant on macOS; elsewhere it is a real copy, which is why the gate points
     // at a project rather than requiring one particular path.
