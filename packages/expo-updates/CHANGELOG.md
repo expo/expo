@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix the embedded manifest recording the wrong `packagerHash` for assets that ship scale variants iOS does not allow (such as `@1.5x` and `@4x`): the hashes were read by the filtered scale index instead of the asset's own, so those images resolved to an empty URI and rendered blank in release builds.
+- [iOS] Fix the embedded manifest recording the wrong `packagerHash` for assets that ship scale variants iOS does not allow (such as `@1.5x` and `@4x`): the hashes were read by the filtered scale index instead of the asset's own, so those images resolved to an empty URI and rendered blank in release builds. ([#48811](https://github.com/expo/expo/pull/48811) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
