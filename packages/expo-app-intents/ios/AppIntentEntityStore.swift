@@ -9,10 +9,10 @@ import Foundation
 /// datasets should publish only the subset needed for Siri and Shortcuts resolution.
 @Record
 public struct AppIntentEntityRecord: Codable, Sendable {
-  var id: String
-  var title: String
-  var subtitle: String?
-  var synonyms: [String] = []
+  public var id: String
+  public var title: String
+  public var subtitle: String?
+  public var synonyms: [String] = []
 
   public init(id: String, title: String, subtitle: String? = nil) {
     self.init(id: id, title: title, subtitle: subtitle, synonyms: [])
