@@ -8,8 +8,7 @@ import DeltaCalculator from '@expo/metro/metro/DeltaBundler/DeltaCalculator';
 import crypto from 'node:crypto';
 
 import { env } from '../../../utils/env';
-
-const debug = require('debug')('expo:metro:cache-vary') as typeof console.log;
+import { debugEvent } from './metroDebugEvents';
 
 interface ObservedAmbientValue {
   scheme: AmbientVaryScheme;
@@ -154,7 +153,10 @@ export function patchGetDeltaForCacheVary(): void {
       for (const [path, module] of dependencies) {
         const dims = embeddedVaryDims(module);
         if (dims?.some((dim) => modifiedAmbientDims.has(dimId(dim)))) {
-          debug('Ambient value changed, marking module for re-transform: %s', path);
+          debugEvent('cache_vary_module_retransform', {
+            path: debugEvent.path(path),
+            dimensions: dims.map(dimId).filter((dimension) => modifiedAmbientDims.has(dimension)),
+          });
           this._modifiedFiles.add(path);
         }
       }
