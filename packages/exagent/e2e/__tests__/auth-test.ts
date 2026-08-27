@@ -6,6 +6,7 @@
 // that reached the real service would be testing the account rather than the wrapper.
 
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import {
@@ -116,7 +117,43 @@ describe('auth commands outside an Expo project', () => {
     expect(result.stdout).not.toContain('Using the EAS CLI');
     // The note about which CLI answered is on stderr, so a caller parsing the name is unaffected.
     expect(result.stderr).toContain('Using the EAS CLI');
-    expect(result.stderr).toContain('~/.expo/state.json');
+    // The file that will actually be read, spelled out: `~/.expo/state.json` was printed as
+    // though it were the only answer, and under EXPO_STAGING it is not (S6).
+    expect(result.stderr).toContain(path.join(os.homedir(), '.expo', 'state.json'));
+  });
+
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Name the session file this run will read —
+  // live staging, S6. The whole family reads `.expo-staging` under this variable.
+  it(`should name the staging session file under EXPO_STAGING`, async () => {
+    const dir = await setupBareDirAsync(['eas']);
+
+    const result = await executeExagentAsync(dir, ['whoami'], {
+      env: { ...isolatedEnv(dir), EXPO_STAGING: '1' },
+    });
+
+    expect(result.stderr).toContain(path.join(os.homedir(), '.expo-staging', 'state.json'));
+    expect(result.stderr).not.toContain(path.join(os.homedir(), '.expo', 'state.json'));
+  });
+
+  // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — live staging, S7. `--json` is
+  // this CLI's contract and neither CLI it forwards to has such a flag, so the flag was ignored and
+  // an agent that asked for one object got a line of prose.
+  it(`should answer whoami --json with one object`, async () => {
+    const dir = await setupBareDirAsync(['eas']);
+
+    const result = await executeExagentAsync(dir, ['whoami', '--json'], {
+      env: isolatedEnv(dir),
+    });
+
+    expect(JSON.parse(result.stdout)).toEqual({
+      loggedIn: true,
+      user: 'kudochien',
+      source: 'eas whoami',
+      sessionFile: path.join(os.homedir(), '.expo', 'state.json'),
+      cli: expect.stringContaining('eas'),
+    });
+    // The flag is this CLI's, so it is not passed on to a CLI that has no such option.
+    expect(readInvocations(dir)[0]?.args).toEqual(['whoami']);
   });
 
   it(`should forward the arguments it was given`, async () => {

@@ -43,7 +43,11 @@ export async function printTypeCheckAsync(
   });
 
   const followups = followUpsEnabled(options.followups)
-    ? buildTypeCheckFollowUps({ checked: report.checked, errorCount: report.errorCount })
+    ? buildTypeCheckFollowUps({
+        checked: report.checked,
+        errorCount: report.errorCount,
+        generatedTypesCommand: report.generatedTypes?.command ?? null,
+      })
     : [];
 
   if (options.json) {

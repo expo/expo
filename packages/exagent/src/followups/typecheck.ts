@@ -10,11 +10,21 @@ export interface TypeCheckFollowUpInput {
   checked: boolean;
   /** How many diagnostics it reported. */
   errorCount: number;
+  /**
+   * The command that generates a declaration file the project expects and does not have.
+   *
+   * When there is one, it *replaces* the "fix the diagnostics" rung: a brand-new project's first
+   * `typecheck` is red because `expo-env.d.ts` has not been generated yet, and telling its caller
+   * to fix two files that are both correct is the one next action that cannot work
+   * [observed — friction run 7, F64].
+   */
+  generatedTypesCommand?: string | null;
 }
 
 export function buildTypeCheckFollowUps({
   checked,
   errorCount,
+  generatedTypesCommand,
 }: TypeCheckFollowUpInput): FollowUp[] {
   if (!checked) {
     return capFollowUps([
@@ -28,10 +38,21 @@ export function buildTypeCheckFollowUps({
 
   if (errorCount > 0) {
     return capFollowUps([
+      ...(generatedTypesCommand
+        ? [
+            {
+              id: 'typecheck-generate-types',
+              command: generatedTypesCommand,
+              why: 'Some of the diagnostics are about declarations the Expo CLI generates, and the file that carries them does not exist yet. This starts the dev server once, which writes it.',
+            },
+          ]
+        : []),
       {
         id: 'typecheck-rerun',
         command: 'npx exagent typecheck',
-        why: 'Fix the diagnostics above and run this again — a type error the bundler is happy to compile is one nothing else in this CLI can see.',
+        why: generatedTypesCommand
+          ? 'Run this again once that file exists: whatever is still reported is about the code.'
+          : 'Fix the diagnostics above and run this again — a type error the bundler is happy to compile is one nothing else in this CLI can see.',
       },
     ]);
   }

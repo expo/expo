@@ -118,7 +118,7 @@ async function askEasAsync(
     // service rejected, which is exactly the case a bare "the variable is set" would get wrong.
     return { loggedIn: false, user: null, source: 'eas whoami' };
   }
-  return { loggedIn: true, user: parseUser(result.stdout), source: 'eas whoami' };
+  return { loggedIn: true, user: parseWhoamiUser(result.stdout), source: 'eas whoami' };
 }
 
 /**
@@ -151,7 +151,7 @@ async function askProjectExpoAsync(
   if (result.exitCode !== 0) {
     return { loggedIn: false, user: null, source: 'expo whoami' };
   }
-  return { loggedIn: true, user: parseUser(result.stdout), source: 'expo whoami' };
+  return { loggedIn: true, user: parseWhoamiUser(result.stdout), source: 'expo whoami' };
 }
 
 /**
@@ -168,7 +168,10 @@ function fromTokenAlone(): AuthPreflight {
 }
 
 /**
- * The account name out of `eas whoami`.
+ * The account name out of a `whoami` run, exported for the `whoami` command's own JSON.
+ *
+ * The same parse for both CLIs: `expo whoami` prints the display name alone [observed —
+ * `@expo/cli` `whoami/whoamiAsync.ts`], and `eas whoami` prints it above more.
  *
  * The **first** line that looks like one name, not the last. `eas whoami` prints the name, then the
  * email, then — for an actor belonging to more than their own personal account — a blank line,
@@ -185,7 +188,7 @@ function fromTokenAlone(): AuthPreflight {
  * The `(authenticated using EXPO_TOKEN)` note the CLI appends when the session came from the
  * variable is dropped: it says how the account was reached, not which account it is.
  */
-function parseUser(stdout: string): string | null {
+export function parseWhoamiUser(stdout: string): string | null {
   for (const raw of stdout.split('\n')) {
     // Everything below this belongs to the account list, and every line of it is a role.
     if (raw.trim() === ACCOUNT_LIST_HEADING) {
