@@ -65,6 +65,10 @@ export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (confi
   ]);
 };
 
+function hasSplashScreenImage(config: BaseAndroidSplashConfig): boolean {
+  return Boolean(config.mdpi || config.hdpi || config.xhdpi || config.xxhdpi || config.xxxhdpi);
+}
+
 /**
  * Deletes all previous splash_screen_images and copies new one to desired drawable directory.
  * If path isn't provided then no new image is placed in drawable directories.
@@ -81,7 +85,7 @@ export async function setSplashImageDrawablesAsync(
   if (drawable != null) {
     await writeSplashScreenDrawablesAsync(projectRoot, drawable);
   } else {
-    if (!hasSplashImage(root)) {
+    if (!hasSplashScreenImage(root)) {
       await writeTransparentSplashScreenDrawableAsync(projectRoot);
     }
     await Promise.all([
@@ -89,10 +93,6 @@ export async function setSplashImageDrawablesAsync(
       setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
     ]);
   }
-}
-
-function hasSplashImage(config: BaseAndroidSplashConfig): boolean {
-  return Boolean(config.mdpi || config.hdpi || config.xhdpi || config.xxhdpi || config.xxxhdpi);
 }
 
 async function writeTransparentSplashScreenDrawableAsync(projectRoot: string) {
