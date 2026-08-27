@@ -51,24 +51,24 @@ An EAS Simulator workflow has four stages:
 
 1. **Start a session** with EAS CLI. Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
 2. **Install your app.** Pass an EAS Build, application archive URL, or Expo Go to the start command, or install a local build through the controller after the session starts. A session without an application source starts with a blank device.
-3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), Appium, or the iOS browser preview.
+3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), [Appium](https://appium.io/docs/en/), or the iOS browser preview.
 4. **Stop the session.** Stop it explicitly when you finish. An unattended non-interactive session continues consuming usage until it stops or reaches a configured limit.
 
 EAS CLI manages the session lifecycle and connection configuration. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
 
 ## Available surfaces
 
-| Capability                                                   | Availability |
-| ------------------------------------------------------------ | ------------ |
-| Remote iOS Simulator                                         | <YesIcon />  |
-| Remote Android Emulator                                      | <YesIcon />  |
-| Programmatic control with agent-device                       | <YesIcon />  |
-| Programmatic control with Argent                             | <YesIcon />  |
-| Programmatic control with Appium                             | <YesIcon />  |
-| Live browser preview for iOS                                 | <YesIcon />  |
-| Live browser preview for Android                             | Coming soon  |
-| Physical device access                                       | <NoIcon />   |
-| Fast Refresh with Metro using Expo Go or a development build | <YesIcon />  |
+| Capability                                                     | Availability |
+| -------------------------------------------------------------- | ------------ |
+| Remote iOS Simulator                                           | <YesIcon />  |
+| Remote Android Emulator                                        | <YesIcon />  |
+| Programmatic control with agent-device                         | <YesIcon />  |
+| Programmatic control with Argent                               | <YesIcon />  |
+| Programmatic control with [Appium](https://appium.io/docs/en/) | <YesIcon />  |
+| Live browser preview for iOS                                   | <YesIcon />  |
+| Live browser preview for Android                               | Coming soon  |
+| Physical device access                                         | <NoIcon />   |
+| Fast Refresh with Metro using Expo Go or a development build   | <YesIcon />  |
 
 Use [EAS Build](/build/introduction/) to create installable builds, and use local device tooling for physical devices.
 
