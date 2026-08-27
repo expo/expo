@@ -38,7 +38,7 @@ describe('create-updates-resources-ios.sh', () => {
       configuration: 'Debug',
       easBuild: 'true',
       inheritedMode: '',
-      mode: 'production',
+      mode: 'development',
       metroDev: 'true',
     },
     {

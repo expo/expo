@@ -63,17 +63,12 @@ describe(loadEnvForBuild, () => {
     expect(process.env.EAS_VALUE).toBe('keep this value');
   });
 
-  it.each([
-    { location: 'outside EAS Build', easBuild: undefined, mode: 'development' },
-    { location: 'inside EAS Build', easBuild: 'true', mode: 'production' },
-  ] as const)('uses $mode mode $location', ({ easBuild, mode }) => {
+  it('requires an explicit config mode', () => {
     process.env = {
-      EAS_BUILD: easBuild,
       PATH: originalEnv.PATH,
     };
 
-    loadEnvForBuild(projectRoot);
-    expect(process.env.NODE_ENV).toBe(mode);
+    expect(() => loadEnvForBuild(projectRoot)).toThrow('Must provide a config mode');
   });
 });
 
