@@ -660,6 +660,56 @@ describe(reloadAsync, () => {
     expect(report.bundlesAfterReload.reason).not.toContain('no mechanism ran');
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The ladder climbs — F99, the second live-cloud run.
+  //
+  // The evidence that settled it, in one pair of runs. `runtime:reload --cloud` found one client on
+  // the command socket, broadcast to it, and nothing happened for the whole 180 s budget: no fresh
+  // debugger target, no bundle. The **next** command, seconds later, found **zero** clients — so the
+  // broadcast had taken the client away without reloading the app — climbed to the relaunch, and
+  // exited 0 with `iOS Bundled 42ms` in 18.5 s [observed — live cloud, 2026-08-27, artifacts 005 and
+  // 006 of `live-cloud-2026-08-27T19-17-35-037Z`].
+  //
+  // So `auto` reaching rung 1 and stopping there made the command fail on a state its own second rung
+  // handled. llp/0005 already said the ladder "spends [the app's state] when nothing cheaper can
+  // reach the app"; a frame that was delivered and produced no churn inside its window *is* nothing
+  // cheaper reaching the app. `--method dev-server` still pins rung 1 and never climbs.
+  it(`climbs to the relaunch when the broadcast was delivered and proved nothing`, async () => {
+    writeProject();
+    // One client, and the same one afterwards: delivered, and no churn.
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }]).socket);
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue(
+      [{ stdout: BOOTED_SIMULATOR }, { stdout: '' }, { stdout: BOOTED_SIMULATOR }, { stdout: '' }],
+      (index) => index === 2 && server.listing([RELOADED_EXPO_GO_TARGET])
+    );
+
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    const report: ReloadResultJson = JSON.parse(printed());
+    expect(report.method).toBe('device');
+    expect(report.reloaded).toBe(true);
+    // Both rungs are in the payload, in the order they were taken, and the first says why the second
+    // was needed.
+    expect(report.attempts.map((attempt) => attempt.method)).toEqual(['dev-server', 'device']);
+    expect(report.attempts[0]!.reason).toContain('did not act on it');
+    // And the cost is on the attempt that spent it, never silent.
+    expect(report.attempts[1]!.reason).toContain("costs the app's JavaScript state");
+  });
+
+  // The other half: a pinned rung is still a pinned rung. A caller who asked for the broadcast and
+  // nothing else must not have their app's state spent by a fallback they excluded.
+  it(`never climbs past a rung the caller pinned`, async () => {
+    writeProject();
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }]).socket);
+    mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }]);
+
+    await reloadAsync(projectRoot, options({ method: 'dev-server', json: true, timeoutMs: 300 }));
+    const report: ReloadResultJson = JSON.parse(printed());
+    expect(report.attempts.map((attempt) => attempt.method)).toEqual(['dev-server']);
+    expect(report.method).toBe('dev-server');
+    expect(report.verifiedBy).toBeNull();
+  });
+
   it(`should refuse to reload onto a dev server that is not there`, async () => {
     writeProject();
     mockDevServer(null);

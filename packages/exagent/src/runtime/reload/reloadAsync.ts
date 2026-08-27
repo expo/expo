@@ -406,6 +406,15 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   // and a debugger call are not (llp/0005 §What `close` will not tell you).
   let mechanismProof: ReloadResultJson['verifiedBy'] = null;
 
+  /**
+   * Rung one was taken, its frame was delivered, and its own proof did not arrive.
+   *
+   * The one fact that makes `auto` climb (F99). Separate from `method`, which by then already names
+   * `dev-server`: the report has to say a mechanism ran, and the ladder has to know it was not
+   * *proved* — those are the two halves F97 split apart, and this is the half rung two reads.
+   */
+  let broadcastUnproved = false;
+
   if (refusal == null) {
     // Read as late as possible, and always again rather than reusing the discovery probe: these
     // ids are what "the app came back" is measured against, and anything that reloaded the app in
@@ -455,6 +464,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
         // That is the difference between exit `20` and exit `22`, and between watching for the
         // evidence and not looking at all.
         method = 'dev-server';
+        broadcastUnproved = true;
       }
     }
 
@@ -476,20 +486,32 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
       }
     }
 
-    // **Rung two: the relaunch, on the device backend in play.** Reached when the socket held no
-    // client — which is the state a broadcast cannot serve, whatever the report of the app's own
-    // connection says. `--cloud` names *which* backend may act: the session's controller
-    // (`./cloudReload.ts`, wave 19's two verbs) or a device booted on this machine.
+    // **Rung two: the relaunch, on the device backend in play.** `--cloud` names *which* backend may
+    // act: the session's controller (`./cloudReload.ts`, wave 19's two verbs) or a device booted on
+    // this machine.
+    //
+    // Reached in **two** states, and the second is F99 — the ladder climbing rather than stopping:
+    //
+    //  1. the socket held no client, so a broadcast has nobody to serve, whatever the report of the
+    //     app's own connection says;
+    //  2. the broadcast **was** delivered to a client and its own proof never arrived. That is
+    //     `broadcastUnproved`, and it is the state a live cloud reload sat in for a whole 180 s
+    //     budget while the very next command — finding the socket empty, because the broadcast had
+    //     taken the client away without reloading anything — climbed here and exited 0 in 18.5 s
+    //     [observed — 2026-08-27, live cloud]. Stopping at a rung that was tried and proved nothing
+    //     is not a ladder, and llp/0005's own rule is that the state is spent "when nothing cheaper
+    //     can reach the app".
     //
     // It costs the app's JavaScript state, and `auto` used to refuse rather than spend it — "never
     // force-stop an app the dev server can see" (K2). That rule protected a cheaper alternative,
-    // and in this state there is none: wave 19 had already made the relaunch primary on a cloud
-    // session for exactly that reason, and the state is the same one locally. What replaces the
-    // caller's consent is a report the cost is visible in (`describeRelaunchCost`).
+    // and in neither state above is there one. What replaces the caller's consent is a report the
+    // cost is visible in (`describeRelaunchCost`). A **pinned** `--method dev-server` never climbs:
+    // a caller who named one rung excluded the others, cost and all.
     const relaunchRung =
-      method == null &&
+      mechanismProof == null &&
+      method !== 'runtime' &&
       (options.method === 'device' ||
-        (options.method === 'auto' && (commandSocketClients ?? 0) === 0));
+        (options.method === 'auto' && ((commandSocketClients ?? 0) === 0 || broadcastUnproved)));
     if (relaunchRung && options.cloud) {
       const cloud = await reloadOnCloudSimulatorAsync(projectRoot, options, {
         devServerUrl,
