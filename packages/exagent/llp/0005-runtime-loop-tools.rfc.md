@@ -227,6 +227,57 @@ Three decisions on the codes (llp/0010 §Exit codes):
   server that fetch has nowhere to go, so stopping the app would replace a stale screen with no
   screen. Nothing is attempted.
 
+### Two lists, one question
+
+Added after Kudo's cloud dogfooding loop, K2 and K3 [observed — 2026-08-27].
+
+Two connection lists describe one running app, and this command was reading the wrong one:
+
+| list | what it names | who reads it |
+|---|---|---|
+| `getpeers` on `/message` | the clients registered on the dev server's **client command socket**, which is what a `reload` broadcast is relayed to | `runtime:reload`'s dev-server method, and nothing else |
+| `GET /json/list` | the **JavaScript runtimes** that have a debugger attached | `status`, `runtime:eval`, `runtime:errors`, `smoke`, the three interaction commands |
+
+Against a cloud app the first was empty and the second had the app in it. So `runtime:reload`
+printed `Apps connected 1 · no reload happened` — the first number off the second list, the verdict
+off the first — then `no app is connected to the dev server, so there is nothing to reload`, then
+`No booted device was found`, because the ladder fell through to the local device path on a machine
+whose device was in a datacenter. `runtime:eval` was evaluating in that same app throughout.
+
+Three changes, and the first is the one that matters:
+
+1. **`/json/list` is the answer to "is anyone there".** It is the list the rest of this CLI uses, so
+   it is the one this command reasons about. The peer list is a property of a *mechanism*, and an
+   empty one now reports what it is — `no client is registered on the dev server's command socket,
+   while its debugger target list names N connected app(s)` — rather than claiming the app is gone.
+2. **A third mechanism, `--method runtime`.** `expo.reloadAppAsync()` over the debugger, at the
+   target `runtime:eval` reads. An app this CLI can *read* is an app it can *ask*, which is exactly
+   the case the command socket could not serve. It proves nothing on its own — the debugger has no
+   peer list to churn — so `verifiedBy: fresh-debugger-target` and the proof is the wait that was
+   already there: a runtime registering under a page id the dev server had never used.
+3. **`auto` never force-stops an app the dev server can see.** The device method costs the app's
+   state and, on a cloud session, can strand it (§Two things a cloud run leaves behind). It stays
+   the answer for "no app is connected at all", where reload and start are the same act, and it is
+   otherwise reached only by `--method device`. When `auto` skips it, the skip is an **attempt in
+   the report** with the reason on it, because a step that is simply absent is a decision a reader
+   cannot see.
+
+With a connected app and no mechanism able to reach it, the run is exit `20` and the `How:` says the
+app *is* connected — the old text said "open the app on a device or simulator first", which is
+advice for a caller whose app is not running and reads as "start a second copy".
+
+**Why `expo.reloadAppAsync` and not `DevSettings.reload()` (K3).** The expression lands in Hermes:
+no `require`, no `import()`, no `process`. A module the app did not already load is unreachable, so
+every recipe of the form `require('react-native').DevSettings.reload()` is untypeable there. The
+`expo` global is the one door, and Kudo found it by dumping `Object.keys(expo)` — which is now in
+`runtime:eval --help`, alongside the note that `runtime:reload` makes the manual call unnecessary.
+An app whose `expo` global has no `reloadAppAsync` is reported as exactly that, with no guessing.
+
+**What is still [inferred].** That this reaches a *cloud* runtime specifically. It is the same CDP
+channel `runtime:eval` used against Kudo's cloud app in the same session, so the connection is
+observed and the reload call over it is not; the e2e proves the mechanism against the stub, and the
+first cloud session that runs it closes this.
+
 ### Live evidence
 
 [observed — 2026-08-23, notesapp SDK 57, Expo Go, iPhone 17 Pro `C159CF99-…`, port 8170]

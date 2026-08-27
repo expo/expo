@@ -12,13 +12,21 @@ import { CommandError } from '../../utils/errors';
 /**
  * How the app is made to reload.
  *
- * `dev-server` is the mechanism; `device` is the fallback. `auto` is the default and tries them in
- * that order, because the dev-server route needs no platform tools, no application id, and no
- * knowledge of which device the app is on — and takes under a second rather than about twelve.
+ * Three mechanisms, and `auto` tries them in the order of what they cost the running app:
+ *
+ * - **`dev-server`** — a broadcast on the dev server's own client command socket. Needs no platform
+ *   tools, no application id and no knowledge of which device the app is on, and takes under a
+ *   second rather than about twelve.
+ * - **`runtime`** — `expo.reloadAppAsync()` over the debugger, at the same target `runtime:eval`
+ *   reads. It is here because the two lists disagree: an app can be in `/json/list` and have no
+ *   client on the command socket, which is what a cloud app over a tunnel was (llp/0005 §Two lists,
+ *   one question). Also non-destructive, and the only mechanism that reaches such an app.
+ * - **`device`** — a force-stop and a relaunch. It is the only one that can *start* an app, and the
+ *   only one that stops a running one, so `auto` reaches it only when no app is connected at all.
  */
-export type ReloadMethod = 'auto' | 'dev-server' | 'device';
+export type ReloadMethod = 'auto' | 'dev-server' | 'runtime' | 'device';
 
-export const RELOAD_METHODS: ReloadMethod[] = ['auto', 'dev-server', 'device'];
+export const RELOAD_METHODS: ReloadMethod[] = ['auto', 'dev-server', 'runtime', 'device'];
 
 /** How long to wait for the app to come back, in milliseconds, when `--timeout` says nothing. */
 export const DEFAULT_RELOAD_TIMEOUT_MS = 30_000;

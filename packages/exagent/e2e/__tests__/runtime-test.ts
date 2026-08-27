@@ -306,3 +306,35 @@ describe('the runtime group at the process boundary', () => {
     expect(result.all).toContain('runtime:eval');
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — Kudo's cloud loop, K3.
+//
+// The runtime an expression lands in is Hermes, and finding that out cost a dogfooding session:
+// there is no `require` and no `import()`, so every "reload it by hand" recipe written for Node or
+// for a browser is unreachable, and the one door — `expo.reloadAppAsync()` — was findable only by
+// dumping `Object.keys(expo)`.
+describe('what runtime:eval says about the runtime it evaluates in', () => {
+  it('documents the Hermes idioms, so the expo global is not a discovery', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['runtime:eval', '--help']);
+
+    expect(result.stdout).toContain('Hermes');
+    expect(result.stdout).toMatch(/no require/i);
+    expect(result.stdout).toContain('Object.keys(expo)');
+    expect(result.stdout).toContain('expo.reloadAppAsync()');
+    // And the command that makes the manual call unnecessary.
+    expect(result.stdout).toContain('npx exagent runtime:reload');
+  });
+
+  it('names the three reload mechanisms in runtime:reload --help', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--help']);
+
+    expect(result.stdout).toContain('auto (default), dev-server, runtime, or device');
+    expect(result.stdout).toContain('expo.reloadAppAsync()');
+    // The rule K2 is about, in the help rather than only in a failure.
+    expect(result.stdout).toMatch(/never force-stops an app it can see/i);
+  });
+});

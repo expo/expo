@@ -516,7 +516,10 @@ export type StubDevServerOptions = {
    */
   messagePeers?: Record<string, string | null>;
   /**
-   * What `GET /json/list` reports after a reload is broadcast on a `v2` socket.
+   * What `GET /json/list` reports after a reload has been asked for.
+   *
+   * Either mechanism asks: a `reload` broadcast on a `v2` socket, or the
+   * `expo.reloadAppAsync()` evaluate `runtime:reload`'s debugger method sends.
    *
    * The peer churn and the debugger target list are two independent facts, and friction run 4
    * found `runtime:reload` believing the first about the second. The three values are the three
@@ -725,6 +728,26 @@ export async function startStubDevServerAsync({
     };
   };
 
+  /**
+   * What the debugger target list reports once a reload has been *asked for*.
+   *
+   * The app's JavaScript runtime re-registers separately from its command-socket connection, and
+   * later: the two are different connections, and believing the first about the second is friction
+   * run 4's F39 and F45. Shared by the two mechanisms that ask — the `reload` broadcast and the
+   * `expo.reloadAppAsync()` evaluate — because the app does the same thing either way.
+   */
+  const applyReloadTargets = (): void => {
+    if (reloadTargets === 'gone') {
+      listedTargets = [];
+    } else if (reloadTargets === 'reconnect') {
+      const pageId = nextPageId++;
+      listedTargets = listedTargets.map((target) => ({
+        ...(target as Record<string, unknown>),
+        id: `${(target as { id?: string }).id ?? 'device'}-reloaded-${pageId}`,
+      }));
+    }
+  };
+
   let peers: Record<string, string | null> = { ...messagePeers };
   let nextPeerId = 100;
   const messageServer = messageSocket === 'none' ? null : new WebSocketServer({ noServer: true });
@@ -765,7 +788,15 @@ export async function startStubDevServerAsync({
         if (message.method !== 'Runtime.evaluate') {
           return;
         }
-        const value = inspectorEvaluate(message.params?.expression ?? '');
+        const expression = message.params?.expression ?? '';
+        const value = inspectorEvaluate(expression);
+        // The reload asked for over the debugger, which `runtime:reload --method runtime` sends.
+        // Its probe half carries the diagnostic string below and the call does not, which is the
+        // only thing that tells them apart: every expression this CLI sends is wrapped, and the
+        // wrapper's own source is in both.
+        if (expression.includes('reloadAppAsync') && !expression.includes('no-expo-global')) {
+          applyReloadTargets();
+        }
         socket.send(
           JSON.stringify({
             id: message.id,
@@ -806,17 +837,7 @@ export async function startStubDevServerAsync({
         peers = Object.fromEntries(
           Object.values(peers).map((query) => [`socket#${nextPeerId++}`, query])
         );
-        // Its JavaScript runtime re-registers separately, and later: the two are different
-        // connections, and believing the first about the second is friction run 4's F39 and F45.
-        if (reloadTargets === 'gone') {
-          listedTargets = [];
-        } else if (reloadTargets === 'reconnect') {
-          const pageId = nextPageId++;
-          listedTargets = listedTargets.map((target) => ({
-            ...(target as Record<string, unknown>),
-            id: `${(target as { id?: string }).id ?? 'device'}-reloaded-${pageId}`,
-          }));
-        }
+        applyReloadTargets();
       }
     });
   });

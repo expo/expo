@@ -506,10 +506,12 @@ describe(reloadAsync, () => {
     expect(JSON.parse(printed())).toMatchObject({ appsConnected: 1, appsReconnected: 1 });
   });
 
-  // The fallback the friction run had to run by hand: stop the app, then deep-link it back.
-  it(`should fall back to the device when no app answers on the command socket`, async () => {
+  // The fallback the friction run had to run by hand: stop the app, then deep-link it back. Its
+  // trigger is **no app on either list** — a peer list that is empty while `/json/list` names an
+  // app is a different case, and force-stopping there is what K2 stopped this command doing.
+  it(`should fall back to the device when no app is connected at all`, async () => {
     writeProject();
-    const server = mockDevServer([EXPO_GO_TARGET]);
+    const server = mockDevServer([]);
     mockConnect(fakeSocket([{}]).socket);
     mockSpawnQueue(
       [
@@ -535,6 +537,13 @@ describe(reloadAsync, () => {
       {
         method: 'dev-server',
         ok: false,
+        reason: expect.stringContaining('no app is connected'),
+        leftAppStopped: null,
+      },
+      {
+        method: 'runtime',
+        ok: false,
+        // Nothing to ask: this method reloads a runtime through its debugger, and there is none.
         reason: expect.stringContaining('no app is connected'),
         leftAppStopped: null,
       },
@@ -748,5 +757,146 @@ describe(explainReloadFailure, () => {
     report.attempts = [report.attempts[0]!];
 
     expect(explainReloadFailure(report, options({ cloud: true }))).not.toMatch(/left/i);
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — Kudo's cloud loop, K2.
+//
+// The peer list on the dev server's command socket and the debugger target list in `/json/list`
+// describe one app and disagree. Against a cloud app the first was empty and the second had the app
+// in it, and this command read the first: "Apps connected 1 · no reload happened", then "no app is
+// connected to the dev server", then a search for a booted simulator on a machine that had none —
+// while `runtime:eval` was evaluating in that same app.
+describe('an app the command socket cannot see', () => {
+  /** A CDP client whose evaluate answers the reload probe and the call. */
+  function mockCdp(answers: { probe?: unknown; call?: unknown } = {}) {
+    const evaluateAsync = jest.fn(async (expression: string) => ({
+      // The probe carries the diagnostic strings it can answer with; the call carries none.
+      value: expression.includes('no-expo-global')
+        ? (answers.probe ?? 'ready')
+        : (answers.call ?? 'sent'),
+      type: 'string',
+    }));
+    jest
+      .spyOn(require('../../cdpClient'), 'CdpClient')
+      .mockImplementation(() => ({ evaluateAsync }) as any);
+    return evaluateAsync;
+  }
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it(`reloads through the debugger when the peer list is empty and a target is not`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    const evaluateAsync = mockCdp();
+    // The app registers a new runtime after the call, which is the only proof of this method.
+    setTimeout(() => server.listing([RELOADED_EXPO_GO_TARGET]), 10).unref();
+
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    const report = JSON.parse(printed());
+    expect(report).toMatchObject({
+      reloaded: true,
+      method: 'runtime',
+      verifiedBy: 'fresh-debugger-target',
+      appsReconnected: 1,
+    });
+    // The probe first, then the call: nothing is asked of an app that cannot answer it.
+    expect(evaluateAsync).toHaveBeenCalledTimes(2);
+    expect(evaluateAsync.mock.calls[0]![0]).toContain('no-expo-global');
+    expect(evaluateAsync.mock.calls[1]![0]).toContain('expo.reloadAppAsync()');
+  });
+
+  it(`says the two lists disagreed rather than that nothing is connected`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockCdp();
+
+    await reloadAsync(projectRoot, options({ json: true, timeoutMs: 300 }));
+    const broadcast = JSON.parse(printed()).attempts.find(
+      (attempt: { method: string }) => attempt.method === 'dev-server'
+    );
+    expect(broadcast.reason).toContain('no client is registered');
+    expect(broadcast.reason).toContain('1 connected app');
+  });
+
+  it(`never force-stops an app the dev server can see`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    // A runtime that answers nothing this can use, so neither mechanism reloads it.
+    mockCdp({ probe: 'no-expo-global' });
+    mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+    await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 300 }))).resolves.toBe(
+      EXIT_OUTCOME_FAILED
+    );
+    // Nothing was spawned at all: no simctl, no terminate.
+    expect(jest.mocked(spawn)).not.toHaveBeenCalled();
+    const device = JSON.parse(printed()).attempts.find(
+      (attempt: { method: string }) => attempt.method === 'device'
+    );
+    expect(device).toMatchObject({ ok: false });
+    expect(device.reason).toContain('--method device');
+  });
+
+  it(`still force-stops it when --method device says so`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue(
+      [
+        { stdout: BOOTED_SIMULATOR },
+        { stdout: '' },
+        { stdout: BOOTED_SIMULATOR },
+        { stdout: '' },
+      ],
+      (index) => index === 2 && server.listing([RELOADED_EXPO_GO_TARGET])
+    );
+
+    await expect(
+      reloadAsync(projectRoot, options({ json: true, method: 'device' }))
+    ).resolves.toBe(EXIT_OK);
+    expect(JSON.parse(printed())).toMatchObject({ method: 'device', verifiedBy: 'app-relaunch' });
+  });
+
+  it(`reports a runtime whose expo global cannot reload it, without guessing`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockCdp({ probe: 'no-reload-function' });
+
+    await reloadAsync(projectRoot, options({ json: true, timeoutMs: 300 }));
+    const runtime = JSON.parse(printed()).attempts.find(
+      (attempt: { method: string }) => attempt.method === 'runtime'
+    );
+    expect(runtime).toMatchObject({ ok: false });
+    expect(runtime.reason).toContain('reloadAppAsync');
+  });
+
+  it(`treats a runtime that stops answering the call as having been asked`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    const evaluateAsync = jest.fn(async (expression: string) => {
+      if (expression.includes('no-expo-global')) {
+        return { value: 'ready', type: 'string' };
+      }
+      // The reload tore down the context that was answering, which is the usual outcome.
+      throw new Error('The app did not answer the Runtime.evaluate request within 4000ms.');
+    });
+    jest
+      .spyOn(require('../../cdpClient'), 'CdpClient')
+      .mockImplementation(() => ({ evaluateAsync }) as any);
+    setTimeout(() => server.listing([RELOADED_EXPO_GO_TARGET]), 10).unref();
+
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    const report = JSON.parse(printed());
+    expect(report.method).toBe('runtime');
+    expect(
+      report.attempts.find((attempt: { method: string }) => attempt.method === 'runtime').reason
+    ).toContain('stopped answering');
   });
 });

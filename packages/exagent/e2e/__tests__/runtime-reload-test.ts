@@ -21,8 +21,8 @@ import {
 /** The shape `reload --json` prints, per `src/reload/reloadAsync.ts`. */
 type ReloadReport = {
   reloaded: boolean;
-  method: 'dev-server' | 'device' | null;
-  verifiedBy: 'message-socket-peers' | 'app-relaunch' | null;
+  method: 'dev-server' | 'runtime' | 'device' | null;
+  verifiedBy: 'message-socket-peers' | 'fresh-debugger-target' | 'app-relaunch' | null;
   devServerUrl: string;
   devServerSource: string;
   appsConnected: number;
@@ -406,5 +406,145 @@ describe('exagent runtime:reload', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('runtime:reload');
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — Kudo's cloud loop, K2.
+//
+// Two connection lists describe one app, and this command read the wrong one. `getpeers` on the
+// dev server's command socket names the clients that speak *that* protocol; `/json/list` names the
+// JavaScript runtimes that have a debugger — which is the list `status`, `runtime:eval` and `smoke`
+// all use. Against a cloud app the first was empty and the second had the app in it, so
+// `runtime:reload` printed "Apps connected 1 · no reload happened", then said "no app is connected
+// to the dev server, so there is nothing to reload", then went looking for a booted simulator that
+// this machine did not have — while `runtime:eval` was evaluating in that same app.
+describe('an app the command socket cannot see', () => {
+  /**
+   * The same app, listed the way a dev server lists one a debugger can reach.
+   *
+   * `nativePageReloads` is what the target selector filters on, so a target without it is one no
+   * CDP command can pick — which is right for the tests above and wrong for these.
+   */
+  const CDP_TARGET = {
+    ...EXPO_GO_TARGET,
+    title: 'React Native Experimental (Improved Chrome Reloads)',
+    description: 'host.exp.Exponent',
+    deviceName: 'iPhone 17 Pro',
+    reactNative: { capabilities: { nativePageReloads: true }, logicalDeviceId: 'device-1' },
+  };
+
+  /** The reload the runtime method sends, which is the only expression this stub answers. */
+  function reloadResponder(): (expression: string) => unknown {
+    return (expression) => {
+      if (!expression.includes('reloadAppAsync')) {
+        return undefined;
+      }
+      // The probe carries its own diagnostic strings; the call does not.
+      return expression.includes('no-expo-global') ? 'ready' : 'sent';
+    };
+  }
+
+  it('reloads the app the debugger target list names, with no peer on the command socket', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({
+      // The app is connected: this is the list every other reading command in this CLI uses.
+      targets: [CDP_TARGET],
+      // And it is invisible on the command socket, which is what a cloud app over a tunnel was.
+      messagePeers: {},
+      inspectorEvaluate: reloadResponder(),
+      reloadTargets: 'reconnect',
+    });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+    const readXcrun = await installStubXcrunAsync(projectRoot);
+
+    try {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
+        env: stubExpoEnv(projectRoot),
+      });
+
+      expect(result.exitCode).toBe(0);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(true);
+      expect(report.method).toBe('runtime');
+      expect(report.verifiedBy).toBe('fresh-debugger-target');
+      expect(report.appsReconnected).toBeGreaterThan(0);
+
+      // The dev-server attempt says the two lists disagreed rather than that nothing is connected.
+      const broadcast = report.attempts.find((attempt) => attempt.method === 'dev-server')!;
+      expect(broadcast.ok).toBe(false);
+      expect(broadcast.reason).toContain('1');
+      expect(broadcast.reason).not.toBe(
+        'no app is connected to the dev server, so there is nothing to reload'
+      );
+
+      // And nothing went near a simulator: the app is connected, so force-stopping it is not a
+      // step this command takes on its own.
+      expect(readXcrun()).toEqual([]);
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  it('never force-stops an app the dev server can see, and says why it did not', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({
+      targets: [CDP_TARGET],
+      messagePeers: {},
+      // A runtime that answers no CDP method at all, so neither mechanism can reach it. This is
+      // the honest dead end, and it must not be answered by stopping the app.
+      inspectorSocket: 'no-debugger',
+    });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+    const readXcrun = await installStubXcrunAsync(projectRoot);
+
+    try {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
+        env: stubExpoEnv(projectRoot),
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(20);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(false);
+      expect(readXcrun()).toEqual([]);
+
+      // The device method is in the list, marked as not taken, with the reason — an attempt that
+      // is simply absent is a decision a reader cannot see.
+      const device = report.attempts.find((attempt) => attempt.method === 'device')!;
+      expect(device.ok).toBe(false);
+      expect(device.reason).toContain('--method device');
+      expect(result.stderr).toContain('--method device');
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  it('takes --method runtime on its own', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({
+      targets: [CDP_TARGET],
+      messagePeers: {},
+      inspectorEvaluate: reloadResponder(),
+      reloadTargets: 'reconnect',
+    });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:reload', '--method', 'runtime', '--json'],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.method).toBe('runtime');
+      // Only the one method was tried, because the caller pinned it.
+      expect(report.attempts.map((attempt) => attempt.method)).toEqual(['runtime']);
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
   });
 });

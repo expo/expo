@@ -81,7 +81,7 @@ const PEER_POLL_INTERVAL_MS = 250;
 
 /** One way of reloading, and what it did. */
 export interface ReloadAttempt {
-  method: 'dev-server' | 'device';
+  method: 'dev-server' | 'runtime' | 'device';
   /** The app was reloaded by this method. */
   ok: boolean;
   /** Why it did not work, or what it did. Never null: an attempt always has something to say. */
@@ -107,15 +107,18 @@ export interface ReloadResultJson {
   /** The app was reloaded, and the reload was observed rather than assumed. */
   reloaded: boolean;
   /** Which method reloaded it, or null when none did. */
-  method: 'dev-server' | 'device' | null;
+  method: 'dev-server' | 'runtime' | 'device' | null;
   /**
    * What proved the reload.
    *
    * `message-socket-peers` — the app's connection to the dev server's command socket was replaced,
    * which the dev server's own never-reused socket ids make unambiguous. `app-relaunch` — the app
    * was stopped on the device and started again, so there was nothing left to keep running.
+   * `fresh-debugger-target` — the reload was asked for **through the debugger**, which has no peer
+   * list to churn, so the only proof is the one {@link appsReconnected} carries: a JavaScript
+   * runtime registering under a page id the dev server had never used.
    */
-  verifiedBy: 'message-socket-peers' | 'app-relaunch' | null;
+  verifiedBy: 'message-socket-peers' | 'fresh-debugger-target' | 'app-relaunch' | null;
   devServerUrl: string;
   devServerSource: DevServerSource;
   /** Debugger targets the dev server reported after the reload: apps with a live JS runtime. */
@@ -274,7 +277,11 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     observedApps = before.targets.length;
 
     if (options.method === 'auto' || options.method === 'dev-server') {
-      const attempt = await reloadOverDevServerAsync(devServerUrl);
+      // The count from `/json/list`, so the broadcast's "is anyone there" and the rest of this CLI
+      // read one list (K2, below).
+      const attempt = await reloadOverDevServerAsync(devServerUrl, {
+        connectedApps: observedApps,
+      });
       attempts.push(attempt);
       if (attempt.ok) {
         method = 'dev-server';
@@ -282,15 +289,43 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
       }
     }
 
-    // The device method is also what starts an app that is not running at all, so `auto` reaches
-    // it both when the broadcast did nothing and when there was nobody to broadcast to.
+    // @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — Kudo's cloud loop, K2.
+    // The debugger is the other way to ask an app to reload, and it is the way that reaches the app
+    // this CLI can *see*: the same socket `runtime:eval` uses, on the same target list `status`
+    // reads. It exists because the command socket's client list and the debugger target list
+    // disagree — a cloud app over a tunnel was in the second and not the first — and the old ladder
+    // read the first as the answer and then went looking for a simulator.
+    if (method == null && (options.method === 'auto' || options.method === 'runtime')) {
+      const attempt = await reloadOverRuntimeAsync(devServerUrl, options, observedApps);
+      attempts.push(attempt);
+      if (attempt.ok) {
+        method = 'runtime';
+        // Nothing here proves the reload on its own: the debugger has no peer list to churn, so
+        // the claim is "the call was made" and the proof is the wait below.
+        verifiedBy = 'fresh-debugger-target';
+      }
+    }
+
+    // The device method force-stops the app, so `auto` reaches it only when there is no app to
+    // stop: with a runtime connected, the two mechanisms above are the ones that keep it running,
+    // and stopping a connected app is a decision the caller makes with --method device (K2). It is
+    // also what *starts* an app that is not running at all, which is the case it is here for.
     if (method == null && (options.method === 'auto' || options.method === 'device')) {
-      const attempt = await reloadOnDeviceAsync(projectRoot, options, devServerUrl);
-      attempts.push(attempt.attempt);
-      device = attempt.device;
-      if (attempt.attempt.ok) {
-        method = 'device';
-        verifiedBy = 'app-relaunch';
+      if (options.method === 'auto' && observedApps > 0) {
+        attempts.push({
+          method: 'device',
+          ok: false,
+          reason: `not tried: ${observedApps} app(s) are connected to the dev server, and this method force-stops the app — pass --method device to do that deliberately`,
+          leftAppStopped: null,
+        });
+      } else {
+        const attempt = await reloadOnDeviceAsync(projectRoot, options, devServerUrl);
+        attempts.push(attempt.attempt);
+        device = attempt.device;
+        if (attempt.attempt.ok) {
+          method = 'device';
+          verifiedBy = 'app-relaunch';
+        }
       }
     }
   }
@@ -412,9 +447,18 @@ export async function reloadOverDevServerAsync(
   {
     connect = connectMessageSocketAsync,
     churnTimeoutMs = PEER_CHURN_TIMEOUT_MS,
+    connectedApps = 0,
   }: {
     connect?: typeof connectMessageSocketAsync;
     churnTimeoutMs?: number;
+    /**
+     * How many apps `/json/list` named, which is the list the rest of this CLI uses.
+     *
+     * @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — K2. An empty peer list is
+     * only "no app is connected" when *this* is zero too. Otherwise the app is there and the
+     * command socket cannot see it, which is a different sentence and a different next step.
+     */
+    connectedApps?: number;
   } = {}
 ): Promise<ReloadAttempt> {
   const failed = (reason: string): ReloadAttempt => ({
@@ -439,11 +483,23 @@ export async function reloadOverDevServerAsync(
 
     if (before == null) {
       return failed(
-        `the dev server did not answer on its command socket, so it does not speak this protocol version and would have dropped the reload silently`
+        `the dev server did not answer on its command socket, so it does not speak this protocol version and would have dropped the reload silently${
+          connectedApps > 0
+            ? ` — while its debugger target list names ${connectedApps} connected app(s), which is the list the debugger method below uses`
+            : ''
+        }`
       );
     }
     if (Object.keys(before).length === 0) {
-      return failed('no app is connected to the dev server, so there is nothing to reload');
+      // The claim "nothing is connected" is only true when both lists say so. With a debugger
+      // target and no peer, the app is running and this socket is the wrong way to reach it — which
+      // is what a cloud app over a tunnel was, and what the old wording read as an empty device
+      // (K2).
+      return failed(
+        connectedApps > 0
+          ? `no client is registered on the dev server's command socket, while its debugger target list names ${connectedApps} connected app(s) — so the app is running and a broadcast here would reach nobody`
+          : 'no app is connected to the dev server, so there is nothing to reload'
+      );
     }
 
     socket.broadcastReload();
@@ -466,6 +522,11 @@ export async function reloadOverDevServerAsync(
   }
 }
 
+/** The first line of a message, for a reason that has to fit on one. */
+function firstLine(text: string): string {
+  return text.split('\n')[0]!.trim();
+}
+
 /** Poll the peers until they are not the ones that were there before, or the budget runs out. */
 async function waitForPeerChurnAsync(
   socket: DevServerMessageSocket,
@@ -484,6 +545,143 @@ async function waitForPeerChurnAsync(
       return false;
     }
   }
+}
+
+/**
+ * Whether the app's `expo` global can reload it, asked before anything is asked of it.
+ *
+ * The diagnostic strings it answers with are also what makes the two expressions distinguishable in
+ * a test double — not the `typeof` in it, which the promise-settling wrapper adds to every
+ * expression this CLI sends (`src/runtime/promiseSettling.ts`).
+ */
+const RELOAD_PROBE_EXPRESSION = `(function () {
+  var e = globalThis.expo;
+  if (e == null) return 'no-expo-global';
+  return typeof e.reloadAppAsync === 'function' ? 'ready' : 'no-reload-function';
+})()`;
+
+/** The reload itself. Returns before the runtime tears itself down, or never returns at all. */
+const RELOAD_CALL_EXPRESSION = `(function () {
+  globalThis.expo.reloadAppAsync();
+  return 'sent';
+})()`;
+
+/**
+ * How long the reload call is given to answer before the silence is read as the runtime going away.
+ *
+ * Short on purpose. `expo.reloadAppAsync()` tears down the JavaScript context that is answering the
+ * request, so an answer is the *unusual* outcome and a long wait here would only delay the wait that
+ * actually proves something — the debugger target registering again.
+ */
+const RUNTIME_RELOAD_ANSWER_MS = 4000;
+
+/**
+ * Reload by asking the app's own `expo` global to reload it, over the debugger.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — Kudo's cloud loop, K2 and K3.
+ *
+ * The mechanism of last resort that does not stop the app. It goes over the same CDP socket
+ * `runtime:eval` uses, at the same target the same `/json/list` names, so an app this CLI can read
+ * is an app this can ask — which is exactly the case the command socket could not serve: a cloud
+ * app over a tunnel was in the target list and had no peer on `/message`.
+ *
+ * It is `expo.reloadAppAsync()` because that is what a Hermes runtime has. There is no `require` and
+ * no `import()` in it, so `DevSettings.reload()` is unreachable from an expression; the `expo`
+ * global is the one door, and it was found by dumping `Object.keys(expo)`
+ * [observed — Kudo, cloud simulator, 2026-08-27]. `runtime:eval --help` documents the same idiom,
+ * so that a caller who needs to do this by hand does not have to rediscover it.
+ *
+ * **Nothing here claims a reload.** The probe says the function exists, the call says it was sent,
+ * and the proof is the caller's own wait for a debugger target the dev server had not listed before.
+ * An app whose runtime stops answering mid-call is the expected shape of success, so a timeout on
+ * the call is reported as "sent" rather than as a failure.
+ */
+async function reloadOverRuntimeAsync(
+  devServerUrl: string,
+  options: ReloadOptions,
+  connectedApps: number
+): Promise<ReloadAttempt> {
+  const failed = (reason: string): ReloadAttempt => ({
+    method: 'runtime',
+    ok: false,
+    reason,
+    leftAppStopped: null,
+  });
+
+  if (connectedApps === 0) {
+    return failed(
+      `no app is connected to the dev server, so there is no runtime to ask — this method reloads an app through its debugger and cannot start one`
+    );
+  }
+
+  const { CdpClient, isMethodNotFoundError } =
+    require('../cdpClient') as typeof import('../cdpClient');
+  const { buildDeviceNameIndexIfNeededAsync } =
+    require('../targetPlatform') as typeof import('../targetPlatform');
+
+  let client: import('../cdpClient').CdpClient;
+  try {
+    const deviceIndex =
+      options.platform == null
+        ? undefined
+        : await buildDeviceNameIndexIfNeededAsync((await probeDevServerAsync(devServerUrl)).targets);
+    client = new CdpClient({ metroUrl: devServerUrl, platform: options.platform, deviceIndex });
+  } catch (error: unknown) {
+    return failed(
+      `could not open a debugger connection to the app: ${error instanceof Error ? firstLine(error.message) : String(error)}`
+    );
+  }
+
+  let probe: string;
+  try {
+    const answer = await client.evaluateAsync(RELOAD_PROBE_EXPRESSION, {
+      awaitPromise: false,
+      timeoutMs: RUNTIME_RELOAD_ANSWER_MS,
+    });
+    if (answer.exceptionText) {
+      return failed(`the app threw while it was asked whether it can reload itself: ${answer.exceptionText}`);
+    }
+    probe = String(answer.value ?? 'no-answer');
+  } catch (error: unknown) {
+    return failed(
+      isMethodNotFoundError(error)
+        ? `the app's runtime has no debugger to ask: it answered "method not found" to Runtime.evaluate, which is what Expo Go for Android does`
+        : `the app did not answer over the debugger: ${error instanceof Error ? firstLine(error.message) : String(error)}`
+    );
+  }
+
+  if (probe !== 'ready') {
+    return failed(
+      probe === 'no-expo-global'
+        ? `the app has no "expo" global, so there is nothing on it to reload with — this needs an app built on the expo package`
+        : probe === 'no-reload-function'
+          ? `the app's "expo" global has no reloadAppAsync, so this runtime cannot be asked to reload itself — a newer expo package has it`
+          : `the app answered the reload probe with "${probe}", which this command cannot read`
+    );
+  }
+
+  try {
+    await client.evaluateAsync(RELOAD_CALL_EXPRESSION, {
+      awaitPromise: false,
+      timeoutMs: RUNTIME_RELOAD_ANSWER_MS,
+    });
+  } catch {
+    // A runtime that stops answering is what a reload looks like from here, so this is not a
+    // failure — and it is not a success either. The wait for a fresh target decides.
+    return {
+      method: 'runtime',
+      ok: true,
+      reason: `expo.reloadAppAsync() was called over the debugger and the runtime stopped answering, which is what a reload looks like from here`,
+      leftAppStopped: null,
+    };
+  }
+
+  return {
+    method: 'runtime',
+    ok: true,
+    reason: `expo.reloadAppAsync() was called over the debugger`,
+    leftAppStopped: null,
+  };
 }
 
 /** Reload by stopping the app on the device and opening it again. */
@@ -637,10 +835,19 @@ async function resolveAppIdAsync(
   }).appId;
 }
 
+/** What each method is, in the words of the thing it acted on rather than its flag value. */
+const METHOD_PHRASE: { [method: string]: string } = {
+  'dev-server': "the dev server's client command socket",
+  runtime: "the app's own expo.reloadAppAsync, over the debugger",
+  device: 'stopping the app on the device and opening it again',
+};
+
 function printHumanReport(report: ReloadResultJson, options: ReloadOptions): void {
   const lines = [
     chalk`{bold Reloaded} ${report.reloaded ? chalk.green('yes') : chalk.red('no')}${
-      report.method ? chalk`{dim  · via ${report.method}}` : ''
+      report.method
+        ? chalk`{dim  · via ${METHOD_PHRASE[report.method] ?? report.method}}`
+        : ''
     }`,
   ];
   if (report.verifiedBy) {
@@ -752,7 +959,13 @@ export function explainReloadFailure(report: ReloadResultJson, options: ReloadOp
       chalk.red(`The app was not reloaded.`),
       `Why: ${report.attempts.map((attempt) => `${attempt.method} — ${attempt.reason}`).join('; ') || 'no method was tried'}.`,
       ...explainStrandedApp(report, options),
-      `How: open the app on a device or simulator first ("npx exagent navigate /"), then run this command again. A reload needs an app that is already running: it replaces the JavaScript in one, it does not start one.`,
+      // @ref llp/0005 §Two lists, one question — K2 and K3. Two different dead ends, and the old
+      // text described only the second: "open the app first" is advice for a caller whose app is
+      // *not* running, and printing it for a connected app is how a reader was sent to start a
+      // second copy of an app this command could see all along.
+      report.appsConnected > 0
+        ? `How: the app is connected — ${report.devServerUrl}/json/list names ${report.appsConnected === 1 ? 'it' : `${report.appsConnected} of them`} — so it is not a missing app, it is a runtime neither mechanism could reach. "npx exagent runtime:eval 'Object.keys(expo)'" says what its own expo global offers; "npx exagent runtime:reload --method device" force-stops the app and opens it again, which always works and costs the app's state${options.cloud ? ', and on a cloud session leaves the app closed if the relaunch is refused' : ''}. Editing a file the app has loaded is the other way: the dev server pushes that on its own.`
+        : `How: open the app on a device or simulator first ("npx exagent navigate /"), then run this command again. A reload needs an app that is already running: it replaces the JavaScript in one, it does not start one.`,
     ].join('\n');
   }
   // Two shapes of "not back", and they are told apart by what the target list says. An empty list

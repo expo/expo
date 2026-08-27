@@ -558,11 +558,17 @@ describe('exagent runtime:reload --cloud', () => {
       );
 
       const report = JSON.parse(result.stdout);
-      // The dev-server method is tried first and refused, so the device method is what ran.
+      // Every mechanism in order, and the device method is the one that ran: with no app connected
+      // there is no command-socket client to broadcast to and no runtime to ask over the debugger,
+      // which is the one case where a force-stop and a relaunch is also how an app gets *started*.
       expect(report.attempts.map((attempt: { method: string }) => attempt.method)).toEqual([
         'dev-server',
+        'runtime',
         'device',
       ]);
+      const runtimeAttempt = report.attempts[1];
+      expect(runtimeAttempt.ok).toBe(false);
+      expect(runtimeAttempt.reason).toContain('no app is connected');
       const invocations = easInvocations(projectRoot);
       expect(invocations.some((argv) => argv[0] === 'simulator:list')).toBe(true);
       // Never the session itself: a reload closes an app, and `--shutdown` would stop a machine
