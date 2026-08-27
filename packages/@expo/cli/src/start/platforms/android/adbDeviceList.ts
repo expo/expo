@@ -15,7 +15,7 @@ export function parseAdbDeviceList(output: string): AdbDeviceRecord[] {
   return output
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter((line) => line && line !== DEVICE_LIST_HEADER)
+    .filter((line) => line && line !== DEVICE_LIST_HEADER && !/\.cpp:[0-9]+/.test(line))
     .map(parseDeviceLine)
     .filter((record): record is AdbDeviceRecord => record != null);
 }
