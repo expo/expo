@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { Input, Textarea } from '~/ui/components/Form';
 import { InlineHelp } from '~/ui/components/InlineHelp';
-import { CALLOUT, LABEL, RawH2 } from '~/ui/components/Text';
+import { CALLOUT, LABEL, RawH3 } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 const URL = isDev
@@ -74,14 +74,16 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                   <div className="flex size-18 items-center justify-center rounded-full border-2 border-success bg-success">
                     <CheckIcon aria-hidden="true" className="icon-2xl text-icon-success" />
                   </div>
-                  <RawH2 className="mt-5! mb-2!">Feedback received</RawH2>
+                  <RawH3 className="mt-5! mb-2!">Feedback received</RawH3>
                   <CALLOUT theme="secondary">
                     Your feedback will help us make our docs better. Thanks for sharing!
                   </CALLOUT>
                 </div>
-                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-6">
+                <div className="flex items-center gap-4 px-6 pb-6">
                   <Dialog.Close asChild>
-                    <Button type="submit">Done</Button>
+                    <Button type="submit" className="flex-1 justify-center">
+                      Done
+                    </Button>
                   </Dialog.Close>
                 </div>
               </>
@@ -93,11 +95,12 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                 }}>
                 <div className="p-6">
                   <div className="flex justify-between">
-                    <RawH2 className="my-0!">Share your feedback</RawH2>
+                    <RawH3 className="my-0!">Share your feedback</RawH3>
                     <Dialog.Close asChild>
                       <Button
                         aria-label="Close"
                         theme="quaternary"
+                        className="bg-element"
                         leftSlot={<XIcon aria-hidden="true" className="icon-md" />}
                       />
                     </Dialog.Close>
@@ -144,11 +147,15 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                     </InlineHelp>
                   )}
                 </div>
-                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-6">
+                <div className="flex items-center gap-4 px-6 pb-6">
                   <Dialog.Close asChild>
-                    <Button theme="quaternary">No thanks</Button>
+                    <Button theme="secondary" className="flex-1 justify-center">
+                      No thanks
+                    </Button>
                   </Dialog.Close>
-                  <Button type="submit">Submit</Button>
+                  <Button type="submit" className="flex-1 justify-center">
+                    Submit
+                  </Button>
                 </div>
               </form>
             )}
