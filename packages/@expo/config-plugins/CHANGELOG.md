@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
-- [iOS] Quote and escape the keys and values written to `.strings` files, so a `locales` key that contains a space no longer produces a file that Xcode cannot parse.
+- [iOS] Quote and escape the keys and values written to `.strings` files, so a `locales` key that contains a space no longer produces a file that Xcode cannot parse. ([#49476](https://github.com/expo/expo/pull/49476) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
