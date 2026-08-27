@@ -358,7 +358,7 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
     }).catch((e) => e);
 
     expect(error.message).toContain('EAS Simulator session on record');
-    expect(error.message).toContain('eas simulator:start');
+    expect(error.message).toContain('eas simulator --platform ios');
   });
 
   // `--cloud` names the device, so no local tool is asked at all.
@@ -396,7 +396,7 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
     }).catch((e) => e);
 
     expect(error.code).toBe('NO_CLOUD_SIMULATOR_SESSION');
-    expect(error.message).toContain('eas simulator:start --platform ios --type agent-device');
+    expect(error.message).toContain('eas simulator --platform ios --type agent-device --expo-go');
   });
 
   // A tool that did not answer has said nothing, and "start a session" would start a second one.

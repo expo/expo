@@ -213,22 +213,39 @@ export async function resolveDevServerReachAsync(projectRoot: string): Promise<D
     Promise.resolve(readDevServerLogSync(projectRoot)),
   ]);
   const fromLog = resolveDevServerReach(captured, lock);
-  if (fromLog.advertised != null || lock == null) {
+  if (lock == null || fromLog.advertised?.hostType === 'tunnel') {
+    // A log that already names a host a device off this machine can use is the best answer there
+    // is: it is the dev server's own account of the run, and a second request cannot improve on it.
     return fromLog;
   }
-  // The log is not the only place the host is written. `Waiting on <url>` is printed once, by a
-  // *terminal* run — a detached `--tunnel` run's log did not contain the tunnel host at all while
-  // the tunnel was up [observed — live staging, 2026-08-26, S3], so every command that needed the
-  // address a device uses reported null and asked the caller for `--dev-server-url`.
+  // The log is not the only place the host is written, and it is not always the better one. Two
+  // live runs settled that:
   //
-  // The dev server itself still knows: it builds the manifest's `launchAsset.url` from
-  // `getDevServerUrl()`, which is the tunnel origin whenever a tunnel is running. One request to a
-  // dev server this project has a lock for answers it.
+  //  - `Waiting on <url>` is printed once, by a *terminal* run — a detached `--tunnel` run's log
+  //    did not contain the tunnel host at all while the tunnel was up [observed — live staging,
+  //    2026-08-26, S3], so every command that needed the address a device uses reported null and
+  //    asked the caller for `--dev-server-url`;
+  //  - a dev server serving a **public origin** through a proxy prints
+  //    `Waiting on http://localhost:<port>` and advertises the origin in its manifest [observed —
+  //    2026-08-27, `EXPO_PACKAGER_PROXY_URL` against a public host, while validating the cloud
+  //    reload]. Reading the log there produced `hostType: localhost` and a refusal to open the app
+  //    on a cloud simulator that could have loaded it.
+  //
+  // The dev server itself knows: it builds the manifest's `launchAsset.url` from
+  // `getDevServerUrl()`, which is the tunnel origin whenever a tunnel is running and the proxy
+  // origin whenever one is set. One request to a dev server this project has a lock for answers it.
+  //
+  // It replaces the log's reading only when it names a **tunnel**: a manifest that names this
+  // machine is no better than a log that does, and swapping a LAN address for `localhost` would
+  // hand back a URL a phone cannot use.
   // @ref llp/0021-honest-reports.rfc.md §The tunnel host the log never held
   const fromManifest = await fetchAdvertisedUrlAsync(lock.url);
-  return fromManifest == null
-    ? fromLog
-    : { advertised: fromManifest, running: true, reason: null };
+  if (fromManifest == null) {
+    return fromLog;
+  }
+  return fromLog.advertised == null || fromManifest.hostType === 'tunnel'
+    ? { advertised: fromManifest, running: true, reason: null }
+    : fromLog;
 }
 
 /** How long the manifest request may take before the host counts as unknown. */

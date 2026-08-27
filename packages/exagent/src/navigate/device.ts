@@ -14,6 +14,7 @@
 
 import { adbNotRunnableError, runAdbAsync, type AdbResolution } from '../device/adb';
 import {
+  CLOUD_SESSION_START_COMMAND,
   cloudPlatformUnknownError,
   cloudPlatformMismatchError,
   cloudSessionUnavailableError,
@@ -527,7 +528,7 @@ function cloudSessionLine(probe: CloudSessionProbe | null): string | null {
     return probe.otherSessionCount > 0
       ? `Or: this project has ${probe.otherSessionCount} running EAS Simulator session${
           probe.otherSessionCount === 1 ? '' : 's'
-        } this CLI cannot drive — ${probe.reason ?? 'none of them is an agent-device session'}. Start one it can with "npx eas simulator:start --platform ios --type agent-device --non-interactive --name exagent-navigate" and pass --cloud.`
+        } this CLI cannot drive — ${probe.reason ?? 'none of them is an agent-device session'}. Start one it can with "${CLOUD_SESSION_START_COMMAND}" and pass --cloud.`
       : null;
   }
   if (probe.state === 'active') {
@@ -536,5 +537,5 @@ function cloudSessionLine(probe: CloudSessionProbe | null): string | null {
       probe.platform ? ` (${probe.platform})` : ''
     }, and it is not the device this run asked for. Run this command again with --cloud and no platform flag to use it.`;
   }
-  return `Or: this project has an EAS Simulator session on record and it is not usable — ${probe.reason ?? 'the service did not report it as running'}. Start a new one with "npx eas simulator:start --platform ios --type agent-device --non-interactive --name \\"exagent navigate\\"" and pass --cloud.`;
+  return `Or: this project has an EAS Simulator session on record and it is not usable — ${probe.reason ?? 'the service did not report it as running'}. Start a new one with "${CLOUD_SESSION_START_COMMAND}" and pass --cloud.`;
 }

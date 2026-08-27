@@ -3,14 +3,25 @@
 // The samples are the lines the Expo CLI actually prints, so a wording change upstream fails here
 // rather than silently handing a cloud simulator a `127.0.0.1` URL again.
 
+import { vol } from 'memfs';
+
+import { readDevServerLockAsync } from '../../devLock';
 import {
   classifyDevServerHost,
   expoGoUrlForHost,
   isTunnelCurrent,
   readDevServerLog,
   resolveDevServerReach,
+  resolveDevServerReachAsync,
   type CapturedDevServerLog,
 } from '../advertisedUrl';
+import { detachedLogPath } from '../logFile';
+
+jest.mock('../../devLock', () => ({
+  readDevServerLockAsync: jest.fn(async () => null),
+}));
+
+const projectRoot = '/project';
 
 /** The head of a real detached log of a tunnelled run [observed — 2026-08-25, live]. */
 const TUNNELLED_LOG = [
@@ -204,5 +215,94 @@ describe(resolveDevServerReach, () => {
 
   it(`never calls a localhost run a tunnel`, () => {
     expect(isTunnelCurrent(resolveDevServerReach(captured(LOCAL_LOG), lock))).toBe(false);
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §The tunnel host the log never held — S3, and wave 19.
+//
+// The log is not the only place the host is written, and it is not always the best one. Two live
+// runs made that concrete: a detached `--tunnel` run's log did not carry the tunnel host at all
+// (S3, wave 17), and a dev server serving a **public origin** through a proxy prints
+// `Waiting on http://localhost:<port>` while its manifest names the origin a device can use
+// [observed — 2026-08-27, `EXPO_PACKAGER_PROXY_URL` against a public host]. The manifest is the
+// answer to the question being asked — where a *device* reaches this dev server — so a manifest
+// that names a reachable host wins over a log line that names this machine.
+describe('resolveDevServerReachAsync', () => {
+  const lockUrl = 'http://127.0.0.1:8309';
+  const startedAt = '2026-08-27T09:00:00.000Z';
+
+  function mockManifest(origin: string | null): void {
+    globalThis.fetch = (async () => {
+      if (origin == null) {
+        throw new Error('fetch failed');
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ launchAsset: { url: `${origin}/entry.bundle?dev=true` } }),
+      };
+    }) as unknown as typeof fetch;
+  }
+
+  function writeProject(lines: string[] | null): void {
+    vol.reset();
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      ...(lines ? { [detachedLogPath(projectRoot)]: lines.join('\n') + '\n' } : {}),
+    });
+    jest.mocked(readDevServerLockAsync).mockResolvedValue({
+      url: lockUrl,
+      port: 8309,
+      pid: 1,
+      startedAt,
+      projectRoot,
+    });
+  }
+
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it(`prefers the manifest's host over a log line that names this machine`, async () => {
+    writeProject(LOCAL_LOG);
+    mockManifest('https://wave19reload.tuft.host');
+
+    await expect(resolveDevServerReachAsync(projectRoot)).resolves.toMatchObject({
+      advertised: { host: 'wave19reload.tuft.host', hostType: 'tunnel' },
+      running: true,
+    });
+  });
+
+  // The log wins when it already names a host a device can use: it is the dev server's own account
+  // of the run, and a second request cannot improve on it.
+  it(`keeps a tunnel host the log named, and asks no manifest for it`, async () => {
+    writeProject(TUNNELLED_LOG);
+    const fetched = jest.fn();
+    globalThis.fetch = fetched as unknown as typeof fetch;
+
+    await expect(resolveDevServerReachAsync(projectRoot)).resolves.toMatchObject({
+      advertised: { host: 'znakdiwe5j2n5o0.boltexpo.dev' },
+    });
+    expect(fetched).not.toHaveBeenCalled();
+  });
+
+  // A manifest that names this machine is no better than a log that does, and replacing a LAN
+  // address with `localhost` would take a URL a phone can use and hand back one it cannot.
+  it(`keeps the log's own reading when the manifest is local too`, async () => {
+    writeProject(LOCAL_LOG);
+    mockManifest('http://127.0.0.1:8309');
+
+    await expect(resolveDevServerReachAsync(projectRoot)).resolves.toMatchObject({
+      advertised: { host: 'localhost:8210' },
+    });
+  });
+
+  it(`still answers from the manifest when the log named nothing (S3)`, async () => {
+    writeProject(['Starting Metro Bundler']);
+    mockManifest('https://chx3ba8-kudochien-8303.exp.direct');
+
+    await expect(resolveDevServerReachAsync(projectRoot)).resolves.toMatchObject({
+      advertised: { host: 'chx3ba8-kudochien-8303.exp.direct', hostType: 'tunnel' },
+    });
   });
 });

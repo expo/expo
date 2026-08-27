@@ -1,9 +1,12 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import fs from 'fs';
 import { vol } from 'memfs';
 
+import { detachedLogPath } from '../../../dev/logFile';
 import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../../devLock';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../../exitCodes';
+import { resetPackageRunnerCache } from '../../../utils/packageRunner';
 import {
   connectMessageSocketAsync,
   type MessageSocketPeers,
@@ -82,7 +85,19 @@ function mockConnect(socket: any) {
  */
 function mockDevServer(
   targets: unknown[] | null,
-  { bundle = 'compiles' }: { bundle?: 'compiles' | 'broken' | 'no-manifest' } = {}
+  {
+    bundle = 'compiles',
+    manifestOrigin = 'http://127.0.0.1:8081',
+  }: {
+    bundle?: 'compiles' | 'broken' | 'no-manifest';
+    /**
+     * Origin of the manifest's `launchAsset.url`, which is where the tunnel host comes from.
+     *
+     * The dev server builds it from `getDevServerUrl()`, so a tunnelled run advertises the tunnel
+     * origin here and nowhere else a detached run can read (`src/dev/advertisedUrl.ts`, S3).
+     */
+    manifestOrigin?: string;
+  } = {}
 ): { listing: (next: unknown[]) => void } {
   let now = targets;
   globalThis.fetch = (async (input: unknown) => {
@@ -116,7 +131,7 @@ function mockDevServer(
       ok: true,
       status: 200,
       headers: { get: () => 'application/json' },
-      json: async () => ({ launchAsset: { url: 'http://127.0.0.1:8081/entry.bundle?dev=true' } }),
+      json: async () => ({ launchAsset: { url: `${manifestOrigin}/entry.bundle?dev=true` } }),
     };
   }) as unknown as typeof fetch;
   return { listing: (next) => (now = next) };
@@ -146,19 +161,25 @@ function mockReloadingDevServer() {
 }
 
 function mockSpawnQueue(
-  answers: { stdout?: string; exitCode?: number | null }[],
+  answers: { stdout?: string; stderr?: string; exitCode?: number | null }[],
   onCall?: (index: number) => void
 ) {
   let call = 0;
   jest.mocked(spawn).mockImplementation((() => {
-    const answer = answers[call] ?? {};
-    onCall?.(call++);
+    // The index advances on every spawn, whether or not a caller passed `onCall`. It used to
+    // advance inside `onCall?.(call++)`, where the optional call skips its own argument — so a test
+    // with no `onCall` answered every spawn from `answers[0]`, and an exit code meant for the
+    // second command was never delivered.
+    const index = call++;
+    const answer = answers[index] ?? {};
+    onCall?.(index);
     const child = Object.assign(new EventEmitter(), {
       stdout: new EventEmitter(),
       stderr: new EventEmitter(),
     });
     process.nextTick(() => {
       if (answer.stdout) child.stdout.emit('data', answer.stdout);
+      if (answer.stderr) child.stderr.emit('data', answer.stderr);
       child.emit('close', answer.exitCode ?? 0, null);
     });
     return child as any;
@@ -314,6 +335,8 @@ describe(reloadAsync, () => {
       'bundle',
       'bundlePlatformSource',
       'bundlePlatforms',
+      'bundlesAfterReload',
+      'commandSocketClients',
       'devServerSource',
       'devServerUrl',
       'deviceId',
@@ -695,8 +718,10 @@ describe(explainReloadFailure, () => {
       devServerUrl: 'http://127.0.0.1:8081',
       devServerSource: 'flag',
       appsConnected: 0,
+      commandSocketClients: 1,
       appsReconnected: 0,
       bundle: { checked: true, ok: true, platform: 'ios', url: null, error: null, reason: null },
+      bundlesAfterReload: { observed: null, count: 0, line: null, reason: null },
       bundlePlatforms: ['ios'],
       bundlePlatformSource: 'flag',
       route: null,
@@ -915,5 +940,328 @@ describe('an app the command socket cannot see', () => {
     expect(
       report.attempts.find((attempt: { method: string }) => attempt.method === 'runtime').reason
     ).toContain('stopped answering');
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Reloading a cloud session — wave 19.
+//
+// The premise this command shipped on: "the dev-server broadcast reaches a cloud session already —
+// a cloud session has to reach that dev server through a tunnel to be running the bundle at all".
+// Live, the tunnel carried the **bundle** and not the client command socket: the broadcast reached
+// nobody, the fallback stopped the app, and the relaunch was refused
+// [observed — live staging, 2026-08-26, S12; reproduced by Kudo, 2026-08-27].
+describe('reloading an app on a cloud simulator session', () => {
+  const SESSION_LISTING = JSON.stringify({
+    sessions: [
+      {
+        id: 'session-1',
+        status: 'IN_PROGRESS',
+        platform: 'IOS',
+        type: 'agent-device',
+        name: 'wave19',
+        createdAt: '2026-08-27T09:00:00.000Z',
+      },
+    ],
+  });
+
+  const BUNDLED_LINE = 'iOS Bundled 812ms node_modules/expo-router/entry.js (943 modules)';
+
+  function writeCloudProject({ log = ['Starting project at /project'] }: { log?: string[] } = {}) {
+    writeProject({
+      // A package runner has to be findable for any `eas` to be spawned at all
+      // (`src/utils/easCli.ts` — one rung, and it is the runner).
+      '/usr/bin/npx': '#!/bin/sh\n',
+      [detachedLogPath(projectRoot)]: log.join('\n') + '\n',
+    });
+    resetPackageRunnerCache();
+  }
+
+  /** What the dev server writes when something fetches the bundle over the tunnel. */
+  function appendBundledLine(): void {
+    const file = detachedLogPath(projectRoot);
+    fs.writeFileSync(file, `${fs.readFileSync(file, 'utf8')}${BUNDLED_LINE}\n`);
+  }
+
+  function cloudOptions(overrides: Partial<ReloadOptions> = {}): ReloadOptions {
+    return options({ cloud: true, devServerUrl: 'https://tunnel.example', ...overrides });
+  }
+
+  /** The argv of every `eas` this run spawned, as one string per spawn. */
+  function spawnedCommands(): string[] {
+    return jest
+      .mocked(spawn)
+      .mock.calls.map(([bin, args]) => [bin, ...((args as string[]) ?? [])].join(' '));
+  }
+
+  // The whole fix, in two verbs, and each half is there for something that was observed to break:
+  //
+  //  1. `open <app-id> --relaunch` restarts the app **with no URL on the launch**. Launching Expo Go
+  //     cold *with* a dev-server URL crashed it every time on the live session —
+  //     `SQLiteGetResultsError … UNIQUE constraint failed: updates.scope_key, updates.commit_time`
+  //     [observed — 2026-08-27, twice, session `01a04378-…`].
+  //  2. `open <url>` then deep-links the route into the app that is now running, which is the same
+  //     verb `navigate --cloud` runs and the one that loaded the project live.
+  //
+  // No `close` anywhere: that is the verb that ended the controller's own session and stranded the
+  // app (S12). And no `exp+<slug>://` launcher form — the URL is the manifest-derived one.
+  it(`relaunches the app and deep-links the URL, and never closes it`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [{ stdout: SESSION_LISTING }, { stdout: '{"success":true}' }, { stdout: '{"success":true}' }],
+      (index) => index === 2 && appendBundledLine()
+    );
+
+    await expect(reloadAsync(projectRoot, cloudOptions({ json: true }))).resolves.toBe(EXIT_OK);
+    const report = JSON.parse(printed());
+    expect(report).toMatchObject({
+      reloaded: true,
+      method: 'device',
+      // The debugger target list is not what decided this: a relaunched app re-registers under the
+      // **same** page id, because Metro's per-device counter restarts with the app [observed —
+      // 2026-08-27, live: `…ce-1` before the relaunch and `…ce-1` after it]. The proof is the one
+      // the dev server can make on its own — it served the bundle again.
+      verifiedBy: 'dev-server-bundle',
+      platform: 'ios',
+      deviceId: 'session-1',
+      url: 'exp://tunnel.example/--/?',
+      bundlesAfterReload: { observed: true, count: 1, line: BUNDLED_LINE },
+    });
+    const commands = spawnedCommands();
+    expect(commands[1]).toContain('open host.exp.Exponent --platform ios --relaunch');
+    expect(commands[1]).not.toContain('exp://');
+    expect(commands[2]).toContain('open exp://tunnel.example/--/? --platform ios');
+    expect(commands.join('\n')).not.toContain('agent-device@latest close');
+  });
+
+  // Both proofs are watched at once, and the first to answer ends the wait. Waiting out the whole
+  // budget for the other one spent 90 s of a billed session on a reload that was already proved
+  // [observed — 2026-08-27, live: `waitedMs: 89913` for a bundle seen in the first seconds].
+  it(`stops waiting as soon as one of the two proofs arrives`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [{ stdout: SESSION_LISTING }, { stdout: '{"success":true}' }, { stdout: '{"success":true}' }],
+      (index) => index === 2 && appendBundledLine()
+    );
+
+    await expect(
+      reloadAsync(projectRoot, cloudOptions({ json: true, timeoutMs: 8000 }))
+    ).resolves.toBe(EXIT_OK);
+    expect(JSON.parse(printed()).waitedMs).toBeLessThan(4000);
+  });
+
+  // The deep link is the half that puts the app on the project, so a refusal there is its own
+  // failure: the app is running its shell and not this project.
+  it(`says which half of the relaunch failed`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue([
+      { stdout: SESSION_LISTING },
+      { stdout: '{"success":true}' },
+      { stderr: 'Error (COMMAND_FAILED): Simulator device failed to open exp://x.', exitCode: 1 },
+    ]);
+
+    await expect(reloadAsync(projectRoot, cloudOptions({ json: true }))).resolves.toBe(
+      EXIT_OUTCOME_FAILED
+    );
+    const device = JSON.parse(printed()).attempts.find(
+      (attempt: { method: string }) => attempt.method === 'device'
+    );
+    expect(device).toMatchObject({ ok: false });
+    expect(device.reason).toContain('the app was restarted');
+    expect(device.reason).toContain('refused the link');
+  });
+
+  // The URL a device opens is not the URL this machine talks to. Without `--dev-server-url` the
+  // host comes from the manifest the dev server builds from `getDevServerUrl()`, which is the
+  // tunnel origin whenever a tunnel is up (wave 17, S3).
+  it(`takes the host from the manifest when no flag named a dev server`, async () => {
+    writeCloudProject();
+    mockDevServer([], { manifestOrigin: 'https://chx3ba8-kudochien-8303.exp.direct' });
+    jest.mocked(readDevServerLockAsync).mockResolvedValue({
+      url: 'http://127.0.0.1:8081',
+      port: 8081,
+      pid: 1,
+      startedAt: '2026-08-27T09:00:00.000Z',
+      projectRoot,
+    });
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [{ stdout: SESSION_LISTING }, { stdout: '{"success":true}' }, { stdout: '{"success":true}' }],
+      (index) => index === 2 && appendBundledLine()
+    );
+
+    await expect(
+      reloadAsync(projectRoot, cloudOptions({ json: true, devServerUrl: null }))
+    ).resolves.toBe(EXIT_OK);
+    expect(JSON.parse(printed()).url).toBe('exp://chx3ba8-kudochien-8303.exp.direct/--/?');
+  });
+
+  // The broadcast is not tried, and the reason is the observation rather than an assumption.
+  it(`does not broadcast on a dev server a cloud session cannot register with`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    const { socket, sent } = fakeSocket([{}]);
+    mockConnect(socket);
+    mockSpawnQueue(
+      [{ stdout: SESSION_LISTING }, { stdout: '{"success":true}' }, { stdout: '{"success":true}' }],
+      (index) => index === 2 && appendBundledLine()
+    );
+
+    await reloadAsync(projectRoot, cloudOptions({ json: true }));
+
+    expect(sent).toEqual([]);
+    const broadcast = JSON.parse(printed()).attempts.find(
+      (attempt: { method: string }) => attempt.method === 'dev-server'
+    );
+    expect(broadcast).toMatchObject({ ok: false });
+    expect(broadcast.reason).toContain('not tried');
+    expect(broadcast.reason).toContain('tunnel');
+    expect(broadcast.reason).toContain('--method dev-server');
+    // What the peer list licenses and nothing more: with a client on it, "none of them is the app"
+    // would be a claim `getpeers` cannot support.
+    expect(broadcast.reason).toContain('No client is registered on it');
+  });
+
+  // @ref llp/0005 §Two lists, one question. Never one number for two lists: "Apps connected 1" off
+  // `/json/list` while broadcasting into an empty peer set is the reading that cost Kudo the loop.
+  it(`reports the debugger targets and the command-socket clients as two facts`, async () => {
+    writeCloudProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [{ stdout: SESSION_LISTING }, { stdout: '{"success":true}' }, { stdout: '{"success":true}' }],
+      (index) => index === 2 && appendBundledLine()
+    );
+
+    await reloadAsync(projectRoot, cloudOptions({ json: true }));
+
+    expect(JSON.parse(printed())).toMatchObject({ appsConnected: 1, commandSocketClients: 0 });
+  });
+
+  it(`prints both lists in the human report`, async () => {
+    writeCloudProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [{ stdout: SESSION_LISTING }, { stdout: '{"success":true}' }, { stdout: '{"success":true}' }],
+      (index) => index === 2 && appendBundledLine()
+    );
+
+    await reloadAsync(projectRoot, cloudOptions());
+
+    expect(printed()).toContain('Apps connected 1');
+    expect(printed()).toContain('Command socket 0');
+  });
+
+  // @ref llp/0005 §A cloud simulator requires a tunnel. The refusal has to come **before** the
+  // relaunch: a run that stops the app and then finds out the URL is unusable is exactly S12.
+  it(`refuses a dev server the session cannot reach, before touching the device`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue([{ stdout: SESSION_LISTING }]);
+
+    const error = await reloadAsync(
+      projectRoot,
+      cloudOptions({ devServerUrl: 'http://127.0.0.1:8081' })
+    ).catch((thrown) => thrown);
+
+    expect(error.code).toBe('CLOUD_SIMULATOR_UNREACHABLE_DEV_SERVER');
+    expect(spawnedCommands().join('\n')).not.toContain('agent-device');
+  });
+
+  // Nothing observed is the 22 band, and the report says which observations were made and which
+  // could not be: an app that came back invisibly and an app that did not come back look the same
+  // from here, and this command must not pick one.
+  it(`exits 22 and names what was and was not observed`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue([
+      { stdout: SESSION_LISTING },
+      { stdout: '{"success":true}' },
+      { stdout: '{"success":true}' },
+    ]);
+
+    await expect(
+      reloadAsync(projectRoot, cloudOptions({ json: true, timeoutMs: 600 }))
+    ).resolves.toBe(EXIT_OUTCOME_TIMEOUT);
+    expect(JSON.parse(printed())).toMatchObject({
+      reloaded: false,
+      method: 'device',
+      verifiedBy: null,
+      bundlesAfterReload: { observed: false, count: 0 },
+    });
+    const explained = jest.mocked(console.error).mock.calls.flat().join('\n');
+    expect(explained).toContain('was relaunched');
+    expect(explained).toContain('no debugger target');
+  });
+
+  // @ref llp/0005 §Finding the session — S14. The controller names the session holding the device,
+  // and binding the verb to it is the remedy. Starting a second session bills another machine.
+  it(`binds the verb to the controller session that holds the device, once`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [
+        { stdout: SESSION_LISTING },
+        {
+          stderr: 'Error (DEVICE_IN_USE): Device is already in use by session "default".',
+          exitCode: 1,
+        },
+        { stdout: '{"success":true}' },
+        { stdout: '{"success":true}' },
+      ],
+      (index) => index === 3 && appendBundledLine()
+    );
+
+    await expect(reloadAsync(projectRoot, cloudOptions({ json: true }))).resolves.toBe(EXIT_OK);
+    const commands = spawnedCommands();
+    expect(commands[1]).not.toContain('--session');
+    expect(commands[2]).toContain('--session default');
+    // And the session it was bound to carries into the deep link, which is the same device.
+    expect(commands[3]).toContain('--session default');
+    expect(commands).toHaveLength(4);
+  });
+
+  // A refused relaunch is not evidence that the app is still up: `--relaunch` terminates before it
+  // launches. The report says that rather than claiming either state.
+  it(`says the app may be off the screen when the relaunch is refused`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue([
+      { stdout: SESSION_LISTING },
+      { stderr: 'Error (COMMAND_FAILED): Simulator device failed to launch app.', exitCode: 1 },
+    ]);
+
+    await expect(reloadAsync(projectRoot, cloudOptions({ json: true }))).resolves.toBe(
+      EXIT_OUTCOME_FAILED
+    );
+    const explained = jest.mocked(console.error).mock.calls.flat().join('\n');
+    expect(explained).toContain('terminates the app before it launches it');
+    expect(explained).toContain('eas simulator:exec');
+  });
+
+  it(`reaches the same one-verb relaunch when --method device names it`, async () => {
+    writeCloudProject();
+    mockDevServer([]);
+    mockSpawnQueue(
+      [{ stdout: SESSION_LISTING }, { stdout: '{"success":true}' }, { stdout: '{"success":true}' }],
+      (index) => index === 2 && appendBundledLine()
+    );
+
+    await expect(
+      reloadAsync(projectRoot, cloudOptions({ json: true, method: 'device' }))
+    ).resolves.toBe(EXIT_OK);
+    expect(spawnedCommands()[1]).toContain('--relaunch');
+    // A pinned method never opens the command socket.
+    expect(connectMessageSocketAsync).not.toHaveBeenCalled();
   });
 });

@@ -17,6 +17,7 @@ import path from 'node:path';
 
 import {
   executeExagentAsync,
+  holdDevLockAsync,
   installStubEasRunnerAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
@@ -252,7 +253,7 @@ describe('exagent navigate --cloud', () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('No EAS Simulator session this CLI can drive is running');
-    expect(result.stderr).toContain('eas simulator:start --platform ios --type agent-device');
+    expect(result.stderr).toContain('eas simulator --platform ios --type agent-device --expo-go');
     // The listing, then the read-only availability question, and nothing that could start or bill
     // anything.
     expect(easInvocations(projectRoot)).toEqual([
@@ -343,7 +344,7 @@ describe('exagent navigate --cloud', () => {
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('sess-e2e');
     expect(result.stderr).toContain('has ended');
-    expect(result.stderr).toContain('eas simulator:start');
+    expect(result.stderr).toContain('eas simulator --platform ios --type agent-device --expo-go');
   });
 
   it(`explains a verb the session refused, and how to check the session`, async () => {
@@ -460,7 +461,7 @@ describe('exagent runtime:stop --cloud', () => {
     });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('eas simulator:start');
+    expect(result.stderr).toContain('eas simulator --platform ios --type agent-device --expo-go');
     expect(easInvocations(projectRoot).some((argv) => argv[0] === 'simulator:exec')).toBe(false);
   });
 });
@@ -532,14 +533,89 @@ describe('exagent smoke --cloud', () => {
 });
 
 describe('exagent runtime:reload --cloud', () => {
-  // The device method of a reload: stop the app on the session's device and open it again. Without
-  // `--cloud` this reaches a local device, and `runtime-reload-test.ts` covers that; with it, the
-  // two verbs have to leave this process as `simulator:exec` calls on the session.
-  it(`drives the session's controller when the dev server cannot reload`, async () => {
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading a cloud session — wave 19.
+  //
+  // The reload on a cloud session is **two** controller verbs, and this is where the argv leaving a
+  // whole process is pinned: restart the app with no URL on the launch, then deep-link the route
+  // into it. The first half is what keeps Expo Go alive (a cold launch carrying a dev-server URL
+  // died on its own updates database, live), and neither half is `close` — the verb that ends the
+  // controller's own session and left a billed session empty (S12).
+  it(`restarts the app and then deep-links the route, and never closes it`, async () => {
     const projectRoot = await setupAsync('go-app');
     await writeSessionFileAsync(projectRoot, 'sess-e2e');
-    // `messageSocket: 'none'` is a dev server that refuses the client command socket, which is what
-    // sends the reload down the device path instead.
+    // A dev server advertising a **tunnel** origin in its manifest, which is the one address a
+    // cloud session can use. The lock is what makes this project's own dev server discoverable, so
+    // the run reads the advertised host rather than being handed one.
+    const stub = await startStubDevServerAsync({
+      targets: [],
+      messageSocket: 'none',
+      manifestOrigin: 'https://stub-tunnel.example',
+    });
+    const releaseLock = await holdDevLockAsync(projectRoot, {
+      url: stub.url,
+      port: stub.port,
+      pid: process.pid,
+      startedAt: new Date().toISOString(),
+      projectRoot,
+    });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:reload', '--cloud', '--timeout', '2s', '--json', '--no-followups'],
+        { reject: false }
+      );
+
+      const report = JSON.parse(result.stdout);
+      expect(report.url).toBe('exp://stub-tunnel.example/--/?');
+      expect(report.attempts.map((attempt: { method: string }) => attempt.method)).toEqual([
+        'dev-server',
+        'device',
+      ]);
+      expect(report.method).toBe('device');
+      // Nothing watched the dev server's output — this project has no captured log — so the reload
+      // is unproved and says so, rather than being taken from a verb that exited 0.
+      expect(report.verifiedBy).toBeNull();
+      expect(report.reloaded).toBe(false);
+      // Watched and not seen: this project has a captured dev server log, and the stub never
+      // writes a `Bundled` line into it.
+      expect(report.bundlesAfterReload.observed).toBe(false);
+      expect(result.exitCode).toBe(22);
+
+      const execs = easInvocations(projectRoot).filter((argv) => argv[0] === 'simulator:exec');
+      expect(execs).toHaveLength(2);
+      // The restart: the app id, `--relaunch`, and no URL anywhere on it.
+      expect(execs[0]!.slice(3)).toEqual([
+        'open',
+        'host.exp.Exponent',
+        '--platform',
+        'ios',
+        '--relaunch',
+      ]);
+      // Then the link, into the app that is now running.
+      expect(execs[1]!.slice(3)).toEqual([
+        'open',
+        'exp://stub-tunnel.example/--/?',
+        '--platform',
+        'ios',
+      ]);
+      const invocations = easInvocations(projectRoot);
+      expect(invocations.some((argv) => argv[0] === 'simulator:list')).toBe(true);
+      // Never `close`, never `--shutdown`, never the session itself.
+      expect(invocations.some((argv) => argv.includes('close'))).toBe(false);
+      expect(invocations.some((argv) => argv.includes('--shutdown'))).toBe(false);
+      expect(invocations.some((argv) => argv[0] === 'simulator:stop')).toBe(false);
+    } finally {
+      await releaseLock();
+      await stub.close();
+    }
+  });
+
+  // @ref llp/0005 §A cloud simulator requires a tunnel. The refusal comes **before** the device is
+  // touched, which is the other half of the S12 fix: a run that restarts the app and only then
+  // finds the URL unusable is how a billed session was left with nothing on it.
+  it(`refuses a dev server the session cannot reach, before any verb`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
     const stub = await startStubDevServerAsync({ targets: [], messageSocket: 'none' });
     try {
       const result = await executeExagentAsync(
@@ -557,19 +633,12 @@ describe('exagent runtime:reload --cloud', () => {
         { reject: false }
       );
 
-      const report = JSON.parse(result.stdout);
-      // The dev-server method is tried first and refused, so the device method is what ran — and
-      // with no app connected at all, a force-stop and a relaunch is also how an app gets started.
-      expect(report.attempts.map((attempt: { method: string }) => attempt.method)).toEqual([
-        'dev-server',
-        'device',
-      ]);
-      const invocations = easInvocations(projectRoot);
-      expect(invocations.some((argv) => argv[0] === 'simulator:list')).toBe(true);
-      // Never the session itself: a reload closes an app, and `--shutdown` would stop a machine
-      // that bills by the minute and may not be this run's to stop.
-      expect(invocations.some((argv) => argv.includes('--shutdown'))).toBe(false);
-      expect(invocations.some((argv) => argv[0] === 'simulator:stop')).toBe(false);
+      expect(result.exitCode).toBe(1);
+      expect(JSON.parse(result.stdout).error.code).toBe(
+        'CLOUD_SIMULATOR_UNREACHABLE_DEV_SERVER'
+      );
+      expect(result.stderr).toContain('dev --detach --tunnel');
+      expect(easInvocations(projectRoot).some((argv) => argv[0] === 'simulator:exec')).toBe(false);
     } finally {
       await stub.close();
     }
@@ -577,36 +646,36 @@ describe('exagent runtime:reload --cloud', () => {
 
   it(`says how to start a session when --cloud finds none`, async () => {
     const projectRoot = await setupAsync('go-app');
-    const stub = await startStubDevServerAsync({ targets: [], messageSocket: 'none' });
+    const stub = await startStubDevServerAsync({
+      targets: [],
+      messageSocket: 'none',
+      manifestOrigin: 'https://stub-tunnel.example',
+    });
+    const releaseLock = await holdDevLockAsync(projectRoot, {
+      url: stub.url,
+      port: stub.port,
+      pid: process.pid,
+      startedAt: new Date().toISOString(),
+      projectRoot,
+    });
     try {
       const result = await executeExagentAsync(
         projectRoot,
-        [
-          'runtime:reload',
-          '--cloud',
-          '--dev-server-url',
-          stub.url,
-          '--timeout',
-          '2s',
-          '--json',
-          '--no-followups',
-        ],
+        ['runtime:reload', '--cloud', '--timeout', '2s', '--json', '--no-followups'],
         { reject: false, env: { STUB_SIM_SESSIONS: '0' } }
       );
 
-      // The one thing a reload must never do on a device it could not find: claim it reloaded.
-      expect(result.exitCode).not.toBe(0);
-      const report = JSON.parse(result.stdout);
-      expect(report.reloaded).toBe(false);
-      expect(report.method).toBeNull();
-      const device = report.attempts.find(
-        (attempt: { method: string }) => attempt.method === 'device'
-      );
-      expect(device.ok).toBe(false);
-      expect(device.reason).toContain('EAS Simulator session');
+      // Nothing was attempted, so this is the missing device rather than a failed reload: exit 1
+      // with the whole of what to do about it, and never a report claiming a reload.
+      expect(result.exitCode).toBe(1);
+      const envelope = JSON.parse(result.stdout);
+      expect(envelope.error.code).toBe('NO_CLOUD_SIMULATOR_SESSION');
+      expect(envelope.error.message).toContain('--expo-go');
+      expect(envelope.reloaded).toBeUndefined();
       // And no verb was sent to a session that does not exist.
       expect(easInvocations(projectRoot).some((argv) => argv[0] === 'simulator:exec')).toBe(false);
     } finally {
+      await releaseLock();
       await stub.close();
     }
   });

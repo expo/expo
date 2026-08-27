@@ -222,6 +222,53 @@ describe('the argv of every eas simulator invocation', () => {
     );
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading a cloud session — wave 19.
+  // The whole of the cloud reload, in one verb: `--relaunch` terminates the app process before it
+  // launches it, so nothing has to `close` first — and `close` is what ended the controller's own
+  // session and left the app stranded (S12). The app id goes **in front of** the URL because the
+  // controller's Expo Go form is `open <shell> <url>`, which launches the shell *with* the link
+  // rather than handing the link to the system [observed — `agent-device help open`, 0.20.10:
+  // `agent-device open "Expo Go" exp://127.0.0.1:8081 --platform ios`].
+  it(`relaunches an app on the URL in one verb, app id before the URL`, () => {
+    expect(
+      buildCloudOpenUrlArgs({
+        url: 'exp://tunnel.example/--/?',
+        platform: 'ios',
+        appId: 'host.exp.Exponent',
+        relaunch: true,
+      })
+    ).toEqual([
+      'simulator:exec',
+      'npx',
+      AGENT_DEVICE_SPEC,
+      'open',
+      'host.exp.Exponent',
+      'exp://tunnel.example/--/?',
+      '--platform',
+      'ios',
+      '--relaunch',
+    ]);
+  });
+
+  // The controller refuses a verb whose device another of its sessions holds — `DEVICE_IN_USE`,
+  // naming the session (S14). Binding the verb to that session is the documented remedy, and the
+  // flag order is the controller's own: subcommand, positionals, then flags.
+  it(`binds the verb to a named controller session when one is given`, () => {
+    expect(
+      buildCloudOpenUrlArgs({ url: 'exp://x/--/?', platform: 'ios', session: 'default' })
+    ).toEqual([
+      'simulator:exec',
+      'npx',
+      AGENT_DEVICE_SPEC,
+      'open',
+      'exp://x/--/?',
+      '--platform',
+      'ios',
+      '--session',
+      'default',
+    ]);
+  });
+
   // The controller downloads the image to a local path, so there is nothing to redirect — and no
   // `--platform`, which the documented verb table does not carry on this verb.
   it(`screenshots to a local path, with no redirect and no platform flag`, () => {
@@ -764,10 +811,10 @@ describe(cloudSessionUnavailableError, () => {
     const error = cloudSessionUnavailableError(probe);
 
     expect(error.code).toBe('NO_CLOUD_SIMULATOR_SESSION');
-    expect(error.message).toContain('eas simulator:start');
+    expect(error.message).toContain('eas simulator --platform ios --type agent-device --expo-go');
     expect(error.message).toContain('--type agent-device');
     expect(error.message).toContain('bills until it is stopped');
-    expect(error.suggestedCommand).toContain('simulator:start');
+    expect(error.suggestedCommand).toContain('--expo-go');
   });
 
   // An account that cannot have the feature must never be told to start a session.
