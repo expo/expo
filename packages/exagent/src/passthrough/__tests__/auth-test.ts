@@ -52,18 +52,35 @@ describe(resolveAuthCliAsync, () => {
 
   // The whole point: a directory with no expo package used to reach for `npx expo`, which
   // downloads the entire SDK to read a file the EAS CLI can read now.
-  it(`should fall back to the project's own eas CLI when there is no expo`, async () => {
-    vol.fromJSON({ [easBin]: '#!/bin/sh' });
-
+  it(`should ask the EAS CLI through the package runner when there is no expo`, async () => {
     await expect(resolveAuthCliAsync(projectRoot, { pathEnv: '' })).resolves.toEqual({
       tool: 'eas',
-      source: 'project-eas',
-      command: easBin,
-      prefixArgs: [],
+      source: 'runner-eas',
+      command: 'npx',
+      // `--yes` because npx prompts before installing a package it has not seen, and this CLI never
+      // attaches stdin, so the prompt would be a hang (`src/utils/easCli.ts`).
+      prefixArgs: ['--yes', 'eas-cli@latest'],
+      runner: 'npx',
     });
   });
 
-  it(`should prefer the project's expo over the project's eas`, async () => {
+  // The pin, still winning — through the runner rather than around it. `npx --yes eas-cli` runs the
+  // project's own copy and touches no network [observed — live, 2026-08-27], so declaring the CLI is
+  // what a project does to control its version, and it no longer needs a rung of its own.
+  it(`should drop the version from the spec when the project declares eas-cli`, async () => {
+    vol.fromJSON({
+      [path.join(projectRoot, 'package.json')]: JSON.stringify({
+        devDependencies: { 'eas-cli': '22.4.0' },
+      }),
+    });
+
+    await expect(resolveAuthCliAsync(projectRoot, { pathEnv: '' })).resolves.toMatchObject({
+      source: 'runner-eas',
+      prefixArgs: ['--yes', 'eas-cli'],
+    });
+  });
+
+  it(`should prefer the project's expo over the EAS CLI`, async () => {
     vol.fromJSON({ [expoBin]: '#!/bin/sh', [easBin]: '#!/bin/sh' });
 
     await expect(resolveAuthCliAsync(projectRoot, { pathEnv: '' })).resolves.toMatchObject({
@@ -71,64 +88,18 @@ describe(resolveAuthCliAsync, () => {
     });
   });
 
-  it(`should fall back to an eas on PATH when the project has neither`, async () => {
-    vol.fromJSON({ [pathEas]: '#!/bin/sh' });
-    mockProbe({ exitCode: 0, stdout: 'eas-cli/22.4.0 darwin-arm64\n' });
-
-    await expect(resolveAuthCliAsync(projectRoot, { pathEnv: pathDir })).resolves.toEqual({
-      tool: 'eas',
-      source: 'path-eas',
-      command: pathEas,
-      prefixArgs: [],
-    });
-  });
-
-  // The machine this was built on has exactly this: an `eas` on PATH that is a wrapper panicking
-  // before it reaches the CLI. Handing an interactive login to it would print a backtrace.
-  it(`should skip an eas on PATH that is not the EAS CLI`, async () => {
-    vol.fromJSON({ [pathEas]: '#!/bin/sh' });
-    mockProbe({ exitCode: 101, stderr: 'thread panicked at src/main.rs\nStack backtrace:\n' });
-
-    await expect(resolveAuthCliAsync(projectRoot, { pathEnv: pathDir })).resolves.toEqual({
-      tool: 'eas',
-      source: 'runner-eas',
-      command: 'npx',
-      // `--yes` since wave 18: npx prompts before installing a package it has not seen, and this
-      // CLI never attaches stdin, so the prompt would be a hang (`src/utils/easCli.ts`).
-      prefixArgs: ['--yes', 'eas-cli@latest'],
-      runner: 'npx',
-    });
-  });
-
-  it(`should keep an eas on PATH that fails for a reason of its own`, async () => {
-    vol.fromJSON({ [pathEas]: '#!/bin/sh' });
-    // Non-zero, but the output is unmistakably the EAS CLI's, so it is the CLI having a bad day.
-    mockProbe({ exitCode: 1, stderr: 'Error: not logged in. Run "eas login".\n' });
-
-    await expect(resolveAuthCliAsync(projectRoot, { pathEnv: pathDir })).resolves.toMatchObject({
-      source: 'path-eas',
-    });
-  });
-
-  it(`should fall back to the package runner when nothing is installed anywhere`, async () => {
-    await expect(resolveAuthCliAsync(projectRoot, { pathEnv: '' })).resolves.toEqual({
-      tool: 'eas',
-      source: 'runner-eas',
-      command: 'npx',
-      // `--yes` since wave 18: npx prompts before installing a package it has not seen, and this
-      // CLI never attaches stdin, so the prompt would be a hang (`src/utils/easCli.ts`).
-      prefixArgs: ['--yes', 'eas-cli@latest'],
-      runner: 'npx',
-    });
-  });
-
-  it(`should probe a PATH candidate once, and not probe the ones it trusts`, async () => {
+  // The machine this was built on has an `eas` on `PATH` that is a wrapper panicking before it
+  // reaches the CLI, and handing an interactive login to it printed a backtrace. There used to be a
+  // `--version` probe here to catch that. There is no candidate to probe any more: a runner resolves
+  // a package, so no file called `eas` is a thing this chain can pick.
+  it(`should never pick a file called eas, and never probe one`, async () => {
     vol.fromJSON({ [easBin]: '#!/bin/sh', [pathEas]: '#!/bin/sh' });
     const probe = mockProbe({ exitCode: 0 });
 
-    await resolveAuthCliAsync(projectRoot, { pathEnv: pathDir });
+    const cli = await resolveAuthCliAsync(projectRoot, { pathEnv: pathDir });
 
-    // The project's own bin came out of node_modules, so it is the CLI by construction.
+    expect(cli).toMatchObject({ source: 'runner-eas', command: 'npx' });
+    expect(cli.command).not.toBe(pathEas);
     expect(probe).not.toHaveBeenCalled();
   });
 });
@@ -165,7 +136,7 @@ describe(resolveRegisterCli, () => {
     vol.fromJSON({ [easBin]: '#!/bin/sh' });
 
     await expect(resolveAuthCliAsync(projectRoot, { pathEnv: '' })).resolves.toMatchObject({
-      source: 'project-eas',
+      source: 'runner-eas',
     });
     expect(resolveRegisterCli(projectRoot, { pathEnv: '' })).toMatchObject({
       source: 'runner-expo',
@@ -251,7 +222,7 @@ describe(authCliLabel, () => {
       })
     ).toBe('bunx eas-cli@latest');
     expect(
-      authCliLabel({ tool: 'eas', source: 'project-eas', command: easBin, prefixArgs: [] })
-    ).toBe(easBin);
+      authCliLabel({ tool: 'expo', source: 'project-expo', command: expoBin, prefixArgs: [] })
+    ).toBe(expoBin);
   });
 });

@@ -7,7 +7,7 @@ import type { FingerprintDiffItem, FingerprintSource } from '../project/fingerpr
 import { readLastBuildRecord } from '../plan/lastBuild';
 import { easCliArgs, easCliLabel, type EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
-import { looksLikeWrapperCrash, wrapperCrashDetail } from '../utils/wrapperCrash';
+import { looksLikeWrapperCrash, runnerCrashDetail } from '../utils/wrapperCrash';
 import type { ComparisonSide } from './types';
 
 /** What every comparison mode answers with. */
@@ -215,7 +215,7 @@ export async function compareWithEasBuildAsync(
         ? [
             `Could not compare against EAS build ${buildId}.`,
             `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}.`,
-            wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
+            runnerCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
           ].join('\n')
         : [
             `Could not compare against EAS build ${buildId}.`,

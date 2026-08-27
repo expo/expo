@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** the plan engine (`src/plan/decide.ts`, `src/plan/resolveAsync.ts`, `src/plan/runTarget.ts`); the toolchain probe and its vocabulary (`src/toolchain/`); the developer config (`src/settings/`); EAS CLI resolution (`src/utils/easCli.ts`, `src/utils/packageRunner.ts`); `exagent dev` (`src/dev/`); `exagent status` (`src/status/`); the change-class follow-ups (`src/followups/change.ts`; `exagent impact` carried these until it was folded into `status`, 2026-08-26)
+**Systems:** the plan engine (`src/plan/decide.ts`, `src/plan/resolveAsync.ts`, `src/plan/runTarget.ts`); the toolchain probe and its vocabulary (`src/toolchain/`); the developer config (`src/settings/`); EAS CLI resolution (`src/utils/easCli.ts`, `src/utils/packageRunner.ts`, `src/utils/processGroup.ts`); `exagent dev` (`src/dev/`); `exagent status` (`src/status/`); the change-class follow-ups (`src/followups/change.ts`; `exagent impact` carried these until it was folded into `status`, 2026-08-26)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-26
 **Related:** [[0004-smart-start-and-project-state]], [[0008-guardrails]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0011-impact-and-freshness]]
@@ -121,7 +121,8 @@ nothing installed would mark the next plan fresh against an app no device is run
 `exagent dev` executed `expo` and refused everything else (`assertExpoStep`). It now accepts `expo`
 and `eas`, resolved through `resolveEasCliOrThrow` — the *throwing* resolver, because a plan that
 chose the cloud cannot do its job without the CLI, so an unreachable `eas` is an error rather than a
-step that quietly does nothing. Failure messages name the CLI the step actually ran (`npx eas build
+step that quietly does nothing. Since wave 18 that error needs a machine with no package runner at
+all, because the published CLI is what runs (§Resolving the EAS CLI). Failure messages name the CLI the step actually ran (`npx eas build
 …`, "the EAS CLI's own" exit code) and the needs-human classifier is given `tool: 'eas'`, because an
 `eas build` that stopped for a login is a different scenario from an `expo start` that stopped for a
 prompt.
@@ -129,67 +130,116 @@ prompt.
 ### Resolving the EAS CLI
 
 **An installed `eas-cli` is not something this CLI may expect** [confirmed — Kudo, 2026-08-26: "we
-should not expect eas-cli is installed"]. The resolver had two rungs, so a machine that had simply
-never installed it got `eas unknown (no EAS CLI is installed, so nothing here can ask EAS about
-builds)` out of `status --explain`, and an install line out of every command that needs EAS
-[observed — 2026-08-26, reported by Kudo]. The published package is one `npx` away, and the auth
-chain had been reaching for it that way since wave 17 — per call site, which is why the rest of the
-CLI did not benefit.
+should not expect eas-cli is installed"]. The resolver had two rungs — the project's
+`node_modules/.bin/eas`, then one on `PATH` — so a machine that had never installed it got `eas
+unknown (no EAS CLI is installed, so nothing here can ask EAS about builds)` out of `status
+--explain`, and an install line out of every command that needs EAS [observed — 2026-08-26, reported
+by Kudo].
 
-So `src/utils/easCli.ts` is a **three-rung ladder**, and the runner is a rung of it:
+The answer is **one rung, taken every time: the package runner** [decided — Kudo, 2026-08-27]. Not a
+ladder with a runner at the bottom — no project bin, no `PATH`, no fallbacks.
 
-1. the project's own `node_modules/.bin/eas` — the version the repository pinned is the version that
-   should run;
-2. an `eas` on `PATH`;
-3. `npx --yes eas-cli@latest`, or `bunx eas-cli@latest` — the rung that is true on every machine.
+```
+project declares eas-cli   ->  <runner> eas-cli          (the pin wins)
+otherwise                  ->  <runner> eas-cli@latest
+runner                     ->  bunx, when the project uses bun; else npx --yes
+```
 
-`null` — and with it the `EAS_CLI_MISSING` failure — now means "no `eas` **and** no `npx` or `bunx`",
-which is a broken Node install rather than a missing package. The advice changed with the scenario:
-`npm install -g eas-cli` is gone, because a reader who reaches that failure cannot run it either.
+One rung is simpler *and* stronger, for two reasons, both measured before they were relied on:
 
-Three decisions inside the rung:
+1. **The runners already prefer the project's own copy**, so the "project bin first" rung was doing
+   nothing the runner does not do.
+2. **It kills the impostor class by construction.** What answered the name `eas` was whatever the
+   machine had under it — a wrapper, a stale symlink, a shim from another tool
+   ([[0001-agentic-cli-on-expo-cli]] §Constraints) — and every call site needed a guard against
+   reporting its bytes as the service's answer. A runner resolves a *package*, never a file on
+   `PATH`, so a stray `eas` is not spawned at all. The guards stay (`utils/wrapperCrash.ts`) and
+   should now be unreachable; they are kept because "unreachable" is a claim about today's resolver,
+   not about the process boundary. The `--version` probe that used to check the `PATH` candidate is
+   **gone**, along with the candidate — one fewer flag on the foreign-flag inventory.
 
-- **Which runner is a fact about the project, not only about this process.**
-  `resolvePackageRunner` answers "which runner started this process" (wave 17), which is right for a
-  package this CLI spawns on its own behalf and incomplete for one spawned *into a project*: a bun
-  app run from a plain shell was started by neither runner, and npm's exec there builds a second
-  cache beside the one bun manages. `resolvePackageRunnerForProject` takes either signal — bun
-  started us, **or** the lockfile governing the project is bun's — and still requires `bunx` to be on
-  `PATH`, because "this project installs with bun" is not the claim "bun is reachable from here".
-- **`--yes`, for npm's exec only.** npx prompts before installing a package it has not seen, and a
-  prompt is a hang rather than a question here: nothing this CLI spawns gets stdin ([[0006-agent-native-cli-surface]]
-  §Non-interactive parity), so the answer can never arrive. `bunx` installs without asking and has no
-  such flag. Run as [[0002-testing-and-evals]] §A flag is not shipped until it has run against the
-  published binary requires [observed — live, 2026-08-27: `npx --yes eas-cli@latest --version`
-  answered `eas-cli/22.6.0 darwin-arm64 node-v26.5.0`, exit 0].
-- **A broken shim on `PATH` falls through to the runner, as part of the ladder.** The `--version`
-  probe that skips a binary that was never the CLI used to live in `passthrough/auth.ts`, which made
-  "route around a shim" a property of one command. It is `resolveEasCliAsync` now. It stays a
-  *separate, async* function rather than an option: the sync callers are on paths that promise to be
-  instant, and they already notice a wrapper after the fact from the run's own output
-  (`utils/wrapperCrash.ts`), which costs nothing when the binary is real.
+#### What the runners actually do
+
+Claim 1 above is load-bearing, so it was verified rather than read [observed — live, 2026-08-27,
+macOS, npm 11.17.0, bun 1.3.14, node 26.5.0; a project holding `eas-cli` 22.4.0 while the registry
+served 22.6.0. A **dead registry** (`npm_config_registry=http://127.0.0.1:9/`) is what proves "no
+fetch": a run that still answers cannot have reached one].
+
+| Invocation | Project | Ran | Registry needed |
+| --- | --- | --- | --- |
+| `npx --yes eas-cli` | local 22.4.0 | **22.4.0** (local), 0.26–0.45 s | **no** |
+| `bunx eas-cli` | local 22.4.0, `bun.lock` | **22.4.0** (local), 0.10 s | **no** |
+| `npx --yes eas-cli` | 22.4.0 hoisted to a workspace root, run from `apps/app` | **22.4.0** (local), 0.48 s | no |
+| `bunx eas-cli` | same monorepo | **22.4.0** (local), 0.09 s | no |
+| `./node_modules/.bin/eas` | local 22.4.0 | 22.4.0, 0.32–0.42 s | no |
+| `npx --yes eas-cli@latest` | local 22.4.0 | **22.6.0 — the pin is defeated** | **yes**; dead registry ⇒ exit 1 after **~70 s** |
+| `bunx eas-cli@latest` | local 22.4.0 | 22.6.0, 5.81 s cold. The project's `bun.lock` was **byte-identical** afterwards | yes |
+| `npx --yes eas-cli` | no local copy | 22.6.0, 1.13 s warm | yes |
+
+Four things follow, and each one is a rule the code keeps:
+
+- **The pin survives.** Local before published, without a rung for it, and in a monorepo too. Going
+  through the runner costs about nothing against spawning the bin directly (0.26–0.45 s against
+  0.32–0.42 s), which is what makes one rung affordable on the paths that promise to be quick.
+- **A version in the spec defeats the pin**, so `pinned` chooses the bare name and nothing else may.
+  The signal is the **declaration** in `package.json`, not an installed copy: the spec has to be
+  chosen before anything runs. A package that does not declare it while a sibling workspace does
+  therefore gets `@latest` and re-downloads a CLI that is on disk — the honest reading of "this
+  project pinned a version", and a cost of one download rather than a wrong version.
+- **`@latest` talks to the registry on every run, not just the first**, and stalls for the length of
+  npm's retry ladder when it cannot reach one. Every caller spawns it under a deadline.
+- **`--yes` for npm's exec only.** npx prompts before installing a package it has not seen, and a
+  prompt is a hang rather than a question here: nothing this CLI spawns is given stdin
+  ([[0006-agent-native-cli-surface]] §Non-interactive parity), so the answer can never arrive. `bunx`
+  installs without asking and has no such flag. `--yes` is on the foreign-flag inventory and was run
+  as the rule requires [observed — `npx --yes eas-cli@latest --version` answered `eas-cli/22.6.0
+  darwin-arm64 node-v26.5.0`, exit 0].
+
+`EAS_CLI_MISSING` survives with a much narrower meaning: **no `npx` and no `bunx` on `PATH`**, which
+is a broken or absent Node install rather than a missing package. `npm install -g eas-cli` is gone
+from its advice, because a reader who reaches it cannot run that either.
+
+#### Killing a runner kills the CLI it started
+
+The one thing that broke, found by an e2e that hung for its whole 45 s timeout instead of finishing
+in about one [observed — 2026-08-27]. `child.kill()` signals the process this CLI holds a handle to.
+That is now the *runner*; the program doing the work is its child, and it survives the signal,
+inherits the pipes, and keeps them open — so `'close'`, which waits for EOF as well as for the exit,
+never fires. **A deadline meant to stop a tool became a deadline that hangs the command it was
+protecting**, and it applied to every timeout, every prompt guard and every forwarded Ctrl-C.
+
+So subprocesses are spawned in a **process group of their own** and signalled as a group
+(`src/utils/processGroup.ts`). Safe here because stdin is never attached, so a detached child could
+not read a terminal even if it tried; terminal signals were already forwarded explicitly, and now
+reach the whole group. Windows has no equivalent — a tree there needs `taskkill /T` — and is a known
+gap rather than a solved problem.
 
 #### What the first run costs, and who pays it
 
-The runner rung's first invocation **installs the package before the query starts**, which no budget
-written for a warm CLI covers. Three answers, one per caller [decided — 2026-08-27]:
+In a project that does not declare `eas-cli`, the rung is `npx --yes eas-cli@latest`: the first run
+installs the package before the query starts, and every run asks the registry. `pinned` is what lets
+each caller weigh that, and they answer differently [decided — 2026-08-27]:
 
-- **The auth preflight declines the rung.** `src/needsHuman/preflight.ts` reads
+- **The auth preflight declines to pay it.** `src/needsHuman/preflight.ts` reads
   `~/.expo/state.json` through `eas whoami`, and the two rungs under it — the project's own `expo
-  whoami`, then `EXPO_TOKEN` — answer the same question from the same file for free. Downloading a
-  CLI to read a local file would cost `status` the speed it promises for nothing, so that one caller
-  uses `resolveInstalledEasCli`. It is the same call `askProjectExpoAsync` beside it already makes.
+  whoami`, then `EXPO_TOKEN` — answer the same question from the same file for free. So it asks the
+  EAS CLI **only when the project pins it**, where the runner resolves it out of `node_modules` in
+  about a third of a second. In every other project `status` asks the project's Expo CLI instead,
+  which is the same judgement `askProjectExpoAsync` beside it already made. Verified: a default
+  `status` in a project with no `eas-cli` and no `eas` on `PATH` takes **1.58 s** and spawns no
+  runner [observed — live, 2026-08-27].
 - **`status --explain` widens its budget, and stays bounded.** `EAS_BUILD_RUNNER_TIMEOUT_MS` (45 s)
-  replaces the 10 s per-platform deadline when the resolved rung is the runner, so a modest install
-  answers rather than expiring — and never the minutes a cold `npm` install can take, because
-  `status` must not hang. The default `status` is untouched: it asks EAS nothing at all.
+  replaces the 10 s per-platform deadline when the resolved invocation may download, so a modest
+  install answers rather than expiring — and never the minutes a cold install or an unreachable
+  registry can take, because `status` must not hang. A pinned project keeps the 10 s.
 - **`impact` keeps its 20 s.** Its lookup is *opportunistic* — nobody asked for it, and the report is
   complete without it. Twenty seconds of a command's time is a fair ceiling on a nicety.
 
-Either way, expiring costs one `unknown` and never a wrong answer, and the reason says the download
-was why *and that the next run is warm* (`runnerDownloadNote`). Every reason and report that names
-the source renders it as the invocation — `npx --yes eas-cli@latest`, not the path `npx` was found at
-— so nothing claims an `eas` binary exists on a machine that has none.
+Expiring costs one `unknown` and never a wrong answer, and the reason says the fetch was why, that
+the install happens once, and that an unreachable registry is the other possibility — with pinning
+named as what makes the section work offline (`runnerDownloadNote`). Every reason and report renders
+the source as the invocation — `npx --yes eas-cli@latest`, not the path `npx` was found at — so
+nothing claims an `eas` binary exists on a machine that has none.
 
 ## The run target
 

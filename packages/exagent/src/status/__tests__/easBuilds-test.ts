@@ -59,7 +59,13 @@ function iosOf(platforms: PlatformBuild[]): PlatformBuild {
 
 beforeEach(() => {
   vol.reset();
-  jest.mocked(resolveEasCli).mockReturnValue({ command: '/bin/eas', prefixArgs: [], source: 'path' });
+  jest.mocked(resolveEasCli).mockReturnValue({
+    command: 'npx',
+    prefixArgs: ['--yes', 'eas-cli@latest'],
+    source: 'npx --yes eas-cli@latest',
+    runner: 'npx',
+    pinned: false,
+  });
   jest.mocked(generateFingerprintAsync).mockResolvedValue({ hash: IOS_HASH, sources: [] });
   jest.mocked(lookUpCachedBuildAsync).mockResolvedValue({ state: 'none' });
 });
@@ -161,7 +167,13 @@ describe(readEasBuildsStatusAsync, () => {
 
     expect(generateFingerprintAsync).toHaveBeenCalledWith(projectRoot, { platform: 'ios' });
     expect(lookUpCachedBuildAsync).toHaveBeenCalledWith(
-      { command: '/bin/eas', prefixArgs: [], source: 'path' },
+      {
+    command: 'npx',
+    prefixArgs: ['--yes', 'eas-cli@latest'],
+    source: 'npx --yes eas-cli@latest',
+    runner: 'npx',
+    pinned: false,
+  },
       projectRoot,
       'ios',
       IOS_HASH,
@@ -258,7 +270,7 @@ describe(readEasBuildsStatusAsync, () => {
 
       expect(iosOf(status.platforms)).toMatchObject({
         state: 'unknown',
-        reason: 'the lookup did not finish within 5000ms',
+        reason: expect.stringContaining('the lookup did not finish within 5000ms'),
       });
     } finally {
       jest.useRealTimers();

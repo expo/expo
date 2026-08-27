@@ -38,7 +38,7 @@ import { spawnCaptureAsync } from '../utils/spawnCapture';
 import {
   checkBinaryCommand,
   looksLikeWrapperCrash,
-  wrapperCrashDetail,
+  runnerCrashDetail,
 } from '../utils/wrapperCrash';
 
 /** Platforms an EAS Simulator session can run. The same two the local backends drive. */
@@ -779,9 +779,10 @@ async function runEasAsync(
     }
   );
   return {
-    // How a person would reproduce the step, which on the runner rung is the runner and the package
-    // rather than a bare `eas` this machine does not have.
-    command: [cli.source === 'runner' ? easCliLabel(cli) : 'eas', ...args].join(' '),
+    // How a person would reproduce the step. The runner and the package spec, not a bare `eas`:
+    // that used to be the honest short form of a resolved binary, and is now the name of a command
+    // the machine may not have (`src/utils/easCli.ts`).
+    command: [easCliLabel(cli), ...args].join(' '),
     stdout,
     stderr,
     exitCode,
@@ -1005,7 +1006,7 @@ export function cloudVerbFailedError(
 
   const wrapperCrash = looksLikeWrapperCrash({ tool: 'eas', ...result });
   const detail = wrapperCrash
-    ? wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, result.binPath ?? 'eas')
+    ? runnerCrashDetail({ tool: 'eas', exitCode: result.exitCode }, result.command)
     : `\nWhat the tool printed:\n${(result.stderr.trim() || result.stdout.trim() || 'nothing').trim()}`;
 
   const error = new CommandError(

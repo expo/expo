@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { vol } from 'memfs';
+import path from 'path';
 
 import {
   parseBootedIosSimulator,
@@ -253,11 +254,23 @@ describe(resolveDeviceAsync, () => {
 // The ladder, not the argv: `src/device/__tests__/cloudSimulator-test.ts` pins what is sent to the
 // EAS CLI, and what is pinned here is *when* it is sent and which backend wins.
 describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
-  /** A project with an `eas` to spawn, and optionally a session on record. */
+  /**
+   * The runner every `eas` invocation goes through, planted where the resolver will look.
+   *
+   * A real `PATH` entry of this process, because these suites run on memfs and the resolver searches
+   * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
+   * used to be what made this hermetic; there is no rung that reads one any more.
+   */
+  const RUNNER = path.join(
+    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
+    'npx'
+  );
+
+  /** A project the cloud backend can be resolved in, and optionally a session on record. */
   function cloudProject(sessionId: string | null): void {
     vol.fromJSON({
       '/project/package.json': '{}',
-      '/project/node_modules/.bin/eas': '#!/bin/sh\n',
+      [RUNNER]: '#!/bin/sh\n',
       ...(sessionId
         ? { '/project/.env.eas-simulator': `EAS_SIMULATOR_SESSION_ID=${sessionId}\n` }
         : {}),

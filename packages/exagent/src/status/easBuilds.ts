@@ -29,7 +29,7 @@ import type { CachedBuild } from '../impact/types';
 import type { NativePlatform } from '../plan/types';
 import { generateFingerprintAsync } from '../project/fingerprint';
 import { ensureDotExpoProjectDirectoryInitialized } from '../utils/dotExpo';
-import { resolveEasCli, type EasCli } from '../utils/easCli';
+import { mayDownloadEasCli, resolveEasCli, type EasCli } from '../utils/easCli';
 import type { AuthStatus, BuildsStatus, PlatformBuild } from './types';
 
 /** Platforms the section reports, in print order — the same two `freshness` reports. */
@@ -50,13 +50,17 @@ export const EAS_BUILD_LOOKUP_TIMEOUT_MS = 10_000;
 /**
  * How long the same lookup gets when the EAS CLI has to be **downloaded** first.
  *
- * @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI
- * The runner rung's first run installs the package before the query starts, which no budget written
- * for a warm CLI can cover. Two answers were possible and this section takes the *middle* one
- * [decided — 2026-08-27, wave 18]: a wider budget, still bounded, so the common case of a modest
- * install answers rather than expires — and never the minutes a cold `npm` install can take, because
- * `status` must not hang. A run that expires anyway says the download was why, and the second run is
- * warm. Only reached under `--explain`; a default `status` asks EAS nothing at all.
+ * @ref llp/0015-backend-selection-and-config.rfc.md §What the first run costs, and who pays it
+ * In a project that does not pin `eas-cli`, the one rung is `npx --yes eas-cli@latest`: its first
+ * run installs the package before the query starts, and every run asks the registry, which no budget
+ * written for a warm CLI can cover. Two answers were possible and this section takes the *middle*
+ * one [decided — 2026-08-27, wave 18]: a wider budget, still bounded, so the common case of a modest
+ * install answers rather than expires — and never the minutes a cold install, or an unreachable
+ * registry, can take, because `status` must not hang. A run that expires anyway says the download was
+ * why, and the next run is warm. Only reached under `--explain`; a default `status` asks EAS nothing.
+ *
+ * A project that *pins* the CLI keeps the tighter budget above: the runner resolves it out of
+ * `node_modules` without a network call at all.
  */
 export const EAS_BUILD_RUNNER_TIMEOUT_MS = 45_000;
 
@@ -145,7 +149,7 @@ async function readPlatformAsync(
 
   const deadline =
     options.timeoutMs ??
-    (easCli?.source === 'runner' ? EAS_BUILD_RUNNER_TIMEOUT_MS : EAS_BUILD_LOOKUP_TIMEOUT_MS);
+    (mayDownloadEasCli(easCli) ? EAS_BUILD_RUNNER_TIMEOUT_MS : EAS_BUILD_LOOKUP_TIMEOUT_MS);
   const outcome = await withDeadlineAsync(
     lookUpPlatformAsync(projectRoot, platform, deadline, easCli),
     deadline

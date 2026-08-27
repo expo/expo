@@ -133,18 +133,18 @@ process.exit(0);
 const STUB_NPX_LOG_NAME = 'stub-npx-invocations.jsonl';
 
 /**
- * Stub `npx`, standing in for the package runner the wrapper falls back to.
+ * Stub `npx`, standing in for the package runner — which is the **only** way `deploy` reaches the
+ * EAS CLI (`src/utils/easCli.ts`, wave 18).
  *
- * `deploy` retries through `npx --yes eas-cli@latest` when the `eas` it resolved turns out not to be
- * the EAS CLI (F67), and an e2e test must not download a package or reach the network to exercise
- * that. So this runs the same stub `eas` script, steered by its own environment variables — which is
- * what lets one test make the fallback succeed and another make it fail for a real reason.
+ * It used to be the rig for a fallback: `deploy` ran the `eas` it resolved, noticed a wrapper crash,
+ * and retried through `npx`, so the stub had environment switches of its own to steer that second
+ * run independently of the first. There is no first run any more. The switches are gone with it, and
+ * this forwards the environment unchanged, so `STUB_EAS_*` steers the one run that happens.
  *
- * The leading `--yes` is npx's own and is skipped rather than forwarded: it stops npx prompting
- * before an install, so it is never part of the `eas` argv (`src/utils/easCli.ts`).
- *
- * - STUB_NPX_EAS_EXIT_CODE: exit code of the fallback run (default 0)
- * - STUB_NPX_EAS_STDERR: what the fallback prints on stderr before a non-zero exit
+ * What it does check is its own argv, the way npx would: `--yes` is npm's flag and is stripped
+ * rather than forwarded, and a spec that is not `eas-cli` is an error — a stub that ran anything it
+ * was handed would hide a wrong package name instead of failing on it. It also records every
+ * invocation, which is how a test asserts the runner was used and with what.
  */
 function stubNpx(easStubPath: string): string {
   return `#!/usr/bin/env node
@@ -160,18 +160,13 @@ fs.appendFileSync(
 );
 
 const forwarded = args[0] === '--yes' ? args.slice(1) : args;
-if (forwarded[0] !== 'eas-cli@latest') {
+if (forwarded[0] !== 'eas-cli' && forwarded[0] !== 'eas-cli@latest') {
   process.stderr.write('stub npx: nothing here runs ' + forwarded[0] + '\\n');
   process.exit(1);
 }
 
 const result = spawnSync(process.execPath, [${JSON.stringify(easStubPath)}, ...forwarded.slice(1)], {
   stdio: 'inherit',
-  env: {
-    ...process.env,
-    STUB_EAS_EXIT_CODE: process.env.STUB_NPX_EAS_EXIT_CODE || '0',
-    STUB_EAS_STDERR: process.env.STUB_NPX_EAS_STDERR || '',
-  },
 });
 process.exit(result.status === null ? 1 : result.status);
 `;
@@ -191,20 +186,37 @@ function readStubNpxInvocations(projectRoot: string): { args: string[]; cwd: str
 }
 
 /**
- * Copy a fixture and install the stub `eas` bin into the `.stub-bin` directory that
- * `stubExpoEnv()` puts on `PATH`, so `eas` resolves to the stub the same way `expo` does.
+ * Copy a fixture and install a stub **package runner** into the `.stub-bin` directory that
+ * `stubExpoEnv()` puts on `PATH`.
+ *
+ * @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI
+ * `deploy` reaches the EAS CLI one way — `npx --yes eas-cli@latest deploy` — so the stub `npx` is
+ * not a fallback rig any more, it is *the* thing under test. There is no stub `eas` bin beside it:
+ * nothing resolves a file by that name, and installing one would test a rung that no longer exists.
  */
-async function setupAsync(fixtureName: string): Promise<string> {
+async function setupAsync(
+  fixtureName: string,
+  { pinEasCli = true }: { pinEasCli?: boolean } = {}
+): Promise<string> {
   const projectRoot = await setupFixtureAsync(fixtureName);
+  // Pinned by default, because that is the shape most of this suite is about: a project that
+  // declares `eas-cli` gets the bare spec, which the runner resolves out of `node_modules` without a
+  // registry call — and it is what makes the *auth preflight* ask the EAS CLI rather than falling
+  // through to the project's `expo whoami` (`src/needsHuman/preflight.ts` §askEasAsync). One test
+  // below passes `pinEasCli: false` for the other shape.
+  if (pinEasCli) {
+    const manifestPath = path.join(projectRoot, 'package.json');
+    const manifest = JSON.parse(await fs.promises.readFile(manifestPath, 'utf8'));
+    manifest.devDependencies = { ...manifest.devDependencies, 'eas-cli': '^22.0.0' };
+    await fs.promises.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+  }
   const binDir = path.join(projectRoot, '.stub-bin');
   await fs.promises.mkdir(binDir, { recursive: true });
   // The stub is a Node script the shims run, not a bin itself: Windows can execute neither a
   // shebang script nor an extensionless file, so both shims are written (see
-  // {@link installStubBinAsync}) exactly as npm installs a real `eas`.
+  // {@link installStubBinAsync}).
   const stubScript = path.join(binDir, 'eas-stub.js');
   await fs.promises.writeFile(stubScript, STUB_EAS);
-  await installStubBinAsync(binDir, 'eas', stubScript);
-  // And the runner, so the wrapper-crash fallback stays inside the sandbox.
   const npxScript = path.join(binDir, 'npx-stub.js');
   await fs.promises.writeFile(npxScript, stubNpx(stubScript));
   await installStubBinAsync(binDir, 'npx', npxScript);
@@ -368,6 +380,14 @@ describe('exagent deploy', () => {
       expect(readStubExpoInvocations(projectRoot)).toEqual([
         { args: ['export', '--platform', 'web'], cwd: projectRoot, ci: '1', isTTY: false },
       ]);
+      // Every EAS run goes through the package runner — the auth preflight's `whoami` as much as the
+      // upload — with `--yes` and the package spec ahead of the command word. The spec is bare,
+      // because this project declares `eas-cli`: `@latest` would run a different version and ask the
+      // registry to find out which (`src/utils/easCli.ts`).
+      expect(readStubNpxInvocations(projectRoot)).toEqual([
+        { args: ['--yes', 'eas-cli', 'whoami'], cwd: projectRoot },
+        { args: ['--yes', 'eas-cli', 'deploy', '--non-interactive'], cwd: projectRoot },
+      ]);
       // The upload runs non-interactively, because nothing can answer a prompt here.
       expect(readStubEasInvocations(projectRoot)).toEqual([
         { args: ['deploy', '--non-interactive'], cwd: projectRoot, isTTY: false },
@@ -441,62 +461,65 @@ describe('exagent deploy', () => {
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('exited with code 7');
-      // The check names the binary that actually ran, not a different package with a similar
-      // name: `npx eas-cli whoami` would answer for a program that was never involved.
-      expect(result.stderr).toMatch(/Try: .*[/\\]\.stub-bin[/\\]eas(\.cmd)? whoami/);
-      expect(result.stderr).not.toContain('npx eas-cli whoami');
+      // The check names the invocation that actually ran, which with one rung is the only thing it
+      // could name — and is a line the reader can paste.
+      expect(result.stderr).toContain('Try: npx --yes eas-cli whoami');
     });
 
-    // A `.tuft-bin/eas`, a stale link, or any wrapper under that name is not the EAS CLI, and its
-    // output is not EAS output. Quoting a Rust backtrace under "What the tool printed" tells the
-    // reader the EAS CLI reported a missing file [observed — friction run, 2026-08-23].
-    //
     // @ref llp/0021-honest-reports.rfc.md §Route around a binary that is not the CLI
-    // Friction run 7's F67 is the other half: the run stopped there and handed back a `Try:` line
-    // that ran the same broken file again. A run that never was the CLI uploaded nothing, so the
-    // retry through the package runner is safe — and it is the only rung left.
-    describe('an "eas" that is not the EAS CLI', () => {
-      /** The env of a machine whose `eas` is a wrapper that panics. */
+    // This block used to be about a binary the machine had under the name `eas` — a wrapper, a stale
+    // link, a shim — whose Rust backtrace `deploy` quoted as EAS output [observed — friction run,
+    // 2026-08-23], and whose `Try:` line ran the same broken file again [F67]. The fix then was to
+    // notice the crash and retry through a package runner.
+    //
+    // **The runner is the only rung now** (wave 18), so there is no file under that name to pick and
+    // no second rung to retry on. What is left to pin is that the guard did not go away with the
+    // scenario: a package that answers like a wrapper is still named rather than quoted, the upload
+    // still happens exactly once, and the `Try:` line still names what actually ran.
+    describe('a package under the name `eas-cli` that does not answer like the CLI', () => {
+      /** The env of a run whose CLI dies the way a wrapper dies. */
       const shimEnv = {
         STUB_EAS_EXIT_CODE: '101',
         STUB_EAS_STDERR:
           'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   0: <std::backtrace::Backtrace>::create\n   2: tuft::main',
       };
 
-      it(`should deploy through the package runner instead`, async () => {
+      it(`should name it rather than quoting it, and upload exactly once`, async () => {
         const projectRoot = await setupAsync('go-app');
 
         const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
           env: shimEnv,
+          reject: false,
         });
 
-        expect(result.exitCode).toBe(0);
-        const report: DeployReport = JSON.parse(result.stdout);
-        expect(report.web?.url).toBe(STUB_DEPLOYMENT_URL);
-        // The retry, through the runner, with the package named.
-        expect(readStubNpxInvocations(projectRoot)).toEqual([
-          { args: ['--yes', 'eas-cli@latest', 'deploy', '--non-interactive'], cwd: projectRoot },
-        ]);
+        expect(result.exitCode).toBe(1);
+        // Once. A retry here would spend a second upload to be told the same thing. (The preflight's
+        // `whoami` goes through the same runner, so the upload runs are what this counts.)
+        expect(
+          readStubNpxInvocations(projectRoot).filter((run) => run.args.includes('deploy'))
+        ).toEqual([{ args: ['--yes', 'eas-cli', 'deploy', '--non-interactive'], cwd: projectRoot }]);
+        // The invocation is named; the panic is never quoted as EAS's answer about the account.
+        expect(result.stderr).toContain('npx --yes eas-cli');
+        expect(result.stderr).toContain('may not be the real CLI');
+        expect(result.all).not.toContain('tuft::main');
+        // And no advice about accounts, which is what a crash makes irrelevant.
+        expect(result.stderr).not.toContain('EXPO_TOKEN');
       });
 
-      it(`should never hand back a command that runs the broken binary`, async () => {
+      it(`should let the CLI's own sentence decide the diagnosis when it gave one`, async () => {
         const projectRoot = await setupAsync('go-app');
 
         const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
           env: {
-            ...shimEnv,
-            // The fallback ran, and the real CLI refused it for a reason of its own.
-            STUB_NPX_EAS_EXIT_CODE: '1',
-            STUB_NPX_EAS_STDERR: 'EAS project not configured.',
+            // Not a crash: the real CLI, refusing for a reason of its own.
+            STUB_EAS_EXIT_CODE: '1',
+            STUB_EAS_STDERR: 'EAS project not configured.',
           },
           reject: false,
         });
 
         expect(result.exitCode).toBe(1);
-        // The shim is named as what it is, and its panic is never quoted as EAS output.
-        expect(result.stderr).toContain('did not run as the EAS CLI');
-        expect(result.stderr).not.toContain('tuft::main');
-        // The EAS CLI's own sentence decides the diagnosis, not the exit signature (S2).
+        // The EAS CLI's own sentence decides it, not the exit signature (S2).
         expect(result.stderr).toContain('not linked');
         const { error } = JSON.parse(result.stdout);
         expect(error).toMatchObject({
@@ -505,6 +528,29 @@ describe('exagent deploy', () => {
         });
         expect(error.message).not.toContain('.stub-bin');
       });
+    });
+
+    // The other shape of the one rung: a project that declares no `eas-cli` at all. It gets
+    // `@latest`, and the auth preflight declines to spend a package install on reading a session
+    // file, so the account question goes to the project's own Expo CLI instead
+    // (llp/0015 §What the first run costs, and who pays it).
+    it(`should ask for @latest, and let the Expo CLI answer the account question, when nothing is pinned`, async () => {
+      const projectRoot = await setupAsync('go-app', { pinEasCli: false });
+
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json']);
+
+      expect(result.exitCode).toBe(0);
+      expect(readStubNpxInvocations(projectRoot)).toEqual([
+        { args: ['--yes', 'eas-cli@latest', 'deploy', '--non-interactive'], cwd: projectRoot },
+      ]);
+      expect(readStubExpoInvocations(projectRoot).map(({ args }) => args)).toEqual([
+        ['whoami'],
+        ['export', '--platform', 'web'],
+      ]);
+      // Nothing asked the EAS CLI who this machine is: that would have been the package install.
+      expect(
+        readStubEasInvocations(projectRoot, { includeProbes: true }).map(({ args }) => args)
+      ).toEqual([['deploy', '--non-interactive']]);
     });
 
     // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol

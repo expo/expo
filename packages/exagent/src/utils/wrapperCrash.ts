@@ -123,6 +123,42 @@ export function wrapperCrashReason(
 }
 
 /**
+ * The same two facts, for a tool this CLI reaches through a **package runner** rather than a file.
+ *
+ * `npx --yes eas-cli@latest` is not a file, so "check that file" is advice a reader cannot take, and
+ * "a wrapper script, a shim, or a stale link under that name" describes a hazard that a runner does
+ * not have — it resolves a package (`src/utils/easCli.ts`). What is worth saying instead is what the
+ * package resolved to here, because a project holding a broken or shadowed `eas-cli` is the only way
+ * this sentence can be reached at all.
+ *
+ * **Both of these should be unreachable**, and are kept for the reason the guard they belong to is
+ * kept: "unreachable" is a claim about today's resolver, not about the process boundary
+ * (llp/0001 §Constraints).
+ */
+export function runnerCrashDetail(
+  { tool, exitCode }: Pick<WrapperCrashInput, 'tool' | 'exitCode'>,
+  invocation: string
+): string {
+  return [
+    ``,
+    `What ran instead:`,
+    `"${invocation}" failed to run at all (this may not be the real CLI): it exited with code ${exitCode} and printed nothing an ${tool} run would print.`,
+    `Check what that package resolves to in this project — a broken or shadowed install of it will fail this way however the command is spelled.`,
+  ].join('\n');
+}
+
+/** The one-sentence form of {@link runnerCrashDetail}, for a report field that holds a reason. */
+export function runnerCrashReason(
+  { tool, exitCode }: Pick<WrapperCrashInput, 'tool' | 'exitCode'>,
+  invocation: string
+): string {
+  return (
+    `"${invocation}" exited ${exitCode} and printed nothing an ${tool} run would print, ` +
+    `so it may not be the real CLI — check what that package resolves to in this project`
+  );
+}
+
+/**
  * The command that reproduces a failure against the binary that actually ran.
  *
  * `npx eas-cli whoami` checks a *different* program than the one that just failed, so a reader who

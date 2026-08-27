@@ -53,17 +53,29 @@ import {
 } from '../cloudSimulator';
 import recordedAvailability from '../../__fixtures__/eas/simulator-availability.json';
 
-/** The `eas` this project has, so the resolver finds one without touching the machine's PATH. */
-const PROJECT_EAS = '/project/node_modules/.bin/eas';
+/**
+ * The runner every `eas` invocation goes through, planted where the resolver will look.
+ *
+ * A real `PATH` entry of this process, because `probeCloudSessionAsync` resolves against
+ * `process.env.PATH` and these tests run on memfs: planting the file at a directory this machine
+ * actually lists is what makes the lookup hermetic (`src/utils/easCli.ts` §resolveEasCli).
+ */
+const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!;
 
-/** A project with an `eas` in it and nothing else. */
+/** A project with a reachable runner and nothing else. */
 function project(files: Record<string, string> = {}): void {
   vol.fromJSON({
     '/project/package.json': '{}',
-    [PROJECT_EAS]: '#!/bin/sh\n',
+    [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh\n',
     ...files,
   });
 }
+
+/** The invocation such a project resolves to: one rung, and it declares no `eas-cli` of its own. */
+const EAS_PREFIX = ['--yes', 'eas-cli@latest'];
+
+/** The argv a spawn actually receives: the runner's prefix, then the EAS argv. */
+const easArgv = (args: string[]) => [...EAS_PREFIX, ...args];
 
 /** One recorded spawn, so a test can assert on the argv that was actually sent. */
 let spawned: { command: string; args: string[] }[] = [];
@@ -506,7 +518,7 @@ describe(probeCloudSessionAsync, () => {
       reason: null,
     });
     expect(spawned).toHaveLength(1);
-    expect(spawned[0]!.args).toEqual(buildSessionListArgs());
+    expect(spawned[0]!.args).toEqual(easArgv(buildSessionListArgs()));
   });
 
   it(`picks the session the dotenv names when the service lists several`, async () => {
@@ -585,8 +597,8 @@ describe(probeCloudSessionAsync, () => {
 
     expect(probe).toMatchObject({ state: 'none', sessionId: null, available: true });
     expect(spawned.map((run) => run.args)).toEqual([
-      buildSessionListArgs(),
-      buildAvailabilityArgs(),
+      easArgv(buildSessionListArgs()),
+      easArgv(buildAvailabilityArgs()),
     ]);
   });
 
@@ -666,15 +678,22 @@ describe(openUrlOnCloudSimulatorAsync, () => {
       projectRoot: '/project',
       url: 'exp://tunnel.example/--/?',
       platform: 'ios',
-      easCli: { command: PROJECT_EAS, prefixArgs: [], source: 'project' },
+      easCli: {
+        command: 'npx',
+        prefixArgs: EAS_PREFIX,
+        source: 'npx --yes eas-cli@latest',
+        runner: 'npx',
+        pinned: false,
+      },
     });
 
     expect(spawned[0]!.args).toEqual(
-      buildCloudOpenUrlArgs({ url: 'exp://tunnel.example/--/?', platform: 'ios' })
+      easArgv(buildCloudOpenUrlArgs({ url: 'exp://tunnel.example/--/?', platform: 'ios' }))
     );
     expect(result).toMatchObject({ exitCode: 0, stdout: 'opened', spawnError: null });
-    // The reproduction line names `eas`, not the resolved path, so it can be pasted.
-    expect(result.command.startsWith('eas simulator:exec')).toBe(true);
+    // The reproduction line names the runner and the package, not the path npx was found at, so it
+    // can be pasted on a machine that has no `eas` of its own.
+    expect(result.command.startsWith('npx --yes eas-cli@latest simulator:exec')).toBe(true);
   });
 
   it(`reports a refusal rather than throwing, so the caller explains it`, async () => {
@@ -685,7 +704,13 @@ describe(openUrlOnCloudSimulatorAsync, () => {
       projectRoot: '/project',
       url: 'exp://tunnel.example/--/?',
       platform: 'ios',
-      easCli: { command: PROJECT_EAS, prefixArgs: [], source: 'project' },
+      easCli: {
+        command: 'npx',
+        prefixArgs: EAS_PREFIX,
+        source: 'npx --yes eas-cli@latest',
+        runner: 'npx',
+        pinned: false,
+      },
     });
 
     expect(result.exitCode).toBe(1);
@@ -703,11 +728,17 @@ describe(captureCloudScreenshotAsync, () => {
     await captureCloudScreenshotAsync({
       projectRoot: '/project',
       filePath: '/project/.expo/exagent/shot.png',
-      easCli: { command: PROJECT_EAS, prefixArgs: [], source: 'project' },
+      easCli: {
+        command: 'npx',
+        prefixArgs: EAS_PREFIX,
+        source: 'npx --yes eas-cli@latest',
+        runner: 'npx',
+        pinned: false,
+      },
     });
 
     expect(spawned[0]!.args).toEqual(
-      buildCloudScreenshotArgs({ filePath: '/project/.expo/exagent/shot.png' })
+      easArgv(buildCloudScreenshotArgs({ filePath: '/project/.expo/exagent/shot.png' }))
     );
   });
 });

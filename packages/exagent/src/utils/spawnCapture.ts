@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 
+import { killProcessTree, USE_PROCESS_GROUP } from './processGroup';
 import { resolveSpawnTarget } from './windowsShim';
 
 /** Outcome of one captured subprocess run. */
@@ -31,13 +32,16 @@ export function spawnCaptureAsync(
       // The output is data for the caller, not something the user should read directly.
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: target.shell,
+      // Its own process group, so the deadline below stops the tree rather than a runner whose
+      // child then holds these pipes open forever (`src/utils/processGroup.ts`).
+      detached: USE_PROCESS_GROUP,
     });
 
     // A lookup tool that hangs must not hang the command that asked. Only set when a caller
     // names a deadline: every other caller runs a tool that ends on its own.
     let deadline: NodeJS.Timeout | null = null;
     if (options.timeoutMs != null) {
-      deadline = setTimeout(() => child?.kill('SIGKILL'), options.timeoutMs);
+      deadline = setTimeout(() => child && killProcessTree(child, 'SIGKILL'), options.timeoutMs);
       // An unreferenced timer never keeps the process alive on its own.
       deadline.unref?.();
     }

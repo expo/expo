@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { vol } from 'memfs';
+import path from 'path';
 
 import { buildStopAppCommand, looksLikeNotRunning, stopAppOnDeviceAsync } from '../appProcess';
 
@@ -78,11 +79,23 @@ describe(stopAppOnDeviceAsync, () => {
 describe('stopping the app on a cloud simulator session', () => {
   afterEach(() => vol.reset());
 
-  /** A project with an `eas` to spawn, so the resolver never reaches this machine's PATH. */
+  /**
+   * The runner every `eas` invocation goes through, planted where the resolver will look.
+   *
+   * A real `PATH` entry of this process, because these suites run on memfs and the resolver searches
+   * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
+   * used to be what made this hermetic; there is no rung that reads one any more.
+   */
+  const RUNNER = path.join(
+    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
+    'npx'
+  );
+
+  /** A project the cloud verbs can be resolved in. */
   function cloudProject(): void {
     vol.fromJSON({
       '/project/package.json': '{}',
-      '/project/node_modules/.bin/eas': '#!/bin/sh\n',
+      [RUNNER]: '#!/bin/sh\n',
     });
   }
 

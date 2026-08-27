@@ -18,7 +18,7 @@ import { spawnSubprocessAsync, type SubprocessResult } from '../../utils/subproc
 import {
   checkBinaryCommand,
   looksLikeWrapperCrash,
-  wrapperCrashDetail,
+  runnerCrashDetail,
 } from '../../utils/wrapperCrash';
 import { parseLastJsonObject, readProgress, readString } from './parseView';
 import type { BuildWaitOptions } from './resolveOptions';
@@ -257,7 +257,7 @@ function pollFailedError(
       : checkBinaryCommand(easCli.command, ['whoami']);
   const crashed = looksLikeWrapperCrash({ tool: 'eas', ...result });
   const detail = crashed
-    ? wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCli.command)
+    ? runnerCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli))
     : fencedTail(result);
   const cause = crashed
     ? `Why: the "eas" that ran is not answering as the EAS CLI at all, so nothing was learned about the ${options.kind === 'submission' ? 'submission' : 'build'}.`

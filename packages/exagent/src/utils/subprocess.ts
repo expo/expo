@@ -8,6 +8,7 @@ import path from 'path';
 import { isPromptShaped, lastNonEmptyLine } from '../needsHuman/detect';
 import { fileExistsSync } from './dir';
 import { env } from './env';
+import { killProcessTree, USE_PROCESS_GROUP } from './processGroup';
 import { resolveSpawnTarget } from './windowsShim';
 
 /** What happens to the output of the subprocess. */
@@ -126,6 +127,10 @@ export function spawnSubprocessAsync(
       cwd,
       stdio: stdioFor(output),
       shell: target.shell,
+      // Its own process group, so a deadline or the prompt guard can stop the whole tree. What this
+      // spawns is usually a package runner, and the program that does the work is the runner's
+      // child (`src/utils/processGroup.ts`).
+      detached: USE_PROCESS_GROUP,
       // Only when there is something to add: `undefined` is what makes the child inherit, and
       // spelling out `process.env` here would freeze a copy for no reason.
       ...(childEnv ? { env: { ...process.env, ...childEnv } } : null),
@@ -141,7 +146,7 @@ export function spawnSubprocessAsync(
     const deadline = timeoutMs
       ? setTimeout(() => {
           timedOut = true;
-          child.kill();
+          killProcessTree(child);
         }, timeoutMs)
       : undefined;
     deadline?.unref?.();
@@ -156,7 +161,7 @@ export function spawnSubprocessAsync(
             lastOutput: () => stderr || stdout,
             onHang: (line) => {
               promptHang = line;
-              child.kill();
+              killProcessTree(child);
             },
           })
         : null;
@@ -185,7 +190,7 @@ export function spawnSubprocessAsync(
 
     const listeners = TERMINAL_SIGNALS.map((signal) => {
       const forward = () => {
-        child.kill(signal);
+        killProcessTree(child, signal);
       };
       process.on(signal, forward);
       return { signal, forward } as const;

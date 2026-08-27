@@ -58,7 +58,7 @@ jest.mock('../../impact/buildCache', () => ({
   ...(jest.requireActual('../../impact/buildCache') as object),
   lookUpBuildPlatformAsync: jest.fn(async () => null),
 }));
-jest.mock('../../utils/easCli', () => ({ resolveEasCliOrThrow: jest.fn(() => ({ command: '/bin/eas', prefixArgs: [], source: 'path' })) }));
+jest.mock('../../utils/easCli', () => ({ resolveEasCliOrThrow: jest.fn(() => ({ command: 'npx', prefixArgs: ['--yes', 'eas-cli@latest'], source: 'npx --yes eas-cli@latest', runner: 'npx', pinned: false })) }));
 jest.mock('../../impact/runtimeVersion', () => ({
   resolveRuntimeVersionAsync: jest.fn(async () => ({
     policy: 'appVersion',

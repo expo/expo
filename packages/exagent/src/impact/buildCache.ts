@@ -7,20 +7,20 @@
 // v22.2.0]. `--json` implies `--non-interactive` there; both are passed anyway, because the
 // implication is the other CLI's and this one does not depend on it.
 
-import { easCliArgs, easCliLabel, usesPackageRunner, type EasCli } from '../utils/easCli';
+import { easCliArgs, easCliLabel, mayDownloadEasCli, type EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
-import { looksLikeWrapperCrash, wrapperCrashReason } from '../utils/wrapperCrash';
+import { looksLikeWrapperCrash, runnerCrashReason } from '../utils/wrapperCrash';
 import type { CachedBuild } from './types';
 
 /**
  * How long the lookup may take before it is abandoned, for a caller that names no budget.
  *
- * **Unchanged by the runner rung** [decided — 2026-08-27, wave 18]. On a machine with no `eas-cli`
- * installed the lookup now runs `npx --yes eas-cli@latest`, whose first run installs the package
- * before the query starts, and that can outlast this. The default stays anyway, because the caller
- * that takes it is `impact` — an *opportunistic* lookup decorating a report that is complete without
- * it, run without being asked for. Twenty seconds of a command's time is a fair ceiling on a nicety;
- * a minute is not.
+ * **Unchanged by the move to a package runner** [decided — 2026-08-27, wave 18]. In a project that
+ * does not pin `eas-cli` the lookup runs `npx --yes eas-cli@latest`, whose first run installs the
+ * package before the query starts, and that can outlast this. The default stays anyway, because the
+ * caller that takes it is `impact` — an *opportunistic* lookup decorating a report that is complete
+ * without it, run without being asked for. Twenty seconds of a command's time is a fair ceiling on a
+ * nicety; a minute is not.
  *
  * The caller that *did* ask — `status --explain` — passes a wider budget of its own
  * (`EAS_BUILD_RUNNER_TIMEOUT_MS`, `src/status/easBuilds.ts`). Either way a run that expires says the
@@ -37,9 +37,14 @@ export const BUILD_CACHE_TIMEOUT_MS = 20_000;
  * be told two different things about the same minute.
  */
 export function runnerDownloadNote(easCli: EasCli | null): string {
-  return usesPackageRunner(easCli)
-    ? `, and "${easCliLabel(easCli!)}" was downloading the EAS CLI, which only happens once — running this again should answer`
-    : '';
+  if (!mayDownloadEasCli(easCli)) {
+    return '';
+  }
+  // Both halves are real. `@latest` installs the package on a first run, and asks the registry on
+  // every run — so a machine that cannot reach one spends the whole budget here [observed — live,
+  // 2026-08-27: ~70 s before npm gave up]. A reader who cannot tell those apart re-runs and finds
+  // out, which is why the sentence names both and promises nothing.
+  return `, and "${easCliLabel(easCli!)}" was fetching the EAS CLI: the install happens once, so a re-run should answer — unless this machine cannot reach the npm registry, in which case pinning the CLI into the project ("npm install --save-dev eas-cli") is what makes this section work offline`;
 }
 
 /**
@@ -98,13 +103,13 @@ export async function lookUpCachedBuildAsync(
   { timeoutMs = BUILD_CACHE_TIMEOUT_MS }: { timeoutMs?: number } = {}
 ): Promise<BuildLookupOutcome> {
   if (!easCli) {
-    // Reachable only on a machine with no `eas` **and** no package runner to fetch one with: the
-    // resolver's third rung is `npx eas-cli@latest`, so "nothing is installed" is no longer an
-    // answer on its own (`src/utils/easCli.ts`).
+    // Not "no EAS CLI is installed" any more — this CLI runs the published one through a package
+    // runner, so the only way to get here is a machine with no `npx` and no `bunx` on PATH at all
+    // (`src/utils/easCli.ts`).
     return {
       state: 'unknown',
       reason:
-        'no EAS CLI is installed and no package runner ("npx" or "bunx") is on PATH to download one, so nothing here can ask EAS about builds',
+        'no package runner ("npx" or "bunx") is on PATH, so nothing here could start the EAS CLI to ask about builds',
     };
   }
   if (!hash) {
@@ -141,7 +146,7 @@ export async function lookUpCachedBuildAsync(
     if (looksLikeWrapperCrash({ tool: 'eas', ...result })) {
       return {
         state: 'unknown',
-        reason: wrapperCrashReason({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
+        reason: runnerCrashReason({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
       };
     }
     return { state: 'unknown', reason: describeLookupFailure(result.stdout, result.stderr) };

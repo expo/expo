@@ -59,6 +59,10 @@ async function setupBareDirAsync(bins: ('expo' | 'eas')[]): Promise<string> {
     await fs.promises.writeFile(script, stubScriptFor(bin));
     await installStubBinAsync(binDir, bin, script);
   }
+  // And a stub package runner on `PATH`, always. It is the only way the EAS side of this chain
+  // reaches a CLI (`src/utils/easCli.ts`, wave 18), and a suite without it would either run the
+  // real npx — downloading eas-cli — or fail to spawn at all.
+  await installStubRunnerAsync(dir);
   return dir;
 }
 
@@ -69,17 +73,28 @@ async function setupBareDirAsync(bins: ('expo' | 'eas')[]): Promise<string> {
  * handed. Letting the real `npx` run would fetch the `expo` package and then hand an interactive
  * signup a terminal, which is two things a test must not do.
  */
-async function installStubNpxAsync(dir: string): Promise<void> {
+async function installStubRunnerAsync(dir: string): Promise<void> {
   const script = path.join(dir, 'npx-stub.js');
   await fs.promises.writeFile(
     script,
     `#!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+const args = process.argv.slice(2);
 fs.appendFileSync(
   path.join(process.env.AUTH_LOG_DIR, ${JSON.stringify(LOG_NAME)}),
-  JSON.stringify({ bin: 'npx', args: process.argv.slice(2), cwd: process.cwd() }) + '\\n'
+  JSON.stringify({ bin: 'npx', args, cwd: process.cwd() }) + '\\n'
 );
+// What the package was asked to do, with the runner's own flag and the spec stripped off.
+const rest = args[0] === '--yes' ? args.slice(1) : args;
+const spec = rest[0] || '';
+const verb = rest[1];
+if (spec.startsWith('eas-cli') && verb === 'whoami') {
+  process.stdout.write('kudochien\\nkudo@csie.io\\n\\nAccounts:\\n• kudochien (Role: Owner)\\n');
+}
+if (spec === 'expo' && verb === 'whoami') {
+  process.stdout.write('kudochien\\n');
+}
 process.exit(0);
 `
   );
@@ -98,19 +113,26 @@ function readInvocations(dir: string): StubInvocation[] {
     .map((line) => JSON.parse(line) as StubInvocation);
 }
 
-/** `PATH` with nothing on it that could answer as `eas` or `expo`. */
+/**
+ * `PATH` with nothing on it that could answer as `eas` or `expo` — and the stub runner, which is
+ * what every EAS-backed invocation goes through.
+ */
 function isolatedEnv(dir: string): Record<string, string> {
-  return { AUTH_LOG_DIR: dir, PATH: [path.dirname(process.execPath), '/usr/bin', '/bin'].join(':') };
+  return {
+    AUTH_LOG_DIR: dir,
+    PATH: [path.join(dir, 'path-bin'), path.dirname(process.execPath), '/usr/bin', '/bin'].join(':'),
+  };
 }
 
 describe('auth commands outside an Expo project', () => {
-  it(`should answer whoami with the project's eas CLI when there is no expo`, async () => {
-    const dir = await setupBareDirAsync(['eas']);
+  it(`should answer whoami with the EAS CLI through the package runner when there is no expo`, async () => {
+    const dir = await setupBareDirAsync([]);
 
     const result = await executeExagentAsync(dir, ['whoami'], { env: isolatedEnv(dir) });
 
+    // `--yes` and the spec ahead of the verb. `@latest` because a bare directory declares nothing.
     expect(readInvocations(dir)).toEqual([
-      { bin: 'eas', args: ['whoami'], cwd: expect.any(String) },
+      { bin: 'npx', args: ['--yes', 'eas-cli@latest', 'whoami'], cwd: expect.any(String) },
     ]);
     // The answer is the EAS CLI's, on stdout, with nothing of this wrapper's mixed into it.
     expect(result.stdout).toContain('kudochien');
@@ -153,15 +175,20 @@ describe('auth commands outside an Expo project', () => {
       cli: expect.stringContaining('eas'),
     });
     // The flag is this CLI's, so it is not passed on to a CLI that has no such option.
-    expect(readInvocations(dir)[0]?.args).toEqual(['whoami']);
+    expect(readInvocations(dir)[0]?.args).toEqual(['--yes', 'eas-cli@latest', 'whoami']);
   });
 
   it(`should forward the arguments it was given`, async () => {
-    const dir = await setupBareDirAsync(['eas']);
+    const dir = await setupBareDirAsync([]);
 
     await executeExagentAsync(dir, ['login', '--help'], { env: isolatedEnv(dir) });
 
-    expect(readInvocations(dir)[0]?.args).toEqual(['login', '--help']);
+    expect(readInvocations(dir)[0]?.args).toEqual([
+      '--yes',
+      'eas-cli@latest',
+      'login',
+      '--help',
+    ]);
   });
 
   // `register` is the one command that does not take the EAS fallback, because there is no
@@ -172,11 +199,10 @@ describe('auth commands outside an Expo project', () => {
   // that ran the real `expo register` would try to create an account.
   it(`should run expo register through the package runner, not any eas`, async () => {
     const dir = await setupBareDirAsync(['eas']);
-    await installStubNpxAsync(dir);
 
     const eventsFile = path.join(dir, 'events.jsonl');
     const result = await executeExagentAsync(dir, ['register'], {
-      env: { ...isolatedEnv(dir), PATH: `${path.join(dir, 'path-bin')}:${isolatedEnv(dir).PATH}`, LOG_EVENTS: eventsFile },
+      env: { ...isolatedEnv(dir), LOG_EVENTS: eventsFile },
     });
 
     expect(result.exitCode).toBe(0);
@@ -189,10 +215,9 @@ describe('auth commands outside an Expo project', () => {
 
   it(`should say which CLI runs register, on stderr, and warn about the download`, async () => {
     const dir = await setupBareDirAsync(['eas']);
-    await installStubNpxAsync(dir);
 
     const result = await executeExagentAsync(dir, ['register'], {
-      env: { ...isolatedEnv(dir), PATH: `${path.join(dir, 'path-bin')}:${isolatedEnv(dir).PATH}` },
+      env: isolatedEnv(dir),
     });
 
     expect(result.stderr).toContain('npx expo');
@@ -213,19 +238,24 @@ describe('auth commands outside an Expo project', () => {
     expect(result.stderr).not.toContain('Using the');
   });
 
-  it(`should use an eas found on PATH when the directory has none of its own`, async () => {
+  // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints
+  // There used to be a rung here for an `eas` on `PATH`, guarded by a `--version` probe because a
+  // binary under that name can be a wrapper, a shim or a stale link — the machine this was written
+  // on has exactly that. Both are gone: a runner resolves a *package*, so a file called `eas` is
+  // never a candidate, and there is nothing left to probe (`src/utils/easCli.ts`, wave 18).
+  it(`should never spawn a stray eas on PATH, and never probe one`, async () => {
     const dir = await setupBareDirAsync([]);
-    const pathDir = path.join(dir, 'path-bin');
+    const easOnPath = path.join(dir, 'path-bin');
     const script = path.join(dir, 'eas-stub.js');
     await fs.promises.writeFile(script, stubScriptFor('eas'));
-    await installStubBinAsync(pathDir, 'eas', script);
+    await installStubBinAsync(easOnPath, 'eas', script);
 
-    await executeExagentAsync(dir, ['whoami'], {
-      env: { ...isolatedEnv(dir), PATH: `${pathDir}:${isolatedEnv(dir).PATH}` },
-    });
+    await executeExagentAsync(dir, ['whoami'], { env: isolatedEnv(dir) });
 
-    // Two runs: the `--version` probe that checks the binary is really the CLI, then the command.
-    expect(readInvocations(dir).map((run) => run.args)).toEqual([['--version'], ['whoami']]);
+    // One invocation, and it is the runner's. Nothing recorded a `--version`, because nothing asked.
+    expect(readInvocations(dir)).toEqual([
+      { bin: 'npx', args: ['--yes', 'eas-cli@latest', 'whoami'], cwd: expect.any(String) },
+    ]);
   });
 });
 
@@ -306,7 +336,10 @@ describe('the runner that downloads a CLI this machine does not have', () => {
       reject: false,
     });
 
-    expect(readInvocations(dir)).toEqual([]);
+    // The bunx stub records itself as `eas`; the npx stub records itself as `npx`. So "bunx was not
+    // reached" is "nothing under that name ran", and the run that did happen was npm's exec.
+    expect(readInvocations(dir).map((run) => run.bin)).toEqual(['npx']);
+    expect(readInvocations(dir)[0]!.args).toEqual(['--yes', 'eas-cli@latest', 'whoami']);
     expect(result.stderr).toContain('Using the EAS CLI (npx --yes eas-cli@latest)');
   });
 });

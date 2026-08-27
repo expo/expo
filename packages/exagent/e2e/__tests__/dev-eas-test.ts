@@ -14,7 +14,7 @@ import path from 'node:path';
 
 import {
   executeExagentAsync,
-  installStubBinAsync,
+  installStubEasRunnerAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
@@ -88,10 +88,10 @@ async function setupAsync(
   await fs.promises.mkdir(binDir, { recursive: true });
   const easStub = path.join(binDir, 'eas-stub.js');
   await fs.promises.writeFile(easStub, easScript);
-  // Both places `resolveEasCli` looks, so the resolver is exercised rather than one of its arms.
-  for (const dir of [binDir, path.join(projectRoot, 'node_modules', '.bin')]) {
-    await installStubBinAsync(dir, 'eas', easStub);
-  }
+  // One place, because there is one rung: a stub package runner on `PATH`. A
+  // `node_modules/.bin/eas` beside it would exercise nothing — no resolver reads one
+  // (`src/utils/easCli.ts`).
+  await installStubEasRunnerAsync(binDir, easStub);
   return projectRoot;
 }
 

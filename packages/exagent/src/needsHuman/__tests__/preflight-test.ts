@@ -23,9 +23,28 @@ function mockWhoami(result: Partial<subprocess.SubprocessResult>) {
     .mockResolvedValue({ exitCode: 0, stdout: '', stderr: '', ...result });
 }
 
-/** A project whose own `eas` bin is the one that would run. */
-function withProjectEas() {
-  vol.fromJSON({ [`${projectRoot}/node_modules/.bin/eas`]: '#!/bin/sh' });
+/**
+ * A real `PATH` entry of this process, so the resolver finds the runner under memfs.
+ *
+ * The preflight resolves against `process.env.PATH`; planting the file at a directory this machine
+ * actually lists is what makes the lookup hermetic (`src/utils/easCli.ts` §resolveEasCli).
+ */
+const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!;
+
+/**
+ * A project that **pins** `eas-cli`, which is the only shape this preflight asks EAS about.
+ *
+ * The one rung is a package runner, and in a project that declares nothing that means
+ * `npx --yes eas-cli@latest` — a package install to read `~/.expo/state.json`. `status` promises to
+ * be instant, so it asks only where the runner resolves the CLI out of `node_modules`
+ * (`src/needsHuman/preflight.ts` §askEasAsync).
+ */
+function withPinnedEasCli(files: Record<string, string> = {}) {
+  vol.fromJSON({
+    [`${projectRoot}/package.json`]: JSON.stringify({ devDependencies: { 'eas-cli': '22.4.0' } }),
+    [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh',
+    ...files,
+  });
 }
 
 beforeEach(() => {
@@ -36,7 +55,7 @@ beforeEach(() => {
 
 describe(readAuthPreflightAsync, () => {
   it('reports the account the EAS CLI named', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({ exitCode: 0, stdout: 'kudo\n' });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
@@ -47,7 +66,7 @@ describe(readAuthPreflightAsync, () => {
   });
 
   it('skips a notice printed above the answer', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({ exitCode: 0, stdout: 'A new version of eas-cli is available\nkudo@expo.dev\n' });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({
@@ -59,7 +78,7 @@ describe(readAuthPreflightAsync, () => {
   // `eas whoami` prints an account list *below* the name, so the last line is a role and not a
   // user. Recorded from the published CLI — see `src/__fixtures__/eas/README.md`.
   it('reads the name above the account list of a multi-account actor', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({ exitCode: 0, stdout: recordedWhoami });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
@@ -72,7 +91,7 @@ describe(readAuthPreflightAsync, () => {
   // `eas-cli/build/commands/account/view.js` appends this when the session came from the variable
   // [observed — 22.4.0]. The account is still the account; the suffix is a note about how.
   it('reads the name out from under the EXPO_TOKEN note', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({ exitCode: 0, stdout: 'ci-robot (authenticated using EXPO_TOKEN)\n' });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({
@@ -81,7 +100,7 @@ describe(readAuthPreflightAsync, () => {
   });
 
   it('reports a signed-out machine as signed out', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({ exitCode: 1, stderr: 'Not logged in\n' });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
@@ -93,7 +112,7 @@ describe(readAuthPreflightAsync, () => {
 
   // A token the service rejected is what a bare "the variable is set" check would call a login.
   it('trusts the CLI over the variable when both could speak', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     process.env.EXPO_TOKEN = 'expired';
     mockWhoami({ exitCode: 1, stderr: 'Not logged in\n' });
 
@@ -101,6 +120,23 @@ describe(readAuthPreflightAsync, () => {
       loggedIn: false,
       source: 'eas whoami',
     });
+  });
+
+  // The cost this preflight refuses to pay. `resolveEasCli` answers for every project — the runner
+  // is always reachable — so what stops a download here is `mayDownloadEasCli`, not a missing CLI.
+  it('never spends a package install to read a local session file', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({ dependencies: { expo: '~54.0.0' } }),
+      [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh',
+    });
+    const spawned = mockWhoami({ exitCode: 0, stdout: 'kudo\n' });
+
+    await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
+      loggedIn: null,
+      user: null,
+      source: null,
+    });
+    expect(spawned).not.toHaveBeenCalled();
   });
 
   it('falls back to the token when there is no EAS CLI to ask', async () => {
@@ -124,7 +160,7 @@ describe(readAuthPreflightAsync, () => {
   });
 
   it('answers "unknown" when the CLI took too long', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({ exitCode: null, timedOut: true });
 
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({ loggedIn: null });
@@ -134,7 +170,7 @@ describe(readAuthPreflightAsync, () => {
   // signed-out one, and calling that "signed out" would stop a command that had every right to
   // run and hand the user a login they do not need.
   it('answers "unknown" when the binary under that name is not the CLI', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({
       exitCode: 101,
       stderr: 'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   2: tuft::main\n',
@@ -148,7 +184,7 @@ describe(readAuthPreflightAsync, () => {
   });
 
   it('answers "unknown" when the CLI could not be started', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     mockWhoami({
       exitCode: null,
       spawnError: Object.assign(new Error('nope'), { code: 'EACCES' }),
@@ -166,19 +202,16 @@ describe(readAuthPreflightAsync, () => {
       eas: Partial<subprocess.SubprocessResult>;
       expo: Partial<subprocess.SubprocessResult>;
     }) {
-      vol.fromJSON({
-        [`${projectRoot}/node_modules/.bin/eas`]: '#!/bin/sh',
-        [`${projectRoot}/node_modules/.bin/expo`]: '#!/bin/sh',
-      });
+      withPinnedEasCli({ [`${projectRoot}/node_modules/.bin/expo`]: '#!/bin/sh' });
       return jest
         .spyOn(subprocess, 'spawnSubprocessAsync')
-        .mockImplementation(async (command: string) => ({
+        // Which CLI is being asked is in the *argv* now, not in the command: the EAS side is the
+        // runner plus the package spec, and the Expo side is still the project's own bin.
+        .mockImplementation(async (command: string, args: string[] = []) => ({
           exitCode: 0,
           stdout: '',
           stderr: '',
-          ...(command.endsWith('expo') || command.endsWith('expo.cmd')
-            ? answers.expo
-            : answers.eas),
+          ...(args.some((arg) => arg.startsWith('eas-cli')) ? answers.eas : answers.expo),
         }) as never);
     }
 
@@ -227,7 +260,7 @@ describe(readAuthPreflightAsync, () => {
     // `resolveExpoCli` would fall back to a package runner, which downloads the whole SDK to read
     // one JSON file. `status` promises to be instant.
     it('never reaches for a package runner when the project has no expo', async () => {
-      withProjectEas();
+      withPinnedEasCli();
       const spawned = mockWhoami({ exitCode: 101, stderr: 'Stack backtrace:\n' });
 
       await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
@@ -240,7 +273,7 @@ describe(readAuthPreflightAsync, () => {
   });
 
   it('spawns once however often it is asked', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     const spawned = mockWhoami({ exitCode: 0, stdout: 'kudo\n' });
 
     const [first, second] = await Promise.all([
@@ -256,14 +289,16 @@ describe(readAuthPreflightAsync, () => {
   });
 
   it('gives the CLI a deadline, so status stays instant', async () => {
-    withProjectEas();
+    withPinnedEasCli();
     const spawned = mockWhoami({ exitCode: 0, stdout: 'kudo\n' });
 
     await readAuthPreflightAsync(projectRoot, { timeoutMs: 1234 });
 
     expect(spawned).toHaveBeenCalledWith(
-      expect.stringContaining('eas'),
-      ['whoami'],
+      'npx',
+      // The bare spec, because this project pins the CLI: `eas-cli@latest` would run a different
+      // version and ask the registry to find out which (`src/utils/easCli.ts`).
+      ['--yes', 'eas-cli', 'whoami'],
       expect.objectContaining({ timeoutMs: 1234 })
     );
   });

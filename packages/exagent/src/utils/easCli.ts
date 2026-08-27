@@ -1,86 +1,114 @@
 // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy — EAS Hosting is the web rail.
-// @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI — the ladder.
+// @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI — the single rung.
 // The EAS CLI is reached as a subprocess like the rest of the family (llp/0001 constraint 5), so
-// the first question of anything that goes through EAS is which `eas` binary is going to run. A
-// web deploy answers it before it exports; every other EAS-backed command answers it the same way,
-// which is why the resolver is here and not under `deploy/`.
+// the first question of anything that goes through EAS is which `eas` is going to run. A web deploy
+// answers it before it exports; every other EAS-backed command answers it the same way, which is
+// why the resolver is here and not under `deploy/`.
 //
-// **An installed `eas-cli` is not something this CLI may expect.** The ladder used to stop at
-// `PATH`, so a machine that had never installed it got `eas unknown (no EAS CLI is installed, so
-// nothing here can ask EAS about builds)` from `status --explain` and an install line from every
-// command that needs EAS [observed — 2026-08-26, reported by Kudo]. The published package is one
-// `npx` away, and the auth chain had been reaching for it that way since wave 17, per call site.
-// So the runner is a **rung of the ladder** now rather than one site's fallback.
+// **There is one answer: the package runner.** `npx --yes eas-cli`, or `bunx eas-cli`. Not a ladder
+// of a project bin, then `PATH`, then a runner — one rung, taken every time
+// [decided — Kudo, 2026-08-27]. An installed `eas-cli` was never something this CLI could expect
+// [observed — 2026-08-26, reported by Kudo: `eas unknown (no EAS CLI is installed, so nothing here
+// can ask EAS about builds)` on a machine that had simply never installed it].
+//
+// Two things make one rung simpler rather than weaker, and both were measured before they were
+// relied on (llp/0015 §What the runners actually do):
+//
+//  1. **The runners already prefer the project's own copy.** `npx --yes eas-cli` in a project that
+//     has `eas-cli` installed runs *that* version and touches no network — verified against a dead
+//     registry [observed — live, 2026-08-27]. So dropping the "project bin first" rung drops
+//     nothing: the pin still wins, including in a monorepo whose install is hoisted to the
+//     workspace root.
+//  2. **It kills the impostor class by construction.** What used to answer the name `eas` was
+//     whatever the machine had under it — a wrapper, a stale symlink, a shim from another tool
+//     (llp/0001 §Constraints) — and every call site needed a guard against reporting its bytes as
+//     the service's answer. A runner resolves a *package*, never a file on `PATH`, so a stray `eas`
+//     is not spawned at all. The guards stay as a safety net (`utils/wrapperCrash.ts`) and should
+//     now be unreachable.
+//
+// The one cost is the first run in a project that does *not* have `eas-cli`: the runner downloads
+// it. Which caller may pay that is a caller's decision rather than this module's, and `pinned` is
+// what lets each of them make it — see llp/0015 §What the first run costs, and who pays it.
 
+import fs from 'fs';
 import path from 'path';
 
-import { fileExistsSync } from './dir';
 import { CommandError } from './errors';
 import { type Invoker } from './invoker';
 import { resolvePackageRunnerForProject } from './packageRunner';
-import { findExecutableOnPath, spawnSubprocessAsync } from './subprocess';
-import { looksLikeWrapperCrash } from './wrapperCrash';
+import { findExecutableOnPath } from './subprocess';
 
-/** Where the `eas` that is going to run came from. */
-export type EasCliSource =
-  /** The project's own `eas-cli`, from `node_modules/.bin`. */
-  | 'project'
-  /** A globally installed one, found on `PATH`. */
-  | 'path'
-  /** None is installed, so the published package is run through `npx` or `bunx`. */
-  | 'runner';
-
-/** The `eas` bin to spawn, and where it came from. */
+/** The `eas` invocation to spawn. */
 export interface EasCli {
-  /** The executable to spawn. */
+  /** The executable to spawn: the runner. An absolute path for `bunx`, the bare name for `npx`. */
   command: string;
   /**
-   * What goes before the `eas` command word, which is the package name in the runner form.
+   * What goes before the `eas` command word: the runner's own flags, then the package spec.
    *
-   * Always spread through {@link easCliArgs} rather than read directly: a call site that spawns
+   * Always spread through {@link easCliArgs} rather than read directly — a call site that spawns
    * `command` with its own argv alone runs `npx build:list`, which is a different program.
    */
   prefixArgs: string[];
-  source: EasCliSource;
   /**
-   * Which runner is downloading the package. Set only for `source: 'runner'`.
+   * Where the CLI came from, which is now always a description of the runner, e.g.
+   * `npx --yes eas-cli@latest`.
    *
-   * The name rather than the path, because it is what {@link easCliLabel} prints and what a reader
-   * would type. The path is still what gets spawned.
+   * A string rather than the old `'project' | 'path' | 'runner'` enum: with one rung there is no
+   * rung to report, and what the reader of an event or a failure needs instead is the line they
+   * could paste. {@link easCliLabel} is the accessor; this field is what carries it into a payload.
    */
-  runner?: Invoker;
+  source: string;
+  /** Which runner is going to run it. */
+  runner: Invoker;
+  /**
+   * Whether the project declares `eas-cli`, so the runner resolves it out of `node_modules`.
+   *
+   * The difference between a spawn that costs about a third of a second and one that may install a
+   * package first, which is the only thing any caller has to weigh about this rung. Read from the
+   * project's `package.json` rather than probed, because the decision it informs has to be made
+   * before anything is spawned.
+   */
+  pinned: boolean;
 }
 
 /**
- * The package the runner rung runs, pinned to a name rather than to a version.
+ * The package spec for a project that does **not** declare `eas-cli`.
  *
- * `@latest` because the rung only exists when nothing is installed: there is no pinned version in
- * this project to respect, and the newest CLI is the one that knows about the newest service.
+ * `@latest` because there is no pin in this project to respect, and the newest CLI is the one that
+ * knows about the newest service. It is not free: `@latest` asks the registry on every run, and on a
+ * machine that cannot reach one it stalls for the length of npm's own retry ladder before failing
+ * [observed — live, 2026-08-27: ~70 s against a dead registry]. Every caller therefore spawns this
+ * under a deadline, and the opportunistic ones say so when it expires.
  */
-export const EAS_CLI_PACKAGE = 'eas-cli@latest';
+export const EAS_CLI_PACKAGE_LATEST = 'eas-cli@latest';
 
 /**
- * What goes before the `eas` command word under npm's exec.
+ * The package spec for a project that declares `eas-cli`.
  *
- * `--yes` because npx **prompts** before installing a package it has not seen — `Need to install the
- * following packages: … Ok to proceed? (y)` — and a prompt is a hang here rather than a question:
- * `spawnSubprocessAsync` never attaches stdin (llp/0006 §Non-interactive parity), so the answer it
- * waits for can never arrive. A named constant rather than an inline array so the foreign-flag lint
- * counts it: it is an option this CLI writes onto another program's command line, which is exactly
- * what that inventory is for (llp/0002).
+ * The bare name, and {@link EAS_CLI_PACKAGE_LATEST} is exactly what it must not be: a spec carrying
+ * a version **defeats the pin**. `npx --yes eas-cli@latest` in a project holding 22.4.0 ran 22.6.0,
+ * where `npx --yes eas-cli` ran 22.4.0 out of `node_modules` and touched no network [observed —
+ * live, 2026-08-27]. A repository that pinned a version pinned it on purpose.
  */
-const NPX_PREFIX_ARGS = ['--yes', EAS_CLI_PACKAGE];
+export const EAS_CLI_PACKAGE_PINNED = 'eas-cli';
 
 /**
- * The same, under bun's.
+ * What goes before the package spec, per runner.
  *
- * No `--yes`: `bunx` installs what it is asked for without asking, and has no such flag [observed —
- * `bunx --help`, bun 1.3.14].
+ * `--yes` for npm's exec because npx **prompts** before installing a package it has not seen —
+ * `Need to install the following packages: … Ok to proceed? (y)` — and a prompt is a hang rather
+ * than a question here: `spawnSubprocessAsync` never attaches stdin (llp/0006 §Non-interactive
+ * parity), so the answer it waits for can never arrive. `bunx` installs without asking and has no
+ * such flag [observed — `bunx --help`, bun 1.3.14].
+ *
+ * A named constant rather than an inline array so the foreign-flag lint counts `--yes`: it is an
+ * option this CLI writes onto another program's command line, which is what that inventory is for
+ * (llp/0002).
  */
-const BUNX_PREFIX_ARGS = [EAS_CLI_PACKAGE];
+const NPX_RUNNER_ARGS = ['--yes'];
 
-/** How long the `PATH` candidate has to prove it is the EAS CLI, for the probing resolver. */
-export const EAS_CLI_PROBE_TIMEOUT_MS = 4000;
+/** The same for bun's exec, which needs nothing. */
+const BUNX_RUNNER_ARGS: string[] = [];
 
 /** The argv one `eas` invocation is actually spawned with. */
 export function easCliArgs(easCli: EasCli, args: string[]): string[] {
@@ -90,165 +118,121 @@ export function easCliArgs(easCli: EasCli, args: string[]): string[] {
 /**
  * How an invocation is written when it has to be named in output.
  *
- * A resolved binary is named by its **path**, because *which* `eas` ran is the fact a reader needs
- * when it turns out not to have been the CLI. A runner is named by its **name and its arguments**,
- * because the path `npx` was found at says nothing the name does not, and `npx --yes eas-cli@latest`
- * is a line that can be pasted. Every reason and every report that names the source renders it this
- * way, so nothing claims an `eas` binary exists on a machine that has none.
+ * The runner's **name** and its arguments, never the path the runner was found at: `bunx` is what a
+ * reader would type, and `/opt/homebrew/bin/bunx eas-cli` is a line that says nothing more while
+ * looking like it says something about this machine. The path is still what gets spawned.
  */
-export function easCliLabel({ command, prefixArgs, runner }: EasCli): string {
-  return runner ? [runner, ...prefixArgs].join(' ') : command;
-}
-
-/** Whether this invocation downloads the CLI before it runs, which is what makes a first run slow. */
-export function usesPackageRunner(easCli: EasCli | null): boolean {
-  return easCli?.source === 'runner';
+export function easCliLabel(easCli: EasCli): string {
+  return easCli.source;
 }
 
 /**
- * The two rungs that are already on this machine: the project's `eas-cli`, then one on `PATH`.
+ * Whether this invocation may have to install the CLI before it can answer.
  *
- * For the one caller that must not pay a download to answer its question — the auth preflight reads
- * a local session file, and the rungs under it (`expo whoami`, `EXPO_TOKEN`) answer the same
- * question for free, so spending a package install on it would cost `status` its speed for nothing
- * (`src/needsHuman/preflight.ts`). Every other caller uses {@link resolveEasCli}.
- *
- * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
+ * The question every caller with a deadline has to ask. False for a project that declares
+ * `eas-cli`: the runner resolves it out of `node_modules`, and the spawn is then as cheap as running
+ * the bin directly [observed — 0.26–0.45 s against 0.32–0.42 s, live, 2026-08-27].
  */
-export function resolveInstalledEasCli(
-  projectRoot: string,
-  { pathEnv }: { pathEnv?: string } = {}
-): EasCli | null {
-  const binName = process.platform === 'win32' ? 'eas.cmd' : 'eas';
-  const projectBin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  if (fileExistsSync(projectBin)) {
-    return { command: projectBin, prefixArgs: [], source: 'project' };
+export function mayDownloadEasCli(easCli: EasCli | null): boolean {
+  return easCli != null && !easCli.pinned;
+}
+
+/**
+ * Whether the project declares `eas-cli`, as a dependency or a dev dependency.
+ *
+ * A **declaration**, not an installed copy. It decides the package spec, and the spec has to be
+ * chosen before anything runs; walking `node_modules` to find out whether the declaration was
+ * honoured would answer a different question more slowly. A project that declares it and has not
+ * installed it gets `npx --yes eas-cli`, and npx installs the declared range — which is the version
+ * the project asked for either way.
+ *
+ * The known gap: a package that does *not* declare it while a sibling workspace does gets
+ * `@latest`, and so downloads a CLI that is already on disk. That is the honest reading of "this
+ * project pinned a version", and the cost is one download rather than a wrong version.
+ *
+ * Sync, and never throws: a `package.json` that is missing, unreadable or not an object reads as
+ * "does not declare it", which costs the pin and never the command.
+ */
+export function projectDeclaresEasCli(projectRoot: string): boolean {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
+  } catch {
+    return false;
   }
+  if (parsed == null || typeof parsed !== 'object') {
+    return false;
+  }
+  const manifest = parsed as { dependencies?: unknown; devDependencies?: unknown };
+  return declaresEasCli(manifest.dependencies) || declaresEasCli(manifest.devDependencies);
+}
 
-  const pathBin = findExecutableOnPath('eas', { pathEnv });
-  return pathBin ? { command: pathBin, prefixArgs: [], source: 'path' } : null;
+function declaresEasCli(field: unknown): boolean {
+  return field != null && typeof field === 'object' && EAS_CLI_PACKAGE_PINNED in field;
 }
 
 /**
- * The runner rung on its own, with no check that the runner can be reached.
+ * The invocation that runs the EAS CLI for a project, whether or not one is installed.
  *
- * For a caller whose contract is to always answer with *something* to spawn, and whose report of a
- * spawn that failed is honest on its own — the auth passthrough, which prints what the runner said.
- * A caller that has to distinguish "nothing here can ask EAS" uses {@link resolveEasCli}.
+ * Never consults `PATH` for an `eas`, and never reaches into `node_modules/.bin`: the runner does
+ * both jobs, and does the second one better (§module header). What it does read is the project's
+ * `package.json`, to choose between the pinned spec and `@latest`.
+ *
+ * **Ungated**, so it always answers with something to spawn — for a caller whose report of a spawn
+ * that failed is honest on its own, like the auth passthrough, which prints what the runner said. A
+ * caller that has to tell "nothing here can ask EAS" apart from "EAS said no" uses
+ * {@link resolveEasCli}.
+ *
+ * @param pathEnv `PATH` to search for the runner, for tests that must not depend on the machine's own.
+ * @param env the environment to read the invoking runner from, for the same reason.
  */
-export function easCliPackageRunner(
+export function easCliInvocation(
   projectRoot: string,
   { pathEnv, env }: { pathEnv?: string; env?: NodeJS.ProcessEnv } = {}
 ): EasCli {
   const runner = resolvePackageRunnerForProject(projectRoot, { env, pathEnv });
+  const pinned = projectDeclaresEasCli(projectRoot);
+  const prefixArgs = [
+    ...(runner.runner === 'npx' ? NPX_RUNNER_ARGS : BUNX_RUNNER_ARGS),
+    pinned ? EAS_CLI_PACKAGE_PINNED : EAS_CLI_PACKAGE_LATEST,
+  ];
   return {
     command: runner.command,
-    prefixArgs: runner.runner === 'npx' ? [...NPX_PREFIX_ARGS] : [...BUNX_PREFIX_ARGS],
-    source: 'runner',
+    prefixArgs,
+    source: [runner.runner, ...prefixArgs].join(' '),
     runner: runner.runner,
+    pinned,
   };
 }
 
 /**
- * Resolve the `eas` CLI for a project, or answer `null`.
+ * The same invocation, or `null` when the runner itself cannot be reached from here.
  *
- * Three rungs: the project's own `eas-cli`, an `eas` on `PATH`, then the published package through
- * a runner. Local before global before downloaded — a version the repository pinned is the version
- * that should run, and a download is the rung that is true on every machine rather than the one
- * that is fastest.
+ * `null` is a much narrower answer than the old resolver's: not "no EAS CLI is installed" — the
+ * runner would have fetched one — but "this machine has no `npx` and no `bunx`", which is a broken
+ * or absent Node install. Callers that must never fail for want of EAS still handle it, and their
+ * reasons say so in those terms.
  *
- * `null` is now a much narrower answer than it was: it means this machine has no `eas` **and** no
- * `npx` or `bunx` to fetch one with, which is a machine with no working Node install. Callers that
- * report "nothing could ask EAS" still have to handle it, and their reasons say which of the two it
- * was.
- *
- * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
- * @param env the environment to read the invoking runner from, for the same reason.
+ * The gate is what keeps that honest. `resolvePackageRunner` deliberately leaves `npx` a bare name —
+ * resolved through `PATH` by the spawn, the way it always was — so the *name* is what is looked up
+ * here, and what gets spawned is still whatever that module returned.
  */
 export function resolveEasCli(
   projectRoot: string,
   { pathEnv, env }: { pathEnv?: string; env?: NodeJS.ProcessEnv } = {}
 ): EasCli | null {
-  const installed = resolveInstalledEasCli(projectRoot, { pathEnv });
-  if (installed) {
-    return installed;
+  const easCli = easCliInvocation(projectRoot, { pathEnv, env });
+  if (path.isAbsolute(easCli.command)) {
+    return easCli;
   }
-  return reachableRunnerRung(projectRoot, { pathEnv, env });
+  return findExecutableOnPath(easCli.command, { pathEnv }) ? easCli : null;
 }
 
 /**
- * The same ladder, with the `PATH` rung checked before it is taken.
- *
- * @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints
- * What answers the name `eas` is whatever this machine has under it — a wrapper, a stale symlink, a
- * shim from another tool — and a shim exits non-zero exactly the way a signed-out CLI does. The
- * check used to live in `passthrough/auth.ts`, which made "route around a broken shim" a property
- * of one command; it is the **ladder's** now, so the rung a shim falls through to is simply the next
- * one.
- *
- * Async because the check is a subprocess, and that is why it is a second function rather than an
- * option: `status` reads this on a path that promises to be instant, and a `--version` spawn per
- * resolution is not free. The sync callers keep the guard they already have — they notice a wrapper
- * *after* the fact, from the run's own output (`utils/wrapperCrash.ts`), which costs nothing when
- * the binary is real.
- *
- * The other two rungs are never probed: `node_modules/.bin` holds only what was installed into it,
- * and the runner rung names the package outright.
- */
-export async function resolveEasCliAsync(
-  projectRoot: string,
-  { pathEnv, env }: { pathEnv?: string; env?: NodeJS.ProcessEnv } = {}
-): Promise<EasCli | null> {
-  const installed = resolveInstalledEasCli(projectRoot, { pathEnv });
-  if (installed && (installed.source === 'project' || (await isRealEasCliAsync(installed.command, projectRoot)))) {
-    return installed;
-  }
-  return reachableRunnerRung(projectRoot, { pathEnv, env });
-}
-
-/**
- * Whether the `eas` this resolved is really the EAS CLI.
- *
- * `--version` because it is the cheapest question the CLI answers and the one a wrapper is least
- * likely to survive. A candidate that times out or cannot be spawned is *kept*: the check exists to
- * catch a binary that is not the CLI, not to second-guess a slow machine, and a download is a worse
- * answer than a slow local one.
- */
-export async function isRealEasCliAsync(command: string, cwd: string): Promise<boolean> {
-  const result = await spawnSubprocessAsync(command, ['--version'], {
-    cwd,
-    output: 'capture',
-    timeoutMs: EAS_CLI_PROBE_TIMEOUT_MS,
-  });
-  if (result.spawnError || result.timedOut) {
-    return true;
-  }
-  return !looksLikeWrapperCrash({ tool: 'eas', ...result });
-}
-
-/**
- * The runner rung, or null when the runner itself cannot be reached from here.
- *
- * The gate is what keeps `null` an honest answer. `resolvePackageRunner` deliberately leaves `npx`
- * a bare name — resolved through `PATH` by the spawn, the way it always was — so the name is what
- * gets looked up here, and what gets spawned is still whatever that module returned.
- */
-function reachableRunnerRung(
-  projectRoot: string,
-  { pathEnv, env }: { pathEnv?: string; env?: NodeJS.ProcessEnv }
-): EasCli | null {
-  const runner = easCliPackageRunner(projectRoot, { pathEnv, env });
-  if (path.isAbsolute(runner.command)) {
-    return runner;
-  }
-  return findExecutableOnPath(runner.command, { pathEnv }) ? runner : null;
-}
-
-/**
- * Resolve the `eas` CLI for a project, for a caller that cannot do its job without one.
+ * Resolve the EAS CLI for a caller that cannot do its job without one.
  *
  * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
- * @throws {CommandError} `EAS_CLI_MISSING` when the whole ladder is exhausted.
+ * @throws {CommandError} `EAS_CLI_MISSING` when no package runner can be reached.
  */
 export function resolveEasCliOrThrow(
   projectRoot: string,
@@ -259,14 +243,15 @@ export function resolveEasCliOrThrow(
     return resolved;
   }
 
-  // Reaching here means no `eas` *and* no runner, so `npm install -g eas-cli` — what this used to
-  // advise — is a command the reader also cannot run. What is broken is the toolchain under it.
+  // Reaching here is not "you have not installed eas-cli" — this CLI would have run the published
+  // one — so `npm install -g eas-cli` is not the advice: it is a command the reader cannot run
+  // either, for the same reason nothing else here worked.
   const error = new CommandError(
     'EAS_CLI_MISSING',
     [
       `The EAS CLI could not be reached, so this command cannot run.`,
-      `Why: no "eas" binary was found in ${path.join('node_modules', '.bin')} or on PATH, and no package runner ("npx" or "bunx") is on PATH either, so the published eas-cli could not be downloaded to stand in for one.`,
-      `How: add the EAS CLI to the project with "npm install --save-dev eas-cli", then run this command again. If that command is also unavailable, PATH is missing the Node.js install that provides npm and npx — fix that first.`,
+      `Why: this CLI runs the published eas-cli through a package runner, and no package runner ("npx" or "bunx") was found on PATH — so there is nothing here that can start it.`,
+      `How: PATH is missing the Node.js install that provides npm and npx; fix that, then run this command again. Once npm is reachable, "npm install --save-dev eas-cli" also pins the CLI into this project, which is the version this command would then run.`,
     ].join('\n')
   );
   error.suggestedCommand = 'npm install --save-dev eas-cli';

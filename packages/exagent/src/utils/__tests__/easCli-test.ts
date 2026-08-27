@@ -1,28 +1,38 @@
+// @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI
+//
+// One rung: the package runner, every time. These tests pin the two things that makes safe — the
+// project's pin still wins, and no file called `eas` on this machine is ever spawned — plus the one
+// failure left, which is a machine with no runner at all.
+//
+// The claim the design rests on was measured rather than assumed [observed — live, 2026-08-27,
+// against a project holding eas-cli 22.4.0 while the registry served 22.6.0]:
+//
+//   npx --yes eas-cli          -> 22.4.0, and answers against a *dead* registry (no fetch)
+//   bunx eas-cli               -> 22.4.0, likewise
+//   npx --yes eas-cli@latest   -> 22.6.0: a version in the spec defeats the pin
+//
+// Which is why `pinned` chooses the bare spec and nothing else may.
+
 import { vol } from 'memfs';
 import path from 'path';
 
 import {
   easCliArgs,
+  easCliInvocation,
   easCliLabel,
+  mayDownloadEasCli,
+  projectDeclaresEasCli,
   resolveEasCli,
-  resolveEasCliAsync,
   resolveEasCliOrThrow,
-  resolveInstalledEasCli,
 } from '../easCli';
 import { CommandError } from '../errors';
 import { resetInvokerCache } from '../invoker';
 import { resetPackageRunnerCache } from '../packageRunner';
-import { spawnSubprocessAsync } from '../subprocess';
-
-jest.mock('../subprocess', () => ({
-  ...jest.requireActual('../subprocess'),
-  spawnSubprocessAsync: jest.fn(),
-}));
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
 
-/** A `PATH` with a package runner on it but no `eas`, which is the machine wave 18 is about. */
+/** A `PATH` with a package runner on it and no `eas`, which is the machine this rung is for. */
 const PATH_WITH_RUNNER = '/usr/local/bin';
 
 /** Environments captured live, the same two `packageRunner-test.ts` pins. */
@@ -39,24 +49,19 @@ function mockPlatform(value: typeof process.platform) {
   Object.defineProperty(process, 'platform', { value });
 }
 
-/** What a spawn of `eas --version` answered, for the rung that probes the `PATH` candidate. */
-function answers({ exitCode, stdout = '', stderr = '' }: { exitCode: number | null; stdout?: string; stderr?: string }) {
-  jest.mocked(spawnSubprocessAsync).mockResolvedValue({
-    exitCode,
-    stdout,
-    stderr,
-    spawnError: undefined,
-    timedOut: false,
-  } as any);
+/** A project manifest, with or without an `eas-cli` of its own, and a runner on `PATH`. */
+function project(manifest: Record<string, unknown>, extra: Record<string, string> = {}) {
+  vol.fromJSON({
+    [`${projectRoot}/package.json`]: JSON.stringify(manifest),
+    '/usr/local/bin/npx': '#!/bin/sh',
+    ...extra,
+  });
 }
 
 beforeEach(() => {
-  // A fixed platform for every test but the Windows one: the resolver picks the bin *name* from
-  // it, so the tests would otherwise install a bin the resolver on Windows never looks for.
   mockPlatform('darwin');
   resetInvokerCache();
   resetPackageRunnerCache();
-  jest.mocked(spawnSubprocessAsync).mockReset();
 });
 
 afterEach(() => {
@@ -65,111 +70,95 @@ afterEach(() => {
 });
 
 describe(resolveEasCliOrThrow, () => {
-  it(`should prefer the eas-cli installed in the project`, () => {
-    vol.fromJSON({
-      [`${projectRoot}/node_modules/.bin/eas`]: '#!/bin/sh',
-      '/usr/local/bin/eas': '#!/bin/sh',
-    });
-
-    expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER })).toEqual({
-      command: path.join(projectRoot, 'node_modules', '.bin', 'eas'),
-      prefixArgs: [],
-      source: 'project',
-    });
-  });
-
-  it(`should prefer the .cmd shim of the project on Windows`, () => {
-    mockPlatform('win32');
-    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/eas.cmd`]: '' });
-
-    expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER })).toEqual({
-      command: path.join(projectRoot, 'node_modules', '.bin', 'eas.cmd'),
-      prefixArgs: [],
-      source: 'project',
-    });
-  });
-
-  it(`should fall back to the eas on PATH`, () => {
-    vol.fromJSON({ '/usr/local/bin/eas': '#!/bin/sh' });
-
-    expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER })).toEqual({
-      command: path.join('/usr/local/bin', 'eas'),
-      prefixArgs: [],
-      source: 'path',
-    });
-  });
-
-  // @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI
-  // The rung wave 18 added, and the reason it exists: an installed `eas-cli` is not a thing this
-  // CLI may expect [confirmed — Kudo, 2026-08-26].
-  it(`should run the published eas-cli through npx when nothing is installed`, () => {
-    vol.fromJSON({ '/usr/local/bin/npx': '#!/bin/sh' });
+  it(`should run the published eas-cli through npx when the project declares none`, () => {
+    project({ name: 'app', dependencies: { expo: '~54.0.0' } });
 
     expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })).toEqual({
       command: 'npx',
       prefixArgs: ['--yes', 'eas-cli@latest'],
-      source: 'runner',
+      source: 'npx --yes eas-cli@latest',
       runner: 'npx',
+      pinned: false,
     });
   });
 
-  it(`should run it through bunx in a project whose lockfile is bun's`, () => {
-    vol.fromJSON({
-      [`${projectRoot}/bun.lock`]: '',
-      '/usr/local/bin/npx': '#!/bin/sh',
-      '/usr/local/bin/bunx': '#!/bin/sh',
+  it(`should drop the version from the spec when the project pins eas-cli, so the pin wins`, () => {
+    // The whole point: `eas-cli@latest` would run 22.6.0 in a project holding 22.4.0, where the
+    // bare name runs the project's own copy and touches no network.
+    project({ name: 'app', devDependencies: { 'eas-cli': '22.4.0' } });
+
+    expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })).toEqual({
+      command: 'npx',
+      prefixArgs: ['--yes', 'eas-cli'],
+      source: 'npx --yes eas-cli',
+      runner: 'npx',
+      pinned: true,
     });
+  });
+
+  it(`should read a plain dependency as a pin too`, () => {
+    project({ name: 'app', dependencies: { 'eas-cli': '^22.0.0' } });
+
+    expect(
+      resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })
+    ).toMatchObject({ prefixArgs: ['--yes', 'eas-cli'], pinned: true });
+  });
+
+  it(`should use bunx, without --yes, in a project whose lockfile is bun's`, () => {
+    project(
+      { name: 'app' },
+      { [`${projectRoot}/bun.lock`]: '', '/usr/local/bin/bunx': '#!/bin/sh' }
+    );
 
     expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })).toEqual({
       command: path.join('/usr/local/bin', 'bunx'),
       prefixArgs: ['eas-cli@latest'],
-      source: 'runner',
+      source: 'bunx eas-cli@latest',
       runner: 'bunx',
+      pinned: false,
     });
   });
 
-  it(`should run it through bunx when bunx started this process, whatever the lockfile says`, () => {
-    vol.fromJSON({
-      [`${projectRoot}/package-lock.json`]: '',
-      '/usr/local/bin/npx': '#!/bin/sh',
-      '/usr/local/bin/bunx': '#!/bin/sh',
-    });
+  it(`should use bunx when bunx started this process, whatever the lockfile says`, () => {
+    project(
+      { name: 'app' },
+      { [`${projectRoot}/package-lock.json`]: '', '/usr/local/bin/bunx': '#!/bin/sh' }
+    );
 
-    expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: BUNX_ENV })).toEqual({
-      command: path.join('/usr/local/bin', 'bunx'),
-      prefixArgs: ['eas-cli@latest'],
-      source: 'runner',
-      runner: 'bunx',
-    });
+    expect(
+      resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: BUNX_ENV })
+    ).toMatchObject({ runner: 'bunx', source: 'bunx eas-cli@latest' });
   });
 
   it(`should keep npx for a bun project on a machine where bunx is not reachable`, () => {
-    vol.fromJSON({ [`${projectRoot}/bun.lockb`]: '', '/usr/local/bin/npx': '#!/bin/sh' });
-
-    expect(resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })).toEqual({
-      command: 'npx',
-      prefixArgs: ['--yes', 'eas-cli@latest'],
-      source: 'runner',
-      runner: 'npx',
-    });
-  });
-
-  it(`should read the lockfile of the workspace root a package sits in`, () => {
-    vol.fromJSON({
-      '/monorepo/bun.lock': '',
-      '/monorepo/apps/app/package.json': '{}',
-      '/usr/local/bin/npx': '#!/bin/sh',
-      '/usr/local/bin/bunx': '#!/bin/sh',
-    });
+    project({ name: 'app' }, { [`${projectRoot}/bun.lockb`]: '' });
 
     expect(
-      resolveEasCliOrThrow('/monorepo/apps/app', { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })
-    ).toMatchObject({ runner: 'bunx' });
+      resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })
+    ).toMatchObject({ runner: 'npx', prefixArgs: ['--yes', 'eas-cli@latest'] });
   });
 
-  it(`should throw a prompt the agent can act on only when even a package runner is missing`, () => {
-    // Errors are prompts (llp/0006). The install line is no longer `npm install -g eas-cli`: the
-    // resolver would have run the published CLI itself if anything on this machine could.
+  it(`should never spawn a file called eas, wherever this machine keeps one`, () => {
+    // The impostor class, gone by construction: a runner resolves a package, so neither of these is
+    // reachable. Before wave 18 the first won, and a shim in the second was spawned and quoted.
+    project(
+      { name: 'app' },
+      {
+        [`${projectRoot}/node_modules/.bin/eas`]: '#!/bin/sh',
+        '/usr/local/bin/eas': '#!/bin/sh',
+      }
+    );
+
+    const resolved = resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV });
+
+    expect(resolved.command).toBe('npx');
+    expect(resolved.source).not.toContain('/eas');
+  });
+
+  it(`should throw a prompt the agent can act on only when no runner is reachable`, () => {
+    // Errors are prompts (llp/0006). Not an install line for eas-cli: this CLI would have run the
+    // published one, so what is broken is the Node install under it.
+    vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
     expect.assertions(5);
     try {
       resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV });
@@ -183,107 +172,73 @@ describe(resolveEasCliOrThrow, () => {
   });
 });
 
-describe(resolveInstalledEasCli, () => {
-  // The rung-limited resolver, for the one caller that must not pay a download: reading a session
-  // file is not worth one, and the rungs under it answer the same question for free.
-  it(`should answer null rather than a runner when nothing is installed`, () => {
-    vol.fromJSON({ '/usr/local/bin/npx': '#!/bin/sh' });
+describe(resolveEasCli, () => {
+  it(`should answer null when no runner is on PATH, and the invocation regardless`, () => {
+    vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
 
-    expect(resolveInstalledEasCli(projectRoot, { pathEnv: PATH_WITH_RUNNER })).toBeNull();
-  });
-
-  it(`should still find the eas on PATH`, () => {
-    vol.fromJSON({ '/usr/local/bin/eas': '#!/bin/sh' });
-
-    expect(resolveInstalledEasCli(projectRoot, { pathEnv: PATH_WITH_RUNNER })).toEqual({
-      command: path.join('/usr/local/bin', 'eas'),
-      prefixArgs: [],
-      source: 'path',
-    });
+    expect(resolveEasCli(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })).toBeNull();
+    // `easCliInvocation` does not gate: the auth passthrough always has to answer with something to
+    // spawn, and the runner's own ENOENT is a truer sentence than a guess.
+    expect(
+      easCliInvocation(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })
+    ).toMatchObject({ command: 'npx' });
   });
 });
 
-describe(resolveEasCliAsync, () => {
-  // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — what answers the name `eas` on a
-  // machine may be a wrapper, a shim or a stale link. The probe was per call site; it is the
-  // ladder's now, so the rung *below* it is what a shim falls through to.
-  it(`should skip an eas on PATH that is not the EAS CLI and use the runner instead`, async () => {
-    vol.fromJSON({ '/usr/local/bin/eas': '#!/bin/sh', '/usr/local/bin/npx': '#!/bin/sh' });
-    answers({ exitCode: 101, stderr: `thread 'main' panicked at src/main.rs:41:9:\nStack backtrace:` });
-
-    await expect(
-      resolveEasCliAsync(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })
-    ).resolves.toEqual({
-      command: 'npx',
-      prefixArgs: ['--yes', 'eas-cli@latest'],
-      source: 'runner',
-      runner: 'npx',
-    });
+describe(projectDeclaresEasCli, () => {
+  it(`should read "does not declare it" out of every unreadable manifest`, () => {
+    // Never throws: the cost of a broken manifest is the pin, never the command.
+    expect(projectDeclaresEasCli(projectRoot)).toBe(false);
+    vol.fromJSON({ [`${projectRoot}/package.json`]: 'not json' });
+    expect(projectDeclaresEasCli(projectRoot)).toBe(false);
+    vol.reset();
+    vol.fromJSON({ [`${projectRoot}/package.json`]: '[]' });
+    expect(projectDeclaresEasCli(projectRoot)).toBe(false);
   });
+});
 
-  it(`should keep an eas on PATH that answers the way the CLI does`, async () => {
-    vol.fromJSON({ '/usr/local/bin/eas': '#!/bin/sh', '/usr/local/bin/npx': '#!/bin/sh' });
-    answers({ exitCode: 0, stdout: 'eas-cli/22.5.0 darwin-arm64 node-v24.3.0' });
+describe(mayDownloadEasCli, () => {
+  it(`should be true only for a project with no eas-cli of its own`, () => {
+    project({ name: 'app' });
+    expect(
+      mayDownloadEasCli(resolveEasCli(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV }))
+    ).toBe(true);
 
-    await expect(
-      resolveEasCliAsync(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })
-    ).resolves.toEqual({
-      command: path.join('/usr/local/bin', 'eas'),
-      prefixArgs: [],
-      source: 'path',
-    });
-  });
+    vol.reset();
+    project({ name: 'app', devDependencies: { 'eas-cli': '22.4.0' } });
+    expect(
+      mayDownloadEasCli(resolveEasCli(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV }))
+    ).toBe(false);
 
-  it(`should never probe the project's own bin, which holds only what was installed into it`, async () => {
-    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/eas`]: '#!/bin/sh' });
-
-    await expect(
-      resolveEasCliAsync(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })
-    ).resolves.toMatchObject({ source: 'project' });
-    expect(spawnSubprocessAsync).not.toHaveBeenCalled();
+    expect(mayDownloadEasCli(null)).toBe(false);
   });
 });
 
 describe(easCliLabel, () => {
-  it(`should name a resolved binary by its path and a runner by the line a reader can paste`, () => {
-    expect(easCliLabel({ command: '/project/node_modules/.bin/eas', prefixArgs: [], source: 'project' })).toBe(
-      '/project/node_modules/.bin/eas'
+  it(`should name the runner and the spec, never the path the runner was found at`, () => {
+    project(
+      { name: 'app' },
+      { '/usr/local/bin/bunx': '#!/bin/sh', [`${projectRoot}/bun.lock`]: '' }
     );
-    expect(
-      easCliLabel({
-        command: '/usr/local/bin/npx',
-        prefixArgs: ['--yes', 'eas-cli@latest'],
-        source: 'runner',
-        runner: 'npx',
-      })
-    ).toBe('npx --yes eas-cli@latest');
-    expect(
-      easCliLabel({
-        command: '/opt/homebrew/bin/bunx',
-        prefixArgs: ['eas-cli@latest'],
-        source: 'runner',
-        runner: 'bunx',
-      })
-    ).toBe('bunx eas-cli@latest');
+
+    const easCli = resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV });
+
+    expect(easCli.command).toBe(path.join('/usr/local/bin', 'bunx'));
+    expect(easCliLabel(easCli)).toBe('bunx eas-cli@latest');
   });
 });
 
 describe(easCliArgs, () => {
-  it(`should put the package name before the eas command word`, () => {
-    expect(
-      easCliArgs(
-        { command: 'npx', prefixArgs: ['--yes', 'eas-cli@latest'], source: 'runner', runner: 'npx' },
-        ['build:list', '--json']
-      )
-    ).toEqual(['--yes', 'eas-cli@latest', 'build:list', '--json']);
-    expect(easCliArgs({ command: '/bin/eas', prefixArgs: [], source: 'path' }, ['whoami'])).toEqual([
-      'whoami',
-    ]);
-  });
-});
+  it(`should put the runner's flags and the package spec before the eas command word`, () => {
+    project({ name: 'app' });
 
-describe(resolveEasCli, () => {
-  it(`should answer null when there is no eas and no runner to download one`, () => {
-    expect(resolveEasCli(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV })).toBeNull();
+    const easCli = resolveEasCliOrThrow(projectRoot, { pathEnv: PATH_WITH_RUNNER, env: NPX_ENV });
+
+    expect(easCliArgs(easCli, ['build:list', '--json'])).toEqual([
+      '--yes',
+      'eas-cli@latest',
+      'build:list',
+      '--json',
+    ]);
   });
 });

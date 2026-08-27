@@ -96,6 +96,62 @@ export async function installStubBinAsync(
 }
 
 /**
+ * Install a stub **package runner** that answers for the `eas-cli` package.
+ *
+ * @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI
+ * Every EAS-backed command spawns `npx --yes eas-cli…` or `bunx eas-cli…`, so a suite that used to
+ * plant a bin called `eas` has to plant a runner instead. Nothing under test resolves a file called
+ * `eas` any more, which is the property the single rung exists for — and it means an e2e that forgot
+ * this would reach the **real** npx and download the real CLI, so these stubs are also what keeps
+ * the suite off the network.
+ *
+ * The runner it stands in for verifies its own argv rather than ignoring it: `--yes` is stripped
+ * because that flag is npm's own, and a spec that is not `eas-cli` is an error, exactly as npx would
+ * treat a package it cannot find. What is left is handed to the stub `eas` script, so every existing
+ * assertion about the EAS argv keeps its meaning.
+ *
+ * @param binDir Directory the shims go into, which must be on the `PATH` of the command under test
+ * @param easScript Absolute path of the stub `eas` Node script to run for the package
+ * @param names Which runners to install. Both, when a test is about which one is chosen.
+ */
+export async function installStubEasRunnerAsync(
+  binDir: string,
+  easScript: string,
+  { names = ['npx'], logFile }: { names?: ('npx' | 'bunx')[]; logFile?: string } = {}
+): Promise<void> {
+  const runnerScript = path.join(binDir, 'stub-eas-runner.js');
+  await fs.promises.mkdir(binDir, { recursive: true });
+  await fs.promises.writeFile(
+    runnerScript,
+    `#!/usr/bin/env node
+'use strict';
+const args = process.argv.slice(2);
+${
+  logFile
+    ? `require('node:fs').appendFileSync(${JSON.stringify(logFile)}, JSON.stringify({ args, runner: process.env.STUB_RUNNER_NAME || null }) + '\\n');`
+    : ''
+}
+// \`--yes\` is npm's own flag, and never part of what the package is asked to do.
+const rest = args[0] === '--yes' ? args.slice(1) : args;
+const spec = rest[0] || '';
+if (spec !== 'eas-cli' && spec !== 'eas-cli@latest') {
+  process.stderr.write('stub runner: no such package ' + JSON.stringify(spec) + '\\n');
+  process.exit(1);
+}
+const result = require('node:child_process').spawnSync(
+  process.execPath,
+  [${JSON.stringify(easScript)}, ...rest.slice(1)],
+  { stdio: 'inherit' }
+);
+process.exit(result.status === null ? 1 : result.status);
+`
+  );
+  for (const name of names) {
+    await installStubBinAsync(binDir, name, runnerScript);
+  }
+}
+
+/**
  * Write the executable shims that make `expo` resolve to the fixture's stub bin, both through
  * `PATH` (see {@link stubExpoEnv}) and through the project's `node_modules/.bin`.
  */

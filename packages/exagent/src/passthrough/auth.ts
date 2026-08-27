@@ -27,11 +27,7 @@ import path from 'path';
 
 import type { Command } from '../types';
 import { fileExistsSync } from '../utils/dir';
-import {
-  easCliPackageRunner,
-  resolveEasCliAsync,
-  type EasCliSource,
-} from '../utils/easCli';
+import { easCliInvocation } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { type Invoker } from '../utils/invoker';
 import { resolvePackageRunner } from '../utils/packageRunner';
@@ -50,15 +46,15 @@ export type AuthTool = 'expo' | 'eas';
 /**
  * Where the CLI that is going to answer came from.
  *
- * `runner-eas` rather than `npx-eas`: which runner downloads the package is the caller's, not this
- * CLI's, so naming npm in the contract would be wrong under Bun (`src/utils/packageRunner.ts`).
+ * `runner-eas` rather than `npx-eas`: which runner runs the package is the caller's, not this CLI's,
+ * so naming npm in the contract would be wrong under Bun (`src/utils/packageRunner.ts`).
+ *
+ * `project-eas` and `path-eas` are **gone** (wave 18). The EAS side has one rung — the runner — and
+ * it subsumes both: the runner resolves the project's own `eas-cli` when the project has one, and
+ * resolves a *package* rather than a file, so an `eas` on `PATH` is no longer a thing that can
+ * answer (`src/utils/easCli.ts`). `project-expo` stays, because the Expo side is unchanged.
  */
-export type AuthCliSource =
-  | 'project-expo'
-  | 'project-eas'
-  | 'path-eas'
-  | 'runner-eas'
-  | 'runner-expo';
+export type AuthCliSource = 'project-expo' | 'runner-eas' | 'runner-expo';
 
 /** The invocation one auth command resolves to. */
 export interface AuthCli {
@@ -95,15 +91,16 @@ const EXPO_CLI_PACKAGE = 'expo';
  * before — which matters because `expo login` and `eas login` are not identical programs, and a
  * project that has an opinion about its Expo version should keep it.
  *
- * The fallback chain only runs when the project has no `expo`: its own `eas-cli`, then an `eas` on
- * `PATH`, then the published package through a runner. Local before global before downloaded,
- * because a version the repository pinned is the version that should run.
+ * When the project has no `expo`, the EAS CLI answers, through the one rung this CLI has for it:
+ * `npx --yes eas-cli`, or `bunx`. This module used to own a chain of its own — the project's
+ * `eas-cli`, then an `eas` on `PATH` (checked with a `--version` probe, because a binary under that
+ * name can be a wrapper), then the runner. **All three collapsed into the runner** (wave 18): it
+ * resolves the project's own copy when there is one, and it resolves a *package*, so the `PATH`
+ * candidate and the probe that guarded it have nothing left to point at
+ * (`src/utils/easCli.ts`).
  *
- * **That chain is `resolveEasCliAsync` now** (wave 18). It was written here first, along with the
- * `PATH` probe below it, and then every other EAS-backed command wanted the same three rungs — so
- * the ladder moved to `src/utils/easCli.ts` and this function maps its answer onto the shape the
- * passthrough reports. Nothing about the behaviour changed; what changed is that a machine with no
- * `eas` now gets the same three rungs from `status`, `deploy` and `dev` as it always got from here.
+ * Still async, and still the async one every caller awaits: the signature is the contract of a
+ * forwarded command, and narrowing it to sync would churn every call site for nothing.
  *
  * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
  */
@@ -116,27 +113,18 @@ export async function resolveAuthCliAsync(
     return { tool: 'expo', source: 'project-expo', command: projectExpo, prefixArgs: [] };
   }
 
-  // `?? easCliPackageRunner(…)` because this function's contract is to always answer with something
-  // to spawn: the resolver declines the runner rung when the runner is not on `PATH`, and a spawn
-  // that fails with ENOENT prints a truer sentence here than any guess this module could make.
-  const easCli =
-    (await resolveEasCliAsync(projectRoot, { pathEnv })) ??
-    easCliPackageRunner(projectRoot, { pathEnv });
+  // The ungated invocation, because this function's contract is to always answer with something to
+  // spawn. When no runner is on `PATH` the spawn fails with ENOENT, and what the runner said is a
+  // truer sentence than any guess this module could make.
+  const easCli = easCliInvocation(projectRoot, { pathEnv });
   return {
     tool: 'eas',
-    source: AUTH_SOURCE_OF[easCli.source],
+    source: 'runner-eas',
     command: easCli.command,
     prefixArgs: easCli.prefixArgs,
     runner: easCli.runner,
   };
 }
-
-/** How the ladder's rungs are named in the `auth_passthrough` event and in `whoami --json`. */
-const AUTH_SOURCE_OF: Record<EasCliSource, AuthCliSource> = {
-  project: 'project-eas',
-  path: 'path-eas',
-  runner: 'runner-eas',
-};
 
 /** A `node_modules/.bin` entry of this project, or null when it has none. */
 function projectBin(projectRoot: string, name: string): string | null {

@@ -23,20 +23,14 @@ import {
   UNTRUSTED_OUTPUT_END,
   wrapUntrustedAppOutput,
 } from '../runtime/untrusted';
-import {
-  EAS_CLI_PACKAGE,
-  easCliLabel,
-  easCliPackageRunner,
-  resolveEasCliOrThrow,
-  type EasCli,
-} from '../utils/easCli';
+import { easCliLabel, resolveEasCliOrThrow, type EasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { spawnExpoAsync } from '../utils/expoCli';
 import { toPosixPath } from '../utils/filePath';
 import { spawnSubprocessAsync, type CapturedOutput } from '../utils/subprocess';
 import {
-  checkBinaryCommand,
   looksLikeWrapperCrash,
+  runnerCrashReason,
   wrapperCrashDetail,
   type WrapperCrashTool,
 } from '../utils/wrapperCrash';
@@ -280,23 +274,23 @@ interface EasUpload {
   /** Arguments before `deploy`, which is the package name in the runner form. */
   prefixArgs: string[];
   result: Awaited<ReturnType<typeof spawnSubprocessAsync>>;
-  /**
-   * The `eas` this project resolves to was not the EAS CLI, so this run used a runner instead.
-   *
-   * Reported because it changes what every sentence about the failure should say: the binary the
-   * machine has under that name is broken, and no advice about accounts applies to it.
-   */
-  afterWrapperCrash: boolean;
 }
 
 /**
- * Upload the export, and route around an `eas` that is not the EAS CLI.
+ * Upload the export.
  *
- * The resolved binary is whatever this machine has under the name `eas` — a wrapper, a shim, a
- * stale link (llp/0001 §Constraints). `deploy` used to stop there, print the shim's Rust panic and
- * hand back a `Try:` line that ran the same broken file again [observed — friction run 7, F67]. The
- * fallback the auth commands already use is the answer: a run that never was the CLI uploaded
- * nothing, so retrying it through `<runner> eas-cli@latest` is safe, and it is the only rung left.
+ * **One run, no retry.** This used to have two: the binary the machine had under the name `eas` was
+ * whatever it was — a wrapper, a shim, a stale link (llp/0001 §Constraints) — so `deploy` printed
+ * the shim's Rust panic and handed back a `Try:` line that ran the same broken file again [observed
+ * — friction run 7, F67], and the fix was to notice the crash and retry through a package runner.
+ *
+ * The runner is now the *only* way this CLI reaches EAS (`src/utils/easCli.ts`, wave 18), so there is
+ * nothing to route around and nothing to route to: the package that answers is `eas-cli` by
+ * definition, and a failure is the CLI's own answer. Retrying it would spend the upload twice.
+ *
+ * The crash **detection** stays, in `easDeployFailed` below — it costs nothing when the CLI is real,
+ * and a guard that is unreachable by construction is exactly the guard worth keeping for the day the
+ * construction changes.
  *
  * @ref llp/0021-honest-reports.rfc.md §Route around a binary that is not the CLI
  */
@@ -316,38 +310,12 @@ async function uploadToEasHostingAsync(
       })
     );
 
-  const first = await run(easCli.command, easCli.prefixArgs);
-  // The retry has one rung and this run may already be standing on it: when the resolver fell
-  // through to a runner (wave 18), the package it downloaded *is* the EAS CLI, so a failure is the
-  // CLI's own answer and re-running the identical command would only spend the upload twice.
-  if (
-    easCli.source === 'runner' ||
-    first.spawnError ||
-    !looksLikeWrapperCrash({ tool: 'eas', ...first })
-  ) {
-    return {
-      command: easCli.command,
-      label: easCliLabel(easCli),
-      prefixArgs: easCli.prefixArgs,
-      result: first,
-      afterWrapperCrash: false,
-    };
-  }
-
-  const runner = easCliPackageRunner(projectRoot);
-  Log.error(
-    [
-      `The "eas" this project resolves to (${easCli.command}) did not run as the EAS CLI: it exited with code ${first.exitCode} and printed nothing an eas run would print.`,
-      `Trying ${easCliLabel(runner)} instead. Nothing was uploaded by the run that failed.`,
-    ].join('\n')
-  );
-  const retried = await run(runner.command, runner.prefixArgs);
+  const result = await run(easCli.command, easCli.prefixArgs);
   return {
-    command: runner.command,
-    label: easCliLabel(runner),
-    prefixArgs: runner.prefixArgs,
-    result: retried,
-    afterWrapperCrash: true,
+    command: easCli.command,
+    label: easCliLabel(easCli),
+    prefixArgs: easCli.prefixArgs,
+    result,
   };
 }
 
@@ -361,42 +329,35 @@ async function uploadToEasHostingAsync(
 function easDeployFailed(upload: EasUpload, output: CapturedOutput): CommandError {
   const { result } = upload;
   const cause = classifyEasDeployFailure(`${result.stdout}${result.stderr}`);
-  // A command against the binary that actually ran, which is what a reader has to reproduce —
-  // except after a wrapper crash, where the binary that ran is the runner and naming it is the
-  // whole point.
-  // A runner invocation is already written the way a reader would type it (`easCliLabel`), so it is
-  // used verbatim; a resolved binary is a path, which is what needs the quoting.
-  const whoami =
-    cause?.command ??
-    (upload.prefixArgs.length > 0
-      ? `${upload.label} whoami`
-      : checkBinaryCommand(upload.command, ['whoami']));
-  const stillNotTheCli = looksLikeWrapperCrash({ tool: 'eas', ...result });
+  // The invocation that actually ran, which is what a reader has to reproduce. It is already
+  // written the way they would type it (`easCliLabel`), so it needs no quoting.
+  const whoami = cause?.command ?? `${upload.label} whoami`;
+  // The safety net. A package runner running the package named `eas-cli` cannot plausibly answer
+  // like a wrapper that was never the CLI, so this should never be true — and it is kept rather than
+  // deleted because "should never" is a claim about today's resolver, not about the process boundary
+  // (llp/0001 §Constraints), and the cost of keeping it is one string comparison.
+  const notTheCli = looksLikeWrapperCrash({ tool: 'eas', ...result });
 
   const error = new CommandError(
     'EAS_DEPLOY_FAILED',
     [
       `The export was built, but EAS Hosting did not accept it (${howItStopped('eas deploy', result)}).`,
-      upload.afterWrapperCrash
-        ? `Note: the "eas" this project resolves to is not the EAS CLI, so this ran "${upload.label}" instead. What follows is about that run.`
-        : '',
       cause
         ? `Why: ${cause.why}`
         : `Why: the upload ran non-interactively, so anything that needs an answer fails instead of prompting. The EAS CLI printed nothing this version recognises, so this is a guess — the output below is the answer.`,
       cause
         ? `How: ${cause.how}`
-        : stillNotTheCli
-          ? `How: what ran under the name "eas" is not the EAS CLI, so nothing about accounts applies to it. Look at that file, and reach the real CLI with "npx --yes ${EAS_CLI_PACKAGE} whoami".`
+        : notTheCli
+          ? `How: ${runnerCrashReason({ tool: 'eas', exitCode: result.exitCode }, upload.label)}, so nothing about accounts applies to this run.`
           : `How: check who that CLI is acting as with "${whoami}"; for a headless machine, set EXPO_TOKEN to an access token from expo.dev instead of signing in.`,
       fence(result, output, { tool: 'eas', binPath: upload.command }),
     ]
       .filter(Boolean)
       .join('\n')
   );
-  // Never the broken binary: running it again reproduces the panic, which is the recovery this
-  // command had been handing back (F67).
-  error.suggestedCommand =
-    cause?.command ?? (stillNotTheCli ? `npx --yes ${EAS_CLI_PACKAGE} whoami` : whoami);
+  // The invocation that ran, never a file this run has concluded is not the CLI (F67). With one rung
+  // those are the same line, which is the point of having one rung.
+  error.suggestedCommand = cause?.command ?? whoami;
   return error;
 }
 

@@ -32,7 +32,18 @@ jest.mock('../../project/fingerprint', () => ({
 }));
 
 const projectRoot = '/project';
-const easCli = { command: '/bin/eas', prefixArgs: [], source: 'path' as const };
+// The one rung, in the shape every caller now gets it: the runner, its flag, and the package spec
+// ahead of the `eas` command word (`src/utils/easCli.ts`).
+const easCli = {
+  command: 'npx',
+  prefixArgs: ['--yes', 'eas-cli@latest'],
+  source: 'npx --yes eas-cli@latest',
+  runner: 'npx' as const,
+  pinned: false,
+};
+
+/** The argv a spawn actually receives: the runner's prefix, then the EAS argv. */
+const spawned = (args: string[]) => [...easCli.prefixArgs, ...args];
 
 function mockSpawn(result: Partial<Awaited<ReturnType<typeof spawnSubprocessAsync>>>) {
   jest
@@ -157,7 +168,7 @@ describe(compareWithEasBuildAsync, () => {
 
     await compareWithEasBuildAsync(easCli, projectRoot, 'build-1');
 
-    expect(spawnSubprocessAsync).toHaveBeenCalledWith('/bin/eas', buildEasCompareArgs('build-1'), {
+    expect(spawnSubprocessAsync).toHaveBeenCalledWith(easCli.command, spawned(buildEasCompareArgs('build-1')), {
       cwd: projectRoot,
       output: 'capture',
     });
@@ -358,8 +369,8 @@ describe(findCachedBuildAsync, () => {
     await findCachedBuildAsync(easCli, projectRoot, 'ios', 'abc');
 
     expect(spawnSubprocessAsync).toHaveBeenCalledWith(
-      '/bin/eas',
-      buildCacheArgs('ios', 'abc'),
+      easCli.command,
+      spawned(buildCacheArgs('ios', 'abc')),
       expect.objectContaining({
         cwd: projectRoot,
         output: 'capture',
@@ -469,7 +480,9 @@ describe(lookUpCachedBuildAsync, () => {
     const outcome = await lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc');
 
     expect(outcome).toMatchObject({ state: 'unknown' });
-    expect((outcome as { reason: string }).reason).toContain('/bin/eas');
+    // The invocation, not a path: with one rung there is no file to send a reader to, and what
+    // resolves this is what `eas-cli` resolves to in the project (`utils/wrapperCrash.ts`).
+    expect((outcome as { reason: string }).reason).toContain('npx --yes eas-cli@latest');
     expect((outcome as { reason: string }).reason).toContain('may not be the real CLI');
     expect((outcome as { reason: string }).reason).not.toContain('panicked');
   });
@@ -498,10 +511,15 @@ describe(lookUpCachedBuildAsync, () => {
 
     await expect(
       lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc', { timeoutMs: 1234 })
-    ).resolves.toEqual({ state: 'unknown', reason: 'the lookup did not answer within 1234ms' });
+    ).resolves.toMatchObject({
+      state: 'unknown',
+      // The deadline, and then why it may have been spent: this project pins no `eas-cli`, so the
+      // run had to fetch one (`impact/buildCache.ts` §runnerDownloadNote).
+      reason: expect.stringContaining('the lookup did not answer within 1234ms'),
+    });
     expect(spawnSubprocessAsync).toHaveBeenCalledWith(
       easCli.command,
-      buildCacheArgs('ios', 'abc'),
+      spawned(buildCacheArgs('ios', 'abc')),
       expect.objectContaining({ timeoutMs: 1234 })
     );
   });
@@ -553,7 +571,7 @@ describe(lookUpBuildPlatformAsync, () => {
     await expect(lookUpBuildPlatformAsync(easCli, projectRoot, 'build-1')).resolves.toBe('android');
     expect(spawnSubprocessAsync).toHaveBeenCalledWith(
       easCli.command,
-      buildViewArgs('build-1'),
+      spawned(buildViewArgs('build-1')),
       expect.anything()
     );
   });

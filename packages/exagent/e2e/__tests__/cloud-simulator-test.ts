@@ -17,7 +17,7 @@ import path from 'node:path';
 
 import {
   executeExagentAsync,
-  installStubBinAsync,
+  installStubEasRunnerAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
   type ExecuteResult,
@@ -128,14 +128,14 @@ process.stderr.write('stub eas: unhandled command ' + args.join(' ') + '\\n');
 process.exit(1);
 `;
 
-/** Copy a fixture and put the stub `eas` where `PATH` and `node_modules/.bin` both find it. */
+/** Copy a fixture and put a stub package runner, answering as `eas-cli`, on its `PATH`. */
 async function setupAsync(fixtureName: string): Promise<string> {
   const projectRoot = await setupFixtureAsync(fixtureName);
   const binDir = path.join(projectRoot, '.stub-bin');
   await fs.promises.mkdir(binDir, { recursive: true });
   const stubScript = path.join(binDir, 'eas-stub.js');
   await fs.promises.writeFile(stubScript, STUB_EAS);
-  await installStubBinAsync(binDir, 'eas', stubScript);
+  await installStubEasRunnerAsync(binDir, stubScript);
   return await fs.promises.realpath(projectRoot);
 }
 

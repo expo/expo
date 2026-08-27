@@ -15,6 +15,7 @@ import {
   executeExagentAsync,
   holdDevLockAsync,
   installStubBinAsync,
+  installStubEasRunnerAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
@@ -231,6 +232,22 @@ async function reportAsync(fixtureName: string): Promise<StatusReport> {
 }
 
 /**
+ * Declare `eas-cli` in the project, which is what makes the EAS CLI answer at all.
+ *
+ * @ref llp/0015-backend-selection-and-config.rfc.md §What the first run costs, and who pays it
+ * The EAS CLI is reached through a package runner (wave 18), and the auth preflight declines to
+ * spend a package install on reading a local session file — so in a project that declares nothing,
+ * `status` asks the project's own `expo whoami` instead. A test whose subject is the *EAS* answer
+ * has to be a project that pins the CLI, which is also the shape where that spawn is cheap.
+ */
+async function pinEasCliAsync(projectRoot: string): Promise<void> {
+  const manifestPath = path.join(projectRoot, 'package.json');
+  const manifest = JSON.parse(await fs.promises.readFile(manifestPath, 'utf8'));
+  manifest.devDependencies = { ...manifest.devDependencies, 'eas-cli': '^22.0.0' };
+  await fs.promises.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+}
+
+/**
  * Install an `eas` bin that answers `whoami`, on the `PATH` the wrapper searches.
  *
  * The auth section runs a real subprocess, so without a stub the report would say whatever the
@@ -251,7 +268,8 @@ async function installStubEasAsync(
       ? `process.stdout.write(${JSON.stringify(`${user}\n`)});\n`
       : `process.stderr.write('Not logged in\\n');\nprocess.exit(1);\n`
   );
-  await installStubBinAsync(binDir, 'eas', stubScript);
+  await installStubEasRunnerAsync(binDir, stubScript);
+  await pinEasCliAsync(projectRoot);
 }
 
 describe('exagent status', () => {
@@ -1052,8 +1070,10 @@ process.exit(1);
 
       for (const dir of [binDir, path.join(projectRoot, 'node_modules', '.bin')]) {
         await installStubBinAsync(dir, 'fingerprint', fingerprintStub);
-        await installStubBinAsync(dir, 'eas', easStub);
       }
+      // One runner, because there is one rung; and the pin, so the EAS CLI is what answers `whoami`.
+      await installStubEasRunnerAsync(binDir, easStub);
+      await pinEasCliAsync(projectRoot);
       return projectRoot;
     }
 

@@ -10,6 +10,7 @@
 // against a stub bin that writes a real PNG.
 
 import { spawn } from 'child_process';
+import path from 'path';
 import { EventEmitter } from 'events';
 import fs from 'fs';
 import { vol } from 'memfs';
@@ -265,10 +266,22 @@ describe(captureScreenshotAsync, () => {
 
 // @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
 describe(`${captureScreenshotAsync.name} on a cloud simulator`, () => {
+  /**
+   * The runner every `eas` invocation goes through, planted where the resolver will look.
+   *
+   * A real `PATH` entry of this process, because these suites run on memfs and the resolver searches
+   * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
+   * used to be what made this hermetic; there is no rung that reads one any more.
+   */
+  const RUNNER = path.join(
+    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
+    'npx'
+  );
+
   beforeEach(() =>
     vol.fromJSON({
       '/project/package.json': '{}',
-      '/project/node_modules/.bin/eas': '#!/bin/sh\n',
+      [RUNNER]: '#!/bin/sh\n',
     })
   );
   afterEach(() => vol.reset());
