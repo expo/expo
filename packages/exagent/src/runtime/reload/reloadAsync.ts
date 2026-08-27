@@ -459,6 +459,7 @@ export async function reloadOverDevServerAsync(
       method: 'dev-server',
       ok: true,
       reason: `the dev server broadcast the reload and the app reconnected to its command socket`,
+      leftAppStopped: null,
     };
   } finally {
     socket.close();

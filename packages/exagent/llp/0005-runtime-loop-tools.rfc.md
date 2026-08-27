@@ -660,6 +660,29 @@ sound there and not here.
 application is not the session's. Until then this CLI cannot offer a verified per-app stop on a
 cloud session, and says so rather than pretending.
 
+### Two things a cloud run leaves behind
+
+Added after live staging validation, S12 and S13 [observed — 2026-08-26].
+
+**A failed `runtime:reload --cloud` leaves the app closed, and said so nowhere (S12).** The device
+fallback is a force-stop and a relaunch. The stop succeeded — `close host.exp.Exponent` on the
+session — and the relaunch was refused, so the session was left up, billing, with nothing running on
+it. The report said only *"The app was not reloaded"* and offered `npx exagent navigate /`, which on
+a cloud session is the very open that had just failed.
+
+The fallback is **not** redesigned here: restoring the controller's session app is not something this
+command can do, and a retry loop around a verb the device refused would spend a billed minute per
+attempt. What changed is that the run says what it did — naming the application id it stopped — and
+hands over the command a person can run, `eas simulator:exec … open <app-id>`. Opening the
+application id rather than a deep link is the part worth keeping: it avoids the "Open in Expo Go?"
+dialog that nothing can answer on a cloud device (S10). The attempt carries `leftAppStopped` on the
+payload so the fact is machine-readable rather than only prose.
+
+**`runtime:stop --cloud`'s follow-up asserted the app was not running (S13).** `wasRunning` is
+**null** on a cloud session for the reason §What `close` will not tell you gives, and the follow-up
+read that null as `false`: *"The app was not running, so this is what starts it"* — while Expo Go was
+running on the session. The three-way is now written out, and the null arm claims neither.
+
 ### Finding the session
 
 Decision [confirmed — Kudo, 2026-08-26]. **A cloud device is a session the service says is
@@ -701,6 +724,22 @@ on one of the two ladders:
   They promise to be instant, they are not acting on anything, and a suggestion that names a dead
   session costs one command that says so — a much cheaper wrong answer than a held-up banner
   (§Where it composes).
+
+#### A device that is held is not a session that ended
+
+Added after live staging validation, S14 [observed — 2026-08-26].
+
+The session's controller answers a verb it cannot perform with `Error (CODE): <sentence>`, and one of
+those codes carries its own remedy: `DEVICE_IN_USE` — *Device is already in use by session
+"default".* The general advice for a refused verb is the opposite of it — "a session can end between
+the moment it was listed and the moment a verb reaches it; start a new one if it has" — and acting on
+that **bills a second machine and leaves the first one held**.
+
+So `DEVICE_IN_USE` gets its own `How:`. It says the session did not end, names the session the
+controller named (read out of the sentence, with a fallback for a message that stops carrying one),
+points at binding the verb to that session, and says not to start another. The suggestion under it
+stays `eas simulator:list --status in-progress`, which for this code is how to see which sessions are
+up and starts nothing.
 
 #### Which session, when there is more than one
 

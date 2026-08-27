@@ -542,3 +542,191 @@ describe('the three commands in the help', () => {
     expect(tree.stdout).toContain('geometry');
   });
 });
+
+// @ref llp/0018-interaction-commands.rfc.md §The bundle gate — friction run 7, F62.
+//
+// The unit suite proves what the gate decides; this proves the parts only a process boundary has:
+// the exit code an agent branches on, one JSON object on stdout, and that the app is never asked
+// anything when the project does not compile.
+describe('the entry bundle gate', () => {
+  it(`stops runtime:tree at exit 20 without evaluating anything`, async () => {
+    const sent: string[] = [];
+    const devServer = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      bundle: 'broken',
+      inspectorEvaluate: (expression) => {
+        sent.push(expression);
+        return treeAnswer();
+      },
+    });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:tree', '--dev-server-url', devServer.url, '--json'],
+        { reject: false, env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(20);
+      const report = JSON.parse(result.stdout);
+      expect(report).toMatchObject({
+        ok: false,
+        reason: 'bundle-broken',
+        nodes: [],
+        bundle: { checked: true, ok: false, error: { filename: 'src/app/index.tsx' } },
+      });
+      expect(sent).toEqual([]);
+      expect(result.stderr).toContain('does not compile');
+      expect(result.stderr).toContain('src/app/index.tsx:101:2');
+    } finally {
+      await devServer.close();
+    }
+  });
+
+  it(`stops runtime:tap before it calls the handler, and says what to run`, async () => {
+    const devServer = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      bundle: 'broken',
+      inspectorEvaluate: responder({ tap: callAnswer() }),
+    });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:tap', 'add-note', '--verify', '--dev-server-url', devServer.url, '--json'],
+        { reject: false, env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(20);
+      expect(JSON.parse(result.stdout)).toMatchObject({
+        ok: false,
+        called: false,
+        reason: 'bundle-broken',
+        verify: null,
+      });
+      expect(result.stderr).toContain('Try: npx exagent runtime:reload');
+    } finally {
+      await devServer.close();
+    }
+  });
+
+  it(`stops runtime:type before it types`, async () => {
+    const devServer = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      bundle: 'broken',
+      inspectorEvaluate: responder({ type: callAnswer() }),
+    });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        [
+          'runtime:type',
+          'stale',
+          '--testID',
+          'note-input',
+          '--dev-server-url',
+          devServer.url,
+          '--json',
+        ],
+        { reject: false, env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(20);
+      expect(JSON.parse(result.stdout)).toMatchObject({ called: false, reason: 'bundle-broken' });
+    } finally {
+      await devServer.close();
+    }
+  });
+
+  it(`is declined by --no-bundle-check, which is the deliberate override`, async () => {
+    const devServer = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      bundle: 'broken',
+      inspectorEvaluate: responder({ tree: treeAnswer() }),
+    });
+    try {
+      const result = await executeExagentAsync(projectRoot, [
+        'runtime:tree',
+        '--no-bundle-check',
+        '--dev-server-url',
+        devServer.url,
+        '--json',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout)).toMatchObject({
+        ok: true,
+        bundle: { checked: false, ok: null, reason: expect.stringContaining('--no-bundle-check') },
+      });
+    } finally {
+      await devServer.close();
+    }
+  });
+});
+
+// @ref llp/0018-interaction-commands.rfc.md §Follow-ups — friction run 7, F75.
+describe('the follow-ups of the three commands', () => {
+  it(`prints a Suggested next: block naming a testID this walk found`, async () => {
+    const devServer = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      inspectorEvaluate: responder({ tree: treeAnswer() }),
+    });
+    try {
+      const result = await executeExagentAsync(projectRoot, [
+        'runtime:tree',
+        '--dev-server-url',
+        devServer.url,
+      ]);
+
+      expect(result.stdout).toContain('Suggested next:');
+      expect(result.stdout).toContain('npx exagent runtime:tap add-note --verify');
+    } finally {
+      await devServer.close();
+    }
+  });
+
+  it(`leaves them out under --no-followups, and carries them in --json`, async () => {
+    const devServer = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      inspectorEvaluate: responder({ tap: callAnswer() }),
+    });
+    try {
+      const quiet = await executeExagentAsync(projectRoot, [
+        'runtime:tap',
+        'add-note',
+        '--no-followups',
+        '--dev-server-url',
+        devServer.url,
+      ]);
+      expect(quiet.stdout).not.toContain('Suggested next:');
+
+      const json = await executeExagentAsync(projectRoot, [
+        'runtime:tap',
+        'add-note',
+        '--dev-server-url',
+        devServer.url,
+        '--json',
+      ]);
+      expect(JSON.parse(json.stdout).followups[0]).toMatchObject({ id: 'tap-verify' });
+      // One JSON object on stdout, follow-ups and all.
+      expect(json.stdout.trim().startsWith('{')).toBe(true);
+    } finally {
+      await devServer.close();
+    }
+  });
+});
+
+// @ref llp/0018-interaction-commands.rfc.md §Negative numbers — friction run 7, F73.
+describe('a negative --index', () => {
+  it(`is refused for what it is, not as a flag with nothing after it`, async () => {
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['runtime:tap', 'dup-btn', '--index', '-1', '--json'],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(1);
+    const envelope = JSON.parse(result.stdout);
+    expect(envelope.error.code).toBe('BAD_ARGS');
+    expect(envelope.error.message).toContain('--index must be a whole number of 0 or more, but got -1');
+    expect(envelope.error.message).not.toContain('nothing after it');
+  });
+});

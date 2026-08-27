@@ -2,10 +2,10 @@
 
 **Type:** RFC
 **Status:** Draft — implemented, marked `[experimental]`
-**Systems:** `src/runtime/interact/` (`expression.ts`, `resolveOptions.ts`, `interactAsync.ts`, `format.ts`, `types.ts`, `tree.ts`, `tap.ts`, `type.ts`); the `runtime` group of `src/commandRegistry.ts`; the `cli:runtime_tree` / `cli:runtime_tap` / `cli:runtime_type` events in `src/events.ts`; the `inspectorEvaluate` option of `e2e/utils.ts`
+**Systems:** `src/runtime/interact/` (`expression.ts`, `resolveOptions.ts`, `interactAsync.ts`, `format.ts`, `types.ts`, `tree.ts`, `tap.ts`, `type.ts`); the follow-up ladders (`src/followups/interact.ts`); the entry-bundle gate they share with `runtime:reload` (`src/runtime/bundleCheck.ts`); the `runtime` group of `src/commandRegistry.ts`; the `cli:runtime_tree` / `cli:runtime_tap` / `cli:runtime_type` events in `src/events.ts`; the `inspectorEvaluate` option of `e2e/utils.ts`
 **Author:** Tuft agent (implementation of [[0014-interaction-spike]], for Kudo)
-**Date:** 2026-08-26
-**Related:** [[0014-interaction-spike]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0016-v1-scope]]
+**Date:** 2026-08-26 (amended 2026-08-27 with §What friction run 7 changed)
+**Related:** [[0014-interaction-spike]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0016-v1-scope]]
 
 ## What this document is
 
@@ -113,7 +113,7 @@ A `--testID` that matches nothing exits **20**. Without one, an empty screen exi
 asked what is there and was told. With one, the caller asked a yes/no question about the app and the
 answer was no.
 
-### 7. No follow-ups, and so no `--no-followups`
+### 7. No follow-ups, and so no `--no-followups` — **reversed by friction run 7, see §Follow-ups**
 
 Every command that prints a `Suggested next:` block takes `--no-followups` to clear it
 ([[0009-smart-followups]]). None of the three recommended shapes has that flag, and adding one to
@@ -212,6 +212,159 @@ Two things it changed, both invisible to every test that existed at the time:
    print their suggestion inside a sentence that is itself quoted, so an unconditional
    `JSON.stringify` produced `run "npx exagent runtime:tree --testID "note-list"" for …` — three
    levels of quote around a string that needed none.
+
+## What friction run 7 changed
+
+The first friction run against a project these commands did not come from — `friction/run7/tapapp`,
+created by `exagent new`, four screens, testIDs for a disabled button, two duplicates, a
+no-handler `Text`, an `editable={false}` input, an input with no `onSubmitEditing`, and one testID
+shared across two screens [observed — iPhone 17 Pro simulator
+`C159CF99-9B06-4D2F-BFDC-010A107E2FBC`, Expo Go, dev server 8190, 2026-08-26] — is the run §What is
+still unverified named as the re-entry point. It closed `--index`, the disabled refusal and the
+ambiguous path (every case landed correctly), and it found nine things. What each one changed:
+
+### The bundle gate
+
+**The finding (F62).** With `src/app/lab.tsx` ending in a syntax error, `smoke` refused at its bundle
+phase and `runtime:reload` refused with exit 20 and a code frame — and all three of these commands
+went green, including `runtime:tap inc-btn --verify` reporting *"Verified after 1000ms, and the
+screen changed: counter-str: 'count is 7' -> 'count is 8'"*. They were reading and driving the
+bundle from before the edit and reporting a verified pass for it.
+
+This is the same shape friction run 4 filed as F38 against `runtime:reload`, which is where the gate
+was built. **The three commands did not inherit it, and now do**, with the same check
+(`checkEntryBundleAsync`), the same `bundle` object on the payload, the same `--no-bundle-check`
+override and the same exit 20 with the file, line and code frame the bundler named. Three decisions
+inside that:
+
+- **The gate runs before the debugger connection is used**, so a refused run asks the app nothing.
+  A payload that named an element would be a payload read off a stale runtime.
+- **The refusal is a `reason` on the report, not an error envelope** (`bundle-broken`,
+  `bundle-inconclusive`): the key set does not vary, and `nodes: []` alone is also what an empty
+  screen looks like.
+- **The budget is fixed at `BUNDLE_CHECK_TIMEOUT_MS = 20_000`, not a flag.** `runtime:reload` spends
+  its `--timeout` on the app quitting and coming back; there is nothing to wait for here but one
+  build the bundler has usually already done, and a cold first build that outlasts this is reported
+  as undecided rather than as broken.
+
+### The text of a node
+
+**The finding (F63).** `--verify` is the only proof these commands offer, and it was blind to
+`<Text>count: {count}</Text>`. The extractor read `typeof children === 'string'` and nothing else, so
+a `Text` with **array** children — a string and an interpolated value, which is how every screen
+shows a number — reported `text: null`. The first live tap of the run said *"nothing in the
+interactive projection changed"* about a tap that had incremented the counter on the screen.
+
+The extractor now joins the string and number children of a node and skips the element ones (each is
+rendered by a fiber this walk reaches separately, and `String(child)` on a React element is
+`[object Object]`). A node whose children are all elements has no text of its own, which stays
+`null` rather than becoming `""`.
+
+The shape was in the spike's own recording all along:
+`src/runtime/__tests__/fixtures/spike-view-tree/out-03-tree-walk.json` holds three `#text` fibers at
+depth 137 carrying `"This starter app includes example"`, `"\n"` and `"code to help you get
+started."`, and their `RCTText` parent at depth 136 is **absent** from the recorded projection —
+because its own `text` came out null. `expression-test.ts` §the text of a node rebuilds that run from
+the fixture.
+
+Also here: **a `TextInput`'s `placeholder` is not its text (F70).** It was reported as `text`, so an
+empty field with a placeholder and a controlled field with a value were indistinguishable, and an
+agent checking "did my typing land" read the placeholder as content. It has its own key now, and
+`text: ""` (a field that was measured and is empty) is a different answer from `text: null` (a field
+that shows nothing).
+
+### The default listing is elements
+
+**The finding (F69).** The default `runtime:tree` — which is where every follow-up in the surface
+sends an agent to discover testIDs — printed **26 rows for 9 elements**: one per fiber, three of them
+for one button, with no `disabled` anywhere and nothing to tell "one element over three fibers" from
+"two real elements needing `--index`". `runtime:tree --testID` and `runtime:tap` both work in
+elements and both answer all of it, one id at a time.
+
+**The default listing now groups by element, exactly as `--testID` and `tap` do.** The match is the
+fiber no ancestor of which carries the same testID; the group is the subtree that carries it; the row
+carries the group's facts rather than the top fiber's — the union of its handler props, `disabled`
+when any fiber of it is disabled, the first text any of them has, and `groupSize` so a row says how
+many fibers it stands for. `nodeCount` counts elements.
+
+Three consequences worth naming:
+
+- **A node with a handler and no testID is still a row**, grouped by its own fiber identity. It is
+  only reachable through this listing, and dropping it would hide the one thing that can be found
+  about it.
+- **The `--verify` diff inherits the grouping**, because the snapshot is this same walk. `counter-str`
+  and `counter-str#1` were one change listed twice.
+- **The row's `handlers` are the element's own, never an ancestor's.** `runtime:tap` walks up when the
+  group has none and says `handlerOutsideMatch: true` about it; a listing that folded that in would
+  report a plain `Text` inside a card as tappable.
+
+### Truncation counts
+
+**The finding (F74).** `--max-nodes 4` printed *"kept 42 node(s)"* and then *"42 node(s) matched and
+the first 4 are below"*, with `nodeCount: 42` beside four nodes in `--json`. One run described twice,
+and the larger number read as work still to come. `nodeCount` is now what came back and
+`nodesBeforeTruncation` is what the projection produced. Not `matchedCount`: `matched` already means
+"elements carrying the `--testID`" on this payload, and a near-synonym beside it is the ambiguity the
+finding is about.
+
+### Follow-ups
+
+**The finding (F75).** No `Suggested next:` on any successful run of the three, and no
+`--no-followups` in their help, while every other command in the surface chains. §7 above argued
+that the per-outcome recovery in the failure explanations was enough. It is not, and the reason is
+specific rather than a change of taste: **a `runtime:tree` run has just read the argument the next
+command takes.** It can name a real testID off this walk instead of `<testID>`, which is the
+difference between a paste and a reminder — and `runtime:tree` ends exactly where
+`runtime:tap <testID>` begins.
+
+So §7 is reversed: `src/followups/interact.ts` builds them, all three take `--no-followups`, and one
+rule runs through it — **never suggest an act this run has shown would be refused**, which is why the
+tap suggestion skips an element the app reports disabled. The ladders are: tree → tap the element it
+found, type into the input it found, read the errors; tap → the `--verify` it did not ask for, or the
+errors when the diff saw nothing; type → the `--submit` it did not make, then the tree that names the
+button which consumes the text.
+
+A run that **failed** still prints no follow-ups. Its refusal already names what to do, and a second
+answer to the same question in a different voice is worse than none.
+
+### Wording
+
+Three slips in `runtime:type`, all F77:
+
+- **`editable`.** *"the app sets editable on its TextInput"* reads as the opposite of what happened:
+  the app set it to **false**. It now says `editable is false on its TextInput`, and the other
+  disabling props are still named the way they were.
+- **"nothing was typed into".** A sentence with a hole where its object should be. A run that matched
+  an element names it; a run that matched none says "nothing was typed" rather than naming one that
+  is not there.
+- **The missing-text error** was a bare usage line where every other refusal of these commands has
+  what, why and how. It has all three, and says that `""` — clearing the field — is a thing a caller
+  asks for on purpose.
+
+### Ambiguity and the handler
+
+**The finding (F80).** `runtime:type "abc" --testID shared-id --all-screens`, on two `shared-id`
+Pressables neither of which is an input, answered with the *ambiguity* and sent the caller to
+`--index 0` — which would have failed for a different reason, and the information that says so was
+already in reach.
+
+The expression now computes **each candidate's own handler** before it refuses anything, and carries
+it on `candidates[].handler`. With no candidate carrying the prop the answer is `no-handler`, naming
+both facts — how many elements there are, and that none of them takes text. `ambiguous` is still the
+answer when some of them do, because then choosing really is the problem. The same ordering applies
+to `runtime:tap`, where it is the same mistake about `onPress`.
+
+### Negative numbers
+
+**The finding (F73).** `--index -1` was reported as *"--index was passed to … with nothing after it
+… there was no next argument"* — about an argument that was right there — because `arg` reads a
+leading `-` as the start of another option. `--index abc`, the same mistake with a different value,
+got the right message all along.
+
+A pre-scan of the caller's own argv catches `--index` and `--max-nodes` values matching `/^-\d/` and
+reports them through the same wording `resolveCount` uses. Scoped to those two flags rather than
+fixed in the shared parser, because for every other flag a leading `-` really does start an option —
+and the same class of bug lives in `dev:logs --tail -5`, which belongs to whoever owns that command.
 
 ## What is still unverified
 

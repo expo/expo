@@ -371,3 +371,48 @@ describe('the registry', () => {
     expect(result.stdout).toContain('is reserved and does not work yet');
   });
 });
+
+// @ref llp/0012-build-explain.rfc.md §Is this a log at all — live staging, S8.
+//
+// An EAS build log fetched without decoding its brotli body was read as a clean build: exit 0,
+// `failure: null`, and ten kilobytes of control characters in `logTail`.
+describe('input that is not a log', () => {
+  /** High-entropy bytes with no line structure, which is what an undecoded brotli body is. */
+  function compressedBytes(): Buffer {
+    return Buffer.from(Array.from({ length: 4000 }, (_unused, index) => index % 256));
+  }
+
+  it(`exits 22 and reports no failure at all, rather than a clean build`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const file = path.join(projectRoot, 'build.log.br');
+    await fs.promises.writeFile(file, compressedBytes());
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['inspect:build-log', '--file', file, '--json'],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(22);
+    const envelope = JSON.parse(result.stdout);
+    expect(envelope.error.code).toBe('LOG_NOT_TEXT');
+    expect(envelope.error.message).toMatch(/brotli/i);
+  });
+
+  it(`puts none of the bytes it refused on either stream`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const file = path.join(projectRoot, 'binary.log');
+    await fs.promises.writeFile(file, compressedBytes());
+
+    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', '--file', file], {
+      reject: false,
+    });
+
+    // Nothing but the message: no NUL, no escape sequences, nothing a terminal would act on.
+    const control = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
+    // Colour is off on a pipe, so any escape byte here would be one that came from the input.
+    expect(control.test(result.stdout)).toBe(false);
+    expect(control.test(result.stderr)).toBe(false);
+    expect(result.stderr).toContain('is not a build log');
+  });
+});

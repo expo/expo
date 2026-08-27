@@ -97,6 +97,7 @@ That second half is also what reclassified one rule. `Execution failed for task 
 
 `0` — **a report was produced**, and that includes `failure: null`.
 `1` — no report could be produced.
+`22` — what arrived is not a log at all (see §Is this a log at all).
 
 Decision [confirmed — Kudo, 2026-08-24]. "The log was read and no rule matched" is a **report**, not a failure, and it exits 0 carrying `failure: null` and `logTail`. The reasoning is [[0010-agent-conventions]]'s: the code answers _did the tool work_, and a command that read four thousand lines and found nothing it has a rule for has done its job exactly. The classification lives in the payload, where an agent that has the JSON does not need the exit code to say the same thing twice.
 
@@ -116,6 +117,41 @@ Four bounds, each with a reason:
 - **ANSI is stripped once, on the way in,** so no rule ever has to know about colour. Two of the captured fixtures are genuinely coloured, which is what makes that testable rather than assumed.
 
 Everything downstream of the reader is pure `string[]`-in, data-out: `phases.ts`, `anchors.ts` and `extract.ts` do no I/O of any kind. That is what makes the fixture suite cheap and what keeps "deterministic extraction" a checkable claim.
+
+## Is this a log at all
+
+Added after live staging validation, S8 [observed — 2026-08-26].
+
+`inspect:build-log --file` was handed an EAS build log that had been fetched but never decoded — EAS
+serves them **brotli-encoded** — and it answered **exit 0 with `failure: null`**: "the log was read
+and nothing failed", about a build that had errored. It then put roughly ten kilobytes of raw control
+characters into `logTail`, where a terminal renders them as anything at all and a driving agent
+carries them through its own context.
+
+Both halves are fixed in the reader, before a rule ever runs:
+
+- **The input is judged as text or not.** The control-character share of the first 8,192 characters
+  decides it, counted **after** the ANSI codes are stripped and excluding tab, newline and carriage
+  return, plus `U+FFFD` — which is what invalid UTF-8 becomes once it has been through a decoder, so
+  a compressed body caught in either state is caught by one rule. The threshold is 2%, and the two
+  measurements that put it there are far from it: the undecoded response was **55%** control
+  characters and the same log decoded was **0%** [observed — staging evidence 35 and 37].
+- **The refusal quotes none of what it read.** It says the share it measured, names brotli as the
+  usual cause, and gives the decode command. Nothing else.
+
+**Exit 22, not 20 and not 1.** Nothing about the build was measured, which is
+[[0010-agent-conventions]]'s "nothing was shown to be wrong and nothing was proved right" — the same
+code `status --assert` uses for a project it cannot measure. `20` would say the build failed. `0`
+with `failure: null`, which is what it did, said the build passed.
+
+There is no magic-number check, and that is deliberate rather than an omission: the brotli stream
+format has none. The observed body began `8b ff 7f 00`, which is data and not a signature, so the
+only sound test is the shape of the bytes.
+
+**What this cannot catch:** a decoded log whose *content* is binary-ish for its first eight
+kilobytes, and a compressed body small enough that the sample is mostly the text around it. The
+first would be refused (and is the honest answer for it anyway); the second is bounded by the sample
+being of the **start**, which is where a compressed body is compressed.
 
 ## The fixtures are the feature
 
