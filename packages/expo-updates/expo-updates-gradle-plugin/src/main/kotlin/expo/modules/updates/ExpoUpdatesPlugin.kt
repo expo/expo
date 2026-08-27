@@ -38,12 +38,18 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       val projectRoot = project.rootProject.projectDir.parentFile.toPath()
       val isDebuggableVariant =
         reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
+      val configMode = getConfigMode(
+        inheritedMode = System.getenv("__EXPO_CONFIG_MODE"),
+        isEasBuild = System.getenv("EAS_BUILD")?.lowercase() in listOf("1", "true"),
+        isDebuggableVariant = isDebuggableVariant
+      )
 
       val createUpdatesResourcesTask = project.tasks.register("create${targetName}UpdatesResources", CreateUpdatesResourcesTask::class.java) {
         it.description = "expo-updates: Create updates resources for ${targetName}."
         it.projectRoot.set(projectRoot.toString())
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
         it.debuggableVariant.set(isDebuggableVariant)
+        it.configMode.set(configMode)
         it.entryFile.set(entryFile.toPath().toString())
       }
       variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
@@ -62,6 +68,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
     @get:Input
     abstract val debuggableVariant: Property<Boolean>
+
+    @get:Input
+    abstract val configMode: Property<String>
 
     @get:Input
     abstract val entryFile: Property<String>
@@ -91,6 +100,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           it.commandLine(args)
         }
 
+        it.environment("__EXPO_CONFIG_MODE", configMode.get())
         it.workingDir(projectRoot)
       }
     }
@@ -116,6 +126,17 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       LoggerFactory.getLogger(ExpoUpdatesPlugin::class.java)
     }
   }
+}
+
+internal fun getConfigMode(
+  inheritedMode: String?,
+  isEasBuild: Boolean,
+  isDebuggableVariant: Boolean
+): String = when {
+  !inheritedMode.isNullOrEmpty() -> inheritedMode
+  isEasBuild -> "production"
+  isDebuggableVariant -> "development"
+  else -> "production"
 }
 
 /**
