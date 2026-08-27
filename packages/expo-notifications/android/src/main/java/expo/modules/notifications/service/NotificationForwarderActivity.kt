@@ -2,6 +2,7 @@ package expo.modules.notifications.service
 
 import android.app.Activity
 import android.content.Intent
+import android.os.BadParcelableException
 import android.os.Bundle
 import android.util.Log
 import expo.modules.notifications.BuildConfig
@@ -26,18 +27,23 @@ class NotificationForwarderActivity : Activity() {
       val notificationResponse = NotificationsService.getNotificationResponseFromBroadcastIntent(intent)
       ExpoHandlingDelegate.openAppToForeground(this, notificationResponse)
       sendBroadcast(broadcastIntent)
-    } catch (e: RuntimeException) {
-      // Covers IllegalArgumentException from the extras being unrecoverable, and
-      // BadParcelableException from the Bundle failing to unparcel at all - the latter is not an
-      // IllegalArgumentException, so it used to take the app down. See
-      // https://github.com/expo/expo/issues/49252
-      Log.e("expo-notifications", "Failed to handle notification response: could not recover notification data from intent extras. This may happen on some Android versions. Opening app to foreground.", e)
-      // Open the app anyway so the user isn't stuck.
-      ExpoHandlingDelegate.getMainActivityLauncher(this)?.let {
-        startActivity(it)
-      }
+    } catch (e: IllegalArgumentException) {
+      // The extras were readable but held no recoverable notification data.
+      openAppWithoutResponse(e)
+    } catch (e: BadParcelableException) {
+      // The Bundle failed to unparcel at all. This is not an IllegalArgumentException, so it used
+      // to take the app down. See https://github.com/expo/expo/issues/49252
+      openAppWithoutResponse(e)
     }
     finish()
+  }
+
+  private fun openAppWithoutResponse(e: Exception) {
+    Log.e("expo-notifications", "Failed to handle notification response: could not recover notification data from intent extras. This may happen on some Android versions. Opening app to foreground.", e)
+    // Open the app anyway so the user isn't stuck.
+    ExpoHandlingDelegate.getMainActivityLauncher(this)?.let {
+      startActivity(it)
+    }
   }
 
   override fun onNewIntent(intent: Intent?) {

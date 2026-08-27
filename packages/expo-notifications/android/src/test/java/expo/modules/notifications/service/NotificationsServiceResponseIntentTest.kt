@@ -1,12 +1,16 @@
 package expo.modules.notifications.service
 
+import android.app.RemoteInput
 import android.content.Intent
+import android.os.Bundle
 import android.os.Parcel
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationAction
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.model.TextInputNotificationAction
+import expo.modules.notifications.notifications.model.TextInputNotificationResponse
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -152,6 +156,48 @@ class NotificationsServiceResponseIntentTest {
     val response = NotificationsService.getNotificationResponseFromBroadcastIntent(delivered)
     assertEquals("hostile-loader-test", response.notification.notificationRequest.identifier)
     assertEquals("tap", response.actionIdentifier)
+  }
+
+  /**
+   * Marshalled bytes carry no class name, so the action needs a key per concrete type or a direct
+   * reply comes back as a base NotificationAction and `userText` never reaches JavaScript.
+   */
+  @Test
+  fun `direct reply keeps its type and user text through the response intent`() {
+    val notification = buildNotification(identifier = "reply-test")
+    val action = TextInputNotificationAction("reply", "Reply", false, "Type here")
+
+    val pendingIntent = NotificationsService.createNotificationResponseIntent(context, notification, action)
+    val delivered = shadowOf(pendingIntent).savedIntent
+    RemoteInput.addResultsToIntent(
+      arrayOf(RemoteInput.Builder(NotificationsService.USER_TEXT_RESPONSE_KEY).build()),
+      delivered,
+      Bundle().apply { putString(NotificationsService.USER_TEXT_RESPONSE_KEY, "hello there") }
+    )
+
+    val response = NotificationsService.getNotificationResponseFromBroadcastIntent(delivered)
+
+    assertTrue(
+      "the action must survive as TextInputNotificationAction, got ${response.action::class.java.name}",
+      response is TextInputNotificationResponse
+    )
+    assertEquals("hello there", (response as TextInputNotificationResponse).userText)
+  }
+
+  /** The same action still has to survive the hostile class loader the other test covers. */
+  @Test
+  fun `direct reply survives a class loader that cannot resolve the model classes`() {
+    val notification = buildNotification(identifier = "reply-loader-test")
+    val action = TextInputNotificationAction("reply", "Reply", false, "Type here")
+
+    val pendingIntent = NotificationsService.createNotificationResponseIntent(context, notification, action)
+    val delivered = parcelRoundTrip(shadowOf(pendingIntent).savedIntent)
+    delivered.setExtrasClassLoader(BlindToNotificationClasses(javaClass.classLoader!!))
+
+    val response = NotificationsService.getNotificationResponseFromBroadcastIntent(delivered)
+
+    assertTrue(response is TextInputNotificationResponse)
+    assertEquals("reply", response.actionIdentifier)
   }
 
   private fun marshalParcelable(parcelable: android.os.Parcelable): ByteArray {
