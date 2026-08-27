@@ -1,5 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
+import fs from 'node:fs';
 import net from 'node:net';
+import os from 'node:os';
 import path from 'node:path';
 
 import { CommandError } from '../../../../utils/errors';
@@ -21,11 +23,7 @@ import {
   openUrlAsync,
 } from '../adb';
 import * as AdbEndpoint from '../adbEndpoint';
-import {
-  AdbProcessWaitError,
-  runAdbHostQueryAsync,
-  runBoundedAdbHostQueryAsync,
-} from '../adbProcess';
+import { AdbProcessWaitError } from '../adbProcess';
 
 jest.mock('../ADBServer', () => ({
   ADBServer: jest.fn(() => {
@@ -41,6 +39,10 @@ jest.mock('../../../../utils/ora', () => ({
   ora: jest.fn(() => ({ start: jest.fn(), stop: jest.fn() })),
 }));
 jest.unmock('child_process');
+jest.unmock('fs');
+jest.unmock('node:fs');
+jest.unmock('os');
+jest.unmock('node:os');
 
 const originalEndpointEnvironment = {
   ADB_SERVER_SOCKET: process.env.ADB_SERVER_SOCKET,
@@ -698,6 +700,43 @@ describe('bounded discovery integration', () => {
     ]);
   });
 
+  it('retries a cold start that fails before its daemon accepts connections', async () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-adb-cold-start-'));
+    const attemptFile = path.join(directory, 'attempts');
+
+    try {
+      await expect(
+        getAttachedDevicesAsync({
+          server: fixtureServer('adb-cold-start-failure.js', [attemptFile, '1']),
+          waitLimitMs: 5_000,
+        })
+      ).resolves.toEqual([
+        expect.objectContaining({ pid: 'USB-1', name: 'Pixel', transportId: '4' }),
+      ]);
+      expect(fs.readFileSync(attemptFile, 'utf8')).toBe('2');
+    } finally {
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('reports a cold start that keeps failing for the whole retry window', async () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-adb-cold-start-'));
+    const attemptFile = path.join(directory, 'attempts');
+
+    try {
+      await expect(
+        getAttachedDevicesAsync({
+          server: fixtureServer('adb-cold-start-failure.js', [attemptFile, '1000']),
+          waitLimitMs: 5_000,
+          probeWaitLimitMs: 5,
+        })
+      ).rejects.toThrow(/cannot connect to daemon at tcp:5037: Connection refused/);
+      expect(Number(fs.readFileSync(attemptFile, 'utf8'))).toBeGreaterThan(1);
+    } finally {
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
   it('cleans up silent discovery before probing the selected host', async () => {
     const sockets = new Set<net.Socket>();
     const hostServer = net.createServer((socket) => {
@@ -730,28 +769,28 @@ describe('bounded discovery integration', () => {
   });
 });
 
-function fixtureServer(name: string): ADBServer {
-  return {
+function fixtureServer(name: string, fixtureArgs: string[] = []): ADBServer {
+  const { ADBServer: ActualADBServer } =
+    jest.requireActual<typeof import('../ADBServer')>('../ADBServer');
+  const fixtureArgv = [fixturePath(name), ...fixtureArgs];
+
+  class FixtureADBServer extends ActualADBServer {
+    getAdbExecutablePath(): string {
+      return process.execPath;
+    }
+
     runHostQueryAsync(
       args: string[],
       operation: string,
       signal?: AbortSignal,
       waitLimitMs?: number
-    ) {
+    ): Promise<string> {
       jest.mocked(spawnAsync).mockImplementationOnce(jest.requireActual('@expo/spawn-async'));
-      const result =
-        waitLimitMs == null
-          ? runAdbHostQueryAsync(process.execPath, [fixturePath(name), ...args], operation, signal)
-          : runBoundedAdbHostQueryAsync(
-              process.execPath,
-              [fixturePath(name), ...args],
-              operation,
-              waitLimitMs,
-              signal
-            );
-      return result.then((result) => result.stdout);
-    },
-  } as ADBServer;
+      return super.runHostQueryAsync([...fixtureArgv, ...args], operation, signal, waitLimitMs);
+    }
+  }
+
+  return new FixtureADBServer();
 }
 
 function fixturePath(name: string): string {
