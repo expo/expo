@@ -27,6 +27,7 @@
 - [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Keep the Room-generated `UpdatesDatabase_Impl` constructor, so minified release builds no longer crash with `NoSuchMethodException` on first database access. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch.
+- [iOS] Repair ready updates that are missing their launch asset by demoting them to pending during launcher selection, so a corrupted row is skipped and retried instead of failing every launch. ([#49457](https://github.com/expo/expo/pull/49457) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
