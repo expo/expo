@@ -112,6 +112,11 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   }
 
   private assertDeviceStateIsUsable(device: AndroidDebugBridge.Device): void {
+    // Exclude unauthorized states, which are checked separately
+    if (device.state === 'unauthorized') {
+      return;
+    }
+
     if (device.state && !isAdbDeviceStateUsable(device.state)) {
       throw this.createDeviceStateError(
         new Error(`Device ${device.pid ?? device.name} is in state ${device.state}.`),
