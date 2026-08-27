@@ -28,6 +28,8 @@ import {
   resolveDeepLinkUrl,
 } from '../../navigate/deepLink';
 import { resolveDeviceAsync, type NavigateDevice } from '../../navigate/device';
+import { isCallerNamedDevServer } from '../../navigate/openRoute';
+import { isTunnelCurrent, resolveDevServerReachAsync } from '../../dev/advertisedUrl';
 import { checkRoute, routeNotFoundError, type RouteCheckJson } from '../../navigate/routeCheck';
 import { decideExpoGoTarget } from '../../navigate/target';
 import { readProjectNativeDirsAsync } from '../../project/nativeCode';
@@ -1191,17 +1193,36 @@ async function reloadOnDeviceAsync(
   };
 }
 
-/** Open the route (or the root) on a device, building the URL exactly as `navigate` does. */
+/**
+ * Open the route (or the root) on a device, building the URL exactly as `navigate` does.
+ *
+ * **Including the host** (F96, the third URL-construction path this CLI had). The sentence above was
+ * true when it was written and stopped being true in wave 17, when `navigate` learned to read the
+ * host a *device* reaches out of the dev server's manifest: this function kept passing only the
+ * origin the dev server listens on, so a project served through a tunnel or a proxy got a link
+ * naming this machine. It never surfaced on a cloud session — the landing open is skipped there,
+ * because the relaunch verb already carried the route — and it is exactly wrong for a phone on
+ * another network, which is a device this rung does reach.
+ *
+ * @see src/dev/advertisedUrl.ts — and `resolveRouteUrlAsync`, which does the same thing for the two
+ * callers that also need a route check and a target decision from the dev server's own target list.
+ */
 async function openRouteAsync(
   projectRoot: string,
   options: ReloadOptions,
   devServerUrl: string,
   known: NavigateDevice | null
 ): Promise<{ url: string; command: string; exitCode: number | null; device: NavigateDevice } | null> {
-  const [config, nativeDirs, packageJson] = await Promise.all([
+  const [config, nativeDirs, packageJson, reach] = await Promise.all([
     Promise.resolve(readProjectSchemeConfig(projectRoot)),
     readProjectNativeDirsAsync(projectRoot),
     readProjectPackageJsonAsync(projectRoot),
+    // The same question `navigate` asks, through the same function: not where this dev server
+    // listens, but where a device reaches it. `options.devServerUrl` is the caller's flag, so a run
+    // that pinned a host keeps it and every other run gets the advertised one.
+    isCallerNamedDevServer({ devServerUrl: options.devServerUrl ?? null })
+      ? Promise.resolve(null)
+      : resolveDevServerReachAsync(projectRoot),
   ]);
   const usesDevClient = await isInstalledDependencyAsync(
     projectRoot,
@@ -1221,6 +1242,9 @@ async function openRouteAsync(
     config,
     isExpoGo: target.isExpoGo,
     devServerUrl,
+    // Only a tunnel that is *current*, for the reason `resolveRouteUrlAsync` gives: a host read out
+    // of a log whose dev server has since stopped is worse than the address of this machine.
+    reachHost: reach && isTunnelCurrent(reach) ? (reach.advertised?.host ?? null) : null,
   });
   if (!resolved.ok) {
     return null;

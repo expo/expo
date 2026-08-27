@@ -80,6 +80,22 @@ export interface OpenRouteOptions {
   appId?: string;
   /** The `--dev-server-url` the caller named, or null when it is still to be found. */
   devServerUrl: string | null;
+  /**
+   * Where {@link devServerUrl} came from: the **caller's own flag**, or a step of this same run.
+   *
+   * The two are not the same question, and treating them as one is F96. The reach lookup below is
+   * suppressed for a `flag`, because the caller named the host they want reached — but `smoke`
+   * discovers this project's dev server in its first phase and hands the URL down to its route
+   * phase, and that URL is a *finding of this run*, not a caller's instruction. Passed as `flag`,
+   * it silenced the manifest lookup and the gate built `exp://127.0.0.1:<port>` while `navigate`,
+   * three minutes earlier and against the same dev server, built the tunnel host from the manifest
+   * [observed — live cloud, 2026-08-27, artifacts 003 and 007].
+   *
+   * Defaults to `flag`, which is the safe reading of a URL whose origin a caller did not say.
+   *
+   * @see llp/0021-honest-reports.rfc.md §One URL source, two callers
+   */
+  devServerUrlSource?: 'flag' | 'discovered';
   /** Check the route against the project's routes first, cleared by `--no-route-check`. */
   routeCheck: boolean;
   /**
@@ -233,10 +249,11 @@ export async function resolveRouteUrlAsync(
     readProjectRoutesAsync(projectRoot),
     // What the dev server said about where a device reaches it (`src/dev/advertisedUrl.ts`).
     //
-    // Not asked when `--dev-server-url` named one: the caller named the host they want reached, and
-    // substituting this project's tunnel host for it would quietly answer a different question —
-    // the flag may well name a dev server that is not this project's at all.
-    options.devServerUrl == null ? resolveDevServerReachAsync(projectRoot) : namedDevServerReach(),
+    // Not asked when `--dev-server-url` **named** one: the caller named the host they want reached,
+    // and substituting this project's tunnel host for it would quietly answer a different question —
+    // the flag may well name a dev server that is not this project's at all. A URL a *step of this
+    // run* found is not that (F96, `devServerUrlSource`), so it is asked for.
+    isCallerNamedDevServer(options) ? namedDevServerReach() : resolveDevServerReachAsync(projectRoot),
   ]);
   const devServerUrl = devServer.devServerUrl;
 
@@ -260,8 +277,10 @@ export async function resolveRouteUrlAsync(
   // this command could still build a URL from it: the scheme of a development build needs no dev
   // server, so a `--dev-server-url` typo used to deep-link the device into an app with no bundle to
   // load and report exit 0. Discovery already probes the URL — `flag` is the one source whose
-  // failure was not acted on.
-  if (devServer.source === 'flag' && !devServer.reachable) {
+  // failure was not acted on. Attributed to the *caller* rather than to discovery's own label: a
+  // URL a phase of this run found reaches discovery as `flag` too, and blaming a flag nobody passed
+  // sends a reader to check an argument they never wrote (F96).
+  if (devServer.source === 'flag' && isCallerNamedDevServer(options) && !devServer.reachable) {
     throw unreachableNamedDevServerError(devServerUrl, devServer.reason);
   }
 
@@ -476,6 +495,20 @@ async function openUrlOnBackendAsync(
     stderr: result.stderr,
     exitCode: result.exitCode,
   };
+}
+
+/**
+ * Whether the dev server URL in these options is the **caller's** rather than this run's finding.
+ *
+ * Pure and exported for the table, because it is the whole of F96 in one expression: a URL and its
+ * provenance are two facts, and a run that keeps only the first cannot tell "the caller pinned this
+ * host" from "an earlier phase of mine found this host".
+ */
+export function isCallerNamedDevServer(options: {
+  devServerUrl: string | null;
+  devServerUrlSource?: 'flag' | 'discovered';
+}): boolean {
+  return options.devServerUrl != null && options.devServerUrlSource !== 'discovered';
 }
 
 /** The reach of a dev server the caller named: their host, and nothing this project knows. */

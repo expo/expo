@@ -282,11 +282,19 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
 
     // The dev server this run settled on, not the flag: a run that discovered one in its first
     // phase must not go looking for a second one in its fourth.
+    //
+    // **And its provenance with it** (F96). That URL is where the dev server *listens*, which is not
+    // where a device *reaches* it: `openRouteAsync` asks the manifest for the second, and it skips
+    // that lookup for a URL the caller pinned. Handing it a discovered URL with no label made the
+    // gate refuse `exp://127.0.0.1:8500` as unreachable from a cloud simulator while `navigate`,
+    // against the same dev server, opened the tunnel host the manifest carried
+    // [observed — live cloud, 2026-08-27]. `flag` only when the caller really did name one.
     openRoute: (route, devServerUrl) =>
       openRouteAsync(projectRoot, {
         route,
         platform: options.platform,
         devServerUrl,
+        devServerUrlSource: options.devServerUrl == null ? 'discovered' : 'flag',
         routeCheck: options.routeCheck,
         command: 'smoke',
         cloud: options.cloud,

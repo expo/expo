@@ -496,6 +496,53 @@ describe('exagent smoke --cloud', () => {
     }
   });
 
+  // @ref llp/0021-honest-reports.rfc.md §One URL source, two callers — F96, the first live-cloud run.
+  //
+  // The dev server here advertises a **tunnel** origin in its manifest, and no `--dev-server-url` is
+  // passed: this is exactly the shape of the live run where `navigate --print-url` reported
+  // `hostType: tunnel` over `exp://exagent-live-8500.tuft.host/--/?` and `smoke --cloud` refused
+  // `exp://127.0.0.1:8500/--/?` as unreachable, three minutes apart, against the same dev server.
+  // What the gate opens has to be the host the dev server advertised, not the port it listens on.
+  it(`opens the host the dev server advertised, not the loopback it listens on`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+    const stub = await startStubDevServerAsync({
+      targets: [],
+      projectRoot,
+      manifestOrigin: 'https://stub-tunnel.example',
+    });
+    // The lock is what makes this project's own dev server discoverable, so the gate finds the URL
+    // rather than being handed one — the case `--dev-server-url` is deliberately not.
+    const releaseLock = await holdDevLockAsync(projectRoot, {
+      url: stub.url,
+      port: stub.port,
+      pid: process.pid,
+      startedAt: new Date().toISOString(),
+      projectRoot,
+    });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['smoke', '--cloud', '--json', '--timeout', '4s', '--no-followups'],
+        { reject: false }
+      );
+
+      // Not the tool failure a loopback host produces: that refusal is correct about the URL it was
+      // given and wrong about which URL this run should have built.
+      expect(JSON.parse(result.stdout).error?.code).not.toBe(
+        'CLOUD_SIMULATOR_UNREACHABLE_DEV_SERVER'
+      );
+      const opens = easInvocations(projectRoot).filter(
+        (argv) => argv[0] === 'simulator:exec' && argv.includes('open')
+      );
+      expect(opens).not.toHaveLength(0);
+      expect(opens[0]).toContain('exp://stub-tunnel.example/--/?');
+    } finally {
+      await releaseLock();
+      await stub.close();
+    }
+  });
+
   // A gate must not pass on a device it never found. `--cloud` is `required` for `smoke`'s device
   // phases, so an account with no session is told so rather than quietly falling back here.
   it(`reports the missing session rather than falling back to this machine`, async () => {
