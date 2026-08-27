@@ -1,4 +1,3 @@
-import type { EnvMode } from '@expo/env';
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
 import type { EmbeddedManifest } from 'expo-manifests';
@@ -17,7 +16,7 @@ export async function createManifestForBuildAsync(
   platform: 'ios' | 'android',
   projectRoot: string,
   destinationDir: string,
-  mode: EnvMode,
+  dev: boolean,
   entryFileArg?: string
 ): Promise<void> {
   const entryFile =
@@ -32,7 +31,7 @@ export async function createManifestForBuildAsync(
     platform,
     entryFile,
     minify: false,
-    dev: mode === 'development', // ensures debug assets packaged correctly for iOS and native debug
+    dev, // ensures debug assets packaged correctly for iOS and native debug
     sourcemapUseAbsolutePath: false,
     resetCache: false,
   };

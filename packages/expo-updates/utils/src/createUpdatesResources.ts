@@ -4,7 +4,6 @@ import {
   loadProjectEnv,
   logLoadedEnv,
   setNodeEnv,
-  type EnvMode,
 } from '@expo/env';
 import assert from 'assert';
 import { boolish } from 'getenv';
@@ -17,7 +16,7 @@ declare namespace globalThis {
   let __DEV__: boolean | undefined;
 }
 
-export function loadEnvForBuild(projectRoot: string): EnvMode {
+export function loadEnvForBuild(projectRoot: string): void {
   process.env = getOriginalEnv();
   const mode =
     consumeConfigEnvMode() ?? (boolish('EAS_BUILD', false) ? 'production' : 'development');
@@ -25,7 +24,6 @@ export function loadEnvForBuild(projectRoot: string): EnvMode {
   setNodeEnv(mode);
   globalThis.__DEV__ = mode === 'development';
   logLoadedEnv(loadProjectEnv(projectRoot, { mode }));
-  return mode;
 }
 
 export async function createUpdatesResourcesAsync(args: string[] = process.argv.slice(2)) {
@@ -53,7 +51,12 @@ export async function createUpdatesResourcesAsync(args: string[] = process.argv.
   }
 
   const entryFileArg = args[4];
-  const mode = loadEnvForBuild(possibleProjectRoot);
+  const metroDevArg = args[5];
+  if (metroDevArg !== 'true' && metroDevArg !== 'false') {
+    throw new Error(`Unsupported Metro dev value: ${metroDevArg}`);
+  }
+  const metroDev = metroDevArg === 'true';
+  loadEnvForBuild(possibleProjectRoot);
 
   await Promise.all([
     createUpdatesResourcesMode === 'all'
@@ -61,7 +64,7 @@ export async function createUpdatesResourcesAsync(args: string[] = process.argv.
           platform,
           possibleProjectRoot,
           destinationDir,
-          mode,
+          metroDev,
           entryFileArg
         )
       : null,
