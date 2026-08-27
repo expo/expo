@@ -60,9 +60,6 @@ export function useNavigationCache<
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
-  const { stackRef } = use(NavigationBuilderContext);
-  const getState = useLatestCallback(() => state);
-
   // Cache object which holds navigation objects for each screen
   // We use `React.useMemo` instead of `React.useRef` coz we want to invalidate it when deps change
   // In reality, these deps will rarely change, if ever
