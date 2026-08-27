@@ -74,8 +74,7 @@ export const websiteSchema = {
     '@type': 'Organization',
     name: 'Expo',
     legalName: '650 Industries, Inc.',
-    description:
-      'Expo is a full-stack React Native framework with cloud services to help you move faster at every stage of the app lifecycle.',
+    description: BASE_DESCRIPTIONS.en,
     url: 'https://expo.dev',
     contactPoint: {
       '@type': 'ContactPoint',
