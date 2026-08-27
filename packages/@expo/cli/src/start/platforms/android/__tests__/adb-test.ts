@@ -17,6 +17,7 @@ import {
   isPackageInstalledAsync,
   launchActivityAsync,
   sanitizeAdbDeviceName,
+  waitForAttachedDevicesAsync,
   openUrlAsync,
 } from '../adb';
 import * as AdbEndpoint from '../adbEndpoint';
@@ -304,17 +305,19 @@ describe(isDeviceBootedAsync, () => {
 });
 
 describe(getAttachedDevicesAsync, () => {
-  it('retries transient empty discovery results', async () => {
+  it('retries transient empty discovery results beyond three rapid attempts', async () => {
     jest
       .mocked(getServer().runHostQueryAsync)
       .mockResolvedValueOnce(deviceListResult(''))
       .mockResolvedValueOnce(deviceListResult(''))
+      .mockResolvedValueOnce(deviceListResult(''))
+      .mockResolvedValueOnce(deviceListResult(''))
       .mockResolvedValueOnce(deviceListResult('USB-1 device usb:1 model:Pixel transport_id:4'));
 
-    await expect(getAttachedDevicesAsync()).resolves.toEqual([
+    await expect(waitForAttachedDevicesAsync()).resolves.toEqual([
       expect.objectContaining({ pid: 'USB-1', name: 'Pixel' }),
     ]);
-    expect(getServer().runHostQueryAsync).toHaveBeenCalledTimes(3);
+    expect(getServer().runHostQueryAsync).toHaveBeenCalledTimes(5);
   });
 
   it('uses an AVD name for a booting offline emulator', async () => {
