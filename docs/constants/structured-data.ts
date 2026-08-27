@@ -1,3 +1,5 @@
+import { BASE_DESCRIPTIONS } from '../common/i18n';
+
 type BreadcrumbItem = {
   name: string;
   url?: string;
@@ -66,11 +68,28 @@ export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Expo Documentation',
+  description: BASE_DESCRIPTIONS.en,
   url: 'https://docs.expo.dev',
   publisher: {
     '@type': 'Organization',
     name: 'Expo',
+    legalName: '650 Industries, Inc.',
+    description:
+      'Expo is a full-stack React Native framework with cloud services to help you move faster at every stage of the app lifecycle.',
     url: 'https://expo.dev',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: 'support@expo.dev',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '624 University Ave, FL1',
+      addressLocality: 'Palo Alto',
+      addressRegion: 'CA',
+      postalCode: '94301',
+      addressCountry: 'US',
+    },
     logo: {
       '@type': 'ImageObject',
       url: 'https://docs.expo.dev/static/images/expo-logo.svg',
