@@ -2,14 +2,12 @@ import { Platform } from 'expo';
 
 import type { RouteNode } from './Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
-import type { Options, State } from './fork/getPathFromState';
+import type { State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
 import { applyRedirects } from './getRoutesRedirects';
-import type { UrlObject } from './global-state/getRouteInfoFromState';
 import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
 import type { LinkingOptions } from './react-navigation/native';
-import { getActionFromState } from './react-navigation/native';
 import type { NativeIntent, RequireContext } from './types';
 
 export function getNavigationConfig(
@@ -67,7 +65,6 @@ interface RouterOptions {
 export function getLinkingConfig(
   routes: RouteNode,
   context: RequireContext,
-  getRouteInfo: () => UrlObject,
   {
     metaOnly = true,
     serverUrl,
@@ -113,13 +110,19 @@ export function getLinkingConfig(
           if (typeof initialUrl === 'string') {
             initialUrl = applyRedirects(initialUrl, redirects);
             if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
-              initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
+              initialUrl = nativeLinking.redirectSystemPath({
+                path: initialUrl,
+                initial: true,
+              });
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
               url = applyRedirects(url, redirects);
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
-                return nativeLinking.redirectSystemPath({ path: url, initial: true });
+                return nativeLinking.redirectSystemPath({
+                  path: url,
+                  initial: true,
+                });
               }
               return url;
             });
@@ -130,9 +133,7 @@ export function getLinkingConfig(
       return initialUrl;
     },
     subscribe: subscribe(nativeLinking, redirects),
-    getStateFromPath: <ParamList extends object>(path: string, options?: Options<ParamList>) => {
-      return getStateFromPath(path, options, getRouteInfo().segments);
-    },
+    getStateFromPath,
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
@@ -142,9 +143,6 @@ export function getLinkingConfig(
         }) ?? '/'
       );
     },
-    // Add all functions to ensure the types never need to fallback.
-    // This is a convenience for usage in the package.
-    getActionFromState,
   };
 }
 

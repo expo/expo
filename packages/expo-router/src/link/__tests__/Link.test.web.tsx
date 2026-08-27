@@ -2,23 +2,16 @@
 import { fireEvent, render } from '@testing-library/react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { linkTo } from '../../global-state/routing';
 import { Link } from '../Link';
 
-jest.mock('../../global-state/routing', () => {
-  const actual = jest.requireActual(
-    '../../global-state/routing'
-  ) as typeof import('../../global-state/routing');
-  return {
-    ...actual,
-    linkTo: jest.fn(),
-  };
-});
+const mockLinkTo = jest.fn();
 
-const mockedLinkTo = linkTo as jest.MockedFunction<typeof linkTo>;
+jest.mock('../../global-state/useRouterActions', () => ({
+  useRouterActions: () => ({ linkTo: mockLinkTo }),
+}));
 
 beforeEach(() => {
-  mockedLinkTo.mockClear();
+  mockLinkTo.mockClear();
 });
 
 it('renders a Link', () => {
@@ -234,7 +227,7 @@ describe('web click navigation', () => {
 
     fireEvent.click(getByTestId('link'), { button: 0 });
 
-    expect(mockedLinkTo).toHaveBeenCalledWith('/foo', {
+    expect(mockLinkTo).toHaveBeenCalledWith('/foo', {
       dangerouslySingular: undefined,
       event: undefined,
       relativeToDirectory: undefined,
@@ -257,7 +250,7 @@ describe('web click navigation', () => {
 
     fireEvent.click(getByTestId('link'), event);
 
-    expect(mockedLinkTo).not.toHaveBeenCalled();
+    expect(mockLinkTo).not.toHaveBeenCalled();
   });
 
   it('does not intercept links with a target', () => {
@@ -269,7 +262,7 @@ describe('web click navigation', () => {
 
     fireEvent.click(getByTestId('link'), { button: 0 });
 
-    expect(mockedLinkTo).not.toHaveBeenCalled();
+    expect(mockLinkTo).not.toHaveBeenCalled();
   });
 
   it.each(['https://expo.dev', '//expo.dev/router', 'mailto:hello@example.com'])(
@@ -283,7 +276,7 @@ describe('web click navigation', () => {
 
       fireEvent.click(getByTestId('link'), { button: 0 });
 
-      expect(mockedLinkTo).toHaveBeenCalled();
+      expect(mockLinkTo).toHaveBeenCalled();
     }
   );
 });

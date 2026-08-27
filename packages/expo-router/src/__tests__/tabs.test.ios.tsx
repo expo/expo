@@ -421,12 +421,13 @@ it('can use replace navigation', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'tab',
         },
       },
     ],
     stale: false,
-    type: 'stack',
+    routeKeySeq: expect.any(Number),
   });
 });
 

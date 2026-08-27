@@ -26,6 +26,36 @@ extension MKMapPoint {
   }
 }
 
+/// Screen-space size of a MapKit `Marker` balloon. MapKit doesn't expose the balloon's bounds, so
+/// this approximates the default balloon drawn by `Marker(_:systemImage:coordinate:)`.
+private let markerHitSize = CGSize(width: 40, height: 44)
+
+/// Screen-space size of an annotation, matching the frame its icon is rendered with.
+private let annotationHitSize = CGSize(width: 50, height: 50)
+
+/// The rect a feature of `size` covers when its coordinate projects to `origin`.
+///
+/// `verticalAnchor` says where along the rect the coordinate itself sits: `1` puts it on the bottom
+/// edge, the way a balloon hangs above its tip, and `0.5` centres the rect on it.
+func featureHitRect(at origin: CGPoint, size: CGSize, verticalAnchor: CGFloat) -> CGRect {
+  CGRect(
+    x: origin.x - size.width / 2,
+    y: origin.y - size.height * verticalAnchor,
+    width: size.width,
+    height: size.height
+  )
+}
+
+/// A marker balloon hangs above the coordinate, which sits at its tip.
+func markerHitRect(at origin: CGPoint) -> CGRect {
+  featureHitRect(at: origin, size: markerHitSize, verticalAnchor: 1)
+}
+
+/// An annotation is centred on its coordinate.
+func annotationHitRect(at origin: CGPoint) -> CGRect {
+  featureHitRect(at: origin, size: annotationHitSize, verticalAnchor: 0.5)
+}
+
 @available(iOS 18.0, *)
 struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
@@ -160,67 +190,83 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       // https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-26-release-notes#Maps
       .simultaneousGesture(SpatialTapGesture()
           .onEnded { event in
-            if let coordinate = reader.convert(event.location, from: .local) {
-              // check if we hit a polygon and send an event
-              if let hit = props.polygons.first(where: { polygon in
-                isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
-              }) {
-                let coords = hit.coordinates.map {
-                  [
-                    "latitude": $0.latitude,
-                    "longitude": $0.longitude
-                  ]
-                }
-                props.onPolygonClick([
-                  "id": hit.id,
-                  "color": hit.color,
-                  "lineColor": hit.lineColor,
-                  "lineWidth": hit.lineWidth,
-                  "coordinates": coords
-                ])
-              } else if let hit = props.circles.first(where: { circle in
-                isTapInsideCircle(
-                  tapCoordinate: coordinate,
-                  circleCenter: circle.clLocationCoordinate2D,
-                  radius: circle.radius
-                )}) {
-                  props.onCircleClick([
-                    "id": hit.id,
-                    "color": hit.color,
-                    "lineColor": hit.lineColor,
-                    "lineWidth": hit.lineWidth,
-                    "radius": hit.radius,
-                    "coordinates": [
-                      "latitude": hit.center.latitude,
-                      "longitude": hit.center.longitude
-                    ]
-                  ])
-                }
-              // Then check if we hit a polyline and send an event
-              else if let hit = polyline(at: coordinate) {
-                let coords = hit.coordinates.map {
-                  [
-                    "latitude": $0.latitude,
-                    "longitude": $0.longitude
-                  ]
-                }
-                props.onPolylineClick([
-                  "id": hit.id,
-                  "color": hit.color,
-                  "width": hit.width,
-                  "contourStyle": hit.contourStyle.rawValue,
-                  "coordinates": coords
-                ])
-              }
+            guard let coordinate = reader.convert(event.location, from: .local) else {
+              return
+            }
 
-              // Send an event of map click regardless
-              props.onMapClick([
+            // `onMapClick` is documented as not being invoked when the tap lands on a marker or a
+            // POI. This gesture is attached with `simultaneousGesture`, so it also recognizes taps
+            // the map has already routed to a marker or an annotation through its selection
+            // binding — those are reported by `onMarkerClick` from `handleSelectionChange`, and
+            // must not be reported here as well.
+            if isTapOnMarker(at: event.location, reader: reader) {
+              return
+            }
+
+            // A tap that lands on a drawn shape belongs to that shape, so it is reported through
+            // the shape's own event instead of as a map click.
+            if let hit = props.polygons.first(where: { polygon in
+              isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
+            }) {
+              let coords = hit.coordinates.map {
+                [
+                  "latitude": $0.latitude,
+                  "longitude": $0.longitude
+                ]
+              }
+              props.onPolygonClick([
+                "id": hit.id,
+                "color": hit.color,
+                "lineColor": hit.lineColor,
+                "lineWidth": hit.lineWidth,
+                "coordinates": coords
+              ])
+              return
+            }
+
+            if let hit = props.circles.first(where: { circle in
+              isTapInsideCircle(
+                tapCoordinate: coordinate,
+                circleCenter: circle.clLocationCoordinate2D,
+                radius: circle.radius
+              )}) {
+              props.onCircleClick([
+                "id": hit.id,
+                "color": hit.color,
+                "lineColor": hit.lineColor,
+                "lineWidth": hit.lineWidth,
+                "radius": hit.radius,
                 "coordinates": [
-                  "latitude": coordinate.latitude,
-                  "longitude": coordinate.longitude
+                  "latitude": hit.center.latitude,
+                  "longitude": hit.center.longitude
                 ]
               ])
+              return
             }
+
+            if let hit = polyline(at: coordinate) {
+              let coords = hit.coordinates.map {
+                [
+                  "latitude": $0.latitude,
+                  "longitude": $0.longitude
+                ]
+              }
+              props.onPolylineClick([
+                "id": hit.id,
+                "color": hit.color,
+                "width": hit.width,
+                "contourStyle": hit.contourStyle.rawValue,
+                "coordinates": coords
+              ])
+              return
+            }
+
+            props.onMapClick([
+              "coordinates": [
+                "latitude": coordinate.latitude,
+                "longitude": coordinate.longitude
+              ]
+            ])
           }
       )
       .mapControls {
@@ -319,6 +365,31 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         ]
       ])
       return
+    }
+  }
+
+  /// Whether a tap landed on one of the markers or annotations drawn on the map.
+  ///
+  /// Markers and annotations are views drawn at a fixed size in screen space, so the tap is matched
+  /// against where they are rendered rather than against the coordinate it converts to: the span of
+  /// coordinates one covers changes with every zoom level.
+  private func isTapOnMarker(at location: CGPoint, reader: MapProxy) -> Bool {
+    let hitMarker = props.markers.contains { marker in
+      guard let origin = reader.convert(marker.clLocationCoordinate2D, to: .local) else {
+        return false
+      }
+      return markerHitRect(at: origin).contains(location)
+    }
+
+    if hitMarker {
+      return true
+    }
+
+    return props.annotations.contains { annotation in
+      guard let origin = reader.convert(annotation.clLocationCoordinate2D, to: .local) else {
+        return false
+      }
+      return annotationHitRect(at: origin).contains(location)
     }
   }
 

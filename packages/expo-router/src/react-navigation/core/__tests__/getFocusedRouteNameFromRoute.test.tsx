@@ -95,25 +95,11 @@ test('gets focused route name from nested state with symbol', () => {
   ).toBe('Article');
 });
 
-test('gets nested screen in params if present', () => {
+test('ignores screen params without nested state', () => {
   expect(
     getFocusedRouteNameFromRoute({
       name: 'Home',
       params: { screen: 'Chat' },
-    })
-  ).toBe('Chat');
-
-  expect(
-    getFocusedRouteNameFromRoute({
-      name: 'Home',
-      params: { screen: 'Chat', initial: false },
-    })
-  ).toBe('Chat');
-
-  expect(
-    getFocusedRouteNameFromRoute({
-      name: 'Home',
-      params: { screen: {} },
     })
   ).toBeUndefined();
 });

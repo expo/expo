@@ -150,6 +150,9 @@ data class LinearWavyProgressIndicatorProps(
   val color: Color? = null,
   val trackColor: Color? = null,
   val stopSize: Float? = null,
+  val amplitude: Float? = null,
+  val wavelength: Float? = null,
+  val waveSpeed: Float? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -161,17 +164,27 @@ fun FunctionalComposableScope.LinearWavyProgressIndicatorContent(props: LinearWa
   val stopSize = props.stopSize?.dp ?: WavyProgressIndicatorDefaults.LinearTrackStopIndicatorSize
 
   if (props.progress != null) {
+    val wavelength = props.wavelength?.dp ?: WavyProgressIndicatorDefaults.LinearDeterminateWavelength
+
     LinearWavyProgressIndicator(
       progress = { props.progress },
       color = color,
       trackColor = trackColor,
       stopSize = stopSize,
+      amplitude = props.amplitude.toAmplitude(),
+      wavelength = wavelength,
+      waveSpeed = props.waveSpeed?.dp ?: wavelength,
       modifier = modifier
     )
   } else {
+    val wavelength = props.wavelength?.dp ?: WavyProgressIndicatorDefaults.LinearIndeterminateWavelength
+
     LinearWavyProgressIndicator(
       color = color,
       trackColor = trackColor,
+      amplitude = props.amplitude ?: IndeterminateAmplitude,
+      wavelength = wavelength,
+      waveSpeed = props.waveSpeed?.dp ?: wavelength,
       modifier = modifier
     )
   }
@@ -186,6 +199,9 @@ data class CircularWavyProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,
   val trackColor: Color? = null,
+  val amplitude: Float? = null,
+  val wavelength: Float? = null,
+  val waveSpeed: Float? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -193,6 +209,8 @@ data class CircularWavyProgressIndicatorProps(
 fun FunctionalComposableScope.CircularWavyProgressIndicatorContent(props: CircularWavyProgressIndicatorProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   val color = props.color.composeOrNull ?: ProgressIndicatorDefaults.circularColor
+  val wavelength = props.wavelength?.dp ?: WavyProgressIndicatorDefaults.CircularWavelength
+  val waveSpeed = props.waveSpeed?.dp ?: wavelength
 
   if (props.progress != null) {
     val trackColor = props.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor
@@ -201,6 +219,9 @@ fun FunctionalComposableScope.CircularWavyProgressIndicatorContent(props: Circul
       progress = { props.progress },
       color = color,
       trackColor = trackColor,
+      amplitude = props.amplitude.toAmplitude(),
+      wavelength = wavelength,
+      waveSpeed = waveSpeed,
       modifier = modifier
     )
   } else {
@@ -209,6 +230,9 @@ fun FunctionalComposableScope.CircularWavyProgressIndicatorContent(props: Circul
     CircularWavyProgressIndicator(
       color = color,
       trackColor = trackColor,
+      amplitude = props.amplitude ?: IndeterminateAmplitude,
+      wavelength = wavelength,
+      waveSpeed = waveSpeed,
       modifier = modifier
     )
   }
@@ -217,6 +241,13 @@ fun FunctionalComposableScope.CircularWavyProgressIndicatorContent(props: Circul
 // endregion
 
 // Utility
+
+private const val IndeterminateAmplitude = 1f
+
+private fun Float?.toAmplitude(): (Float) -> Float {
+  val amplitude = this ?: return WavyProgressIndicatorDefaults.indicatorAmplitude
+  return { amplitude }
+}
 
 private fun String?.toStrokeCap(): StrokeCap? {
   return when (this?.lowercase()) {

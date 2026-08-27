@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import {
   ensureStateHistory,
   type TabActionHelpers,
@@ -10,7 +8,7 @@ import {
   type TabRouterOptions,
 } from './TabRouter';
 import { ensureStateType } from './ensureStateType';
-import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
+import type { CommonNavigationAction, ParamListBase, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -95,9 +93,8 @@ export function DrawerRouter({
       initialRouteName
     ) as unknown as DrawerNavigationState<ParamListBase>;
 
-  const isDrawerInHistory = (
-    state: DrawerNavigationState<ParamListBase> | PartialState<DrawerNavigationState<ParamListBase>>
-  ) => Boolean(state.history?.some((it) => it.type === 'drawer'));
+  const isDrawerInHistory = (state: DrawerNavigationState<ParamListBase>) =>
+    Boolean(state.history?.some((it) => it.type === 'drawer'));
 
   const addDrawerToHistory = (
     state: DrawerNavigationState<ParamListBase>
@@ -156,29 +153,6 @@ export function DrawerRouter({
 
     type: 'drawer',
 
-    getRehydratedState(partialState, { routeNames, routeGetIdList }) {
-      if (partialState.stale === false) {
-        return partialState;
-      }
-
-      let state = router.getRehydratedState(partialState, {
-        routeNames,
-        routeGetIdList,
-      });
-
-      if (isDrawerInHistory(partialState)) {
-        // Re-sync the drawer entry in history to correct it if it was wrong
-        state = removeDrawerFromHistory(state);
-        state = addDrawerToHistory(state);
-      }
-
-      return {
-        ...state,
-        type: 'drawer',
-        key: `drawer-${nanoid()}`,
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const result = router.getStateForRouteFocus(ensureDrawerStateOptionalProperties(state), key);
 
@@ -188,37 +162,55 @@ export function DrawerRouter({
     getStateForAction(inputState, action, options) {
       // Restore route history before drawer actions can add drawer-only history.
       const state = ensureDrawerStateOptionalProperties(inputState);
+      const focusedRouteKey = state.routes[state.index]?.key;
 
       switch (action.type) {
         case 'OPEN_DRAWER':
-          return openDrawer(state);
+          return { state: openDrawer(state), affectedRouteKey: focusedRouteKey };
 
         case 'CLOSE_DRAWER':
-          return closeDrawer(state);
+          return { state: closeDrawer(state), affectedRouteKey: focusedRouteKey };
 
         case 'TOGGLE_DRAWER':
           if (isDrawerInHistory(state)) {
-            return removeDrawerFromHistory(state);
+            return {
+              state: removeDrawerFromHistory(state),
+              affectedRouteKey: focusedRouteKey,
+            };
           }
 
-          return addDrawerToHistory(state);
+          return {
+            state: addDrawerToHistory(state),
+            affectedRouteKey: focusedRouteKey,
+          };
 
         case 'PUSH':
         case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE': {
-          const result = router.getStateForAction(state, action, options);
+          const actionResult = router.getStateForAction(state, action, options);
 
-          if (result != null && result.index !== state.index) {
-            return closeDrawer(result as DrawerNavigationState<ParamListBase>);
+          if (actionResult !== null) {
+            const nextState = actionResult.state;
+            if (nextState.index === state.index) {
+              return actionResult;
+            }
+
+            return {
+              ...actionResult,
+              state: closeDrawer(nextState as DrawerNavigationState<ParamListBase>),
+            };
           }
 
-          return result;
+          return null;
         }
 
         case 'GO_BACK':
           if (isDrawerInHistory(state)) {
-            return removeDrawerFromHistory(state);
+            return {
+              state: removeDrawerFromHistory(state),
+              affectedRouteKey: focusedRouteKey,
+            };
           }
 
           return router.getStateForAction(state, action, options);

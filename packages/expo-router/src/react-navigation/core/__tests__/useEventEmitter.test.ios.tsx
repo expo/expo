@@ -250,8 +250,7 @@ test('fires focus and blur events in nested navigator', () => {
 
   expect(firstFocusCallback).toHaveBeenCalledTimes(1);
 
-  // FIXME: figure out why this is called twice instead of once
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(2);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(1);
   expect(thirdFocusCallback).toHaveBeenCalledTimes(0);
 
   act(() => parent.current.navigate('second'));
@@ -265,9 +264,9 @@ test('fires focus and blur events in nested navigator', () => {
   expect(firstBlurCallback).toHaveBeenCalledTimes(1);
   expect(secondBlurCallback).toHaveBeenCalledTimes(1);
   expect(thirdFocusCallback).toHaveBeenCalledTimes(0);
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'third' }));
+  act(() => child.current.navigate('third'));
 
   expect(fourthBlurCallback).toHaveBeenCalledTimes(2);
   expect(thirdFocusCallback).toHaveBeenCalledTimes(1);
@@ -277,13 +276,16 @@ test('fires focus and blur events in nested navigator', () => {
   expect(firstFocusCallback).toHaveBeenCalledTimes(2);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'fourth' }));
+  act(() => {
+    child.current.navigate('fourth');
+    parent.current.navigate('nested');
+  });
 
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(4);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
   expect(firstBlurCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'third' }));
+  act(() => child.current.navigate('third'));
 
   expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
   expect(fourthBlurCallback).toHaveBeenCalledTimes(3);
@@ -298,7 +300,7 @@ test('fires focus and blur events in nested navigator', () => {
   expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
 
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(4);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
   expect(fourthBlurCallback).toHaveBeenCalledTimes(3);
 });
 
@@ -313,17 +315,23 @@ test('fires blur event when a route is removed with a delay', async () => {
         switch (action.type) {
           case 'PUSH':
             return {
-              ...state,
-              index: state.index + 1,
-              routes: [...state.routes, action.payload],
+              state: {
+                ...state,
+                index: state.index + 1,
+                routes: [...state.routes, action.payload],
+              },
+              affectedRouteKey: action.payload.key,
             };
           case 'POP': {
             const routes = state.routes.slice(0, -1);
 
             return {
-              ...state,
-              index: routes.length - 1,
-              routes,
+              state: {
+                ...state,
+                index: routes.length - 1,
+                routes,
+              },
+              affectedRouteKey: routes[routes.length - 1]?.key,
             };
           }
           default:

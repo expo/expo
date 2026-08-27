@@ -4,10 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Paused time is now excluded from the `AudioRecorder` duration limit. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
 - [Android] Aligned the default audio focus request on Android 7.0–7.1 with newer versions by using transient exclusive focus when no interruption mode has been configured. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
+- [Android] Added support for `keepAudioSessionActive`. ([#49108](https://github.com/expo/expo/pull/49108) by [@behenate](https://github.com/behenate))
 - Added the `doNotMixPersistent` interruption mode. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
 - Added `fileName` option to `RecordingOptions` to allow specifying the recording file basename on Android and iOS. ([#47265](https://github.com/expo/expo/pull/47265) by [@silwalprabin](https://github.com/silwalprabin))
 - Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
@@ -17,6 +19,7 @@
 
 ### 🐛 Bug fixes
 
+- Preserve recorder duration limits across pauses, consistently exclude paused time on Android, iOS, and Web. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
 - [Android] Pause audio players and playlists when headphones or Bluetooth audio devices disconnect. ([#48151](https://github.com/expo/expo/pull/48151) by [@vivekjm](https://github.com/vivekjm))
 - [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
@@ -26,6 +29,7 @@
 - [iOS] Activate the audio session once and keep it active instead of toggling. ([#48588](https://github.com/expo/expo/pull/48588) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
 - [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
+- [iOS] Resolve permission requests with `denied` and reject recording calls instead of letting the OS terminate the app when `NSMicrophoneUsageDescription` is missing. ([#49162](https://github.com/expo/expo/pull/49162) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
