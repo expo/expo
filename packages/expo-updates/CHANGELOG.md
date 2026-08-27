@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch. ([#49456](https://github.com/expo/expo/pull/49456) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 55.0.29 — 2026-08-27
