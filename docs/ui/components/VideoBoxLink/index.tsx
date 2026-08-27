@@ -43,7 +43,7 @@ export function VideoBoxLink({
         openInNewTab
         href={`https://www.youtube.com/watch?v=${videoId}${time ? `&t=${time}` : ''}`}
         className={mergeClasses(
-          'group relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+          'group relative flex items-stretch overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
           'hocus:bg-subtle hocus:shadow-sm',
           'max-sm:flex-col',
           '[&+hr]:mt-6!',

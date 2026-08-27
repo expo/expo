@@ -58,7 +58,7 @@ export const Footer = ({
             <LinkBase
               href={previousPage.href}
               className={mergeClasses(
-                'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
+                'flex w-full items-center gap-3 rounded-3xl border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
               <ArrowLeftIcon aria-hidden="true" className="shrink-0 text-icon-secondary" />
@@ -77,7 +77,7 @@ export const Footer = ({
             <LinkBase
               href={nextPage.href}
               className={mergeClasses(
-                'flex w-full items-center justify-between gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
+                'flex w-full items-center justify-between gap-3 rounded-3xl border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
               <div>
