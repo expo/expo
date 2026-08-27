@@ -16,8 +16,8 @@ import * as Log from '../log';
 import { resolveDeviceAsync } from '../navigate/device';
 import { readConfiguredAppId, resolveAppId } from './appId';
 import { stopAppOnDeviceAsync } from './appProcess';
-import { discoverDevServerAsync } from './devServer';
 import { debugEvent, event } from './events';
+import { preflightRuntimeAsync } from './preflight';
 import type { RuntimeStopOptions } from './resolveStopOptions';
 
 /**
@@ -97,11 +97,16 @@ export async function runtimeStopAsync(
     projectRoot,
   });
 
-  // The dev server is consulted but never required: it is the strongest evidence for *which* app
-  // is running, and an app can be running with no dev server behind it at all.
-  const devServer = await discoverDevServerAsync(options.devServerUrl ?? undefined, {
-    projectRoot,
-  });
+  // @ref ./preflight — the family's one resolution step, asked here for what it can give rather
+  // than for a precondition. `need: 'optional'` is the honest answer for this command: it acts on a
+  // **device**, the dev server is its strongest evidence for *which* app is running, and an app can
+  // be running with no dev server behind it at all. Requiring a debugger target here would refuse
+  // the run that llp/0010 §The seventh and eighth calls a success — stopping an app that has
+  // already stopped — so the connection is read and never insisted on.
+  const devServer = await preflightRuntimeAsync(
+    { need: 'optional', devServerUrl: options.devServerUrl ?? null, cloud: options.cloud },
+    { projectRoot }
+  );
   const connectedAppIds = devServer.targets.map((target) => target.appId).filter(Boolean);
   const resolved = resolveAppId({
     platform: device.platform,

@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
+**Systems:** `exagent` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]], [[0017-deferred-commands]]
@@ -69,6 +69,91 @@ third: a command that reports on the app does not gate on what it reported.
 
 Still open: Android capture via a dev build, performance probe, cross-platform sweep. ("No traffic"
 versus a silently-unsupported Network domain is settled below, in §Android.)
+
+## One preflight for the runtime family
+
+Added in wave 21, on Kudo's directive: "same for `runtime:*` commands — if there's no connected app, we
+should disable or exit the command call early" [confirmed — Kudo, 2026-08-27].
+
+Every command in this group needs the same two facts before it does any work — a dev server, and
+something connected to it — and each one used to establish them its own way, in its own order, with
+its own words. `src/runtime/preflight.ts` is the one place that asks, and the one refusal they all
+print.
+
+### What each command needs, which is not the same thing
+
+| Command | Needs | Why |
+|---|---|---|
+| `runtime:eval`, `runtime:errors`, `runtime:tree`, `runtime:tap`, `runtime:type` | a **debugger target** | there is nothing to read or drive without a JavaScript runtime, and nothing they report means anything |
+| `runtime:reload` | a **dev server** | it can *start* an app, so "no app is connected" is a rung of its ladder; a missing dev server is a refusal, because a reload makes the app fetch the served bundle and stopping it there replaces a stale screen with no screen |
+| `runtime:stop` | a **device** | it acts on a device, and an app can be running with no dev server behind it at all |
+
+The third row is a decision and it is the one that looks wrong at first: the directive says "if
+there's no connected app… exit early", and `runtime:stop` deliberately does not. Its subject is a
+**state**, not an act — llp/0010 §The seventh and eighth: the stop commands makes an app that was
+already stopped a success, so that an agent stopping an app twice does not have to special-case the
+second run. Refusing there would fail the very run that convention exists to make boring. So `stop`
+reads the connection like everything else (`need: 'optional'`, one shared discovery) and requires
+only what it acts on; a machine with no device is told so by `resolveDeviceAsync`, in that layer's
+own words, with `xcrun simctl list devices booted` / `adb devices` to look with.
+
+### The refusal, in one shape
+
+Two codes, unchanged from the ones five of the commands already shipped — llp/0010 §Needs-human
+protocol's rule that reclassification never renames a code applies to a *unification* too:
+
+- **`NO_DEV_SERVER`** — nothing answered `GET /json/list` on the dev server this command was going to
+  use. The dev server is probed **first**, so "no dev server on `<url>`" and "no app on a dev server
+  that is running" are never conflated; an agent that could not tell them apart would restart a
+  healthy dev server.
+- **`NO_APP_CONNECTED`** — the dev server is running and its debugger target list is empty, or holds
+  no app on the platform the caller named (F51's two shapes are kept).
+
+Each carries What (which list is empty, and on which dev server, by URL), Why (the request that
+failed, or the list that was empty and for how long it stayed empty), and How — one ladder, in one
+order: `npx exagent dev --detach`, then `npx exagent navigate /`, then `npx exagent smoke`, which
+waits for the bundle and the app together. `reachTheAppLadder` is that sentence, as a function,
+because six copies of it had drifted into six different first steps — one of which named a keypress
+in a terminal that a `--detach`ed dev server does not have (F48-5).
+
+**`--cloud` is carried onto every command in the ladder that takes it**, and `dev --detach` becomes
+`dev --detach --tunnel` there. This is the F5x/S5 rule applied to the refusal: a caller who passed
+`--cloud` is on a machine whose device is in a datacenter, so a suggestion without the flag sends
+them to a local simulator they have not got, and a dev server without a tunnel is one the session
+cannot reach (§A cloud simulator requires a tunnel). Only `reload` and `stop` have the flag to pass;
+the reading commands talk to a dev server over HTTP and do not care where the device is.
+
+### The counts go on the wire, not only in the prose
+
+`error.data` is a new key of the `--json` error envelope (llp/0010 §The `--json` error envelope),
+always present and `null` for a failure with nothing to count. The runtime refusals fill it with
+what they observed: `devServerUrl`, `devServerReachable`, `debuggerTargets`,
+`commandSocketClients` (null for every command that never opens `/message`, which is all of them but
+`runtime:reload`) and `platform`. The alternative was a caller regexing `names 1 app` out of an
+English sentence nobody promised.
+
+### Two things the sweep changed, and one it did not
+
+**The connection is asked before the bundle gate** [observed — 2026-08-27, and confirmed against the
+wave-19 tip by re-running the new e2e suite on it]. `runtime:tree`, `runtime:tap` and `runtime:type`
+asked their entry-bundle gate first, so with nothing connected the exit code was decided by whether
+the *project compiled*: exit **20** for a broken bundle and exit **1** for a clean one, for one
+situation. Nothing can be read off a screen that is not there, whatever the code on disk says, so
+`1` — the code the other three commands already gave — is the answer, and llp/0010's bands decide
+it: nothing was attempted, so there is no outcome to report. It also cost time nobody had a use for,
+because the gate's budget is twenty seconds and the answer took a millisecond.
+
+**One read of the target list instead of three.** `runtime:eval` resolved the dev server (a probe),
+built the platform index (a probe), then required a connected app (a probe) — and any two of those
+reads could disagree about which app was attached, which is the shape F51 and F53 both had. The
+preflight reads it once and hands back the populated connection: the URL, how it was found, the
+targets, the platform-scoped subset a command may read, and the device index.
+
+**What did not change: the bands.** Both refusals are exit `1` in every command, as they already
+were, including under a gate-shaped flag — `runtime:errors --fail-on-error` with no app is `1` and
+never `0`, because `1` is "fix the call" and the fix is to start a dev server or open the app. The
+`22` rule of llp/0010 §The sixth (a gate that cannot measure must not pass) is about a gate whose
+window *opened* and observed nothing, which is a different state and still `22`.
 
 ## Reloading the app
 
@@ -273,6 +358,12 @@ Three changes, and the first is the one that matters:
    the report** with the reason on it, because a step that is simply absent is a decision a reader
    cannot see.
 
+   **Superseded in wave 21 — §One ladder, chosen by the command socket.** This rule was written to
+   protect a cheaper alternative, and in the state it fires on there is none: with no client on the
+   command socket the broadcast reaches nobody, so the choice is not "relaunch or keep the state", it
+   is "relaunch or do nothing". Wave 19 had already made the relaunch primary on a cloud session for
+   exactly that reason. What replaces the caller's consent is a report the cost is visible in.
+
 With a connected app and no mechanism able to reach it, the run is exit `20` and the `How:` says the
 app *is* connected — the old text said "open the app on a device or simulator first", which is
 advice for a caller whose app is not running and reads as "start a second copy".
@@ -293,7 +384,9 @@ proof — and the first dev build somebody runs it against decides whether it ca
 **The honest limit of the whole section.** For an app that is connected and whose command socket has
 no client, and which is not one `expo.reloadAppAsync()` reloads, this command has **no**
 non-destructive reload. It says so, and points at the one thing that always works and costs nothing:
-editing a file the app has loaded, which the dev server pushes on its own.
+editing a file the app has loaded, which the dev server pushes on its own. [Amended in wave 21: the
+limit is unchanged and the *answer* to it is no longer a refusal — `auto` spends the app's state
+rather than leaving the caller with a stale screen, and says on the attempt that it did.]
 
 ### Reloading a cloud session
 
@@ -370,6 +463,65 @@ observations spelled out, and never a success off a verb that accepted an argume
 That last row is why every piece of advice in this package now names
 `eas simulator … --expo-go` (`CLOUD_SESSION_START_COMMAND`): the old suggestion started a session
 with no app on it, which no `navigate --cloud` or `runtime:reload --cloud` can use.
+
+### One ladder, chosen by the command socket
+
+Wave 21 [confirmed — Kudo's delegate, 2026-08-27]. `--cloud` stops being a behaviour switch. There is
+one ladder, and one observable fact picks the rung: **whether the dev server's client command socket
+holds a client**, which is what `getpeers` answers.
+
+| rung | mechanism | reached when |
+|---|---|---|
+| 1 | broadcast on `/message` | the socket holds a client. Costs the app nothing, same code path on both platforms, under a second |
+| 2 | relaunch the app | the socket holds none. On `--cloud`, wave 19's two controller verbs; otherwise the local device method (`simctl terminate`/`am force-stop`, then the deep link) |
+
+`--method` still pins a rung and skips the rest, `--method runtime` is still a rung `auto` never
+picks (§Two lists, one question), and the bundle gate still runs before any of them.
+
+**Why the socket and not the location.** The wave-19 section's own finding is that the cloud broke the
+ladder through a *mechanism*, not through geography: the tunnel carries the bundle over HTTP and the
+app registers no client on `/message`, so the broadcast reaches nobody. That is a fact about the
+socket. Keying the ladder on `--cloud` encoded the correlation instead of the cause, and it was wrong
+in both directions — a local app whose socket is empty was refused with advice, and a cloud session
+that *did* hold a client would have been force-stopped for no reason. Two things follow, and both are
+better than what they replace: the reading of the peer list is now the same step that broadcasts (one
+socket open, not two), and `--cloud` narrows to what it is honestly about — **which device backend may
+relaunch**, and which flag every suggested command keeps.
+
+**What it costs, said out loud.** Rung 2 replaces the app's process, so the JavaScript state is gone.
+Before wave 21 `auto` refused to spend that on a connected app and named `--method device` for a
+caller who meant it; now the ladder spends it when nothing cheaper can reach the app, and the
+*attempt* carries the cost: `no client was registered on the dev server's command socket, so the app
+was relaunched instead — which costs the app's JavaScript state: <the commands that ran>`. Only when
+there was an app to lose state — a relaunch that *started* an app cost nothing, and says nothing.
+
+**The verification is identical on every rung**, which is the other half of "one ladder". Two
+observations, watched on one budget, either of which is a reload:
+
+1. a debugger target the dev server had not listed before — the stronger one, and what tells an app
+   that came back from one that quit;
+2. a `Bundled` line in the dev server's captured output that was not there before (`bundleSignal.ts`).
+
+`verifiedBy` keeps the *mechanism's* own observation as its label when it has one —
+`message-socket-peers` for peer churn, `app-relaunch` for a local relaunch — because "the app's
+connection was replaced" is a stronger fact than "the dev server served a bundle to somebody", and
+flattening the two would lose it. The exit code is decided by the observations alone: `0` with either,
+`22` with neither, `20` when no rung ran at all. So the F45 hold is unchanged — peer churn alone is
+still `reloaded: true` with exit `22` — and the second observation is now available to the local rungs
+too, which is what makes the ladder one ladder rather than two with a shared name.
+
+**The consequence to know about, and it is a real cost.** A relaunched app re-registers under the page
+id it had before (§Reloading a cloud session, observed live), so on a project with **no captured dev
+server log** rung 2 has nothing left to observe and exits `22` after spending the whole `--timeout`.
+That is honest — the app was relaunched and whether it came back is unknown — and the fix is the first
+rung of the preflight's own ladder: `npx exagent dev --detach` captures the output that makes the
+second observation possible. It is not a regression; the local relaunch path had exactly this hold
+before, reached from a different direction.
+
+**Not attempted, and why.** A third observation is available in principle — a target that *vanished*
+from `/json/list` and came back is a new connection even under an id it used before — and it is
+[inferred] until something watches a live relaunch closely enough to say so. It is written down here
+rather than built, because a proof this command reports as `reloaded` has to be one that was seen.
 
 ### Live evidence
 

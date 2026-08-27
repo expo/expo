@@ -521,6 +521,9 @@ describe('the --json error envelope', () => {
         message: expect.stringContaining('--upload-root'),
         suggestedCommand: expect.any(String),
         needsHuman: null,
+        // @ref llp/0010 §The `--json` error envelope — always present, null for a failure with
+        // nothing to count (wave 21).
+        data: null,
       },
     });
     // The prose is unchanged and stays where a person reads it.

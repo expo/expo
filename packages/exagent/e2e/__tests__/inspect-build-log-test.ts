@@ -295,6 +295,7 @@ describe('when no report can be produced', () => {
         message: expect.stringContaining('there is nothing at that path'),
         suggestedCommand: 'npx exagent inspect:build-log --help',
         needsHuman: null,
+        data: null,
       },
     });
 

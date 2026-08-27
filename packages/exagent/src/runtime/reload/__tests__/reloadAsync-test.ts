@@ -843,41 +843,67 @@ describe('an app the command socket cannot see', () => {
     expect(broadcast.reason).toContain('1 connected app');
   });
 
-  it(`never force-stops an app the dev server can see`, async () => {
+  // @ref llp/0005-runtime-loop-tools.rfc.md §One ladder, chosen by the command socket — wave 21.
+  //
+  // What this replaces: `auto` used to refuse here — "never force-stop an app the dev server can
+  // see" — and exit 20 with two deliberate methods to choose between. That rule was written to
+  // protect a *cheaper alternative*, and in this state there is none: the broadcast has nobody to
+  // reach, and the only mechanism left is the relaunch. Wave 19 had already made it the primary
+  // mechanism on a cloud session for exactly that reason; the state is the same one locally, so the
+  // ladder is the same.
+  it(`relaunches on the device when the command socket has no client`, async () => {
     writeProject();
-    mockDevServer([EXPO_GO_TARGET]);
+    const server = mockDevServer([EXPO_GO_TARGET]);
     mockConnect(fakeSocket([{}]).socket);
-    mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+    mockSpawnQueue(
+      [{ stdout: BOOTED_SIMULATOR }, { stdout: '' }, { stdout: BOOTED_SIMULATOR }, { stdout: '' }],
+      (index) => index === 2 && server.listing([RELOADED_EXPO_GO_TARGET])
+    );
 
-    await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 300 }))).resolves.toBe(
-      EXIT_OUTCOME_FAILED
-    );
-    // Nothing was spawned at all: no simctl, no terminate.
-    expect(jest.mocked(spawn)).not.toHaveBeenCalled();
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
     const report = JSON.parse(printed());
-    const device = report.attempts.find(
-      (attempt: { method: string }) => attempt.method === 'device'
-    );
-    expect(device).toMatchObject({ ok: false });
-    expect(device.reason).toContain('--method device');
-    // The debugger method is not in the ladder either: on Expo Go it closes the app, so it is a
-    // method a caller picks.
+    expect(report).toMatchObject({ reloaded: true, method: 'device', verifiedBy: 'app-relaunch' });
+    // Both rungs are in the report, in the order they were tried: the broadcast that had nobody to
+    // reach, then the relaunch that did the work.
     expect(report.attempts.map((attempt: { method: string }) => attempt.method)).toEqual([
       'dev-server',
       'device',
     ]);
   });
 
-  it(`names both deliberate methods for an app neither the broadcast nor a save can reach`, async () => {
+  // The relaunch costs the app's JavaScript state, and a run that spends it says so on the attempt
+  // — the old design made the caller choose it by name, and what replaces that consent is a report
+  // a reader can see the cost in.
+  it(`says what the relaunch cost when it ran on an app that was connected`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [{ stdout: BOOTED_SIMULATOR }, { stdout: '' }, { stdout: BOOTED_SIMULATOR }, { stdout: '' }],
+      (index) => index === 2 && server.listing([RELOADED_EXPO_GO_TARGET])
+    );
+
+    await reloadAsync(projectRoot, options({ json: true }));
+    const device = JSON.parse(printed()).attempts.find(
+      (attempt: { method: string }) => attempt.method === 'device'
+    );
+    expect(device.reason).toContain(`the app's JavaScript state`);
+    expect(device.reason).toContain('simctl terminate');
+  });
+
+  it(`names both deliberate methods for an app no rung of the ladder could reach`, async () => {
     writeProject();
     mockDevServer([EXPO_GO_TARGET]);
     mockConnect(fakeSocket([{}]).socket);
+    // No booted device, so the relaunch rung has nothing to act on either.
+    mockSpawnQueue([{ stdout: '{"devices":{}}' }]);
 
-    await reloadAsync(projectRoot, options({ timeoutMs: 300 }));
+    await expect(reloadAsync(projectRoot, options({ timeoutMs: 300 }))).resolves.toBe(
+      EXIT_OUTCOME_FAILED
+    );
     const explained = jest.mocked(console.error).mock.calls.flat().join('\n');
 
     expect(explained).toContain('the app is connected');
-    expect(explained).toContain('--method device');
     // And what the other one costs on Expo Go, said where the caller is deciding.
     expect(explained).toContain('--method runtime');
     expect(explained).toContain('closes the app');
@@ -1101,8 +1127,11 @@ describe('reloading an app on a cloud simulator session', () => {
     expect(JSON.parse(printed()).url).toBe('exp://chx3ba8-kudochien-8303.exp.direct/--/?');
   });
 
-  // The broadcast is not tried, and the reason is the observation rather than an assumption.
-  it(`does not broadcast on a dev server a cloud session cannot register with`, async () => {
+  // The broadcast is asked and never sent, and the reason is the observation rather than an
+  // assumption: the socket held no client, which is what a cloud session over a tunnel is
+  // [observed — live staging, S12]. Wave 21 asks it rather than skipping it on the strength of
+  // `--cloud`, because the flag names a *device backend* and not a fact about this socket.
+  it(`sends no broadcast to a command socket a cloud session never registered on`, async () => {
     writeCloudProject();
     mockDevServer([]);
     const { socket, sent } = fakeSocket([{}]);
@@ -1119,12 +1148,7 @@ describe('reloading an app on a cloud simulator session', () => {
       (attempt: { method: string }) => attempt.method === 'dev-server'
     );
     expect(broadcast).toMatchObject({ ok: false });
-    expect(broadcast.reason).toContain('not tried');
-    expect(broadcast.reason).toContain('tunnel');
-    expect(broadcast.reason).toContain('--method dev-server');
-    // What the peer list licenses and nothing more: with a client on it, "none of them is the app"
-    // would be a claim `getpeers` cannot support.
-    expect(broadcast.reason).toContain('No client is registered on it');
+    expect(broadcast.reason).toContain('nothing to broadcast to');
   });
 
   // @ref llp/0005 §Two lists, one question. Never one number for two lists: "Apps connected 1" off
@@ -1263,5 +1287,99 @@ describe('reloading an app on a cloud simulator session', () => {
     expect(spawnedCommands()[1]).toContain('--relaunch');
     // A pinned method never opens the command socket.
     expect(connectMessageSocketAsync).not.toHaveBeenCalled();
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §One ladder, chosen by the command socket — wave 21.
+//
+// `--cloud` used to change the ladder: it skipped the broadcast on the strength of the flag. The
+// flag names which **device backend** may relaunch, and the rung is chosen by one observable fact —
+// whether the dev server's client command socket holds a client. A cloud session that did register
+// one is reloaded the cheap way, and a local app that did not is relaunched, because in both cases
+// that is the mechanism that can reach the app.
+describe('the rung the ladder picks', () => {
+  const SESSION_LISTING = JSON.stringify({
+    sessions: [
+      {
+        id: 'session-1',
+        status: 'IN_PROGRESS',
+        platform: 'IOS',
+        type: 'agent-device',
+        name: 'wave21',
+        createdAt: '2026-08-27T09:00:00.000Z',
+      },
+    ],
+  });
+
+  it(`broadcasts on --cloud when the command socket does hold a client`, async () => {
+    writeProject({ '/usr/bin/npx': '#!/bin/sh\n' });
+    resetPackageRunnerCache();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+    mockSpawnQueue([{ stdout: SESSION_LISTING }]);
+
+    await expect(
+      reloadAsync(
+        projectRoot,
+        options({ json: true, cloud: true, devServerUrl: 'https://tunnel.example' })
+      )
+    ).resolves.toBe(EXIT_OK);
+    expect(JSON.parse(printed())).toMatchObject({
+      method: 'dev-server',
+      verifiedBy: 'message-socket-peers',
+      commandSocketClients: 1,
+    });
+    // No controller verb was spawned, so no billed session was touched.
+    expect(spawn).not.toHaveBeenCalled();
+  });
+
+  // The other half of one ladder: the verification is the same on every rung. A `Bundled` line in
+  // the dev server's captured output is the proof wave 19 added for a session with no debugger
+  // target to wait for, and it is the same proof here — the local rungs simply have a better one
+  // most of the time.
+  it(`takes a bundle the dev server served as the proof on the local rung too`, async () => {
+    const bundled = 'iOS Bundled 812ms node_modules/expo-router/entry.js (943 modules)';
+    writeProject({ [detachedLogPath(projectRoot)]: 'Starting project at /project\n' });
+    // The listing never changes, so there is no fresh debugger target to be had.
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () => {
+        const file = detachedLogPath(projectRoot);
+        fs.writeFileSync(file, `${fs.readFileSync(file, 'utf8')}${bundled}\n`);
+      }).socket
+    );
+
+    await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 2000 }))).resolves.toBe(
+      EXIT_OK
+    );
+    expect(JSON.parse(printed())).toMatchObject({
+      reloaded: true,
+      method: 'dev-server',
+      // The mechanism keeps the label — peer churn is what this rung observed — and the bundle is
+      // what the exit code was decided on, which the `bundlesAfterReload` object carries.
+      verifiedBy: 'message-socket-peers',
+      appsReconnected: 0,
+      bundlesAfterReload: { observed: true, count: 1, line: bundled },
+    });
+  });
+
+  // ...and with neither observation it is still 22, which is the hold F45 put in: peer churn proves
+  // the app acted and never that it came back.
+  it(`stays at 22 when neither a fresh target nor a bundle arrived`, async () => {
+    writeProject({ [detachedLogPath(projectRoot)]: 'Starting project at /project\n' });
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }]).socket);
+
+    await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 600 }))).resolves.toBe(
+      EXIT_OUTCOME_TIMEOUT
+    );
+    expect(JSON.parse(printed())).toMatchObject({
+      reloaded: true,
+      bundlesAfterReload: { observed: false },
+    });
   });
 });

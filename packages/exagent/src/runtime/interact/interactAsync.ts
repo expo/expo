@@ -40,9 +40,8 @@ import {
   type BundleCheckResult,
 } from '../bundleCheck';
 import { CdpClient, isMethodNotFoundError, type CdpEvaluateResult } from '../cdpClient';
-import { probeDevServerAsync, requireConnectedAppAsync } from '../devServer';
-import { evaluateUnsupportedError, resolveDevServerUrlAsync, type RuntimeContext } from '../runtimeAsync';
-import { buildDeviceNameIndexIfNeededAsync } from '../targetPlatform';
+import { preflightRuntimeAsync, type RuntimeContext } from '../preflight';
+import { evaluateUnsupportedError } from '../runtimeAsync';
 import {
   buildSnapshotExpression,
   buildTapExpression,
@@ -125,12 +124,19 @@ interface OpenApp {
  *
  * @ref llp/0018-interaction-commands.rfc.md §The bundle gate — friction run 7, F62.
  *
- * The gate runs **before** the connection is used, and its result is on every payload. These three
- * commands read and drive the bundle the app is *running*: with a syntax error on disk the app is
- * still running the code from before the edit, so the walk describes code that no longer exists —
- * and `runtime:tap --verify` reported `Verified ... the screen changed` for exactly that while
- * `smoke` and `runtime:reload` both refused. It is the same check, the same `bundle` object and the
- * same `--no-bundle-check` override those two use, because it is the same question.
+ * Two gates, in this order, and the order is a decision (llp/0005 §One preflight for the runtime
+ * family). **The preflight comes first:** with no app connected there is nothing to read whatever
+ * the bundle says, and asking the bundler first spent that gate's whole budget — up to twenty
+ * seconds — before the command could say the one thing it knew in a millisecond. It also decided
+ * the exit code by an unrelated fact: no app plus a broken bundle was `20`, no app plus a clean
+ * bundle was `1`, for one situation.
+ *
+ * **Then the bundle gate**, whose result is on every payload. These three commands read and drive
+ * the bundle the app is *running*: with a syntax error on disk the app is still running the code
+ * from before the edit, so the walk describes code that no longer exists — and `runtime:tap
+ * --verify` reported `Verified ... the screen changed` for exactly that while `smoke` and
+ * `runtime:reload` both refused. It is the same check, the same `bundle` object and the same
+ * `--no-bundle-check` override those two use, because it is the same question.
  */
 async function openAppAsync(
   options: {
@@ -140,16 +146,11 @@ async function openAppAsync(
   },
   context: RuntimeContext
 ): Promise<OpenApp> {
-  const devServerUrl = await resolveDevServerUrlAsync(options, context);
+  const { devServerUrl, targets, deviceIndex } = await preflightRuntimeAsync(
+    { need: 'debugger-target', devServerUrl: options.devServerUrl, platform: options.platform },
+    context
+  );
   const wantBundleCheck = options.bundleCheck !== false;
-  // One probe, read by both the platform index and the gate: the platform this command was told
-  // about has to be the platform of the app it drives, and of the bundle it asks about (F53).
-  const targets =
-    options.platform != null || wantBundleCheck
-      ? (await probeDevServerAsync(devServerUrl)).targets
-      : [];
-  const deviceIndex =
-    options.platform == null ? undefined : await buildDeviceNameIndexIfNeededAsync(targets);
 
   let bundle: BundleCheckResult | null = null;
   if (wantBundleCheck) {
@@ -188,12 +189,6 @@ async function openAppAsync(
     // No connection is opened: the app is not what this run is about any more.
     return { devServerUrl, client: null as unknown as CdpClient, bundle: json, refusal };
   }
-
-  await requireConnectedAppAsync(devServerUrl, {
-    explicit: options.devServerUrl != null,
-    platform: options.platform,
-    deviceIndex,
-  });
 
   return {
     devServerUrl,

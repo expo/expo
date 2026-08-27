@@ -9,13 +9,9 @@ import { event } from '../../events';
 import { followUpsEnabled, reportFollowUps } from '../../followups';
 import * as Log from '../../log';
 import type { CdpTarget } from '../../runtime/cdpClient';
-import { probeDevServerAsync, requireConnectedAppAsync } from '../../runtime/devServer';
-// `resolveDevServerUrlAsync` is module-private to `src/runtime/runtimeAsync.ts`, which is where
-// this command lived. Restoring it means moving these two functions back into that module rather
-// than exporting its internals for a file nothing imports.
-import type { RuntimeContext } from '../../runtime/runtimeAsync';
-import { resolveDevServerUrlAsync } from '../../runtime/runtimeAsync';
-import { buildDeviceNameIndexIfNeededAsync } from '../../runtime/targetPlatform';
+// The family's one resolution step (`src/runtime/preflight.ts`): the dev server, the app and the
+// platform index in one read. This command asked for all three separately when it shipped.
+import { preflightRuntimeAsync, type RuntimeContext } from '../../runtime/preflight';
 import { CommandError } from '../../utils/errors';
 import { buildRuntimeNetworkFollowUps } from './followups';
 import {
@@ -43,18 +39,14 @@ export async function runtimeNetworkAsync(
   context: RuntimeContext = {}
 ): Promise<number> {
   const { durationMs, json } = options;
-  const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  const deviceIndex =
-    options.platform == null
-      ? undefined
-      : await buildDeviceNameIndexIfNeededAsync(
-          (await probeDevServerAsync(devServerUrl)).targets
-        );
-  const targets = await requireConnectedAppAsync(devServerUrl, {
-    explicit: options.devServerUrl != null,
-    platform: options.platform,
+  const {
+    devServerUrl,
     deviceIndex,
-  });
+    appTargets: targets,
+  } = await preflightRuntimeAsync(
+    { need: 'debugger-target', devServerUrl: options.devServerUrl, platform: options.platform },
+    context
+  );
 
   let requests: NetworkRequestRecord[];
   const collector = new CdpNetworkCollector({

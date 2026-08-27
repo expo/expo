@@ -97,8 +97,12 @@ export const exagentRuntimeTree: Command = async (argv) => {
         chalk`  Exit codes: {bold 0} the screen was read, {bold 20} a {bold --testID} that matched no element or`,
         chalk`  an entry bundle that does not compile, {bold 1} the app could not be read at all.`,
         '',
-        chalk`  Needs a running dev server ({bold npx exagent dev --detach}) with the app open on a device`,
-        chalk`  ({bold npx exagent navigate /} opens it).`,
+        chalk`  {bold The connection is the first gate, before the entry bundle:} with no app connected`,
+        chalk`  there is nothing to read whatever the code on disk says. That is exit {bold 1}, with`,
+        chalk`  {bold NO_DEV_SERVER} or {bold NO_APP_CONNECTED} — the same refusal every {bold runtime} command`,
+        chalk`  gives, naming which list was empty and on which dev server. The ladder out is`,
+        chalk`  {bold npx exagent dev --detach}, then {bold npx exagent navigate /}, then {bold npx exagent smoke},`,
+        chalk`  which waits for the bundle and the app together.`,
         '',
       ].join('\n')
     );

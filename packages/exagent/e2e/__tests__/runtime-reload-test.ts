@@ -95,6 +95,22 @@ async function installStubXcrunAsync(projectRoot: string): Promise<() => string[
       : [];
 }
 
+/** A stub `xcrun` that reports no booted device, for the runs where no rung may act. */
+async function writeNoDeviceXcrunAsync(projectRoot: string): Promise<string> {
+  const scriptPath = path.join(projectRoot, '.stub-bin', 'xcrun-empty.js');
+  await fs.promises.mkdir(path.dirname(scriptPath), { recursive: true });
+  await fs.promises.writeFile(
+    scriptPath,
+    [
+      `if (process.argv[3] === 'list') {`,
+      `  process.stdout.write(JSON.stringify({ devices: {} }));`,
+      `}`,
+      `process.exit(0);`,
+    ].join('\n')
+  );
+  return scriptPath;
+}
+
 /** Point the project's dev-server lock at a stub, so discovery finds it without a port scan. */
 async function lockToStubAsync(projectRoot: string, stub: { url: string; port: number }) {
   return await holdDevLockAsync(projectRoot, {
@@ -480,10 +496,15 @@ describe('an app the command socket cannot see', () => {
     }
   });
 
-  it('never force-stops an app the dev server can see, and says why it did not', async () => {
+  // @ref llp/0005-runtime-loop-tools.rfc.md §One ladder, chosen by the command socket — wave 21.
+  //
+  // The K2 shape at the process boundary: the app is in `/json/list` and holds no client on the
+  // command socket. `auto` used to refuse here and exit 20 with two methods to pick between; the
+  // ladder now takes the rung that can reach the app, which is the relaunch — the same rung wave 19
+  // made primary on a cloud session for the same reason.
+  it('relaunches the app when the command socket has no client to broadcast to', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({
-      // The app is connected and the command socket cannot see it, which is the K2 shape.
       targets: [CDP_TARGET],
       messagePeers: {},
     });
@@ -491,17 +512,25 @@ describe('an app the command socket cannot see', () => {
     const readXcrun = await installStubXcrunAsync(projectRoot);
 
     try {
-      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
-        env: stubExpoEnv(projectRoot),
-        reject: false,
-      });
+      const result = await executeExagentAsync(
+        projectRoot,
+        // A short wait, because this run cannot end early: neither observation is available, so it
+        // spends the whole budget establishing that. The default 30s is the same wait live.
+        ['runtime:reload', '--ios', '--timeout', '2s', '--json'],
+        { env: stubExpoEnv(projectRoot), reject: false }
+      );
 
-      expect(result.exitCode).toBe(20);
+      // 22, and honestly so: this stub relists the app under the page id it had before, which is
+      // what a relaunched app does [observed — 2026-08-27, live on a cloud session: `…ce-1` before
+      // the relaunch and `…ce-1` after it]. So there is no *fresh* target to be had, and this
+      // project has no captured dev server log to read a `Bundled` line out of — the run reports
+      // the mechanism it ran and says nothing was observed, which is "look again" and never a
+      // success off a verb that accepted an argument.
+      expect(result.exitCode).toBe(22);
       const report: ReloadReport = JSON.parse(result.stdout);
-      expect(report.reloaded).toBe(false);
-      expect(readXcrun()).toEqual([]);
+      expect(report.method).toBe('device');
 
-      // The dev-server attempt says the two lists disagreed rather than that nothing is connected.
+      // The dev-server rung says the two lists disagreed rather than that nothing is connected.
       const broadcast = report.attempts.find((attempt) => attempt.method === 'dev-server')!;
       expect(broadcast.ok).toBe(false);
       expect(broadcast.reason).toContain('1 connected app');
@@ -509,11 +538,43 @@ describe('an app the command socket cannot see', () => {
         'no app is connected to the dev server, so there is nothing to reload'
       );
 
-      // The device method is in the list, marked as not taken, with the reason — an attempt that
-      // is simply absent is a decision a reader cannot see.
+      // The relaunch ran on the local device backend, and the attempt says what it cost.
       const device = report.attempts.find((attempt) => attempt.method === 'device')!;
-      expect(device.ok).toBe(false);
-      expect(device.reason).toContain('--method device');
+      expect(device.ok).toBe(true);
+      expect(device.reason).toContain(`the app's JavaScript state`);
+      expect(readXcrun()).toContainEqual([
+        'simctl',
+        'terminate',
+        SIMULATOR_UDID,
+        'host.exp.Exponent',
+      ]);
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  // ...and with no device to relaunch on, the same state is exit 20 with the two deliberate
+  // methods, which is what the ladder has left to offer.
+  it('exits 20 and names the deliberate methods when no rung can reach the app', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [CDP_TARGET], messagePeers: {} });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+    // A stub `xcrun` that reports nothing booted, so the relaunch rung has no device.
+    await installStubBinAsync(
+      path.join(projectRoot, '.stub-bin'),
+      'xcrun',
+      await writeNoDeviceXcrunAsync(projectRoot)
+    );
+
+    try {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--ios', '--json'], {
+        env: stubExpoEnv(projectRoot),
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(20);
+      expect(JSON.parse(result.stdout).reloaded).toBe(false);
       // Both deliberate methods are on stderr, with what each one costs.
       expect(result.stderr).toContain('--method device');
       expect(result.stderr).toContain('--method runtime');

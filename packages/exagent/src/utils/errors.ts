@@ -29,6 +29,19 @@ export class CommandError extends Error {
   suggestedCommand?: string;
 
   /**
+   * The facts this failure observed, for a caller that reads the envelope instead of the prose.
+   *
+   * @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+   *
+   * Structured JSON, always a flat object with a fixed key set *per error code* — the runtime
+   * family's refusals carry the two list counts and the dev server they were read from
+   * (`src/runtime/preflight.ts`). Undefined on every failure that has nothing to count, which is
+   * most of them, and printed as `null` there: a caller reading `error.data` branches on a value
+   * rather than on a missing key.
+   */
+  data?: Record<string, unknown>;
+
+  /**
    * The code to leave the process with, when it is not {@link EXIT_ERROR} (llp/0010).
    *
    * Set it from `exitCodes.ts` — never as a literal — for the errors the convention gives a band
@@ -164,6 +177,8 @@ export interface JsonErrorEnvelope {
     suggestedCommand: string | null;
     /** The whole handoff when a person has to finish the step, null otherwise. */
     needsHuman: NeedsHuman | null;
+    /** What the failure observed, e.g. the two connection counts of a runtime refusal. */
+    data: Record<string, unknown> | null;
   };
 }
 
@@ -178,11 +193,13 @@ export function jsonErrorEnvelope({
   message,
   suggestedCommand,
   needsHuman,
+  data,
 }: {
   code: string;
   message: string;
   suggestedCommand?: string;
   needsHuman?: NeedsHuman | null;
+  data?: Record<string, unknown> | null;
 }): JsonErrorEnvelope {
   return {
     error: {
@@ -190,6 +207,7 @@ export function jsonErrorEnvelope({
       message,
       suggestedCommand: suggestedCommand ?? null,
       needsHuman: needsHuman ?? null,
+      data: data ?? null,
     },
   };
 }
@@ -235,6 +253,7 @@ export function logCmdError(error: any): never {
     const code = error instanceof CommandError ? error.code : error.name;
     const suggestedCommand = error instanceof CommandError ? error.suggestedCommand : undefined;
     const needsHuman = isNeedsHumanError(error) ? error.needsHuman : null;
+    const data = error instanceof CommandError ? error.data : undefined;
     cliEvent('error', {
       code,
       message: error.message,
@@ -270,7 +289,7 @@ export function logCmdError(error: any): never {
     if (isJsonRequested()) {
       log(
         JSON.stringify(
-          jsonErrorEnvelope({ code, message: error.message, suggestedCommand, needsHuman }),
+          jsonErrorEnvelope({ code, message: error.message, suggestedCommand, needsHuman, data }),
           null,
           2
         )

@@ -15,12 +15,8 @@ import {
   isMethodNotFoundError,
   type CdpEvaluateResult,
 } from './cdpClient';
-import {
-  APP_RECONNECT_GRACE_MS,
-  discoverDevServerAsync,
-  probeDevServerAsync,
-  requireConnectedAppAsync,
-} from './devServer';
+import { APP_RECONNECT_GRACE_MS } from './devServer';
+import { preflightRuntimeAsync, type RuntimeContext } from './preflight';
 import {
   evaluateResultToJson,
   formatEvaluateResult,
@@ -37,39 +33,11 @@ import {
   relativizeFrame,
   symbolicateFramesAsync,
 } from './symbolicate';
-import { buildDeviceNameIndexIfNeededAsync } from './targetPlatform';
 
-export interface RuntimeContext {
-  /**
-   * Project the command was run in, when it was run in one.
-   *
-   * Only used to find the dev server: a project knows where its own dev server listens, and a
-   * command that has no project to ask falls back to scanning ports.
-   */
-  projectRoot?: string | null;
-}
-
-/**
- * Which dev server this command talks to.
- *
- * A named URL is used as named — the caller was specific, so nothing is guessed around it. With
- * no URL, discovery asks the project's dev-server lock first and only then scans, so a dev server
- * that `exagent` started on a port other than 8081 is found instead of missed.
- *
- * @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
- */
-export async function resolveDevServerUrlAsync(
-  options: { devServerUrl: string | null },
-  { projectRoot }: RuntimeContext
-): Promise<string> {
-  if (options.devServerUrl != null) {
-    return options.devServerUrl;
-  }
-  const discovery = await discoverDevServerAsync(undefined, {
-    projectRoot: projectRoot ?? undefined,
-  });
-  return discovery.devServerUrl;
-}
+// The family's shared type, re-exported from where it was first defined so that the commands and
+// the modules that call them keep importing it from one place (`./preflight` owns it now, because
+// the preflight is what reads it).
+export type { RuntimeContext };
 
 /**
  * Evaluate an expression in the running app and print the value it returned.
@@ -82,20 +50,13 @@ export async function runtimeEvalAsync(
   context: RuntimeContext = {}
 ): Promise<number> {
   const { expression, timeoutMs, awaitPromise, json } = options;
-  const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  // Read once and passed to both, so the platform this command was told about is the platform of
-  // the app it reads — and the two steps cannot disagree about which app that is (F51).
-  const deviceIndex =
-    options.platform == null
-      ? undefined
-      : await buildDeviceNameIndexIfNeededAsync(
-          (await probeDevServerAsync(devServerUrl)).targets
-        );
-  await requireConnectedAppAsync(devServerUrl, {
-    explicit: options.devServerUrl != null,
-    platform: options.platform,
-    deviceIndex,
-  });
+  // One preflight, one read of the target list (`./preflight`): the dev server, the app and the
+  // platform index come back together, so the platform this command was told about is the platform
+  // of the app it reads and the two steps cannot disagree about which app that is (F51).
+  const { devServerUrl, deviceIndex } = await preflightRuntimeAsync(
+    { need: 'debugger-target', devServerUrl: options.devServerUrl, platform: options.platform },
+    context
+  );
 
   let result: CdpEvaluateResult;
   try {
@@ -213,7 +174,6 @@ export async function runtimeErrorsAsync(
   context: RuntimeContext = {}
 ): Promise<number> {
   const { durationMs, json, failOnError } = options;
-  const devServerUrl = await resolveDevServerUrlAsync(options, context);
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — friction run 4, F39.
   // This is the command the CLI's own follow-ups name straight after a reload, so it is the one
@@ -222,18 +182,15 @@ export async function runtimeErrorsAsync(
   // between. Both were reported as "there is no app", one run in three. The grace period is what
   // makes the printed chain deterministic — including for a reload nothing here performed, such as
   // pressing "r" in the dev server's terminal.
-  const deviceIndex =
-    options.platform == null
-      ? undefined
-      : await buildDeviceNameIndexIfNeededAsync(
-          (await probeDevServerAsync(devServerUrl)).targets
-        );
-  await requireConnectedAppAsync(devServerUrl, {
-    retryMs: APP_RECONNECT_GRACE_MS,
-    explicit: options.devServerUrl != null,
-    platform: options.platform,
-    deviceIndex,
-  });
+  const { devServerUrl, deviceIndex } = await preflightRuntimeAsync(
+    {
+      need: 'debugger-target',
+      devServerUrl: options.devServerUrl,
+      platform: options.platform,
+      retryMs: APP_RECONNECT_GRACE_MS,
+    },
+    context
+  );
 
   // Marked before the window opens, so the log read below is bounded the same way the debugger
   // window is: a log is cumulative, and reporting all of it as "what happened while I watched"

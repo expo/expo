@@ -334,7 +334,11 @@ describe('what runtime:eval says about the runtime it evaluates in', () => {
 
     expect(result.stdout).toContain('auto (default), dev-server, runtime, or device');
     expect(result.stdout).toContain('expo.reloadAppAsync()');
-    // The rule K2 is about, in the help rather than only in a failure.
-    expect(result.stdout).toMatch(/never force-stops an app it can see/i);
+    // What picks the rung, in the help rather than only in a failure (wave 21): the command socket,
+    // and never `--cloud`, which names the device backend that may relaunch.
+    expect(result.stdout).toMatch(/the command socket picks the rung/i);
+    expect(result.stdout).toMatch(/the rung is the socket, not the location/i);
+    // ...and what the rung that relaunches costs, where a caller is deciding.
+    expect(result.stdout).toMatch(/costs the app's JavaScript state/i);
   });
 });

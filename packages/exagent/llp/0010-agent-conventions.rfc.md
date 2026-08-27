@@ -371,10 +371,18 @@ whole design (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
 
 | Code | The reload                                                                                                 |
 | ---- | ---------------------------------------------------------------------------------------------------------- |
-| `0`  | happened, and a debugger target that was not there before has registered                                   |
-| `20` | did not happen: the entry bundle does not compile, nothing answered, or nothing acted on it                |
-| `22` | happened, and no _new_ app had registered when `--timeout` expired; or the entry bundle was still building |
+| `0`  | happened, and was **observed**: a debugger target that was not there before has registered, or the dev server served a bundle after this command acted |
+| `20` | did not happen: the entry bundle does not compile, or no rung of the ladder could reach the app             |
+| `22` | a mechanism ran and neither observation was made when `--timeout` expired; or the entry bundle was still building |
 | `1`  | was not attempted: no dev server to reload onto, or a bad argument                                         |
+
+
+Rows `0` and `22` were widened in wave 21 [amended — 2026-08-27]: the second observation was the
+cloud path's alone and is now watched on every rung, because "was the app seen to come back" is one
+question and a command that answered it two ways was two commands wearing one name
+([[0005-runtime-loop-tools]] §One ladder, chosen by the command socket). What did not move is the
+hold underneath: peer churn on the command socket proves the app *acted* and never that it came back,
+so on its own it is `reloaded: true` with exit `22`, which is F45.
 
 Three details are decisions rather than transcription:
 
@@ -723,7 +731,7 @@ This replaces the "no `--json` error envelope" limit recorded above [superseded 
 
 Four properties are load-bearing:
 
-- **The key set never varies.** `suggestedCommand` and `needsHuman` are `null` rather than absent, per [[0006-agent-native-cli-surface]] §Output contract, so a caller reading `error.needsHuman` after a plain tool error branches on a value instead of on a missing key. `needsHuman` carries the whole record — the same one `cli:needs_human` carries — because an agent that has to hand a step to its user needs the URL and the environment variables, not a boolean.
+- **The key set never varies.** `suggestedCommand`, `needsHuman` and `data` are `null` rather than absent, per [[0006-agent-native-cli-surface]] §Output contract, so a caller reading `error.needsHuman` after a plain tool error branches on a value instead of on a missing key. `needsHuman` carries the whole record — the same one `cli:needs_human` carries — because an agent that has to hand a step to its user needs the URL and the environment variables, not a boolean.
 - **The code is the one the site already shipped.** Reclassification never renames a code (the rule of §Needs-human protocol), and the envelope reports `error.code` verbatim.
 - **Success paths are untouched.** Nothing about a command that works changes, and no command gained a second object: a failing command printed nothing on stdout before, so the envelope is the _only_ thing there.
 
@@ -749,6 +757,15 @@ The same change gives a bad option the what / why / how shape the rest of the CL
 on `runtime:reload` — the message names it, from a small hand-kept table (`OPTION_OWNERS`) in the
 style of `absentCapabilities` here: only options a caller actually reaches for on the wrong command
 belong in it, and a unit test pins that every command it names still resolves.
+
+**`data` carries what a failure observed** [added — wave 21, 2026-08-27]. A fourth key, always
+present and `null` for the failures that have nothing to count, holding a flat object of the facts
+the refusal was made on. It exists because the alternative is a caller regexing English: the runtime
+family's refusals (`src/runtime/preflight.ts`, [[0005-runtime-loop-tools]] §One preflight for the
+runtime family) say which of the two connection lists was empty and on which dev server, and an
+agent branching on that had only the prose. Two rules keep it from becoming a second output format:
+the key set is fixed **per error code**, so a caller that knows the code knows the shape; and nothing
+goes in it that is not already in the message a person reads — it is the same facts, addressable.
 
 - **The exit code is still the first thing to read.** The envelope explains a failure; it does not signal one. `7` and the `20`–`29` band mean exactly what the table above says.
 

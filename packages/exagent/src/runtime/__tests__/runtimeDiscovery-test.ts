@@ -1,10 +1,14 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
 // Which dev server a runtime command talks to. The commands used to assume 8081 whenever
 // `--dev-server-url` was absent, which missed every dev server that had to walk to another port.
+//
+// The discovery step is `src/runtime/preflight.ts` now, and it is the *only* step: a named URL is
+// probed as named, an unnamed one is discovered, and either way the answer is read once and handed
+// to the command (llp/0005 §One preflight for the runtime family).
 
 import * as Log from '../../log';
 import { CdpClient } from '../cdpClient';
-import { discoverDevServerAsync, requireConnectedAppAsync } from '../devServer';
+import { discoverDevServerAsync } from '../devServer';
 import type { RuntimeErrorsOptions, RuntimeEvalOptions } from '../resolveOptions';
 import { runtimeErrorsAsync, runtimeEvalAsync } from '../runtimeAsync';
 import { CdpRuntimeErrorCollector } from '../runtimeErrorCollector';
@@ -13,7 +17,6 @@ jest.mock('../../log');
 jest.mock('../devServer', () => ({
   ...jest.requireActual('../devServer'),
   discoverDevServerAsync: jest.fn(),
-  requireConnectedAppAsync: jest.fn(),
 }));
 jest.mock('../cdpClient', () => ({
   ...jest.requireActual('../cdpClient'),
@@ -22,6 +25,18 @@ jest.mock('../cdpClient', () => ({
 jest.mock('../runtimeErrorCollector', () => ({ CdpRuntimeErrorCollector: jest.fn() }));
 
 const projectRoot = '/project';
+
+/** A connected app, so the preflight resolves rather than refuses. */
+const TARGET = {
+  id: '1',
+  appId: 'host.exp.Exponent',
+  deviceName: 'iPhone 17',
+  description: '',
+  type: 'native',
+  title: 'Expo Go',
+  devtoolsFrontendUrl: '/devtools',
+  webSocketDebuggerUrl: 'ws://debugger',
+};
 
 const evalOptions: RuntimeEvalOptions = {
   action: 'eval',
@@ -45,15 +60,19 @@ const errorsOptions: RuntimeErrorsOptions = {
 function mockDiscovered(devServerUrl: string) {
   jest.mocked(discoverDevServerAsync).mockResolvedValue({
     reachable: true,
-    targets: [],
+    targets: [TARGET],
     devServerUrl,
     source: 'lock',
     discovered: true,
   });
 }
 
+/** The dev server the command actually opened a debugger connection to. */
+function metroUrlOfClient(): string | undefined {
+  return jest.mocked(CdpClient).mock.calls[0]?.[0]?.metroUrl;
+}
+
 beforeEach(() => {
-  jest.mocked(requireConnectedAppAsync).mockResolvedValue([]);
   jest.mocked(CdpClient).mockImplementation(() => ({ evaluateAsync: async () => ({}) }) as any);
   jest
     .mocked(CdpRuntimeErrorCollector)
@@ -69,12 +88,9 @@ describe('the dev server a runtime command talks to', () => {
     await run();
 
     expect(discoverDevServerAsync).toHaveBeenCalledWith(undefined, { projectRoot });
-    // The first argument is the whole subject here; the options that follow it differ per
-    // command (only `runtime:errors` asks for the reconnect grace period) and are tested there.
-    expect(jest.mocked(requireConnectedAppAsync).mock.calls[0]![0]).toBe('http://127.0.0.1:8083');
-    expect(jest.mocked(requireConnectedAppAsync).mock.calls[0]![1]).toMatchObject({
-      explicit: false,
-    });
+    // Discovered once and used everywhere after that: the discovered URL is what the report names
+    // and what the debugger connection is opened on.
+    expect(jest.mocked(Log.log).mock.calls.flat().join('\n')).toContain('http://127.0.0.1:8083');
   });
 
   it.each([
@@ -87,16 +103,21 @@ describe('the dev server a runtime command talks to', () => {
       () =>
         runtimeErrorsAsync({ ...errorsOptions, devServerUrl: 'http://host:9000' }, { projectRoot }),
     ],
-  ])(`%s uses the URL it was given, and discovers nothing`, async (_name, run) => {
+  ])(`%s probes the URL it was given, and guesses nothing around it`, async (_name, run) => {
+    mockDiscovered('http://host:9000');
+
     await run();
 
-    // The caller was specific, so nothing is guessed around it — the flag semantics are unchanged.
-    expect(discoverDevServerAsync).not.toHaveBeenCalled();
-    // `explicit` is what keeps the failure from suggesting the flag this caller just passed.
-    expect(jest.mocked(requireConnectedAppAsync).mock.calls[0]![0]).toBe('http://host:9000');
-    expect(jest.mocked(requireConnectedAppAsync).mock.calls[0]![1]).toMatchObject({
-      explicit: true,
-    });
+    // The caller was specific, so the named URL is the only one tried — no lock, no log, no scan.
+    // `source: flag` is what keeps the failure from suggesting the flag this caller just passed.
+    expect(discoverDevServerAsync).toHaveBeenCalledWith('http://host:9000', { projectRoot });
+    expect(jest.mocked(Log.log).mock.calls.flat().join('\n')).toContain('http://host:9000');
+  });
+
+  it(`opens the debugger connection on the dev server it found`, async () => {
+    await runtimeEvalAsync(evalOptions, { projectRoot });
+
+    expect(metroUrlOfClient()).toBe('http://127.0.0.1:8083');
   });
 
   it(`reports the discovered dev server in the output`, async () => {

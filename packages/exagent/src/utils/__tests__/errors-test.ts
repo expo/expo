@@ -153,7 +153,24 @@ describe(logCmdError, () => {
           message: 'Project root directory not found.',
           suggestedCommand: 'npx exagent new my-app',
           needsHuman: null,
+          data: null,
         },
+      });
+    });
+
+    // @ref llp/0005-runtime-loop-tools.rfc.md §One preflight for the runtime family — the counts a
+    // refusal observed belong on the wire, not only in the prose. A caller that has to regex
+    // "names 1 app" out of an English sentence is parsing a message nobody promised.
+    it('carries the counts a failure observed, when it observed any', async () => {
+      setJsonRequested(true);
+      const error = new CommandError('NO_APP_CONNECTED', 'No app is connected.');
+      error.data = { devServerUrl: 'http://127.0.0.1:8081', debuggerTargets: 0 };
+
+      await exitCodeOfAsync(error);
+
+      expect(stdoutObject().error.data).toEqual({
+        devServerUrl: 'http://127.0.0.1:8081',
+        debuggerTargets: 0,
       });
     });
 
@@ -170,6 +187,7 @@ describe(logCmdError, () => {
           message: 'Nobody is signed in.',
           suggestedCommand: 'npx eas login',
           needsHuman: needsHuman(),
+          data: null,
         },
       });
     });
