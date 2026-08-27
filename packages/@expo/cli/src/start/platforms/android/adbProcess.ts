@@ -124,6 +124,7 @@ async function runAdbProcessAsync(
   params: AdbProcessParams,
   signal?: AbortSignal
 ): Promise<spawnAsync.SpawnResult> {
+  signal?.throwIfAborted();
   event('adb_operation_start', {
     operation: params.operation,
     phase: params.phase,
