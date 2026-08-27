@@ -1,4 +1,5 @@
 import * as Log from '../../../../log';
+import { installExitHooks } from '../../../../utils/exit';
 import { getAttachedDevicesAsync, getServer } from '../adb';
 import { startAdbReverseAsync, stopAdbReverseAsync } from '../adbReverse';
 
@@ -19,6 +20,31 @@ jest.mock('../../../../utils/exit', () => ({
 }));
 
 describe(startAdbReverseAsync, () => {
+  it('awaits and bounds best-effort cleanup in the exit hook', async () => {
+    jest.useFakeTimers();
+    let exitHook: (() => void | Promise<void>) | undefined;
+    jest.mocked(installExitHooks).mockImplementationOnce((hook) => {
+      exitHook = () => hook('SIGINT');
+      return jest.fn();
+    });
+    jest
+      .mocked(getAttachedDevicesAsync)
+      .mockResolvedValueOnce([])
+      .mockImplementationOnce(
+        ({ signal } = {}) =>
+          new Promise((_, reject) => {
+            signal!.addEventListener('abort', () => reject(signal!.reason), { once: true });
+          })
+      );
+
+    await expect(startAdbReverseAsync([3000])).resolves.toBe(true);
+    const cleanup = exitHook!();
+    expect(cleanup).toBeInstanceOf(Promise);
+    await jest.advanceTimersByTimeAsync(2_000);
+    await expect(cleanup).resolves.toBeUndefined();
+    jest.useRealTimers();
+  });
+
   it(`reverses devices`, async () => {
     jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([
       {
@@ -145,7 +171,7 @@ describe(stopAdbReverseAsync, () => {
       1,
       ['-s', 'FA8251A00720', 'reverse', '--remove', 'tcp:3000'],
       'remove reverse port',
-      undefined,
+      expect.any(AbortSignal),
       2_000
     );
   });

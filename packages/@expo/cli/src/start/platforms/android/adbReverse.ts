@@ -29,7 +29,7 @@ export async function startAdbReverseAsync(
   // Install cleanup automatically...
   removeExitHook = installExitHooks(() => {
     exitController.abort();
-    stopAdbReverseAsync(ports).catch(() => undefined);
+    return stopAdbReverseAsync(ports).catch(() => undefined);
   });
 
   const devices = await getAttachedDevicesAsync({ signal: operationSignal });
@@ -47,10 +47,12 @@ export async function startAdbReverseAsync(
 export async function stopAdbReverseAsync(ports: number[], signal?: AbortSignal): Promise<void> {
   removeExitHook?.();
 
-  const devices = await getAttachedDevicesAsync({ signal });
+  const cleanupSignal = AbortSignal.timeout(ADB_REVERSE_CLEANUP_WAIT_LIMIT_MS);
+  const operationSignal = signal ? AbortSignal.any([signal, cleanupSignal]) : cleanupSignal;
+  const devices = await getAttachedDevicesAsync({ signal: operationSignal });
   for (const device of devices) {
     for (const port of ports) {
-      await adbReverseRemoveAsync(device, port, signal);
+      await adbReverseRemoveAsync(device, port, operationSignal);
     }
   }
 }
@@ -99,11 +101,6 @@ async function adbReverseRemoveAsync(
     return true;
   } catch (error: any) {
     if (signal?.aborted && error === signal.reason) throw error;
-    // Don't send this to warn because we call this preemptively sometimes
-    event('adb_reverse_unforward_failed', {
-      port,
-      error: event.error(error as Error),
-    });
     return false;
   }
 }
