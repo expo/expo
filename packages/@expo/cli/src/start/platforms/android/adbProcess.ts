@@ -23,7 +23,7 @@ export class AdbProcessError extends Error {
   stdout?: string;
   stderr?: string;
   status?: number;
-  signal?: AbortSignal;
+  signal?: NodeJS.Signals | null;
 }
 
 export class AdbProcessWaitError extends AdbProcessError {}
