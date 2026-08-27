@@ -9,7 +9,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 The remote device starts blank unless the start command receives an application source. You can ask EAS CLI to install and launch an EAS Build, an application archive, or Expo Go while the session starts. You can also start a blank device and install a local simulator- or emulator-compatible build through its controller.
 
-> **info** For agentic development, ask your coding agent to use the [EAS Simulator skill](https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-simulator/SKILL.md). It can choose the appropriate build workflow, start the remote device, drive the app, collect evidence, and stop the session. The sections below document the same workflow for manual use.
+> **info** **Typical use case:** A coding agent starts an agent-device session, opens Expo Go or a development build connected to Metro, and iterates with Fast Refresh while you follow the same iOS session in the web preview. Ask the agent to use the [EAS Simulator skill](https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-simulator/SKILL.md), which handles the build workflow, remote session, device control, evidence collection, and cleanup. The sections below document the same workflow for manual use.
 
 Choose the build type based on what you need:
 
