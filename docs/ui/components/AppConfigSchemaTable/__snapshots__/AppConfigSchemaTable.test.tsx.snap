@@ -4,7 +4,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
         class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -158,7 +158,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
         class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -311,7 +311,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -414,7 +414,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how the image will be displayed in the splash loading screen.
         </p>
         <div
-          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+          class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
             class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -500,7 +500,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -600,7 +600,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
         class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -781,7 +781,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -866,7 +866,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
       </div>
       <div
-        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -944,7 +944,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <div
-          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+          class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
             class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
