@@ -36,7 +36,6 @@
     "expo-app-intents": "workspace:*",
     "expo-app-metrics": "workspace:*",
     "expo-background-fetch": "workspace:*",
-    "expo-blur": "workspace:*",
     "expo-brownfield": "workspace:*",
     "expo-build-properties": "workspace:*",
     "expo-camera": "workspace:*",
