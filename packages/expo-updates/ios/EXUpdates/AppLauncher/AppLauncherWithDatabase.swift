@@ -281,9 +281,41 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
   }
 
+  /// Resolves an asset's source path inside the app binary, or nil when it has none.
+  /// Assets read back from SQLite never carry `mainBundleFilename` -- the assets table has no such
+  /// column -- so the embedded counterpart is matched on `key` instead.
+  private func bundledSourcePath(forAsset asset: UpdateAsset) -> String? {
+    guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database),
+      let matchingAsset = embeddedManifest.assets()?.first(where: { $0.key != nil && $0.key == asset.key }),
+      matchingAsset.mainBundleFilename != nil else {
+      return nil
+    }
+    return UpdatesUtils.path(forBundledAsset: matchingAsset)
+  }
+
+  private func fileSize(at url: URL) -> Int? {
+    return (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize
+  }
+
+  /// A partially copied launch asset satisfies `fileExists` forever, and `ErrorRecovery` cannot
+  /// relaunch out of it once the update has one successful launch, so its size is also compared
+  /// against the app-binary source that produced it. Falls back to accepting the cached file
+  /// whenever no source is resolvable, since there is then nothing authoritative to compare to.
+  private func isCachedLaunchAssetComplete(_ asset: UpdateAsset, at assetLocalUrl: URL) -> Bool {
+    var isComplete = true
+    if asset.isLaunchAsset,
+      let bundlePath = bundledSourcePath(forAsset: asset),
+      let sourceSize = fileSize(at: URL(fileURLWithPath: bundlePath)),
+      let cachedSize = fileSize(at: assetLocalUrl) {
+      isComplete = sourceSize == cachedSize
+    }
+    return isComplete
+  }
+
   private func checkExistence(ofAsset asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (Bool) -> Void) {
     FileDownloader.assetFilesQueue.async {
       let exists = FileManager.default.fileExists(atPath: assetLocalUrl.path)
+        && self.isCachedLaunchAssetComplete(asset, at: assetLocalUrl)
       self.launcherQueue.async {
         completion(exists)
       }
@@ -316,12 +348,19 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
           return
         }
 
+        // Staged through a sibling temp file and renamed into place, so an interrupted copy cannot
+        // leave a truncated asset at the launch path where every later existence check accepts it.
+        let stagingUrl = assetLocalUrl.deletingLastPathComponent()
+          .appendingPathComponent(".tmp-\(UUID().uuidString)-\(assetLocalUrl.lastPathComponent)")
         do {
-          try FileManager.default.copyItem(atPath: bundlePath, toPath: assetLocalUrl.path)
+          try FileManager.default.copyItem(atPath: bundlePath, toPath: stagingUrl.path)
+          try? FileManager.default.removeItem(at: assetLocalUrl)
+          try FileManager.default.moveItem(at: stagingUrl, to: assetLocalUrl)
           self.launcherQueue.async {
             completion(true, nil)
           }
         } catch {
+          try? FileManager.default.removeItem(at: stagingUrl)
           self.launcherQueue.async {
             completion(
               false,
