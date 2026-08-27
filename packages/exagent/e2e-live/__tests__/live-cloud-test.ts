@@ -136,6 +136,24 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     expectExit(created, 0);
     projectRoot = parseJson(created).projectRoot;
 
+    // `eas simulator` refuses a project EAS has never heard of, and a scratch scaffold is exactly
+    // that. Link it to the suite's standing staging project (the same one `live-eas` deploys to)
+    // instead of creating one per run: `eas init --id` is what the refusal itself suggests, but it
+    // stops on the slug mismatch in non-interactive mode, so the link is written the way `eas init`
+    // would have written it. Identity comes from the committed fixture, not a literal here.
+    const fixtureApp = JSON.parse(
+      fs.readFileSync(path.join(fixturesDir, 'livecheck', 'app.json'), 'utf8')
+    );
+    const appJsonPath = path.join(projectRoot, 'app.json');
+    const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'));
+    appJson.expo.owner = fixtureApp.expo.owner;
+    appJson.expo.slug = fixtureApp.expo.slug;
+    appJson.expo.extra = {
+      ...appJson.expo.extra,
+      eas: { projectId: fixtureApp.expo.extra.eas.projectId },
+    };
+    fs.writeFileSync(appJsonPath, JSON.stringify(appJson, null, 2));
+
     // The lab screen, so the `--route` reload has somewhere to go that is not the root. Same fixture
     // and same tab-trigger insertion as `live-local`; see that file for why it is an insertion.
     fs.writeFileSync(
