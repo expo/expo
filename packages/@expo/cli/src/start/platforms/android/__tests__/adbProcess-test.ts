@@ -88,6 +88,18 @@ describe(runAdbDeviceQueryAsync, () => {
     });
   });
 
+  it('includes subprocess cleanup in the bounded wait policy', async () => {
+    const pending = createPendingSpawn({ ignoreTerm: true });
+    jest.mocked(spawnAsync).mockReturnValueOnce(pending);
+    const startedAt = Date.now();
+
+    await expect(
+      runBoundedAdbHostQueryAsync('adb', ['devices'], 'device discovery', 100)
+    ).rejects.toBeInstanceOf(AdbProcessWaitError);
+    expect(Date.now() - startedAt).toBeLessThan(200);
+    expect(pending.child.kill).toHaveBeenCalledWith('SIGKILL');
+  });
+
   it('preserves a caller timeout when a longer wait policy is configured', async () => {
     const pending = createPendingSpawn();
     jest.mocked(spawnAsync).mockReturnValueOnce(pending);

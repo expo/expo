@@ -140,8 +140,14 @@ async function runAdbProcessAsync(
 
   let operationSignal = signal;
   let waitLimitSignal: AbortSignal | undefined;
+  let cleanupWaitLimitMs = ADB_SUBPROCESS_CLEANUP_WAIT_LIMIT_MS;
   if (params.waitLimitMs != null) {
-    waitLimitSignal = AbortSignal.timeout(params.waitLimitMs);
+    cleanupWaitLimitMs = Math.min(
+      ADB_SUBPROCESS_CLEANUP_WAIT_LIMIT_MS,
+      Math.max(1, Math.floor(params.waitLimitMs / 4))
+    );
+    // The public wait limit covers both command execution and reaping its child.
+    waitLimitSignal = AbortSignal.timeout(Math.max(1, params.waitLimitMs - cleanupWaitLimitMs));
     operationSignal = operationSignal
       ? AbortSignal.any([operationSignal, waitLimitSignal])
       : waitLimitSignal;
@@ -154,10 +160,7 @@ async function runAdbProcessAsync(
   } catch (error) {
     if (operationSignal?.aborted && error === operationSignal.reason) {
       // NOTE(@kitten): Killing this client cannot retract a request already sent to the server
-      const clientTermination = await terminateAndObserveAsync(
-        spawnPromise,
-        ADB_SUBPROCESS_CLEANUP_WAIT_LIMIT_MS
-      );
+      const clientTermination = await terminateAndObserveAsync(spawnPromise, cleanupWaitLimitMs);
       const waitExpired = waitLimitSignal?.aborted && error === waitLimitSignal.reason;
       event('adb_operation_cleanup', {
         operation: params.operation,
