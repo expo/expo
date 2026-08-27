@@ -3,6 +3,7 @@ import net from 'node:net';
 import path from 'node:path';
 
 import { CommandError } from '../../../../utils/errors';
+import { ora } from '../../../../utils/ora';
 import type { ADBServer } from '../ADBServer';
 import type { Device } from '../adb';
 import {
@@ -310,6 +311,8 @@ describe(getAttachedDevicesAsync, () => {
       .mockResolvedValueOnce(['Pixel_4_XL_API_30', 'OK'].join('\n'));
 
     const devices = await getAttachedDevicesAsync();
+
+    expect(ora).not.toHaveBeenCalled();
 
     expect(devices).toEqual([
       {

@@ -14,7 +14,7 @@ it(`asserts no devices are available`, async () => {
   jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([]);
   jest.mocked(listAvdsAsync).mockResolvedValueOnce([]);
   await expect(getDevicesAsync()).rejects.toThrow(CommandError);
-  expect(getAttachedDevicesAsync).toHaveBeenCalled();
+  expect(getAttachedDevicesAsync).toHaveBeenCalledWith({ shouldShowWaitingMessage: true });
   expect(listAvdsAsync).toHaveBeenCalled();
 });
 
