@@ -30,6 +30,7 @@
 - [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
 - [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
 - [iOS] Resolve permission requests with `denied` and reject recording calls instead of letting the OS terminate the app when `NSMicrophoneUsageDescription` is missing. ([#49162](https://github.com/expo/expo/pull/49162) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Resolve `requestRecordingPermissionsAsync` from the system callback's result instead of re-reading the audio session, which could still report `undetermined` and return `granted: false` for a permission the user just granted. ([#49438](https://github.com/expo/expo/pull/49438) by [@lux-in-tenebris-lucet](https://github.com/lux-in-tenebris-lucet))
 
 ### 💡 Others
 
