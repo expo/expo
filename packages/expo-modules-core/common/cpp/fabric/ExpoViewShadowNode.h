@@ -104,22 +104,13 @@ public:
       return ConcreteViewShadowNode::measureContent(layoutContext, layoutConstraints);
     }
 
-    // Every child, not just the first: a leaf's children are outside the Yoga tree, so anything
-    // skipped here is never laid out at all. `RNHostView` documents a single element, and a
-    // `Fragment` satisfies that while still producing several - `MenuView` wraps its trigger in one.
-    auto size = react::Size{};
+    auto const *content = hostedContent();
 
-    for (auto const &child : this->getChildren()) {
-      auto const *layoutable = dynamic_cast<const react::LayoutableShadowNode *>(child.get());
-
-      if (layoutable == nullptr) {
-        continue;
-      }
-
-      auto const childSize = layoutable->measure(layoutContext, hostedContentConstraints(*child));
-      size.width = std::max(size.width, childSize.width);
-      size.height = std::max(size.height, childSize.height);
+    if (content == nullptr) {
+      return {};
     }
+
+    auto size = content->measure(layoutContext, hostedContentConstraints(*content));
 
     // Round up to the next value on the pixel grid, so the frame this node reports is never a
     // fraction of a pixel smaller than the content laid out inside it. `ParagraphShadowNode` biases
@@ -137,36 +128,49 @@ public:
       return;
     }
 
+    auto const *content = hostedContent();
+
+    if (content == nullptr) {
+      return;
+    }
+
     // The same constraints the content was measured with, deliberately not the frame Yoga settled
     // on. Laying it out at that frame would put the parent back in charge of the content's layout,
     // which is the dependency this whole path exists to remove.
-    //
-    // `replaceChild` may reallocate the child list, so it is re-read each turn and the child is held
-    // by value rather than by reference.
-    for (size_t i = 0; i < this->getChildren().size(); i++) {
-      auto const child = this->getChildren().at(i);
+    auto const clonedContent = content->clone({});
 
-      if (dynamic_cast<const react::LayoutableShadowNode *>(child.get()) == nullptr) {
-        continue;
-      }
+    static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(
+      layoutContext,
+      hostedContentConstraints(*content)
+    );
 
-      auto const clonedChild = child->clone({});
+    this->replaceChild(*content, clonedContent, 0);
 
-      static_cast<react::LayoutableShadowNode &>(*clonedChild).layoutTree(
-        layoutContext,
-        hostedContentConstraints(*child)
-      );
-
-      this->replaceChild(*child, clonedChild, i);
-
-      if (layoutContext.affectedNodes != nullptr) {
-        layoutContext.affectedNodes->push_back(
-          static_cast<const react::LayoutableShadowNode *>(clonedChild.get()));
-      }
+    if (layoutContext.affectedNodes != nullptr) {
+      layoutContext.affectedNodes->push_back(
+        static_cast<const react::LayoutableShadowNode *>(clonedContent.get()));
     }
   }
 
 private:
+  /**
+   The single element this view hosts, or nothing when nothing is mounted yet - a hosted RN `Modal`
+   renders null until it is visible.
+
+   Only the first child is measured and laid out, and `RNHostView` takes one element for that reason.
+   A leaf's children are outside the Yoga tree, so arranging several would mean reimplementing flex
+   here: the default is a column with `alignItems: stretch`, and a caller's own `flexDirection`, gaps
+   and child margins are all invisible from this side. A caller that needs several gives them one
+   React Native parent, which Yoga arranges properly.
+   */
+  const react::LayoutableShadowNode *hostedContent() const {
+    auto const &children = this->getChildren();
+
+    return children.empty()
+      ? nullptr
+      : dynamic_cast<const react::LayoutableShadowNode *>(children.front().get());
+  }
+
   react::LayoutDirection resolvedLayoutDirection() const {
     return YGNodeLayoutGetDirection(&this->yogaNode_) == YGDirectionRTL
       ? react::LayoutDirection::RightToLeft
