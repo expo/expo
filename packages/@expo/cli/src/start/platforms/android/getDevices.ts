@@ -25,7 +25,7 @@ export async function getDevicesAsync(): Promise<Device[]> {
   const allDevices = mergeDevices(bootedDevices, data);
 
   if (!allDevices.length) {
-    throw new CommandError(formatNoDevicesMessage());
+    throw new CommandError('ANDROID_NO_DEVICES', formatNoDevicesMessage());
   }
 
   return allDevices;
