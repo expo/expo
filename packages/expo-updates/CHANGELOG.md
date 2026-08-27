@@ -28,6 +28,7 @@
 - [Android] Keep the Room-generated `UpdatesDatabase_Impl` constructor, so minified release builds no longer crash with `NoSuchMethodException` on first database access. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch.
 - [iOS] Repair ready updates that are missing their launch asset by demoting them to pending during launcher selection, so a corrupted row is skipped and retried instead of failing every launch. ([#49457](https://github.com/expo/expo/pull/49457) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Register a downloaded update's assets, links, and ready status in a single transaction, so an interrupted or partially failed registration leaves no partial state behind. ([#49458](https://github.com/expo/expo/pull/49458) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
