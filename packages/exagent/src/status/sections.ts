@@ -408,6 +408,13 @@ export function buildLocalDeviceStatus(probe: LocalDeviceProbe): LocalDeviceStat
     platform: probe.device?.platform ?? null,
     deviceId: probe.device?.deviceId ?? null,
     name: probe.device?.name ?? null,
+    // Every one of them (F106). The singular fields above stay the first, because the ladders in
+    // this report branch on them and a device is a device; what was missing was the *report*.
+    devices: probe.devices.map((device) => ({
+      platform: device.platform,
+      deviceId: device.deviceId,
+      name: device.name ?? null,
+    })),
     reason: probe.reason,
   };
 }

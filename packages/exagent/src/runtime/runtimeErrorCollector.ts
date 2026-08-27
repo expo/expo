@@ -180,16 +180,16 @@ export class CdpRuntimeErrorCollector {
    * Rejects when the app cannot be reached, so callers can tell "no errors" from "not connected".
    */
   async collectAsync(): Promise<RuntimeErrorRecord[]> {
-    const {
-      metroUrl,
-      targetSelector,
-      createWebSocket,
-      targetRetryMs,
-      durationMs = 2000,
-      timeoutMs = 2000,
-    } = this.config;
+    const { durationMs = 2000, timeoutMs = 2000, ...clientOptions } = this.config;
 
-    const client = new CdpClient({ metroUrl, targetSelector, createWebSocket, targetRetryMs });
+    // @ref llp/0005-runtime-loop-tools.rfc.md §The dev server does not label its targets — F100.
+    // Every `CdpClientOptions` key is forwarded, and that is the point: this used to name the four
+    // it wanted and so silently dropped `platform` and `deviceIndex`, which both callers pass. The
+    // result was `runtime:errors --android` reading the iOS runtime and reporting it as Android's —
+    // not by accident, but because the default selector ranks a runtime that answers above one that
+    // answers `-32601`, and Expo Go for Android is the second kind. A rest spread cannot go stale
+    // the next time an option is added to the client.
+    const client = new CdpClient(clientOptions);
     const ws: WebSocket = await client.createWebSocketAsync();
     this.clientWebSocketDebuggerUrl = client.getWebSocketDebuggerUrl();
 

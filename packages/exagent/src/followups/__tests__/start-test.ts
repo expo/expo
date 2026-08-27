@@ -199,6 +199,27 @@ describe(buildStartPlanFollowUps, () => {
     expect(followups[0]!.command).toBe('npx exagent dev');
   });
 
+  // F103 — found live on 2026-08-27: `dev --plan --android` printed
+  // `expo start --go --android` and then offered `npx exagent dev`, which on this Mac plans for
+  // **iOS**. The one follow-up whose whole promise is "runs the plan above" ran a different plan.
+  //
+  // The flag the caller typed is what is carried, not the platform the plan settled on: a no-flag
+  // run's plan is the host's default, and printing a flag nobody typed would claim the caller had
+  // asked for it. That is the same `requestedPlatform` / `platform` split `decideStartPlan` keeps.
+  it(`carries the platform flag the caller typed into the command that runs the plan (F103)`, () => {
+    expect(
+      buildStartPlanFollowUps(mockPlan(), mockState(), 'android').find(
+        (followup) => followup.id === 'dev'
+      )!.command
+    ).toBe('npx exagent dev --android');
+
+    expect(
+      buildStartPlanFollowUps(mockPlan(), mockState(), undefined).find(
+        (followup) => followup.id === 'dev'
+      )!.command
+    ).toBe('npx exagent dev');
+  });
+
   it.each(['dev-client-stale', 'bare-stale', 'needs-dev-client'])(
     `should explain what makes the %s plan cheaper`,
     (rule) => {

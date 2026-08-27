@@ -567,6 +567,7 @@ describe(buildNextActionStatus, () => {
         platform: null,
         deviceId: null,
         name: null,
+        devices: [],
         reason: 'no booted iOS simulator was found',
       };
 
@@ -674,6 +675,7 @@ describe(buildNextActionStatus, () => {
           platform: 'ios',
           deviceId: 'SIM-1',
           name: 'iPhone 17',
+          devices: [{ platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' }],
           reason: null,
         });
 
@@ -724,6 +726,7 @@ describe(buildLocalDeviceStatus, () => {
       buildLocalDeviceStatus({
         state: 'present',
         device: { backend: 'local-ios', platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
+        devices: [{ backend: 'local-ios', platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' }],
         reason: null,
       })
     ).toEqual({
@@ -731,20 +734,54 @@ describe(buildLocalDeviceStatus, () => {
       platform: 'ios',
       deviceId: 'SIM-1',
       name: 'iPhone 17',
+      devices: [{ platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' }],
       reason: null,
     });
   });
 
   it(`carries the reason of a machine with none`, () => {
     expect(
-      buildLocalDeviceStatus({ state: 'absent', device: null, reason: 'no booted iOS simulator' })
+      buildLocalDeviceStatus({
+        state: 'absent',
+        device: null,
+        devices: [],
+        reason: 'no booted iOS simulator',
+      })
     ).toEqual({
       state: 'absent',
       platform: null,
       deviceId: null,
       name: null,
+      devices: [],
       reason: 'no booted iOS simulator',
     });
+  });
+
+  // F106 — every device, not only the first. See `readLocalDeviceProbe`'s own test for the live run
+  // this comes from: on macOS iOS is probed first, so an emulator holding the only connected app was
+  // absent from the report while the simulator beside it was named.
+  it(`lists every device the machine has (F106)`, () => {
+    const status = buildLocalDeviceStatus({
+      state: 'present',
+      device: { backend: 'local-ios', platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
+      devices: [
+        { backend: 'local-ios', platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
+        {
+          backend: 'local-android',
+          platform: 'android',
+          deviceId: 'emulator-5554',
+          name: 'sdk_gphone64_arm64',
+        },
+      ],
+      reason: null,
+    });
+
+    expect(status.devices).toEqual([
+      { platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
+      { platform: 'android', deviceId: 'emulator-5554', name: 'sdk_gphone64_arm64' },
+    ]);
+    // The singular fields are unchanged, because every ladder in the report branches on them.
+    expect(status.deviceId).toBe('SIM-1');
   });
 });
 

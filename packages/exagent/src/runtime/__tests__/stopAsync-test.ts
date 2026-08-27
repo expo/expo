@@ -279,11 +279,13 @@ describe(runtimeStopAsync, () => {
     mockDevServer([]);
     mockSpawnQueue([
       { stdout: 'List of devices attached\nemulator-5554\tdevice\n' },
+      // The `pidof` F102 added, before the stop, because after it the answer is the same either way.
+      { stdout: '4021\n' },
       { stdout: '' },
     ]);
 
     await expect(runtimeStopAsync(projectRoot, options({ platform: 'android' }))).resolves.toBe(0);
-    expect(spawnedArgv(1)).toEqual([
+    expect(spawnedArgv(2)).toEqual([
       'adb',
       '-s',
       'emulator-5554',
@@ -292,6 +294,45 @@ describe(runtimeStopAsync, () => {
       'force-stop',
       'host.exp.exponent',
     ]);
+    expect(JSON.parse(printed())).toMatchObject({ stopped: true, wasRunning: true });
+  });
+
+  // F101 — CRITICAL, found live on 2026-08-27: `runtime:stop --android` on a machine with an iPhone
+  // simulator on the same dev server ran
+  // `adb -s emulator-5554 shell am force-stop host.exp.Exponent` — the **iOS** spelling, which is
+  // not an installed package on Android — and reported `stopped: true, wasRunning: true` while
+  // `adb shell pidof host.exp.exponent` still answered `3933` and the target stayed listed.
+  //
+  // The mechanism is one line: `resolveAppId` took `targetAppIds.find(Boolean)` off the *unscoped*
+  // target list, and Expo Go's two application ids differ by one capital letter (llp/0005 §The dev
+  // server does not label its targets). The dev server happened to list iOS first. So this command
+  // now reads `appTargets` — the platform-scoped list the preflight already builds for every other
+  // command in the family — and the ids in its report are the ones on the device it acted on.
+  it(`resolves the application id from the platform it is stopping, not the first one listed (F101)`, async () => {
+    Object.defineProperty(process, 'platform', { value: 'linux' });
+    mockDevServer([
+      { id: 'ios-1', appId: 'host.exp.Exponent', deviceName: 'iPhone 17 Pro' },
+      {
+        id: 'android-1',
+        appId: 'host.exp.exponent',
+        deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+      },
+    ]);
+    mockSpawnQueue([
+      { stdout: 'List of devices attached\nemulator-5554\tdevice sdk_gphone64_arm64\n' },
+      { stdout: '3933\n' },
+      { stdout: '' },
+    ]);
+
+    await expect(runtimeStopAsync(projectRoot, options({ platform: 'android' }))).resolves.toBe(0);
+
+    const report = JSON.parse(printed());
+    expect(report.bundleId).toBe('host.exp.exponent');
+    expect(report.bundleIdSource).toBe('dev-server');
+    // The list a reader of an `--android` run needs is the one on the device the run acted on: the
+    // iOS id belongs to another device and stopping it here would have been the defect.
+    expect(report.connectedAppIds).toEqual(['host.exp.exponent']);
+    expect(spawnedArgv(2)).toContain('host.exp.exponent');
   });
 
   it(`should offer navigate as the way back`, async () => {
@@ -301,7 +342,8 @@ describe(runtimeStopAsync, () => {
     await runtimeStopAsync(projectRoot, options({ followups: true }));
 
     expect(JSON.parse(printed()).followups).toEqual([
-      { id: 'navigate', command: 'npx exagent navigate /', why: expect.any(String) },
+      // The platform is carried: this stop was on the iOS simulator, so the way back is too (F103).
+      { id: 'navigate', command: 'npx exagent navigate / --ios', why: expect.any(String) },
     ]);
   });
 });
@@ -355,5 +397,19 @@ describe(buildStopFollowUps, () => {
     expect(
       buildStopFollowUps(report({ wasRunning: null, deviceBackend: 'cloud' }))[0]!.command
     ).toBe('npx exagent navigate / --cloud');
+  });
+
+  // F103 — found live on 2026-08-27: `runtime:stop --android` suggested `npx exagent navigate /`,
+  // which on this Mac opens the app on the **iOS simulator**. The app that was just stopped is on
+  // the emulator, so the one command offered as the way back goes to a different device.
+  //
+  // `--cloud` is left alone deliberately: that flag already names the device, and a session has
+  // exactly one, so a platform beside it says nothing (the assertion above pins that).
+  it(`carries the platform of the device it stopped into the way back (F103)`, () => {
+    expect(
+      buildStopFollowUps(report({ platform: 'android', deviceBackend: 'local-android' }))[0]!
+        .command
+    ).toBe('npx exagent navigate / --android');
+    expect(buildStopFollowUps(report())[0]!.command).toBe('npx exagent navigate / --ios');
   });
 });

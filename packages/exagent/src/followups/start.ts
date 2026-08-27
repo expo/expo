@@ -3,6 +3,7 @@
 // without a dev server, a device, or an EAS account.
 
 import type { LocalDeviceState } from '../device/localDevice';
+import type { PlanPlatform } from '../plan/types';
 import type { ProjectState, StartPlan } from '../project/types';
 import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
 import type { ToolchainStatus } from '../toolchain/types';
@@ -264,7 +265,21 @@ export function buildEasBuildFollowUp(
  * The plan itself is the first answer; the rest explains what made it as expensive as it is, which
  * is the "state deltas" idea of llp/0009 §Wider ideas.
  */
-export function buildStartPlanFollowUps(plan: StartPlan, state: ProjectState): FollowUp[] {
+export function buildStartPlanFollowUps(
+  plan: StartPlan,
+  state: ProjectState,
+  /**
+   * The platform flag the caller typed, when they typed one.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Smaller things the same round settled — F103.
+   * `dev --plan --android` printed `expo start --go --android` and then offered `npx exagent dev`,
+   * which on a Mac plans for iOS — so the one follow-up whose whole promise is "runs the plan above"
+   * ran a different plan. The *typed* flag rather than the platform the plan settled on, which is
+   * the same split `decideStartPlan` keeps: printing a flag nobody typed would claim they asked.
+   */
+  requestedPlatform?: PlanPlatform
+): FollowUp[] {
+  const platformFlag = requestedPlatform ? ` --${requestedPlatform}` : '';
   const followups: FollowUp[] = [];
 
   // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
@@ -291,7 +306,7 @@ export function buildStartPlanFollowUps(plan: StartPlan, state: ProjectState): F
 
   followups.push({
     id: 'dev',
-    command: 'npx exagent dev',
+    command: `npx exagent dev${platformFlag}`,
     why: 'Runs the plan above, emitting it again first so nothing runs unannounced.',
   });
 

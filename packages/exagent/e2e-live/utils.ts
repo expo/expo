@@ -472,6 +472,59 @@ export async function copyTreeAsync(from: string, to: string): Promise<void> {
   fs.cpSync(from, to, { recursive: true });
 }
 
+/**
+ * Boot an AVD and wait until `adb` will talk to it, returning its serial.
+ *
+ * Three things here are live facts rather than choices, and each cost somebody a run:
+ *
+ *  1. **`-ports 5554,5555`.** Without it the emulator binds ephemeral ports and `adb devices` never
+ *     lists it at all — not "offline", *absent* [observed — friction run 6, F62, and again on
+ *     2026-08-27]. So the serial this returns is known before the boot rather than discovered after.
+ *  2. **`device` is not `booted`.** `adb devices` reports the serial as `offline` for the first
+ *     seconds and then `device`; `sys.boot_completed` is what says Android itself is up, and an
+ *     `adb shell` before that answers `device offline`.
+ *  3. **Detached, and killed in cleanup only if this suite started it.** A machine whose emulator was
+ *     already up keeps it: this tier runs on somebody's laptop, and shutting down a device they were
+ *     using is a worse cost than a slow test.
+ */
+export async function bootEmulatorAsync(
+  run: LiveRun,
+  adb: string,
+  avd: string,
+  { serial = 'emulator-5554', boundMs = 240_000 }: { serial?: string; boundMs?: number } = {}
+): Promise<string> {
+  const executable = process.platform === 'win32' ? 'emulator.exe' : 'emulator';
+  const beside = path.join(path.dirname(path.dirname(adb)), 'emulator', executable);
+  // `prereq.ts`'s `resolveEmulator` accepts either, so this has to as well.
+  const emulator = fs.existsSync(beside) ? beside : executable;
+  const logFile = path.join(run.artifactsDir, 'emulator-boot.log');
+  const log = fs.openSync(logFile, 'a');
+  const child = spawn(emulator, ['-avd', avd, '-ports', '5554,5555', '-no-snapshot-save'], {
+    detached: true,
+    stdio: ['ignore', log, log],
+  });
+  child.unref();
+
+  run.onCleanup(`emulator ${avd}`, async () => {
+    await execAsync(adb, ['-s', serial, 'emu', 'kill'], { timeoutMs: 60_000 });
+  });
+
+  const up = await waitForAsync(async () => {
+    const probe = await execAsync(adb, ['-s', serial, 'shell', 'getprop', 'sys.boot_completed'], {
+      timeoutMs: 30_000,
+    });
+    return probe.exitCode === 0 && probe.stdout.trim() === '1';
+  }, boundMs, 5_000);
+
+  if (!up) {
+    throw new Error(
+      `the emulator ${avd} did not finish booting within ${boundMs}ms — "${adb} -s ${serial} shell ` +
+        `getprop sys.boot_completed" never answered 1. Its output is in ${logFile}`
+    );
+  }
+  return serial;
+}
+
 /** Which package manager a project's lockfile names. Live projects are not all npm. */
 export function packageManagerFor(projectRoot: string): {
   command: string;

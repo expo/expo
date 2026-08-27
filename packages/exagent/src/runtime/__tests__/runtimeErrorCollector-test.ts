@@ -51,6 +51,56 @@ class NeverOpeningWebSocket extends EventEmitter {
   close() {}
 }
 
+// The two targets one dev server lists when a simulator and an emulator are both on it. Copied from
+// `fixtures/json-list-ios-and-android.json`, which is a real `/json/list` payload: nothing in it
+// names a platform, and the two Expo Go app ids differ by one capital letter (llp/0005 §The dev
+// server does not label its targets). `nativePageReloads` is what the default selector requires
+// before it will probe a target at all.
+const MIXED_CAPABILITIES = { reactNative: { capabilities: { nativePageReloads: true } } };
+
+const IOS_TARGET = {
+  ...TARGET,
+  ...MIXED_CAPABILITIES,
+  id: 'ios-1',
+  appId: 'host.exp.Exponent',
+  deviceName: 'iPhone 17 Pro',
+  webSocketDebuggerUrl: 'ws://debugger/ios',
+};
+
+const ANDROID_TARGET = {
+  ...TARGET,
+  ...MIXED_CAPABILITIES,
+  id: 'android-1',
+  appId: 'host.exp.exponent',
+  deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+  webSocketDebuggerUrl: 'ws://debugger/android',
+};
+
+/**
+ * A socket that answers the way the runtime behind that URL really answers.
+ *
+ * The iOS runtime returns a value for `Runtime.evaluate`; Expo Go for Android answers `-32601`
+ * [observed — 2026-08-25, and again 2026-08-27]. That asymmetry is not decoration: the default
+ * target selector keeps a `-32601` target only as a *fallback*, so an unscoped selection over both
+ * of these lands on iOS every time.
+ */
+function mixedPlatformSocket(url: string): WebSocketImpl {
+  const android = url.endsWith('/android');
+  return new MockWebSocket(url, (request, socket) => {
+    if (request.method !== 'Runtime.evaluate') {
+      return;
+    }
+    socket.emit(
+      'message',
+      JSON.stringify(
+        android
+          ? { id: request.id, error: { code: -32601, message: "Unsupported method 'Runtime.evaluate'" } }
+          : { id: request.id, result: { result: { type: 'undefined' } } }
+      )
+    );
+  }) as unknown as WebSocketImpl;
+}
+
 describe('CdpRuntimeErrorCollector.collectAsync', () => {
   let originalFetch: typeof fetch | undefined;
 
@@ -209,6 +259,84 @@ describe('CdpRuntimeErrorCollector.collectAsync', () => {
     });
 
     await expect(collector.collectAsync()).resolves.toHaveLength(1);
+  });
+
+  // F100 — CRITICAL, found live on 2026-08-27 against Expo Go on `tuft-pixel` with an iPhone 17 Pro
+  // simulator on the same dev server.
+  //
+  // What it was: this collector accepted `platform` and `deviceIndex` — `runtimeAsync` and
+  // `smokeAsync` both pass them — and then **left them out of the `CdpClient` it built**. So the
+  // narrowing llp/0005 §The dev server does not label its targets describes reached every command
+  // that opens a `CdpClient` itself (`runtime:eval`, `runtime:tree`, `runtime:tap`, `runtime:type`)
+  // and neither of the two that go through here: `runtime:errors` and `smoke`'s `errors` phase.
+  //
+  // Why it was the dangerous direction rather than a mislabel. The default selector ranks a target
+  // that answers `Runtime.evaluate` **above** one that answers `-32601` (llp/0005 §Android pass),
+  // and Expo Go for Android is the second kind — so on a mixed machine the unscoped selector picks
+  // iOS *by design*. Live, in one minute [observed — 2026-08-27, port 8560, both apps on `/lab`
+  // throwing `new Error("W25 boom on " + Platform.OS)`]:
+  //
+  //     runtime:eval "1+1" --android  → exit 1, RUNTIME_EVALUATE_UNSUPPORTED
+  //     runtime:errors --android      → count 1, message "W25 boom on ios", runtimeReadable: true
+  //
+  // The second answer is an iOS runtime's error list reported as Android's, under a
+  // `runtimeReadable: true` that also suppressed the dev-server-log fallback F52 built for exactly
+  // this runtime. Two commands given the same flag read two different apps.
+  it(`talks only to a target on the platform it was given (F100)`, async () => {
+    globalThis.fetch = (async () => ({
+      ok: true,
+      json: async () => [IOS_TARGET, ANDROID_TARGET],
+    })) as unknown as typeof fetch;
+
+    const opened: string[] = [];
+    const collector = new CdpRuntimeErrorCollector({
+      metroUrl: 'http://localhost:8081',
+      durationMs: 20,
+      platform: 'android',
+      // The index this machine's own device tools would report, which is the strongest of the three
+      // pieces of evidence `platformOfTarget` ranks.
+      deviceIndex: { iosNames: ['iPhone 17 Pro'], androidModels: ['sdk_gphone64_arm64'] },
+      createWebSocket: (url) => {
+        opened.push(url);
+        return mixedPlatformSocket(url);
+      },
+    });
+
+    await collector.collectAsync();
+
+    // No `targetSelector` is injected on purpose: the default one is what ranks an answering
+    // runtime above a `-32601` one — `mixedPlatformSocket` reproduces both answers — so this
+    // asserts the narrowing happens *before* the selector rather than that some selector happened
+    // to choose right. Unscoped, the same list resolves to iOS, which is the live defect.
+    expect(collector.metadata.webSocketDebuggerUrl).toBe(ANDROID_TARGET.webSocketDebuggerUrl);
+    expect(opened).not.toContain(IOS_TARGET.webSocketDebuggerUrl);
+  });
+
+  it(`refuses rather than reading the other platform when none of its own is listed (F100)`, async () => {
+    globalThis.fetch = (async () => ({
+      ok: true,
+      json: async () => [
+        {
+          ...TARGET,
+          id: 'ios-1',
+          appId: 'host.exp.Exponent',
+          deviceName: 'iPhone 17 Pro',
+          webSocketDebuggerUrl: 'ws://debugger/ios',
+        },
+      ],
+    })) as unknown as typeof fetch;
+
+    const collector = new CdpRuntimeErrorCollector({
+      metroUrl: 'http://localhost:8081',
+      durationMs: 20,
+      platform: 'android',
+      deviceIndex: { iosNames: ['iPhone 17 Pro'], androidModels: ['sdk_gphone64_arm64'] },
+      createWebSocket: (url) => new MockWebSocket(url, () => {}) as unknown as WebSocketImpl,
+    });
+
+    // The message `NoTargetOnPlatformError` writes: an empty window from the wrong app is worse
+    // than no window, so the scoped failure has to reach the caller as a failure.
+    await expect(collector.collectAsync()).rejects.toThrow(/No android app is connected/);
   });
 });
 

@@ -73,6 +73,21 @@ export interface RuntimeErrorsLogJson {
   older: number;
   /** Why the log was not read, or null when it was. */
   reason: string | null;
+  /**
+   * Platforms other than the one asked for whose app is on this dev server, when the log was read.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Reading Android errors anyway — F105.
+   * The log is the one channel in this command that **cannot** be scoped: Expo's logger prefixes a
+   * line with a platform only when the app is not bridgeless, and every modern app is. So a window
+   * asked about `android` can return a line the iOS app wrote, and live it did — `runtime:errors
+   * --android --fail-on-error` exited 20 on `[Error: W25 boom on ios]` [observed — 2026-08-27].
+   *
+   * Non-empty is the caller's cue that a record may belong to another app. Empty means this
+   * platform's app was the only one connected, so the ambiguity does not arise. Always `[]` when the
+   * log was not read, and always `[]` for a run that named no platform — there was nothing to
+   * confuse the records with.
+   */
+  otherPlatformsConnected: string[];
 }
 
 /** Fields of {@link EvaluateResultJson} that hold app-originated content. */
@@ -243,6 +258,7 @@ export const NO_DEV_SERVER_LOG: RuntimeErrorsLogJson = {
   count: 0,
   older: 0,
   reason: 'the runtime answered the debugger, so the dev server log was not needed',
+  otherPlatformsConnected: [],
 };
 
 function stringifyValueForOutput(value: unknown): string {

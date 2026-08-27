@@ -300,16 +300,38 @@ export interface DevServerStatus {
   reason?: string;
 }
 
+/** One device this machine has, as the status report lists it. */
+export interface LocalDeviceEntry {
+  /** `ios` or `android`. */
+  platform: string;
+  /** Simulator UDID or `adb` serial. */
+  deviceId: string;
+  /** What the platform tool called it, when it named one. */
+  name: string | null;
+}
+
 /** What this machine has to open an app on, as the status report carries it. */
 export interface LocalDeviceStatus {
   /** `present`, `absent`, or `unknown` when no platform tool could be run. */
   state: LocalDeviceState;
-  /** Platform of the device that was found, or null. */
+  /** Platform of the **first** device that was found, or null. See {@link devices}. */
   platform: string | null;
-  /** Simulator UDID or `adb` serial of the device that was found, or null. */
+  /** Simulator UDID or `adb` serial of the first device that was found, or null. */
   deviceId: string | null;
-  /** Simulator name, when the platform tool reported one. */
+  /** Simulator name of the first device, when the platform tool reported one. */
   name: string | null;
+  /**
+   * Every device this machine has, in the order the platform tools were asked.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Smaller things the same round settled — F106.
+   * The three fields above describe one device because that is all a ladder needs. This section is
+   * not a ladder: it answers "what does this machine have", and it answered it wrongly on the
+   * machine that has two. iOS is probed first on macOS, so `status` printed
+   * `device  ios iPhone 17 Pro (…)` on a run whose only connected app was Expo Go on
+   * `emulator-5554` [observed — 2026-08-27] — and an agent that read the line concluded the app was
+   * on iOS. Empty exactly when {@link deviceId} is null.
+   */
+  devices: LocalDeviceEntry[];
   /** Why the state is what it is. Null when a device was found. */
   reason: string | null;
 }

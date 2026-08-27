@@ -77,9 +77,16 @@ export interface StopAppResult {
   /**
    * Whether the tool's answer is about **this application id**.
    *
-   * True for the local backends, where `simctl terminate` and `am force-stop` name a process and
-   * the exit code is about that process. False for a cloud session, where `agent-device close`
-   * answers about the controller's session whatever id it is given [observed — live, 2026-08-26].
+   * True on iOS, where `simctl terminate` names a process and its exit code is about that process.
+   * False for a cloud session, where `agent-device close` answers about the controller's session
+   * whatever id it is given [observed — live, 2026-08-26].
+   *
+   * On Android it depends on a second round trip, and that is F102. `am force-stop` exits 0 and
+   * prints nothing whether the app was running or not, so its exit code establishes nothing about
+   * the id — yet this used to be `true` there, which made `runtime:stop --android` report
+   * `wasRunning: true` on every run, including one whose application id was not installed on the
+   * device at all. So Android asks `pidof` **before** the stop: an answer makes this `true` and is
+   * what {@link wasAlreadyStopped} is read from, and a `pidof` that could not run makes it `false`.
    *
    * It exists so `wasRunning` can be *absent* rather than wrong: a run that cannot know must not
    * report `wasRunning: true`, which would tell a caller its app had been stopped when the verb
@@ -112,6 +119,11 @@ export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopA
   }
   // Resolved here when the caller has none, for the same reason the screenshot does it (F49).
   const adb = params.adb ?? (params.platform === 'android' ? resolveAdb() : undefined);
+  // Asked before the stop, because after it the answer is the same either way (F102).
+  const running =
+    params.platform === 'android'
+      ? await probeAndroidProcessAsync(adb?.bin ?? 'adb', params.deviceId, params.appId)
+      : null;
   const { bin, args, display } = buildStopAppCommand({ ...params, adb });
   const { stderr, stdout, exitCode, spawnError } = await spawnCaptureAsync(bin, args);
 
@@ -140,9 +152,18 @@ export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopA
       reason: stderr.trim() || stdout.trim() || `exit code ${exitCode}`,
     };
   }
-  // `adb shell am force-stop` exits 0 whether or not the app was running and prints nothing
-  // either way, so on Android this is only ever inferred from the iOS-shaped message above. The
-  // honest reading is "not known to have been stopped already", which is what `false` says.
+  // `adb shell am force-stop` exits 0 whether or not the app was running and prints nothing either
+  // way, so on Android the answer comes from the `pidof` above and from nowhere else (F102). iOS
+  // reads it off the tool's own refusal, which does name the process.
+  if (params.platform === 'android') {
+    return {
+      command: display,
+      ok: true,
+      verified: running !== null,
+      wasAlreadyStopped: running === false,
+      reason: null,
+    };
+  }
   return {
     command: display,
     ok: true,
@@ -150,6 +171,44 @@ export async function stopAppOnDeviceAsync(params: StopAppParams): Promise<StopA
     wasAlreadyStopped: exitCode !== 0 && notRunning,
     reason: null,
   };
+}
+
+/**
+ * Whether a package has a process on an Android device, or null when nothing could be established.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the app — F102.
+ * `pidof <package>` answers a pid on stdout for a running app and exits 1 with nothing for one that
+ * is not running *or* not installed. Those two are one answer here — nothing was stopped — and both
+ * are answers, which is what `am force-stop`'s exit code never was.
+ *
+ * Null is the third case and it is the one worth being careful about: a shell without `pidof`, an
+ * `adb` that could not be spawned, a device that went away between the probe and the stop. Each of
+ * those establishes nothing, and a stop whose report says nothing about `wasRunning` is honest where
+ * one that guesses `true` is not.
+ */
+async function probeAndroidProcessAsync(
+  bin: string,
+  deviceId: string,
+  appId: string
+): Promise<boolean | null> {
+  const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync(bin, [
+    '-s',
+    deviceId,
+    'shell',
+    'pidof',
+    appId,
+  ]);
+  if (spawnError) {
+    return null;
+  }
+  const pid = stdout.trim();
+  if (/^\d[\d\s]*$/.test(pid)) {
+    return true;
+  }
+  // Exit 1 with nothing said is `pidof`'s "no such process". Anything else — a shell that has no
+  // `pidof`, an `adb` that could not reach the device — is a tool failure wearing the same code.
+  const complained = `${stderr}${stdout}`.trim().length > 0;
+  return exitCode === 1 && !complained ? false : null;
 }
 
 /**

@@ -689,6 +689,7 @@ async function readLocalDeviceStatusAsync(options: StatusOptions): Promise<Local
     probe ?? {
       state: 'unknown',
       device: null,
+      devices: [],
       reason: `no platform tool answered within ${timeoutMs}ms`,
     }
   );

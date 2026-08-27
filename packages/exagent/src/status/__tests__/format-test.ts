@@ -70,6 +70,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       platform: 'ios',
       deviceId: 'SIM-1',
       name: 'iPhone 17',
+      devices: [{ platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' }],
       reason: null,
     },
     skills: { agentIds: ['claude-code'], discovered: 3, linked: 3 },
@@ -543,6 +544,28 @@ describe(formatStatusReport, () => {
       expect(line(mockReport(), 'device')).toContain('iPhone 17 (SIM-1)');
     });
 
+    // F106 — the line named the first device and nothing else, so an Android emulator beside a
+    // booted simulator was invisible in the one section whose whole subject is what this machine has.
+    it(`names every device, not only the first (F106)`, () => {
+      const value = mockReport({
+        device: {
+          state: 'present',
+          platform: 'ios',
+          deviceId: 'SIM-1',
+          name: 'iPhone 17',
+          devices: [
+            { platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' },
+            { platform: 'android', deviceId: 'emulator-5554', name: 'sdk_gphone64_arm64' },
+          ],
+          reason: null,
+        },
+      });
+
+      expect(line(value, 'device')).toContain('iPhone 17 (SIM-1)');
+      expect(line(value, 'device')).toContain('android');
+      expect(line(value, 'device')).toContain('emulator-5554');
+    });
+
     it(`says none, and why, for a machine with no device`, () => {
       const value = mockReport({
         device: {
@@ -550,6 +573,7 @@ describe(formatStatusReport, () => {
           platform: null,
           deviceId: null,
           name: null,
+          devices: [],
           reason: 'no booted iOS simulator was found',
         },
       });
@@ -566,6 +590,7 @@ describe(formatStatusReport, () => {
           platform: null,
           deviceId: null,
           name: null,
+          devices: [],
           reason: 'could not run "adb"',
         },
       });

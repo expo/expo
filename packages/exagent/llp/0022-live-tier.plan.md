@@ -23,6 +23,11 @@ this tier arrived with: **F93**, `status --explain` reporting bun's install prog
 about the caller's builds, on 3 of 6 runs; and **F94**, every uncaught exception exiting 7 — the code
 the protocol reserves for needs-human — with a raw Node stack.
 
+It has kept doing that as it has grown. Wave 25 added the fourth suite, `live-android`, and adding one
+platform to a tier that already had one found **six defects and one open gap** — three of them commands
+that were reading the iOS app while reporting about Android. §live-android, and
+[[0005-runtime-loop-tools]] §The second Android round for what each was.
+
 ## Why the two tiers below it cannot do this
 
 Both limits are already written down; this section only puts them side by side, because together they
@@ -46,13 +51,16 @@ the rule that covers the gap and the note that it is a manual step. This is that
 ## A jest project of its own, run by nothing else
 
 `e2e-live/jest.config.js` is a fourth jest project beside the unit config and `e2e/`. It is reachable
-only through `test:live`, `test:live:local`, `test:live:eas` and `test:live:cloud`. No `test`, no
+only through `test:live`, `test:live:local`, `test:live:android`, `test:live:eas` and
+`test:live:cloud`. No `test`, no
 `test:e2e`, no CI workflow names it, and none should: every suite spends a real simulator, a real
 account or a real deployment, and a tier that can bill money must be asked for by name.
 
 `maxWorkers: 1`. Two suites cannot share one simulator, one dev-server port range or one cloud
 session, and a live tier that raced itself would report the race as the CLI's fault — which is a
 mistake this tier made once already, in the other direction. §The finding this tier arrived with.
+`live-android` makes this sharper rather than looser: it drives the *same* iOS simulator `live-local`
+does, for its mixed-platform block, and it terminates the app on it when that block ends.
 
 `typecheck` gained a third `tsc` invocation, so the suites are type-checked with everything else.
 
@@ -143,6 +151,69 @@ The break is a **syntax error** and never a dead statement. `exagent new` scaffo
 render body, so `(undefined as any).boom` is compiled away and every gate stays honestly green
 [observed — friction run 7 §5]. Someone loses an hour to this once per project; it is written here so
 it is once.
+
+## live-android: the platform the other suites do not run
+
+The fourth suite [added 2026-08-27, wave 25]. Same scaffold, same loop, on a real Android emulator
+running the real Expo Go APK. **24 tests, 103 s including a 40-second emulator boot, free.**
+
+It is not `live-local` with a different device, and the reason is one measured fact: **Expo Go for
+Android ships a Hermes built without the Chrome DevTools Protocol debugger**
+([[0005-runtime-loop-tools]] §The CDP-less runtime, corrected). So five of the seven runtime commands
+cannot answer there, and what this suite asserts is what they do instead. Three things it reaches that
+nothing else does:
+
+- **The refusal, from Hermes rather than from a double.** `e2e/utils.ts` has an `inspectorSocket:
+  'no-debugger'` mode that answers every method `-32601`, and it is a good double *written from a
+  measurement of this runtime*. What a double cannot establish is that the measurement still holds —
+  and the exit-code contract turns on it: exit **1** for the four reading commands (nothing was
+  attempted, so there is no outcome to report), **0** for `runtime:errors` without a gate flag, **20**
+  when the log fallback caught something inside the window, and **22** when there was no log to read.
+  All four bands, from the published bundle, against the engine the stub was modelled on.
+- **A reload verified with no debugger anywhere in it.** Expo Go for Android holds a client on the dev
+  server's `/message` socket, so `runtime:reload --android` stops on rung 1 and both of its proofs are
+  non-CDP facts: a socket id the dev server's counter had not used, and a bundle it was seen to serve
+  for `android`. That is the exact opposite of `live-cloud`, where the broadcast does not reload the app
+  and the ladder has to climb — the two suites together are what make the ladder a claim about the
+  socket rather than about the device's location.
+- **Two platforms on one dev server.** The block that matters most, and the one that is *conditional*:
+  it runs only when a booted iOS simulator with Expo Go is there as well. Nothing in `/json/list` names
+  a platform, and the default target selector deliberately prefers a runtime that answers — so on a
+  machine with both, an unscoped read lands on iOS every time and looks like an answer. Three commands
+  were unscoped. This block is what found them (F100, F101, F105) and it is the reason the suite was
+  worth writing rather than deducing.
+
+**Its gate boots, and `live-local`'s does not.** That asymmetry is a machine fact rather than a
+preference: a booted iOS simulator is usually something the owner of the laptop is looking at, and an
+Android emulator is started for a task and shut afterwards. Requiring one to be up already would mean
+this suite never ran. So a listed AVD passes the gate and `beforeAll` boots it with
+`-ports 5554,5555` — without which the emulator binds ephemeral ports and `adb` never lists it at all
+(F62, and again on 2026-08-27) — and the cleanup kills it **only if this suite started it**.
+
+One consequence has to be stated because it breaks the tier's own rule: a machine whose AVD boots
+without Expo Go on it **fails** rather than skipping. By then the boot has been spent, and a suite
+cannot become skipped after it has started. The message names the one command that fixes it.
+
+**What `smoke --android` is, and why the row is an assertion rather than a gap.** Exit **22 on a
+working app**: the `runtime` phase cannot measure, and [[0010-agent-conventions]] §The sixth says a gate
+that cannot measure must not pass. The suite asserts that, phase by phase — `dev-server`,
+`bundler-ready`, `bundle` for android, `app`, `screenshot` all `ok`; `runtime` and `errors`
+`inconclusive` with the reason naming the engine. A broken Android bundle is still 20 with the later
+phases skipped. So `smoke --android` is not a green light on Expo Go and this tier says so in a test
+rather than in a caveat.
+
+**The break is platform-resolved, not a syntax error in a screen.** `live-local` breaks `lab.tsx`,
+which breaks both platforms. This suite copies a broken `platform-note.android.ts` over a good one
+beside an `.ios.ts` that parses — the break F53 was found with, and the only kind that tells "checked
+the right platform" apart from "checked something". A no-flag `runtime:reload` then has to refuse at 20
+with `bundlePlatformSource: "connected-app"`, which is the assertion.
+
+**Two preconditions this suite needs and `live-local`'s do not fit.** Its `waitForLabScreenAsync` polls
+`runtime:tree`, which is the first thing Android refuses. The Android equivalents are
+`waitForAndroidRuntimeAsync` — a zero-length `runtime:errors --android` window, which establishes both
+that a target is listed *and* that something is behind it, because a reload leaves the old page listed
+for a second with nothing there (F56) — and `waitForExpoGoStoppedAsync`, because **`am force-stop` is
+asynchronous** and `pidof` still answers for a beat after the `adb shell` exits.
 
 ## live-eas: the read side, and exactly one write
 
@@ -420,8 +491,19 @@ the label's own count, which is the claim the rung actually establishes.
   `npx <package>@latest` run in a project outside this repository before shipping, and this tier
   narrows what that run has to discover rather than replacing it. The `foreignFlags` snapshot is still
   the countable surface that says where a run is owed.
-- **One platform.** macOS, iOS, Expo Go. Android is not run; nor is a development build, a physical
-  device, or Windows.
+- **Two platforms, both on this machine, both in Expo Go.** macOS with iOS and Android emulators
+  [narrowed 2026-08-27, wave 25 — it read "one platform" before `live-android` existed]. What is still
+  not run anywhere: a **development build** on either platform, a **physical device**, and Windows. The
+  first of those is the one that matters on Android, because a development build is what would give it a
+  debugger — every refusal `live-android` asserts is a property of Expo Go, not of the platform.
+- **Anything about Android that needs a runtime read.** `runtime:tap`'s three refusal bands, `--verify`
+  diffs and a successful `runtime:eval` are `unreachable` in the Android column rather than `open`, and
+  `smoke --android` is asserted to be **22 on a working app** rather than expected to pass. A reader
+  quoting "the live tier is green on Android" is quoting a suite in which the gate never passes.
+- **Whether an Android app was really stopped, at the instant the command returned.** `am force-stop`
+  is asynchronous: it exits as soon as ActivityManager takes the request. `runtime:stop --android`
+  claims the stop ran and — since F102 — that the app *was* running; the suite checks the effect within
+  a bound because that is the only honest form of the assertion.
 - **Build creation.** Impossible in v1, so it is unreachable here rather than untested here.
 - **Speed, of anything.** §What a live assertion is allowed to be.
 - **A skip is not a pass.** `test:live` printing `2 skipped, 1 passed` means a third of this tier ran,
@@ -430,6 +512,10 @@ the label's own count, which is the claim the rung actually establishes.
   and its live test passes on a run where the crash never fires. The unit tests are what pin the
   handler; the live test is what proves the handler meets a crash it could not have been given by a
   fixture. Neither is the other's substitute.
+- **The Android mixed-platform block is conditional, so a green `live-android` may be 21 tests or 24.**
+  Three of the seven findings that suite produced are only visible with an app on both platforms at
+  once, and a machine with no booted simulator runs neither those tests nor anything that replaces
+  them. The suite prints which of the two runs it is doing, in `beforeAll`, for exactly this reason.
 - **live-cloud has not been seen 7/7.** Wave 23 took it to 6/7 and corrected the last assertion against
   that run's own artifact, with the session budget spent. The corrected suite is a suite that has not
   been run, which is precisely the state this document refuses to call evidence — so the next run of

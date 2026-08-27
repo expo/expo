@@ -523,8 +523,17 @@ function openUrlLines(devServer: DevServerStatus): string[] {
  */
 function deviceLine(device: LocalDeviceStatus): string {
   if (device.state === 'present') {
-    const label = device.name ? `${device.name} (${device.deviceId})` : device.deviceId;
-    return [chalk.green(device.platform ?? 'device'), label ?? ''].filter(Boolean).join(' ');
+    // Every device, separated (F106). One line rather than one per device: the section is a summary,
+    // and a machine with a simulator and an emulator on it has two facts, not two sections.
+    const listed = device.devices.length > 0
+      ? device.devices
+      : [{ platform: device.platform ?? 'device', deviceId: device.deviceId ?? '', name: device.name }];
+    return listed
+      .map((entry) => {
+        const label = entry.name ? `${entry.name} (${entry.deviceId})` : entry.deviceId;
+        return [chalk.green(entry.platform ?? 'device'), label ?? ''].filter(Boolean).join(' ');
+      })
+      .join(SEPARATOR);
   }
   if (device.state === 'absent') {
     return [

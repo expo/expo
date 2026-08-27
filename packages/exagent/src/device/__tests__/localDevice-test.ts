@@ -32,13 +32,45 @@ const unrunnable: DeviceProbe = {
   toolError: new CommandError('ADB_NOT_RUNNABLE', 'adb could not be run'),
 };
 
+/** An attached Android emulator, as the second probe reports it. */
+const foundAndroid: DeviceProbe = {
+  device: {
+    backend: 'local-android',
+    platform: 'android',
+    deviceId: 'emulator-5554',
+    name: 'sdk_gphone64_arm64',
+  },
+};
+
 describe(readLocalDeviceProbe, () => {
   it(`reports the device when one platform found one`, () => {
     expect(readLocalDeviceProbe([found, none])).toEqual({
       state: 'present',
       device: found.device,
+      devices: [found.device],
       reason: null,
     });
+  });
+
+  // F106 — MED, found live on 2026-08-27. This fold took `probes.find((probe) => probe.device)` and
+  // iOS is probed first on macOS, so with a booted simulator *and* an attached emulator the report
+  // named the simulator and said nothing about the emulator at all. Live: `status` printed
+  // `device  ios iPhone 17 Pro (C159CF99-…)` while the only app on the dev server was Expo Go on
+  // `emulator-5554`, which is the reading an agent takes as "the app is on iOS".
+  //
+  // The singular `device` is unchanged — first found, which is what every ladder already branches on
+  // — and `devices` is what makes the report true rather than merely not-wrong.
+  it(`reports every device that was found, not only the first (F106)`, () => {
+    const probe = readLocalDeviceProbe([found, foundAndroid]);
+
+    expect(probe.state).toBe('present');
+    expect(probe.device).toEqual(found.device);
+    expect(probe.devices).toEqual([found.device, foundAndroid.device]);
+  });
+
+  it(`reports an empty device list when nothing was found (F106)`, () => {
+    expect(readLocalDeviceProbe([none, unrunnable]).devices).toEqual([]);
+    expect(readLocalDeviceProbe([]).devices).toEqual([]);
   });
 
   it(`reports absent when a tool ran and reported nothing`, () => {

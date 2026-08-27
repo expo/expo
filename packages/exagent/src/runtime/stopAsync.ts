@@ -63,10 +63,16 @@ export interface RuntimeStopResultJson {
   /** What the device tool said when it did not stop the app. Null when it did. */
   reason: string | null;
   /**
-   * Application ids of the apps connected to the dev server when this ran.
+   * Application ids of the apps connected to the dev server **on the platform this stopped**.
    *
    * Reported whether or not they were used to choose {@link bundleId}: they are what makes a
    * `--app-id` that stopped nothing diagnosable, and the command had them all along.
+   *
+   * Scoped rather than every id the dev server listed, and that is F101. This command acts on one
+   * device, and Expo Go's two application ids differ by one capital letter — so the unscoped list
+   * handed an `--android` run the iOS spelling, which `am force-stop` accepted, exited 0 on, and did
+   * nothing with. An id from another device is not a candidate for this stop and is not evidence
+   * about it.
    */
   connectedAppIds: string[];
   /**
@@ -103,11 +109,21 @@ export async function runtimeStopAsync(
   // be running with no dev server behind it at all. Requiring a debugger target here would refuse
   // the run that llp/0010 §The seventh and eighth calls a success — stopping an app that has
   // already stopped — so the connection is read and never insisted on.
+  //
+  // The platform is passed even though nothing here refuses on it (F101). `resolveDeviceAsync` has
+  // just settled which device this stop acts on, and the preflight's `appTargets` is the scoped list
+  // every other command in the family reads — without it, the id below came off whichever target
+  // the dev server happened to list first, on either platform.
   const devServer = await preflightRuntimeAsync(
-    { need: 'optional', devServerUrl: options.devServerUrl ?? null, cloud: options.cloud },
+    {
+      need: 'optional',
+      devServerUrl: options.devServerUrl ?? null,
+      cloud: options.cloud,
+      platform: device.platform,
+    },
     { projectRoot }
   );
-  const connectedAppIds = devServer.targets.map((target) => target.appId).filter(Boolean);
+  const connectedAppIds = devServer.appTargets.map((target) => target.appId).filter(Boolean);
   const resolved = resolveAppId({
     platform: device.platform,
     appIdOverride: options.appId,
@@ -243,11 +259,17 @@ export function buildStopFollowUps(report: RuntimeStopResultJson): FollowUp[] {
   }
   // `--cloud` is carried through: the app was stopped on the session, and `navigate /` without the
   // flag would look for a device on this machine — which is the machine that has none.
+  //
+  // On a local backend the **platform** is carried for the same reason and it is F103: this command
+  // stopped the app on one device, and `navigate /` with no flag opens it on whichever device the
+  // host defaults to — the iOS simulator, on a Mac, after a stop on the emulator. A cloud session
+  // needs no platform beside `--cloud`, which already names the one device it has.
   const onCloud = report.deviceBackend === 'cloud';
+  const flag = onCloud ? ' --cloud' : ` --${report.platform}`;
   return [
     {
       id: 'navigate',
-      command: `npx exagent navigate /${onCloud ? ' --cloud' : ''}`,
+      command: `npx exagent navigate /${flag}`,
       // Three arms, not two. `wasRunning: null` is the cloud case — the controller closes the app
       // in front and says nothing about which id that was — and a falsy check read it as `false`,
       // so the follow-up asserted "The app was not running" about an app that was [live staging,

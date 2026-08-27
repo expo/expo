@@ -199,6 +199,7 @@ describe(runtimeErrorsToJson, () => {
         count: 0,
         older: 0,
         reason: 'the runtime answered the debugger, so the dev server log was not needed',
+        otherPlatformsConnected: [],
       },
       untrusted: ['errors'],
     });

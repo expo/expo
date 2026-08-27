@@ -149,6 +149,198 @@ export function bootedSimulatorGate(): {
   return { gate: ok, simulator };
 }
 
+/** Expo Go's Android package. One capital letter apart from the iOS one, which is the point. */
+export const EXPO_GO_ANDROID_PACKAGE = 'host.exp.exponent';
+
+export type AndroidDevice = {
+  /** The `adb` serial, e.g. `emulator-5554`. */
+  serial: string;
+  /** The `adb` this machine has, so the suite spawns the same one the CLI resolves. */
+  adb: string;
+  /** The AVD to boot in `beforeAll`, when nothing is attached yet. */
+  bootAvd: string | null;
+};
+
+/**
+ * Where `adb` is on this machine, searched the way `src/device/adb.ts` searches.
+ *
+ * Reimplemented rather than imported, because this tier runs the **published bundle** and must not
+ * share a module with it: a suite that resolved `adb` through the code under test would agree with
+ * it by construction, which is exactly what F49 needed a second opinion about. The order is the
+ * CLI's own — `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `PATH`, then this platform's default location.
+ */
+function resolveAdbForSuite(): string | null {
+  const executable = process.platform === 'win32' ? 'adb.exe' : 'adb';
+  const roots = [process.env.ANDROID_HOME, process.env.ANDROID_SDK_ROOT].filter(Boolean) as string[];
+  for (const root of roots) {
+    const candidate = path.join(root, 'platform-tools', executable);
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  // Resolved to an absolute path rather than left as the bare name, and not for tidiness: the SDK
+  // root is `<adb>/../..`, and that is where `emulator` is. A gate that kept the bare name could not
+  // find the binary that boots an AVD and reported "no emulator beside that adb" on a machine that
+  // has one [observed — the third run of this suite, 2026-08-27].
+  try {
+    const found = execFileSync(process.platform === 'win32' ? 'where' : 'which', [executable], {
+      encoding: 'utf8',
+      timeout: 60_000,
+    })
+      .split('\n')[0]
+      ?.trim();
+    if (found && fs.existsSync(found)) {
+      return fs.realpathSync(found);
+    }
+  } catch {
+    // Not on PATH; fall through to the default install location.
+  }
+  const home = os.homedir();
+  const defaults: Record<string, string[]> = {
+    darwin: [path.join(home, 'Library', 'Android', 'sdk')],
+    linux: [path.join(home, 'Android', 'Sdk'), path.join(home, 'Android', 'sdk')],
+    win32: [path.join(home, 'AppData', 'Local', 'Android', 'Sdk')],
+  };
+  for (const root of defaults[process.platform] ?? []) {
+    const candidate = path.join(root, 'platform-tools', executable);
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+/** The `emulator` binary of this SDK — beside the resolved `adb`, or on `PATH`. */
+function resolveEmulator(adb: string): string | null {
+  const executable = process.platform === 'win32' ? 'emulator.exe' : 'emulator';
+  if (adb !== 'adb' && adb !== 'adb.exe') {
+    const candidate = path.join(path.dirname(path.dirname(adb)), 'emulator', executable);
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  try {
+    execFileSync(executable, ['-version'], { stdio: 'ignore', timeout: 60_000 });
+    return executable;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * An Android device this suite can drive: attached now, or an AVD it may boot.
+ *
+ * Deliberately **not** the shape of {@link bootedSimulatorGate}, and the difference is a machine
+ * fact rather than a preference. A booted iOS simulator is something the owner of the machine is
+ * usually looking at, so `live-local` refuses to boot one. An Android emulator is not: it is started
+ * for a task and shut afterwards, and requiring one to be up already would mean this suite never
+ * ran. So a listed AVD is enough to pass, and `beforeAll` boots it — about 40 s, which the RUNBOOK
+ * prices.
+ *
+ * Two things the reason has to say when they are missing, because each is one command:
+ *
+ *  - **No `adb`.** F49's own trap, from the other side: on a machine with the SDK installed the
+ *    normal way and `platform-tools` never put on `PATH`, the bare name fails — so this searches
+ *    where the CLI searches and, failing that, says which variable would settle it.
+ *  - **`-ports 5554,5555`.** An emulator started without it binds ephemeral ports and `adb` never
+ *    discovers it [observed — friction run 6, F62; and again 2026-08-27]. A gate that printed a
+ *    plain `emulator -avd <name>` would send a reader into that for a second time.
+ */
+export function androidDeviceGate(): { gate: Gate; device: AndroidDevice | null } {
+  const adb = resolveAdbForSuite();
+  if (!adb) {
+    return {
+      gate: missing(
+        'no "adb" could be found: it is not on PATH, ANDROID_HOME and ANDROID_SDK_ROOT name nothing, ' +
+          `and there is no SDK at this platform's default location. Install the Android SDK ` +
+          'platform-tools and set ANDROID_HOME to the SDK root'
+      ),
+      device: null,
+    };
+  }
+
+  let attached: string[] = [];
+  try {
+    const listed = execFileSync(adb, ['devices'], { encoding: 'utf8', timeout: 60_000 });
+    attached = listed
+      .split('\n')
+      .slice(1)
+      .map((line) => line.trim().split(/\s+/))
+      .filter(([serial, state]) => serial && state === 'device')
+      .map(([serial]) => serial!);
+  } catch (error: any) {
+    return {
+      gate: missing(`"${adb} devices" could not run: ${error.message}`),
+      device: null,
+    };
+  }
+
+  if (attached.length > 0) {
+    const serial = attached[0]!;
+    // Only checkable for a device that is already up; the boot path checks it in `beforeAll`, which
+    // is a failure rather than a skip and the RUNBOOK says why.
+    try {
+      const packages = execFileSync(adb, ['-s', serial, 'shell', 'pm', 'list', 'packages'], {
+        encoding: 'utf8',
+        timeout: 120_000,
+      });
+      if (!packages.includes(EXPO_GO_ANDROID_PACKAGE)) {
+        return {
+          gate: missing(
+            `Expo Go is not installed on ${serial} — install it by running "npx expo start --android" ` +
+              `once against any project, or "${adb} install <Expo Go apk>"`
+          ),
+          device: null,
+        };
+      }
+    } catch (error: any) {
+      return {
+        gate: missing(`"${adb} -s ${serial} shell pm list packages" could not run: ${error.message}`),
+        device: null,
+      };
+    }
+    return { gate: ok, device: { serial, adb, bootAvd: null } };
+  }
+
+  const emulator = resolveEmulator(adb);
+  if (!emulator) {
+    return {
+      gate: missing(
+        `no Android device is attached to "${adb} devices", and no "emulator" binary was found ` +
+          `beside that adb or on PATH to boot one with. Attach a device, or install the SDK's ` +
+          `emulator package (\`sdkmanager emulator\`)`
+      ),
+      device: null,
+    };
+  }
+  let avds: string[] = [];
+  try {
+    avds = execFileSync(emulator, ['-list-avds'], { encoding: 'utf8', timeout: 60_000 })
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+  } catch (error: any) {
+    return {
+      gate: missing(`"${emulator} -list-avds" could not run: ${error.message}`),
+      device: null,
+    };
+  }
+  const wanted = process.env.EXAGENT_LIVE_AVD;
+  const avd = wanted ? avds.find((name) => name === wanted) : avds[0];
+  if (!avd) {
+    return {
+      gate: missing(
+        wanted
+          ? `no AVD is named ${wanted} (EXAGENT_LIVE_AVD); "${emulator} -list-avds" reports ${avds.length ? avds.join(', ') : 'none'}`
+          : `no Android device is attached and this machine has no AVD to boot — create one in ` +
+            `Android Studio's Device Manager, or with "${path.join(path.dirname(path.dirname(adb)), 'cmdline-tools', 'latest', 'bin', 'avdmanager')} create avd -n tuft-pixel -k "system-images;android-35;google_apis;arm64-v8a""`
+      ),
+      device: null,
+    };
+  }
+  return { gate: ok, device: { serial: '', adb, bootAvd: avd } };
+}
+
 /** Where the Expo CLI family keeps the session, per {@link stagingGate}'s environment. */
 export const STAGING_SESSION_FILE = path.join(os.homedir(), '.expo-staging', 'state.json');
 

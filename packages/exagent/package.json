@@ -38,6 +38,7 @@
     "test:e2e": "jest --config e2e/jest.config.js",
     "test:live": "jest --config e2e-live/jest.config.js --runInBand",
     "test:live:local": "jest --config e2e-live/jest.config.js --runInBand live-local",
+    "test:live:android": "jest --config e2e-live/jest.config.js --runInBand live-android",
     "test:live:eas": "jest --config e2e-live/jest.config.js --runInBand live-eas",
     "test:live:cloud": "jest --config e2e-live/jest.config.js --runInBand live-cloud",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"

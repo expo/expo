@@ -43,6 +43,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       platform: 'ios',
       deviceId: 'SIM-1',
       name: 'iPhone 17',
+      devices: [{ platform: 'ios', deviceId: 'SIM-1', name: 'iPhone 17' }],
       reason: null,
     },
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
@@ -351,6 +352,24 @@ describe(buildNavigateFollowUps, () => {
     expect(screenshot.why).toContain('npx exagent runtime:tree');
   });
 
+  // F104 — found live on 2026-08-27. The line above is good advice on iOS and impossible advice on
+  // Android: `runtime:tree` needs `Runtime.evaluate`, and Expo Go for Android has no CDP debugger at
+  // all (llp/0005 §The CDP-less runtime, corrected), so following it is exit 1 every time. What can
+  // wait there is `smoke`, whose screenshot phase waits on the honest neighbouring fact — two reads
+  // of the target list naming the same ids — and then captures the screen itself.
+  it(`does not send an Android caller to a command that cannot answer there (F104)`, () => {
+    const screenshot = buildNavigateFollowUps({
+      platform: 'android',
+      deviceId: 'emulator-5554',
+    })[0]!;
+
+    expect(screenshot.why).toMatch(/still be loading|not finished loading/i);
+    // The command is still *named*, as the thing that cannot answer — what must be gone is the
+    // instruction to run it.
+    expect(screenshot.why).not.toContain('run "npx exagent runtime:tree" first');
+    expect(screenshot.why).toContain('npx exagent smoke --android');
+  });
+
   it(`says it for a cloud session too, where the load is slower rather than faster`, () => {
     const screenshot = buildNavigateFollowUps({
       backend: 'cloud',
@@ -384,6 +403,34 @@ describe(buildRuntimeErrorsFollowUps, () => {
     // And the rung that contradicts the reading an empty window invites: the bug this command
     // cannot see does not throw at all (F34).
     expect(followups[1]!.command).toBe('npx exagent typecheck');
+  });
+
+  // F103 — found live on 2026-08-27. llp/0005 §Smaller things records F54/F58 as "every command a
+  // follow-up names now carries the flag the run had", and this one never did: `runtime:errors
+  // --android` suggested `npx exagent runtime:reload` and `npx exagent runtime:errors --duration
+  // 6000`, both of which read whichever app the dev server lists first. On a machine with a
+  // simulator and an emulator on one dev server the flagless rerun is a different question from the
+  // one that was just asked — and after F100 it is a *readable* different question, which is worse:
+  // the rerun answers, in iOS, and looks like a confirmation.
+  it(`carries the platform of the run into every command it names (F103)`, () => {
+    expect(
+      buildRuntimeErrorsFollowUps({ count: 2, durationMs: 2000, platform: 'android' }).map(
+        (followup) => followup.command
+      )
+    ).toEqual([
+      'npx exagent runtime:reload --android',
+      'npx exagent runtime:errors --android --duration 2000',
+    ]);
+
+    expect(
+      buildRuntimeErrorsFollowUps({ count: 0, durationMs: 2000, platform: 'android' }).map(
+        (followup) => followup.command
+      )
+    ).toEqual([
+      'npx exagent runtime:errors --android --duration 4000',
+      // `typecheck` reads the code on disk, which no platform flag changes.
+      'npx exagent typecheck',
+    ]);
   });
 });
 

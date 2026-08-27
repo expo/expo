@@ -1,0 +1,7 @@
+// The Android half of the pair, with a syntax error. Copied over `platform-note.android.ts` by the
+// suite, so the entry bundle compiles for ios and does not compile for android.
+//
+// The `.broken` suffix is load-bearing: a file that does not parse cannot be named `*.ts` inside this
+// package, because `oxlint` lints every source file it finds and reported this one as an error of its
+// own [observed — 2026-08-27]. The suite renames it on the way in, which is when it is meant to fail.
+export const PLATFORM_NOTE = ((((

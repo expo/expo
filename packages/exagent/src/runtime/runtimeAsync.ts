@@ -17,6 +17,7 @@ import {
 } from './cdpClient';
 import { APP_RECONNECT_GRACE_MS } from './devServer';
 import { preflightRuntimeAsync, type RuntimeContext } from './preflight';
+import { EMPTY_DEVICE_INDEX, scopeTargets } from './targetPlatform';
 import {
   evaluateResultToJson,
   formatEvaluateResult,
@@ -182,7 +183,7 @@ export async function runtimeErrorsAsync(
   // between. Both were reported as "there is no app", one run in three. The grace period is what
   // makes the printed chain deterministic — including for a reload nothing here performed, such as
   // pressing "r" in the dev server's terminal.
-  const { devServerUrl, deviceIndex } = await preflightRuntimeAsync(
+  const connection = await preflightRuntimeAsync(
     {
       need: 'debugger-target',
       devServerUrl: options.devServerUrl,
@@ -191,6 +192,20 @@ export async function runtimeErrorsAsync(
     },
     context
   );
+  const { devServerUrl, deviceIndex } = connection;
+
+  // @ref ../dev/logErrors — F105. Which *other* platforms have an app on this dev server, because
+  // the log fallback below cannot tell their lines from this one's and a caveat that does not say so
+  // is the overclaim. Computed from the read the preflight already made, so it costs nothing.
+  const otherPlatformsConnected =
+    options.platform == null
+      ? []
+      : [
+          ...new Set(
+            scopeTargets(connection.targets, options.platform, deviceIndex ?? EMPTY_DEVICE_INDEX)
+              .otherPlatform.map((entry) => entry.platform)
+          ),
+        ].sort();
 
   // Marked before the window opens, so the log read below is bounded the same way the debugger
   // window is: a log is cumulative, and reporting all of it as "what happened while I watched"
@@ -231,7 +246,9 @@ export async function runtimeErrorsAsync(
   const logRead = blind
     ? readDevServerLogWindow(context.projectRoot ?? null, logMark)
     : { json: NO_DEV_SERVER_LOG, entries: [] };
-  const log = logRead.json;
+  const log: RuntimeErrorsLogJson = logRead.json.read
+    ? { ...logRead.json, otherPlatformsConnected }
+    : logRead.json;
   errors = [...errors, ...logRecordsOf(logRead.entries)];
 
   event('runtime_errors', {
@@ -245,7 +262,11 @@ export async function runtimeErrorsAsync(
   // next steps: errors mean "fix, then prove the window is clean", an empty window means the
   // failure was probably never reproduced inside it.
   const followups = followUpsEnabled(options.followups)
-    ? buildRuntimeErrorsFollowUps({ count: errors.length, durationMs })
+    ? buildRuntimeErrorsFollowUps({
+        count: errors.length,
+        durationMs,
+        platform: options.platform ?? null,
+      })
     : [];
 
   const caveat = blind ? blindRuntimeCaveat(capability.evidence, log) : null;
@@ -291,8 +312,15 @@ export async function runtimeErrorsAsync(
 
 /** The line that has to sit above an empty window from a runtime that cannot report anything. */
 function blindRuntimeCaveat(evidence: string | null, log: RuntimeErrorsLogJson): string {
+  // F105: on a dev server with an app on another platform too, the second half of this sentence used
+  // to be false. The log is not a per-app channel — Expo's logger prefixes a platform only for an
+  // app that is not bridgeless, and every modern app is — so the honest form names the other app.
+  const ambiguity =
+    log.otherPlatformsConnected.length > 0
+      ? ` That log does not say which app wrote a line, and the ${log.otherPlatformsConnected.join(' and ')} app on this same dev server writes to it too — so a record below may be from ${log.otherPlatformsConnected.length === 1 ? 'that app' : 'one of those apps'} rather than this one.`
+      : '';
   const readClause = log.read
-    ? ` The errors below marked "dev server log" were read from ${log.logFile} instead, which is where this app's errors do arrive${log.older > 0 ? `; ${log.older} more ${log.older === 1 ? 'was' : 'were'} already in that log before this window opened` : ''}.`
+    ? ` The errors below marked "dev server log" were read from ${log.logFile} instead, which is where a bridgeless app's errors do arrive${log.older > 0 ? `; ${log.older} more ${log.older === 1 ? 'was' : 'were'} already in that log before this window opened` : ''}.${ambiguity}`
     : ` ${log.reason ?? 'No dev server log was available to read instead.'}`;
   return `CAVEAT: this runtime cannot report errors over the debugger protocol, so an empty window from it means nothing about the app. Why: ${evidence ?? 'it answered no debugger call'}.${readClause}`;
 }
@@ -349,7 +377,15 @@ function readDevServerLogWindow(
 
   const { errors, older } = readDevServerLogErrors(read.lines, mark ?? 0);
   return {
-    json: { read: true, logFile: read.logFile, count: errors.length, older, reason: null },
+    json: {
+      read: true,
+      logFile: read.logFile,
+      count: errors.length,
+      older,
+      reason: null,
+      // Filled in by the caller, which is the only place that knows what else is connected (F105).
+      otherPlatformsConnected: [],
+    },
     entries: errors,
   };
 }

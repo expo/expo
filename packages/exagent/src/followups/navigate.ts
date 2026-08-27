@@ -141,7 +141,16 @@ export function buildNavigateFollowUps({
         (on === 'cloud'
           ? 'Captures the screen this route opened on the cloud simulator and downloads it here, so the change can be checked as it renders. '
           : 'Captures the screen this route opened, so the change can be checked as it renders. ') +
-        'The app may still be loading its bundle: this route was opened a moment ago, and a cold start takes seconds, so run "npx exagent runtime:tree" first and capture once it lists the screen — otherwise the picture is of the splash.',
+        'The app may still be loading its bundle: this route was opened a moment ago, and a cold start takes seconds, so ' +
+        // F104 — the wait to name is one the caller's platform can actually run. `runtime:tree`
+        // needs `Runtime.evaluate`, and Expo Go for Android has no CDP debugger at all
+        // (llp/0005 §The CDP-less runtime, corrected) — so on Android the line above was an
+        // instruction that exits 1 every time it is followed. `smoke` is what waits there: its
+        // screenshot phase waits on the honest neighbouring fact — two reads of the dev server's
+        // target list naming the same ids (F57) — and then captures the screen itself.
+        (platform === 'android'
+          ? 'wait with "npx exagent smoke --android", which waits for the app and captures the screen itself — this runtime has no debugger, so "runtime:tree" cannot answer there. Otherwise the picture is of the splash.'
+          : 'run "npx exagent runtime:tree" first and capture once it lists the screen — otherwise the picture is of the splash.'),
     },
     {
       id: 'runtime-errors',

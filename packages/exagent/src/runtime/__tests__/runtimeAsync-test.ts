@@ -1,3 +1,5 @@
+import { vol } from 'memfs';
+
 import { EXIT_OUTCOME_FAILED } from '../../exitCodes';
 import {
   CdpClient,
@@ -428,6 +430,7 @@ describe(runtimeErrorsAsync, () => {
         count: 0,
         older: 0,
         reason: 'the runtime answered the debugger, so the dev server log was not needed',
+        otherPlatformsConnected: [],
       },
       untrusted: ['errors'],
       followups: [
@@ -568,5 +571,101 @@ describe(`${runtimeErrorsAsync.name} on a runtime with no debugger`, () => {
     expect(report.devServerLog.read).toBe(false);
     // No project root was given, so there is no log to read — said, not left blank.
     expect(report.devServerLog.reason).toContain('not run inside a project');
+  });
+
+  // F105 — MED, found live on 2026-08-27, and it is the *other* half of F100. F100 was the debugger
+  // reading the wrong platform; this is the fallback reading a channel that has no platform at all.
+  //
+  // llp/0005 §Reading Android errors anyway already records the limit — "the log does not name the
+  // platform (Expo's logger only prefixes when the app is not bridgeless, and every modern app is)"
+  // — but the caveat printed above the records said they were read from the log "which is where this
+  // app's errors do arrive". With an iOS simulator on the same dev server that is false, and it was
+  // false in the direction that matters: `runtime:errors --android --fail-on-error` exited **20** on
+  // a record whose own text was `[Error: W25 boom on ios]` [observed — 2026-08-27, port 8560].
+  //
+  // The fix is not scoping — the log cannot be scoped, that is the finding — it is saying so. The
+  // caveat names the other platform, and `devServerLog.otherPlatformsConnected` puts it on the wire
+  // so an agent can branch on it rather than on prose.
+  describe('the dev server log does not say which app wrote a line (F105)', () => {
+    const projectRoot = '/project';
+    const ANDROID_TARGET = {
+      id: 'android-1',
+      appId: 'host.exp.exponent',
+      deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+      webSocketDebuggerUrl: 'ws://debugger/android',
+    };
+
+    const logFile = `${projectRoot}/.expo/dev/logs/dev-detached.log`;
+
+    beforeEach(() => {
+      vol.fromJSON({ [logFile]: 'Starting Metro Bundler\n' });
+    });
+
+    afterEach(() => vol.reset());
+
+    /**
+     * A blind collector that writes an error into the dev server log while its window is open.
+     *
+     * It has to happen *during* the window: the log is cumulative and the read is bounded by a mark
+     * taken before the collector runs, so a line planted in `beforeEach` is correctly counted as
+     * `older` rather than as this window's. The text is the live one — an iOS app's error, written
+     * with no platform prefix, which is what makes the log unscopeable (F105).
+     */
+    function mockBlindCollectWritingToLog() {
+      jest.mocked(CdpRuntimeErrorCollector).mockImplementation(
+        () =>
+          ({
+            collectAsync: jest.fn(async () => {
+              vol.appendFileSync(logFile, ' ERROR  [Error: W25 boom on ios]\n');
+              return [];
+            }),
+            capability: {
+              blind: true,
+              evidence: 'the runtime answered Runtime.evaluate with "method not found" (-32601)',
+            },
+          }) as any
+      );
+    }
+
+    it(`names the other platform whose app is on the same dev server`, async () => {
+      mockDevServer([ANDROID_TARGET, TARGET]);
+      mockBlindCollectWritingToLog();
+
+      await runtimeErrorsAsync(
+        { ...errorsOptions, platform: 'android', json: true },
+        { projectRoot }
+      );
+
+      const report = JSON.parse(printed());
+      expect(report.devServerLog.read).toBe(true);
+      expect(report.devServerLog.count).toBe(1);
+      expect(report.devServerLog.otherPlatformsConnected).toEqual(['ios']);
+      expect(report.errors[0].source).toBe('dev-server-log');
+    });
+
+    it(`says nothing of the kind when this platform's app is the only one connected`, async () => {
+      mockDevServer([ANDROID_TARGET]);
+      mockBlindCollect();
+
+      await runtimeErrorsAsync(
+        { ...errorsOptions, platform: 'android', json: true },
+        { projectRoot }
+      );
+
+      expect(JSON.parse(printed()).devServerLog.otherPlatformsConnected).toEqual([]);
+    });
+
+    it(`puts the ambiguity in the caveat a reader sees, not only in the JSON`, async () => {
+      mockDevServer([ANDROID_TARGET, TARGET]);
+      mockBlindCollectWritingToLog();
+
+      await runtimeErrorsAsync({ ...errorsOptions, platform: 'android' }, { projectRoot });
+
+      const said = printed();
+      expect(said).toContain('does not say which app wrote a line');
+      expect(said).toContain('ios');
+      // And the sentence that was wrong is gone: nothing here may claim the records are this app's.
+      expect(said).not.toContain("where this app's errors do arrive");
+    });
   });
 });

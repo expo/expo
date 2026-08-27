@@ -63,10 +63,16 @@ that pins the *plan* an EAS run would produce.
 **stub** of its backend's binary. This one asks the next question, which is the one §What is still not
 tested left open in as many words: **has it ever run for real, and where is the evidence.**
 
-One row per v1 command, four columns. What each cell means, and the distinctions are load-bearing:
+One row per v1 command, five columns. What each cell means, and the distinctions are load-bearing:
 
 - **`stub-e2e`** — a whole `exagent` process ran against a stub `expo`/`eas`/dev server (`e2e/`).
 - **`live-local`** — ran against a real Metro, a real booted iOS simulator, real Expo Go, real Hermes.
+- **`live-android`** [added 2026-08-27, wave 25] — ran against a real Metro and the real Expo Go APK on
+  a real Android emulator. It is not a duplicate of the column to its left: Expo Go for Android has no
+  CDP debugger, so every cell here is either a **refusal** the iOS column cannot reach or a claim about
+  a platform-scoped read that only a machine with two platforms attached can put at risk. A cell
+  reading `open — same reason as the column left` means the command has no platform dimension and
+  running it twice would prove nothing.
 - **`live-eas`** — ran against the real EAS service on staging.
 - **`live-cloud`** — ran against a real EAS Simulator session.
 - **`filled`** — asserted by a run somebody has seen green. Green means green on macOS/iOS/Expo Go.
@@ -77,61 +83,63 @@ One row per v1 command, four columns. What each cell means, and the distinctions
 - **`n/a`** — the command has no such backend, so the column is not a gap.
 - **`unreachable`** — the tier cannot cross the boundary. Reason in the cell, and these are the rows
   that matter most, because they are the ones a "fully tested" claim would be quietly wrong about.
+  `smoke (pass)` under `live-android` is the clearest of them: the gate is *asserted* to exit 22 on a
+  working app, because a runtime it cannot read is a phase it may not pass.
 
-| Command | stub-e2e | live-local | live-eas | live-cloud |
-| --- | --- | --- | --- | --- |
-| `new` | filled | **filled** — scaffolds + installs, per run | n/a | runnable (its own scaffold) |
-| `install --check` | filled | **filled** — real registry resolution, `check.report` non-null (F76) | n/a | n/a |
-| `install` (adds a package) | filled | open — every run would install from the registry; the `--check` path proves the wrapper | n/a | n/a |
-| `typecheck` (fresh project) | unit only — a stub `expo` writes no `expo-env.d.ts` | **filled** — exit 20 + `generatedTypes` naming the file (F64) | n/a | n/a |
-| `typecheck` (after `dev`) | filled | **filled** — same command, exit 0, `generatedTypes: null` | n/a | n/a |
-| `doctor` | filled | **filled** — real expo-doctor, `parse: "full"`, 21 checks, protocol exit code (F68) | n/a | n/a |
-| `status` (report) | filled | **filled** — real 40-hex fingerprint from the resolved `@expo/fingerprint` | **filled** — `auth` agrees with `whoami` (F65) | n/a |
-| `status --assert` | filled | **filled** — 22 on a project with no recorded build | n/a | n/a |
-| `status --explain` (build lookup) | filled | n/a | **filled** — real build found by fingerprint, **+ found F93** | n/a |
-| `status --explain --build <id>` | filled | n/a | **filled** — the id is echoed (F66) | n/a |
-| `dev --detach --wait-ready` | filled | **filled** — and the port still answers 8 s later (F61) | n/a | n/a |
-| `dev` (attached, blocking) | filled | open — the suite has no use for a foreground server; `--detach` is the agent-facing shape | n/a | n/a |
-| `dev` (EAS plan run) | filled (wave 19) | n/a | unreachable — the plan's EAS step is a native build, which no v1 command creates | n/a |
-| `dev --tunnel` | filled | **unreachable on this machine** — `@expo/ngrok` exits 1 (`Tunnel URL not found` ×12, then `Cannot read properties of undefined`) [wave19-live] | n/a | n/a — `live-cloud` uses a **proxy origin** (`EXPO_PACKAGER_PROXY_URL` + `tuft host`) instead, which is the path wave 19 proved |
-| `dev` with a **proxy origin** | none — a stub dev server advertises nothing | open — `live-local` has no use for a public origin | n/a | **runnable** — `EXPO_PACKAGER_PROXY_URL` + `tuft host add`, and the origin is checked before a session is billed |
-| cloud session start (`--expo-go`) | n/a | n/a | n/a | **runnable** — `eas simulator … --expo-go`; without the flag the session has no app and every `open` is `LSApplicationWorkspaceErrorDomain error 115` [wave19-live] |
-| `dev:logs` | filled | **filled** — reads the real bundler error the gates refused on | n/a | n/a |
-| `dev:stop` | filled | **filled** — process gone, port free after | n/a | n/a |
-| `start` | filled | open — `expo start` verbatim; `dev` covers the same subprocess with a plan around it | n/a | n/a |
-| `navigate` (local) | filled | **filled** — `simctl openurl`, route check, `attached: true` | n/a | n/a |
-| `navigate` (bad route) | filled | **filled** — exit 1, `ROUTE_NOT_FOUND`, real sitemap in the message | n/a | n/a |
-| `navigate --print-url` | filled | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | n/a | **runnable** — `beforeAll` uses it to prove the public origin took (`hostType: "tunnel"`) before billing a session |
-| `navigate --cloud` | filled | n/a | n/a | **filled** — `deviceBackend: "cloud"`, the URL on the public origin, the `open` at exit 0, and `attached: true` in 206 ms on a session started with `--open-url` [2026-08-27]. `attached` is asserted permissively — a cold first bundle over a proxy may outlive the wait — but a run that does not attach must have looked for the S10 dialog |
-| `runtime:eval` | filled (6, failure paths only) | **filled** — returns `2` from real Hermes; the row §What is still not tested called unreachable | n/a | unreachable — no `--cloud` on `eval` (correct), and S11 anyway |
-| `runtime:errors` | filled (6) | **filled** — `runtimeReadable: true` from a real debugger | n/a | unreachable — same |
-| `runtime:tree` | filled | **filled** — `disabled`, `groupSize`, `placeholder` on real nodes (F69, F70) | n/a | unreachable — same |
-| `runtime:tap` (3 refusal bands) | filled | **filled** — disabled / ambiguous / no-handler, all 20 | n/a | unreachable — same |
-| `runtime:tap --verify` | unreachable — no CDP at tier 0 | **filled** — interpolated **and** single-string Text in the diff (F63) | n/a | unreachable — same |
-| `runtime:type` | filled | **filled** — types into a real input; `editable={false}` → 20 | n/a | unreachable — same |
-| `runtime:reload` (local) | filled | **filled** — `verifiedBy: "message-socket-peers"`, real reconnect | n/a | n/a |
-| `runtime:reload --cloud` | filled (wave 19) | n/a | n/a | **filled** — exit 0, `verifiedBy: "dev-server-bundle"`, `iOS Bundled 40ms`, in 18.5 s and 48 s on two runs [2026-08-27]. **Not** wave 19's field-by-field contract: `method: "device"` was that session's state, and the assertion is now the *ladder* — rung 1 always taken and always reporting what the socket held, the relaunch reloading from either state |
-| `runtime:reload --cloud --route` | filled | n/a | n/a | **filled** — `exp://<public-host>/--/lab` opened and echoed, exit 0 in 18.5 s and 26.5 s [2026-08-27]. The landing open of a socket-rung reload goes through the third URL path F96's audit found, so this row is what would have caught it |
-| `runtime:stop` (local) | filled | **filled** — `wasRunning: true`, Expo Go terminated on the named udid | n/a | n/a |
-| `runtime:stop --cloud` | filled | n/a | n/a | **runnable** — `wasRunning` may be null and that is honest (S13), and the session is still listed afterwards (S12) |
-| `smoke` (pass) | unreachable — the runtime and screenshot phases need an app | **filled** — 8 phases, screenshot on disk | n/a | n/a |
-| `smoke` (broken bundle) | filled | **filled** — 20, later phases skipped, `lab.tsx` named | n/a | n/a |
-| `smoke --cloud` | filled (2) | n/a | n/a | **filled** — exit 22 at the `runtime` phase, `deviceBackend: "cloud"`, a 64 KB PNG through the session's controller, every follow-up on `--cloud` [2026-08-27]. It found F96 (exit 1 refusing its own dev server) and F98 (`deviceBackend: null` beside that PNG) |
-| break-and-fix cycle (6 gates) | partial — the refusal only | **filled** — 6 gates to 20 and back to green, no restart (F62) | n/a | n/a |
-| `deploy --web` | filled | n/a | **filled** — URL 200, HTML title, entry bundle serves the fixture's marker | n/a |
-| `deploy --native` (launch) | filled | n/a | open — it runs `eas build`, which bills a worker; one deploy per run is the budget | n/a |
-| `whoami` | filled | n/a | **filled** — staging session file named (S6), `--json` object | n/a |
-| `login` / `logout` / `register` | filled | unreachable — they mutate the machine's session, which a test suite must not | unreachable — same | n/a |
-| `inspect:build-log` (binary in) | filled | n/a | **filled** — a real brotli-served EAS log → 22 (S8) | n/a |
-| `inspect:build-log` (decoded) | filled | n/a | **filled** — same log decoded → phase located, line checked back against the file | n/a |
-| `inspect:build-log <build-id>` | n/a | n/a | unreachable — reserved; eas-cli has no `build:logs` | n/a |
-| `inspect:config-plugins` | filled | open — no backend dimension, and the stub tier runs the real config loader already | n/a | n/a |
-| `skills:*`, `agents:setup` | filled | open — filesystem only; nothing about them is a second process boundary | n/a | n/a |
-| forwarded `expo` set | filled | open — a forward is argv assembly, which is what the stub tier is for | n/a | n/a |
-| native EAS build **creation** | n/a | n/a | **unreachable in v1** — verified: no v1 command creates one. `deploy --native` runs create-launch; `inspect:build-log` takes no id | n/a |
-| Android, anywhere | filled (posix) | **unreachable today** — the suite is iOS/Expo Go; the harness has no Android gate yet | n/a | n/a |
-| Windows | filled (`tier0-windows`) | unreachable — no simulator, and this tier is macOS-gated | unreachable — same gate | unreachable — same |
-| CDP on a cloud simulator | n/a | n/a | n/a | **S11 amended, 2026-08-27** — the app registers a debugger target *and* a command-socket client once the project is loaded, so CDP is reachable there; `smoke --cloud`'s `runtime` phase still answered `No target found.` at that moment, which is a timing question rather than the wall S11 described. What is upstream and unreachable is narrower: the `/message` reload broadcast does not reload Expo Go there, and takes the app's socket client with it |
+| Command | stub-e2e | live-local | live-android | live-eas | live-cloud |
+| --- | --- | --- | --- | --- | --- |
+| `new` | filled | **filled** — scaffolds + installs, per run | **filled** — the same scaffold, per run | n/a | runnable (its own scaffold) |
+| `install --check` | filled | **filled** — real registry resolution, `check.report` non-null (F76) | open — no platform dimension; `live-local` proves the wrapper | n/a | n/a |
+| `install` (adds a package) | filled | open — every run would install from the registry; the `--check` path proves the wrapper | open — same reason as the column left | n/a | n/a |
+| `typecheck` (fresh project) | unit only — a stub `expo` writes no `expo-env.d.ts` | **filled** — exit 20 + `generatedTypes` naming the file (F64) | open — F64 is about a file `expo start` writes, which has no platform | n/a | n/a |
+| `typecheck` (after `dev`) | filled | **filled** — same command, exit 0, `generatedTypes: null` | **filled** — exit 0 with the emulator attached, which is the claim that it has no platform dimension | n/a | n/a |
+| `doctor` | filled | **filled** — real expo-doctor, `parse: "full"`, 21 checks, protocol exit code (F68) | **filled** — `parse: "full"`, 21 checks, protocol exit code, emulator attached | n/a | n/a |
+| `status` (report) | filled | **filled** — real 40-hex fingerprint from the resolved `@expo/fingerprint` | **filled** — `device.devices` names `emulator-5554` beside the simulator (**found F106**) | **filled** — `auth` agrees with `whoami` (F65) | n/a |
+| `status --assert` | filled | **filled** — 22 on a project with no recorded build | open — freshness is per platform in the report and the assert path has no device dimension | n/a | n/a |
+| `status --explain` (build lookup) | filled | n/a | n/a | **filled** — real build found by fingerprint, **+ found F93** | n/a |
+| `status --explain --build <id>` | filled | n/a | n/a | **filled** — the id is echoed (F66) | n/a |
+| `dev --detach --wait-ready` | filled | **filled** — and the port still answers 8 s later (F61) | **filled** — same server, and the port still answers | n/a | n/a |
+| `dev` (attached, blocking) | filled | open — the suite has no use for a foreground server; `--detach` is the agent-facing shape | open — same reason as the column left | n/a | n/a |
+| `dev` (EAS plan run) | filled (wave 19) | n/a | unreachable — same reason | unreachable — the plan's EAS step is a native build, which no v1 command creates | n/a |
+| `dev --tunnel` | filled | **unreachable on this machine** — `@expo/ngrok` exits 1 (`Tunnel URL not found` ×12, then `Cannot read properties of undefined`) [wave19-live] | n/a — an emulator reaches this machine through `adb reverse`, not a tunnel | n/a | n/a — `live-cloud` uses a **proxy origin** (`EXPO_PACKAGER_PROXY_URL` + `tuft host`) instead, which is the path wave 19 proved |
+| `dev` with a **proxy origin** | none — a stub dev server advertises nothing | open — `live-local` has no use for a public origin | open — `adb reverse` is the local answer and it is asserted by the `navigate` row | n/a | **runnable** — `EXPO_PACKAGER_PROXY_URL` + `tuft host add`, and the origin is checked before a session is billed |
+| cloud session start (`--expo-go`) | n/a | n/a | n/a | n/a | **runnable** — `eas simulator … --expo-go`; without the flag the session has no app and every `open` is `LSApplicationWorkspaceErrorDomain error 115` [wave19-live] |
+| `dev:logs` | filled | **filled** — reads the real bundler error the gates refused on | **filled** — carries the `Android Bundled` line, and the `.android.ts` break | n/a | n/a |
+| `dev:stop` | filled | **filled** — process gone, port free after | **filled** — port free after; F94's trigger tolerated the same way | n/a | n/a |
+| `start` | filled | open — `expo start` verbatim; `dev` covers the same subprocess with a plan around it | open — same reason as the column left | n/a | n/a |
+| `navigate` (local) | filled | **filled** — `simctl openurl`, route check, `attached: true` | **filled** — `reversedPort` (F50), `attached: true`, the resolved `adb` in the command (F49), and the wait it names is one Android can run (**found F104**) | n/a | n/a |
+| `navigate` (bad route) | filled | **filled** — exit 1, `ROUTE_NOT_FOUND`, real sitemap in the message | open — the sitemap has no platform; asserted once, in the column left | n/a | n/a |
+| `navigate --print-url` | filled | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | open — same reason as the column left | n/a | **runnable** — `beforeAll` uses it to prove the public origin took (`hostType: "tunnel"`) before billing a session |
+| `navigate --cloud` | filled | n/a | n/a | n/a | **filled** — `deviceBackend: "cloud"`, the URL on the public origin, the `open` at exit 0, and `attached: true` in 206 ms on a session started with `--open-url` [2026-08-27]. `attached` is asserted permissively — a cold first bundle over a proxy may outlive the wait — but a run that does not attach must have looked for the S10 dialog |
+| `runtime:eval` | filled (6, failure paths only) | **filled** — returns `2` from real Hermes; the row §What is still not tested called unreachable | **filled** — exit 1 `RUNTIME_EVALUATE_UNSUPPORTED` from real Hermes, naming the wall and no `--timeout` | n/a | unreachable — no `--cloud` on `eval` (correct), and S11 anyway |
+| `runtime:errors` | filled (6) | **filled** — `runtimeReadable: true` from a real debugger | **filled** — `runtimeReadable: false`, the log fallback read (F52), 20 for an error caught in the window, **22 with no log** — and the mixed block **found F100 and F105** | n/a | unreachable — same |
+| `runtime:tree` | filled | **filled** — `disabled`, `groupSize`, `placeholder` on real nodes (F69, F70) | **filled** — the same refusal, exit 1 | n/a | unreachable — same |
+| `runtime:tap` (3 refusal bands) | filled | **filled** — disabled / ambiguous / no-handler, all 20 | **filled** — the refusal only; the three bands need a runtime to read | n/a | unreachable — same |
+| `runtime:tap --verify` | unreachable — no CDP at tier 0 | **filled** — interpolated **and** single-string Text in the diff (F63) | unreachable — no debugger, so nothing can be tapped or diffed | n/a | unreachable — same |
+| `runtime:type` | filled | **filled** — types into a real input; `editable={false}` → 20 | **filled** — the refusal only, same reason | n/a | unreachable — same |
+| `runtime:reload` (local) | filled | **filled** — `verifiedBy: "message-socket-peers"`, real reconnect | **filled** — rung 1, `commandSocketClients: 2`, `verifiedBy: "message-socket-peers"`, `Android Bundled` — verified with no CDP at all | n/a | n/a |
+| `runtime:reload --cloud` | filled (wave 19) | n/a | n/a | n/a | **filled** — exit 0, `verifiedBy: "dev-server-bundle"`, `iOS Bundled 40ms`, in 18.5 s and 48 s on two runs [2026-08-27]. **Not** wave 19's field-by-field contract: `method: "device"` was that session's state, and the assertion is now the *ladder* — rung 1 always taken and always reporting what the socket held, the relaunch reloading from either state |
+| `runtime:reload --cloud --route` | filled | n/a | n/a | n/a | **filled** — `exp://<public-host>/--/lab` opened and echoed, exit 0 in 18.5 s and 26.5 s [2026-08-27]. The landing open of a socket-rung reload goes through the third URL path F96's audit found, so this row is what would have caught it |
+| `runtime:stop` (local) | filled | **filled** — `wasRunning: true`, Expo Go terminated on the named udid | **filled** — Android's own application id, `wasRunning` from a `pidof`, and the device asked afterwards (**found F101 and F102**) | n/a | n/a |
+| `runtime:stop --cloud` | filled | n/a | n/a | n/a | **runnable** — `wasRunning` may be null and that is honest (S13), and the session is still listed afterwards (S12) |
+| `smoke` (pass) | unreachable — the runtime and screenshot phases need an app | **filled** — 8 phases, screenshot on disk | **unreachable — and that is the answer.** 22 on a working app: the `runtime` phase cannot measure, so llp/0010 §The sixth forbids a pass. Four phases `ok`, two `inconclusive`, asserted phase by phase | n/a | n/a |
+| `smoke` (broken bundle) | filled | **filled** — 20, later phases skipped, `lab.tsx` named | **filled** — 20, later phases skipped, the `.android.ts` file named | n/a | n/a |
+| `smoke --cloud` | filled (2) | n/a | n/a | n/a | **filled** — exit 22 at the `runtime` phase, `deviceBackend: "cloud"`, a 64 KB PNG through the session's controller, every follow-up on `--cloud` [2026-08-27]. It found F96 (exit 1 refusing its own dev server) and F98 (`deviceBackend: null` beside that PNG) |
+| break-and-fix cycle (6 gates) | partial — the refusal only | **filled** — 6 gates to 20 and back to green, no restart (F62) | partial — the **platform-resolved** break instead: an `.android.ts` that does not parse beside an `.ios.ts` that does, which is what F53 needed and `live-local` cannot make | n/a | n/a |
+| `deploy --web` | filled | n/a | n/a | **filled** — URL 200, HTML title, entry bundle serves the fixture's marker | n/a |
+| `deploy --native` (launch) | filled | n/a | n/a | open — it runs `eas build`, which bills a worker; one deploy per run is the budget | n/a |
+| `whoami` | filled | n/a | n/a | **filled** — staging session file named (S6), `--json` object | n/a |
+| `login` / `logout` / `register` | filled | unreachable — they mutate the machine's session, which a test suite must not | unreachable — same reason | unreachable — same | n/a |
+| `inspect:build-log` (binary in) | filled | n/a | n/a | **filled** — a real brotli-served EAS log → 22 (S8) | n/a |
+| `inspect:build-log` (decoded) | filled | n/a | n/a | **filled** — same log decoded → phase located, line checked back against the file | n/a |
+| `inspect:build-log <build-id>` | n/a | n/a | n/a | unreachable — reserved; eas-cli has no `build:logs` | n/a |
+| `inspect:config-plugins` | filled | open — no backend dimension, and the stub tier runs the real config loader already | open — same reason as the column left | n/a | n/a |
+| `skills:*`, `agents:setup` | filled | open — filesystem only; nothing about them is a second process boundary | open — same reason as the column left | n/a | n/a |
+| forwarded `expo` set | filled | open — a forward is argv assembly, which is what the stub tier is for | open — same reason as the column left | n/a | n/a |
+| native EAS build **creation** | n/a | n/a | n/a | **unreachable in v1** — verified: no v1 command creates one. `deploy --native` runs create-launch; `inspect:build-log` takes no id | n/a |
+| Android, anywhere | filled (posix) | **unreachable today** — the suite is iOS/Expo Go; the harness has no Android gate yet | **this column** — `live-android`, 24 tests, 103 s including the emulator boot [2026-08-27]. What is still not run on Android: a **development build** (which is what would give it a debugger), a **physical device**, and `--tunnel` | n/a | n/a |
+| Windows | filled (`tier0-windows`) | unreachable — no simulator, and this tier is macOS-gated | unreachable — the emulator and `adb` exist there, and nobody has run this suite on one | unreachable — same gate | unreachable — same |
+| CDP on a cloud simulator | n/a | n/a | n/a | n/a | **S11 amended, 2026-08-27** — the app registers a debugger target *and* a command-socket client once the project is loaded, so CDP is reachable there; `smoke --cloud`'s `runtime` phase still answered `No target found.` at that moment, which is a timing question rather than the wall S11 described. What is upstream and unreachable is narrower: the `/message` reload broadcast does not reload Expo Go there, and takes the app's socket client with it |
 
 ### What the live columns changed
 
@@ -149,9 +157,20 @@ are `open`, not gaps.
 **Unreachable, and worth saying out loud** — build creation (impossible in v1); `login`/`logout`/
 `register` (a suite must not mutate the machine's session); the `/message` reload broadcast on a cloud
 simulator (upstream; the narrowed remains of S11);
-`expo start --tunnel` on this machine at all (`@expo/ngrok` exits 1); Android and Windows at the live
-tier. A claim that the v1 surface is "fully tested live" would be wrong about every one of these, which
-is why they have rows.
+`expo start --tunnel` on this machine at all (`@expo/ngrok` exits 1); Windows at the live tier. A claim
+that the v1 surface is "fully tested live" would be wrong about every one of these, which is why they
+have rows.
+
+**The Android column was the emptiest row in this table, and filling it cost seven findings**
+[added 2026-08-27, wave 25]. `Android, anywhere` read `unreachable today — the harness has no Android
+gate yet`, and that row was carrying more than it looked like: **F100**, **F101** and **F105** were three
+commands reading the iOS app while reporting about Android, **F102** was `wasRunning: true` on no
+evidence, **F103** was three follow-up builders dropping the platform flag, **F104** was advice an
+Android caller cannot follow, and **F107** is the one gap left open. Every one of them needed two
+platforms attached to one dev server to see, which is a state no other suite in this tier can reach and
+no stub can double — the stub tier has a `no-debugger` socket, and what it has not got is a *second*
+socket that answers. The two `--android` rows that were already green stayed green, which is the other
+half of what a column is for.
 
 **The cloud column is `runnable`, and its expectations came from a live run rather than from a type**
 [rewritten 2026-08-27, after wave 19 landed]. Wave 19 changed what a cloud reload *is* — a two-verb

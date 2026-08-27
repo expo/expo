@@ -37,8 +37,19 @@ export type LocalDeviceState =
 
 export interface LocalDeviceProbe {
   state: LocalDeviceState;
-  /** The device that was found, when one was. */
+  /** The device that was found, when one was. The first, in the order the probes ran. */
   device: NavigateDevice | null;
+  /**
+   * **Every** device that was found, in the order the probes ran.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Smaller things the same round settled — F106.
+   * `device` is one device because every ladder that reads this only needs to know that a device
+   * exists. A *report* needs more than that: iOS is probed first on macOS, so a machine with a
+   * booted simulator and an attached emulator answered `ios iPhone 17 Pro` and never mentioned the
+   * emulator — on a run whose only connected app was Expo Go on that emulator [observed —
+   * 2026-08-27]. Empty exactly when {@link device} is null.
+   */
+  devices: NavigateDevice[];
   /** Why the state is what it is, for a report that has to explain itself. Null when `present`. */
   reason: string | null;
 }
@@ -82,6 +93,7 @@ async function runProbesAsync(options: ProbeLocalDeviceOptions): Promise<LocalDe
     return {
       state: 'unknown',
       device: null,
+      devices: [],
       reason: `the device probe could not run: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
@@ -103,9 +115,11 @@ async function defaultProbesAsync(): Promise<DeviceProbe[]> {
  * round where nothing ran is `unknown`.
  */
 export function readLocalDeviceProbe(probes: DeviceProbe[]): LocalDeviceProbe {
-  const found = probes.find((probe) => probe.device);
-  if (found?.device) {
-    return { state: 'present', device: found.device, reason: null };
+  const devices = probes
+    .map((probe) => probe.device)
+    .filter((device): device is NavigateDevice => device != null);
+  if (devices.length > 0) {
+    return { state: 'present', device: devices[0]!, devices, reason: null };
   }
 
   const answered = probes.filter((probe) => probe.toolError == null);
@@ -118,12 +132,14 @@ export function readLocalDeviceProbe(probes: DeviceProbe[]): LocalDeviceProbe {
     return {
       state: 'unknown',
       device: null,
+      devices: [],
       reason: reason || 'no platform tool could be run, so nothing is known about this machine',
     };
   }
   return {
     state: 'absent',
     device: null,
+    devices: [],
     reason: reason || 'no device was found',
   };
 }

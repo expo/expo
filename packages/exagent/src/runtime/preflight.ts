@@ -215,30 +215,42 @@ export async function preflightRuntimeAsync(
     });
   }
 
+  // The device index is built from the list that was already read, so the platform this command was
+  // told about is the platform of the app it reads — the two steps cannot disagree about which app
+  // that is (F51, F53). It costs a subprocess only when a target's platform cannot be read off its
+  // application id or its device name, which for Expo Go is never.
+  const deviceIndex =
+    platform == null
+      ? undefined
+      : (knownDeviceIndex ?? (await buildDeviceNameIndexIfNeededAsync(targets)));
+
+  // Scoped for **every** caller that named a platform, whatever it needs, and that is F101. This
+  // used to sit below the `need` branch, so `appTargets` — documented as the list a command may read
+  // — was the unscoped list for `runtime:stop` (`optional`) and `runtime:reload` (`dev-server`).
+  // Live consequence: `runtime:stop --android` took the first application id the dev server listed,
+  // which was the iOS one, and force-stopped a package that is not installed on Android while
+  // reporting `stopped: true, wasRunning: true`. Reading the other platform's app is F51 whether or
+  // not the command also required one to exist.
+  const scoped = platform == null ? null : scopeTargets(targets, platform, deviceIndex!);
+  const connection: RuntimeConnection = scoped
+    ? { ...base, appTargets: scoped.matched, deviceIndex }
+    : base;
+
   if (need !== 'debugger-target') {
-    return base;
+    return connection;
   }
 
   if (targets.length === 0) {
     throw noAppConnectedError({ devServerUrl: url, retryMs, cloud, platform });
   }
 
-  // The device index is built from the list that was already read, so the platform this command was
-  // told about is the platform of the app it reads — the two steps cannot disagree about which app
-  // that is (F51, F53).
-  const deviceIndex =
-    platform == null
-      ? undefined
-      : (knownDeviceIndex ?? (await buildDeviceNameIndexIfNeededAsync(targets)));
-  if (platform == null) {
-    return base;
+  // Only a command that *requires* a runtime refuses on an empty scope. For `reload` an empty scope
+  // is a rung of its ladder — it can start the app — and for `stop` it is the state llp/0010 §The
+  // seventh and eighth calls a success.
+  if (scoped && scoped.matched.length === 0) {
+    throw noAppOnPlatformError(url, platform!, scoped, cloud);
   }
-
-  const scoped = scopeTargets(targets, platform, deviceIndex!);
-  if (scoped.matched.length === 0) {
-    throw noAppOnPlatformError(url, platform, scoped, cloud);
-  }
-  return { ...base, appTargets: scoped.matched, deviceIndex };
+  return connection;
 }
 
 /**

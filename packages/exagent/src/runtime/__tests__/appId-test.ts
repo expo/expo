@@ -70,6 +70,51 @@ describe(resolveAppId, () => {
     expect(EXPO_GO_APP_ID.android).toBe('host.exp.exponent');
   });
 
+  // F101's second half, at the chokepoint. The preflight now hands `runtime:stop` a platform-scoped
+  // target list, but `runtime:reload`'s device rung resolves an id from a list it read for its own
+  // purposes (`reloadAsync.ts`) — so the guard belongs here too, where it costs nothing and cannot
+  // be forgotten by the next caller.
+  //
+  // Only the *other platform's Expo Go id* is rejected, and only when the list holds something else.
+  // A wider rule would be a guess: a development build's package name says nothing about a platform,
+  // and dropping an id this cannot place would leave a stop with nothing to aim at.
+  it(`should not hand a run the other platform's Expo Go id (F101)`, () => {
+    expect(
+      resolveAppId({
+        ...base,
+        platform: 'android',
+        targetAppIds: ['host.exp.Exponent', 'host.exp.exponent'],
+      })
+    ).toMatchObject({ appId: 'host.exp.exponent', source: 'dev-server' });
+
+    expect(
+      resolveAppId({
+        ...base,
+        platform: 'ios',
+        targetAppIds: ['host.exp.exponent', 'host.exp.Exponent'],
+      })
+    ).toMatchObject({ appId: 'host.exp.Exponent', source: 'dev-server' });
+  });
+
+  it(`falls through rather than acting on an id that is only the other platform's (F101)`, () => {
+    // The one app connected is Expo Go on iOS and this run is about Android. There is nothing on
+    // Android to stop, so the dev server is no longer evidence and the ladder continues: the answer
+    // is Android's own Expo Go id, and `source` says it was a default rather than an observation.
+    expect(
+      resolveAppId({ ...base, platform: 'android', targetAppIds: ['host.exp.Exponent'] })
+    ).toMatchObject({ appId: 'host.exp.exponent', source: 'expo-go-default' });
+  });
+
+  it(`keeps an id it cannot place, because a dev build's package names no platform (F101)`, () => {
+    expect(
+      resolveAppId({
+        ...base,
+        platform: 'android',
+        targetAppIds: ['com.example.devbuild'],
+      })
+    ).toMatchObject({ appId: 'com.example.devbuild', source: 'dev-server' });
+  });
+
   it(`should always say which evidence it used`, () => {
     for (const input of [
       { ...base, appIdOverride: 'a' },

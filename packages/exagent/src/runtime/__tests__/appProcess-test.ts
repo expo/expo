@@ -75,6 +75,97 @@ describe(stopAppOnDeviceAsync, () => {
   });
 });
 
+// F102 — MAJOR, found live on 2026-08-27 against Expo Go on `tuft-pixel`.
+//
+// What it was: `adb shell am force-stop` exits 0 and prints nothing whether the app was running or
+// not — this file's own comment said so — and the result was still returned as `verified: true`
+// with `wasAlreadyStopped: false`, which `runtime:stop` renders as **`wasRunning: true`**. So every
+// Android stop claimed the app had been running, on no evidence at all. Live it claimed it for an
+// application id that is not even installed on Android (F101): `stopped: true, wasRunning: true`
+// while `adb shell pidof host.exp.exponent` still answered `3933`.
+//
+// The fix is an observation rather than a downgrade: `pidof` is one more `adb` round trip and it
+// answers the question the exit code cannot. When `pidof` itself cannot run, `verified` is false and
+// `wasRunning` goes null — llp/0021's rule that a report may be silent and may not be wrong.
+describe('what an Android stop can establish about the app it stopped', () => {
+  const android = {
+    platform: 'android' as const,
+    deviceId: 'emulator-5554',
+    appId: 'host.exp.exponent',
+  };
+
+  /** Answer successive `spawn` calls in order, and record the argv of each. */
+  function mockSpawnSequence(
+    answers: { stdout?: string; stderr?: string; exitCode?: number }[]
+  ): string[][] {
+    const calls: string[][] = [];
+    let next = 0;
+    jest.mocked(spawn).mockImplementation(((bin: string, args: string[]) => {
+      calls.push([bin, ...args]);
+      const { stdout = '', stderr = '', exitCode = 0 } = answers[next++] ?? {};
+      const child = Object.assign(new EventEmitter(), {
+        stdout: new EventEmitter(),
+        stderr: new EventEmitter(),
+      });
+      process.nextTick(() => {
+        if (stdout) child.stdout.emit('data', stdout);
+        if (stderr) child.stderr.emit('data', stderr);
+        child.emit('close', exitCode, null);
+      });
+      return child as any;
+    }) as any);
+    return calls;
+  }
+
+  it(`asks the device whether the app was running, and says it was`, async () => {
+    const calls = mockSpawnSequence([
+      { stdout: '3933\n', exitCode: 0 },
+      { exitCode: 0 },
+    ]);
+
+    await expect(stopAppOnDeviceAsync(android)).resolves.toMatchObject({
+      ok: true,
+      verified: true,
+      wasAlreadyStopped: false,
+    });
+    expect(calls[0]).toEqual([
+      'adb',
+      '-s',
+      'emulator-5554',
+      'shell',
+      'pidof',
+      'host.exp.exponent',
+    ]);
+    expect(calls[1]).toContain('force-stop');
+  });
+
+  // `pidof` exits 1 with nothing on stdout for a package that is not running — and for one that is
+  // not installed, which is the state F101 produced. Both are "nothing was stopped", and reporting
+  // them as a stop that happened is the claim this closes.
+  it(`says the app was already stopped when nothing answered to that id`, async () => {
+    mockSpawnSequence([{ exitCode: 1 }, { exitCode: 0 }]);
+
+    await expect(stopAppOnDeviceAsync(android)).resolves.toMatchObject({
+      ok: true,
+      verified: true,
+      wasAlreadyStopped: true,
+    });
+  });
+
+  it(`claims nothing when pidof itself could not run`, async () => {
+    mockSpawnSequence([
+      { exitCode: 127, stderr: '/system/bin/sh: pidof: inaccessible or not found' },
+      { exitCode: 0 },
+    ]);
+
+    // Not `wasAlreadyStopped: false` — that is a claim too. The stop still ran and still succeeded.
+    await expect(stopAppOnDeviceAsync(android)).resolves.toMatchObject({
+      ok: true,
+      verified: false,
+    });
+  });
+});
+
 // @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do
 describe('stopping the app on a cloud simulator session', () => {
   afterEach(() => vol.reset());

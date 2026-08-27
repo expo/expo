@@ -6,9 +6,10 @@ worth reading before you quote a green run at anybody — what green here does a
 
 ## What this tier is
 
-Three jest suites that run the **published surface** of `exagent` — `bin/exagent.js`, which loads the
+Four jest suites that run the **published surface** of `exagent` — `bin/exagent.js`, which loads the
 ncc bundle in `build/cli/` — against **real backends**: a real Metro, a real iOS simulator running
-Expo Go, a real Hermes debugger connection, and the real EAS service on staging.
+Expo Go, a real Android emulator running the Expo Go APK, a real Hermes debugger connection, and the
+real EAS service on staging.
 
 Nothing here is stubbed. The other two tiers are: `pnpm test` (unit) and `pnpm test:e2e`, which runs
 whole `exagent` processes against a **stub** `expo`, `eas` and dev server. This tier exists because a
@@ -31,8 +32,50 @@ Everything needs the bundle built first: **`pnpm build`**.
 | suite | needs |
 | --- | --- |
 | `live-local` | macOS; a **booted** iOS simulator with **Expo Go** installed; network (npm, for the scaffold's install) |
+| `live-android` | a runnable `adb` (`ANDROID_HOME`, `ANDROID_SDK_ROOT`, `PATH`, or the SDK's default location); an **attached device or a bootable AVD**; **Expo Go** on it; network. A booted iOS simulator with Expo Go is an *optional* extra that adds three tests — see below |
 | `live-eas` | `EXPO_STAGING=1`; a staging session in `~/.expo-staging/state.json`; `bunx` or `npx`; network to `staging.expo.dev`; an EAS-linked project on disk with finished builds and at least one ERRORED build (default `~/Developer/DailyWords-Grok`, override with `EXAGENT_LIVE_EAS_PROJECT`) |
 | `live-cloud` | everything `live-eas` needs, **plus** `EXAGENT_LIVE_CLOUD=1` and a way to publish a local port — `tuft host`, or an origin of your own in `EXAGENT_LIVE_PUBLIC_ORIGIN` |
+
+### Three things about `live-android`
+
+**Its gate boots an emulator, and `live-local`'s never boots a simulator.** Deliberate, and the reason
+is about the machine rather than the tier: a booted iOS simulator is usually something the owner of the
+laptop is looking at, and an Android emulator is started for a task and shut afterwards. So a listed
+AVD is enough to pass the gate, `beforeAll` boots it (~40 s, printed), and the cleanup kills it **only
+if this run started it**. `EXAGENT_LIVE_AVD` names one when there are several.
+
+Two consequences worth knowing before you read a run:
+
+- **A boot always uses `-ports 5554,5555`.** Without it the emulator binds ephemeral ports and
+  `adb devices` does not list it *at all* — not `offline`, absent [F62, and again on 2026-08-27]. If you
+  boot one by hand before running this suite, use the same flags.
+- **An AVD that boots without Expo Go on it fails the suite rather than skipping it.** By then the boot
+  has been spent, and jest cannot turn a running suite into a skipped one. The message names the fix:
+  `npx expo start --android` once against any project.
+
+**The mixed-platform block is optional, and it is the valuable one.** With a booted iOS simulator that
+has Expo Go on it, the suite also opens the app there and asserts that `--android` and `--ios` read two
+different runtimes on one dev server. That block found **F100**, **F101** and **F105** — three commands
+that were reading the iOS app while reporting about Android — and none of them is visible with only one
+platform attached. `beforeAll` prints which of the two runs you are getting:
+
+```
+[live] live-android: running the mixed-platform block too — iPhone 17 Pro is booted with Expo Go on it
+[live] live-android: SKIPPING the mixed-platform block — no booted iOS simulator with Expo Go, …
+```
+
+So **24 tests green and 21 tests green are different claims**, and the line above says which you have.
+The block terminates Expo Go on the simulator when it ends, which is worth knowing if you run
+`test:live:local` straight afterwards — the app takes a few seconds to come back, and `live-local`'s
+break-and-fix block reports `NO_APP_CONNECTED` at exit 1 if it starts inside that window. Run it twice
+or wait; it is not a finding.
+
+**`smoke --android` exits 22 on a working app, and the suite asserts that.** Not a defect and not a
+flake: the `runtime` phase cannot read a runtime with no debugger, and `llp/0010` §The sixth forbids a
+gate that cannot measure from passing. Four phases `ok`, two `inconclusive`. A green `live-android`
+therefore does **not** mean `smoke --android` passes anywhere — it means it refuses correctly. The one
+Android gate that does return a verdict on the app is `runtime:errors --android --fail-on-error`, which
+reads the dev server's log.
 
 ### Two things about `live-cloud` that cost somebody an hour each
 
@@ -91,6 +134,7 @@ was dropped somewhere between the gate and the spawn has.
 | `EXPO_STAGING=1` | required by `live-eas` and `live-cloud`. Nothing here ever talks to production |
 | `EXAGENT_LIVE_CLOUD=1` | the second opt-in for `live-cloud`, because its prerequisites can all hold on a machine whose owner did not mean to start a billing session |
 | `EXAGENT_LIVE_UDID` | which booted simulator to use, when several are |
+| `EXAGENT_LIVE_AVD` | which AVD `live-android` boots, when several are listed and none is attached |
 | `EXAGENT_LIVE_EAS_PROJECT` | the EAS-linked project `live-eas` copies and reads builds from |
 | `EXAGENT_LIVE_PUBLIC_ORIGIN` | an origin that already forwards to the dev-server port, for `live-cloud` on a machine without `tuft host`. Supplied origins are not torn down by the cleanup |
 | `EXAGENT_LIVE_PORT` | first dev-server port to *try* (default `8500`); each run binds the first free one upward from there |
@@ -103,10 +147,11 @@ was dropped somewhere between the gate and the spawn has.
 pnpm build                                  # the tier tests this artifact, so it must exist
 
 pnpm test:live:local                        # ~1 min, free
+pnpm test:live:android                      # ~2 min, free (includes an emulator boot)
 EXPO_STAGING=1 pnpm test:live:eas           # ~1 min, one web deployment
 EXPO_STAGING=1 EXAGENT_LIVE_CLOUD=1 pnpm test:live:cloud   # bills a cloud session
 
-pnpm test:live                              # all three; the ones that cannot run skip with a reason
+pnpm test:live                              # all four; the ones that cannot run skip with a reason
 ```
 
 Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
@@ -120,6 +165,7 @@ Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
 | suite | wall time | money | what it leaves behind |
 | --- | --- | --- | --- |
 | `live-local` | ~60 s (measured 58 s, 30 tests, 38 `exagent` runs) | none | nothing: the dev server is stopped, the app terminated, the scratch project deleted |
+| `live-android` | **~103 s measured** (24 tests, 36 `exagent` runs) — of which ~40 s is the emulator boot; ~80 s against an emulator that was already up | none | nothing, **unless the emulator was already booted**: an emulator this run started is killed, one it found is left as it was. The dev server is stopped, Expo Go force-stopped on the emulator and terminated on the simulator, the scratch project deleted |
 | `live-eas` | ~50 s (measured, 9 tests) | one EAS Hosting preview deployment per run | one deployment under `@kudo1/livecheck`. Idempotent: EAS Hosting gives each deploy its own preview URL, so a re-run adds one and changes nothing that existed. No native build — no v1 command creates one |
 | `live-cloud` | **~4 min measured** (237 s, 7 tests) — and variable: one cloud reload took 18.5 s, another 48 s, and an unproved one spent its whole 180 s `--timeout` | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
 
@@ -140,11 +186,20 @@ export produced, a log line that appeared inside a generous bound.
 
 - **Speed.** Nothing here asserts a timing. Bounds are generous on purpose, and an expiry is a
   failure; a bound met in a different number of milliseconds on a busy laptop is not a finding.
-- **Any platform but this one.** `live-local` is macOS and iOS and Expo Go. Android is not run, and
-  neither is a development build, a physical device, or Windows (`tier0-windows` covers the `.cmd`
-  shim half at the stub tier).
+- **Any platform but these two.** `live-local` is macOS and iOS and Expo Go; `live-android` is an
+  Android **emulator** and Expo Go. Not run anywhere: a **development build** on either platform — which
+  on Android is the one thing that would give it a debugger, so every refusal `live-android` asserts is
+  a property of Expo Go and not of Android — a **physical device**, and Windows (`tier0-windows` covers
+  the `.cmd` shim half at the stub tier).
+- **That any Android runtime read works.** It cannot: `runtime:eval`, `runtime:tree`, `runtime:tap` and
+  `runtime:type` are asserted to **refuse** there, `smoke --android` to be **22** on a working app, and
+  a green Android run is a run in which none of those five ever answered.
 - **Native builds.** No v1 command creates an EAS build [observed — staging-live, 2026-08-26], so
   every claim about build *creation* is untested here and cannot be tested here.
+- **That an Android stop had taken effect when the command returned.** `am force-stop` is
+  asynchronous — it exits as soon as ActivityManager takes the request, and `pidof` still answers for a
+  beat. `runtime:stop --android` claims the stop ran and that the app was running before it; the suite
+  checks the effect inside a bound.
 - **The reload broadcast on a cloud simulator.** Narrower than S11, which said a cloud simulator
   registers zero CDP targets — it registers a debugger target *and* a command-socket client once the
   project is loaded, and `navigate --cloud` confirms the attach in ~200 ms [observed — 2026-08-27]. What
@@ -159,6 +214,21 @@ export produced, a log line that appeared inside a generous bound.
   `2 skipped, 1 passed` means one third of this tier ran.
 
 ## Known findings this tier is carrying
+
+`live-android` arrived with seven of its own, six fixed in the same wave and one left open:
+
+- **Fixed and now asserted** — **F100** (`runtime:errors` and `smoke`'s error window read the runtime
+  that *answers*, which on a mixed machine is iOS), **F101** (`runtime:stop --android` force-stopped the
+  iOS application id and reported success), **F102** (`wasRunning: true` on every Android stop, on no
+  evidence), **F103** (three follow-up builders dropped the platform flag), **F104** (`navigate
+  --android` told the caller to wait on `runtime:tree`, which cannot answer there) and **F105** (the
+  dev-server-log fallback called the records "this app's errors" when either app writes to that log).
+  `llp/0005-runtime-loop-tools.rfc.md` §The second Android round has the measurements.
+- **F107, open and not skipped.** `smoke`'s `errors` phase has no dev-server-log fallback, so on Android
+  it reports `inconclusive` where `runtime:errors --android` reports a real, symbolicated observation of
+  the same window. Nothing it prints is false and the outcome would be 22 either way, so there is no
+  failing test for it — what there is instead is a suite that asserts `smoke --android` cannot decide,
+  and a note here that `runtime:errors --android --fail-on-error` is the Android gate that can.
 
 Nothing is skipped today. The three findings this tier arrived with — **F93** (the package runner's
 install progress reported as EAS's answer), **F94** (every crash exiting 7, the needs-human code) and
@@ -178,6 +248,11 @@ Two of them left something in place worth knowing before you read a run:
   the F94 test asserts exit 1 with the stack and the `UNCAUGHT_EXCEPTION` envelope, and asserts in every
   case that the run did **not** end in exit 7 with a raw stack. A green run with no such line means the
   crash simply did not fire — the unit tests are what pin the handler.
+- **`am force-stop` is asynchronous, and two Android assertions were written as if it were not.** The
+  `adb shell` exits as soon as ActivityManager has taken the request, so `pidof` still answers a pid for
+  a beat afterwards; the first version of the two `runtime:stop --android` tests read the device
+  immediately and went red under a CLI that was behaving correctly. They wait inside a bound now. Same
+  lesson as F95's, from the other end: a live assertion about an *effect* is a bound, never a read.
 - **A live assertion has to name the signal's own count.** F95's test used to assert `appsReconnected > 0`
   under `verifiedBy: 'message-socket-peers'`, and those are two different signals: the reload ladder
   watches two proofs on one budget and whichever answers first ends both, so the debugger-target count is

@@ -511,6 +511,24 @@ better than what they replace: the reading of the peer list is now the same step
 socket open, not two), and `--cloud` narrows to what it is honestly about — **which device backend may
 relaunch**, and which flag every suggested command keeps.
 
+**Which rung Android takes, measured.** Rung 1, always, on a local emulator — and it is worth
+recording as a fact rather than an assumption, because Android is the platform where the *other*
+verification is impossible. Expo Go for Android holds a client on `/message` [observed — 2026-08-27,
+Expo Go 57.0.9 on `tuft-pixel`, port 8560]: `getpeers` answered
+`{"socket#3":"device=sdk_gphone64_arm64%20-%2015%20-%20API%2035&app=host.exp.exponent&clientid=b","socket#4":null}`,
+and `runtime:reload --android` reported `commandSocketClients: 2`, `method: "dev-server"`, one attempt,
+`verifiedBy: "message-socket-peers"`, `commandSocketChurn: {observed: true, before: 2, after: 1,
+reconnected: 1}` and `bundlesAfterReload.line: "Android Bundled 30ms …"`, in 590 ms. So the ladder
+stops on its first rung and the app never loses its process — the opposite of the cloud, where the
+broadcast does not reload Expo Go and takes its socket client with it (§Reloading a cloud session).
+
+**And the verification is honest there without any debugger.** Neither of the two facts that carried it
+is a CDP read: a socket id the dev server's non-rewinding counter had not used before, and a bundle the
+dev server was seen to serve for `android`. `appsReconnected` is the count that *would* have needed one,
+and on the runs where the bundle line lands first it is `0` with `appsReconnectedReason` saying which
+fact that is (F95). This is the whole reason `runtime:reload` is the one runtime command that works on
+Expo Go for Android while five others refuse.
+
 **What it costs, said out loud.** Rung 2 replaces the app's process, so the JavaScript state is gone.
 Before wave 21 `auto` refused to spend that on a connected app and named `--method device` for a
 caller who meant it; now the ladder spends it when nothing cheaper can reach the app, and the
@@ -1903,6 +1921,108 @@ and the "no device" message is only reachable once `adb` has run and answered.
 - **`impact` and `checkpoint` agreed about git all along.** Both resolve the work tree the same way;
   what differed was that a `git status` which *failed* borrowed the sentence written for a project
   with no repository [F60]. `listChangedFilesAsync` now returns which of the two happened.
+
+### The second Android round, and where F51's fix had not reached
+
+Wave 25 put Android into the live tier — `e2e-live/__tests__/live-android-test.ts`, 24 tests on a real
+emulator, described in [[0022-live-tier]] — and the suite's mixed-platform block found that **the
+scoping this section describes was in three fewer places than this document said**. Every finding
+below is one dev server with an iPhone 17 Pro simulator and a `tuft-pixel` emulator on it, port 8560,
+2026-08-27. The shape is F51's, and the reason it recurred is worth naming: the narrowing is a
+parameter, and a parameter can be accepted and then not passed on.
+
+**F100 (CRITICAL) — `runtime:errors` and `smoke`'s error window read the runtime that answers.**
+`CdpRuntimeErrorCollector` takes `platform` and `deviceIndex` — `runtimeAsync` and `smokeAsync` both
+pass them — and built its `CdpClient` by naming four other options, so those two were dropped.
+Unscoped, the default selector ranks a target that answers `Runtime.evaluate` **above** one that
+answers `-32601` (§Android pass), and Expo Go for Android is the second kind: so the selection landed
+on iOS *by design*. Measured, in one minute, both apps on `/lab` throwing
+`new Error("W25 boom on " + Platform.OS)`:
+
+| command | answer |
+| --- | --- |
+| `runtime:eval "1+1" --android` | exit 1, `RUNTIME_EVALUATE_UNSUPPORTED` |
+| `runtime:errors --android` | `count: 1`, message **`W25 boom on ios`**, `runtimeReadable: true` |
+
+Two commands, one flag, two runtimes — and the `runtimeReadable: true` also suppressed the
+dev-server-log fallback F52 built for exactly this runtime. The collector now forwards every
+`CdpClientOptions` key with a rest spread, which cannot go stale when an option is added.
+
+**F101 (CRITICAL) — `runtime:stop --android` force-stopped the iOS application id.** `resolveAppId`
+took `targetAppIds.find(Boolean)` off the **unscoped** target list, and the two Expo Go ids differ by
+one capital letter (§The dev server does not label its targets). The dev server listed iOS first, so
+the command ran `adb -s emulator-5554 shell am force-stop host.exp.Exponent` — not an installed
+package on Android — and reported `stopped: true, wasRunning: true` while
+`adb shell pidof host.exp.exponent` still answered `3933` and the target stayed listed. Two fixes,
+because either alone leaves a hole:
+
+- `preflightRuntimeAsync` scopes `appTargets` for **every** caller that names a platform, not only
+  for `need: 'debugger-target'`. That field is documented as "the targets this command may read", and
+  it was the unscoped list for `runtime:stop` (`optional`) and `runtime:reload` (`dev-server`). Only a
+  command that *requires* a runtime still refuses on an empty scope — for `reload` an empty scope is a
+  rung of its ladder, and for `stop` it is the state [[0010-agent-conventions]] §The seventh and
+  eighth calls a success.
+- `resolveAppId` drops the other platform's Expo Go id before it takes the first one. It is the one id
+  in that list that can be *shown* to be about another device; an id it cannot place is kept, because
+  a development build's package name says nothing about a platform.
+
+**F102 (MAJOR) — `wasRunning` was `true` on every Android stop, on no evidence.** `am force-stop`
+exits 0 and prints nothing whether the app was running or not — `appProcess.ts`'s own comment said so
+— and the result was still returned as `verified: true, wasAlreadyStopped: false`, which the report
+renders as "the app was running". `stopAppOnDeviceAsync` now asks `adb shell pidof <appId>` **before**
+the stop: a pid makes `wasRunning` an observation, exit 1 with nothing said makes it `false`, and a
+`pidof` that could not run makes `verified` false and `wasRunning` null.
+
+**And `am force-stop` is asynchronous.** The `adb shell` exits as soon as ActivityManager has taken
+the request; `pidof` still answers for a moment afterwards [observed — the second run of
+`live-android`]. So `stopped: true` means the stop ran, not that the process is already gone, and a
+caller that needs the second fact has to look. `simctl terminate` on iOS does not behave this way.
+The live suite asserts the effect within a bound rather than instantly, per [[0022-live-tier]] §What a
+live assertion is allowed to be.
+
+**F103 (MAJOR) — three follow-up builders dropped the platform flag**, against §Smaller things' own
+claim that "every command a follow-up names now carries the flag the run had":
+`buildRuntimeErrorsFollowUps` took no platform at all (`runtime:reload`, `runtime:errors --duration`),
+`buildStopFollowUps` carried `--cloud` and not the platform (`navigate /`), and
+`buildStartPlanFollowUps` offered a bare `npx exagent dev` after `dev --plan --android` — the one
+follow-up whose whole promise is "runs the plan above", naming a command that would plan for iOS.
+`--cloud` is still carried alone, because that flag already names the one device a session has.
+
+**F104 (LOW) — `navigate --android`'s screenshot line named a command that cannot answer there.** It
+said to run `npx exagent runtime:tree` first and capture once it lists the screen: good advice on iOS,
+exit 1 every time on Android. It now names `npx exagent smoke --android`, whose screenshot phase waits
+on the fact F57 chose and captures the screen itself.
+
+**F105 (MED) — the log fallback said the records were "this app's errors".** §Reading Android errors
+anyway already records that the log does not name a platform, and the caveat above the records
+contradicted it. With both apps connected, `runtime:errors --android --fail-on-error` exited **20** on
+a record whose own text was `[Error: W25 boom on ios]`. The log cannot be scoped — that is the finding
+— so what changed is the saying: `devServerLog.otherPlatformsConnected` names the platforms whose app
+writes to the same log, and the caveat says a record below may be from one of them.
+
+**F106 (MED) — `status` named one device, and iOS wins on macOS.** `readLocalDeviceProbe` took
+`probes.find((probe) => probe.device)`, so the section whose whole subject is what this machine has
+printed `device  ios iPhone 17 Pro (C159CF99-…)` on a run whose only connected app was Expo Go on
+`emulator-5554`. `LocalDeviceStatus.devices` lists every device now; the singular fields stay the
+first, because the ladders in that report branch on them.
+
+**F107 (MED, deferred) — `smoke`'s error window has no dev-server-log fallback.** So on Android the
+`errors` phase is `inconclusive` where `runtime:errors --android` reports a real, symbolicated,
+log-backed observation of the same window. Nothing it prints is false — the reason names the runtime,
+not the app — and the phase above it (`runtime`) is inconclusive either way, so the outcome would stay
+22 regardless. It is deferred rather than fixed because the decision it needs is not a bug fix:
+whether a gate may fail on a record it cannot attribute to the platform it was asked about (F105), on
+a dev server with two apps. Until that is answered, `smoke --android` cannot tell a healthy Android
+app from a crashing one and `runtime:errors --android --fail-on-error` can.
+
+### What `smoke --android` is, given all of that
+
+Not a green light, and it never will be on Expo Go: exit **22 on a working app**, because
+[[0010-agent-conventions]] §The sixth says a gate that cannot measure must not pass and the `runtime`
+phase cannot measure. What it is instead is four proofs and two abstentions, and the report says which
+is which — `dev-server`, `bundler-ready`, `bundle` (for **android**), `app` and `screenshot` all
+`ok`; `runtime` and `errors` `inconclusive` with the reason naming the engine. A broken Android bundle
+is still exit 20 with the later phases skipped, which is the answer that matters most often.
 
 ## Testing
 

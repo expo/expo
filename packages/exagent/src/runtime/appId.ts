@@ -60,7 +60,15 @@ export function resolveAppId({
     return { appId: appIdOverride, source: 'flag', reason: `--app-id named ${appIdOverride}` };
   }
 
-  const connected = targetAppIds.find(Boolean);
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the app — F101.
+  // The other platform's Expo Go id is dropped before the first one is taken. It is the one id in
+  // this list that can be *shown* to be about another device, because Expo Go's two ids differ by a
+  // single capital letter and nothing else in a `/json/list` entry names a platform — and the
+  // consequence of taking it was silent: `am force-stop host.exp.Exponent` on an emulator exits 0,
+  // stops nothing, and prints nothing. An id this cannot place is kept, because a development
+  // build's package name says nothing about a platform and a stop with no id to aim at is worse.
+  const wrongPlatformExpoGoId = EXPO_GO_APP_ID[platform === 'ios' ? 'android' : 'ios'];
+  const connected = targetAppIds.find((id) => id && id !== wrongPlatformExpoGoId);
   if (connected) {
     return {
       appId: connected,

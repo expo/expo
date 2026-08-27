@@ -117,6 +117,7 @@ describe("the flags this CLI writes onto a command line", () => {
         "-p  src/toolchain/detect.ts",
         "-s  src/device/screenshot.ts",
         "-s  src/navigate/adbReverse.ts",
+        "-s  src/runtime/appProcess.ts",
         "-sTCP:LISTEN  src/dev/portListener.ts",
         "-version  src/toolchain/detect.ts",
       ]
