@@ -34,10 +34,15 @@ import type { AssertStatus, FreshnessStatus } from './types';
  *   holding only a hash, or a fingerprint with no sources. That platform *is* in play and its cost
  *   is unknown, so the whole answer is unknown. Never skipped.
  *
- * Under `--build` every platform carries the one comparison, so this is simply its class.
+ * Under `--build` the gate is about the **named build**, so only the `eas` axis is considered: the
+ * local axis answers "does this differ from what I built here", which is a different question and
+ * one the caller did not ask (llp/0021 §Freshness has two axes).
  */
 export function strongestClass(freshness: FreshnessStatus | null): ImpactClass | null {
-  const platforms = (freshness?.platforms ?? []).filter((platform) => platform.impact != null);
+  const axis = freshness?.comparison.kind === 'eas-build' ? 'eas' : 'local';
+  const platforms = (freshness?.platforms ?? []).filter(
+    (platform) => platform.impact != null && platform.backend === axis
+  );
   // A platform that was built here and could not be measured makes the whole answer unknown.
   if (
     platforms.some((platform) => platform.impact!.class == null && platform.recordedHash != null)
@@ -127,16 +132,21 @@ function undecidedCause(freshness: FreshnessStatus | null): string {
   // The platform that was built here and could not be measured, if there is one; otherwise the
   // first platform with nothing to compare against. The first is the more surprising cause, so it
   // is the one worth naming.
-  const inPlay = freshness.platforms.find(
+  const axis = freshness.comparison.kind === 'eas-build' ? 'eas' : 'local';
+  const considered = freshness.platforms.filter((platform) => platform.backend === axis);
+  const inPlay = considered.find(
     (platform) => platform.impact?.class == null && platform.recordedHash != null
   );
-  const reason = (inPlay ?? freshness.platforms.find((platform) => platform.impact?.class == null))
-    ?.impact?.reason;
+  const reason = (inPlay ?? considered.find((platform) => platform.impact?.class == null))?.impact
+    ?.reason;
   return reason ?? 'nothing was compared';
 }
 
 /** The sentence that carried the class, so a failing gate says what tripped it. */
 function firstReason(freshness: FreshnessStatus | null): string {
-  const impact = freshness?.platforms.find((platform) => platform.impact?.class != null)?.impact;
+  const axis = freshness?.comparison.kind === 'eas-build' ? 'eas' : 'local';
+  const impact = freshness?.platforms.find(
+    (platform) => platform.backend === axis && platform.impact?.class != null
+  )?.impact;
   return impact ? `: ${impact.reason}` : '';
 }

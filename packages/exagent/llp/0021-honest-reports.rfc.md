@@ -2,14 +2,15 @@
 
 **Type:** RFC
 **Status:** Draft — implemented
-**Systems:** `src/dev/stopAsync.ts`, `src/dev/portListener.ts`; `src/dev/detachAsync.ts`, `src/dev/childVerdict.ts`, `src/dev/advertisedUrl.ts`; `src/dev/forwardedArgs.ts`; `src/status/statusAsync.ts`, `src/status/format.ts`, `src/impact/buildCache.ts`; `src/needsHuman/preflight.ts`; `src/deploy/deployAsync.ts`, `src/deploy/easFailure.ts`; `src/typecheck/generatedTypes.ts`; `src/passthrough/auth.ts`; `src/followups/doctor.ts`, `src/followups/typecheck.ts`
+**Systems:** `src/dev/stopAsync.ts`, `src/dev/portListener.ts`; `src/dev/detachAsync.ts`, `src/dev/childVerdict.ts`, `src/dev/advertisedUrl.ts`; `src/dev/forwardedArgs.ts`; `src/status/statusAsync.ts`, `src/status/sections.ts`, `src/status/format.ts`, `src/status/assert.ts`, `src/status/types.ts`, `src/impact/buildCache.ts`; `src/needsHuman/preflight.ts`; `src/deploy/deployAsync.ts`, `src/deploy/easFailure.ts`; `src/typecheck/generatedTypes.ts`; `src/passthrough/auth.ts`; `src/followups/doctor.ts`, `src/followups/typecheck.ts`, `src/followups/status.ts`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-27
 **Related:** [[0004-smart-start-and-project-state]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0011-impact-and-freshness]], [[0015-backend-selection-and-config]], [[0016-v1-scope]]
 
 ## Summary
 
-Friction run 7 and the first live-staging run found eleven failures of one kind. In every one of
+Friction run 7, the first live-staging run and Kudo's own cloud loop found thirteen failures of one
+kind. In every one of
 them the CLI **had** the right answer and reported a different one: the detached child wrote its own
 needs-human verdict into a log while the parent printed `Bundler ready` and exit 0; `dev:stop --port
 8195` read a lock for port 8190 and killed that; one EAS build's fingerprint comparison was copied
@@ -17,8 +18,10 @@ onto both platforms and said an iOS build could run android code; `status` repor
 (nothing could answer)` in a directory where `exagent whoami` printed the name.
 
 None of them is a missing feature. Each is a **claim made about the wrong subject**, or at the wrong
-time, or from the wrong evidence. This LLP records the rules that came out of fixing them, because
-the same mistake is available to every command in the surface.
+time, or from the wrong evidence — and the cloud loop added the two most expensive versions of it:
+`freshness ios: stale (no recorded build)` about a project whose fingerprint matched a finished EAS
+build, and a dev server line quoting a URL nothing can open. This LLP records the rules that came out
+of fixing them, because the same mistake is available to every command in the surface.
 
 ## The rules
 
@@ -34,6 +37,12 @@ the same mistake is available to every command in the surface.
    a failure the caller did not see.
 6. **A generated file is not a mistake in the code.** A gate red for a file no human wrote must say
    what generates it.
+7. **Two questions get two answers.** "Is my app up to date" is a question per *backend*, and one
+   axis answering for both is the same mistake as one platform answering for both.
+8. **Advice is about the device the loop is on.** A cloud loop is not a local loop with a longer
+   wire.
+9. **A string this CLI prints is a string that works.** Relaying another tool's URL unchecked is
+   relaying a URL nobody can open.
 
 Every section below is one of these applied, with the finding that forced it.
 
@@ -268,6 +277,118 @@ expo-doctor's words — and only the offered command is rewritten. The mapping i
 (`--check`, `--fix`), because a rewrite is a claim that two commands do the same thing and that is
 the only pair where it has been verified.
 
+## Freshness has two axes
+
+`status` in Kudo's cloud loop reported `freshness ios: stale (no recorded build)` for a project whose
+fingerprint matched a **finished development-simulator EAS build**, `device none`, and a `next` line
+naming `smoke` and `navigate /` — three answers about a machine that was not where the app was
+running [observed — 2026-08-27, K7].
+
+The freshness half is one axis answering for two. "Does this need a native build" has two sources —
+what this machine built, and what EAS has — and the section only ever read the first.
+
+**The decision** [design direction — Kudo, 2026-08-27: *"maybe we should split local and eas for the
+freshness. local/eas x ios/android = 2 x 2 = 4 combos"*]: `freshness.platforms` carries one entry per
+**backend × platform**, four in the ordinary case, each with its own `state`, `detail` and — on the
+`eas` axis — the `buildId` and `buildProfile` that answered. The text report prints one line per
+platform and one entry per backend:
+
+```
+freshness   ios      local stale (no recorded build) · eas fresh (simulator build 21d7d434 matches this fingerprint)
+            android  local stale (no recorded build) · eas unknown (EAS was not asked — pass --explain)
+```
+
+Three rules keep the four honest:
+
+- **The `eas` axis costs nothing extra.** It is folded in from the lookup `readEasBuildsStatusAsync`
+  already performs, whose key *is* the working tree's per-platform fingerprint — so a `found` is the
+  definition of fresh here, and there is no second network call and no second source of truth.
+- **`unknown`, not `stale`, before anything asks.** A default run does not pay for the lookup. Saying
+  so is cheaper and truer than either verdict, and it is the exact confusion the finding is about.
+- **`--build <id>` replaces the `eas` axis of the platform it names**, and leaves `local` alone. This
+  is where §One build is one platform lands: the comparison the caller asked for is an answer about
+  EAS, and the local record was never what they asked about. `--assert` follows the same rule — under
+  `--build` it gates on the `eas` axis only.
+
+**Who reads which.** The *effective* answer — the freshest axis — is what a consumer branching on
+"does this need a build" wants, and that is what `effectivePlatformFreshness` returns and what the
+`cli:status` event carries. One consumer deliberately does **not** use it: the download follow-up
+exists exactly for `local stale` + `eas found`, and reading the effective answer there would hide the
+rung in the one state it is for.
+
+## Advice for the device the loop is actually on
+
+The other half of K7. Every rung of `next` drives a local simulator or an attached device, and the
+section chose between them from the local device probe alone — so a run whose app was on an EAS
+Simulator over a tunnel was told `exagent smoke` (looks for a simulator here) and `exagent navigate /`
+(opens one here).
+
+**The decision.** A cloud session on record plus a local device that is not `present` is a **cloud
+loop**, and every rung takes `--cloud`: `smoke --cloud` when an app is connected, `navigate / --cloud`
+when none is. `!== 'present'` rather than `=== 'absent'` on purpose: with a session on record, a
+device probe that could not run is not a reason to name the local path — the caller has *told* this
+project where its device is, and that outranks a missing `simctl`. Without a session, an unanswered
+probe keeps the local rung exactly as before: nothing has shown there is no device here.
+
+## The scheme in "Waiting on" is not the dev server's
+
+K8, and it is an upstream bug with an exagent-side consequence.
+
+**What Kudo saw.** Metro's stdout on a tunnelled run printed
+`Waiting on exp+dailywords-grok://<host>.on.staging.expo.app` — a URL that opens the dev-client
+*launcher* rather than the app, so an agent copying stdout fails. Locally, in a terminal, the same
+command printed the correct URLs and no `Waiting on` line at all.
+
+**Reproduced, deterministically, against this monorepo's own `UrlCreator`** [observed —
+2026-08-27]:
+
+```
+constructUrl()          = exp+dailywords-grok://x8fj2.on.staging.expo.app
+constructUrl({http})    = http://x8fj2.on.staging.expo.app
+constructDevClientUrl() = exp+dailywords-grok://expo-development-client/?url=https%3A%2F%2Fx8fj2.on.staging.expo.app
+```
+
+The chain, in four steps:
+
+1. `resolveOptions.ts` resolves `location.scheme` to the app's **deep-link** scheme whenever the
+   project has `expo-dev-client` (or `--scheme` was passed), and that becomes `UrlCreator.defaults.scheme`.
+2. `BundlerDevServer.getDevServerUrl()` returns `this.getUrlCreator().constructUrl()` — **with no
+   scheme option** — whenever an `AsyncWsTunnel` is active, i.e. under `EXPO_UNSTABLE_TUNNEL_V2=1` or
+   in a webcontainer. The sibling branch returns `instance.location.url`, an `http://` URL, and
+   `getJsInspectorBaseUrl` passes `{ scheme: 'http' }` explicitly.
+3. `getUrlComponents` then uses `options.scheme ?? 'http'`, and `options` *is* the defaults, so the
+   protocol is the app's scheme.
+4. `startAsync` prints that string as `Waiting on <url>` — **only in non-interactive mode**. A
+   terminal gets the Terminal UI instead and no such line, which is exactly why the local repro
+   showed none.
+
+**It is upstream, and it is one option wide**: `constructUrl({ scheme: 'http' })` in step 2 makes it
+the URL every other branch produces. Filed in [[0010-agent-conventions]] §Upstream asks with this
+repro. Everything that reads `getDevServerUrl()` under a v2 tunnel is affected, not only the printed
+line — the MCP server's `devServerUrl` and the non-native `DevelopmentSession` URL take the same
+string.
+
+**What was ours.** `parseWaitingOn` read `URL.origin` of that line, and `origin` is the string
+`"null"` for every non-special scheme — so `status`, `dev:logs` and `dev --detach` reported
+`tunnelUrl: "null"`, a field carrying the word rather than a null. The host is the fact the line
+carries, so the host is what is kept, and the origin is rebuilt: `http`/`https` when the line had
+one, `https` for a tunnel host otherwise (a tunnel terminates TLS), `http` for a LAN one. A line with
+no authority at all — `exp+app:///--/route`, a route link — names no dev server and answers null.
+
+And since the address a device needs was the thing being got wrong, `status` now prints the one that
+works next to the one the dev server listens on [K7(c)]:
+
+```
+dev server  running on http://127.0.0.1:8081 · tunnel https://x8fj2.on.staging.expo.app
+            open in development build: exp+dailywords-grok://expo-development-client/?url=https%3A%2F%2Fx8fj2.on.staging.expo.app
+```
+
+`DevServerStatus.openUrls` carries the whole list (one per app, because a development build and Expo
+Go take different URLs), the `cli:status` event carries the best one as `openUrl`, and both come from
+`buildConnectUrls` — the same builder `navigate --print-url` uses, so no reader is ever given two
+different strings for the same thing. Printed only for a dev server a device off this machine can
+reach: on a local run the listen address is the whole answer.
+
 ## Testing
 
 Every finding above has a test that fails against the code as it shipped:
@@ -276,8 +397,16 @@ Every finding above has a test that fails against the code as it shipped:
   `forwardedStepArgs`/`withForwardedExpoArgs`, `parseBuildPlatform`, `classifyEasDeployFailure`,
   `findMissingGeneratedTypesSync`, the two new `dev:stop` describes, the preflight's Expo rung, the
   `status` section note and the unclipped reason.
+- Unit, wave 17's second half: the four freshness combos and the fold that fills the `eas` axis,
+  `effectivePlatformFreshness`, the cloud rungs of `next` (including the unanswered device probe both
+  ways), `applyOpenUrls`, and four `Waiting on` shapes — the app-scheme line, the `exp://` line, the
+  route link, and the assertion that the word `null` never reaches a URL field.
 - e2e, through the published bin: `dev:stop --port` against a real lock and a real signal recorder;
   a detached child that dies inside the tunnel wait, asserted at exit 7 with the relayed scenario;
   `dev --plan --tunnel`; `doctor` at exit 20; `typecheck` naming the generated file; `whoami --json`
-  and the staging session file; and `deploy` falling back through a stub `npx` — a stub, because a
-  test that reached the registry would be testing the network.
+  and the staging session file; `status --explain` reporting a stub EAS build as fresh on the `eas`
+  axis while the `local` axis answers its own question; and `deploy` falling back through a stub
+  `npx` — a stub, because a test that reached the registry would be testing the network.
+- K8's upstream half is reproduced by a script rather than by a test: it is another package's
+  behaviour, and a test in this package asserting it would fail on the day it is fixed. The chain is
+  recorded above with the file and line of each step.

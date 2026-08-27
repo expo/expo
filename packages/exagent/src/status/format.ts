@@ -57,6 +57,8 @@ export function formatStatusReport(report: StatusReport): string {
       ? [row('eas build', report.builds, buildsLine, report, 'builds')]
       : []),
     row('dev server', report.devServer, devServerLine, report, 'devServer'),
+    // Under the dev server it points at, because that is the address it was built from.
+    ...(report.devServer ? openUrlLines(report.devServer) : []),
     row('device', report.device, deviceLine, report, 'device'),
     // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
     // The one section that can have nothing to say at all. A project whose dependencies ship no
@@ -131,11 +133,15 @@ function impactLines(report: StatusReport): string[] {
     // they really say the same thing. Written as an escape: a raw control character in
     // source makes git treat the file as binary.
     const key = `${platform.impact.class}\u0000${platform.impact.reason}`;
+    // The backend is named only when it is the EAS one: `local` is what every other line of this
+    // report is about, and labelling it everywhere would be a word repeated to make one rare case
+    // legible (llp/0021 §Freshness has two axes).
+    const label = platform.backend === 'eas' ? `${platform.platform} (eas)` : platform.platform;
     const existing = grouped.get(key);
     if (existing) {
-      existing.platforms.push(platform.platform);
+      existing.platforms.push(label);
     } else {
-      grouped.set(key, { platforms: [platform.platform], impact: platform.impact });
+      grouped.set(key, { platforms: [label], impact: platform.impact });
     }
   }
 
@@ -412,16 +418,36 @@ function expoGoLine(expoGo: ExpoGoStatus): string {
   return chalk.yellow(`not compatible (${expoGo.reasonCount} ${reasons})`);
 }
 
+/** Width of the platform column of the freshness block. */
+const PLATFORM_WIDTH = 9;
+
+/**
+ * The freshness of every platform, one line per platform and one entry per backend.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §Freshness has two axes
+ * Two axes on one line, because the two disagree routinely and the disagreement is the answer: a
+ * project whose fingerprint matches a finished EAS build needs no build here, and the one-axis line
+ * called it `ios: stale (no recorded build)` [observed — Kudo's cloud loop, 2026-08-27, K7]. One
+ * line per platform rather than four facts on one, because four is past what a reader scans.
+ */
 function freshnessLine(freshness: FreshnessStatus): string {
-  const platforms = freshness.platforms.map((platform) => {
-    const state = platform.state === 'fresh' ? chalk.green('fresh') : chalk.yellow(platform.state);
-    return `${platform.platform}: ${state}${platform.detail ? ` (${platform.detail})` : ''}`;
+  const indent = ' '.repeat(LABEL_WIDTH);
+  const platforms = [...new Set(freshness.platforms.map((entry) => entry.platform))];
+  const lines = platforms.map((platform, index) => {
+    const axes = freshness.platforms
+      .filter((entry) => entry.platform === platform)
+      .map((entry) => {
+        const state =
+          entry.state === 'fresh' ? chalk.green('fresh') : chalk.yellow(entry.state);
+        return `${chalk.dim(entry.backend)} ${state}${entry.detail ? ` (${entry.detail})` : ''}`;
+      });
+    return `${index === 0 ? '' : indent}${platform.padEnd(PLATFORM_WIDTH)}${axes.join(SEPARATOR)}`;
   });
-  // The fingerprint error explains every `unknown` above it, so it belongs on the same line.
+  // The fingerprint error explains every `unknown` above it, so it belongs under them.
   if (freshness.error) {
-    platforms.push(chalk.dim(`fingerprint error: ${summarize(freshness.error)}`));
+    lines.push(`${indent}${chalk.dim(`fingerprint error: ${summarize(freshness.error)}`)}`);
   }
-  return platforms.join(SEPARATOR);
+  return lines.join('\n');
 }
 
 function devServerLine(devServer: DevServerStatus): string {
@@ -467,6 +493,25 @@ function devServerLine(devServer: DevServerStatus): string {
  */
 function reachFact(devServer: DevServerStatus): string | null {
   return devServer.tunnelUrl ? `${chalk.green('tunnel')} ${devServer.tunnelUrl}` : null;
+}
+
+/**
+ * The URL that opens the app, under the address it was built from.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's
+ * Only for a dev server a device off this machine can reach, which is the case where the address
+ * above is not the thing to copy — and the case where the line `expo start` prints for itself is a
+ * URL nothing can open [K7(c), K8]. One line per app, because a development build and Expo Go take
+ * different URLs and a reader with one installed needs to see which is which.
+ */
+function openUrlLines(devServer: DevServerStatus): string[] {
+  if (devServer.hostType !== 'tunnel' || !devServer.openUrls.length) {
+    return [];
+  }
+  const indent = ' '.repeat(LABEL_WIDTH);
+  return devServer.openUrls.map(
+    (connect) => `${indent}${chalk.dim(`open in ${connect.label}:`)} ${chalk.cyan(connect.url)}`
+  );
 }
 
 /**

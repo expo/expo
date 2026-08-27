@@ -108,6 +108,45 @@ describe(readDevServerLog, () => {
 
     expect(readDevServerLog(lines).advertised?.host).toBe('localhost:8081');
   });
+
+  // @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's — K8.
+  // With the v2 tunnel active, `getDevServerUrl()` builds the URL with no scheme option and picks
+  // up the app's *deep-link* scheme, so the line names the dev server under a scheme no HTTP client
+  // can use. `URL.origin` is the string "null" for every non-special scheme, which is what reached
+  // `tunnelUrl`. Reproduced against this monorepo's own `UrlCreator` on 2026-08-27.
+  describe('a line whose scheme is the app\u2019s, not the dev server\u2019s', () => {
+    it(`keeps the host and rebuilds an origin a client can use`, () => {
+      const lines = ['Waiting on exp+dailywords-grok://x8fj2.on.staging.expo.app'];
+
+      expect(readDevServerLog(lines).advertised).toEqual({
+        // https, because a tunnel terminates TLS \u2014 the same rule `devClientConnectUrl` applies.
+        url: 'https://x8fj2.on.staging.expo.app',
+        host: 'x8fj2.on.staging.expo.app',
+        hostType: 'tunnel',
+      });
+    });
+
+    it(`never reports the word "null" as a URL`, () => {
+      const lines = ['Waiting on exp+dailywords-grok://x8fj2.on.staging.expo.app'];
+
+      expect(readDevServerLog(lines).advertised?.url).not.toContain('null');
+    });
+
+    it(`reads an exp:// line as the local dev server it names`, () => {
+      const lines = ['Waiting on exp://192.168.1.5:8081'];
+
+      expect(readDevServerLog(lines).advertised).toEqual({
+        url: 'http://192.168.1.5:8081',
+        host: '192.168.1.5:8081',
+        hostType: 'lan',
+      });
+    });
+
+    // A route link is not a dev server address, and it has no authority to read one from.
+    it(`answers null for a scheme URL with no host`, () => {
+      expect(readDevServerLog(['Waiting on exp+dailywords-grok:///--/lab']).advertised).toBeNull();
+    });
+  });
 });
 
 describe(resolveDevServerReach, () => {

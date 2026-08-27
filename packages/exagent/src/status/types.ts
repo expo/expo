@@ -5,6 +5,7 @@
 import type { DevServerHostType } from '../dev/advertisedUrl';
 import type { LocalDeviceState } from '../device/localDevice';
 import type { ChangedFiles, ChangedSource, ImpactClass, OtaSafety } from '../impact/types';
+import type { ConnectUrl } from '../navigate/connectUrl';
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
 import type { DevServerSource } from '../runtime/devServer';
@@ -80,13 +81,42 @@ export interface FreshnessImpact {
   changedSources: ChangedSource[] | null;
 }
 
+/**
+ * Which build a freshness answer is about.
+ *
+ * Two axes, because "is my app up to date" has two answers and they disagree routinely: a project
+ * whose native surface matches a finished **EAS** build needs no build here, and the report used to
+ * call it `stale (no recorded build)` because it only ever looked at what this machine built
+ * [observed — Kudo's cloud loop, 2026-08-27, K7]. Backend × platform is four answers, and each one
+ * is a fact somebody acts on.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §Freshness has two axes
+ */
+export type FreshnessBackend =
+  /** What `exagent` built on this machine, from the project's own record. */
+  | 'local'
+  /** What EAS has, from the build lookup keyed on this exact fingerprint. */
+  | 'eas';
+
 export interface PlatformFreshness {
   platform: NativePlatform;
+  /** Which build this entry compared against. */
+  backend: FreshnessBackend;
   state: FreshnessState;
   /** Short phrase explaining the state, e.g. "no recorded build". */
   detail: string;
-  /** Fingerprint of the last build `exagent` recorded for the platform. */
+  /**
+   * Fingerprint of the build this entry compared against.
+   *
+   * The last build `exagent` recorded, on the `local` axis. Null on the `eas` axis: the lookup is
+   * *keyed* on the working tree's own hash, so a build it found has that hash by construction and
+   * there is no second fingerprint to report.
+   */
   recordedHash: string | null;
+  /** The EAS build that answered, on the `eas` axis. Null everywhere else. */
+  buildId: string | null;
+  /** The profile that build was made with, e.g. `simulator`. Null when the payload named none. */
+  buildProfile: string | null;
   /**
    * What has changed since that build, and what it costs.
    *
@@ -131,10 +161,11 @@ export interface FreshnessStatus {
   /**
    * What the impact headline is measured against.
    *
-   * Always present, so a reader never has to infer the base from which flags were passed. The
-   * `fresh`/`stale` state above is *always* about the project's own record even under `--build`:
-   * "is the app I built here still current" and "does this differ from that cloud build" are two
-   * questions, and one of them silently changing meaning would be worse than reporting both.
+   * Always present, so a reader never has to infer the base from which flags were passed. `--build`
+   * replaces the **`eas` axis** of the platform it names and leaves the `local` axis alone: "is the
+   * app I built here still current" and "does this differ from that cloud build" are two questions,
+   * and one of them silently changing meaning would be worse than reporting both
+   * (llp/0021 §Freshness has two axes).
    */
   comparison: FreshnessComparison;
   /**
@@ -252,6 +283,19 @@ export interface DevServerStatus {
    * would be reading somebody else's prose [decided — Kudo, 2026-08-26].
    */
   tunnelUrl: string | null;
+  /**
+   * The URLs that point an app at this dev server, best first. Empty when no host can be named.
+   *
+   * The **encoded** launcher URL, not the address the dev server prints for itself: a development
+   * build is opened with `<scheme>://expo-development-client/?url=<encoded origin>`, and the line a
+   * tunnelled `expo start` writes to its own stdout is neither that nor a URL an HTTP client can use
+   * [observed — 2026-08-27, K8]. An agent that copies what the terminal said fails; this is the
+   * string that works, next to the address it was built from.
+   *
+   * @see src/navigate/connectUrl.ts
+   * @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's
+   */
+  openUrls: ConnectUrl[];
   /** Why the dev server did not answer. */
   reason?: string;
 }

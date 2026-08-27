@@ -233,8 +233,23 @@ declare module '2g' {
       devServerHostType: string | null;
       /** The tunnel origin while it is current, null otherwise. */
       tunnelUrl: string | null;
+      /**
+       * The URL that opens this project's app on a device, best first, or null.
+       *
+       * The **encoded** launcher URL of a development build rather than the address the dev server
+       * prints for itself, which is not one a client can open (llp/0021 §The scheme in "Waiting on"
+       * is not the dev server's). The whole list is in `--json`.
+       */
+      openUrl: string | null;
       /** Whether this machine has a device to open the app on: `present`, `absent`, `unknown`. */
       localDevice: string;
+      /**
+       * The freshest answer per platform, across both backends.
+       *
+       * A platform whose fingerprint matches a finished EAS build needs no native build, whatever
+       * this machine has built (llp/0021 §Freshness has two axes). The per-backend split is in
+       * `--json`.
+       */
       freshness: { ios: string | null; android: string | null };
       /**
        * Whether EAS has a finished build for this fingerprint: `found`, `none` or `unknown`.

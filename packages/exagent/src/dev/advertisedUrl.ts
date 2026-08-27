@@ -290,7 +290,21 @@ export async function fetchAdvertisedUrlAsync(
  */
 export const ADVERTISED_LOG_LINES = 5000;
 
-/** The `Waiting on <url>` line, as a parsed URL, or null when this line is not one. */
+/**
+ * The `Waiting on <url>` line, as a parsed URL, or null when this line is not one.
+ *
+ * **The scheme in that line is not always the dev server's.** With the v2 tunnel active,
+ * `getDevServerUrl()` builds the URL with no scheme option, so it picks up the *deep-link* scheme of
+ * the app config and prints `exp+dailywords-grok://<tunnel host>` [observed — 2026-08-27, and
+ * reproduced against this monorepo's own `UrlCreator`; llp/0010 §Upstream asks records the ask].
+ * `URL.origin` is the string `"null"` for every non-special scheme, so reading it produced
+ * `tunnelUrl: "null"` — a report field carrying the word rather than a null.
+ *
+ * So the host is taken as the fact the line carries, and the origin is rebuilt: `http`/`https` are
+ * kept when the line had one, and anything else becomes `https` for a tunnel host and `http`
+ * otherwise — the same rule `devClientConnectUrl` applies, because a tunnel terminates TLS and a LAN
+ * address does not.
+ */
 function parseWaitingOn(rawLine: string): AdvertisedDevServerUrl | null {
   // The CLI underlines the URL, and a caller may hand over lines that were never stripped.
   const match = WAITING_ON.exec(stripVTControlCharacters(rawLine));
@@ -303,9 +317,17 @@ function parseWaitingOn(rawLine: string): AdvertisedDevServerUrl | null {
   } catch {
     return null;
   }
-  return {
-    url: parsed.origin,
-    host: parsed.host,
-    hostType: classifyDevServerHost(parsed.hostname),
-  };
+  if (!parsed.host) {
+    // A URL with no authority at all names no dev server — `exp+app:///--/route` is a route link.
+    return null;
+  }
+
+  const hostType = classifyDevServerHost(parsed.hostname);
+  const scheme =
+    parsed.protocol === 'http:' || parsed.protocol === 'https:'
+      ? parsed.protocol.slice(0, -1)
+      : hostType === 'tunnel'
+        ? 'https'
+        : 'http';
+  return { url: `${scheme}://${parsed.host}`, host: parsed.host, hostType };
 }

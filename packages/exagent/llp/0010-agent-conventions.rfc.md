@@ -945,6 +945,22 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   nothing in this CLI writes another package's template.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.
+- **Do not print the app's deep-link scheme as the dev server's URL.** With the v2 tunnel active
+  (`EXPO_UNSTABLE_TUNNEL_V2=1`, or a webcontainer), `BundlerDevServer.getDevServerUrl()` returns
+  `this.getUrlCreator().constructUrl()` with **no scheme option**
+  [observed — `start/server/BundlerDevServer.ts:468`, 2026-08-27], so it picks up
+  `UrlCreator.defaults.scheme` — which `start/resolveOptions.ts` sets to the app's *deep-link* scheme
+  for any project with `expo-dev-client`. The result is printed as
+  `Waiting on exp+dailywords-grok://<host>.on.staging.expo.app`
+  [observed — Kudo's staging run, 2026-08-27], which opens the dev-client launcher rather than the
+  app and which no HTTP client can use; the same string reaches the MCP server's `devServerUrl` and
+  the non-native `DevelopmentSession`. Reproduced against this monorepo's own `UrlCreator`:
+  `constructUrl()` → `exp+dailywords-grok://x8fj2.on.staging.expo.app`, `constructUrl({scheme:'http'})`
+  → `http://x8fj2.on.staging.expo.app`. The fix is one option wide, and the sibling branch of the same
+  method (and `getJsInspectorBaseUrl`) already passes it. Note that `Waiting on` prints **only** in
+  non-interactive mode, so a terminal never sees the line and an agent always does. Worked around in
+  `src/dev/advertisedUrl.ts`: the host is kept and the origin is rebuilt (llp/0021 §The scheme in
+  "Waiting on" is not the dev server's).
 - Emit `devserver:url` in a **released** SDK. The event already exists on `main` with exactly the
   right fields — `url`, `runtimeUrl`, `hostType`, `port` [observed — `BundlerDevServer.startAsync`,
   2026-08-25] — and expo 57.0.17 does not emit it [observed — live: `start.log` carries

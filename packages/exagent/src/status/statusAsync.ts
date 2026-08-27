@@ -39,12 +39,15 @@ import { buildAssertStatus } from './assert';
 import { readEasBuildsStatusAsync } from './easBuilds';
 import { formatStatusReport } from './format';
 import {
+  applyEasFreshness,
+  applyOpenUrls,
   buildDevServerStatus,
   buildExpoGoStatus,
   buildFreshnessStatus,
   buildLocalDeviceStatus,
   buildNextActionStatus,
   buildProjectStatus,
+  effectivePlatformFreshness,
   resolveDefaultPlatform,
   type DevServerReadiness,
 } from './sections';
@@ -150,6 +153,7 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     appsStale: report.devServer?.appsStale ?? 0,
     devServerHostType: report.devServer?.hostType ?? null,
     tunnelUrl: report.devServer?.tunnelUrl ?? null,
+    openUrl: report.devServer?.openUrls[0]?.url ?? null,
     localDevice: report.device?.state ?? 'unknown',
     freshness: { ios: freshnessOf(report, 'ios'), android: freshnessOf(report, 'android') },
     easBuilds: { ios: easBuildOf(report, 'ios'), android: easBuildOf(report, 'android') },
@@ -275,6 +279,12 @@ export async function collectStatusReportAsync(
         errors.freshness = compared.error;
       }
     }
+    // @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's
+    // The URL a device opens, next to the address the dev server listens on. Here, because the
+    // scheme and the app target are the *project's* facts and the dev-server probe ran before them
+    // (K7(c)).
+    const devBuildScheme = devBuildSchemeSync(projectRoot);
+    applyOpenUrls(report.devServer, state, devBuildScheme);
     report.next = buildNextActionStatus(
       state,
       lastBuild,
@@ -284,7 +294,7 @@ export async function collectStatusReportAsync(
       // The scheme a development build of this project registers, read the same way the deep link
       // reads it: `exp://` is the Expo Go form only, and a development build's connect URL takes
       // the app's own scheme (`src/navigate/connectUrl.ts`).
-      devBuildSchemeSync(projectRoot),
+      devBuildScheme,
       // A file read, not a service call: `status` promises to be instant (`src/device/
       // cloudSimulator.ts` §readCloudSessionIdSync).
       readCloudSessionIdSync(projectRoot) != null,
@@ -340,6 +350,14 @@ export async function collectStatusReportAsync(
     report.builds = builds.value;
   } else {
     errors.builds = builds.error;
+  }
+
+  // @ref llp/0021-honest-reports.rfc.md §Freshness has two axes — K7(b)
+  // The same lookup, read as a verdict rather than as an inventory: a finished EAS build made from
+  // this exact fingerprint means this platform needs no native build, and the freshness section used
+  // to report `stale (no recorded build)` beside it because it only ever looked at this machine.
+  if (report.freshness) {
+    applyEasFreshness(report.freshness, report.builds);
   }
 
   // Its own section note under `freshness`, because that is the section it belongs to: a failed
@@ -466,12 +484,30 @@ async function compareAgainstEasBuildAsync(
     changedSources: classified ? classified.changedSources : null,
   };
 
-  for (const platform of freshness.platforms) {
-    platform.impact =
-      platform.platform === buildPlatform
-        ? impact
-        : notComparedImpact(buildId, buildPlatform, platform.platform);
+  // The **eas** axis, and only it: "does this differ from that cloud build" is a question about
+  // EAS, and the local axis answers "does it differ from what I built here" — which `--build` did
+  // not ask and did not change (llp/0021 §Freshness has two axes).
+  for (const entry of freshness.platforms) {
+    if (entry.backend !== 'eas') {
+      continue;
+    }
+    const compared = entry.platform === buildPlatform;
+    entry.impact = compared ? impact : notComparedImpact(buildId, buildPlatform, entry.platform);
+    entry.buildId = compared ? buildId : null;
+    entry.state = compared ? easBuildFreshness(comparison.fingerprintChanged) : 'unknown';
+    entry.detail = compared
+      ? comparison.fingerprintChanged === false
+        ? `matches EAS build ${buildId}`
+        : comparison.fingerprintChanged
+          ? `differs from EAS build ${buildId}`
+          : `EAS build ${buildId} could not be compared`
+      : `not compared — ${buildId} is ${buildPlatform ?? 'a build of an unestablished platform'}`;
   }
+}
+
+/** The freshness state of an `eas` axis a named build was compared against. */
+function easBuildFreshness(fingerprintChanged: boolean | null): FreshnessState {
+  return fingerprintChanged === false ? 'fresh' : fingerprintChanged ? 'stale' : 'unknown';
 }
 
 /**
@@ -724,8 +760,15 @@ function countLinkedSkills(
   ).length;
 }
 
+/**
+ * The freshness one platform is in, across both axes.
+ *
+ * The **effective** answer, which is what a consumer of this stream branches on: a platform whose
+ * fingerprint matches a finished EAS build needs no native build, whatever this machine has built
+ * (llp/0021 §Freshness has two axes). The split itself is in `--json`.
+ */
 function freshnessOf(report: StatusReport, platform: NativePlatform): FreshnessState | null {
-  return report.freshness?.platforms.find((entry) => entry.platform === platform)?.state ?? null;
+  return effectivePlatformFreshness(report.freshness, platform)?.state ?? null;
 }
 
 function easBuildOf(report: StatusReport, platform: NativePlatform): BuildLookupState | null {
@@ -734,7 +777,8 @@ function easBuildOf(report: StatusReport, platform: NativePlatform): BuildLookup
 
 function impactClassOf(report: StatusReport, platform: NativePlatform): ImpactClass | null {
   return (
-    report.freshness?.platforms.find((entry) => entry.platform === platform)?.impact?.class ?? null
+    report.freshness?.platforms.find((entry) => entry.platform === platform && entry.impact?.class)
+      ?.impact?.class ?? null
   );
 }
 

@@ -2,6 +2,7 @@ import fs from 'fs';
 import { vol } from 'memfs';
 
 import { event } from '../../events';
+import * as network from '../../followups/network';
 import { lookUpBuildPlatformAsync } from '../../impact/buildCache';
 import { compareWithEasBuildAsync } from '../../impact/compare';
 import { refineWithChangedFilesAsync } from '../../impact/fromRecord';
@@ -104,6 +105,9 @@ function mockState(overrides: Partial<ProjectState> = {}): ProjectState {
 
 beforeEach(() => {
   vol.reset();
+  // The connect URLs of a non-tunnelled run carry this host, and a suite that read the machine's
+  // own would pass or fail by which network it is on.
+  jest.spyOn(network, 'resolveLanHost').mockReturnValue('192.168.1.233');
   vol.fromJSON({ '/project/package.json': JSON.stringify({ name: 'my-app' }) });
   mockState();
   jest.mocked(readLastBuildRecord).mockReturnValue({});
@@ -174,6 +178,9 @@ describe(collectStatusReportAsync, () => {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
+      // The URL a device opens, next to the address the dev server listens on (K7(c)). This project
+      // has no dev client, so Expo Go's form is the only one there is.
+      openUrls: [{ target: 'expo-go', label: 'Expo Go', url: 'exp://192.168.1.233:8081' }],
     });
     expect(report.skills).toEqual({ agentIds: ['claude-code'], discovered: 1, linked: 1 });
     expect(report.next?.rule).toBe('expo-go');
@@ -253,6 +260,7 @@ describe(collectStatusReportAsync, () => {
       projectRootMatched: null,
       hostType: null,
       tunnelUrl: null,
+      openUrls: [],
       reason: 'fetch failed',
     });
     // Nothing answered, so nothing was asked about readiness either.
@@ -341,7 +349,10 @@ describe(collectStatusReportAsync, () => {
 
     expect(report.freshness?.hash).toBeNull();
     expect(report.freshness?.error).toBe('fingerprint CLI not found');
+    // Four entries now: backend × platform (llp/0021 §Freshness has two axes).
     expect(report.freshness?.platforms.map((platform) => platform.state)).toEqual([
+      'unknown',
+      'unknown',
       'unknown',
       'unknown',
     ]);
@@ -633,19 +644,27 @@ describe(collectStatusReportAsync, () => {
         buildId: 'build-1',
         platform: 'ios',
       });
-      const byPlatform = new Map(
-        report.freshness!.platforms.map((platform) => [platform.platform, platform.impact])
-      );
-      expect(byPlatform.get('ios')).toMatchObject({
+      // The eas axis, which is the one `--build` asks about (llp/0021 §Freshness has two axes).
+      const easAxis = (platform: string) =>
+        report.freshness!.platforms.find(
+          (one) => one.platform === platform && one.backend === 'eas'
+        )!;
+      expect(easAxis('ios').impact).toMatchObject({
         class: 'needs-native-build',
         fingerprintChanged: true,
       });
+      expect(easAxis('ios')).toMatchObject({ state: 'stale', buildId: 'build-1' });
       // A stated non-answer, never the other platform's verdict.
-      expect(byPlatform.get('android')).toMatchObject({
+      expect(easAxis('android').impact).toMatchObject({
         class: null,
         fingerprintChanged: null,
         reason: expect.stringContaining('not compared'),
       });
+      // And the local axis is left alone: it answers a question `--build` did not ask.
+      expect(
+        report.freshness!.platforms.find((one) => one.platform === 'ios' && one.backend === 'local')!
+          .impact?.reason
+      ).not.toContain('build-1');
     });
 
     it(`should compare nothing when the build's platform could not be established`, async () => {
@@ -659,7 +678,9 @@ describe(collectStatusReportAsync, () => {
       });
 
       expect(report.freshness?.comparison.platform).toBeNull();
-      for (const platform of report.freshness!.platforms) {
+      // The eas axis of both platforms: the comparison was against a build, and which platform
+      // that build is for was never established, so neither axis is an answer about either.
+      for (const platform of report.freshness!.platforms.filter((one) => one.backend === 'eas')) {
         expect(platform.impact).toMatchObject({
           class: null,
           reason: expect.stringContaining('could not be established'),
@@ -869,6 +890,8 @@ describe(printStatusAsync, () => {
       appsStale: 0,
       devServerHostType: null,
       tunnelUrl: null,
+      // The best of the URLs a device opens, so the stream carries the one an agent can act on.
+      openUrl: 'exp://192.168.1.233:8081',
       localDevice: 'unknown',
       freshness: { ios: 'stale', android: 'stale' },
       // The section builder is mocked out here; its own suite covers what it answers.
