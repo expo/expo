@@ -241,6 +241,26 @@ named as what makes the section work offline (`runnerDownloadNote`). Every reaso
 the source as the invocation — `npx --yes eas-cli@latest`, not the path `npx` was found at — so
 nothing claims an `eas` binary exists on a machine that has none.
 
+#### One spawn of a spec at a time
+
+The third thing this rung brought with it, found live and fixed in wave 22 [F93, 2026-08-27]: **a
+runner keeps one scratch directory per package spec** — `$TMPDIR/bunx-<uid>-eas-cli@latest` — and does
+not queue for it. Two spawns of one spec started milliseconds apart are two writers of one directory,
+and the loser exits 1 with empty stdout and its own install progress on stderr. `status --explain`
+starts exactly such a pair on purpose (`Promise.all` over the two platforms), so the reason it printed
+for a platform was `Resolving dependencies` on half the fresh runs.
+
+`src/utils/runnerLock.ts` serializes per spec inside the spawn layer, keyed off the argv so no call
+site has to remember, and applied in all three helpers that can start a runner. It is a **property of
+this rung** rather than of `status`: any two concurrent calls into an EAS-backed section share the same
+spec, and `--build <id>` runs `fingerprint:compare` and `build:view` together for the same reason.
+
+A private cache per spawn (`BUN_INSTALL_CACHE_DIR`, `npm_config_cache`) was the alternative and was
+rejected: it would turn the once-per-machine install cost weighed above into a per-spawn one, and it
+rests on two other tools' undocumented environment variables. The report guard that goes with the
+mutex — for a directory held by a sibling process this one cannot serialize — is
+[[0021-honest-reports]] §The runner is not the service.
+
 ## The run target
 
 The second question the developer may have an opinion about: **which app**, not where. `expo-go` or

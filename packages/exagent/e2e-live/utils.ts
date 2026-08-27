@@ -333,30 +333,47 @@ export function parseJson<T = any>(result: LiveResult): T {
   }
 }
 
+/** The first line of the crash report `handleUncaughtException` prints (`src/utils/errors.ts`). */
+const CRASH_REPORT_MARKER = 'This command crashed:';
+
 /**
- * Whether a result is an **uncaught exception** rather than a report this CLI chose to print.
+ * Whether an error reached the top of the process, however it was reported.
  *
- * F94: `src/utils/errors.ts` registers `process.on('uncaughtException', handleTooManyOpenFileErrors)`,
- * and that handler rethrows everything that is not macOS `EMFILE`. Rethrowing from inside an
- * `uncaughtException` handler makes Node exit **7** — which is the code `llp/0010` reserves for
- * needs-human — with a raw stack, no `Try:` line and no `--json` envelope. Every crash therefore looks
- * to an agent exactly like "a person has to intervene".
+ * F94 was the *reporting*, not the crash: `src/utils/errors.ts` registered an `uncaughtException`
+ * handler that rethrew everything it did not recognise, and Node's exit code for a throw inside such
+ * a handler is **7** — the code `llp/0010` reserves for needs-human — with a raw stack, no `Try:` line
+ * and no `--json` envelope. Wave 22 made the handler print a report and exit 1, so this now matches the
+ * shape it prints, and {@link looksLikeUnreportedCrash} is what watches for the old one coming back.
  *
- * Detected here rather than left to a reader because the failure is otherwise a puzzle: "exited 7,
- * expected 0" on a command that has no needs-human path at all.
+ * Still detected rather than left to a reader, because a crash is not an answer about the project: a
+ * test that meets one has learnt nothing about what it was asking.
  */
 export function looksLikeUncaughtException(result: LiveResult): boolean {
+  return looksLikeUnreportedCrash(result) || result.all.includes(CRASH_REPORT_MARKER);
+}
+
+/**
+ * Whether a crash was reported the way F94 reported it: exit 7 and a raw Node stack.
+ *
+ * The regression tripwire. Exit 7 is a promise about a person being needed, and a crash keeps none of
+ * it — so a run that ends this way is a finding whatever else the suite was asking about.
+ */
+export function looksLikeUnreportedCrash(result: LiveResult): boolean {
   return result.exitCode === 7 && /\nNode\.js v\d/.test(result.all);
 }
 
 /** Assert an exit code, with the artifact path in the message rather than the whole output. */
 export function expectExit(result: LiveResult, code: number, why?: string): void {
   if (result.exitCode !== code) {
-    const crashed = looksLikeUncaughtException(result)
-      ? ' This is an uncaught exception, not a report: exit 7 plus a raw Node stack is F94, ' +
-        'the rethrow in the `uncaughtException` handler. The first stack frame in the artifact is the ' +
-        'real failure.'
-      : '';
+    const crashed = looksLikeUnreportedCrash(result)
+      ? ' This is an uncaught exception reported as needs-human: exit 7 plus a raw Node stack is F94 ' +
+        'come back — the handler in `src/utils/errors.ts` is rethrowing again. The first stack frame in ' +
+        'the artifact is the real failure.'
+      : result.all.includes(CRASH_REPORT_MARKER)
+        ? ' An error reached the top of the process: the output carries the crash report, so the exit ' +
+          'code is 1 for a defect rather than an answer about the project. The stack in the artifact is ' +
+          'the real failure.'
+        : '';
     throw new Error(
       `"exagent ${result.argv.join(' ')}" exited ${result.exitCode}, expected ${code}` +
         `${why ? ` (${why})` : ''}.${crashed} Full output: ${result.artifact}`

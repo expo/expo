@@ -272,7 +272,13 @@ runtime on its way out, so an app that quit instead of coming back still counted
 skipped it, and had nothing left — which is what `No target found.` means (F39).
 
 Metro's page ids come from a counter it does not rewind, exactly like the message socket's peer
-ids, so "a target this run has not seen" is decidable rather than inferred. Three properties:
+ids, so "a target this run has not seen" is decidable rather than inferred. And the same test now
+applies to the **peer** list, which it did not until wave 22: the churn wait returned as soon as
+`peersChanged` was true, and a list changes in two directions — an app that had dropped its connection
+and not yet come back satisfied it, so this rung could report the reload as observed off a client
+*leaving*. It waits for an id the dev server had not listed before, and reports the count
+(`commandSocketChurn.reconnected`), which is what makes `verifiedBy: 'message-socket-peers'` checkable
+[F95]. Three properties:
 
 - **The known ids are read as late as possible**, from a probe of their own taken after the bundle
   gate and immediately before the broadcast — never reused from discovery. A save the watcher
@@ -280,6 +286,11 @@ ids, so "a target this run has not seen" is decidable rather than inferred. Thre
 - **`appsConnected` and `appsReconnected` are both reported**, because they answer different
   questions and their difference is the diagnosis: one connected and zero reconnected is an app
   that never re-registered, zero of both is an app that went. The exit-22 prose says which.
+  **Amended in wave 22** [F95, live tier, 2026-08-27]: `appsReconnected: 0` is *three* facts, not two,
+  since the wave-21 ladder watches the bundle signal on every rung — the third being "the bundle proof
+  answered first, so this watch stopped asking". `appsReconnectedReason` names which one, and a run
+  proved by another signal is no longer a zero that reads as an app that failed to come back. See
+  [[0021-honest-reports]] §An observed signal, or the band.
 - **The last read of that wait is the re-read of the target list**, so a success is structurally
   never a peer count — it is a runtime that was observed after the reload. That is what makes F45's
   false-success path impossible rather than unlikely.

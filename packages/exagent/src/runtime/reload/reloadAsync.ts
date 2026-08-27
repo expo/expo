@@ -81,6 +81,42 @@ const PEER_CHURN_TIMEOUT_MS = 8000;
 /** How often the peers are read while waiting for the app to reconnect. */
 const PEER_POLL_INTERVAL_MS = 250;
 
+/**
+ * What the dev server's client command socket was seen to do.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §An observed signal, or the band — F95.
+ *
+ * The evidence behind `verifiedBy: 'message-socket-peers'`, and it exists because the label used to
+ * have none in the payload. A run reported `verifiedBy: 'message-socket-peers'` beside
+ * `appsReconnected: 0` [observed — live tier, 2026-08-27, twice], and a reader reconciling those two
+ * numbers was reconciling a label against a **different signal's** count: `appsReconnected` is what
+ * `fresh-debugger-target` rests on. Every label now carries its own count, and a label whose count is
+ * zero cannot be named ({@link hasEvidenceFor}).
+ */
+export interface CommandSocketChurn {
+  /**
+   * A client the dev server had not listed before registered after the broadcast.
+   *
+   * Null when the socket was never asked — the rung was skipped, or a pinned `--method` went past it.
+   */
+  observed: boolean | null;
+  /** Clients registered before the broadcast, or null when the dev server did not answer. */
+  before: number | null;
+  /** Clients registered at the read that ended the wait, or null when there was none. */
+  after: number | null;
+  /**
+   * Client ids present afterwards that were not present before.
+   *
+   * The number the label rests on, and not the same question as "did the list change": a client that
+   * **left** changes the list too, and an app that dropped its connection and did not come back is
+   * the failure this count exists to tell apart. The dev server's socket ids come from a counter it
+   * never rewinds (`../messageSocket.ts`), so a new id is a new connection.
+   */
+  reconnected: number;
+  /** Why nothing was observed, or null when something was. */
+  reason: string | null;
+}
+
 /** One way of reloading, and what it did. */
 export interface ReloadAttempt {
   method: 'dev-server' | 'runtime' | 'device';
@@ -124,6 +160,13 @@ export interface ReloadResultJson {
    *
    * The mechanism's own observation wins the label when it has one, because it is the stronger fact;
    * the exit code is decided by the observations rather than by the label (llp/0005 §One ladder).
+   *
+   * **One rule, and it is checked rather than intended** (F95, llp/0021 §An observed signal, or the
+   * band): this may name only a signal whose **own** evidence is in this payload and non-empty —
+   * `commandSocketChurn.reconnected` for `message-socket-peers`, {@link appsReconnected} for
+   * `fresh-debugger-target`, `bundlesAfterReload.count` for `dev-server-bundle`, and an `attempts`
+   * entry that stopped and started the app for `app-relaunch`. A label with nothing to show for
+   * itself is `null`, which makes `reloaded` false — the band, rather than a claim.
    */
   verifiedBy:
     | 'message-socket-peers'
@@ -146,15 +189,35 @@ export interface ReloadResultJson {
    */
   commandSocketClients: number | null;
   /**
+   * What that socket was seen to do: the evidence `verifiedBy: 'message-socket-peers'` rests on.
+   *
+   * @see CommandSocketChurn — F95. `commandSocketClients` above is a count *before* the broadcast,
+   * which is a fact about the world and not about the reload.
+   */
+  commandSocketChurn: CommandSocketChurn;
+  /**
    * How many of those targets the dev server had *not* listed before the reload.
    *
-   * The number success is decided on, and the reason it is reported next to
-   * {@link appsConnected} rather than instead of it. A reloading app's previous target stays in
+   * The evidence `verifiedBy: 'fresh-debugger-target'` rests on, and the reason it is reported next
+   * to {@link appsConnected} rather than instead of it. A reloading app's previous target stays in
    * `/json/list` for about half a second [observed — 2026-08-23, live], so one connected and zero
    * reconnected is an app that has not come back — which is the false success friction run 4
    * recorded as F45, and the flake it recorded as F39.
+   *
+   * **Zero is not always "the app did not come back"** (F95): the wait for this runs against the
+   * bundle watch on one budget, and whichever answers first ends both — so a run proved by another
+   * signal leaves this at zero having stopped asking. {@link appsReconnectedReason} is what says
+   * which of those a zero is.
    */
   appsReconnected: number;
+  /**
+   * Why {@link appsReconnected} is zero, or null when it is not zero.
+   *
+   * A zero used to be a number with no story, sitting under `Reloaded yes` and reading as a
+   * contradiction [observed — live tier, 2026-08-27]. Three different facts produce it — nothing was
+   * reloaded, another proof ended the wait, or the wait ran out — and they are different next steps.
+   */
+  appsReconnectedReason: string | null;
   /**
    * What building this project's entry bundle answered, before anything was reloaded.
    *
@@ -301,6 +364,15 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   // Read whenever the command socket is opened at all, and reported next to the debugger-target
   // count rather than instead of it (llp/0005 §Two lists, one question).
   let commandSocketClients: number | null = null;
+  // The evidence behind `verifiedBy: 'message-socket-peers'` (F95). Its own default says the socket
+  // was never asked, which is the truth for every run that skipped the rung.
+  let commandSocketChurn: CommandSocketChurn = {
+    observed: null,
+    before: null,
+    after: null,
+    reconnected: 0,
+    reason: 'the dev server\'s command socket was not asked on this run',
+  };
   // Where the dev server's captured output stood before anything was reloaded. Marked on every rung
   // (wave 21): "was the app seen to come back" is one question, and a command that answered it two
   // ways depending on where the device was is two commands wearing one name.
@@ -340,8 +412,18 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
       // connected" from "the app is connected and this socket cannot see it" (K2).
       const attempt = await reloadOverDevServerAsync(devServerUrl, {
         connectedApps: observedApps,
-        onPeers: (count) => {
-          commandSocketClients = count;
+        // Bounded by the command's own budget as well as by its own (F95). The wait is for a *new*
+        // client id now rather than for the list to move, so an app that dropped its connection and
+        // stayed away spends the whole churn window — and a `--timeout` the caller chose must not be
+        // outlived by a step inside it, which would delay the relaunch rung past the deadline. The
+        // floor keeps at least one read: a budget already spent is still worth one look.
+        churnTimeoutMs: Math.min(
+          PEER_CHURN_TIMEOUT_MS,
+          Math.max(remainingMs(), PEER_POLL_INTERVAL_MS * 2)
+        ),
+        onChurn: (churn) => {
+          commandSocketChurn = churn;
+          commandSocketClients = churn.before;
         },
       });
       attempts.push(attempt);
@@ -438,14 +520,24 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   // "the app's connection was replaced" and "the dev server served a bundle to somebody" are
   // different facts and the stronger one belongs in the report. With no mechanism proof, the
   // observation that answered is the label — and with neither, `reloaded` is false.
+  //
+  // **Every candidate has to have its evidence in the payload** (F95). Before wave 22 the mechanism
+  // proof was taken on trust, and the report then named a signal a reader could not check: a run said
+  // `verifiedBy: 'message-socket-peers'` beside `appsReconnected: 0`, which is a label reconciled
+  // against a different signal's count. Now the label is chosen from the candidates that can show
+  // themselves, in the same order of strength.
   if (method != null) {
+    const evidence: VerificationEvidence = {
+      churn: commandSocketChurn,
+      freshTargets: connection.freshTargets,
+      bundle: bundleObservation,
+      attempts,
+    };
     verifiedBy =
-      mechanismProof ??
-      (connection.freshTargets > 0
-        ? 'fresh-debugger-target'
-        : bundleObservation?.observed
-          ? 'dev-server-bundle'
-          : null);
+      ([mechanismProof, 'fresh-debugger-target', 'dev-server-bundle'] as const).find(
+        (label): label is NonNullable<ReloadResultJson['verifiedBy']> =>
+          label != null && hasEvidenceFor(label, evidence)
+      ) ?? null;
   }
   if (bundleObservation != null) {
     debugEvent('bundle_observed', {
@@ -509,7 +601,15 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     devServerSource: devServer.devServerSource,
     appsConnected: connection.appsConnected,
     commandSocketClients,
+    commandSocketChurn,
     appsReconnected: connection.freshTargets,
+    appsReconnectedReason: describeNoReconnection({
+      method,
+      freshTargets: connection.freshTargets,
+      bundle: bundleObservation,
+      timedOut: connection.timedOut,
+      timeoutMs: options.timeoutMs,
+    }),
     // The same flag as `dev:wait`'s, so the reason a null bundle carries is the same sentence
     // whichever command asked the question (llp/0010 §The reload gate).
     bundle: bundleToJson(bundle, { skippedByFlag: !options.bundleCheck }),
@@ -561,6 +661,77 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   return exitCode;
 }
 
+/** Everything a label could be named off, as the payload will carry it. */
+export interface VerificationEvidence {
+  churn: CommandSocketChurn;
+  freshTargets: number;
+  bundle: BundleSignalObservation | null;
+  attempts: readonly ReloadAttempt[];
+}
+
+/**
+ * Whether the payload holds this label's **own** evidence, non-empty.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §An observed signal, or the band — F95.
+ *
+ * The rule `verifiedBy` is chosen by, spelled once so a fifth label cannot be added without saying
+ * what would prove it. Each case names a field of {@link ReloadResultJson} and nothing else: a reader
+ * who wants to check the label reads that field, and a label whose field is empty is not printed.
+ */
+export function hasEvidenceFor(
+  label: NonNullable<ReloadResultJson['verifiedBy']>,
+  evidence: VerificationEvidence
+): boolean {
+  switch (label) {
+    case 'message-socket-peers':
+      return evidence.churn.observed === true && evidence.churn.reconnected > 0;
+    case 'fresh-debugger-target':
+      return evidence.freshTargets > 0;
+    case 'dev-server-bundle':
+      return evidence.bundle?.observed === true && evidence.bundle.newBundles > 0;
+    case 'app-relaunch':
+      // The relaunch is its own observation — `simctl terminate` names a process and fails when there
+      // is none — so what has to be in the payload is the attempt that made it, succeeding.
+      return evidence.attempts.some((attempt) => attempt.method === 'device' && attempt.ok);
+  }
+}
+
+/**
+ * Why nothing reconnected on the debugger target list, or null when something did.
+ *
+ * F95. Three facts produce a zero and they are three different next steps, and the report used to
+ * carry the number with none of them: `appsReconnected: 0` under `Reloaded yes` reads as a
+ * contradiction, and the reader cannot tell "the app did not come back" from "this watch was ended by
+ * the other proof answering first" — which is what `waitForReloadEvidenceAsync` does by design.
+ */
+function describeNoReconnection({
+  method,
+  freshTargets,
+  bundle,
+  timedOut,
+  timeoutMs,
+}: {
+  method: ReloadResultJson['method'];
+  freshTargets: number;
+  bundle: BundleSignalObservation | null;
+  timedOut: boolean;
+  timeoutMs: number;
+}): string | null {
+  if (freshTargets > 0) {
+    return null;
+  }
+  if (method == null) {
+    return 'no reload happened, so nothing had reason to reconnect';
+  }
+  if (bundle?.observed === true) {
+    return 'the dev server was seen to serve a bundle first, which ended this watch — so this is not a count of an app that failed to come back';
+  }
+  if (timedOut) {
+    return `the dev server listed no debugger target it had not listed before within ${timeoutMs}ms`;
+  }
+  return 'nothing was watched for a fresh debugger target on this run';
+}
+
 /**
  * Say on the attempt what the relaunch cost, when it cost anything.
  *
@@ -597,18 +768,19 @@ export async function reloadOverDevServerAsync(
     connect = connectMessageSocketAsync,
     churnTimeoutMs = PEER_CHURN_TIMEOUT_MS,
     connectedApps = 0,
-    onPeers,
+    onChurn,
   }: {
     connect?: typeof connectMessageSocketAsync;
     churnTimeoutMs?: number;
     /**
-     * Called with the number of clients this socket held before the broadcast, or null when the
-     * dev server did not answer.
+     * Called once with everything this socket was seen to do, whatever the outcome.
      *
-     * An out-parameter rather than a second return value, because the count is a fact for the
+     * An out-parameter rather than a second return value, because these are facts for the
      * **report** and not part of what this function decides (llp/0005 §Two lists, one question).
+     * Called on every path, including the ones that fail before the broadcast: a payload whose
+     * evidence field is missing for a run that asked the question is the shape F95 was.
      */
-    onPeers?: (count: number | null) => void;
+    onChurn?: (churn: CommandSocketChurn) => void;
     /**
      * How many apps `/json/list` named, which is the list the rest of this CLI uses.
      *
@@ -630,50 +802,49 @@ export async function reloadOverDevServerAsync(
   try {
     socket = await connect(devServerUrl);
   } catch (error: unknown) {
-    return failed(
-      `could not open the dev server's command socket: ${error instanceof Error ? error.message : String(error)}`
-    );
+    const reason = `could not open the dev server's command socket: ${error instanceof Error ? error.message : String(error)}`;
+    onChurn?.({ observed: null, before: null, after: null, reconnected: 0, reason });
+    return failed(reason);
   }
 
   try {
     const before = await socket.getPeersAsync();
     debugEvent('peers_read', { count: before ? Object.keys(before).length : null, when: 'before' });
-    onPeers?.(before ? Object.keys(before).length : null);
 
     if (before == null) {
-      return failed(
-        `the dev server did not answer on its command socket, so it does not speak this protocol version and would have dropped the reload silently${
-          connectedApps > 0
-            ? ` — while its debugger target list names ${connectedApps} connected app(s), which is the list the debugger method below uses`
-            : ''
-        }`
-      );
+      const reason = `the dev server did not answer on its command socket, so it does not speak this protocol version and would have dropped the reload silently${
+        connectedApps > 0
+          ? ` — while its debugger target list names ${connectedApps} connected app(s), which is the list the debugger method below uses`
+          : ''
+      }`;
+      onChurn?.({ observed: null, before: null, after: null, reconnected: 0, reason });
+      return failed(reason);
     }
     if (Object.keys(before).length === 0) {
       // The claim "nothing is connected" is only true when both lists say so. With a debugger
       // target and no peer, the app is running and this socket is the wrong way to reach it — which
       // is what a cloud app over a tunnel was, and what the old wording read as an empty device
       // (K2).
-      return failed(
+      const reason =
         connectedApps > 0
           ? `no client is registered on the dev server's command socket, while its debugger target list names ${connectedApps} connected app(s) — so the app is running and there is nothing to broadcast to`
-          : 'no app is connected to the dev server, so there is nothing to broadcast to'
-      );
+          : 'no app is connected to the dev server, so there is nothing to broadcast to';
+      onChurn?.({ observed: false, before: 0, after: 0, reconnected: 0, reason });
+      return failed(reason);
     }
 
     socket.broadcastReload();
     debugEvent('broadcast_sent', { devServerUrl });
 
-    const churned = await waitForPeerChurnAsync(socket, before, churnTimeoutMs);
-    if (!churned) {
-      return failed(
-        `the reload was broadcast, but no client reconnected within ${churnTimeoutMs}ms, so the app did not act on it`
-      );
+    const churn = await waitForPeerChurnAsync(socket, before, churnTimeoutMs);
+    onChurn?.(churn);
+    if (!churn.observed) {
+      return failed(churn.reason ?? 'nothing was seen on the dev server\'s command socket');
     }
     return {
       method: 'dev-server',
       ok: true,
-      reason: `the dev server broadcast the reload and the app reconnected to its command socket`,
+      reason: `the dev server broadcast the reload and ${churn.reconnected === 1 ? 'the app reconnected' : `${churn.reconnected} clients reconnected`} to its command socket`,
       leftAppStopped: null,
     };
   } finally {
@@ -747,22 +918,56 @@ function firstLine(text: string): string {
   return text.split('\n')[0]!.trim();
 }
 
-/** Poll the peers until they are not the ones that were there before, or the budget runs out. */
+/**
+ * Poll the peers until one the dev server had not listed before appears, or the budget runs out.
+ *
+ * **A new id, not a changed list** (F95). This used to return as soon as `peersChanged` was true, and
+ * a list changes in two directions: an app that dropped its connection and had not yet come back
+ * satisfied it, and the rung reported the reload as observed off a client *leaving*. The dev server's
+ * ids come from a counter it never rewinds (`../messageSocket.ts`), so the honest question is whether
+ * an id appeared that was not there before — which is also the count the report has to carry, because
+ * a label with no count behind it is the defect this whole field exists to close.
+ */
 async function waitForPeerChurnAsync(
   socket: DevServerMessageSocket,
   before: MessageSocketPeers,
   timeoutMs: number
-): Promise<boolean> {
+): Promise<CommandSocketChurn> {
+  const beforeIds = new Set(Object.keys(before));
   const deadline = Date.now() + timeoutMs;
+  /** Whether the list moved at all, which tells "it left and stayed away" from "nothing happened". */
+  let sawAnyChange = false;
+  let lastCount: number | null = beforeIds.size;
+
   for (;;) {
     await new Promise((resolve) => setTimeout(resolve, PEER_POLL_INTERVAL_MS));
     const after = await socket.getPeersAsync({ timeoutMs: PEER_POLL_INTERVAL_MS * 4 });
-    debugEvent('peers_read', { count: after ? Object.keys(after).length : null, when: 'after' });
-    if (peersChanged(before, after) === true) {
-      return true;
+    const afterIds = after ? Object.keys(after) : [];
+    lastCount = after ? afterIds.length : null;
+    debugEvent('peers_read', { count: lastCount, when: 'after' });
+
+    const fresh = afterIds.filter((id) => !beforeIds.has(id));
+    if (fresh.length > 0) {
+      return {
+        observed: true,
+        before: beforeIds.size,
+        after: afterIds.length,
+        reconnected: fresh.length,
+        reason: null,
+      };
     }
+    sawAnyChange = sawAnyChange || peersChanged(before, after) === true;
+
     if (Date.now() >= deadline) {
-      return false;
+      return {
+        observed: false,
+        before: beforeIds.size,
+        after: lastCount,
+        reconnected: 0,
+        reason: sawAnyChange
+          ? `the reload was broadcast and the app dropped its connection to the dev server's command socket, but nothing registered a new one within ${timeoutMs}ms — so the app went and did not come back`
+          : `the reload was broadcast, but no client reconnected within ${timeoutMs}ms, so the app did not act on it`,
+      };
     }
   }
 }
@@ -1092,6 +1297,27 @@ function explainCloudRelaunchRefusal(report: ReloadResultJson): string[] {
   ];
 }
 
+/**
+ * The count behind the label, in one clause.
+ *
+ * F95: `verified by message-socket-peers` on its own is a name, and the reader's only way to check it
+ * used to be a number belonging to a different signal. Each label reads its own field.
+ */
+function describeEvidence(report: ReloadResultJson): string {
+  switch (report.verifiedBy) {
+    case 'message-socket-peers':
+      return `${report.commandSocketChurn.reconnected} client(s) registered on the dev server's command socket that it had not listed before`;
+    case 'fresh-debugger-target':
+      return `${report.appsReconnected} debugger target(s) the dev server had not listed before`;
+    case 'dev-server-bundle':
+      return `${report.bundlesAfterReload.count} bundle(s) the dev server finished after this command acted`;
+    case 'app-relaunch':
+      return 'the app was stopped on the device and started again';
+    default:
+      return 'nothing';
+  }
+}
+
 function printHumanReport(report: ReloadResultJson, options: ReloadOptions): void {
   const lines = [
     chalk`{bold Reloaded} ${report.reloaded ? chalk.green('yes') : chalk.red('no')}${
@@ -1101,19 +1327,22 @@ function printHumanReport(report: ReloadResultJson, options: ReloadOptions): voi
     }`,
   ];
   if (report.verifiedBy) {
-    lines.push(chalk`{dim  verified by ${report.verifiedBy}}`);
+    // The evidence beside the label, always: a label a reader has to go looking for the count of is
+    // the shape F95 was, and "verified by message-socket-peers" over "0 reconnected" is what it read
+    // like.
+    lines.push(chalk`{dim  verified by ${report.verifiedBy} · ${describeEvidence(report)}}`);
   }
   lines.push(
     chalk`{bold Dev server} ${report.devServerUrl}{dim  · via ${report.devServerSource}}`,
-    // Both numbers whenever a reload happened: the second is what the reload was judged on, and
-    // printing only the first is what let "Apps connected 1" describe a runtime that was on its
-    // way out (F45). When no reload happened there is nothing to count reconnections *against*,
-    // and "0 reconnected after the reload" read as an app that failed to come back from one
-    // [friction run 5, F48-6] — so the clause says which of the two this is instead.
+    // Both numbers whenever a reload happened: the second is what a reload proved by a debugger
+    // target is judged on, and printing only the first is what let "Apps connected 1" describe a
+    // runtime that was on its way out (F45). A zero says *why* it is zero (F95): "0 reconnected
+    // after the reload" was three different facts wearing one number, one of them being "another
+    // proof answered first and this watch stopped asking".
     chalk`{bold Apps connected} ${report.appsConnected}{dim  · ${
-      report.reloaded
+      report.appsReconnected > 0
         ? `${report.appsReconnected} reconnected after the reload`
-        : 'no reload happened, so nothing had reason to reconnect'
+        : (report.appsReconnectedReason ?? 'none reconnected after the reload')
     }}`
   );
   // @ref llp/0005 §Two lists, one question. Its own line, whenever the socket was asked: one number

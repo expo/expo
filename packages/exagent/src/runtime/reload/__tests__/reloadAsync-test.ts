@@ -331,11 +331,13 @@ describe(reloadAsync, () => {
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'appsConnected',
       'appsReconnected',
+      'appsReconnectedReason',
       'attempts',
       'bundle',
       'bundlePlatformSource',
       'bundlePlatforms',
       'bundlesAfterReload',
+      'commandSocketChurn',
       'commandSocketClients',
       'devServerSource',
       'devServerUrl',
@@ -719,7 +721,15 @@ describe(explainReloadFailure, () => {
       devServerSource: 'flag',
       appsConnected: 0,
       commandSocketClients: 1,
+      commandSocketChurn: {
+        observed: false,
+        before: 1,
+        after: 1,
+        reconnected: 0,
+        reason: 'the reload was broadcast, but no client reconnected within 8000ms',
+      },
       appsReconnected: 0,
+      appsReconnectedReason: 'no reload happened, so nothing had reason to reconnect',
       bundle: { checked: true, ok: true, platform: 'ios', url: null, error: null, reason: null },
       bundlesAfterReload: { observed: null, count: 0, line: null, reason: null },
       bundlePlatforms: ['ios'],
@@ -1381,5 +1391,187 @@ describe('the rung the ladder picks', () => {
       reloaded: true,
       bundlesAfterReload: { observed: false },
     });
+  });
+});
+
+// F95 — MAJOR, found by the live tier on 2026-08-27 and observed twice.
+//
+// The report said `verifiedBy: 'message-socket-peers'` while `appsReconnected: 0`. Both numbers were
+// true of the run, and the report was still not honest: `appsReconnected` is the evidence for
+// `fresh-debugger-target`, so a reader checking the label was checking it against a *different*
+// signal's count — and the label's own count was nowhere in the payload at all.
+//
+// The rule this block pins (llp/0021 §An observed signal, or the band): `verifiedBy` may name only a
+// signal whose own evidence is in the payload and non-empty. Every rung of the ladder, because "the
+// dev-server rung is consistent" is the claim that was made before.
+describe('the verification payload', () => {
+  /**
+   * The one invariant, applied to whatever a rung produced.
+   *
+   * Written as a function rather than repeated per test so that a rung added later cannot be added
+   * without it — and so the failure message names the label and the count it could not show.
+   */
+  function expectVerificationIsBacked(report: ReloadResultJson): void {
+    const evidence: Record<string, number> = {
+      'message-socket-peers': report.commandSocketChurn.reconnected,
+      'fresh-debugger-target': report.appsReconnected,
+      'dev-server-bundle': report.bundlesAfterReload.count,
+      // The relaunch's evidence is not a count: it is the attempt that stopped and started the app.
+      'app-relaunch': report.attempts.filter((a) => a.method === 'device' && a.ok).length,
+    };
+    // `reloaded` is exactly "a label was earned", so the two can never disagree.
+    expect(report.reloaded).toBe(report.verifiedBy != null);
+    if (report.verifiedBy == null) {
+      return;
+    }
+    expect(Object.keys(evidence)).toContain(report.verifiedBy);
+    expect({
+      verifiedBy: report.verifiedBy,
+      evidence: evidence[report.verifiedBy],
+    }).toEqual({ verifiedBy: report.verifiedBy, evidence: expect.any(Number) });
+    expect(evidence[report.verifiedBy]).toBeGreaterThan(0);
+    // And a zero on the other count is never left as a bare number.
+    if (report.appsReconnected === 0) {
+      expect(report.appsReconnectedReason).not.toBeNull();
+    } else {
+      expect(report.appsReconnectedReason).toBeNull();
+    }
+  }
+
+  it('backs message-socket-peers with the churn count on the ordinary dev-server rung', async () => {
+    writeProject();
+    mockConnect(mockReloadingDevServer().socket);
+
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    const report: ReloadResultJson = JSON.parse(printed());
+    expectVerificationIsBacked(report);
+    expect(report.verifiedBy).toBe('message-socket-peers');
+    expect(report.commandSocketChurn).toEqual({
+      observed: true,
+      before: 1,
+      after: 1,
+      reconnected: 1,
+      reason: null,
+    });
+  });
+
+  // The live failure, reproduced: the bundle watch answers first and ends the debugger-target watch,
+  // so `appsReconnected` is 0 for a run that was verified. The label keeps its name — peer churn is
+  // what this rung observed — and the payload now carries the count behind it, plus the sentence that
+  // says what the zero is.
+  it('says why appsReconnected is zero when another proof ended that watch', async () => {
+    const bundled = 'iOS Bundled 812ms node_modules/expo-router/entry.js (943 modules)';
+    writeProject({ [detachedLogPath(projectRoot)]: 'Starting project at /project\n' });
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () => {
+        const file = detachedLogPath(projectRoot);
+        fs.writeFileSync(file, `${fs.readFileSync(file, 'utf8')}${bundled}\n`);
+      }).socket
+    );
+
+    await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 2000 }))).resolves.toBe(
+      EXIT_OK
+    );
+    const report: ReloadResultJson = JSON.parse(printed());
+    expectVerificationIsBacked(report);
+    expect(report.verifiedBy).toBe('message-socket-peers');
+    expect(report.appsReconnected).toBe(0);
+    expect(report.commandSocketChurn.reconnected).toBe(1);
+    expect(report.appsReconnectedReason).toContain('serve a bundle first');
+  });
+
+  // The same run without `--json`, because the reader met the contradiction in the prose: "verified
+  // by message-socket-peers" printed directly above "0 reconnected after the reload".
+  it('prints the label with its own count, and never a bare zero under it', async () => {
+    const bundled = 'iOS Bundled 812ms node_modules/expo-router/entry.js (943 modules)';
+    writeProject({ [detachedLogPath(projectRoot)]: 'Starting project at /project\n' });
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () => {
+        const file = detachedLogPath(projectRoot);
+        fs.writeFileSync(file, `${fs.readFileSync(file, 'utf8')}${bundled}\n`);
+      }).socket
+    );
+
+    await reloadAsync(projectRoot, options({ timeoutMs: 2000 }));
+
+    expect(printed()).toContain('verified by message-socket-peers');
+    expect(printed()).toContain("1 client(s) registered on the dev server's command socket");
+    expect(printed()).not.toContain('0 reconnected after the reload');
+    expect(printed()).toContain('serve a bundle first');
+  });
+
+  it('backs fresh-debugger-target with appsReconnected on the runtime rung', async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+    jest
+      .spyOn(require('../../cdpClient'), 'CdpClient')
+      .mockImplementation(() => ({ evaluateAsync: jest.fn(async () => ({ value: 'ready', type: 'string' })) }) as any);
+    setTimeout(() => server.listing([RELOADED_EXPO_GO_TARGET]), 10).unref();
+
+    await expect(
+      reloadAsync(projectRoot, options({ json: true, method: 'runtime' }))
+    ).resolves.toBe(EXIT_OK);
+    const report: ReloadResultJson = JSON.parse(printed());
+    expectVerificationIsBacked(report);
+    expect(report.verifiedBy).toBe('fresh-debugger-target');
+    expect(report.appsReconnected).toBe(1);
+    // A pinned `--method runtime` never opens the socket, so its evidence is `null` — nothing was
+    // established either way — rather than a zero that would read as "the socket held no client".
+    expect(report.commandSocketChurn.observed).toBeNull();
+    expect(report.commandSocketChurn.reconnected).toBe(0);
+    jest.restoreAllMocks();
+  });
+
+  it('backs app-relaunch with the attempt that stopped and started the app', async () => {
+    writeProject();
+    const server = mockDevServer([]);
+    mockConnect(fakeSocket([{}]).socket);
+    mockSpawnQueue(
+      [{ stdout: BOOTED_SIMULATOR }, { stdout: '' }, { stdout: BOOTED_SIMULATOR }, { stdout: '' }],
+      (index) => index === 2 && server.listing([RELOADED_EXPO_GO_TARGET])
+    );
+
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    const report: ReloadResultJson = JSON.parse(printed());
+    expectVerificationIsBacked(report);
+    expect(report.verifiedBy).toBe('app-relaunch');
+  });
+
+  // The false-green this closes on the way past. `peersChanged` was the old test, and a list changes
+  // in two directions: an app that dropped its connection and did not come back satisfied it, and the
+  // rung then reported the reload as observed off a client *leaving*.
+  it('refuses the label when the only churn was a client leaving', async () => {
+    writeProject();
+    // One client before, none after, and the listing never changes — so nothing came back on either
+    // list. The peers *did* change.
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }, {}]).socket);
+
+    await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 900 }))).resolves.toBe(
+      EXIT_OUTCOME_FAILED
+    );
+    const report: ReloadResultJson = JSON.parse(printed());
+    expectVerificationIsBacked(report);
+    expect(report.verifiedBy).toBeNull();
+    expect(report.reloaded).toBe(false);
+    expect(report.commandSocketChurn).toMatchObject({ observed: false, reconnected: 0 });
+    expect(report.commandSocketChurn.reason).toContain('did not come back');
+  });
+
+  it('reports the socket as unasked rather than empty when the rung was skipped', async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }]).socket);
+
+    await reloadAsync(projectRoot, options({ json: true }));
+    const report: ReloadResultJson = JSON.parse(printed());
+    expectVerificationIsBacked(report);
+    // Null and not false: nothing asked, so nothing was established either way.
+    expect(report.commandSocketChurn.observed).toBeNull();
+    expect(report.commandSocketChurn.reason).toContain('not asked');
+    expect(report.appsReconnectedReason).toContain('no reload happened');
   });
 });

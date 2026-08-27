@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft — implemented
-**Systems:** `src/dev/stopAsync.ts`, `src/dev/portListener.ts`; `src/dev/detachAsync.ts`, `src/dev/childVerdict.ts`, `src/dev/advertisedUrl.ts`; `src/dev/forwardedArgs.ts`; `src/status/statusAsync.ts`, `src/status/sections.ts`, `src/status/format.ts`, `src/status/assert.ts`, `src/status/types.ts`, `src/impact/buildCache.ts`; `src/needsHuman/preflight.ts`; `src/deploy/deployAsync.ts`, `src/deploy/easFailure.ts`; `src/typecheck/generatedTypes.ts`; `src/passthrough/auth.ts`; `src/followups/doctor.ts`, `src/followups/typecheck.ts`, `src/followups/status.ts`
+**Systems:** `src/utils/errors.ts`, `src/utils/runnerLock.ts`, `src/utils/wrapperCrash.ts`, `src/runtime/reload/reloadAsync.ts`; `src/dev/stopAsync.ts`, `src/dev/portListener.ts`; `src/dev/detachAsync.ts`, `src/dev/childVerdict.ts`, `src/dev/advertisedUrl.ts`; `src/dev/forwardedArgs.ts`; `src/status/statusAsync.ts`, `src/status/sections.ts`, `src/status/format.ts`, `src/status/assert.ts`, `src/status/types.ts`, `src/impact/buildCache.ts`; `src/needsHuman/preflight.ts`; `src/deploy/deployAsync.ts`, `src/deploy/easFailure.ts`; `src/typecheck/generatedTypes.ts`; `src/passthrough/auth.ts`; `src/followups/doctor.ts`, `src/followups/typecheck.ts`, `src/followups/status.ts`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-27
 **Related:** [[0004-smart-start-and-project-state]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0011-impact-and-freshness]], [[0015-backend-selection-and-config]], [[0016-v1-scope]]
@@ -43,6 +43,13 @@ of fixing them, because the same mistake is available to every command in the su
    wire.
 9. **A string this CLI prints is a string that works.** Relaying another tool's URL unchecked is
    relaying a URL nobody can open.
+10. **An observed signal, or the band.** A report may name the signal that verified something only
+    when that signal's *own* evidence is in the payload and non-empty. A label checked against
+    another signal's count is a label nobody can check.
+11. **The runner is not the service.** A tool this CLI chose to reach another tool *through* is a
+    third party in the sentence. Its progress output is never quoted as the answer.
+12. **A crash is a tool error.** An unexpected failure of this CLI is exit 1 with what happened, and
+    never a code that promises something else.
 
 Every section below is one of these applied, with the finding that forced it.
 
@@ -418,6 +425,128 @@ Go take different URLs), the `cli:status` event carries the best one as `openUrl
 different strings for the same thing. Printed only for a dev server a device off this machine can
 reach: on a local run the listen address is the whole answer.
 
+## An observed signal, or the band
+
+`runtime:reload --json` reported `verifiedBy: "message-socket-peers"` beside `appsReconnected: 0`,
+twice on the merged tree [F95, live tier, 2026-08-27]. Both numbers were true of the run. The report
+was still not honest, and the reason is the interesting part: **`appsReconnected` is a different
+signal's evidence.** It counts debugger targets the dev server had not listed before, which is what
+`fresh-debugger-target` rests on; the peer churn's own count was nowhere in the payload. So the only
+number a reader could reconcile the label against was one that says nothing about it — and the
+reconciliation it invites, "verified by the peers, and none reconnected", is a contradiction the
+command never meant to state.
+
+It was not a false attribution: the churn had fired, and the label was earned. It was **a label with
+no evidence in the payload**, which is the same defect one step earlier: a claim nobody can check is
+indistinguishable from a claim that is wrong.
+
+**The decision.** Every label names a field, and the field is in the payload:
+
+| `verifiedBy` | its evidence |
+| --- | --- |
+| `message-socket-peers` | `commandSocketChurn.reconnected` |
+| `fresh-debugger-target` | `appsReconnected` |
+| `dev-server-bundle` | `bundlesAfterReload.count` |
+| `app-relaunch` | an `attempts` entry with `method: "device"` and `ok: true` |
+
+`hasEvidenceFor` (`src/runtime/reload/reloadAsync.ts`) is that table as code, and the label is
+**chosen** through it rather than checked after the fact: the candidates are tried in order of
+strength — the mechanism's own observation first, as before — and the first one that can show itself
+wins. A run where none can is `verifiedBy: null`, which makes `reloaded` false. That is the band, and
+it is the right answer: the exit code is still decided by the observations (llp/0005 §One ladder), so
+such a run exits 22 with what it did watch for, rather than 0 with a name.
+
+Two accounting fixes came with it, both of them a number that was true and unreadable.
+
+**A zero needs a story.** `appsReconnected: 0` is three different facts — nothing was reloaded, the
+wait ran out, or *the other proof answered first and this watch stopped asking*. The third is by
+design: the two watches share one budget and whichever answers ends both
+(`waitForReloadEvidenceAsync`), which is what made the live report flaky rather than wrong. So
+`appsReconnectedReason` says which one, the way `bundlesAfterReload.reason` already did on the other
+side, and the human report prints the sentence instead of the bare zero.
+
+**A list that changed is not a client that came back.** The peer wait returned as soon as
+`peersChanged` was true, and a list changes in two directions: an app that had dropped its connection
+and not yet returned satisfied it. The rung could therefore report the reload as observed off a
+client *leaving* — rule 10 broken at the source rather than in the report. It now waits for an **id
+the dev server had not used before**, which is both the honest test and the count the payload needs;
+the dev server's ids come from a counter it never rewinds, so a reconnection is always a new one. The
+wait is additionally bounded by the command's own `--timeout`, because waiting for a new id can take
+the whole churn window where waiting for any change could not, and a step inside a deadline must not
+outlive it.
+
+## The runner is not the service
+
+`status --explain` reported `reason: "Resolving dependencies"` for a platform's EAS build lookup
+[F93, live tier, 2026-08-27, on 3 of 6 runs]. That is bun installing a package. It was printed as
+what EAS said about the caller's builds.
+
+This is [[0019-backend-parity-audit]] bug 3 one process boundary further out. There, the bytes were a
+wrapper's panic under the name `eas` — somebody else's binary, which the machine had chosen. Here they
+are the **package runner's**, which *this CLI* chose (llp/0015 §Resolving the EAS CLI). That makes it
+worse rather than better: the third party in the sentence is a tool the design reached for.
+
+The cause is a property of the runners and is worth writing down, because every caller of the single
+rung inherits it: **a runner keeps one scratch directory per package spec**
+(`$TMPDIR/bunx-<uid>-eas-cli@latest`) and does not queue for it. Two spawns of one spec started
+milliseconds apart are two writers of one directory, and the loser exits 1 with empty stdout and its
+own progress on stderr. `status --explain` starts exactly such a pair, by design (`Promise.all` over
+the two platforms), and it is not the only one: `status --explain --build <id>` runs
+`fingerprint:compare` and `build:view` together, and the OTA safety read runs beside the build lookups.
+
+**Two decisions, and neither alone is enough.**
+
+1. **Serialize per spec, in the spawn layer.** `src/utils/runnerLock.ts` derives the key from the argv
+   — runner name plus package spec — so no call site has to remember, and all three spawn helpers that
+   can start a runner go through it (`subprocess.ts`, `spawnCapture.ts`, `inheritedRun.ts`). Two
+   different specs still run at once, and nothing that is not a runner is touched. The alternative
+   considered and rejected was a private cache per spawn: it buys concurrency by making every lookup a
+   cold download, which is the cost llp/0015 §What the first run costs is careful to pay once per
+   machine, and it rests on two other tools' undocumented environment variables.
+2. **Guard the report anyway.** A mutex is a claim about *this process*, and the directory can be held
+   by a sibling that crashed. So `describeLookupFailure` will not quote a line the runner wrote:
+   `looksLikeRunnerNoise` (`src/utils/wrapperCrash.ts`) recognises the two runners' install vocabulary
+   the way `looksLikeWrapperCrash` recognises a wrapper's death, and the reason becomes
+   `"bunx eas-cli@latest" failed to deliver the eas CLI …` — a sentence about the runner, with the
+   runner's line quoted **as the runner's**.
+
+The guard's two halves are different from the wrapper guard's, and the difference is instructive: the
+runner's noise *names the package*, so `npm warn exec … will be installed: eas-cli@latest` matches an
+EAS marker and the marker veto would clear it every time. What is required instead is nothing on
+stdout — the CLI's own refusals go there — and the runner's vocabulary as the **first** thing on
+stderr, because the runner prints before it hands over. A first line the list does not recognise is
+left alone and quoted, which is the conservative direction: a vaguer reason costs a re-run, and a
+wrong attribution costs the truth.
+
+## A crash is a tool error
+
+Every unexpected crash of this CLI exited **7** [F94, live tier, 2026-08-27], which llp/0010 reserves
+for a step only a person can complete. An agent branching on 7 read a defect as "hand this to your
+user", and got none of the three things 7 promises: no handoff block, no `cli:needs_human` event, no
+`--json` envelope.
+
+The mechanism was one line, and it is worth knowing about Node rather than about this CLI:
+`src/utils/errors.ts` registered an `uncaughtException` handler for the macOS `EMFILE` watcher limit,
+and that handler **rethrew** everything else. Node's exit code for an exception thrown from inside an
+`uncaughtException` handler is 7, "Internal Exception Handler Run-Time Failure". With no `exagent` in
+the picture:
+
+```
+node -e "process.on('uncaughtException',(e)=>{throw e}); setImmediate(()=>{throw new Error('x')})"
+→ exit 7
+```
+
+**The decision.** The handler does not rethrow. A crash prints what/why/how on stderr **with the
+stack** — `exception` withholds it outside `EXPO_DEBUG`, and the stack is the only report a crash has
+— prints the ordinary error envelope on stdout under `--json` with `code: "UNCAUGHT_EXCEPTION"` and
+the stack under `error.data`, and exits 1. The `EMFILE` recovery keeps its own path.
+
+Synchronous throughout, deliberately: a handler that scheduled an async flush would hand control back
+to an event loop that may have nothing left in it, and Node would then exit **0** for a crash. So the
+JSONL `cli:error` event is *not* emitted here, which is the one thing this path gives up and is the
+right trade — an envelope on stdout and a stack on stderr, over an event that would cost the exit code
+its meaning.
+
 ## Testing
 
 Every finding above has a test that fails against the code as it shipped:
@@ -436,6 +565,16 @@ Every finding above has a test that fails against the code as it shipped:
   and the staging session file; `status --explain` reporting a stub EAS build as fresh on the `eas`
   axis while the `local` axis answers its own question; and `deploy` falling back through a stub
   `npx` — a stub, because a test that reached the registry would be testing the network.
+- Unit, wave 22: `handleUncaughtException` pinned at exit 1 for an injected crash and for a
+  non-`Error` throw, with the `EMFILE` path asserted separately; `runnerSpawnKey` and the lock's
+  exclusion, ordering, fairness and give-up-on-deadline; `looksLikeRunnerNoise` on both runners'
+  vocabulary and on a real refusal that also carries it; `describeLookupFailure` never returning the
+  runner's line; and the reload payload invariant applied to every rung of the ladder, including the
+  rung that must now refuse its label because the only churn was a client leaving.
+- e2e, wave 22: a stub package runner that holds its scratch directory the way a real one does — `mkdir`
+  without `recursive`, held 250 ms — so `status --explain`'s two lookups collide deterministically; the
+  same stub with the directory taken behind its back, which is the collision no mutex can serialize
+  away; and the reload payload invariant across all three of the stub dev server's reload modes.
 - K8's upstream half is reproduced by a script rather than by a test: it is another package's
   behaviour, and a test in this package asserting it would fail on the day it is fixed. The chain is
   recorded above with the file and line of each step.

@@ -159,6 +159,100 @@ export function runnerCrashReason(
 }
 
 /**
+ * Lines only a package **runner** prints: its own resolution, download and install progress.
+ *
+ * The vocabulary of two other tools, anchored where it can be. `bunx` writes the first three on every
+ * run it has to install for [observed — bun 1.3.14], and npm's exec writes the rest.
+ *
+ * Deliberately not a list of every line either tool can print. It is the list of lines that mean
+ * "I was still fetching the package", which is the only state that produces the failure this guards.
+ */
+const RUNNER_NOISE = [
+  /^Resolving dependencies\b/i,
+  /^Resolved,? downloaded and extracted\b/i,
+  /^Saved lockfile\b/i,
+  /^\s*[+-]?\s*installed \d+ packages?\b/i,
+  /^npm (warn|notice) exec\b/i,
+  /^Need to install the following packages\b/i,
+  /^Ok to proceed\? \(y\)/i,
+  /^bun install v/i,
+];
+
+/**
+ * Whether a failed runner spawn printed the **runner's** progress and no answer from the CLI.
+ *
+ * @ref src/utils/runnerLock.ts — F93. Two spawns of one package spec share the runner's scratch
+ * directory, and the loser exits 1 having printed nothing but its own install progress. Quoted into a
+ * report field that holds a *reason*, that line reads as what EAS said about the caller's builds:
+ * `reason: "Resolving dependencies"` [observed — live, 2026-08-27].
+ *
+ * Two halves, the same discipline {@link looksLikeWrapperCrash} follows — and **different** halves,
+ * because the runner's noise *names the package*: `npm warn exec … will be installed: eas-cli@latest`
+ * matches an EAS marker, so the marker veto that guards a wrapper crash would clear this every time.
+ * What is required instead is:
+ *
+ *  1. **Nothing on stdout.** The EAS CLI puts its own refusals there — an unlinked project gets the
+ *     whole `eas init` explanation on stdout with one sentence on stderr
+ *     [observed — 2026-08-26, `src/__fixtures__/eas/README.md`] — so anything on stdout is an answer,
+ *     whatever the runner also said.
+ *  2. **The first thing on stderr is the runner's.** The runner prints before it hands over, so a CLI
+ *     that got as far as saying anything says it first. A first line this list does not recognise is
+ *     left alone and quoted, which is the conservative direction: a vaguer reason costs a reader a
+ *     re-run, and a wrong attribution costs them the truth.
+ */
+export function looksLikeRunnerNoise({
+  exitCode,
+  stdout,
+  stderr,
+}: WrapperCrashInput): boolean {
+  if (exitCode === 0 || exitCode == null) {
+    return false;
+  }
+  if (stdout.trim()) {
+    return false;
+  }
+  const line = firstNonEmptyLine(stderr);
+  return line != null && RUNNER_NOISE.some((pattern) => pattern.test(line));
+}
+
+/** The runner's own first line, which is the one a reason would otherwise have quoted. */
+export function runnerNoiseLine(stderr: string): string | null {
+  return firstNonEmptyLine(stderr);
+}
+
+function firstNonEmptyLine(output: string): string | null {
+  for (const raw of output.split('\n')) {
+    const line = raw.trim();
+    if (line) {
+      return line;
+    }
+  }
+  return null;
+}
+
+/**
+ * What to say when the runner never delivered the CLI, for a field that holds a reason.
+ *
+ * The claim is about the **runner**, and it is the whole point: this is not the service refusing and
+ * not a broken install of the package either — it is `bunx` or `npx` exiting before the CLI ran. So
+ * the line it printed is quoted *as the runner's*, and the recovery is the one that removes the
+ * runner from the path: pinning the CLI into the project.
+ */
+export function runnerNoiseReason(
+  { tool, exitCode }: Pick<WrapperCrashInput, 'tool' | 'exitCode'>,
+  invocation: string,
+  noiseLine: string | null
+): string {
+  const service = tool === 'eas' ? 'EAS' : 'the Expo CLI';
+  return (
+    `"${invocation}" failed to deliver the ${tool} CLI: it exited ${exitCode} having printed only its own ` +
+    `install progress${noiseLine ? ` ("${noiseLine}")` : ''} and nothing an ${tool} run would print, ` +
+    `so nothing here is ${service}'s answer — run it again, or pin the CLI into the project ` +
+    `("npm install --save-dev ${tool === 'eas' ? 'eas-cli' : 'expo'}") so no download can race`
+  );
+}
+
+/**
  * The command that reproduces a failure against the binary that actually ran.
  *
  * `npx eas-cli whoami` checks a *different* program than the one that just failed, so a reader who

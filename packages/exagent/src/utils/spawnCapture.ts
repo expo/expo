@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 
 import { killProcessTree, USE_PROCESS_GROUP } from './processGroup';
+import { acquireRunnerLockAsync, runnerSpawnKey, tryAcquireRunnerLock } from './runnerLock';
 import { resolveSpawnTarget } from './windowsShim';
 
 /** Outcome of one captured subprocess run. */
@@ -18,8 +19,53 @@ export interface SpawnCaptureResult {
  *
  * Never rejects: a non-zero exit code and a missing binary are both results the caller reports
  * to the user, so the failure message can name the tool instead of the exception.
+ *
+ * **A package runner waits its turn** (`./runnerLock.ts`, F93), the same way `spawnSubprocessAsync`
+ * makes it: the cloud simulator's verbs come through here, and they are `npx eas-cli` too.
  */
 export function spawnCaptureAsync(
+  command: string,
+  args: string[],
+  options: { cwd?: string; timeoutMs?: number } = {}
+): Promise<SpawnCaptureResult> {
+  const key = runnerSpawnKey(command, args);
+  if (key == null) {
+    return spawnCaptureNowAsync(command, args, options);
+  }
+  // Nothing is holding it: spawn in this tick (`./runnerLock.ts` §tryAcquireRunnerLock).
+  const free = tryAcquireRunnerLock(key);
+  if (free) {
+    return spawnCaptureNowAsync(command, args, options).finally(() => free.release());
+  }
+  return queuedCaptureAsync(key, command, args, options);
+}
+
+/** The contended case: wait for the runner ahead, then spawn with what is left of the budget. */
+async function queuedCaptureAsync(
+  key: string,
+  command: string,
+  args: string[],
+  options: { cwd?: string; timeoutMs?: number }
+): Promise<SpawnCaptureResult> {
+  const lock = await acquireRunnerLockAsync(key, { timeoutMs: options.timeoutMs });
+  if (lock == null) {
+    // The same shape a killed deadline resolves to here: no code, nothing captured. The caller's
+    // reason names the timeout it asked for, which is what the wait spent.
+    return { stdout: '', stderr: '', exitCode: null };
+  }
+  try {
+    return await spawnCaptureNowAsync(command, args, {
+      ...options,
+      timeoutMs:
+        options.timeoutMs == null ? undefined : Math.max(1, options.timeoutMs - lock.queuedMs),
+    });
+  } finally {
+    lock.release();
+  }
+}
+
+/** Spawn now, with no regard for what else is running. The body of the function above. */
+function spawnCaptureNowAsync(
   command: string,
   args: string[],
   options: { cwd?: string; timeoutMs?: number } = {}

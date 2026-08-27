@@ -9,6 +9,7 @@ import { isPromptShaped, lastNonEmptyLine } from '../needsHuman/detect';
 import { fileExistsSync } from './dir';
 import { env } from './env';
 import { killProcessTree, USE_PROCESS_GROUP } from './processGroup';
+import { acquireRunnerLockAsync, runnerSpawnKey, tryAcquireRunnerLock } from './runnerLock';
 import { resolveSpawnTarget } from './windowsShim';
 
 /** What happens to the output of the subprocess. */
@@ -107,8 +108,58 @@ const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
  * Terminal signals are forwarded while the child runs, the same way `runExpoAsync` does it, so
  * killing `exagent` stops the cloud build or the deploy it is waiting for rather than orphaning
  * it. An interrupt resolves as a clean exit, because the stop was asked for.
+ *
+ * **A package runner waits its turn** (`./runnerLock.ts`, F93): two spawns of one package spec share
+ * the runner's scratch directory, and the loser of that race exits 1 with the runner's own progress
+ * output — which the caller then reports as the service's answer. Nothing that is not a runner is
+ * affected, and two different specs still run at once.
  */
 export function spawnSubprocessAsync(
+  command: string,
+  args: string[],
+  options: SubprocessOptions = {}
+): Promise<SubprocessResult> {
+  const key = runnerSpawnKey(command, args);
+  if (key == null) {
+    return spawnNowAsync(command, args, options);
+  }
+  // Nothing is holding it: spawn in this tick, the way every caller of this function has always
+  // been able to rely on (`./runnerLock.ts` §tryAcquireRunnerLock).
+  const free = tryAcquireRunnerLock(key);
+  if (free) {
+    return spawnNowAsync(command, args, options).finally(() => free.release());
+  }
+  return queuedSpawnAsync(key, command, args, options);
+}
+
+/** The contended case: wait for the runner ahead, then spawn with what is left of the budget. */
+async function queuedSpawnAsync(
+  key: string,
+  command: string,
+  args: string[],
+  options: SubprocessOptions
+): Promise<SubprocessResult> {
+  const lock = await acquireRunnerLockAsync(key, { timeoutMs: options.timeoutMs });
+  if (lock == null) {
+    // The queue is part of the budget, so running out in it is the same outcome as running out in
+    // the spawn: a caller that promised an answer within a deadline reports that it did not get one.
+    return { exitCode: null, stdout: '', stderr: '', timedOut: true };
+  }
+  try {
+    return await spawnNowAsync(command, args, {
+      ...options,
+      // What is left of the deadline after the wait. A spawn that queued for a second has a second
+      // less, because the caller's promise was about the whole call and not about the child.
+      timeoutMs:
+        options.timeoutMs == null ? undefined : Math.max(1, options.timeoutMs - lock.queuedMs),
+    });
+  } finally {
+    lock.release();
+  }
+}
+
+/** Spawn now, with no regard for what else is running. The body of the function above. */
+function spawnNowAsync(
   command: string,
   args: string[],
   {

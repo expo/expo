@@ -234,6 +234,12 @@ stopped, the directory deleted.
 
 ## The findings this tier arrived with
 
+All three were found on 2026-08-27, on this suite's first working runs, and all three are **fixed in
+wave 22** — the design each one forced is recorded in [[0021-honest-reports]] (§The runner is not the
+service, §A crash is a tool error, §An observed signal, or the band). The findings are kept here in full
+because what this tier is *for* is the class of defect it can reach, and these three are the evidence:
+none of them was reachable by a unit or a stub test, and each had a passing test one call frame away.
+
 ### F93 — MAJOR: the package runner's install progress, reported as EAS's answer
 
 `status --explain` reports the package runner's install progress as what EAS said about the caller's
@@ -257,11 +263,17 @@ that the runner is *this CLI's own choice* rather than something it found on the
 untrusted output from somebody else's binary. It is noise from a tool this CLI decided to use, quoted
 back to the caller as a service's answer.
 
-Not fixed in this wave, by the tier's own rule: a live tier that edits its assertions down to whatever
-the CLI currently does is a stub tier with a longer runtime. The test is skipped with the evidence and
-a `TODO`, and the neighbouring test — the one that proves the lookup does find the real build — retries
-up to four times and says in a comment that the retry is scaffolding for a defect and must be deleted
-with it.
+**Reported and not worked around in wave 21**, by the tier's own rule: a live tier that edits its
+assertions down to whatever the CLI currently does is a stub tier with a longer runtime. The test was
+skipped with the evidence and a `TODO`, and the neighbouring test retried up to four times with a
+comment saying the retry was scaffolding for a defect.
+
+**Fixed in wave 22** ([[0021-honest-reports]] §The runner is not the service): a per-spec mutex in the
+spawn layer (`src/utils/runnerLock.ts`), applied in all three helpers that can start a runner, plus a
+guard that will not let a runner's line be quoted as the service's answer for the collisions no mutex in
+this process can prevent. The live test runs, and the retry is gone with the defect it was scaffolding
+for. The deterministic reproduction is an e2e test whose stub runner holds its scratch directory the way
+a real one does, red on the code as it shipped: one platform `unknown`.
 
 ### F94 — MAJOR: an uncaught exception exits 7, which is the needs-human code
 
@@ -293,11 +305,43 @@ crash becomes exit 1 with a printed cause and a JSON envelope, which an agent ca
 
 The command's *effect* survives the crash: the dev server is already dead when the probe dies, and the
 cleanup `dev:stop` a moment later reports `not-running`. So `dev:stop` does its job and then fails to
-say so, and the suite is split along exactly that line — a running test asserts the effect (the port is
-free), and the skipped F94 test carries the report. `looksLikeUncaughtException` recognises the
-signature (exit 7 plus a `Node.js v…` footer) so the effect test can log the hit by name and
-`expectExit` can name F94 in any other failure message: "exited 7, expected 0" on a command that has no
-needs-human path at all is otherwise a puzzle.
+say so, and the suite was split along exactly that line — a running test asserting the effect (the port
+is free), and a skipped F94 test carrying the report.
+
+**Fixed in wave 22** ([[0021-honest-reports]] §A crash is a tool error): the handler prints the crash
+with its stack and exits 1, and emits the `--json` envelope. The live test runs, and the trigger is left
+in place deliberately — an environmental crash from inside Node's own socket layer is not a thing a
+fixture arranges, so it is the only test of this handler against a real uncaught exception. It asserts
+one thing whatever undici does this run: never exit 7 with a raw stack. When the crash does fire it
+asserts the report — exit 1, the stack, `code: "UNCAUGHT_EXCEPTION"` — and logs that it fired.
+`looksLikeUnreportedCrash` is the regression tripwire for the old signature (exit 7 plus a `Node.js v…`
+footer), which `expectExit` names in any failure message, and `looksLikeUncaughtException` now matches
+the shape the fixed handler prints so any test that meets a crash knows it learnt nothing about what it
+was asking.
+
+### F95 — MAJOR: a verification label with no evidence in the payload
+
+`runtime:reload --json` reported `verifiedBy: "message-socket-peers"` beside `appsReconnected: 0`.
+Observed twice on the merged tree via `test:live:local`, and flaky in the way that matters: three
+failures in one whole-suite run and one in the next.
+
+Both numbers were true of the run — the peer churn had fired, and the label was earned. What was wrong
+is that **`appsReconnected` is a different signal's evidence** (it counts debugger targets, which
+`fresh-debugger-target` rests on) and the churn's own count was nowhere in the payload. So the report
+named a signal a reader had no way to check, and the reconciliation it invited was a contradiction.
+
+The flakiness is the wave-21 ladder working as designed: the two proofs share one budget and whichever
+answers first ends both, so whether the debugger target arrives before the `Bundled` line is a property
+of the moment. That made a live assertion on `appsReconnected` a coin toss under a run that was, itself,
+correct.
+
+Only this tier could have found it. The stub tier pins `appsReconnected` for each rung with a fixture
+that decides the race, so both orderings pass there and neither is the one a real app takes.
+
+**Fixed in wave 22** ([[0021-honest-reports]] §An observed signal, or the band): every label names a
+field of the payload, the label is chosen through that table rather than checked after the fact, and a
+zero on either count carries the sentence saying which of three facts it is. The live test now asserts
+the label's own count, which is the claim the rung actually establishes.
 
 ## What this does not close
 
@@ -312,6 +356,10 @@ needs-human path at all is otherwise a puzzle.
 - **Speed, of anything.** §What a live assertion is allowed to be.
 - **A skip is not a pass.** `test:live` printing `2 skipped, 1 passed` means a third of this tier ran,
   and the cost line of a suite that did not run is absent rather than zero.
+- **A green run is not a green machine.** F94's trigger is an undici bug on this Node and this macOS,
+  and its live test passes on a run where the crash never fires. The unit tests are what pin the
+  handler; the live test is what proves the handler meets a crash it could not have been given by a
+  fixture. Neither is the other's substitute.
 
 ## The rule this states
 

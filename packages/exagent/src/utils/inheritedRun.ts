@@ -9,6 +9,7 @@
 
 import { spawn } from 'child_process';
 
+import { withRunnerLockAsync, runnerSpawnKey } from './runnerLock';
 import { resolveSpawnTarget } from './windowsShim';
 
 /** Signals the terminal delivers to the whole process group, so the child gets them too. */
@@ -28,9 +29,29 @@ const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
  * The two events are the caller's to emit, not this function's: each CLI has its own pair in the
  * event registry, and a shared runner that emitted a third name would silently retire them.
  *
+ * **A package runner waits its turn** (`./runnerLock.ts`, F93). Unbounded here, unlike the captured
+ * paths: a run that owns the terminal has no deadline to spend, and a person watching a queued
+ * `npx expo start` is watching the runner ahead of it finish rather than a hang with no cause.
+ *
  * @throws the raw spawn error, for a caller that knows what a missing binary means in its case.
  */
 export function runInheritedAsync(
+  command: string,
+  args: string[],
+  options: {
+    cwd: string;
+    onExit?: (code: number, signal: NodeJS.Signals | null) => void;
+    onSpawnError?: (error: NodeJS.ErrnoException) => void;
+  }
+): Promise<number> {
+  const key = runnerSpawnKey(command, args);
+  return key == null
+    ? runInheritedNowAsync(command, args, options)
+    : withRunnerLockAsync(key, () => runInheritedNowAsync(command, args, options));
+}
+
+/** Spawn now, with no regard for what else is running. The body of the function above. */
+function runInheritedNowAsync(
   command: string,
   args: string[],
   {

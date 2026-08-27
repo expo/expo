@@ -150,29 +150,20 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
         expect(platform.source).toBe('eas');
       }
     }
-    // Deliberately not asserted here: that a platform reached an answer at all. That is F93 below,
-    // and an assertion that holds on half the runs is worse than no assertion — it makes the suite a
-    // coin toss and teaches everyone to re-run it.
+    // Every platform reaches an answer, which until wave 22 held on about half the runs — see F93
+    // below for what was in the way.
+    expect(report.builds.platforms.every((p: any) => p.state !== 'unknown')).toBe(true);
   });
 
   it('the lookup does find the real build this project was made from', async () => {
-    // The claim the row in llp/0019 was missing, made in the only way it can be made honestly while
-    // F93 stands: up to four attempts, and one `found` with a real build id is the proof. The retry
-    // is scaffolding for a defect, not a tolerance for slowness — **delete it when F93 is fixed** and
-    // fold this back into the test above.
-    let found: any = null;
-    for (let attempt = 1; attempt <= 4 && !found; attempt++) {
-      const result = await runLiveEasAsync(
-        run,
-        readProjectRoot,
-        ['status', '--explain', '--json'],
-        {
-          label: `status-explain-attempt-${attempt}`,
-        }
-      );
-      expectExit(result, 0);
-      found = parseJson(result).builds.platforms.find((p: any) => p.state === 'found') ?? null;
-    }
+    // The claim the row in llp/0019 was missing. One run and no retry: the retry that used to be here
+    // was scaffolding for F93, and it went with the fix.
+    const result = await runLiveEasAsync(run, readProjectRoot, ['status', '--explain', '--json'], {
+      label: 'status-explain-found',
+    });
+    expectExit(result, 0);
+    const found = parseJson(result).builds.platforms.find((p: any) => p.state === 'found') ?? null;
+
     expect(found).not.toBeNull();
     expect(found.buildId).toMatch(/^[0-9a-f-]{36}$/);
     expect(found.buildUrl).toMatch(/^https:\/\//);
@@ -182,41 +173,45 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
     expect(found.fingerprintHash).toMatch(/^[0-9a-f]{40}$/);
   });
 
-  // F93 — MAJOR, found by this suite on 2026-08-27, reported and deliberately not worked around.
+  // F93 — MAJOR, found by this suite on 2026-08-27, **fixed in wave 22**.
   //
-  // `status --explain` runs its two per-platform lookups concurrently (`Promise.all` in
+  // What it was: `status --explain` runs its two per-platform lookups concurrently (`Promise.all` in
   // `src/status/easBuilds.ts` §readEasBuildsStatusAsync). In a project that does not pin `eas-cli` —
-  // which is the common case, and the case wave 18 made the only rung — each lookup spawns
-  // `bunx eas-cli@latest`, and both share one per-spec scratch directory
-  // (`$TMPDIR/bunx-501-eas-cli@latest`). Started milliseconds apart they collide: the loser exits 1
-  // with empty stdout, and `describeLookupFailure` (src/impact/buildCache.ts) then reports the first
-  // line of its stderr — which is **bun's own progress output** — as what the service said about the
-  // caller's builds.
+  // the common case, and the case wave 18 made the only rung — each lookup spawns
+  // `bunx eas-cli@latest`, and both shared one per-spec scratch directory
+  // (`$TMPDIR/bunx-501-eas-cli@latest`). Started milliseconds apart they collided: the loser exited 1
+  // with empty stdout, and `describeLookupFailure` (src/impact/buildCache.ts) then reported the first
+  // line of its stderr — **bun's own progress output** — as what the service said about the caller's
+  // builds.
   //
   // Observed, six runs against a fresh copy of the same project with no `.expo` cache:
   //   both platforms poisoned 2/6, one platform poisoned 1/6, clean 3/6.
   //   reason: "Resolving dependencies"   ← bun installing, not EAS answering
-  // The identical argv run on its own exits 0 with the correct payload every time, and inserting a
+  // The identical argv run on its own exited 0 with the correct payload every time, and inserting a
   // ~50 ms skew between the two spawns made the collision disappear.
   //
-  // This is llp/0019 bug 3 one process boundary further out: there, a wrapper's panic was reported as
-  // EAS's answer; here, the package runner's progress line is. The difference is that the runner is
-  // this CLI's own choice rather than the machine's, so the reason is not even untrusted output from
-  // somebody else's binary — it is noise from a tool this CLI decided to use.
+  // llp/0019 bug 3, one process boundary further out: there a wrapper's panic was reported as EAS's
+  // answer; here the package runner's progress line was. The difference is that the runner is this
+  // CLI's own choice rather than the machine's, so the reason was not even untrusted output from
+  // somebody else's binary — it was noise from a tool this CLI decided to use.
   //
-  // TODO(F93): unskip when the fix lands, and delete the retry in the test above with it.
-  it.skip("F93: a build lookup never reports the package runner's progress line as EAS's answer", async () => {
+  // The fix is a per-spec mutex in the spawn layer (`src/utils/runnerLock.ts`) plus a guard that will
+  // not let a runner's line be quoted as the service's answer even when the two do collide
+  // (`looksLikeRunnerNoise`). This test asserts both halves against the real runner.
+  it("F93: a build lookup never reports the package runner's progress line as EAS's answer", async () => {
     const result = await runLiveEasAsync(run, readProjectRoot, ['status', '--explain', '--json'], {
       label: 'f93-status-explain',
     });
     expectExit(result, 0);
     const report = parseJson(result);
     for (const platform of report.builds.platforms) {
+      // The guard: whatever went wrong, the runner's vocabulary is never the reason on its own.
       expect(platform.reason ?? '').not.toMatch(
-        /Resolving dependencies|Saved lockfile|downloaded and extracted/
+        /^(Resolving dependencies|Saved lockfile|Resolved, downloaded and extracted)/
       );
     }
-    // And the stronger half: with both platforms asked at once, both get an answer.
+    // And the stronger half, which is the mutex: with both platforms asked at once, both get an
+    // answer. This is the assertion that was a coin toss before the fix.
     expect(report.builds.platforms.every((p: any) => p.state !== 'unknown')).toBe(true);
   });
 

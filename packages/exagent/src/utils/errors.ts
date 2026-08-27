@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 
 import { event as cliEvent } from '../events';
 import { EXIT_ERROR, EXIT_NEEDS_HUMAN, exitWithCodeAsync } from '../exitCodes';
-import { exit, exception, log, warn } from '../log';
+import { error as printToStderr, exit, exception, log, warn } from '../log';
 import { renderForInvoker } from './invoker';
 import { isJsonRequested } from './jsonMode';
 
@@ -335,38 +335,131 @@ export class UnimplementedError extends Error {
   }
 }
 
+/** The code every crash of this CLI reports under. One code, because the class is the fact. */
+export const UNCAUGHT_EXCEPTION_CODE = 'UNCAUGHT_EXCEPTION';
+
 /**
- * Add additional information when EMFILE errors are encountered.
- * These errors originate from Metro's FSEventsWatcher due to `fsevents` going over MacOS system limit.
- * Unfortunately, these limits in macOS are relatively low compared to an average React Native project.
+ * Whether this is the macOS watcher-limit error the recovery below is for.
+ *
+ * These originate from Metro's FSEventsWatcher when `fsevents` goes over the macOS system limit,
+ * which is low compared to an average React Native project.
  *
  * @see https://github.com/expo/expo/issues/29083
  * @see https://github.com/facebook/metro/issues/834
  * @see https://github.com/fsevents/fsevents/issues/42#issuecomment-62632234
  */
-function handleTooManyOpenFileErrors(error: any) {
-  // Only enable special logging when running on macOS and are running into the `EMFILE` error
-  if ('code' in error && error.code === 'EMFILE' && process.platform === 'darwin') {
-    try {
-      // Try to recover watchman, if it's not installed this will throw
-      execSync('watchman shutdown-server', { stdio: 'ignore' });
-      // NOTE(cedric): this both starts the watchman server and resets all watchers
-      execSync('watchman watch-del-all', { stdio: 'ignore' });
-
-      warn(
-        'Watchman is installed but was likely not enabled when starting Metro, try starting your project again.\nIf this problem persists, follow the troubleshooting guide of Watchman: https://facebook.github.io/watchman/docs/troubleshooting'
-      );
-    } catch {
-      warn(
-        `Your macOS system limit does not allow enough watchers for Metro, install Watchman instead. Learn more: https://facebook.github.io/watchman/docs/install`
-      );
-    }
-
-    exception(error);
-    process.exit(EXIT_ERROR);
-  }
-
-  throw error;
+function isMacOsWatcherLimit(error: unknown): boolean {
+  return (
+    error != null &&
+    typeof error === 'object' &&
+    (error as NodeJS.ErrnoException).code === 'EMFILE' &&
+    process.platform === 'darwin'
+  );
 }
 
-process.on('uncaughtException', handleTooManyOpenFileErrors);
+/** Reset the watchers and say which of the two states this machine is in. */
+function recoverWatchers(error: Error): never {
+  try {
+    // Try to recover watchman, if it's not installed this will throw
+    execSync('watchman shutdown-server', { stdio: 'ignore' });
+    // NOTE(cedric): this both starts the watchman server and resets all watchers
+    execSync('watchman watch-del-all', { stdio: 'ignore' });
+
+    warn(
+      'Watchman is installed but was likely not enabled when starting Metro, try starting your project again.\nIf this problem persists, follow the troubleshooting guide of Watchman: https://facebook.github.io/watchman/docs/troubleshooting'
+    );
+  } catch {
+    warn(
+      `Your macOS system limit does not allow enough watchers for Metro, install Watchman instead. Learn more: https://facebook.github.io/watchman/docs/install`
+    );
+  }
+
+  exception(error);
+  return process.exit(EXIT_ERROR) as never;
+}
+
+/** Whatever was thrown, as an `Error` — a `throw 'string'` is still a crash to report. */
+function asError(thrown: unknown): Error {
+  if (thrown instanceof Error) {
+    return thrown;
+  }
+  const error = new Error(typeof thrown === 'string' ? thrown : String(thrown));
+  error.name = 'UncaughtException';
+  return error;
+}
+
+/**
+ * The last thing this process does when an error reaches the top of it.
+ *
+ * @ref llp/0010-agent-conventions.rfc.md §Exit codes
+ * @ref llp/0021-honest-reports.rfc.md §A crash is a tool error
+ *
+ * **It must not rethrow, and that is the whole design.** Node's exit code for an exception thrown
+ * from inside an `uncaughtException` handler is 7 — "Internal Exception Handler Run-Time Failure" —
+ * which is exactly the code this convention reserves for a step only a person can complete. The old
+ * handler recognised macOS `EMFILE` and rethrew everything else, so every other crash left the
+ * process with 7 and none of the three things 7 promises: no handoff, no `cli:needs_human` event, no
+ * envelope [observed — live tier, F94, 2026-08-27: `dev:stop` died with `setTypeOfService EINVAL`
+ * out of undici's `writeH1` during a `fetch`, and exited 7 with a raw Node stack]. Proven without
+ * this CLI in the picture:
+ *
+ *     node -e "process.on('uncaughtException',(e)=>{throw e}); setImmediate(()=>{throw new Error('x')})"
+ *     → exit 7
+ *
+ * A crash is a **tool error**: the command did not work, and running it again unchanged may or may
+ * not help, but no person is being asked for anything. So it is {@link EXIT_ERROR}, with the stack on
+ * stderr, because the stack is the only report a crash has — and with the ordinary `--json` envelope
+ * on stdout when the run asked for one, so a caller parsing stdout gets an object rather than
+ * nothing at all.
+ *
+ * Synchronous throughout. A handler that scheduled an async flush would hand control back to an
+ * event loop that may have nothing left in it, and Node would then exit **0** for a crash.
+ *
+ * Exported for the tests that pin the exit code; registered on the process below.
+ */
+export function handleUncaughtException(thrown: unknown): void {
+  const error = asError(thrown);
+  if (isMacOsWatcherLimit(thrown)) {
+    recoverWatchers(error);
+    return;
+  }
+
+  const errorCode =
+    thrown != null && typeof thrown === 'object'
+      ? ((thrown as NodeJS.ErrnoException).code ?? null)
+      : null;
+  const message = [
+    `This command crashed: ${error.name}: ${error.message}`,
+    `Why: an error reached the top of the process, so the command stopped without reporting what it did. That is a defect in this CLI or in a library it calls, not an answer about the project — and it may have happened after the work itself succeeded.`,
+    `How: read the stack below for where it happened, run the command again to see whether it is repeatable, and report it at https://github.com/expo/expo/issues with that stack. Nothing here is waiting on a person: this is exit ${EXIT_ERROR}, a tool error.`,
+  ].join('\n');
+
+  // Both, always, and on stderr: `exception` hides the stack outside `EXPO_DEBUG`, and a crash with
+  // its stack withheld is a report a reader cannot act on.
+  printToStderr(chalk.red(message));
+  if (error.stack) {
+    printToStderr(chalk.gray(error.stack));
+  }
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — a run that asked for
+  // machine-readable output gets one however it ended, so `JSON.parse` of a crashed `--json`
+  // command works the way it does for every other failure.
+  if (isJsonRequested()) {
+    log(
+      JSON.stringify(
+        jsonErrorEnvelope({
+          code: UNCAUGHT_EXCEPTION_CODE,
+          message,
+          needsHuman: null,
+          data: { errorName: error.name, errorCode, stack: error.stack ?? null },
+        }),
+        null,
+        2
+      )
+    );
+  }
+
+  process.exit(EXIT_ERROR);
+}
+
+process.on('uncaughtException', handleUncaughtException);

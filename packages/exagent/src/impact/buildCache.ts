@@ -9,7 +9,13 @@
 
 import { easCliArgs, easCliLabel, mayDownloadEasCli, type EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
-import { looksLikeWrapperCrash, runnerCrashReason } from '../utils/wrapperCrash';
+import {
+  looksLikeRunnerNoise,
+  looksLikeWrapperCrash,
+  runnerCrashReason,
+  runnerNoiseLine,
+  runnerNoiseReason,
+} from '../utils/wrapperCrash';
 import type { CachedBuild } from './types';
 
 /**
@@ -149,7 +155,10 @@ export async function lookUpCachedBuildAsync(
         reason: runnerCrashReason({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
       };
     }
-    return { state: 'unknown', reason: describeLookupFailure(result.stdout, result.stderr) };
+    return {
+      state: 'unknown',
+      reason: describeLookupFailure(result, easCliLabel(easCli)),
+    };
   }
   return readLookupPayload(result.stdout);
 }
@@ -244,9 +253,29 @@ export function parseBuildPlatform(stdout: string): 'ios' | 'android' | null {
  * `eas init` forms that would fix it — on *stdout*, with only `Error: build:list command failed.`
  * on stderr [observed — live against an unlinked project, 2026-08-26]. Reading stderr first would
  * report the one sentence with nothing in it.
+ *
+ * **And never the runner's own output** (F93). What this returns is printed as what EAS answered
+ * about the caller's builds, so a line the *package runner* wrote is the one thing it may not quote:
+ * `reason: "Resolving dependencies"` is bun installing, and reads as a sentence about the account
+ * that no Expo service ever said [observed — live, 2026-08-27]. `looksLikeRunnerNoise` is the guard,
+ * and it says the runner failed to deliver the CLI instead (`src/utils/wrapperCrash.ts`).
+ *
+ * Exported for the tests that pin both halves.
+ *
+ * @param invocation how the runner and package spec are written, for the sentence about them.
  */
-function describeLookupFailure(stdout: string, stderr: string): string {
-  const line = firstLine(stdout) ?? firstLine(stderr);
+export function describeLookupFailure(
+  result: { exitCode: number | null; stdout: string; stderr: string },
+  invocation: string
+): string {
+  if (looksLikeRunnerNoise({ tool: 'eas', ...result })) {
+    return runnerNoiseReason(
+      { tool: 'eas', exitCode: result.exitCode },
+      invocation,
+      runnerNoiseLine(result.stderr)
+    );
+  }
+  const line = firstLine(result.stdout) ?? firstLine(result.stderr);
   if (!line) {
     return 'the EAS CLI refused the lookup and printed nothing';
   }

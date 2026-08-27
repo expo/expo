@@ -51,6 +51,59 @@ if (command === 'build:list') {
 `;
 }
 
+/**
+ * A stub package runner that behaves like a **real** one: one spawn per package spec at a time.
+ *
+ * @ref src/utils/runnerLock.ts — F93, reproduced deterministically. A package runner keeps a scratch
+ * directory per spec (`$TMPDIR/bunx-<uid>-eas-cli@latest`) and does not queue for it: two spawns
+ * started milliseconds apart are two writers of one directory, and the loser exits 1 having printed
+ * only its own install progress. `mkdir` without `recursive` is the same exclusion the real runners
+ * lose, and the 250 ms hold is the resolution window they lose it in — measured at 1.10–1.33 s live,
+ * so this is the same shape an order of magnitude cheaper.
+ *
+ * Everything else is {@link stubRunnerScript}: the argv log, and the EAS answers.
+ */
+function racingRunnerScript(logFile: string, scratchRoot: string): string {
+  return `#!/usr/bin/env node
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const args = process.argv.slice(2);
+fs.appendFileSync(${JSON.stringify(logFile)}, JSON.stringify({ args }) + '\\n');
+
+// The package spec, which is what the scratch directory is keyed on.
+const spec = args.find((arg) => !arg.startsWith('-')) || 'unknown';
+const scratch = path.join(${JSON.stringify(scratchRoot)}, 'runner-' + spec.replace(/[^\\w.@-]+/g, '_'));
+try {
+  fs.mkdirSync(scratch);
+} catch (error) {
+  if (error.code !== 'EEXIST') throw error;
+  // Exactly what bun does on the losing side: its own progress on stderr, nothing on stdout, exit 1.
+  process.stderr.write('Resolving dependencies\\n');
+  process.stderr.write('Resolved, downloaded and extracted [214]\\n');
+  process.exit(1);
+}
+
+// Hold it, the way resolving and installing a package holds it.
+Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 250);
+
+const command = args.find((arg) => !arg.startsWith('-') && !arg.startsWith('eas-cli'));
+try {
+  if (command === 'build:list') {
+    process.stdout.write('[]\\n');
+  } else if (command === 'whoami') {
+    process.stdout.write('e2e-user\\n');
+  } else if (command === 'fingerprint:compare') {
+    process.stdout.write('{}\\n');
+  } else {
+    process.stdout.write('eas-cli/22.6.0 darwin-arm64 node-v26.5.0\\n');
+  }
+} finally {
+  fs.rmSync(scratch, { recursive: true, force: true });
+}
+`;
+}
+
 /** An `eas` that is not the EAS CLI: a wrapper that panics before it runs anything. */
 const STUB_EAS_WRAPPER_CRASH = `#!/usr/bin/env node
 'use strict';
@@ -90,10 +143,13 @@ async function plantAsync({
   runners,
   lockfile,
   brokenEasOnPath = false,
+  racing = false,
 }: {
   runners: string[];
   lockfile?: string;
   brokenEasOnPath?: boolean;
+  /** Give the runner a real runner's exclusion on its scratch directory (F93). */
+  racing?: boolean;
 }): Promise<Planted> {
   const projectRoot = await setupFixtureAsync('dev-client-fresh-app');
   await installStubFingerprintAsync(projectRoot);
@@ -102,7 +158,10 @@ async function plantAsync({
   const logFile = path.join(projectRoot, 'runner-invocations.jsonl');
 
   const runnerStub = path.join(projectRoot, 'runner-stub.js');
-  await fs.promises.writeFile(runnerStub, stubRunnerScript(logFile));
+  await fs.promises.writeFile(
+    runnerStub,
+    racing ? racingRunnerScript(logFile, projectRoot) : stubRunnerScript(logFile)
+  );
   for (const runner of runners) {
     await installStubBinAsync(binDir, runner, runnerStub);
   }
@@ -171,6 +230,65 @@ describe('a machine with no eas-cli installed', () => {
     for (const platform of report.builds.platforms) {
       expect(platform.reason).not.toContain('no EAS CLI is installed');
     }
+  });
+
+  // F93 — @ref src/utils/runnerLock.ts. `status --explain` asks EAS about both platforms at once, so
+  // both spawns want one scratch directory. Live, six runs against a fresh copy of one project: both
+  // platforms poisoned 2/6, one platform poisoned 1/6, clean 3/6 [2026-08-27]. Here the collision is
+  // not a coin toss — the stub runner holds the directory for 250 ms and refuses a second writer, the
+  // way a real one does — so a run that answers is the lock working and nothing else.
+  describe('two lookups that want one scratch directory', () => {
+    it('answers for both platforms, and quotes no progress line as EAS', async () => {
+      const planted = await plantAsync({ runners: ['npx'], racing: true });
+
+      const result = await executeExagentAsync(
+        planted.projectRoot,
+        ['status', '--explain', '--json'],
+        { env: pathEnv(planted.binDir) }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      // Both lookups happened: serializing them must not drop one.
+      const lookups = invocations(planted).filter((run) => run.args.includes('build:list'));
+      expect(lookups).toHaveLength(2);
+      // And both reached the service. `none` is EAS answering; `unknown` is the collision.
+      expect(report.builds.platforms.map((p: { state: string }) => p.state)).toEqual([
+        'none',
+        'none',
+      ]);
+      for (const platform of report.builds.platforms) {
+        // A `none` names what was established, not what a runner was doing.
+        expect(platform.reason).toBe('EAS has no finished build made from this fingerprint');
+      }
+      // The report as a whole carries none of the runner's vocabulary, wherever it might have leaked.
+      expect(result.stdout).not.toContain('Resolving dependencies');
+      expect(result.stdout).not.toContain('downloaded and extracted');
+    });
+
+    it('still says what happened if a runner does fail, without calling it the service', async () => {
+      // The other half: the guard is not only reachable through the lock. A runner that fails on its
+      // own — the directory left behind by a crashed sibling process, which nothing in this process
+      // can serialize away — must not have its progress line reported as EAS's answer.
+      const planted = await plantAsync({ runners: ['npx'], racing: true });
+      // The scratch directory the stub keys on, created behind its back and never released.
+      await fs.promises.mkdir(path.join(planted.projectRoot, 'runner-eas-cli@latest'));
+
+      const result = await executeExagentAsync(
+        planted.projectRoot,
+        ['status', '--explain', '--json'],
+        { env: pathEnv(planted.binDir) }
+      );
+
+      // Never fails the command: an unanswered section costs one line of the report (llp/0011).
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      for (const platform of report.builds.platforms) {
+        expect(platform.state).toBe('unknown');
+        expect(platform.reason).not.toBe('Resolving dependencies');
+        expect(platform.reason).toContain('failed to deliver the eas CLI');
+      }
+    });
   });
 
   it('uses bunx in a project whose lockfile is bun\'s', async () => {

@@ -36,6 +36,7 @@ import {
   fixturesDir,
   httpStatusAsync,
   looksLikeUncaughtException,
+  looksLikeUnreportedCrash,
   parseJson,
   runLiveAsync,
   waitForAsync,
@@ -378,7 +379,19 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
     // @ref llp/0005 §Peer churn proves the app acted. The stub tier has the two halves of this and
     // not the thing itself, because it has no client that can disconnect and come back.
     expect(report.verifiedBy).toBe('message-socket-peers');
-    expect(report.appsReconnected).toBeGreaterThan(0);
+    // F95: the label's **own** count, which is what this used to assert against `appsReconnected` —
+    // a different signal's count, and zero on 3 of one run's tests and 1 of the next's. The two
+    // watches race on one budget by design (`src/runtime/reload/reloadAsync.ts`), so whether the
+    // debugger target arrives before the bundle line is a property of the moment; whether the app
+    // reconnected to the command socket is what this rung established.
+    expect(report.commandSocketChurn.reconnected).toBeGreaterThan(0);
+    expect(report.commandSocketChurn.observed).toBe(true);
+    // And a zero on the other count is never a bare number: it says which fact it is.
+    if (report.appsReconnected === 0) {
+      expect(report.appsReconnectedReason).toBeTruthy();
+    } else {
+      expect(report.appsReconnectedReason).toBeNull();
+    }
 
     expect(await waitForLabScreenAsync('after-reload')).toBe(true);
   });
@@ -668,50 +681,61 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
     }
   });
 
-  // F94 — MAJOR, found by this suite on 2026-08-27, reported and deliberately not worked around.
+  // F94 — MAJOR, found by this suite on 2026-08-27, **fixed in wave 22**.
   //
-  // **An uncaught exception exits 7**, which is the code `llp/0010` §Exit codes reserves for
-  // needs-human, and prints a raw Node stack with no `Try:` line and no `--json` error envelope.
+  // What it was: **an uncaught exception exited 7**, the code `llp/0010` §Exit codes reserves for
+  // needs-human, printing a raw Node stack with no `Try:` line and no `--json` error envelope.
   //
-  // Mechanism, and it is one line: `src/utils/errors.ts:353` registers
-  // `process.on('uncaughtException', handleTooManyOpenFileErrors)`, and that handler recognises macOS
-  // `EMFILE` and **rethrows everything else**. Node's exit code for an exception thrown from inside an
-  // `uncaughtException` handler is 7 — "Internal Exception Handler Run-Time Failure" — which collides
-  // exactly with this CLI's needs-human code. Proven on its own, no exagent involved:
+  // Mechanism, and it was one line: `src/utils/errors.ts` registered
+  // `process.on('uncaughtException', handleTooManyOpenFileErrors)`, and that handler recognised macOS
+  // `EMFILE` and **rethrew everything else**. Node's exit code for an exception thrown from inside an
+  // `uncaughtException` handler is 7 — "Internal Exception Handler Run-Time Failure" — which collided
+  // exactly with this CLI's needs-human code. Provable on its own, no exagent involved:
   //
   //     node -e "process.on('uncaughtException',(e)=>{throw e}); setImmediate(()=>{throw new Error('x')})"
   //     → exit 7
   //
-  // So an agent that branches on 7 reads every crash as "a person must intervene", and gets none of
-  // the three things that code promises: no `needsHuman` block, no event, no envelope. It is the
-  // inverse of F61 — there a failure was reported as success; here a crash is reported as the one
-  // outcome an agent is told it cannot recover from.
+  // So an agent that branched on 7 read every crash as "a person must intervene", and got none of the
+  // three things that code promises: no `needsHuman` block, no event, no envelope. The inverse of F61 —
+  // there a failure was reported as success; here a crash was reported as the one outcome an agent is
+  // told it cannot recover from.
   //
-  // How this suite met it: `dev:stop` dies with `Error: setTypeOfService EINVAL` out of undici's
-  // `writeH1`, during the `fetch` that probes the dev server, on Node 26.5.0 / macOS. `fetch` surfaces
-  // it as an uncaught exception rather than a rejected promise, so no `await` in the command could have
-  // caught it. Intermittent but common: it fired on **3 of the last 3 whole-suite runs** and on roughly
-  // half of the runs before them [2026-08-27]. The server is already dead by then — the cleanup
-  // `dev:stop` right after reports `not-running` — so the command does its job and then fails to say
-  // so, which is why the test above asserts the effect and this one carries the report.
+  // How this suite met it, and why the trigger is left in place: `dev:stop` dies with
+  // `Error: setTypeOfService EINVAL` out of undici's `writeH1`, during the `fetch` that probes the dev
+  // server, on Node 26.5.0 / macOS. `fetch` surfaces it as an uncaught exception rather than a rejected
+  // promise, so no `await` in the command could have caught it. Intermittent but common: roughly half of
+  // the runs [2026-08-27]. **The undici bug is environmental and not this CLI's** — which is exactly
+  // what makes it a usable live trigger for the handler above it.
   //
-  // **The undici bug is environmental and not this CLI's.** What is this CLI's is the handler above it,
-  // and the two are separable: fix the handler and this same crash becomes exit 1 with a printed cause
-  // and a JSON envelope, which an agent can act on.
-  //
-  // TODO(F94): unskip when the handler stops rethrowing — an unexpected crash is a tool error, which is
-  // exit 1 (`llp/0010` §Exit codes), and it should still print what happened.
-  it.skip('F94: dev:stop reports what it did, and a crash is exit 1 with a report', async () => {
+  // What is asserted now: whatever this machine's undici does, the crash is never exit 7 with a raw
+  // stack. Either the command reports normally, or it reports the crash — exit 1, the stack, and the
+  // `--json` envelope an agent can read.
+  it('F94: dev:stop reports what it did, and a crash is exit 1 with a report', async () => {
     const result = await runLiveAsync(run, projectRoot, ['dev:stop', '--json'], {
       label: 'f94-dev-stop',
     });
-    expect(looksLikeUncaughtException(result)).toBe(false);
-    if (result.exitCode === 7) {
-      // 7 is only ever needs-human, and needs-human always carries these three things.
+    // The regression tripwire: 7 is a promise about a person, and a crash keeps none of it.
+    expect(looksLikeUnreportedCrash(result)).toBe(false);
+    expect(result.exitCode).not.toBe(7);
+
+    if (looksLikeUncaughtException(result)) {
+      // The crash fired. A tool error is exit 1, the stack is on stderr, and stdout still carries the
+      // one object a `--json` run promises.
+      expectExit(result, 1, 'a crash is a tool error, not a needs-human handoff');
+      expect(result.all).toContain('This command crashed:');
       const report = parseJson(result);
-      expect(report.error.needsHuman).not.toBeNull();
-      expect(report.error.suggestedCommand).toBeTruthy();
-      expect(result.all).toContain('Needs a human');
+      expect(report.error.code).toBe('UNCAUGHT_EXCEPTION');
+      expect(report.error.needsHuman).toBeNull();
+      expect(report.error.data.stack).toContain('at ');
+      console.log(
+        `[live] F94's trigger fired on dev:stop and was reported as a tool error (exit ` +
+          `${result.exitCode}). Evidence: ${result.artifact}`
+      );
+    } else {
+      // No crash this run: the dev server was already stopped by the test above, so the report says
+      // there was nothing to stop. Either way it is a report rather than a stack.
+      expectExit(result, 0);
+      expect(parseJson(result).portStillAnswering).toBe(false);
     }
   });
 });

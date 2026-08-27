@@ -1,9 +1,10 @@
-import { EXIT_NEEDS_HUMAN } from '../../exitCodes';
-import { log, warn } from '../../log';
+import { EXIT_ERROR, EXIT_NEEDS_HUMAN } from '../../exitCodes';
+import { error as logError, log, warn } from '../../log';
 import {
   CommandError,
   NeedsHumanError,
   formatNeedsHumanBlock,
+  handleUncaughtException,
   isNeedsHumanError,
   logCmdError,
   type NeedsHuman,
@@ -23,8 +24,17 @@ jest.mock('2g', () => {
 jest.mock('../../log', () => ({
   exit: jest.fn(),
   exception: jest.fn(),
+  error: jest.fn(),
   log: jest.fn(),
   warn: jest.fn(),
+}));
+
+const execSyncCalls: string[] = [];
+
+jest.mock('child_process', () => ({
+  execSync: jest.fn((command: string) => {
+    execSyncCalls.push(command);
+  }),
 }));
 
 /** A handoff, as the registry hands one over. */
@@ -251,6 +261,118 @@ describe(formatNeedsHumanBlock, () => {
     expect(
       formatNeedsHumanBlock(needsHuman({ command: null, url: null, unattendedEnv: [] }))[1]
     ).toBe('Ask the user    Sign in to an Expo account on this machine.');
+  });
+});
+
+// F94 — @ref llp/0010-agent-conventions.rfc.md §Exit codes, llp/0021 §A crash is a tool error.
+// The handler used to rethrow everything it did not recognise, and Node's exit code for a throw
+// inside an `uncaughtException` handler is 7 — the code this convention reserves for a step only a
+// person can finish. So every crash of this CLI arrived as the one outcome an agent is told it
+// cannot recover from, with none of the three things that code promises.
+describe(handleUncaughtException, () => {
+  let exitSpy: jest.SpyInstance;
+  const realPlatform = process.platform;
+
+  beforeEach(() => {
+    emitted.length = 0;
+    execSyncCalls.length = 0;
+    jest.clearAllMocks();
+    exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {}) as never);
+  });
+
+  afterEach(() => {
+    exitSpy.mockRestore();
+    setJsonRequested(false);
+    Object.defineProperty(process, 'platform', { value: realPlatform, configurable: true });
+  });
+
+  function onPlatform(platform: string): void {
+    Object.defineProperty(process, 'platform', { value: platform, configurable: true });
+  }
+
+  /** The crash the live tier meets: undici throwing out of a `fetch` this process cannot await. */
+  function undiciCrash(): NodeJS.ErrnoException {
+    const error: NodeJS.ErrnoException = new Error('setTypeOfService EINVAL');
+    error.code = 'EINVAL';
+    error.syscall = 'setTypeOfService';
+    return error;
+  }
+
+  it('exits 1 for a crash, never the needs-human code', () => {
+    handleUncaughtException(undiciCrash());
+
+    expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
+    expect(exitSpy).not.toHaveBeenCalledWith(EXIT_NEEDS_HUMAN);
+  });
+
+  it('does not rethrow, so nothing above it can turn the crash into another code', () => {
+    expect(() => handleUncaughtException(undiciCrash())).not.toThrow();
+  });
+
+  it('prints the message and the stack on stderr', () => {
+    handleUncaughtException(undiciCrash());
+
+    const printed = jest.mocked(logError).mock.calls.map((call) => call.join(' ')).join('\n');
+    expect(printed).toContain('setTypeOfService EINVAL');
+    // The stack is the whole report of a crash: an agent that cannot see where it happened has
+    // nothing to hand a person.
+    expect(printed).toContain('errors-test.ts');
+  });
+
+  it('prints the same JSON envelope a failing --json command prints', () => {
+    setJsonRequested(true);
+
+    handleUncaughtException(undiciCrash());
+
+    const calls = jest.mocked(log).mock.calls;
+    expect(calls).toHaveLength(1);
+    const envelope = JSON.parse(calls[0]![0]!);
+    expect(envelope.error.code).toBe('UNCAUGHT_EXCEPTION');
+    expect(envelope.error.message).toContain('setTypeOfService EINVAL');
+    // The key set never varies, whatever the failure was (llp/0010 §The `--json` error envelope).
+    expect(envelope.error).toHaveProperty('suggestedCommand', null);
+    expect(envelope.error).toHaveProperty('needsHuman', null);
+    expect(envelope.error.data).toMatchObject({ errorCode: 'EINVAL' });
+  });
+
+  it('prints nothing on stdout when JSON was not asked for', () => {
+    handleUncaughtException(undiciCrash());
+
+    expect(jest.mocked(log)).not.toHaveBeenCalled();
+  });
+
+  it('handles something thrown that is not an Error at all', () => {
+    handleUncaughtException('a string nobody expected' as unknown as Error);
+
+    expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
+    expect(jest.mocked(logError).mock.calls.map((call) => call.join(' ')).join('\n')).toContain(
+      'a string nobody expected'
+    );
+  });
+
+  // The EMFILE special case is the reason this handler exists, and it keeps its own path: the two
+  // watchman commands, the advice, and exit 1.
+  it('keeps the macOS EMFILE recovery', () => {
+    onPlatform('darwin');
+    const emfile: NodeJS.ErrnoException = new Error('EMFILE: too many open files');
+    emfile.code = 'EMFILE';
+
+    handleUncaughtException(emfile);
+
+    expect(execSyncCalls).toEqual(['watchman shutdown-server', 'watchman watch-del-all']);
+    expect(jest.mocked(warn).mock.calls.map(([line]) => line).join('\n')).toContain('Watchman');
+    expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
+  });
+
+  it('treats an EMFILE off macOS as the ordinary crash it is', () => {
+    onPlatform('linux');
+    const emfile: NodeJS.ErrnoException = new Error('EMFILE: too many open files');
+    emfile.code = 'EMFILE';
+
+    handleUncaughtException(emfile);
+
+    expect(execSyncCalls).toEqual([]);
+    expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
   });
 });
 

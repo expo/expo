@@ -7,7 +7,13 @@ import type { FingerprintDiffItem, FingerprintSource } from '../project/fingerpr
 import { readLastBuildRecord } from '../plan/lastBuild';
 import { easCliArgs, easCliLabel, type EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
-import { looksLikeWrapperCrash, runnerCrashDetail } from '../utils/wrapperCrash';
+import {
+  looksLikeRunnerNoise,
+  looksLikeWrapperCrash,
+  runnerCrashDetail,
+  runnerNoiseLine,
+  runnerNoiseReason,
+} from '../utils/wrapperCrash';
 import type { ComparisonSide } from './types';
 
 /** What every comparison mode answers with. */
@@ -205,13 +211,23 @@ export async function compareWithEasBuildAsync(
     // the "check the id, check your sign-in" line below is advice about neither problem it has.
     const wrapperCrash =
       !result.spawnError && looksLikeWrapperCrash({ tool: 'eas', ...result });
+    // F93, the same guard the build lookup takes: a spawn that printed only the runner's install
+    // progress never reached the CLI, so "check the id, check your sign-in" is advice about a
+    // problem this run does not have.
+    const runnerNoise = !result.spawnError && looksLikeRunnerNoise({ tool: 'eas', ...result });
     return {
       base: baseSide,
       head: headSide,
       items: null,
       fingerprintChanged: null,
       caveats: [],
-      error: wrapperCrash
+      error: runnerNoise
+        ? [
+            `Could not compare against EAS build ${buildId}.`,
+            `Why: ${runnerNoiseReason({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli), runnerNoiseLine(result.stderr))}.`,
+            `How: run this command again — the install completes once and the next run is warm. "npm install --save-dev eas-cli" pins the CLI into the project, which removes the download from every run.`,
+          ].join('\n')
+        : wrapperCrash
         ? [
             `Could not compare against EAS build ${buildId}.`,
             `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}.`,

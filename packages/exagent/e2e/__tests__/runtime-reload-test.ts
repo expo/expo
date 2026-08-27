@@ -26,7 +26,16 @@ type ReloadReport = {
   devServerUrl: string;
   devServerSource: string;
   appsConnected: number;
+  commandSocketChurn: {
+    observed: boolean | null;
+    before: number | null;
+    after: number | null;
+    reconnected: number;
+    reason: string | null;
+  };
   appsReconnected: number;
+  appsReconnectedReason: string | null;
+  bundlesAfterReload: { observed: boolean | null; count: number; line: string | null };
   bundle: {
     checked: boolean;
     ok: boolean | null;
@@ -167,11 +176,16 @@ describe('exagent runtime:reload', () => {
       expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
         'appsConnected',
         'appsReconnected',
+        // F95: a zero on the count above is three different facts, and this is which one.
+        'appsReconnectedReason',
         'attempts',
         'bundle',
         'bundlePlatformSource',
         'bundlePlatforms',
         'bundlesAfterReload',
+        // F95: the evidence `verifiedBy: 'message-socket-peers'` rests on. Without it the label was
+        // checked against `appsReconnected`, which belongs to a different signal.
+        'commandSocketChurn',
         'commandSocketClients',
         'devServerSource',
         'devServerUrl',
@@ -328,6 +342,78 @@ describe('exagent runtime:reload', () => {
       releaseLock();
       await stub.close();
     }
+  });
+
+  // F95 — MAJOR, found by the live tier on 2026-08-27. `verifiedBy: 'message-socket-peers'` sat
+  // beside `appsReconnected: 0`, which is a label reconciled against a *different* signal's count:
+  // the peer churn's own count was not in the payload at all. The rule (llp/0021 §An observed signal,
+  // or the band): a label may name only a signal whose evidence is here and non-empty.
+  //
+  // Run against every reload mode the stub has, because "the happy path is consistent" is the claim
+  // that was true before the fix as well.
+  describe('the verification payload is consistent, whatever the app does', () => {
+    it.each([['reconnect'], ['stale'], ['gone']] as const)(
+      'reloadTargets %s',
+      async (reloadTargets) => {
+        const projectRoot = await setupFixtureAsync('go-app');
+        const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET], reloadTargets });
+        const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+        try {
+          const result = await executeExagentAsync(
+            projectRoot,
+            ['runtime:reload', '--method', 'dev-server', '--timeout', '2s', '--json'],
+            { env: stubExpoEnv(projectRoot), reject: false }
+          );
+
+          const report = JSON.parse(result.stdout);
+          // `reloaded` is exactly "a label was earned", so the two can never disagree.
+          expect(report.reloaded).toBe(report.verifiedBy != null);
+          const evidence: Record<string, number> = {
+            'message-socket-peers': report.commandSocketChurn.reconnected,
+            'fresh-debugger-target': report.appsReconnected,
+            'dev-server-bundle': report.bundlesAfterReload.count,
+            'app-relaunch': report.attempts.filter(
+              (attempt: { method: string; ok: boolean }) => attempt.method === 'device' && attempt.ok
+            ).length,
+          };
+          if (report.verifiedBy != null) {
+            expect(evidence[report.verifiedBy]).toBeGreaterThan(0);
+          }
+          // A zero is never a bare number: it says which of the three facts it is.
+          if (report.appsReconnected === 0) {
+            expect(report.appsReconnectedReason).toBeTruthy();
+          } else {
+            expect(report.appsReconnectedReason).toBeNull();
+          }
+        } finally {
+          releaseLock();
+          await stub.close();
+        }
+      }
+    );
+
+    it('carries the churn count behind the label the happy path prints', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+      const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+      try {
+        const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
+          env: stubExpoEnv(projectRoot),
+        });
+
+        expect(result.exitCode).toBe(0);
+        const report = JSON.parse(result.stdout);
+        expect(report.verifiedBy).toBe('message-socket-peers');
+        // The count the label rests on, from a socket that really did replace its client id.
+        expect(report.commandSocketChurn).toMatchObject({ observed: true, reconnected: 1 });
+        expect(report.commandSocketChurn.reason).toBeNull();
+      } finally {
+        releaseLock();
+        await stub.close();
+      }
+    });
   });
 
   // Friction run 4, F39: the target that is listed is the runtime the reload was meant to replace.

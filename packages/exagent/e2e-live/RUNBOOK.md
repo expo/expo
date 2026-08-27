@@ -149,24 +149,31 @@ export produced, a log line that appeared inside a generous bound.
 
 ## Known findings this tier is carrying
 
-- **F93** (`live-eas`, skipped with a `TODO`): `status --explain` runs its two per-platform lookups
-  concurrently, and the loser reports the *package runner's* progress line — `Resolving dependencies`,
-  which is bun installing — as what EAS said about the caller's builds. Measured 3 of 6 fresh runs
-  affected. The test above it retries up to four times to make its own claim honestly; **delete the
-  retry when F93 is fixed**. Details and evidence are in the comment on the skipped test.
-- **F94** (`live-local`, skipped with a `TODO`): an **uncaught exception exits 7** — the code the
-  protocol reserves for needs-human — with a raw Node stack, no `Try:` line and no `--json` envelope,
-  because `src/utils/errors.ts:353` rethrows every non-`EMFILE` error from inside its
-  `uncaughtException` handler and Node's exit code for that is 7. Proven in one line of `node -e`; see
-  the comment on the skipped test.
+Nothing is skipped today. The three findings this tier arrived with — **F93** (the package runner's
+install progress reported as EAS's answer), **F94** (every crash exiting 7, the needs-human code) and
+**F95** (a verification label with no evidence in its payload) — were all fixed in wave 22, and their
+tests run. The evidence and the design each one forced are in `llp/0022-live-tier.plan.md` §The findings
+this tier arrived with and `llp/0021-honest-reports.rfc.md`.
 
-  **You will probably see this fire.** On this machine `dev:stop` hits `Error: setTypeOfService EINVAL`
-  out of undici's `writeH1` during its dev-server probe on most runs (3 of the last 3), on Node 26.5.0
-  / macOS. The undici bug is environmental and not this CLI's; the exit-7-and-a-stack is. The suite is
-  split along what survives the crash: a running test asserts the **effect** (the port is free
-  afterwards, which holds every time) and logs `[live] F94 hit on dev:stop` when the report crashed, and
-  the skipped test carries the report contract. So a green `live-local` with an `F94 hit` line in it is
-  the expected output today, and the line is the thing to fix.
+Two of them left something in place worth knowing before you read a run:
+
+- **F94's trigger is still on this machine, and that is on purpose.** `dev:stop` hits
+  `Error: setTypeOfService EINVAL` out of undici's `writeH1` during its dev-server probe on roughly half
+  of runs, on Node 26.5.0 / macOS. `fetch` surfaces it as an uncaught exception no `await` could have
+  caught, and a crash from inside Node's own socket layer is not something a fixture arranges — so it is
+  the only test of the crash handler against a real uncaught exception. The undici bug is environmental
+  and not this CLI's. With the fix, a run where it fires prints
+  `[live] F94's trigger fired on dev:stop and was reported as a tool error (exit 1)` and stays green;
+  the F94 test asserts exit 1 with the stack and the `UNCAUGHT_EXCEPTION` envelope, and asserts in every
+  case that the run did **not** end in exit 7 with a raw stack. A green run with no such line means the
+  crash simply did not fire — the unit tests are what pin the handler.
+- **A live assertion has to name the signal's own count.** F95's test used to assert `appsReconnected > 0`
+  under `verifiedBy: 'message-socket-peers'`, and those are two different signals: the reload ladder
+  watches two proofs on one budget and whichever answers first ends both, so the debugger-target count is
+  zero on the runs where the bundle line lands first. It was three failures in one whole-suite run and one
+  in the next, under a CLI that was behaving correctly. The test now asserts
+  `commandSocketChurn.reconnected`, which is what that rung establishes. If you add a live assertion on a
+  verified outcome, assert the field the label names.
 
 ## When a live test fails
 
