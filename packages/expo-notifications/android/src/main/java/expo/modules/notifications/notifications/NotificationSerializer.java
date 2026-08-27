@@ -130,6 +130,7 @@ public class NotificationSerializer {
       serializedContent.putString("categoryIdentifier", content.getCategoryId());
     }
     serializedContent.putBoolean("sticky", content.isSticky());
+    serializedContent.putString("threadIdentifier", content.getGroup());
     return serializedContent;
   }
 
@@ -202,6 +203,9 @@ public class NotificationSerializer {
       // ensuring it can be converted for emitting to JS
       serializedContent.putBundle("data", filteredBundleForJSTypeConverter(extras));
     }
+
+    String threadIdentifier = extras.getString("threadIdentifier");
+    serializedContent.putString("threadIdentifier", threadIdentifier == null || threadIdentifier.isEmpty() ? null : threadIdentifier);
 
     Bundle serializedTrigger = new Bundle();
     serializedTrigger.putString("type", "push");
