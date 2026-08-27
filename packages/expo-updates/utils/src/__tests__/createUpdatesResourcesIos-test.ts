@@ -23,6 +23,7 @@ describe('create-updates-resources-ios.sh', () => {
       easBuild: '',
       inheritedMode: '',
       mode: 'development',
+      metroDev: 'true',
     },
     {
       build: 'a Release build',
@@ -30,22 +31,26 @@ describe('create-updates-resources-ios.sh', () => {
       easBuild: '',
       inheritedMode: '',
       mode: 'production',
+      metroDev: 'false',
     },
     {
-      build: 'an EAS Build',
+      build: 'an EAS Debug build',
       configuration: 'Debug',
       easBuild: 'true',
       inheritedMode: '',
       mode: 'production',
+      metroDev: 'true',
     },
     {
-      build: 'an inherited mode',
+      build: 'a build with an inherited config mode',
       configuration: 'Release',
       easBuild: 'true',
       inheritedMode: 'development',
       mode: 'development',
+      metroDev: 'false',
     },
-  ])('passes $mode mode for $build', ({ configuration, easBuild, inheritedMode, mode }) => {
+  ])('passes the config and Metro modes for $build', (testCase) => {
+    const { configuration, easBuild, inheritedMode, mode, metroDev } = testCase;
     const captureFile = path.join(projectRoot, 'capture.txt');
     const fakeNode = path.join(projectRoot, 'node');
     const podsRoot = path.join(projectRoot, 'ios', 'Pods');
@@ -82,6 +87,8 @@ describe('create-updates-resources-ios.sh', () => {
 
     expect(result.stderr).toBe('');
     expect(result.status).toBe(0);
-    expect(fs.readFileSync(captureFile, 'utf8').split('\n')[0]).toBe(mode);
+    const capturedValues = fs.readFileSync(captureFile, 'utf8').trim().split('\n');
+    expect(capturedValues[0]).toBe(mode);
+    expect(capturedValues.at(-1)).toBe(metroDev);
   });
 });

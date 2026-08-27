@@ -8,6 +8,7 @@ on:
       - .github/workflows/android-unit-tests.yml
       - fastlane/**
       - packages/**/android/**
+      - packages/expo-updates/expo-updates-gradle-plugin/**
       - tools/**
       - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
@@ -17,6 +18,7 @@ on:
       - .github/workflows/android-unit-tests.yml
       - fastlane/**
       - packages/**/android/**
+      - packages/expo-updates/expo-updates-gradle-plugin/**
       - tools/**
       - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
@@ -72,9 +74,15 @@ jobs:
         if: always()
         timeout-minutes: 30
         run: pnpm expotools native-unit-tests --platform android
+      - name: 🎸 Run Expo Updates Gradle plugin tests
+        if: always()
+        working-directory: apps/bare-expo/android
+        run: ./gradlew :expo-updates-gradle-plugin:test
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-results
-          path: packages/*/android/build/test-results/**/*xml
+          path: |
+            packages/*/android/build/test-results/**/*xml
+            packages/expo-updates/expo-updates-gradle-plugin/build/test-results/**/*xml

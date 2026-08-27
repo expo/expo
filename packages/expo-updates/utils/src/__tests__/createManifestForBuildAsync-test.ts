@@ -48,7 +48,7 @@ afterEach(() => {
 });
 
 async function createManifestAsync(platform: 'ios' | 'android') {
-  await createManifestForBuildAsync(platform, projectRoot, projectRoot, 'production');
+  await createManifestForBuildAsync(platform, projectRoot, projectRoot, false);
   return JSON.parse(fs.readFileSync(path.join(projectRoot, 'app.manifest'), 'utf8'));
 }
 
@@ -74,14 +74,14 @@ describe(createManifestForBuildAsync, () => {
   });
 
   it.each([
-    ['development', true],
-    ['production', false],
-  ] as const)('uses %s mode for the Metro build', async (mode, expectedDev) => {
-    await createManifestForBuildAsync('ios', projectRoot, projectRoot, mode);
+    ['Debug', true],
+    ['Release', false],
+  ] as const)('uses Metro dev mode for a %s build', async (_, dev) => {
+    await createManifestForBuildAsync('ios', projectRoot, projectRoot, dev);
 
     expect(createMetroServerAndBundleRequestAsync).toHaveBeenCalledWith(
       projectRoot,
-      expect.objectContaining({ dev: expectedDev })
+      expect.objectContaining({ dev })
     );
   });
 });

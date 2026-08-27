@@ -38,7 +38,7 @@ describe(loadEnvForBuild, () => {
       __EXPO_CONFIG_MODE: mode,
     };
 
-    expect(loadEnvForBuild(projectRoot)).toBe(mode);
+    loadEnvForBuild(projectRoot);
     expect(process.env).toMatchObject({
       MODE_VALUE: expectedValue,
       NODE_ENV: mode,
@@ -64,15 +64,15 @@ describe(loadEnvForBuild, () => {
   });
 
   it.each([
-    ['outside EAS Build', undefined, 'development'],
-    ['in EAS Build', 'true', 'production'],
-  ] as const)('uses the %s fallback', (_, easBuild, mode) => {
+    { location: 'outside EAS Build', easBuild: undefined, mode: 'development' },
+    { location: 'inside EAS Build', easBuild: 'true', mode: 'production' },
+  ] as const)('uses $mode mode $location', ({ easBuild, mode }) => {
     process.env = {
       EAS_BUILD: easBuild,
       PATH: originalEnv.PATH,
     };
 
-    expect(loadEnvForBuild(projectRoot)).toBe(mode);
+    loadEnvForBuild(projectRoot);
     expect(process.env.NODE_ENV).toBe(mode);
   });
 });
@@ -100,14 +100,21 @@ describe(createUpdatesResourcesAsync, () => {
     jest.clearAllMocks();
   });
 
-  it('passes the native build mode to the manifest', async () => {
-    await createUpdatesResourcesAsync(['ios', projectRoot, destinationDir, 'all', 'index.js']);
+  it('keeps the Metro dev mode separate from the config mode', async () => {
+    await createUpdatesResourcesAsync([
+      'ios',
+      projectRoot,
+      destinationDir,
+      'all',
+      'index.js',
+      'true',
+    ]);
 
     expect(createManifestForBuildAsync).toHaveBeenCalledWith(
       'ios',
       projectRoot,
       destinationDir,
-      'production',
+      true,
       'index.js'
     );
   });

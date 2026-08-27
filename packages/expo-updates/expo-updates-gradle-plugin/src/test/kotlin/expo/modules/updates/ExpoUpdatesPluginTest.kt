@@ -5,7 +5,7 @@ import org.junit.Test
 
 class ExpoUpdatesPluginTest {
   @Test
-  fun `selects the native build mode`() {
+  fun `selects the config mode`() {
     data class TestCase(
       val name: String,
       val inheritedMode: String?,
@@ -15,11 +15,11 @@ class ExpoUpdatesPluginTest {
     )
 
     val testCases = listOf(
-      TestCase("inherited mode", "development", true, false, "development"),
-      TestCase("EAS Build", null, true, true, "production"),
-      TestCase("debug build", null, false, true, "development"),
-      TestCase("release build", null, false, false, "production"),
-      TestCase("empty inherited mode", "", false, true, "development")
+      TestCase("inherited config mode", "development", true, false, "development"),
+      TestCase("EAS Debug build", null, true, true, "production"),
+      TestCase("Debug build", null, false, true, "development"),
+      TestCase("Release build", null, false, false, "production"),
+      TestCase("empty inherited config mode", "", false, true, "development")
     )
 
     testCases.forEach { testCase ->
