@@ -659,6 +659,10 @@ export function withExtendedResolver(
         return getAsyncRequireModule();
       }
 
+      // TODO(@kitten): Revisit the virtual registry approach after the React Native 0.87 upgrade
+      // lands. The virtual module predates the upgrade (introduced by @EvanBacon) and it needs
+      // some testing and sleuthing to establish why it exists instead of resolving react-native's
+      // real registry module, and whether the internal-import capture below can then be dropped.
       // Redirect every asset registry request to the virtual registry module so all consumers
       // share one instance: Metro's generated asset modules (`assetRegistryPath`), imports of
       // `react-native/asset-registry`, and imports of the legacy `@react-native/assets-registry`
