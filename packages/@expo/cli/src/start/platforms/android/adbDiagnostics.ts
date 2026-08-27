@@ -1,10 +1,5 @@
 import { CommandError } from '../../../utils/errors';
-import {
-  ADB_HOST_PROBE_WAIT_LIMIT_MS,
-  formatAdbEndpoint,
-  probeAdbHostVersionAsync,
-  resolveAdbEndpoint,
-} from './adbEndpoint';
+import { formatAdbEndpoint } from './adbEndpoint';
 import type { AdbEndpoint, AdbHostProbeResult } from './adbEndpoint';
 import { AdbProcessError, AdbProcessWaitError } from './adbProcess';
 
@@ -61,26 +56,12 @@ export function shouldProbeAdbHost(error: unknown): boolean {
   );
 }
 
-export async function createAdbOperationErrorAsync(
+export function createAdbOperationError(
   code: string,
   error: unknown,
   device?: AdbDeviceDiagnostic
-): Promise<CommandError> {
-  const endpoint = resolveAdbEndpoint();
-  let hostProbe: AdbHostProbeResult | undefined;
-  if (error instanceof AdbProcessWaitError && error.phase === 'device-service') {
-    try {
-      hostProbe = await probeAdbHostVersionAsync(
-        endpoint,
-        AbortSignal.timeout(ADB_HOST_PROBE_WAIT_LIMIT_MS)
-      );
-    } catch {
-      hostProbe = {
-        kind: 'connection-failure',
-      };
-    }
-  }
-  const commandError = new CommandError(code, formatAdbError(error, endpoint, hostProbe, device));
+): CommandError {
+  const commandError = new CommandError(code, formatAdbError(error, undefined, undefined, device));
   commandError.cause = error;
   return commandError;
 }

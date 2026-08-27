@@ -620,20 +620,18 @@ describe(isBootAnimationCompleteAsync, () => {
 });
 
 describe(getPropertyDataForDeviceAsync, () => {
-  it('reports host health after a property wait expires', async () => {
+  it('does not extend an expired property wait with a host probe', async () => {
     const operation = 'device property/boot query';
     jest
       .mocked(getServer().getFileOutputAsync)
       .mockRejectedValueOnce(
         new AdbProcessWaitError('property wait expired', operation, 'device-service')
       );
-    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockResolvedValue({
-      kind: 'version',
-    });
+    const probe = jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync');
 
     const result = getPropertyDataForDeviceAsync(asDevice({ pid: '123' }));
     await expect(result).rejects.toThrow('property wait expired');
-    await expect(result).rejects.not.toThrow(/ADB server is responding/);
+    expect(probe).not.toHaveBeenCalled();
   });
 
   it(`returns parsed property data`, async () => {

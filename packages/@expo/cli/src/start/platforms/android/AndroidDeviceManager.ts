@@ -12,7 +12,7 @@ import { activateWindowAsync } from './activateWindow';
 import * as AndroidDebugBridge from './adb';
 import { isAdbDeviceStateUsable } from './adbDeviceList';
 import {
-  createAdbOperationErrorAsync,
+  createAdbOperationError,
   formatAdbDeviceError,
   isAdbDeviceDisconnectedError,
 } from './adbDiagnostics';
@@ -143,7 +143,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
       throw new CommandError('ADB_DEVICE_DISCONNECTED', formatAdbDeviceError(error, this.device));
     }
     if (error instanceof AdbProcessError) {
-      throw await createAdbOperationErrorAsync('ADB_DEVICE_OPERATION', error, this.device);
+      throw createAdbOperationError('ADB_DEVICE_OPERATION', error, this.device);
     }
     throw error;
   }
