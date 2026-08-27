@@ -164,6 +164,21 @@ describe(launchActivityAsync, () => {
       undefined
     );
   });
+  it('classifies a rejected missing activity as not installed', async () => {
+    jest.mocked(getServer().runDeviceMutationAsync).mockRejectedValueOnce(
+      Object.assign(new Error('ADB command failed'), {
+        status: 1,
+        stderr:
+          'Error type 3\nError: Activity class {com.does.not.exist/com.does.not.exist.MainActivity} does not exist.',
+      })
+    );
+
+    await expect(
+      launchActivityAsync(device, {
+        launchActivity: 'com.does.not.exist/.MainActivity',
+      })
+    ).rejects.toMatchObject({ code: 'APP_NOT_INSTALLED' });
+  });
 });
 
 describe(isPackageInstalledAsync, () => {
