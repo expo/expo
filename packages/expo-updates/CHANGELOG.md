@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the embedded manifest recording the wrong `packagerHash` for assets that ship scale variants iOS does not allow (such as `@1.5x` and `@4x`): the hashes were read by the filtered scale index instead of the asset's own, so those images resolved to an empty URI and rendered blank in release builds. ([#48811](https://github.com/expo/expo/pull/48811) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix `expo-dev-client` being detected as installed when it is absent, which enabled `USE_DEV_CLIENT` and printed a `MODULE_NOT_FOUND` trace during `pod install`. ([#49233](https://github.com/expo/expo/pull/49233) by [@dennytosp](https://github.com/dennytosp))
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Fix two launch crashes reachable when a native module resolves the updates controller before `start()` runs: reading `launchedUpdateId` / `launchAssetPath` / `launchAssetUrl()` trapped on an implicitly-unwrapped optional, and the unsynchronized `stateChangeListeners` dictionary could fault while `UpdatesStateMachine` iterated it. ([#48898](https://github.com/expo/expo/pull/48898) by [@spsaucier](https://github.com/spsaucier))
