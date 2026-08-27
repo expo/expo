@@ -524,6 +524,16 @@ export type StubDevServerOptions = {
    *   answer produces.
    */
   bundle?: 'compiles' | 'broken' | 'no-manifest';
+  /**
+   * Origin the manifest's `launchAsset.url` carries, instead of this stub's own `127.0.0.1` one.
+   *
+   * What the real dev server puts there is `getDevServerUrl()`, which is the **tunnel** origin
+   * whenever a tunnel or a proxy is in front of it — and that is the one address a cloud simulator
+   * can use (llp/0005 §Where a device reaches the dev server). A stub bound to the loopback cannot
+   * be reached by a hostname, so this is how a test says "this dev server is advertising itself to
+   * the world" without inventing DNS.
+   */
+  manifestOrigin?: string;
   /** Delay before the entry bundle answers, standing in for a cold first build. */
   bundleDelayMs?: number;
   /**
@@ -666,6 +676,7 @@ export async function startStubDevServerAsync({
   statusDelayMs = 0,
   projectRoot = '/stub-project',
   bundle = 'compiles',
+  manifestOrigin,
   bundleDelayMs = 0,
   messageSocket = 'v2',
   inspectorSocket = 'live',
@@ -697,7 +708,7 @@ export async function startStubDevServerAsync({
           launchAsset: {
             key: 'bundle',
             contentType: 'application/javascript',
-            url: `http://127.0.0.1:${port}${STUB_BUNDLE_PATH}?platform=${request.headers['expo-platform']}&dev=true`,
+            url: `${manifestOrigin ?? `http://127.0.0.1:${port}`}${STUB_BUNDLE_PATH}?platform=${request.headers['expo-platform']}&dev=true`,
           },
         })
       );

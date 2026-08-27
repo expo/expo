@@ -120,7 +120,36 @@ detached run's log did not contain it. The dev server still knew: it builds its 
 `launchAsset.url` from `getDevServerUrl()`, which is the tunnel origin whenever a tunnel is running.
 `fetchAdvertisedUrlAsync` asks it, one request, and `resolveDevServerReachAsync` falls back to it
 whenever the log named nothing — which fixes `navigate --print-url` and `status` at the same time.
-The log stays the first source: it is the dev server's own announcement, and it costs nothing.
+
+**Wave 19 widened that fallback by one condition**, and a live run is why. A dev server serving a
+**public origin** through a proxy prints `Waiting on http://localhost:<port>` and advertises the
+public origin in its manifest [observed — 2026-08-27, `EXPO_PACKAGER_PROXY_URL` against a public
+host, while validating the cloud reload]. The log named *something*, so the manifest was never asked,
+and `hostType: localhost` refused a cloud open the session could have served. So the manifest also
+wins over a log line that names **this machine** — and only then: it replaces the log's reading only
+when the manifest names a tunnel, because swapping a LAN address for `localhost` would hand back a
+URL a phone cannot use. The log stays first for a host a device can already reach: it is the dev
+server's own announcement, and it costs nothing.
+
+### The premise that could not be tested
+
+`runtime:reload --cloud`'s broadcast was `[inferred]`, and the inference was written into the code as
+prose: "the dev-server broadcast reaches a cloud session already — a cloud session has to reach that
+dev server through a tunnel to be running the bundle at all". Staging could not close it (S12) and
+kept it marked. **It is now resolved by observation, and it was false**: the tunnel carries the
+bundle over HTTP and the app holds no client on the dev server's command socket through it, so the
+broadcast reached nobody and the fallback stranded the app
+[observed — 2026-08-27, live; llp/0005 §Reloading a cloud session].
+
+Two rules for the corpus come out of it, both of them about *this* kind of claim — a sentence that
+explains why something must work, in a place no test can reach:
+
+- **A premise that justifies skipping a check is a claim, and it carries a tag.** The sentence read
+  like a derivation and was never labelled `[inferred]`, so nothing in the review or the friction
+  runs treated it as something to test.
+- **Report what was observed, not what follows from it.** The replacement path reports the two lists
+  separately and names its proof (`verifiedBy: dev-server-bundle`), so the next reader can see which
+  fact is an observation and which is the mechanism that ran.
 
 ## The plan has to carry the forwarded flags
 

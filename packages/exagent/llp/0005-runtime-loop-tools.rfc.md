@@ -295,6 +295,82 @@ no client, and which is not one `expo.reloadAppAsync()` reloads, this command ha
 non-destructive reload. It says so, and points at the one thing that always works and costs nothing:
 editing a file the app has loaded, which the dev server pushes on its own.
 
+### Reloading a cloud session
+
+Added in wave 19, after Kudo hit it live: `runtime:reload` did not reload the app on an EAS cloud
+simulator with a tunnelled dev server, with "1 app connected" on the screen
+[observed — 2026-08-27]. The staging round had already recorded the same shape as S12.
+
+**The premise that was wrong.** This document and the code both said the cloud changed only the
+*fallback*, because "the dev-server broadcast reaches a cloud session already — a cloud session has
+to reach that dev server through a tunnel to be running the bundle at all". The tunnel carries the
+**bundle**, over HTTP. It is not evidence of a client on the dev server's client command socket, and
+live there was none: the broadcast reached nobody, `auto` then fell through to the force-stop, and
+the relaunch was refused — leaving a billed session with nothing running on it (S12). A premise no
+stub could test was carried for two waves by the sentence that justified it.
+
+**What `auto` does on `--cloud` now.** The relaunch is the **primary** mechanism, not a fallback,
+and the rule "never force-stop an app the dev server can see" does not apply there: that rule
+protects an alternative, and a cloud session has none. Two controller verbs:
+
+```
+eas simulator:exec npx agent-device@latest open <app-id> --platform ios --relaunch
+eas simulator:exec npx agent-device@latest open <url>    --platform ios
+```
+
+- **`--relaunch`** terminates the app process and launches it again, so nothing has to `close` —
+  and `close` is the verb that ends the *controller's* session, which is how the app was stranded
+  [observed — `agent-device help open`, 0.20.10; the controller's own React Native guide says "Do
+  not use agent-device reload. Use open --relaunch for native startup reset."].
+- **Two verbs and not the documented shell-plus-link form.** `open <app-id> <url> --relaunch` cold
+  launches the shell *with* the dev-server URL, and Expo Go died on its own updates database every
+  time: `SQLiteGetResultsError: (code: 19; extendedCode: 2067; message: UNIQUE constraint failed:
+  updates.scope_key, updates.commit_time)` on screen, twice out of two
+  [observed — 2026-08-27, session `01a04378-…`, SDK 57 Expo Go on an iOS cloud simulator]. Restart
+  the shell with no URL, *then* send the link. llp/0010 §Upstream asks records the Expo Go bug.
+- **The URL is `navigate --cloud`'s**, resolved by `resolveRouteUrlAsync`: the manifest-derived
+  tunnel host, never the `exp+<slug>://<host>` launcher form. The tunnel precondition is checked
+  **before** the first verb, which is the other half of the S12 fix — a run that stops the app and
+  only then finds the URL unusable is exactly how the app was left closed.
+- **`DEVICE_IN_USE` is retried once**, bound to the session the controller names (S14). Never a
+  second session: that bills another machine.
+
+**What proves it, when there is no debugger target to wait for.** Two observations are watched on one
+budget and the first to answer ends both:
+
+1. a debugger target the dev server had not listed before — the proof every other path uses;
+2. a **`Bundled` line** in the dev server's captured output that was not there before the relaunch,
+   which means something fetched the served bundle again (`src/runtime/reload/bundleSignal.ts`).
+
+The second one is why a cloud reload can exit `0` at all, and two live facts make it the load-bearing
+one. A relaunched app re-registers under the **same** debugger page id — Metro's per-device counter
+restarts with the app, so `…ce-1` before the relaunch was `…ce-1` after it — and Fast Refresh
+produces no `Bundled` line, so the signal is specific to a full bundle fetch rather than to any edit
+[both observed — 2026-08-27, live]. `verifiedBy: dev-server-bundle` is its own value: it says the dev
+server served a bundle after this command acted, and **not** which client asked for it.
+
+`reloaded` is `verifiedBy != null`, which is stricter than it was for exactly one path. On a local
+device the relaunch *is* an observation — `simctl terminate` names a process and fails when there is
+none — and on a cloud session neither controller verb answers about the app it was given (§What
+`close` will not tell you). So a cloud relaunch that nothing observed is exit `22` with both
+observations spelled out, and never a success off a verb that accepted an argument.
+
+**Live evidence** [observed — 2026-08-27, staging, project `@kudo1/livecheck`, iOS session
+`01a04378-bf7f-74d3-b9c9-7603b2ff27d3`, SDK 57 Expo Go, public dev-server origin]:
+
+| Case | Result |
+| --- | --- |
+| `runtime:reload --cloud` with the shell-plus-link verb | exit **22**, honest: relaunch ran, nothing observed. Screen: Expo Go's updates-database crash, twice |
+| `runtime:reload --cloud`, two-verb sequence | exit **0**, `verifiedBy: dev-server-bundle`, `iOS Bundled 32ms … (1 module)`, `MARKER-THREE` on screen — the edit made seconds earlier |
+| `runtime:reload --cloud --route /second` | exit **0** in 15.2 s, landed on `/second`, screenshot confirms |
+| Both waits run to their own end | 89.9 s for a reload proved in the first seconds — hence the abort |
+| `--cloud` with a `localhost` dev server | exit 1, `CLOUD_SIMULATOR_UNREACHABLE_DEV_SERVER`, **no** device verb spawned |
+| A session started without `--expo-go` | `apps` lists only the controller's test runner; every `exp://` open fails `LSApplicationWorkspaceErrorDomain error 115` |
+
+That last row is why every piece of advice in this package now names
+`eas simulator … --expo-go` (`CLOUD_SESSION_START_COMMAND`): the old suggestion started a session
+with no app on it, which no `navigate --cloud` or `runtime:reload --cloud` can use.
+
 ### Live evidence
 
 [observed — 2026-08-23, notesapp SDK 57, Expo Go, iPhone 17 Pro `C159CF99-…`, port 8170]
@@ -738,13 +814,15 @@ session — and the relaunch was refused, so the session was left up, billing, w
 it. The report said only *"The app was not reloaded"* and offered `npx exagent navigate /`, which on
 a cloud session is the very open that had just failed.
 
-The fallback is **not** redesigned here: restoring the controller's session app is not something this
-command can do, and a retry loop around a verb the device refused would spend a billed minute per
-attempt. What changed is that the run says what it did — naming the application id it stopped — and
-hands over the command a person can run, `eas simulator:exec … open <app-id>`. Opening the
-application id rather than a deep link is the part worth keeping: it avoids the "Open in Expo Go?"
-dialog that nothing can answer on a cloud device (S10). The attempt carries `leftAppStopped` on the
-payload so the fact is machine-readable rather than only prose.
+**Wave 19 did redesign it**, and the first cut of this paragraph — "the fallback is not redesigned
+here" — is the thing to correct. There is no `close` in the path any more, so the state this
+paragraph describes cannot be reached the same way: one verb restarts the app, and a refusal of it
+says something narrower and true — `--relaunch` terminates before it launches, so whether the app is
+on the screen is **not known**, and the report says that instead of claiming either. `leftAppStopped`
+stays on the payload for the local device method, where the stop and the start are two commands and
+the fact *is* knowable. The by-hand recovery is still named, and still the application id rather than
+a deep link: it avoids the "Open in Expo Go?" dialog that nothing can answer on a cloud device
+(S10).
 
 **`runtime:stop --cloud`'s follow-up asserted the app was not running (S13).** `wasRunning` is
 **null** on a cloud session for the reason §What `close` will not tell you gives, and the follow-up
@@ -916,16 +994,19 @@ With one app-ending verb in hand, the rest of the loop follows:
 | `navigate` | yes | `open <url> --platform <p>` |
 | `smoke` | yes | `navigate`'s device, then `screenshot <path>` |
 | `runtime:stop --cloud` | yes, with a caveat | `close <appId>` — which ends the app but does **not** report which one, so `wasRunning` is null. See §What `close` will not tell you |
-| `runtime:reload --cloud --method device` | yes | `close <appId>`, then the same `open` `navigate` runs — and unlike `runtime:stop` it *verifies*, so the unreliable verb is sound here |
+| `runtime:reload --cloud` | yes, and it is the **primary** path there | `open <appId> --relaunch`, then `open <url>` — no `close` at all. §Reloading a cloud session |
 | the Android attach recovery | yes | the same pair, so it is gated on "the platform is Android" rather than on "the device is local" |
 | ending the **session** | no, and deliberately | `eas simulator:stop` is the person's command. This CLI never spawns it; it only names it |
 
-`runtime:reload`'s **primary** path never needed a cloud form: it broadcasts over the dev server's
-own client command socket, and a cloud session reaches that dev server through the tunnel it is
-required to have (§A cloud simulator requires a tunnel). So the cloud only changes the **fallback**,
-which is exactly the force-stop-and-relaunch pair above. (`agent-device metro reload` exists and is
-*not* used: it would ask the controller to reach a dev server this CLI is already connected to, and
-two ways to send one reload is one more than the report can explain.)
+**Corrected in wave 19.** This section used to say `runtime:reload`'s primary path "never needed a
+cloud form", because the broadcast goes over the dev server's own command socket and a cloud session
+must reach that dev server through a tunnel. The tunnel carries the *bundle*; the app holds no client
+on that socket through it, and the broadcast reloaded nothing. The cloud therefore changes the
+**ladder** rather than a fallback, and §Reloading a cloud session is the sequence that works.
+(`agent-device metro reload` is still *not* used, and now for a reason that was read rather than
+assumed: its own help says that "when the server has no HTTP /reload route (Expo) the reload is
+broadcast over its /message websocket instead" — the same broadcast, sent from the controller's side,
+with the same empty client list at the far end.)
 
 ### Where it composes
 

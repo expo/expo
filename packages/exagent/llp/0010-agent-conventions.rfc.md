@@ -961,6 +961,28 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   non-interactive mode, so a terminal never sees the line and an agent always does. Worked around in
   `src/dev/advertisedUrl.ts`: the host is kept and the origin is rebuilt (llp/0021 §The scheme in
   "Waiting on" is not the dev server's).
+Expo Go (iOS) — found while validating the cloud reload [observed — 2026-08-27]:
+
+- **A cold launch with a dev-server URL kills the app on its own updates database.** Launching Expo
+  Go with the project URL as the launch URL — `agent-device open host.exp.Exponent exp://<host>/--/?
+  --relaunch`, which is the controller's documented shell-plus-link form — showed
+  `There was a problem running "<app>". SQLiteGetResultsError: (code: 19; extendedCode: 2067;
+  message: UNIQUE constraint failed: updates.scope_key, updates.commit_time)` and left the app
+  unusable, twice out of two, on an iOS cloud simulator running SDK 57 Expo Go. The same project
+  loaded fine when the shell was restarted **without** a URL and the link was sent afterwards, which
+  is the sequence llp/0005 §Reloading a cloud session now uses. The insert appears to collide with
+  the row an earlier launch of the same project wrote, so the second cold launch of any dev project
+  is the case. Worked around by never putting the URL on the launch.
+
+`agent-device` — the ask from the staging round still stands (a `close` that reports the app it acted
+on, §What `close` will not tell you in llp/0005), and wave 19 adds one:
+
+- **`open <app> <url>` should not be the recommended shape for an Expo Go dev URL** while the launch
+  path above is broken — or, better, the controller could send the URL as a deep link after the
+  launch it already performs, which is what a caller has to do by hand today.
+
+`@expo/cli`, continued:
+
 - Emit `devserver:url` in a **released** SDK. The event already exists on `main` with exactly the
   right fields — `url`, `runtimeUrl`, `hostType`, `port` [observed — `BundlerDevServer.startAsync`,
   2026-08-25] — and expo 57.0.17 does not emit it [observed — live: `start.log` carries

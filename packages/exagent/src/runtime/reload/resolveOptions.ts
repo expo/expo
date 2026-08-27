@@ -41,12 +41,21 @@ export interface ReloadOptions {
   /** Platform to reload on. Undefined means "whichever device is booted". */
   platform?: NavigatePlatform;
   /**
-   * `--cloud`: the device method acts on this project's EAS Simulator session.
+   * `--cloud`: the reload acts on this project's EAS Simulator session.
    *
-   * Only the **device** method changes. The dev-server broadcast reaches a cloud session already —
-   * it goes out over this dev server's own client command socket, and a cloud session has to reach
-   * that dev server through a tunnel to be running the bundle at all (llp/0005 §A cloud simulator
-   * requires a tunnel). So this flag is about the fallback: the force-stop and the relaunch.
+   * **This used to say the flag changed only the fallback**, on the grounds that "the dev-server
+   * broadcast reaches a cloud session already — a cloud session has to reach that dev server
+   * through a tunnel to be running the bundle at all". That premise was wrong, and it was wrong in
+   * a way no stub could catch: the tunnel carries the **bundle**, over HTTP, and the app holds no
+   * client on the dev server's command socket through it. The broadcast reached nobody, and the
+   * fallback then force-stopped the app and could not start it again
+   * [observed — live staging, 2026-08-26, S12; hit again by Kudo, 2026-08-27].
+   *
+   * So the flag changes the **ladder**. On a cloud session the relaunch is the primary mechanism —
+   * one controller verb, `open <app-id> <url> --relaunch` — and `auto` reaches it even with an app
+   * on the debugger target list, because there the rule "never force-stop an app the dev server can
+   * see" is protecting an alternative that does not exist
+   * (llp/0005 §Reloading a cloud session, `./cloudReload.ts`).
    *
    * `required` and never `fallback`: a session bills by the minute, so the flag is the only way a
    * reload reaches one.
@@ -80,8 +89,8 @@ const RELOAD_ARGS = {
   '--scheme': String,
   '--ios': Boolean,
   '--android': Boolean,
-  // @ref llp/0005 §What the cloud backend can and cannot do. The device method is a force-stop and
-  // a relaunch, and the controller has both — `close <app-id>` and `open <url>`.
+  // @ref llp/0005 §Reloading a cloud session. One controller verb does both halves:
+  // `open <app-id> <url> --relaunch` terminates the app process and launches it on the URL.
   '--cloud': Boolean,
   '--dev-server-url': String,
   // Sugar for the URL above (llp/0005 §The dev server a caller names).

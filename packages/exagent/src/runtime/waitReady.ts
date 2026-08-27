@@ -234,6 +234,15 @@ export interface WaitForFreshAppConnectionOptions extends WaitForAppConnectionOp
    * the `--method device` case where "reload" and "start" are the same act.
    */
   knownTargetIds: readonly string[];
+  /**
+   * Stop the wait from outside, for a caller watching a second proof at the same time.
+   *
+   * `runtime:reload --cloud` watches this list *and* the dev server's own output, because a cloud
+   * simulator may register no target at all. Whichever answers first ends both waits: running this
+   * one out to its budget spent 90 s of a billed session on a reload the log had already proved
+   * [observed — 2026-08-27, live].
+   */
+  signal?: AbortSignal;
 }
 
 export interface FreshAppConnectionResult extends AppConnectionResult {
@@ -264,7 +273,7 @@ export interface FreshAppConnectionResult extends AppConnectionResult {
  */
 export async function waitForFreshAppConnectionAsync(
   devServerUrl: string,
-  { timeoutMs, intervalMs = 250, knownTargetIds }: WaitForFreshAppConnectionOptions
+  { timeoutMs, intervalMs = 250, knownTargetIds, signal }: WaitForFreshAppConnectionOptions
 ): Promise<FreshAppConnectionResult> {
   const startedAt = Date.now();
   const deadline = startedAt + timeoutMs;
@@ -282,6 +291,12 @@ export async function waitForFreshAppConnectionAsync(
         timedOut: false,
         waitedMs: Date.now() - startedAt,
       };
+    }
+    // A caller watching a second proof has had it answered, so this one has nothing left to
+    // decide. The counts are what the last read said, and `timedOut` is false: the budget did not
+    // run out, the question was settled elsewhere.
+    if (signal?.aborted) {
+      return { appsConnected, freshTargets: 0, timedOut: false, waitedMs: Date.now() - startedAt };
     }
     if (Date.now() + intervalMs >= deadline) {
       return { appsConnected, freshTargets: 0, timedOut: true, waitedMs: Date.now() - startedAt };

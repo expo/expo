@@ -114,6 +114,25 @@ export const CLOUD_SESSION_LIST_LIMIT = 25;
 /** Where an account without EAS Simulator asks for it, when the service names one. [observed] */
 export const CLOUD_SIMULATOR_WAITLIST_URL = 'https://expo.dev/services/simulators';
 
+/**
+ * The command that starts a session this CLI can actually drive, in one place.
+ *
+ * `--expo-go` is the part that was missing, and its absence made every piece of advice in this
+ * package a dead end for an Expo Go project: a session started without it comes up with **no app on
+ * it**. `apps --platform ios` on such a session listed only the controller's own test runner, and
+ * every `open` of an `exp://` URL failed with `LSApplicationWorkspaceErrorDomain error 115` — the
+ * simulator has nothing registered for the scheme [observed — live, 2026-08-27, session
+ * `01a04375-…`]. The same start with `--expo-go` listed `Expo Go (host.exp.Exponent)` and loaded the
+ * project [observed — live, session `01a04378-…`].
+ *
+ * `eas simulator` rather than `eas simulator:start`: that is the command name in the CLI's own
+ * manifest, and it is the one carrying `--expo-go` [observed — `eas-cli@22.6.0`
+ * `oclif.manifest.json`, and run live]. A project with a development build of its own passes
+ * `--build-id <id>` instead, which is the other observed way to have an app on the session.
+ */
+export const CLOUD_SESSION_START_COMMAND =
+  'npx eas simulator --platform ios --type agent-device --expo-go --non-interactive --name "exagent"';
+
 // ---- The argv, as pure functions -------------------------------------------------------------
 //
 // Pure and exported for the same reason `buildOpenUrlCommand` and `buildScreenshotCommand` are: the
@@ -157,21 +176,57 @@ export function buildAvailabilityArgs(): string[] {
 }
 
 /**
- * The deep link, as the cloud backend opens it. [inferred]
+ * The deep link, as the cloud backend opens it.
  *
  * `simulator:exec` loads the session environment and runs the controller, and the controller's verb
  * is `open` — the same verb for an app id and for a deep link. `--platform` is passed because the
  * skill's examples pass it on `open`, and a session knows its own platform: this says which of the
  * two the URL is for, and a session probe is where the value comes from rather than a guess.
+ * [observed — live, 2026-08-26: the bare `open <url> --platform <p>` form, exit 0.]
+ *
+ * Three optional pieces, all of them from the controller's own help [observed —
+ * `agent-device help open`, 0.20.10] and all of them for the cloud **reload** (llp/0005 §Reloading a
+ * cloud session):
+ *
+ * - `appId` in front of the URL — the shell-plus-link form, `open "Expo Go" exp://host …`, which
+ *   launches the named app *with* the link instead of handing the link to the system. What that
+ *   avoids is the "Open in 'Expo Go'?" dialog nothing can answer on a cloud device (S10).
+ * - `relaunch` — `--relaunch`, which "terminate[s] the app process before launching it". One verb
+ *   for the force-stop and the relaunch, so a reload never has to `close` first; `close` ends the
+ *   *controller's* session and is what left a cloud app stranded (S12).
+ * - `session` — `--session <name>`, the remedy the controller names in its own `DEVICE_IN_USE`
+ *   refusal (S14).
+ *
+ * The order is the controller's: subcommand, then positionals, then flags.
  */
 export function buildCloudOpenUrlArgs({
   url,
   platform,
+  appId,
+  relaunch = false,
+  session,
 }: {
   url: string;
   platform: CloudPlatform;
+  /** Application id of the shell to launch the URL with, or undefined for a bare URL open. */
+  appId?: string;
+  /** Terminate the app process before launching it. */
+  relaunch?: boolean;
+  /** Controller session to bind the verb to, or undefined for the controller's own default. */
+  session?: string;
 }): string[] {
-  return ['simulator:exec', 'npx', AGENT_DEVICE_SPEC, 'open', url, '--platform', platform];
+  return [
+    'simulator:exec',
+    'npx',
+    AGENT_DEVICE_SPEC,
+    'open',
+    ...(appId ? [appId] : []),
+    url,
+    '--platform',
+    platform,
+    ...(relaunch ? ['--relaunch'] : []),
+    ...(session ? ['--session', session] : []),
+  ];
 }
 
 /**
@@ -723,13 +778,30 @@ async function noUsableSessionAsync({
   };
 }
 
-/** Open a URL on the cloud simulator. Never throws for a verb that ran and refused. */
+/**
+ * Open a URL on the cloud simulator. Never throws for a verb that ran and refused.
+ *
+ * `appId`, `relaunch` and `session` are {@link buildCloudOpenUrlArgs}'s: a caller that wants the
+ * one-verb relaunch passes them, and a caller that wants the plain open passes none.
+ */
 export function openUrlOnCloudSimulatorAsync({
   url,
   platform,
+  appId,
+  relaunch,
+  session,
   ...options
-}: CloudRunOptions & { url: string; platform: CloudPlatform }): Promise<CloudRunResult> {
-  return runCloudVerbAsync(buildCloudOpenUrlArgs({ url, platform }), options);
+}: CloudRunOptions & {
+  url: string;
+  platform: CloudPlatform;
+  appId?: string;
+  relaunch?: boolean;
+  session?: string;
+}): Promise<CloudRunResult> {
+  return runCloudVerbAsync(
+    buildCloudOpenUrlArgs({ url, platform, appId, relaunch, session }),
+    options
+  );
 }
 
 /**
@@ -802,7 +874,7 @@ async function runEasAsync(
  * reader knows the file on disk is stale rather than wrong.
  */
 export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandError {
-  const start = `npx eas simulator:start --platform ios --type agent-device --non-interactive --name "exagent navigate"`;
+  const start = CLOUD_SESSION_START_COMMAND;
 
   if (probe.available === false) {
     const error = new CommandError(
@@ -827,7 +899,7 @@ export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandE
       // `--id` is named rather than left out: `simulator:stop` defaults to `.env.eas-simulator`,
       // and a session started with `--json` writes that file empty, so the bare form has nothing to
       // read [observed — 2026-08-26, live]. Advice that bills by the minute has to work first time.
-      `How: start one with "${start}", then run this command again. The session bills until it is stopped, so end it with "npx eas simulator:stop --id <session-id>" when the run is done. To see what this project has running, "npx eas simulator:list --status in-progress" lists it, with the id. To open the link somewhere this CLI does not drive, "npx exagent navigate <route> --print-url" prints the URL and asks for no device.`,
+      `How: start one with "${start}", then run this command again. "--expo-go" is not optional advice: a session started without it comes up with no app installed, and every link opened on it is refused. A project with a development build of its own passes "--build-id <id>" instead. The session bills until it is stopped, so end it with "npx eas simulator:stop --id <session-id>" when the run is done. To see what this project has running, "npx eas simulator:list --status in-progress" lists it, with the id. To open the link somewhere this CLI does not drive, "npx exagent navigate <route> --print-url" prints the URL and asks for no device.`,
     ].join('\n')
   );
   error.suggestedCommand = start;
@@ -958,8 +1030,19 @@ export function cloudNeedsTunnelError(url: string, hostType: string | null): Com
  * `Device is already in use by session "default".` [observed — live, 2026-08-26], and a message that
  * stops carrying a name falls back to advice that names none.
  */
+/**
+ * The controller session named in a `DEVICE_IN_USE` message, or null when it named none.
+ *
+ * `Device is already in use by session "default".` [observed — live, 2026-08-26]. Exported because
+ * two callers need it: the advice below, and the cloud reload — which binds its verb to that session
+ * and retries, rather than telling a reader to do it (`src/runtime/reload/cloudReload.ts`).
+ */
+export function readHeldSessionName(message: string): string | null {
+  return /session\s+["']([^"']+)["']/.exec(message)?.[1] ?? null;
+}
+
 function heldDeviceHow(message: string): string {
-  const session = /session\s+["']([^"']+)["']/.exec(message)?.[1] ?? null;
+  const session = readHeldSessionName(message);
   return [
     session
       ? `The device is held by the session named ${JSON.stringify(session)}, so bind this verb to that session — the controller takes --session ${session} — or wait for whatever is holding it to let go.`

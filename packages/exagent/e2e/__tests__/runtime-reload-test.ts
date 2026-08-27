@@ -155,6 +155,8 @@ describe('exagent runtime:reload', () => {
         'bundle',
         'bundlePlatformSource',
         'bundlePlatforms',
+        'bundlesAfterReload',
+        'commandSocketClients',
         'devServerSource',
         'devServerUrl',
         'deviceId',
