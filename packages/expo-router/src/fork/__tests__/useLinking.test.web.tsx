@@ -237,16 +237,17 @@ test('keeps the current route group when parsing a popstate path', () => {
   act(() => historyListener?.());
 
   expect(parsePath).toHaveBeenCalledWith('/shared', config, ['(b)', 'other']);
-  expect(getPendingIntents()).toEqual([
-    {
-      type: 'NAVIGATE_TO_HREF',
-      payload: { href: '/shared', options: { event: 'NAVIGATE' } },
-      metadata: { history: { path: '/shared' } },
-      onDispatch: expect.any(Function),
-    },
-  ]);
-  const parsedState = completeParsedState(parsePath.mock.results[0]?.value, ROOT_CHAIN);
-  expect(getRouteInfoFromState(parsedState).segments).toEqual(['(b)', 'shared']);
+  const parsedIntent = getPendingIntents()[0];
+  expect(parsedIntent).toMatchObject({
+    type: 'ACTION',
+    payload: { action: { type: 'RESET', target: 'navigator:root' } },
+    metadata: { history: { path: '/shared' } },
+    onDispatch: expect.any(Function),
+  });
+  const parsedState =
+    parsedIntent?.type === 'ACTION' ? parsedIntent.payload.action.payload : undefined;
+  // `NavigationAction` exposes its payload only as `object`.
+  expect(getRouteInfoFromState(parsedState as NavigationState).segments).toEqual(['(b)', 'shared']);
 });
 
 test('parses the initial URL instead of returning the existing store state', async () => {
