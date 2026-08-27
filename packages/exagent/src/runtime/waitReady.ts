@@ -237,10 +237,11 @@ export interface WaitForFreshAppConnectionOptions extends WaitForAppConnectionOp
   /**
    * Stop the wait from outside, for a caller watching a second proof at the same time.
    *
-   * `runtime:reload --cloud` watches this list *and* the dev server's own output, because a cloud
-   * simulator may register no target at all. Whichever answers first ends both waits: running this
-   * one out to its budget spent 90 s of a billed session on a reload the log had already proved
-   * [observed — 2026-08-27, live].
+   * `runtime:reload` watches this list *and* the dev server's own output, on every rung: some apps
+   * register no target at all (a cloud simulator), and a relaunched app can come back under the page
+   * id it had before. Whichever answers first ends both waits: running this one out to its budget
+   * spent 90 s of a billed session on a reload the log had already proved, and 30 s of a local one
+   * [both observed — 2026-08-27, live].
    */
   signal?: AbortSignal;
 }
