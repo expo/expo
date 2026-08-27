@@ -4,10 +4,12 @@ import { spawn } from 'child_process';
 import { setTimeout as delayAsync } from 'node:timers/promises';
 
 import * as Log from '../../../log';
-import { AbortCommandError } from '../../../utils/errors';
+import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import type { Device } from './adb';
 import { getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
+import { isAdbDeviceDisconnectedError } from './adbDiagnostics';
+import { AdbProcessWaitError } from './adbProcess';
 
 export const EMULATOR_MAX_WAIT_TIMEOUT = 60 * 1000 * 3;
 
@@ -124,11 +126,16 @@ async function checkEmulatorBootAsync(name: string, signal?: AbortSignal): Promi
       if (await isBootAnimationCompleteAsync(connected.pid, signal)) {
         return connected;
       }
-    } catch {
+    } catch (error) {
       if (signal?.aborted) throw signal.reason;
-      // NOTE(@kitten): If `isBootAnimationCompleteAsync` rejects, the device may not have been ready to reply.
-      // Assume we're still waiting for it, so the outer loop can continue checking
+      if (!isTransientBootPropertyError(error)) throw error;
     }
   }
   return null;
+}
+
+function isTransientBootPropertyError(error: unknown): boolean {
+  const cause =
+    error instanceof CommandError && error.code === 'ADB_PROPERTY' ? error.cause : error;
+  return cause instanceof AdbProcessWaitError || isAdbDeviceDisconnectedError(cause);
 }

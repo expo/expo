@@ -80,7 +80,9 @@ export async function createAdbOperationErrorAsync(
       };
     }
   }
-  return new CommandError(code, formatAdbError(error, endpoint, hostProbe, device));
+  const commandError = new CommandError(code, formatAdbError(error, endpoint, hostProbe, device));
+  commandError.cause = error;
+  return commandError;
 }
 
 function formatHostProbeAdvice(
