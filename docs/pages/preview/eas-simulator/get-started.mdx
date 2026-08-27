@@ -89,9 +89,9 @@ Do not commit or share this file. It includes the token that lets a controller r
 
 <Step label="4">
 
-### Choose a controller and start a remote device
+### Choose a session type and start a remote device
 
-Choose the controller you plan to use for installation and device actions. Pass its type explicitly when you start the session.
+Choose the controller you plan to use for installation and device actions. On iOS, each controller-backed session also includes a web preview. If you only need the web preview, use `serve-sim` without a controller. Pass the session type explicitly when you start the session.
 
 <Tabs>
 
@@ -126,6 +126,18 @@ Use an Appium client when you already have Appium tests or automation. EAS CLI w
 <Terminal
   cmd={[
     '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Web preview only">
+
+Use the iOS web preview without provisioning a programmatic controller.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type serve-sim --name "Design review" --non-interactive',
   ]}
 />
 

@@ -24,14 +24,14 @@ Choose the build type based on what you need:
 
 ## Choose a session type
 
-Choose how you plan to control or view the device before starting the session and pass its type explicitly. For programmatic control, use the matching controller's commands for the rest of the session.
+Choose how you plan to control the device before starting the session and pass its type explicitly. On iOS, agent-device, Appium, and Argent sessions include both the selected controller and a web preview. Use `serve-sim` when you only need the web preview without programmatic control.
 
-| Session type | Start option          | Use case                                                              |
-| ------------ | --------------------- | --------------------------------------------------------------------- |
-| agent-device | `--type agent-device` | [Agent-native device control and installation](/agents/agent-device/) |
-| Appium       | `--type appium`       | Existing Appium clients and test suites                               |
-| Argent       | `--type argent`       | [Argent device tools and MCP integration](/agents/argent/)            |
-| Browser only | `--type serve-sim`    | Interactive iOS stream without programmatic control                   |
+| Session type     | Start option          | Use case                                                              |
+| ---------------- | --------------------- | --------------------------------------------------------------------- |
+| agent-device     | `--type agent-device` | [Agent-native device control and installation](/agents/agent-device/) |
+| Appium           | `--type appium`       | Existing Appium clients and test suites                               |
+| Argent           | `--type argent`       | [Argent device tools and MCP integration](/agents/argent/)            |
+| Web preview only | `--type serve-sim`    | Interactive iOS stream without programmatic control                   |
 
 ## Find the app identifier
 
