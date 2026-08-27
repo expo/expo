@@ -80,6 +80,8 @@ const treeOptions = {
   maxNodes: DEFAULT_MAX_NODES,
   devServerUrl: null,
   json: true,
+  bundleCheck: true,
+  followups: false,
 };
 
 const tapOptions = {
@@ -91,6 +93,8 @@ const tapOptions = {
   maxNodes: DEFAULT_MAX_NODES,
   devServerUrl: null,
   json: true,
+  bundleCheck: true,
+  followups: false,
 };
 
 const typeOptions = {
@@ -197,16 +201,20 @@ describe(runtimeTreeAsync, () => {
     expect(await runtimeTreeAsync(treeOptions)).toBe(EXIT_OK);
     expect(Object.keys(json()).sort()).toEqual([
       'allScreens',
+      'bundle',
       'devServerUrl',
       'fibersWalked',
       'focusedScreen',
+      'followups',
       'matched',
       'matches',
       'maxNodes',
       'nodeCount',
       'nodes',
+      'nodesBeforeTruncation',
       'ok',
       'projection',
+      'reason',
       'screensSeen',
       'testID',
       'truncated',
@@ -446,5 +454,141 @@ describe(runtimeTypeAsync, () => {
     expect(await runtimeTypeAsync({ ...typeOptions, submit: true })).toBe(EXIT_OUTCOME_FAILED);
     expect(json()).toMatchObject({ called: true, submitted: false, ok: false });
     expect(stderr()).toMatch(/text/i);
+  });
+});
+
+// @ref llp/0018-interaction-commands.rfc.md §The bundle gate — friction run 7, F62.
+//
+// With a syntax error in the project, `smoke` and `runtime:reload` both refused, and these three
+// went green: `runtime:tap add-note --verify` reported "the screen changed" about the bundle from
+// before the edit. The gate is the one `runtime:reload` already owns, and so is the flag that
+// declines it.
+describe('the entry bundle gate', () => {
+  /** The `TransformError` body Metro answers a failed build with. */
+  const transformError = {
+    type: 'TransformError',
+    filename: 'src/app/lab.tsx',
+    lineNumber: 137,
+    column: 4,
+    message: "SyntaxError: Unexpected keyword 'this'. (137:4)\n  > 137 |   this is not valid",
+  };
+
+  /** A dev server with one app attached whose entry bundle builds, or does not. */
+  function mockBundle(compiles: boolean): jest.Mock {
+    const fetchMock = jest.fn(async (input: any, init?: any) => {
+      const url = String(input);
+      if (url.includes('/json/list')) {
+        return { ok: true, json: async () => [TARGET] } as any;
+      }
+      if (url.includes('.bundle')) {
+        return compiles
+          ? ({ ok: true, status: 200, statusText: 'OK' } as any)
+          : ({
+              ok: false,
+              status: 500,
+              statusText: 'Internal Server Error',
+              text: async () => JSON.stringify(transformError),
+            } as any);
+      }
+      // The manifest, which is the only thing that knows this project's entry bundle URL.
+      return {
+        ok: true,
+        status: 200,
+        headers: new Map(),
+        json: async () => ({
+          launchAsset: { url: `${devServerUrl}/node_modules/expo-router/entry.bundle?platform=ios` },
+        }),
+      } as any;
+    });
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    return fetchMock;
+  }
+
+  it(`refuses runtime:tree with exit 20, and never asks the app anything`, async () => {
+    mockBundle(false);
+    const evaluateAsync = mockEvaluate(treeAnswer());
+
+    expect(await runtimeTreeAsync(treeOptions)).toBe(EXIT_OUTCOME_FAILED);
+    expect(evaluateAsync).not.toHaveBeenCalled();
+    expect(json()).toMatchObject({
+      ok: false,
+      bundle: { checked: true, ok: false, error: { filename: 'src/app/lab.tsx', lineNumber: 137 } },
+    });
+    expect(stderr()).toContain('does not compile');
+    expect(stderr()).toContain('src/app/lab.tsx:137:4');
+  });
+
+  it(`refuses runtime:tap without calling the handler`, async () => {
+    mockBundle(false);
+    const evaluateAsync = mockEvaluate(tapAnswer());
+
+    expect(await runtimeTapAsync({ ...tapOptions, verify: true })).toBe(EXIT_OUTCOME_FAILED);
+    expect(evaluateAsync).not.toHaveBeenCalled();
+    expect(json()).toMatchObject({ ok: false, called: false, reason: 'bundle-broken', verify: null });
+  });
+
+  it(`refuses runtime:type without typing`, async () => {
+    mockBundle(false);
+    const evaluateAsync = mockEvaluate(tapAnswer());
+
+    expect(await runtimeTypeAsync(typeOptions)).toBe(EXIT_OUTCOME_FAILED);
+    expect(evaluateAsync).not.toHaveBeenCalled();
+    expect(json()).toMatchObject({ ok: false, called: false, reason: 'bundle-broken' });
+  });
+
+  it(`reads the app when the bundle compiles, and says which platform it built`, async () => {
+    mockBundle(true);
+    mockEvaluate(treeAnswer());
+
+    expect(await runtimeTreeAsync(treeOptions)).toBe(EXIT_OK);
+    expect(json().bundle).toMatchObject({ checked: true, ok: true, platform: 'ios' });
+  });
+
+  it(`is declined by --no-bundle-check, which says so in the payload`, async () => {
+    const fetchMock = mockBundle(false);
+    mockEvaluate(treeAnswer());
+
+    expect(await runtimeTreeAsync({ ...treeOptions, bundleCheck: false })).toBe(EXIT_OK);
+    expect(json().bundle).toMatchObject({
+      checked: false,
+      ok: null,
+      reason: expect.stringContaining('--no-bundle-check'),
+    });
+    // Nothing was built: the flag is what a caller passes to drive a bundle they know is stale.
+    expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('.bundle'))).toEqual([]);
+  });
+});
+
+// @ref llp/0018-interaction-commands.rfc.md §Follow-ups — friction run 7, F75.
+describe('the follow-ups of the three commands', () => {
+  it(`names a testID this walk found, and rides in --json`, async () => {
+    mockEvaluate(treeAnswer());
+
+    expect(await runtimeTreeAsync({ ...treeOptions, followups: true })).toBe(EXIT_OK);
+    expect(json().followups[0]).toMatchObject({
+      id: 'tap-element',
+      command: 'npx exagent runtime:tap add-note --verify',
+    });
+  });
+
+  it(`offers a tap the proof it did not ask for`, async () => {
+    mockEvaluate(tapAnswer());
+
+    expect(await runtimeTapAsync({ ...tapOptions, followups: true })).toBe(EXIT_OK);
+    expect(json().followups[0]).toMatchObject({ id: 'tap-verify' });
+  });
+
+  it(`offers a type the submit it did not make`, async () => {
+    mockEvaluate({ ...tapAnswer(), testID: 'note-input', handler: 'onChangeText' });
+
+    expect(await runtimeTypeAsync({ ...typeOptions, followups: true })).toBe(EXIT_OK);
+    expect(json().followups[0]).toMatchObject({ id: 'type-submit' });
+  });
+
+  it(`suggests nothing for a run that failed, because the failure says what to do`, async () => {
+    mockEvaluate(tapAnswer({ reason: 'no-match', matched: 0, called: false }));
+
+    expect(await runtimeTapAsync({ ...tapOptions, followups: true })).toBe(EXIT_OUTCOME_FAILED);
+    expect(json().followups).toEqual([]);
   });
 });

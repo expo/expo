@@ -179,6 +179,16 @@ const PRELUDE = `
     }
   }
 
+  /** Whether an ancestor carries the same testID, i.e. this fiber is inside an element, not its top. */
+  function insideSameElement(f, target) {
+    var p = f['return'];
+    while (p) {
+      if (testIDOf(p) === target) return true;
+      p = p['return'];
+    }
+    return false;
+  }
+
   /**
    * The **elements** carrying one testID: fibers no ancestor of which carries the same one.
    *
@@ -189,11 +199,7 @@ const PRELUDE = `
     var found = [];
     walkAll(function (f, d, unfocused, screen) {
       if (testIDOf(f) !== target) return;
-      var p = f['return'];
-      while (p) {
-        if (testIDOf(p) === target) return;
-        p = p['return'];
-      }
+      if (insideSameElement(f, target)) return;
       found.push({ f: f, d: d, u: unfocused, s: screen });
     });
     return found;
@@ -276,18 +282,59 @@ const PRELUDE = `
     };
   }
 
+  /**
+   * The text one fiber shows, which is its **own** string children joined.
+   *
+   * A single string child is the easy case and was the only one this read [friction run 7, F63].
+   * \`<Text>count: {count}</Text>\` compiles to \`children: ['count: ', count]\` — an array — and
+   * every screen that shows a number shows it that way, so a reader of only the string case
+   * reported \`text: null\` for the one node a tap had changed and \`--verify\` said "nothing
+   * changed" for a tap that worked.
+   *
+   * Element children are skipped rather than stringified: each is rendered by a fiber of its own
+   * that this walk reaches separately, and \`String(child)\` on a React element is
+   * \`[object Object]\`. A node whose children are *all* elements has no text of its own, which is
+   * null and not the empty string.
+   *
+   * A \`value\` is read only when there are no text children, because the two never coexist: it is
+   * a \`TextInput\`'s committed content. A \`placeholder\` is never text — see {@link placeholderOf}.
+   */
+  function textOf(f) {
+    var p = propsOf(f);
+    if (!p) {
+      return typeof f.memoizedProps === 'string' ? f.memoizedProps : null;
+    }
+    var kids = p.children;
+    if (typeof kids === 'string') return kids;
+    if (typeof kids === 'number') return String(kids);
+    if (Array.isArray(kids)) {
+      var parts = [];
+      var sawText = false;
+      for (var i = 0; i < kids.length; i++) {
+        if (typeof kids[i] === 'string') { parts.push(kids[i]); sawText = true; }
+        else if (typeof kids[i] === 'number') { parts.push(String(kids[i])); sawText = true; }
+      }
+      if (sawText) return parts.join('');
+    }
+    return typeof p.value === 'string' ? p.value : null;
+  }
+
+  /**
+   * What an input shows when it is **empty**, which is not its text [friction run 7, F70].
+   *
+   * Reported under its own key: as \`text\` it made an empty field indistinguishable from a filled
+   * one, so an agent checking "did my typing land" read the placeholder as content.
+   */
+  function placeholderOf(f) {
+    var p = propsOf(f);
+    return p && typeof p.placeholder === 'string' ? p.placeholder : null;
+  }
+
   /** One node of the report, as both the tree and the verify snapshot project it. */
   function project(f, depth, screen) {
     var p = propsOf(f);
-    var text = null;
-    if (p) {
-      if (typeof p.children === 'string') text = p.children;
-      else if (typeof p.value === 'string') text = p.value;
-      else if (typeof p.placeholder === 'string') text = p.placeholder;
-    } else if (typeof f.memoizedProps === 'string') {
-      text = f.memoizedProps;
-    }
     var handlers = handlersOf(f);
+    var disabled = disabledOn(f);
     return {
       component: nameOf(f),
       testID: testIDOf(f),
@@ -296,13 +343,62 @@ const PRELUDE = `
         p && typeof p.accessibilityRole === 'string'
           ? p.accessibilityRole
           : p && typeof p.role === 'string' ? p.role : null,
-      text: text,
+      text: textOf(f),
+      placeholder: placeholderOf(f),
       handlers: handlers,
       interactive: handlers.length > 0,
+      disabled: disabled != null,
+      disabledOn: disabled,
+      // How many fibers this row stands for: one for a plain fiber, the whole group for an element.
+      groupSize: 1,
       host: isHost(f),
       depth: depth,
       screen: screen
     };
+  }
+
+  /**
+   * One row for one **element**, which is the unit \`runtime:tap\` and \`--testID\` work in.
+   *
+   * The default listing used to be one row per fiber: nine elements printed 26 rows, three of them
+   * for one button, and nothing in the output told "one element over three fibers" from "two real
+   * elements needing --index" [friction run 7, F69]. A testID lands on every fiber that forwards
+   * props to a host view, and which fiber of that chain carries \`onPress\`, \`disabled\` or the
+   * text differs by component — so the row carries the whole group's facts rather than the top
+   * fiber's.
+   *
+   * A fiber with no testID is its own element. It has no group to fold: nothing else in the tree
+   * identifies it, and a node with a handler and no testID is only reachable through this listing.
+   */
+  function projectElement(entry) {
+    var node = project(entry.f, entry.d, entry.s);
+    var target = node.testID;
+    if (target == null) return node;
+
+    var group = groupOf(entry.f, target);
+    node.groupSize = group.length;
+    var found = [];
+    for (var i = 0; i < group.length; i++) {
+      var own = handlersOf(group[i].f);
+      for (var h = 0; h < own.length; h++) {
+        if (found.indexOf(own[h]) < 0) found.push(own[h]);
+      }
+      // Shallowest first, so the first fiber that has one wins and the order of the group cannot
+      // change what the row says.
+      if (node.text == null) node.text = textOf(group[i].f);
+      if (node.placeholder == null) node.placeholder = placeholderOf(group[i].f);
+    }
+    // In HANDLER_PROPS order, so two elements with the same handlers report them the same way.
+    var handlers = [];
+    for (var k = 0; k < HANDLER_PROPS.length; k++) {
+      if (found.indexOf(HANDLER_PROPS[k]) >= 0) handlers.push(HANDLER_PROPS[k]);
+    }
+    node.handlers = handlers;
+    node.interactive = handlers.length > 0;
+    var disabled = groupDisabledOn(group);
+    node.disabled = disabled != null;
+    node.disabledOn = disabled ? disabled.on : null;
+    return node;
   }
 
   /**
@@ -318,7 +414,7 @@ const PRELUDE = `
     return (
       node.accessibilityLabel != null ||
       node.accessibilityRole != null ||
-      (node.host && node.text != null)
+      (node.host && (node.text != null || node.placeholder != null))
     );
   }
 `;
@@ -374,7 +470,13 @@ export function buildTreeExpression({
 
   if (TARGET == null) {
     for (var i = 0; i < scoped.length; i++) {
-      var node = project(scoped[i].f, scoped[i].d, scoped[i].s);
+      var entry = scoped[i];
+      var id = testIDOf(entry.f);
+      // The element's top fiber is the one no ancestor of which carries the same testID — the same
+      // match rule \`runtime:tap\` uses, so the two commands cannot disagree about what an element
+      // is (F69). Every fiber below it is part of the row that fiber produced.
+      if (id != null && insideSameElement(entry.f, id)) continue;
+      var node = projectElement(entry);
       if (keep(node, FULL)) nodes.push(node);
     }
   } else {
@@ -413,7 +515,11 @@ export function buildTreeExpression({
     }
   }
 
-  var truncated = nodes.length > MAX;
+  // Two counts, because one of them was read as the other: \`nodeCount: 42\` beside four returned
+  // nodes said "42 kept, and 38 of them are still to come" to a caller who had already been given
+  // everything this run would give [friction run 7, F74]. \`nodeCount\` is what came back.
+  var total = nodes.length;
+  var truncated = total > MAX;
   return {
     supported: true,
     reason: null,
@@ -423,7 +529,8 @@ export function buildTreeExpression({
     allScreens: ALL_SCREENS,
     projection: FULL ? 'full' : 'interactive',
     fibersWalked: raw.length,
-    nodeCount: nodes.length,
+    nodeCount: truncated ? MAX : total,
+    nodesBeforeTruncation: total,
     truncated: truncated,
     nodes: truncated ? nodes.slice(0, MAX) : nodes,
     matched: matched,
@@ -507,11 +614,18 @@ function callPrologue(prop: string, extraFields: string = ''): string {
     elements = elements.filter(function (e) { return !e.u; });
   }
   report.matched = elements.length;
+  // Each candidate's own handler, computed before anything is refused: "two elements carry this
+  // testID, pass --index" was the answer for two elements neither of which had the prop this
+  // command calls, and --index 0 would have failed for a different reason (F80).
+  var candidatesWithHandler = 0;
   for (var ci = 0; ci < elements.length; ci++) {
+    var candidateHandler = findHandler(groupOf(elements[ci].f, TARGET), ${JSON.stringify(prop)});
+    if (candidateHandler) candidatesWithHandler++;
     report.candidates.push({
       index: ci,
       component: nameOf(elements[ci].f),
-      screen: elements[ci].s
+      screen: elements[ci].s,
+      handler: candidateHandler ? ${JSON.stringify(prop)} : null
     });
   }
 
@@ -520,7 +634,9 @@ function callPrologue(prop: string, extraFields: string = ''): string {
     return report;
   }
   if (elements.length > 1 && INDEX == null) {
-    report.reason = 'ambiguous';
+    // Which of the two facts is reported is which of the two the caller has to act on: with no
+    // candidate carrying the handler, choosing between them is not the problem.
+    report.reason = candidatesWithHandler === 0 ? 'no-handler' : 'ambiguous';
     return report;
   }
   var chosen = INDEX == null ? 0 : INDEX;

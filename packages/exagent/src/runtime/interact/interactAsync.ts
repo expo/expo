@@ -22,8 +22,23 @@
 
 import { event } from '../../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED } from '../../exitCodes';
+import {
+  buildTapFollowUps,
+  buildTreeFollowUps,
+  buildTypeFollowUps,
+  followUpsEnabled,
+  reportFollowUps,
+  type FollowUp,
+} from '../../followups';
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
+import {
+  bundleToJson,
+  checkEntryBundleAsync,
+  resolveBundleCheckPlatformsAsync,
+  type BundleCheckJson,
+  type BundleCheckResult,
+} from '../bundleCheck';
 import { CdpClient, isMethodNotFoundError, type CdpEvaluateResult } from '../cdpClient';
 import { probeDevServerAsync, requireConnectedAppAsync } from '../devServer';
 import { evaluateUnsupportedError, resolveDevServerUrlAsync, type RuntimeContext } from '../runtimeAsync';
@@ -36,6 +51,7 @@ import {
 } from './expression';
 import {
   diffSnapshots,
+  explainBundleRefusal,
   explainTapFailure,
   explainTypeFailure,
   formatTap,
@@ -83,18 +99,96 @@ interface RawAnswer {
   [key: string]: unknown;
 }
 
-/** A debugger connection to the app these commands drive, and the dev server it went through. */
+/**
+ * How long the entry bundle check gets before the run stops waiting for the bundler.
+ *
+ * Fixed rather than a flag, unlike `runtime:reload`'s `--timeout`: that timeout covers the app
+ * quitting and coming back, which is tens of seconds, and this covers one build the bundler has
+ * usually already done — a warm `.bundle` HEAD answered in under a second live [observed — friction
+ * run 7]. A cold first build can take longer than this, and a run that hits that is told the check
+ * did not finish rather than that the project is broken.
+ */
+export const BUNDLE_CHECK_TIMEOUT_MS = 20_000;
+
+/** What all three commands share: the app they drive, and the state of the code it is running. */
+interface OpenApp {
+  devServerUrl: string;
+  client: CdpClient;
+  /** The gate's answer. `ok: false` is the one value that stops the command. */
+  bundle: BundleCheckJson;
+  /** Whether the bundle is broken or undecided, i.e. nothing may be asked of the app. */
+  refusal: 'bundle-broken' | 'bundle-inconclusive' | null;
+}
+
+/**
+ * The dev server, the state of this project's code, and a debugger connection to the app.
+ *
+ * @ref llp/0018-interaction-commands.rfc.md §The bundle gate — friction run 7, F62.
+ *
+ * The gate runs **before** the connection is used, and its result is on every payload. These three
+ * commands read and drive the bundle the app is *running*: with a syntax error on disk the app is
+ * still running the code from before the edit, so the walk describes code that no longer exists —
+ * and `runtime:tap --verify` reported `Verified ... the screen changed` for exactly that while
+ * `smoke` and `runtime:reload` both refused. It is the same check, the same `bundle` object and the
+ * same `--no-bundle-check` override those two use, because it is the same question.
+ */
 async function openAppAsync(
-  options: { devServerUrl: string | null; platform?: RuntimeTreeOptions['platform'] },
+  options: {
+    devServerUrl: string | null;
+    platform?: RuntimeTreeOptions['platform'];
+    bundleCheck?: boolean;
+  },
   context: RuntimeContext
-): Promise<{ devServerUrl: string; client: CdpClient }> {
+): Promise<OpenApp> {
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  // Read once and passed to both, so the platform this command was told about is the platform of
-  // the app it drives, and the two steps cannot disagree about which app that is.
+  const wantBundleCheck = options.bundleCheck !== false;
+  // One probe, read by both the platform index and the gate: the platform this command was told
+  // about has to be the platform of the app it drives, and of the bundle it asks about (F53).
+  const targets =
+    options.platform != null || wantBundleCheck
+      ? (await probeDevServerAsync(devServerUrl)).targets
+      : [];
   const deviceIndex =
-    options.platform == null
-      ? undefined
-      : await buildDeviceNameIndexIfNeededAsync((await probeDevServerAsync(devServerUrl)).targets);
+    options.platform == null ? undefined : await buildDeviceNameIndexIfNeededAsync(targets);
+
+  let bundle: BundleCheckResult | null = null;
+  if (wantBundleCheck) {
+    const { platforms } = await resolveBundleCheckPlatformsAsync(options.platform ?? null, targets);
+    const results: BundleCheckResult[] = [];
+    for (const platform of platforms) {
+      results.push(
+        await checkEntryBundleAsync(devServerUrl, {
+          platform,
+          timeoutMs: BUNDLE_CHECK_TIMEOUT_MS,
+          projectRoot: context.projectRoot ?? null,
+        })
+      );
+    }
+    // A broken bundle decides the run whichever platform it was found on, the way it does for a
+    // reload: a project with a `.android.ts` sibling of a broken file compiles for one and not the
+    // other, and answering for one of two attached apps is how a red screen went unreported (F53).
+    bundle =
+      results.find((entry) => entry.outcome === 'broken') ??
+      results.find((entry) => entry.outcome === 'timeout') ??
+      results[0] ??
+      null;
+  }
+  // `unknown` passes, as it does for `dev:wait` and `runtime:reload`: a dev server that answered
+  // nothing this CLI understands has not shown the project to be broken, and refusing there would
+  // stop a read that would have worked and name no fix.
+  const refusal =
+    bundle?.outcome === 'broken'
+      ? ('bundle-broken' as const)
+      : bundle?.outcome === 'timeout'
+        ? ('bundle-inconclusive' as const)
+        : null;
+
+  const json = bundleToJson(bundle, { skippedByFlag: !wantBundleCheck });
+  if (refusal != null) {
+    // No connection is opened: the app is not what this run is about any more.
+    return { devServerUrl, client: null as unknown as CdpClient, bundle: json, refusal };
+  }
+
   await requireConnectedAppAsync(devServerUrl, {
     explicit: options.devServerUrl != null,
     platform: options.platform,
@@ -104,7 +198,16 @@ async function openAppAsync(
   return {
     devServerUrl,
     client: new CdpClient({ metroUrl: devServerUrl, platform: options.platform, deviceIndex }),
+    bundle: json,
+    refusal,
   };
+}
+
+/** The platform a follow-up carries, which is the one the caller named or none. */
+function followUpPlatform(
+  platform: RuntimeTreeOptions['platform']
+): 'ios' | 'android' | null {
+  return platform === 'ios' || platform === 'android' ? platform : null;
 }
 
 /** Send one expression and read the object it answered with, or refuse. */
@@ -194,12 +297,79 @@ function nodesOf(answer: RawAnswer, key: string): TreeNodeJson[] {
   return Array.isArray(value) ? (value as TreeNodeJson[]) : [];
 }
 
+/**
+ * Report a run the bundle gate stopped, and hand back the exit code for it.
+ *
+ * The payload comes first and carries the same keys a run that reached the app does — every fact
+ * about the app null, and `bundle` holding the reason (llp/0006 §Output contract). The text mode
+ * prints one line rather than an empty listing: a projection of nothing would read as a screen with
+ * nothing on it, which is not what happened.
+ */
+function refuseForBundle(
+  report: RuntimeTreeJson | RuntimeTapJson | RuntimeTypeJson,
+  { json, what, rerun }: { json: boolean; what: string; rerun: string }
+): number {
+  if (json) {
+    Log.log(JSON.stringify(report, null, 2));
+  } else {
+    Log.log(
+      `Bundle ${report.bundle.ok === false ? 'does not compile' : 'not checked'}${
+        report.bundle.platform ? ` · for ${report.bundle.platform}` : ''
+      }`
+    );
+  }
+  const failure = explainBundleRefusal(report.bundle, { what, rerun });
+  Log.error(failure.message);
+  Log.warn(`Try: ${failure.suggestedCommand}`);
+  return EXIT_OUTCOME_FAILED;
+}
+
+/** The tree payload of a run that never read the app, with every app fact absent. */
+function unreadTreeReport(
+  options: RuntimeTreeOptions,
+  devServerUrl: string,
+  bundle: BundleCheckJson,
+  refusal: 'bundle-broken' | 'bundle-inconclusive'
+): RuntimeTreeJson {
+  return {
+    devServerUrl,
+    testID: options.testID,
+    focusedScreen: null,
+    screensSeen: [],
+    allScreens: options.allScreens,
+    projection: options.full ? 'full' : 'interactive',
+    fibersWalked: 0,
+    nodes: [],
+    nodeCount: 0,
+    nodesBeforeTruncation: 0,
+    truncated: false,
+    maxNodes: options.maxNodes,
+    matched: 0,
+    matches: [],
+    bundle,
+    // Named on the payload as well as on stderr, so a caller reading JSON does not have to infer
+    // "nothing was read" from an empty `nodes` array — which is also what an empty screen looks
+    // like (llp/0018 §The bundle gate).
+    reason: refusal,
+    ok: false,
+    followups: [],
+    untrusted: UNTRUSTED_TREE_FIELDS,
+  };
+}
+
 /** Walk the app's component tree and print what is on the screen. */
 export async function runtimeTreeAsync(
   options: RuntimeTreeOptions,
   context: RuntimeContext = {}
 ): Promise<number> {
-  const { devServerUrl, client } = await openAppAsync(options, context);
+  const { devServerUrl, client, bundle, refusal } = await openAppAsync(options, context);
+  if (refusal != null) {
+    return refuseForBundle(unreadTreeReport(options, devServerUrl, bundle, refusal), {
+      json: options.json,
+      what: 'nothing on the screen was read',
+      rerun: 'npx exagent runtime:tree',
+    });
+  }
   const answer = await askAppAsync(
     client,
     buildTreeExpression({
@@ -225,11 +395,23 @@ export async function runtimeTreeAsync(
     fibersWalked: Number(answer.fibersWalked ?? 0),
     nodes: nodesOf(answer, 'nodes'),
     nodeCount: Number(answer.nodeCount ?? 0),
+    nodesBeforeTruncation: Number(answer.nodesBeforeTruncation ?? answer.nodeCount ?? 0),
     truncated: answer.truncated === true,
     maxNodes: options.maxNodes,
     matched,
     matches: Array.isArray(answer.matches) ? (answer.matches as TreeMatchJson[]) : [],
+    bundle,
+    reason: null,
     ok,
+    // A run that answered "no" says what to do in its own refusal, so a follow-up ladder there
+    // would be a second answer to the same question (llp/0009 §Design).
+    followups: ok && followUpsEnabled(options.followups)
+      ? buildTreeFollowUps({
+          nodes: nodesOf(answer, 'nodes'),
+          testID: options.testID,
+          platform: followUpPlatform(options.platform),
+        })
+      : [],
     untrusted: UNTRUSTED_TREE_FIELDS,
   };
 
@@ -267,6 +449,7 @@ export async function runtimeTreeAsync(
     );
     return EXIT_OUTCOME_FAILED;
   }
+  reportFollowUps('runtime:tree', report.followups, { json: options.json });
   return EXIT_OK;
 }
 
@@ -289,9 +472,15 @@ function delayAsync(ms: number): Promise<void> {
 }
 
 /** The fields a tap and a type report in common, read off one answer. */
-function callFieldsOf(answer: RawAnswer, devServerUrl: string, options: { allScreens: boolean }) {
+function callFieldsOf(
+  answer: RawAnswer,
+  devServerUrl: string,
+  options: { allScreens: boolean },
+  bundle: BundleCheckJson
+) {
   return {
     devServerUrl,
+    bundle,
     testID: String(answer.testID ?? ''),
     matched: Number(answer.matched ?? 0),
     index: (answer.index as number | null) ?? null,
@@ -318,12 +507,63 @@ function callFieldsOf(answer: RawAnswer, devServerUrl: string, options: { allScr
   };
 }
 
+/**
+ * The tap or type payload of a run that never reached the app, with every app fact absent.
+ *
+ * `called: false` and `reason` naming the gate: a caller branching on `reason` reads one field
+ * whether the app refused the act or the project refused to compile (llp/0006 §Output contract).
+ */
+function unreadCallFields(
+  options: { testID: string; allScreens: boolean },
+  devServerUrl: string,
+  bundle: BundleCheckJson,
+  refusal: 'bundle-broken' | 'bundle-inconclusive'
+) {
+  return {
+    devServerUrl,
+    bundle,
+    testID: options.testID,
+    matched: 0,
+    index: null,
+    candidates: [],
+    component: null,
+    screen: null,
+    focusedScreen: null,
+    screensSeen: [],
+    allScreens: options.allScreens,
+    groupSize: null,
+    handler: null,
+    handlerOn: null,
+    handlerOutsideMatch: null,
+    disabled: null,
+    disabledOn: null,
+    disabledComponent: null,
+    forced: false,
+    called: false,
+    threw: null,
+    reason: refusal,
+    ok: false,
+    followups: [] as FollowUp[],
+    untrusted: UNTRUSTED_CALL_FIELDS,
+  };
+}
+
 /** Tap the element carrying a testID, by calling the `onPress` the app wrote. */
 export async function runtimeTapAsync(
   options: RuntimeTapOptions,
   context: RuntimeContext = {}
 ): Promise<number> {
-  const { devServerUrl, client } = await openAppAsync(options, context);
+  const { devServerUrl, client, bundle, refusal } = await openAppAsync(options, context);
+  if (refusal != null) {
+    return refuseForBundle(
+      { ...unreadCallFields(options, devServerUrl, bundle, refusal), verify: null },
+      {
+        json: options.json,
+        what: 'nothing was tapped',
+        rerun: `npx exagent runtime:tap ${options.testID}`,
+      }
+    );
+  }
 
   // Before the tap, because "what changed" needs both halves and only the first one can be read
   // before the call happens.
@@ -342,7 +582,7 @@ export async function runtimeTapAsync(
     devServerUrl
   );
 
-  const fields = callFieldsOf(answer, devServerUrl, options);
+  const fields = callFieldsOf(answer, devServerUrl, options, bundle);
   const ok = fields.called && fields.threw == null && fields.reason == null;
 
   // Only a call that was made has an effect to look for. A refusal walked nothing, so a second
@@ -354,7 +594,20 @@ export async function runtimeTapAsync(
     verify = diffSnapshots(before, after, VERIFY_SETTLE_MS);
   }
 
-  const report: RuntimeTapJson = { ...fields, ok, verify };
+  const report: RuntimeTapJson = {
+    ...fields,
+    ok,
+    verify,
+    followups:
+      ok && followUpsEnabled(options.followups)
+        ? buildTapFollowUps({
+            testID: fields.testID,
+            verified: verify != null,
+            changed: verify == null ? null : verify.changed,
+            platform: followUpPlatform(options.platform),
+          })
+        : [],
+  };
 
   event('runtime_tap', {
     devServerUrl,
@@ -384,6 +637,7 @@ export async function runtimeTapAsync(
     Log.warn(`Try: ${failure.suggestedCommand}`);
     return EXIT_OUTCOME_FAILED;
   }
+  reportFollowUps('runtime:tap', report.followups, { json: options.json });
   return EXIT_OK;
 }
 
@@ -392,7 +646,22 @@ export async function runtimeTypeAsync(
   options: RuntimeTypeOptions,
   context: RuntimeContext = {}
 ): Promise<number> {
-  const { devServerUrl, client } = await openAppAsync(options, context);
+  const { devServerUrl, client, bundle, refusal } = await openAppAsync(options, context);
+  if (refusal != null) {
+    return refuseForBundle(
+      {
+        ...unreadCallFields(options, devServerUrl, bundle, refusal),
+        text: options.text,
+        submitted: false,
+        submitHandlerOn: null,
+      },
+      {
+        json: options.json,
+        what: 'nothing was typed',
+        rerun: `npx exagent runtime:type ${JSON.stringify(options.text)} --testID ${options.testID}`,
+      }
+    );
+  }
   const answer = await askAppAsync(
     client,
     buildTypeExpression({
@@ -406,14 +675,25 @@ export async function runtimeTypeAsync(
     devServerUrl
   );
 
-  const fields = callFieldsOf(answer, devServerUrl, options);
+  const fields = callFieldsOf(answer, devServerUrl, options, bundle);
   const ok = fields.called && fields.threw == null && fields.reason == null;
+  const submitted = answer.submitted === true;
   const report: RuntimeTypeJson = {
     ...fields,
     text: options.text,
-    submitted: answer.submitted === true,
+    submitted,
     submitHandlerOn: (answer.submitHandlerOn as string | null) ?? null,
     ok,
+    followups:
+      ok && followUpsEnabled(options.followups)
+        ? buildTypeFollowUps({
+            testID: fields.testID,
+            text: options.text,
+            submitted,
+            submitRequested: options.submit,
+            platform: followUpPlatform(options.platform),
+          })
+        : [],
   };
 
   event('runtime_type', {
@@ -440,5 +720,6 @@ export async function runtimeTypeAsync(
     Log.warn(`Try: ${failure.suggestedCommand}`);
     return EXIT_OUTCOME_FAILED;
   }
+  reportFollowUps('runtime:type', report.followups, { json: options.json });
   return EXIT_OK;
 }

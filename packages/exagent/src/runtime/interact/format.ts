@@ -11,6 +11,7 @@
 // than a mistake of the caller, so each one says what, why, and the command that recovers it
 // (llp/0006 §Errors are prompts) — the recovery is a paste, never a re-read.
 
+import type { BundleCheckJson } from '../bundleCheck';
 import { wrapUntrustedAppOutput } from '../untrusted';
 import type {
   RuntimeTapJson,
@@ -68,7 +69,13 @@ function scopeLine(report: {
   return `Scope: the focused screen. Pass --all-screens for the whole tree.`;
 }
 
-/** One node as a line of the human report. */
+/**
+ * One element as a line of the human report.
+ *
+ * Everything `--testID` mode says about a match is on this line too, because the default listing is
+ * what every follow-up sends an agent to and it used to say less: no `disabled`, no fiber count, and
+ * one row per fiber [friction run 7, F69].
+ */
 function nodeLine(node: TreeNodeJson): string {
   const parts = [node.component];
   if (node.testID != null) {
@@ -76,6 +83,14 @@ function nodeLine(node: TreeNodeJson): string {
   }
   if (node.handlers.length) {
     parts.push(node.handlers.join(','));
+  }
+  if (node.disabled) {
+    parts.push(`disabled=${node.disabledOn}`);
+  }
+  // Only when it stands for more than itself: "3 fibers" is what tells one element over three
+  // fibers from three elements that each need an --index.
+  if (node.groupSize > 1) {
+    parts.push(`${node.groupSize} fibers`);
   }
   if (node.accessibilityRole != null) {
     parts.push(`role=${node.accessibilityRole}`);
@@ -85,6 +100,10 @@ function nodeLine(node: TreeNodeJson): string {
   }
   if (node.text != null) {
     parts.push(`text=${JSON.stringify(node.text)}`);
+  }
+  // Its own key, never `text`: a placeholder is what an empty input shows (F70).
+  if (node.placeholder != null) {
+    parts.push(`placeholder=${JSON.stringify(node.placeholder)}`);
   }
   if (node.screen != null) {
     parts.push(`screen=${node.screen}`);
@@ -110,8 +129,10 @@ function matchLine(match: TreeMatchJson): string {
 export function formatTree(report: RuntimeTreeJson): string {
   const header: string[] = [];
   if (report.testID == null) {
+    // "element(s)", because that is what a row is: the fiber count is the other number on the
+    // line, and printing rows as "nodes" was half of why the old listing read as a fiber dump.
     header.push(
-      `Walked ${report.fibersWalked} fibers of the app (dev server ${report.devServerUrl}) and kept ${report.nodeCount} node(s), ${report.projection} projection.`
+      `Walked ${report.fibersWalked} fibers of the app (dev server ${report.devServerUrl}) and kept ${report.nodeCount} element(s), ${report.projection} projection.`
     );
   } else {
     header.push(
@@ -120,13 +141,15 @@ export function formatTree(report: RuntimeTreeJson): string {
   }
   header.push(scopeLine(report));
   if (report.truncated) {
+    // The pre-truncation total, and then what came back — in that order, and each named for what it
+    // is. `kept 42` above `the first 4` was one run described twice (F74).
     header.push(
-      `Truncated: ${report.nodeCount} node(s) matched and the first ${report.maxNodes} are below. Raise --max-nodes, or narrow with --testID.`
+      `Truncated: the projection produced ${report.nodesBeforeTruncation} element(s) and the first ${report.nodeCount} are below, because --max-nodes is ${report.maxNodes}. Raise it, or narrow with --testID.`
     );
   }
   if (report.projection === 'interactive' && report.testID == null) {
     header.push(
-      `Only nodes with a handler or a testID are listed. Pass --all for labels, roles and text as well.`
+      `Only elements with a handler or a testID are listed. Pass --all for labels, roles and text as well.`
     );
   }
 
@@ -138,7 +161,7 @@ export function formatTree(report: RuntimeTreeJson): string {
     body.push(...report.nodes.map(nodeLine));
   } else if (report.testID == null) {
     body.push(
-      `  (nothing) — no node on this screen carries a handler or a testID. An app with no testIDs cannot be driven by testID; add them, or read the whole projection with --all.`
+      `  (nothing) — no element on this screen carries a handler or a testID. An app with no testIDs cannot be driven by testID; add them, or read the whole projection with --all.`
     );
   } else {
     body.push(`  (nothing)`);
@@ -305,6 +328,21 @@ export function explainTypeFailure(report: RuntimeTypeJson): InteractFailure {
   return failure;
 }
 
+/**
+ * What the app disabled, in the app's own terms.
+ *
+ * `editable` is the one prop whose *false* is what disables the control, and naming it the way the
+ * others are named — "the app sets editable on its TextInput" — read as the opposite of what
+ * happened [friction run 7, F77].
+ */
+function disabledPhrase(report: RuntimeTapJson | RuntimeTypeJson): string {
+  const on = report.disabledOn ?? 'a disabling prop';
+  const component = report.disabledComponent ?? 'its component';
+  return on === 'editable'
+    ? `editable is false on its ${component}`
+    : `${on} on its ${component}`;
+}
+
 /** The shared explanation, which differs between the two commands only in what it names. */
 function explainFailure(
   report: RuntimeTapJson | RuntimeTypeJson,
@@ -314,12 +352,25 @@ function explainFailure(
 ): InteractFailure {
   const tree = `npx exagent runtime:tree --testID ${quoted(report.testID)}`;
   const verb = command === 'runtime:tap' ? 'tapped' : 'typed into';
+  /**
+   * "nothing was tapped" / "nothing was typed", with the object when there is one.
+   *
+   * `so nothing was typed into (dev server …)` was a sentence with a hole where its object should
+   * be [friction run 7, F77]. A run that matched no element has no object to name, so it says
+   * "nothing was typed" instead of naming one that is not there.
+   */
+  const nothing = (withObject: boolean): string =>
+    command === 'runtime:tap'
+      ? 'nothing was tapped'
+      : withObject
+        ? `nothing was typed into ${report.testID}`
+        : 'nothing was typed';
 
   switch (report.reason) {
     case 'no-match':
       return {
         message: [
-          `No element carrying the testID ${report.testID} was found, so nothing was ${verb} (dev server ${report.devServerUrl}).`,
+          `No element carrying the testID ${report.testID} was found, so ${nothing(false)} (dev server ${report.devServerUrl}).`,
           `Why: this walks the app's own component tree and matches on the testID prop as written in the JSX, so an element with no testID cannot be addressed at all.${allScreensClause(report)}`,
           `How: run "npx exagent runtime:tree" for the testIDs this screen is carrying${report.allScreens ? '' : ', or "npx exagent runtime:tree --all-screens" for every mounted screen'}. If the element has no testID, add one.`,
         ].join('\n'),
@@ -328,7 +379,7 @@ function explainFailure(
     case 'ambiguous':
       return {
         message: [
-          `${report.matched} different elements carry the testID ${report.testID}, so nothing was ${verb} (dev server ${report.devServerUrl}).`,
+          `${report.matched} different elements carry the testID ${report.testID}, so ${nothing(false)} (dev server ${report.devServerUrl}).`,
           `Why: these are ${report.matched} separate elements, not one element spread over several fibers — a list row rendered many times is the usual reason — and acting on the first would be a guess about which one you meant.`,
           `How: pass --index to pick one, from 0 to ${report.matched - 1}. Run "${tree}" to see what each of them is.`,
         ].join('\n'),
@@ -337,7 +388,7 @@ function explainFailure(
     case 'index-out-of-range':
       return {
         message: [
-          `--index named an element that is not there: ${report.matched} element(s) carry the testID ${report.testID}, so nothing was ${verb} (dev server ${report.devServerUrl}).`,
+          `--index named an element that is not there: ${report.matched} element(s) carry the testID ${report.testID}, so ${nothing(false)} (dev server ${report.devServerUrl}).`,
           `Why: the index is zero-based and counts elements, not fibers, so the valid values are 0 to ${report.matched - 1}.`,
           `How: pass --index in that range, or leave it out${report.matched === 1 ? ', since there is only one element to act on' : ''}. Run "${tree}" to see them.`,
         ].join('\n'),
@@ -346,21 +397,31 @@ function explainFailure(
     case 'disabled':
       return {
         message: [
-          `The element carrying ${report.testID} is disabled, so nothing was ${verb} (dev server ${report.devServerUrl}).`,
-          `Why: the app sets ${report.disabledOn} on its ${report.disabledComponent}. React Native disables the interaction at the responder level, which this never goes through — so calling the handler would run code a user cannot reach, and report a pass for something that cannot happen.`,
+          `The element carrying ${report.testID} is disabled, so ${nothing(true)} (dev server ${report.devServerUrl}).`,
+          `Why: the app says ${disabledPhrase(report)}. React Native disables the interaction at the responder level, which this never goes through — so calling the handler would run code a user cannot reach, and report a pass for something that cannot happen.`,
           `How: make the element usable and run this again, or pass --force to call the handler anyway. A --force run says in its report that the element was disabled.`,
         ].join('\n'),
         suggestedCommand: `${rerun} --force`,
       };
-    case 'no-handler':
+    case 'no-handler': {
+      // @ref llp/0018 §Ambiguity and the handler — friction run 7, F80. With several candidates and
+      // none of them carrying the prop, the answer used to be "pass --index": advice for choosing
+      // between two elements this command cannot drive either of. Both facts, in the order that
+      // decides what to do next.
+      const several = report.matched > 1;
       return {
         message: [
-          `The element carrying ${report.testID} has no ${handlerProp}, so nothing was ${verb} (dev server ${report.devServerUrl}).`,
-          `Why: no fiber of this element carries ${handlerProp}, and neither does any of its ancestors — ${report.component ?? 'the element'} is not something this command can drive.`,
-          `How: run "${tree}" for what this element does carry, or "npx exagent runtime:tree" for the elements on this screen that have a handler.`,
+          several
+            ? `None of the ${report.matched} elements carrying ${report.testID} has ${handlerProp}, so ${nothing(true)} (dev server ${report.devServerUrl}).`
+            : `The element carrying ${report.testID} has no ${handlerProp}, so ${nothing(true)} (dev server ${report.devServerUrl}).`,
+          several
+            ? `Why: ${report.matched} separate elements carry this testID and no fiber of any of them carries ${handlerProp}, nor does any of their ancestors — so --index would only choose between elements this command cannot drive. ${report.candidates.map((candidate) => `[${candidate.index}] ${candidate.component}${candidate.screen == null ? '' : ` on ${candidate.screen}`}`).join(', ')}.`
+            : `Why: no fiber of this element carries ${handlerProp}, and neither does any of its ancestors — ${report.component ?? 'the element'} is not something this command can drive.`,
+          `How: run "${tree}" for what ${several ? 'each of them does' : 'this element does'} carry, or "npx exagent runtime:tree" for the elements on this screen that have a handler.`,
         ].join('\n'),
         suggestedCommand: tree,
       };
+    }
     default:
       break;
   }
@@ -377,8 +438,57 @@ function explainFailure(
   }
 
   return {
-    message: `Nothing was ${verb} for the testID ${report.testID} (dev server ${report.devServerUrl}).`,
+    message: `${capitalize(nothing(true))} (dev server ${report.devServerUrl}).`,
     suggestedCommand: tree,
+  };
+}
+
+/** A clause reused as a sentence. */
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/**
+ * The refusal for a project whose entry bundle does not compile, before the app was asked anything.
+ *
+ * @ref llp/0018-interaction-commands.rfc.md §The bundle gate — friction run 7, F62.
+ *
+ * The same words `runtime:reload` refuses with, because it is the same fact about the same bundle:
+ * these three commands read and drive the bundle the app is *running*, and a bundle that no longer
+ * compiles is one the app cannot have reloaded onto — so the projection describes the code from
+ * before the edit, and a `--verify` diff of it reported a change as "verified" for a file that does
+ * not build.
+ *
+ * @param what what did not happen, e.g. `nothing was tapped`.
+ * @param rerun this command as the caller ran it, for the sentence that says to run it again.
+ */
+export function explainBundleRefusal(
+  bundle: BundleCheckJson,
+  { what, rerun }: { what: string; rerun: string }
+): InteractFailure {
+  if (bundle.ok !== false) {
+    return {
+      message: [
+        `The bundler had not finished building this project's entry bundle, so ${what}.`,
+        `Why: ${bundle.reason ?? 'the bundler gave no answer about the entry bundle'}. Until that build finishes it is not known whether the app is running the code that is on disk, and this command would have described a runtime nobody can place.`,
+        `How: run "npx exagent smoke" to wait for the bundle and the app together, then run "${rerun}" again. Pass --no-bundle-check to read the app without asking about the bundle first.`,
+      ].join('\n'),
+      suggestedCommand: 'npx exagent smoke',
+    };
+  }
+
+  const error = bundle.error;
+  const where = [error?.filename, error?.lineNumber, error?.column]
+    .filter((part) => part != null)
+    .join(':');
+  return {
+    message: [
+      `This project's entry bundle does not compile, so ${what}.`,
+      `Why: the bundler stopped${where ? ` at ${where}` : ''} — ${error?.message ?? 'it reported an error'}. The app on the device is still running the bundle from before that edit, so what this command would have read is the old code, and a pass for it would be a pass for code that no longer exists.`,
+      `How: fix ${where || 'the file the bundler named'}, then "npx exagent runtime:reload" so the app runs the fixed code, and run "${rerun}" again. Pass --no-bundle-check to act on the app as it is, which is only useful when you mean to drive a bundle you know is stale.`,
+      ...(error?.snippet ? [error.snippet] : []),
+    ].join('\n'),
+    suggestedCommand: 'npx exagent runtime:reload',
   };
 }
 

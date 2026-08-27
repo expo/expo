@@ -9,6 +9,15 @@ export { buildExplainFollowUps, type ExplainFollowUpInput } from './explain';
 export { buildChangeFollowUps, type ChangeFollowUpInput } from './change';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export {
+  buildTapFollowUps,
+  buildTreeFollowUps,
+  buildTypeFollowUps,
+  type TapFollowUpInput,
+  type TreeFollowUpInput,
+  type TreeFollowUpNode,
+  type TypeFollowUpInput,
+} from './interact';
+export {
   buildNavigateFollowUps,
   buildPrintUrlFollowUps,
   type NavigateFollowUpInput,

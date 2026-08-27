@@ -19,6 +19,8 @@ describe(resolveTreeOptions, () => {
       devServerUrl: null,
       platform: undefined,
       json: false,
+      bundleCheck: true,
+      followups: true,
     });
   });
 
@@ -41,6 +43,19 @@ describe(resolveTreeOptions, () => {
 
   it.each([['0'], ['-4'], ['many'], ['1.5']])(`refuses --max-nodes %p`, (value) => {
     expect(() => resolveTreeOptions(['--max-nodes', value])).toThrow(/--max-nodes/);
+  });
+
+  // @ref llp/0018 §Negative numbers — friction run 7, F73. A value starting with `-` is a value the
+  // argument parser reads as the next option, so the flag arrived with nothing after it and was
+  // reported that way: "there was no next argument" about an argument that was right there.
+  it.each([['-4'], ['-1']])(`says what --max-nodes %p was, rather than that it was missing`, (value) => {
+    expect(() => resolveTreeOptions(['--max-nodes', value])).toThrow(
+      new RegExp(`--max-nodes must be a whole number of 1 or more, but got ${value}`)
+    );
+  });
+
+  it(`still reports a --max-nodes with nothing after it as missing`, () => {
+    expect(() => resolveTreeOptions(['--max-nodes'])).toThrow(/with nothing after it/);
   });
 
   // @ref llp/0014 §Correction 1 — fiber depth on a real screen is 152, and every visible element
@@ -73,6 +88,8 @@ describe(resolveTapOptions, () => {
       devServerUrl: null,
       platform: undefined,
       json: false,
+      bundleCheck: true,
+      followups: true,
     });
   });
 
@@ -88,6 +105,16 @@ describe(resolveTapOptions, () => {
 
   it.each([['-1'], ['two'], ['1.5']])(`refuses --index %p`, (value) => {
     expect(() => resolveTapOptions(['row', '--index', value])).toThrow(/--index/);
+  });
+
+  // @ref llp/0018 §Negative numbers — friction run 7, F73.
+  it(`says --index -1 is out of range, not that it was passed nothing`, () => {
+    expect(() => resolveTapOptions(['row', '--index', '-1'])).toThrow(
+      /--index must be a whole number of 0 or more, but got -1/
+    );
+    expect(() => resolveTypeOptions(['abc', '--testID', 'row', '--index', '-1'])).toThrow(
+      /but got -1/
+    );
   });
 
   it(`refuses a missing testID`, () => {
@@ -112,6 +139,8 @@ describe(resolveTypeOptions, () => {
       devServerUrl: null,
       platform: undefined,
       json: false,
+      bundleCheck: true,
+      followups: true,
     });
   });
 
@@ -129,11 +158,45 @@ describe(resolveTypeOptions, () => {
     expect(() => resolveTypeOptions(['hello'])).toThrow(/--testID/);
   });
 
-  it(`refuses a run with no text`, () => {
-    expect(() => resolveTypeOptions(['--testID', 'note-input'])).toThrow(/text/);
+  // @ref llp/0018 §Wording — friction run 7, F77. Every other refusal of these commands says what,
+  // why and how; this one was a bare usage line.
+  it(`refuses a run with no text, with the same three parts as every other error`, () => {
+    let caught: CommandError | null = null;
+    try {
+      resolveTypeOptions(['--testID', 'note-input']);
+    } catch (error) {
+      caught = error as CommandError;
+    }
+
+    expect(caught?.message).toMatch(/Missing text/);
+    expect(caught?.message).toMatch(/Why:/);
+    expect(caught?.message).toMatch(/How:/);
+    // Clearing an input is a thing a caller means to do, so it is not the same as passing nothing.
+    expect(caught?.message).toContain('""');
+    expect(caught?.suggestedCommand).toBe('npx exagent runtime:tree');
   });
 
   it(`refuses two positionals, which is unquoted text`, () => {
     expect(() => resolveTypeOptions(['hello', 'world', '--testID', 'x'])).toThrow(/Quote/);
+  });
+});
+
+// @ref llp/0018 §The bundle gate — friction run 7, F62. The gate `runtime:reload` already owns, and
+// the same flag that declines it.
+describe('the flags all three commands share', () => {
+  it.each([
+    ['runtime:tree', () => resolveTreeOptions(['--no-bundle-check'])],
+    ['runtime:tap', () => resolveTapOptions(['row', '--no-bundle-check'])],
+    ['runtime:type', () => resolveTypeOptions(['x', '--testID', 'row', '--no-bundle-check'])],
+  ])(`%s takes --no-bundle-check`, (_command, resolve) => {
+    expect(resolve()).toMatchObject({ bundleCheck: false });
+  });
+
+  it.each([
+    ['runtime:tree', () => resolveTreeOptions(['--no-followups'])],
+    ['runtime:tap', () => resolveTapOptions(['row', '--no-followups'])],
+    ['runtime:type', () => resolveTypeOptions(['x', '--testID', 'row', '--no-followups'])],
+  ])(`%s takes --no-followups`, (_command, resolve) => {
+    expect(resolve()).toMatchObject({ followups: false });
   });
 });

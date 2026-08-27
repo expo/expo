@@ -1,9 +1,11 @@
 // @ref llp/0008-guardrails.rfc.md §Untrusted content
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
 
+import type { BundleCheckJson } from '../../bundleCheck';
 import { UNTRUSTED_OUTPUT_BEGIN, UNTRUSTED_OUTPUT_END } from '../../untrusted';
 import {
   diffSnapshots,
+  explainBundleRefusal,
   explainTapFailure,
   explainTypeFailure,
   formatTap,
@@ -19,8 +21,12 @@ function node(overrides: Partial<TreeNodeJson> = {}): TreeNodeJson {
     accessibilityLabel: null,
     accessibilityRole: null,
     text: null,
+    placeholder: null,
     handlers: ['onPress'],
     interactive: true,
+    disabled: false,
+    disabledOn: null,
+    groupSize: 1,
     host: false,
     depth: 130,
     screen: 'notes',
@@ -39,11 +45,22 @@ function tree(overrides: Partial<RuntimeTreeJson> = {}): RuntimeTreeJson {
     fibersWalked: 504,
     nodes: [node()],
     nodeCount: 1,
+    nodesBeforeTruncation: 1,
     truncated: false,
     maxNodes: 200,
     matched: 0,
     matches: [],
+    bundle: {
+      checked: true,
+      ok: true,
+      platform: 'ios',
+      url: 'http://127.0.0.1:8081/index.bundle?platform=ios',
+      error: null,
+      reason: null,
+    },
+    reason: null,
     ok: true,
+    followups: [],
     untrusted: ['nodes', 'matches', 'focusedScreen', 'screensSeen'],
     ...overrides,
   };
@@ -55,7 +72,7 @@ function tap(overrides: Partial<RuntimeTapJson> = {}): RuntimeTapJson {
     testID: 'add-note',
     matched: 1,
     index: 0,
-    candidates: [{ index: 0, component: 'Pressable', screen: 'notes' }],
+    candidates: [{ index: 0, component: 'Pressable', screen: 'notes', handler: 'onPress' }],
     component: 'Pressable',
     screen: 'notes',
     focusedScreen: 'notes',
@@ -72,8 +89,17 @@ function tap(overrides: Partial<RuntimeTapJson> = {}): RuntimeTapJson {
     called: true,
     threw: null,
     reason: null,
+    bundle: {
+      checked: true,
+      ok: true,
+      platform: 'ios',
+      url: 'http://127.0.0.1:8081/index.bundle?platform=ios',
+      error: null,
+      reason: null,
+    },
     ok: true,
     verify: null,
+    followups: [],
     untrusted: ['component', 'handlerOn', 'candidates', 'threw', 'verify'],
     ...overrides,
   };
@@ -116,10 +142,74 @@ describe(formatTree, () => {
   });
 
   it(`says when the report was cut, and names the flag that lifts the cut`, () => {
-    const output = formatTree(tree({ truncated: true, nodeCount: 900, maxNodes: 200 }));
+    const output = formatTree(
+      tree({ truncated: true, nodeCount: 200, nodesBeforeTruncation: 900, maxNodes: 200 })
+    );
 
     expect(output).toContain('900');
     expect(output).toContain('--max-nodes');
+  });
+
+  // @ref llp/0018 §Truncation counts — friction run 7, F74. `and kept 42 node(s)` above
+  // `the first 4 are below` described one run two ways, and the larger number was the one an agent
+  // read as the size of what it had been given.
+  it(`counts what came back and what was cut apart, and never prints the total as the size`, () => {
+    const output = formatTree(
+      tree({
+        truncated: true,
+        nodeCount: 4,
+        nodesBeforeTruncation: 42,
+        maxNodes: 4,
+        nodes: Array.from({ length: 4 }, (_, index) => node({ testID: `row-${index}` })),
+      })
+    );
+
+    expect(output).toContain('kept 4');
+    expect(output).toMatch(/42 element\(s\)/);
+    expect(output).not.toContain('kept 42');
+  });
+
+  it(`counts elements, because that is what one row is`, () => {
+    const output = formatTree(
+      tree({ nodes: [node({ groupSize: 3 })], nodeCount: 1, nodesBeforeTruncation: 1 })
+    );
+
+    expect(output).toContain('1 element(s)');
+  });
+
+  // @ref llp/0018 §The default listing is elements — friction run 7, F69. From the old listing an
+  // agent could not see that a button was disabled, nor tell one element over three fibers from two
+  // elements needing `--index`.
+  it(`marks a disabled element and says how many fibers a row stands for`, () => {
+    const output = formatTree(
+      tree({
+        nodes: [
+          node({ testID: 'disabled-btn', disabled: true, disabledOn: 'disabled', groupSize: 3 }),
+        ],
+      })
+    );
+
+    expect(output).toContain('disabled=disabled');
+    expect(output).toContain('3 fibers');
+  });
+
+  it(`prints a placeholder as a placeholder, so an empty field reads as empty`, () => {
+    const output = formatTree(
+      tree({
+        nodes: [
+          node({
+            component: 'TextInput',
+            testID: 'name-input',
+            handlers: ['onChangeText'],
+            text: null,
+            placeholder: 'your name',
+          }),
+        ],
+      })
+    );
+
+    expect(output).toContain('placeholder="your name"');
+    expect(output).not.toContain('text="your name"');
   });
 
   it(`says an empty screen is empty rather than printing nothing`, () => {
@@ -279,6 +369,80 @@ describe(explainTypeFailure, () => {
     expect(failure.message).toMatch(/text/i);
     expect(failure.message).toMatch(/onSubmitEditing/);
   });
+
+  // @ref llp/0018 §Wording — friction run 7, F77. "the app sets editable on its TextInput" reads as
+  // the opposite of what happened: the app set it to **false**.
+  it(`says the app turned editing off, not that it set editable`, () => {
+    const failure = explainTypeFailure(
+      typed({
+        reason: 'disabled',
+        disabled: true,
+        disabledOn: 'editable',
+        disabledComponent: 'TextInput',
+        called: false,
+        ok: false,
+      })
+    );
+
+    expect(failure.message).toContain('editable is false on its TextInput');
+    expect(failure.message).not.toContain('sets editable on');
+  });
+
+  it(`still names the prop for the disabled props that are not editable`, () => {
+    const failure = explainTypeFailure(
+      typed({
+        reason: 'disabled',
+        disabled: true,
+        disabledOn: 'disabled',
+        disabledComponent: 'TextInput',
+        called: false,
+        ok: false,
+      })
+    );
+
+    expect(failure.message).toContain('disabled on its TextInput');
+  });
+
+  // F77: "nothing was typed into" with no object, which is half a sentence.
+  it.each([
+    ['no-match', 'nothing was typed'],
+    ['no-handler', 'nothing was typed into note-input'],
+    ['disabled', 'nothing was typed into note-input'],
+  ])(`finishes the sentence for %p`, (reason, clause) => {
+    const failure = explainTypeFailure(
+      typed({ reason, called: false, ok: false, matched: reason === 'no-match' ? 0 : 1 })
+    );
+
+    expect(failure.message).toContain(clause);
+    expect(failure.message).not.toMatch(/typed into \(/);
+  });
+
+  // @ref llp/0018 §Ambiguity and the handler — friction run 7, F80. Two elements carrying one
+  // testID, neither an input: the answer was "pass --index", which is advice for choosing between
+  // two things this command cannot do either of.
+  it(`says no candidate takes text before it asks which candidate to use`, () => {
+    const failure = explainTypeFailure(
+      typed({
+        testID: 'shared-id',
+        reason: 'no-handler',
+        matched: 2,
+        called: false,
+        ok: false,
+        component: null,
+        handler: null,
+        handlerOn: null,
+        candidates: [
+          { index: 0, component: 'Pressable', screen: 'lab', handler: null },
+          { index: 1, component: 'Pressable', screen: 'lab2', handler: null },
+        ],
+      })
+    );
+
+    expect(failure.message).toMatch(/onChangeText/);
+    // Both facts: there are two of them, and none of them is an input.
+    expect(failure.message).toContain('2');
+    expect(failure.suggestedCommand).toBe('npx exagent runtime:tree --testID shared-id');
+  });
 });
 
 describe(diffSnapshots, () => {
@@ -334,5 +498,68 @@ describe(diffSnapshots, () => {
     const diff = diffSnapshots([row('a'), row('b')], [row('a'), row('c')], 1000);
 
     expect(diff.changedText).toEqual([{ key: 'row#1', before: 'b', after: 'c' }]);
+  });
+});
+
+// @ref llp/0018 §The bundle gate — friction run 7, F62.
+//
+// `runtime:reload` already refuses to act on a bundle that does not compile, and the three commands
+// that shipped after it did not inherit the gate: `runtime:tap add-note --verify` reported
+// "Verified ... the screen changed" for a project whose entry file was a syntax error. The refusal
+// says the same thing reload's does, because it is the same fact.
+describe(explainBundleRefusal, () => {
+  function broken(overrides: Partial<BundleCheckJson> = {}): BundleCheckJson {
+    return {
+      checked: true,
+      ok: false,
+      platform: 'ios',
+      url: 'http://127.0.0.1:8081/index.bundle?platform=ios',
+      error: {
+        type: 'TransformError',
+        filename: 'src/app/lab.tsx',
+        lineNumber: 137,
+        column: 4,
+        message: "SyntaxError: Unexpected keyword 'this'. (137:4)",
+        snippet: '  135 | }\n> 137 |   this is not valid',
+      },
+      reason: null,
+      ...overrides,
+    };
+  }
+
+  it(`names the file and line the bundler stopped on, and does not claim the app was read`, () => {
+    const failure = explainBundleRefusal(broken(), {
+      what: 'nothing was tapped',
+      rerun: 'npx exagent runtime:tap inc-btn',
+    });
+
+    expect(failure.message).toContain('does not compile');
+    expect(failure.message).toContain('nothing was tapped');
+    expect(failure.message).toContain('src/app/lab.tsx:137:4');
+    expect(failure.message).toContain("SyntaxError: Unexpected keyword 'this'. (137:4)");
+    expect(failure.message).toContain('this is not valid');
+    expect(failure.message).toContain('--no-bundle-check');
+  });
+
+  it(`says why a projection of a stale bundle is worse than no projection`, () => {
+    const failure = explainBundleRefusal(broken(), {
+      what: 'nothing was read',
+      rerun: 'npx exagent runtime:tree',
+    });
+
+    // The whole point: the app is running the code from *before* the edit, so a green answer here
+    // is a green answer about code that no longer exists.
+    expect(failure.message).toMatch(/before|stale|no longer/i);
+    expect(failure.suggestedCommand).toBe('npx exagent runtime:reload');
+  });
+
+  it(`reports a build that never finished as inconclusive rather than broken`, () => {
+    const failure = explainBundleRefusal(
+      broken({ ok: null, error: null, checked: false, reason: 'the bundler did not finish' }),
+      { what: 'nothing was tapped', rerun: 'npx exagent runtime:tap inc-btn' }
+    );
+
+    expect(failure.message).toMatch(/still building|did not finish/i);
+    expect(failure.message).not.toContain('does not compile');
   });
 });

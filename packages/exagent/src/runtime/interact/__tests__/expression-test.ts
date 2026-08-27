@@ -106,13 +106,18 @@ interface TreeAnswer {
   screensSeen: string[];
   projection: string;
   nodeCount: number;
+  nodesBeforeTruncation: number;
   truncated: boolean;
   nodes: {
     component: string;
     testID: string | null;
     text: string | null;
+    placeholder: string | null;
     handlers: string[];
     interactive: boolean;
+    disabled: boolean;
+    disabledOn: string | null;
+    groupSize: number;
     host: boolean;
     accessibilityRole: string | null;
     screen: string | null;
@@ -148,7 +153,12 @@ interface CallAnswer {
   called: boolean;
   threw: { text: string; stack: string | null } | null;
   reason: string | null;
-  candidates: { index: number; component: string; screen: string | null }[];
+  candidates: {
+    index: number;
+    component: string;
+    screen: string | null;
+    handler: string | null;
+  }[];
   submitted?: boolean;
   submitHandlerOn?: string | null;
 }
@@ -261,11 +271,14 @@ describe('matching by element rather than by fiber', () => {
     };
     restore = installHook(tree);
 
-    // 17 fibers carry a testID in this tree, exactly as they did live, and four elements do.
+    // 17 fibers carry a testID in this tree, exactly as they did live, and four elements do. The
+    // listing reports the four and accounts for all 17 in their group sizes (F69).
     const all = evaluateExpression<TreeAnswer>(
       buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 500 })
     );
-    expect(all.nodes.filter((node) => node.testID != null)).toHaveLength(17);
+    const carriers = all.nodes.filter((node) => node.testID != null);
+    expect(carriers).toHaveLength(4);
+    expect(carriers.reduce((sum, node) => sum + node.groupSize, 0)).toBe(17);
 
     for (const group of groups) {
       const answer = evaluateExpression<CallAnswer>(
@@ -295,8 +308,8 @@ describe('matching by element rather than by fiber', () => {
     );
     expect(ambiguous).toMatchObject({ matched: 2, reason: 'ambiguous', called: false });
     expect(ambiguous.candidates).toEqual([
-      { index: 0, component: 'Pressable', screen: null },
-      { index: 1, component: 'Pressable', screen: null },
+      { index: 0, component: 'Pressable', screen: null, handler: 'onPress' },
+      { index: 1, component: 'Pressable', screen: null, handler: 'onPress' },
     ]);
 
     restore?.();
@@ -717,7 +730,10 @@ describe('the projections', () => {
     ]);
   });
 
-  it(`truncates at --max-nodes and says that it did`, () => {
+  // @ref llp/0018 §Truncation counts — friction run 7, F74. `nodeCount: 42` beside four returned
+  // nodes read as "42 kept, handle the other 38", which is truncation the caller had already been
+  // given. The two counts are two fields.
+  it(`truncates at --max-nodes and reports the returned count and the total separately`, () => {
     const many: FiberSpec = {
       name: 'Root',
       props: {},
@@ -733,8 +749,18 @@ describe('the projections', () => {
     );
 
     expect(answer.truncated).toBe(true);
-    expect(answer.nodeCount).toBe(10);
+    expect(answer.nodeCount).toBe(4);
+    expect(answer.nodesBeforeTruncation).toBe(10);
     expect(answer.nodes).toHaveLength(4);
+  });
+
+  it(`reports the same two counts when nothing was cut`, () => {
+    const answer = against<TreeAnswer>(
+      { name: 'Pressable', props: { testID: 'only', onPress: () => {} } },
+      buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 4 })
+    );
+
+    expect(answer).toMatchObject({ truncated: false, nodeCount: 1, nodesBeforeTruncation: 1 });
   });
 
   it(`reports the subtree of a named testID, whatever the projection would keep`, () => {
@@ -801,6 +827,270 @@ describe('the projections', () => {
   });
 });
 
+// @ref llp/0018 §The text of a node — friction run 7, F63.
+//
+// `<Text>count: {count}</Text>` compiles to `children: ['count: ', 1]`, and a reader of only
+// `typeof children === 'string'` sees nothing there. The spike recorded the shape live: three
+// `#text` fibers at depth 137 of `out-03-tree-walk.json` carry "This starter app includes example",
+// "\n" and "code to help you get started.", and their `RCTText` parent at depth 136 is absent from
+// the recorded projection — because its own `text` came out null.
+describe('the text of a node', () => {
+  /** The `#text` runs the fixture recorded under one absent parent, in order. */
+  function recordedTextRun(): string[] {
+    const kept = JSON.parse(fs.readFileSync(path.join(FIXTURES, 'out-03-tree-walk.json'), 'utf8'))
+      .result.value.kept as { component: string; text: string | null; depth: number }[];
+    const start = kept.findIndex((node) => node.text === 'This starter app includes example');
+    return kept.slice(start, start + 3).map((node) => node.text!);
+  }
+
+  it(`is the shape the fixture recorded: three text runs whose parent kept no text`, () => {
+    expect(recordedTextRun()).toEqual([
+      'This starter app includes example',
+      '\n',
+      'code to help you get started.',
+    ]);
+  });
+
+  it(`joins the string children the fixture recorded as separate runs`, () => {
+    const runs = recordedTextRun();
+    const answer = against<TreeAnswer>(
+      {
+        name: 'RCTText',
+        host: true,
+        props: { testID: 'blurb', children: runs },
+      },
+      buildTreeExpression({ full: true, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes[0]!.text).toBe(runs.join(''));
+  });
+
+  it(`reads an interpolated number, which is the most common change on a screen`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'Root',
+        props: {},
+        children: [
+          { name: 'Text', props: { testID: 'counter-label', children: ['count: ', 7] } },
+          { name: 'Text', props: { testID: 'counter-str', children: 'count is 7' } },
+        ],
+      },
+      buildTreeExpression({ full: true, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes.map((node) => [node.testID, node.text])).toEqual([
+      ['counter-label', 'count: 7'],
+      ['counter-str', 'count is 7'],
+    ]);
+  });
+
+  it(`skips element children rather than stringifying them`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'Text',
+        props: {
+          testID: 'mixed',
+          children: ['press ', { type: 'Text', props: { children: 'here' } }, ' now'],
+        },
+      },
+      buildTreeExpression({ full: true, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes[0]!.text).toBe('press  now');
+  });
+
+  it(`is null for a node whose children are all elements`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'View',
+        props: { testID: 'wrapper', children: [{ type: 'Text' }, { type: 'Text' }] },
+      },
+      buildTreeExpression({ full: true, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes[0]!.text).toBeNull();
+  });
+
+  // @ref llp/0018 §The text of a node — friction run 7, F70. A placeholder is what the input says
+  // when it is *empty*, so reporting it as `text` makes an empty field indistinguishable from a
+  // filled one.
+  it(`reports a placeholder as a placeholder and never as text`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'Root',
+        props: {},
+        children: [
+          {
+            name: 'TextInput',
+            props: { testID: 'empty-input', placeholder: 'no submit handler', onChangeText: () => {} },
+          },
+          {
+            name: 'TextInput',
+            props: { testID: 'filled-input', value: 'cannot change', onChangeText: () => {} },
+          },
+        ],
+      },
+      buildTreeExpression({ full: true, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes.map((node) => [node.testID, node.text, node.placeholder])).toEqual([
+      ['empty-input', null, 'no submit handler'],
+      ['filled-input', 'cannot change', null],
+    ]);
+  });
+
+  it(`reports a committed empty value as empty rather than as the placeholder`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'TextInput',
+        props: { testID: 'cleared', value: '', placeholder: 'type here', onChangeText: () => {} },
+      },
+      buildTreeExpression({ full: true, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes[0]).toMatchObject({ text: '', placeholder: 'type here' });
+  });
+});
+
+// @ref llp/0018 §The default listing is elements — friction run 7, F69.
+//
+// The default listing was one row per fiber: nine elements printed 26 rows, `--index` was
+// unguessable from it, and nothing said a button was disabled. It is now the unit `runtime:tap`
+// and `--testID` already work in.
+describe('the default listing groups by element', () => {
+  /** The friction-run-7 lab screen: one button over three fibers, two real duplicates, a Text. */
+  const lab: FiberSpec = {
+    name: 'Root',
+    props: {},
+    children: [
+      {
+        name: 'Pressable',
+        props: { testID: 'inc-btn', onPress: () => {} },
+        children: [
+          {
+            name: 'View',
+            props: { testID: 'inc-btn' },
+            children: [{ name: 'RCTView', props: { testID: 'inc-btn' } }],
+          },
+        ],
+      },
+      {
+        name: 'Pressable',
+        props: { testID: 'disabled-btn', onPress: () => {}, disabled: true },
+        children: [
+          {
+            name: 'RCTView',
+            props: { testID: 'disabled-btn', accessibilityState: { disabled: true } },
+          },
+        ],
+      },
+      {
+        name: 'Pressable',
+        props: { testID: 'dup-btn', onPress: () => {} },
+        children: [{ name: 'RCTView', props: { testID: 'dup-btn' } }],
+      },
+      {
+        name: 'Pressable',
+        props: { testID: 'dup-btn', onPress: () => {} },
+        children: [{ name: 'RCTView', props: { testID: 'dup-btn' } }],
+      },
+      { name: 'Text', props: { testID: 'plain-text', children: 'no handler here' } },
+    ],
+  };
+
+  it(`prints one row per element, not one per fiber`, () => {
+    const answer = against<TreeAnswer>(
+      lab,
+      buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes.map((node) => [node.testID, node.component, node.groupSize])).toEqual([
+      ['inc-btn', 'Pressable', 3],
+      ['disabled-btn', 'Pressable', 2],
+      ['dup-btn', 'Pressable', 2],
+      ['dup-btn', 'Pressable', 2],
+      ['plain-text', 'Text', 1],
+    ]);
+    expect(answer.nodeCount).toBe(5);
+  });
+
+  it(`marks the element the app reports as disabled, which a tap would refuse`, () => {
+    const answer = against<TreeAnswer>(
+      lab,
+      buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    const disabled = answer.nodes.find((node) => node.testID === 'disabled-btn')!;
+    expect(disabled).toMatchObject({ disabled: true, disabledOn: 'disabled' });
+    expect(answer.nodes.filter((node) => node.disabled)).toHaveLength(1);
+  });
+
+  it(`agrees with runtime:tap about what one element is`, () => {
+    const listing = against<TreeAnswer>(
+      lab,
+      buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 500 })
+    );
+    restore?.();
+    const tapped = against<CallAnswer>(
+      lab,
+      buildTapExpression({ testID: 'dup-btn', index: null, allScreens: true, force: false })
+    );
+
+    expect(listing.nodes.filter((node) => node.testID === 'dup-btn')).toHaveLength(tapped.matched);
+    expect(tapped.reason).toBe('ambiguous');
+  });
+
+  it(`reports the handlers of the whole element, wherever in the group they sit`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'CustomButton',
+        props: { testID: 'deep', onLongPress: () => {} },
+        children: [{ name: 'RCTView', props: { testID: 'deep', onPress: () => {} } }],
+      },
+      buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes).toHaveLength(1);
+    expect(answer.nodes[0]!.handlers).toEqual(['onPress', 'onLongPress']);
+  });
+
+  it(`keeps a node that carries a handler and no testID, as its own element`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'Root',
+        props: {},
+        children: [{ name: 'Pressable', props: { onPress: () => {} } }],
+      },
+      buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 500 })
+    );
+
+    expect(answer.nodes).toMatchObject([{ component: 'Pressable', testID: null, groupSize: 1 }]);
+  });
+
+  // The `--verify` snapshot is the same walk, so the diff inherits the grouping: `counter-str` and
+  // `counter-str#1` were one change listed twice (F69).
+  it(`carries the grouping into the --verify snapshot`, () => {
+    const answer = against<TreeAnswer>(
+      {
+        name: 'Text',
+        props: { testID: 'counter-str', children: ['count is ', 8] },
+        children: [
+          {
+            name: 'RCTText',
+            props: { testID: 'counter-str', children: ['count is ', 8] },
+            children: [{ name: '#text', props: 'count is 8' }],
+          },
+        ],
+      },
+      buildSnapshotExpression({ allScreens: true, maxNodes: 200 })
+    );
+
+    expect(answer.nodes.map((node) => [node.testID, node.text])).toEqual([
+      ['counter-str', 'count is 8'],
+    ]);
+  });
+});
+
 // @ref llp/0014 §What the implementer must not lose, item 4. React's numeric fiber tags are
 // renumbered between versions, so a host component is recognised by its element type being a
 // string and by nothing else.
@@ -826,10 +1116,12 @@ describe('host detection without fiber tags', () => {
 
   it(`calls a fiber a host component when its element type is a string`, () => {
     const answer = against<TreeAnswer>(
+      // Two elements rather than one over two fibers, so both rows are in the listing: the point
+      // here is which of them is called a host component, not how they are grouped.
       {
         name: 'Pressable',
         props: { testID: 'button', onPress: () => {} },
-        children: [{ name: 'RCTView', props: { testID: 'button' } }],
+        children: [{ name: 'RCTView', props: { testID: 'button-view' } }],
       },
       buildTreeExpression({ full: false, allScreens: true, testID: null, maxNodes: 500 })
     );
@@ -1013,6 +1305,78 @@ describe('the type call', () => {
         })
       )
     ).toMatchObject({ disabled: true, called: true, reason: null });
+  });
+
+  // @ref llp/0018 §Ambiguity and the handler — friction run 7, F80. Two `shared-id` Pressables,
+  // neither of them an input: the answer was the ambiguity, so an agent was sent to `--index 0`,
+  // which would have failed for a different reason.
+  it(`answers "no candidate takes text" before it answers "which one"`, () => {
+    const shared = (screenName: string): FiberSpec =>
+      screen(screenName, true, [
+        { name: 'Pressable', props: { testID: 'shared-id', onPress: () => {} } },
+      ]);
+    const answer = against<CallAnswer>(
+      { name: 'Root', props: {}, children: [shared('lab'), shared('lab2')] },
+      buildTypeExpression({
+        testID: 'shared-id',
+        index: null,
+        allScreens: true,
+        force: false,
+        text: 'abc',
+        submit: false,
+      })
+    );
+
+    expect(answer).toMatchObject({ matched: 2, reason: 'no-handler', called: false });
+    expect(answer.candidates.map((candidate) => candidate.handler)).toEqual([null, null]);
+  });
+
+  it(`still asks which one when the candidates do take text`, () => {
+    const input = (screenName: string): FiberSpec =>
+      screen(screenName, true, [
+        { name: 'TextInput', props: { testID: 'shared-input', onChangeText: () => {} } },
+      ]);
+    const answer = against<CallAnswer>(
+      { name: 'Root', props: {}, children: [input('lab'), input('lab2')] },
+      buildTypeExpression({
+        testID: 'shared-input',
+        index: null,
+        allScreens: true,
+        force: false,
+        text: 'abc',
+        submit: false,
+      })
+    );
+
+    expect(answer).toMatchObject({ matched: 2, reason: 'ambiguous', called: false });
+    expect(answer.candidates.map((candidate) => candidate.handler)).toEqual([
+      'onChangeText',
+      'onChangeText',
+    ]);
+  });
+
+  it(`asks which one when only some of the candidates take text`, () => {
+    const answer = against<CallAnswer>(
+      {
+        name: 'Root',
+        props: {},
+        children: [
+          { name: 'Pressable', props: { testID: 'mixed', onPress: () => {} } },
+          { name: 'TextInput', props: { testID: 'mixed', onChangeText: () => {} } },
+        ],
+      },
+      buildTypeExpression({
+        testID: 'mixed',
+        index: null,
+        allScreens: true,
+        force: false,
+        text: 'abc',
+        submit: false,
+      })
+    );
+
+    expect(answer).toMatchObject({ matched: 2, reason: 'ambiguous' });
+    expect(answer.candidates.map((candidate) => candidate.handler)).toEqual([null, 'onChangeText']);
   });
 
   it(`reports no handler for an element that takes no text`, () => {

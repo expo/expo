@@ -29,6 +29,18 @@ interface InteractSharedOptions {
   /** How many nodes a tree or a verify snapshot carries before it truncates. */
   maxNodes: number;
   json: boolean;
+  /**
+   * Build the project's entry bundle before reading or driving the app, cleared by
+   * `--no-bundle-check`.
+   *
+   * The same gate and the same flag as `runtime:reload`'s (llp/0010 §The reload gate). These three
+   * commands read the bundle the app is *running*, so a project that no longer compiles is a
+   * projection of the code from before the edit — and `runtime:tap --verify` reported "the screen
+   * changed" for exactly that [friction run 7, F62].
+   */
+  bundleCheck: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups: boolean;
 }
 
 export interface RuntimeTreeOptions extends InteractSharedOptions {
@@ -74,6 +86,8 @@ const SHARED_ARGS = {
   // `NaN` a numeric handler produces.
   '--max-nodes': String,
   '--json': Boolean,
+  '--no-bundle-check': Boolean,
+  '--no-followups': Boolean,
 };
 
 const TREE_ARGS = {
@@ -106,6 +120,14 @@ const TYPE_ARGS = {
   '--submit': Boolean,
 };
 
+/** The one wording for a count this CLI cannot use, whichever path caught it. */
+function badCountError(flag: string, value: unknown, min: number): CommandError {
+  return new CommandError(
+    'BAD_ARGS',
+    `${flag} must be a whole number of ${min} or more, but got ${value}.`
+  );
+}
+
 /** A count flag as a whole number, or the error naming what the caller typed. */
 function resolveCount(
   value: unknown,
@@ -118,12 +140,40 @@ function resolveCount(
   }
   const count = Number(value);
   if (!Number.isInteger(count) || count < min) {
-    throw new CommandError(
-      'BAD_ARGS',
-      `${flag} must be a whole number of ${min} or more, but got ${value}.`
-    );
+    throw badCountError(flag, value, min);
   }
   return count;
+}
+
+/**
+ * The smallest value each numeric flag accepts, which is also the set this pre-scan covers.
+ *
+ * @ref llp/0018-interaction-commands.rfc.md §Negative numbers — friction run 7, F73.
+ */
+const COUNT_FLAG_MINIMUMS: { [flag: string]: number } = {
+  '--index': 0,
+  '--max-nodes': 1,
+};
+
+/**
+ * Catch a negative count **before** the argument parser reads it as another option.
+ *
+ * `--index -1` never reaches {@link resolveCount}: `arg` sees a token starting with `-` and reports
+ * the flag as having nothing after it, so the caller was told "there was no next argument" about an
+ * argument that was right there, and `--index abc` — the same mistake with a different value — got
+ * the right message [friction run 7, F73]. This is a pre-scan of the caller's own argv rather than a
+ * change to the parser, because a leading `-` legitimately starts an option for every other flag.
+ *
+ * @throws {CommandError} `BAD_ARGS` naming the flag, the minimum and the value as typed.
+ */
+function rejectNegativeCounts(argv: string[]): void {
+  for (let index = 0; index < argv.length; index++) {
+    const min = COUNT_FLAG_MINIMUMS[argv[index]!];
+    const value = argv[index + 1];
+    if (min != null && value != null && /^-\d/.test(value)) {
+      throw badCountError(argv[index]!, value, min);
+    }
+  }
 }
 
 /** The dev server, the platform and the node cap, which every one of the three reads the same. */
@@ -138,6 +188,8 @@ function resolveShared(
     }),
     maxNodes: resolveCount(args['--max-nodes'], '--max-nodes', DEFAULT_MAX_NODES, { min: 1 })!,
     json: !!args['--json'],
+    bundleCheck: !args['--no-bundle-check'],
+    followups: !args['--no-followups'],
   };
 }
 
@@ -148,6 +200,7 @@ function resolveShared(
  * is a caller who meant `--testID` and would otherwise have been given the whole screen.
  */
 export function resolveTreeOptions(argv: string[]): RuntimeTreeOptions {
+  rejectNegativeCounts(argv);
   const args = parseArgsOrThrow(TREE_ARGS, argv, 'runtime:tree');
   if (args._.length > 0) {
     throw strayArgumentError('runtime:tree', args._, {
@@ -174,6 +227,7 @@ function resolveIndex(args: { readonly [flag: string]: unknown }): number | null
  * @throws {CommandError} `BAD_ARGS` for a missing testID, more than one, or an unusable index.
  */
 export function resolveTapOptions(argv: string[]): RuntimeTapOptions {
+  rejectNegativeCounts(argv);
   const args = parseArgsOrThrow(TAP_ARGS, argv, 'runtime:tap');
   const positional = args._.map(String);
   if (positional.length === 0) {
@@ -212,13 +266,22 @@ export function resolveTapOptions(argv: string[]): RuntimeTapOptions {
  * @throws {CommandError} `BAD_ARGS` for missing text, a missing `--testID`, or unquoted text.
  */
 export function resolveTypeOptions(argv: string[]): RuntimeTypeOptions {
+  rejectNegativeCounts(argv);
   const args = parseArgsOrThrow(TYPE_ARGS, argv, 'runtime:type');
   const positional = args._.map(String);
   if (positional.length === 0) {
-    throw new CommandError(
+    // The three parts every other error of these commands has. This one was a bare one-liner
+    // [friction run 7, F77], which is the shape a caller learns nothing from.
+    const missingText = new CommandError(
       'BAD_ARGS',
-      `Missing text. Usage: npx exagent runtime:type "<text>" --testID <id>. Pass "" to clear the input.`
+      [
+        `Missing text. "exagent runtime:type" types a string into an input, and none was given.`,
+        `Why: the text is this command's subject and its first argument, so there is nothing to type — and an empty run is not the same as clearing the field, which is what "" means and is a thing a caller asks for on purpose.`,
+        `How: npx exagent runtime:type "<text>" --testID <id>, or npx exagent runtime:type "" --testID <id> to clear the input. Run "npx exagent runtime:tree" for the testIDs the screen is carrying.`,
+      ].join('\n')
     );
+    missingText.suggestedCommand = 'npx exagent runtime:tree';
+    throw missingText;
   }
   if (positional.length > 1) {
     throw new CommandError(
