@@ -6,7 +6,6 @@ import {
   setNodeEnv,
 } from '@expo/env';
 import assert from 'assert';
-import { boolish } from 'getenv';
 
 import { createFingerprintForBuildAsync } from './createFingerprintForBuildAsync';
 import { createManifestForBuildAsync } from './createManifestForBuildAsync';
@@ -18,8 +17,8 @@ declare namespace globalThis {
 
 export function loadEnvForBuild(projectRoot: string): void {
   process.env = getOriginalEnv();
-  const mode =
-    consumeConfigEnvMode() ?? (boolish('EAS_BUILD', false) ? 'production' : 'development');
+  const mode = consumeConfigEnvMode();
+  assert(mode, 'Must provide a config mode');
 
   setNodeEnv(mode);
   globalThis.__DEV__ = mode === 'development';

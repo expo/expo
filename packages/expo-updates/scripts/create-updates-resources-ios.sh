@@ -6,8 +6,6 @@ CREATE_UPDATES_RESOURCES_MODE="all"
 
 if [[ -n "$__EXPO_CONFIG_MODE" ]]; then
   CONFIG_MODE="$__EXPO_CONFIG_MODE"
-elif [[ "$EAS_BUILD" == "1" || "$EAS_BUILD" == "true" ]]; then
-  CONFIG_MODE="production"
 elif [[ "$CONFIGURATION" == *Debug* ]]; then
   CONFIG_MODE="development"
 else

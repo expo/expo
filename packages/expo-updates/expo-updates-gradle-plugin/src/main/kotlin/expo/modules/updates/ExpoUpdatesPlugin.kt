@@ -40,7 +40,6 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
         reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
       val configMode = getConfigMode(
         inheritedMode = System.getenv("__EXPO_CONFIG_MODE"),
-        isEasBuild = System.getenv("EAS_BUILD")?.lowercase() in listOf("1", "true"),
         isDebuggableVariant = isDebuggableVariant
       )
 
@@ -131,11 +130,9 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
 internal fun getConfigMode(
   inheritedMode: String?,
-  isEasBuild: Boolean,
   isDebuggableVariant: Boolean
 ): String = when {
   !inheritedMode.isNullOrEmpty() -> inheritedMode
-  isEasBuild -> "production"
   isDebuggableVariant -> "development"
   else -> "production"
 }
