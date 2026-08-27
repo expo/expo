@@ -1,6 +1,6 @@
 import { readDevServerLockAsync } from '../../devLock';
 import { EXIT_OK, EXIT_OUTCOME_FAILED } from '../../exitCodes';
-import { findPortListenerAsync } from '../portListener';
+import { findPortListenerAsync, isPortInUseAsync } from '../portListener';
 import type { DevStopOptions } from '../resolveStopOptions';
 import { devStopAsync, looksLikeDevServerProcess } from '../stopAsync';
 
@@ -9,6 +9,7 @@ jest.mock('../../devLock', () => ({
 }));
 jest.mock('../portListener', () => ({
   findPortListenerAsync: jest.fn(async () => null),
+  isPortInUseAsync: jest.fn(async () => false),
 }));
 
 const projectRoot = '/project';
@@ -258,6 +259,99 @@ describe(devStopAsync, () => {
     await devStopAsync(projectRoot, options());
 
     expect(JSON.parse(printed()).detail).toContain('--port');
+  });
+
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // F60. The one destructive verb in the surface acted on a port the caller did not name.
+  describe('--port names the target, and the lock does not overrule it', () => {
+    beforeEach(() => {
+      jest.mocked(readDevServerLockAsync).mockResolvedValue(
+        lock({ port: 8190, url: 'http://127.0.0.1:8190', pid: 4242 }) as never
+      );
+      livePids.add(4242);
+    });
+
+    it(`should not signal the lock's pid when --port names another port`, async () => {
+      mockPort({ answering: false });
+      jest.mocked(findPortListenerAsync).mockResolvedValue({ pid: 777, command: 'python3' });
+
+      await expect(devStopAsync(projectRoot, options({ port: 8195 }))).resolves.toBe(
+        EXIT_OUTCOME_FAILED
+      );
+
+      expect(killed).toEqual([]);
+      const report = JSON.parse(printed());
+      expect(report).toMatchObject({
+        stopped: false,
+        port: 8195,
+        pid: 777,
+        lockHeld: false,
+        reason: 'foreign-dev-server',
+      });
+      // The lock is named so the caller can tell the two dev servers apart, and never acted on.
+      expect(report.detail).toContain('8190');
+    });
+
+    it(`should signal the lock's pid when --port names the port the lock holds`, async () => {
+      jest
+        .mocked(readDevServerLockAsync)
+        .mockResolvedValueOnce(lock({ port: 8190, url: 'http://127.0.0.1:8190' }) as never)
+        .mockResolvedValue(null as never);
+      mockPort({ answering: false });
+
+      await expect(devStopAsync(projectRoot, options({ port: 8190 }))).resolves.toBe(EXIT_OK);
+
+      expect(killed).toEqual([{ pid: 4242, signal: 'SIGTERM' }]);
+      expect(JSON.parse(printed())).toMatchObject({
+        stopped: true,
+        port: 8190,
+        lockHeld: true,
+      });
+    });
+  });
+
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // F72. "Nothing is listening" is a claim, and it was made about a port something was on.
+  describe('a port this machine will not name a listener for', () => {
+    beforeEach(() => {
+      jest.mocked(readDevServerLockAsync).mockResolvedValue(null as never);
+      jest.mocked(findPortListenerAsync).mockResolvedValue(null);
+      mockPort({ answering: false });
+    });
+
+    it(`should report it as a foreign listener when the port cannot be bound`, async () => {
+      jest.mocked(isPortInUseAsync).mockResolvedValue(true);
+
+      await expect(devStopAsync(projectRoot, options({ port: 8195 }))).resolves.toBe(
+        EXIT_OUTCOME_FAILED
+      );
+
+      const report = JSON.parse(printed());
+      expect(report).toMatchObject({ stopped: false, reason: 'foreign-dev-server' });
+      expect(report.detail).toContain('no Expo dev server answered on port 8195');
+      expect(report.detail).not.toContain('nothing is listening');
+    });
+
+    it(`should report nothing running only when the port is free`, async () => {
+      jest.mocked(isPortInUseAsync).mockResolvedValue(false);
+
+      await expect(devStopAsync(projectRoot, options({ port: 8195 }))).resolves.toBe(EXIT_OK);
+
+      const report = JSON.parse(printed());
+      expect(report).toMatchObject({ stopped: false, reason: 'not-running' });
+      expect(report.detail).toContain('nothing is listening on port 8195');
+    });
+
+    it(`should name the listener's pid rather than claiming the port is quiet`, async () => {
+      jest.mocked(findPortListenerAsync).mockResolvedValue({ pid: 63465, command: 'python3' });
+
+      await expect(devStopAsync(projectRoot, options({ port: 8195 }))).resolves.toBe(
+        EXIT_OUTCOME_FAILED
+      );
+
+      const report = JSON.parse(printed());
+      expect(report.detail).toContain('pid 63465 (python3) is listening and is not one');
+    });
   });
 
   describe('a dev server this CLI did not start', () => {

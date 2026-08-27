@@ -235,6 +235,51 @@ describe('exagent dev --detach', () => {
     expect(await readDevLockAsync(projectRoot)).toBeNull();
   });
 
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Readiness is a claim about now
+  //
+  // Friction run 7's F61 and live staging's S4, which are one finding: the child had already
+  // classified the stop, written the scenario and the what/why/how into its log, and exited — while
+  // the parent, the only process the caller is reading, printed `Bundler ready` and exit 0. The
+  // verdict was never missing. It was in the wrong process.
+  it('hands on the child’s own verdict instead of reporting a dev server that has gone', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        // `--tunnel`, because that is the wait the child died inside of: the parent is still
+        // waiting for a tunnel host when the process that would print one exits.
+        ['dev', '--detach', '--yes', '--tunnel', '--json'],
+        {
+          env: {
+            ...stubExpoEnv(projectRoot),
+            STUB_EXPO_DEV_SERVER_PORT: '8397',
+            // Long enough for the lock to be published and read, short enough that the death
+            // lands inside the parent's tunnel wait rather than after it.
+            STUB_EXPO_DELAY_MS: '2500',
+            STUB_EXPO_EXIT_CODE: '1',
+            STUB_EXPO_STDERR: "Input is required, but 'npx expo' is in non-interactive mode.",
+          },
+          reject: false,
+        }
+      );
+
+      // 7, not 0 and not 1: the CLI worked, and what is left is a step only a person can finish.
+      expect(result.exitCode).toBe(7);
+      const { error } = JSON.parse(result.stdout);
+      expect(error.needsHuman).toMatchObject({
+        scenario: 'expo-prompt',
+        // Relayed rather than seen: this parent never ran the Expo CLI.
+        detectedBy: 'detached-child-log',
+      });
+      // The two words the finding is about, on neither stream.
+      expect(result.stdout).not.toContain('"ready": true');
+      expect(result.all).not.toContain('Bundler      ready');
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
   it('rejects --wait-ready on its own, which would wait for nothing', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 

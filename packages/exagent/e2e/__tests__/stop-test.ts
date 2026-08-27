@@ -7,6 +7,7 @@
 // that it signals the one the lock names and nothing else; `runtime:stop` runs a **real device
 // tool**, and the property that matters is the exact argv it hands it.
 import fs from 'node:fs';
+import net from 'node:net';
 import path from 'node:path';
 
 import {
@@ -214,6 +215,73 @@ describe('exagent dev:stop', () => {
       expect((await fetch(`${stub.url}/status`)).ok).toBe(true);
     } finally {
       await stub.close();
+    }
+  });
+
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // F60. This is the assertion the finding is about, and it needs a real lock and a real process:
+  // `--port` named one port, the lock named another, and the lock won.
+  it('leaves the lock alone when --port names a different port', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const recorder = await startSignalRecorderAsync(projectRoot);
+    const releaseLock = await holdDevLockAsync(projectRoot, {
+      url: 'http://127.0.0.1:59999',
+      port: 59999,
+      pid: recorder.pid,
+      startedAt: new Date().toISOString(),
+      projectRoot,
+    });
+    const stranger = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev:stop', '--port', String(stranger.port), '--json'],
+        { env: stubExpoEnv(projectRoot), reject: false }
+      );
+
+      expect(result.exitCode).toBe(20);
+      const report = JSON.parse(result.stdout);
+      expect(report).toMatchObject({
+        stopped: false,
+        port: stranger.port,
+        lockHeld: false,
+        reason: 'foreign-dev-server',
+      });
+      // The lock's own dev server is named, so a mistyped port is recoverable, and it is untouched.
+      expect(report.detail).toContain('59999');
+      expect(recorder.signalled()).toBeNull();
+      expect((await fetch(`${stranger.url}/status`)).ok).toBe(true);
+    } finally {
+      releaseLock();
+      recorder.stop();
+      await stranger.close();
+    }
+  });
+
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // F72. "Nothing is listening" was reported about a port a plain TCP server was on.
+  it('does not claim a busy port is quiet', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const server = net.createServer((socket) => socket.destroy());
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', () => resolve()));
+    const port = (server.address() as net.AddressInfo).port;
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev:stop', '--port', String(port), '--json'],
+        { reject: false }
+      );
+
+      expect(result.exitCode).toBe(20);
+      const report = JSON.parse(result.stdout);
+      expect(report).toMatchObject({ stopped: false, reason: 'foreign-dev-server' });
+      expect(report.detail).toContain(`no Expo dev server answered on port ${port}`);
+      expect(report.detail).not.toContain('nothing is listening');
+      expect(server.listening).toBe(true);
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
     }
   });
 

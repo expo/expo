@@ -69,8 +69,20 @@ export interface NeedsHuman {
   unattendedEnv: string[];
   /** Whether re-running the same `exagent` command works once the person is done. */
   resumable: boolean;
-  /** How the scenario was recognised. */
-  detectedBy: 'preflight' | 'exit-signature' | 'prompt-pattern' | 'no-non-interactive-flag';
+  /**
+   * How the scenario was recognised.
+   *
+   * `detached-child-log` is the one that is not this process' own observation: a `dev --detach` run
+   * classifies the stop in the *child*, which prints it to a log file, and the parent hands it on
+   * (`src/dev/childVerdict.ts`). Named apart from `exit-signature` because the reader of a handoff
+   * deserves to know it was relayed rather than seen.
+   */
+  detectedBy:
+    | 'preflight'
+    | 'exit-signature'
+    | 'prompt-pattern'
+    | 'no-non-interactive-flag'
+    | 'detached-child-log';
 }
 
 /**

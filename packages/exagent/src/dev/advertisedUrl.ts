@@ -212,7 +212,73 @@ export async function resolveDevServerReachAsync(projectRoot: string): Promise<D
     readDevServerLockAsync(projectRoot),
     Promise.resolve(readDevServerLogSync(projectRoot)),
   ]);
-  return resolveDevServerReach(captured, lock);
+  const fromLog = resolveDevServerReach(captured, lock);
+  if (fromLog.advertised != null || lock == null) {
+    return fromLog;
+  }
+  // The log is not the only place the host is written. `Waiting on <url>` is printed once, by a
+  // *terminal* run — a detached `--tunnel` run's log did not contain the tunnel host at all while
+  // the tunnel was up [observed — live staging, 2026-08-26, S3], so every command that needed the
+  // address a device uses reported null and asked the caller for `--dev-server-url`.
+  //
+  // The dev server itself still knows: it builds the manifest's `launchAsset.url` from
+  // `getDevServerUrl()`, which is the tunnel origin whenever a tunnel is running. One request to a
+  // dev server this project has a lock for answers it.
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §The tunnel host the log never held
+  const fromManifest = await fetchAdvertisedUrlAsync(lock.url);
+  return fromManifest == null
+    ? fromLog
+    : { advertised: fromManifest, running: true, reason: null };
+}
+
+/** How long the manifest request may take before the host counts as unknown. */
+const MANIFEST_TIMEOUT_MS = 2500;
+
+/**
+ * The dev server URL a running dev server builds its own manifest from, or null.
+ *
+ * `accept: application/json` for the same reason `runtime`'s bundle check asks for it: the same
+ * manifest is served as `multipart/mixed` to an Expo Updates client, and nothing here has a reason
+ * to parse multipart framing to reach an object it can ask for directly.
+ *
+ * Never throws. A dev server that is starting, gone, or not an Expo dev server answers null, and
+ * the caller says the host is unknown rather than inventing one.
+ */
+export async function fetchAdvertisedUrlAsync(
+  devServerOrigin: string,
+  { platform = 'ios', timeoutMs = MANIFEST_TIMEOUT_MS }: { platform?: string; timeoutMs?: number } = {}
+): Promise<AdvertisedDevServerUrl | null> {
+  const manifestUrl = `${devServerOrigin.replace(/\/+$/, '')}/`;
+  let payload: unknown;
+  try {
+    const response = await fetch(manifestUrl, {
+      headers: { 'expo-platform': platform, accept: 'application/json' },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!response.ok) {
+      return null;
+    }
+    payload = await response.json();
+  } catch {
+    return null;
+  }
+
+  const launchAsset = (payload as { launchAsset?: { url?: unknown } } | null)?.launchAsset;
+  if (typeof launchAsset?.url !== 'string' || !launchAsset.url) {
+    return null;
+  }
+  try {
+    // Resolved against the manifest URL, because the dev server answers with a path-relative URL
+    // when the request carried a `Forwarded` header [observed — `ManifestMiddleware`].
+    const parsed = new URL(launchAsset.url, manifestUrl);
+    return {
+      url: parsed.origin,
+      host: parsed.host,
+      hostType: classifyDevServerHost(parsed.hostname),
+    };
+  } catch {
+    return null;
+  }
 }
 
 /**

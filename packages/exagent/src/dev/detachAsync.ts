@@ -23,12 +23,21 @@ import fs from 'fs';
 
 import { readDevServerLockAsync, type DevServerLockInfo } from '../devLock';
 import { event as cliEvent } from '../events';
+import { EXIT_OUTCOME_FAILED } from '../exitCodes';
 import { followUpsEnabled, reportFollowUps, type FollowUp } from '../followups';
 import * as Log from '../log';
+import { needsHumanErrorFrom, needsHumanOf } from '../needsHuman/error';
+import { findNeedsHumanScenario } from '../needsHuman/registry';
+import { wrapUntrustedAppOutput } from '../runtime/untrusted';
 import { waitForBundlerReadyAsync, type BundlerReadyResult } from '../runtime/waitReady';
 import { requestsTunnel } from '../start/followUps';
 import { CommandError } from '../utils/errors';
-import { readDevServerLogSync } from './advertisedUrl';
+import { fetchAdvertisedUrlAsync, readDevServerLogSync } from './advertisedUrl';
+import {
+  parseDetachedChildVerdict,
+  VERDICT_LOG_LINES,
+  type DetachedChildVerdict,
+} from './childVerdict';
 import { event } from './events';
 import { openDetachedLogSync, readDetachedLogSync } from './logFile';
 import { parsePortMove, type PortMove } from './portCollision';
@@ -165,7 +174,7 @@ export async function devDetachAsync(
       print,
       // Whatever the dev server that is already up advertised. Nothing is waited for here: this
       // run started nothing, so there is no tunnel of its own on its way.
-      tunnelUrl: currentTunnelUrlSync(projectRoot),
+      tunnelUrl: await currentTunnelUrlAsync(projectRoot, running.url),
     });
   }
 
@@ -225,6 +234,25 @@ export async function devDetachAsync(
     }
   }
 
+  const hasExited = () => childExit != null;
+  const tunnelUrl = await waitForTunnelUrlAsync(projectRoot, options, hasExited);
+
+  // The last thing before anything is claimed. Everything above is a fact about a moment that has
+  // passed: the lock answered, the bundler answered, the tunnel wait ran — and a child that died in
+  // between left the caller with `Bundler ready` and exit 0 for a dev server that was gone
+  // [observed — friction run 7, F61; live staging, S4]. `ready: true` is only ever printed for a
+  // process that is alive and a `/status` that still answers, here, now.
+  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Readiness is a claim about now
+  const verdict = readChildVerdictSync(projectRoot);
+  const failure = resolveDetachFailure({
+    exited: hasExited(),
+    verdict,
+    statusAnswering: ready === true ? await isBundlerAnsweringAsync(lock.url) : null,
+  });
+  if (failure) {
+    throw detachFailureError(failure, { projectRoot, lock, logFile, verdict, childExit });
+  }
+
   return reportDetached(projectRoot, options, {
     lock,
     alreadyRunning: false,
@@ -232,8 +260,132 @@ export async function devDetachAsync(
     projectRootMatched,
     startedAt,
     print,
-    tunnelUrl: await waitForTunnelUrlAsync(projectRoot, options),
+    tunnelUrl,
   });
+}
+
+/** Why a detached run that had come up is not something this command may report success for. */
+export type DetachFailureKind =
+  /** The child stopped at a step only a person can complete, and said which. */
+  | 'needs-human'
+  /** The child is gone, and its log holds no handoff. */
+  | 'child-exited'
+  /** The child is alive and the bundler that had answered `/status` no longer does. */
+  | 'not-answering';
+
+/** What the checks said at the moment the report was about to be printed. */
+export interface DetachCheck {
+  /** The child process this run spawned has exited. */
+  exited: boolean;
+  /** The child's own conclusion, read out of its log. */
+  verdict: DetachedChildVerdict | null;
+  /**
+   * Whether `/status` still answered.
+   *
+   * Null when readiness was never established — a run without `--wait-ready` claims nothing about
+   * the bundler, so a bundler that is still working is not a failure of this run.
+   */
+  statusAnswering: boolean | null;
+}
+
+/**
+ * Whether a detached run may be reported as a success.
+ *
+ * Pure, and exported, because it is the whole of the F61 fix: three facts in, one verdict out, and
+ * every combination testable without a second process.
+ */
+export function resolveDetachFailure({
+  exited,
+  verdict,
+  statusAnswering,
+}: DetachCheck): DetachFailureKind | null {
+  // The handoff block is written by `logCmdError` and by nothing else, so a log that has one is the
+  // log of a process on its way out — conclusive whether or not its exit has been observed yet.
+  if (verdict?.scenario != null) {
+    return 'needs-human';
+  }
+  if (exited) {
+    return 'child-exited';
+  }
+  if (statusAnswering === false) {
+    return 'not-answering';
+  }
+  return null;
+}
+
+/** One `/status` probe: whether the bundler that had answered still does. */
+async function isBundlerAnsweringAsync(url: string): Promise<boolean> {
+  const result = await waitForBundlerReadyAsync(url, { timeoutMs: LIVENESS_PROBE_TIMEOUT_MS });
+  return result.ready;
+}
+
+/** How long the final `/status` probe may take. Short: the bundler already answered once. */
+const LIVENESS_PROBE_TIMEOUT_MS = 2000;
+
+/** The child's verdict, read out of the log this run opened. */
+function readChildVerdictSync(projectRoot: string): DetachedChildVerdict | null {
+  const read = readDetachedLogSync(projectRoot, VERDICT_LOG_LINES);
+  return read == null ? null : parseDetachedChildVerdict(read.lines);
+}
+
+/**
+ * The error for a detached run whose dev server is not there to be reported.
+ *
+ * Two exit codes, and the difference is the child's own: a stop only a person can complete is
+ * `EXIT_NEEDS_HUMAN` with the scenario the child named, because the recovery is not another
+ * command. Everything else is `EXIT_OUTCOME_FAILED` — the CLI worked and the dev server did not
+ * come up — with the child's log quoted as what it is: output of another program.
+ */
+function detachFailureError(
+  kind: DetachFailureKind,
+  {
+    projectRoot,
+    lock,
+    logFile,
+    verdict,
+    childExit,
+  }: {
+    projectRoot: string;
+    lock: DevServerLockInfo;
+    logFile: string;
+    verdict: DetachedChildVerdict | null;
+    childExit: { code: number | null; signal: NodeJS.Signals | null } | null;
+  }
+): CommandError {
+  if (kind === 'needs-human' && verdict?.scenario != null) {
+    const scenario = findNeedsHumanScenario(verdict.scenario);
+    const message = [
+      `The detached dev server stopped at a step only a person can complete, so there is no dev server on ${lock.url}.`,
+      `Why: the run was started in a process of its own, and that process ran its plan and stopped. This is its own report of why, from ${logFile}:`,
+      wrapUntrustedAppOutput(verdict.message),
+    ].join('\n');
+    return scenario
+      ? needsHumanErrorFrom(
+          needsHumanOf(scenario, { detectedBy: 'detached-child-log' }),
+          { message, code: 'DEV_DETACH_NEEDS_HUMAN' }
+        )
+      : new CommandError('DEV_DETACH_NEEDS_HUMAN', message);
+  }
+
+  const error = new CommandError(
+    kind === 'child-exited' ? 'DEV_DETACH_DIED' : 'DEV_DETACH_NOT_ANSWERING',
+    [
+      kind === 'child-exited'
+        ? `The detached dev server is not running any more: the process this command started (pid ${lock.pid}) exited${
+            childExit?.signal
+              ? ` on ${childExit.signal}`
+              : childExit?.code != null
+                ? ` with code ${childExit.code}`
+                : ''
+          } before this command could report it.`
+        : `The dev server on ${lock.url} stopped answering before this command could report it.`,
+      `Why: a detached run is two processes, and only this one is being read. The bundler answered while the other one was starting, and it is not there now — so "ready" would be a claim about a moment that has passed.`,
+      `How: read what it printed with "npx exagent dev:logs" (the file is ${logFile}), fix what it names, and start it again with "npx exagent dev --detach --wait-ready". Running "npx exagent dev --yes" in this terminal shows the same start in the foreground, which is the quickest way to watch it fail.${logTail(projectRoot)}`,
+    ].join('\n')
+  );
+  error.exitCode = EXIT_OUTCOME_FAILED;
+  error.suggestedCommand = 'npx exagent dev:logs';
+  return error;
 }
 
 /**
@@ -258,22 +410,51 @@ function currentTunnelUrlSync(projectRoot: string): string | null {
 }
 
 /**
+ * The tunnel host, from the log or from the dev server itself.
+ *
+ * The log is asked first because it costs nothing, and because `Waiting on <url>` is the dev
+ * server's own announcement. It is not always there: a detached `--tunnel` run's log held no host
+ * at all while the tunnel was up [observed — live staging, 2026-08-26, S3]. The manifest of the dev
+ * server this run already has a lock for carries the same address, one request away.
+ */
+async function currentTunnelUrlAsync(
+  projectRoot: string,
+  devServerUrl: string
+): Promise<string | null> {
+  const fromLog = currentTunnelUrlSync(projectRoot);
+  if (fromLog != null) {
+    return fromLog;
+  }
+  const advertised = await fetchAdvertisedUrlAsync(devServerUrl);
+  return advertised?.hostType === 'tunnel' ? advertised.url : null;
+}
+
+/**
  * Wait for the tunnel URL, but only for a run that asked for one.
  *
  * A run with no `--tunnel` has nothing to wait for and pays nothing: the whole cost of this is
  * paid by the runs it is for.
+ *
+ * `hasExited` ends the wait early, because a tunnel cannot arrive from a process that is gone —
+ * and this is the wait the child died inside of while the parent went on to report `ready: true`
+ * (F61, S4).
  */
 async function waitForTunnelUrlAsync(
   projectRoot: string,
-  options: DevOptions
+  options: DevOptions,
+  hasExited: () => boolean = () => false
 ): Promise<string | null> {
   if (!requestsTunnel(options.expoArgs)) {
     return null;
   }
+  const lock = await readDevServerLockAsync(projectRoot);
   const deadline = Date.now() + TUNNEL_URL_WAIT_MS;
   for (;;) {
-    const url = currentTunnelUrlSync(projectRoot);
-    if (url != null || Date.now() >= deadline) {
+    const url =
+      lock == null
+        ? currentTunnelUrlSync(projectRoot)
+        : await currentTunnelUrlAsync(projectRoot, lock.url);
+    if (url != null || hasExited() || Date.now() >= deadline) {
       return url;
     }
     await new Promise((resolve) => setTimeout(resolve, TUNNEL_URL_POLL_MS));
@@ -446,10 +627,18 @@ async function waitForLockAsync(
   }
 }
 
-/** The log tail a failure quotes, or an empty string when there is none. */
+/**
+ * The log tail a failure quotes, or an empty string when there is none.
+ *
+ * Fenced rather than pasted in: the lines are Metro's, the Expo CLI's, and the app's own
+ * `console.error` calls, none of which are this CLI speaking, and a failing bundle can carry
+ * whatever text a file in the project holds (llp/0008 §Untrusted-content marking).
+ */
 function logTail(projectRoot: string): string {
   const read = readDetachedLogSync(projectRoot, FAILURE_LOG_LINES);
-  return read?.lines.length ? `\n\nWhat the dev server printed:\n${read.lines.join('\n')}` : '';
+  return read?.lines.length
+    ? `\n\nWhat the dev server printed:\n${wrapUntrustedAppOutput(read.lines.join('\n'))}`
+    : '';
 }
 
 /** The error for a detached child that never published a lock. */
