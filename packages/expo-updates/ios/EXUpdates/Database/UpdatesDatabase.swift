@@ -160,7 +160,7 @@ public final class UpdatesDatabase: NSObject {
         )
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        return
+        throw error
       }
 
       // statements must stay in precisely this order for last_insert_rowid() to work correctly
@@ -170,7 +170,7 @@ public final class UpdatesDatabase: NSObject {
           _ = try execute(sql: updateSql, withArgs: [updateId])
         } catch {
           sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-          return
+          throw error
         }
       }
 
@@ -181,7 +181,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try execute(sql: updateInsertSql, withArgs: [updateId])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        return
+        throw error
       }
     }
 
