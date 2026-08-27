@@ -49,7 +49,9 @@ export type StrictResolverFactory = (
   platform: string | null
 ) => StrictResolver;
 
-const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
+// Serves both import shapes: Metro's generated asset modules call `registerAsset` on the module
+// itself, while react-native core destructures `{AssetRegistry}` from its internal registry module.
+const ASSET_REGISTRY_SRC = `const assets=[];const registry={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};module.exports={registerAsset:registry.registerAsset,getAssetByID:registry.getAssetByID,AssetRegistry:registry};`;
 
 interface PlatformExtensions {
   sourceExts: string[];
@@ -657,18 +659,28 @@ export function withExtendedResolver(
         return getAsyncRequireModule();
       }
 
-      // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
+      // Redirect every asset registry request to the virtual registry module so all consumers
+      // share one instance: Metro's generated asset modules (`assetRegistryPath`), imports of
+      // `react-native/asset-registry`, and imports of the legacy `@react-native/assets-registry`
+      // package, which no longer ships with react-native 0.87.
       if (
+        moduleName === config.transformer.assetRegistryPath ||
         moduleName === 'react-native/asset-registry' ||
         /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)
       ) {
-        // Serve a virtual registry on web (`react-native` isn't bundled there) and resolve to
-        // react-native's real registry on native so all consumers share one instance. The legacy
-        // `@react-native/assets-registry` package no longer ships with RN 0.87.
-        if (platform === 'web') {
-          return getAssetRegistryModule();
-        }
-        return getStrictResolver(context, platform)('react-native/asset-registry');
+        return getAssetRegistryModule();
+      }
+
+      // react-native core imports its registry singleton through relative paths (e.g.
+      // `../../src/private/assets/AssetRegistry` from `Libraries/Image/resolveAssetSource.js`),
+      // which the specifier checks above can never match. Capture those too, or React Native's
+      // `<Image>` would read a different registry instance than Metro's asset modules write to.
+      if (
+        moduleName.startsWith('.') &&
+        /[\\/]private[\\/]assets[\\/]AssetRegistry(\.js)?$/.test(moduleName) &&
+        /[\\/]react-native[\\/](src|Libraries)[\\/]/.test(context.originModulePath)
+      ) {
+        return getAssetRegistryModule();
       }
 
       if (
