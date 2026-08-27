@@ -151,11 +151,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Storing your own metadata on an event
+## Storing your app's metadata with extended properties
 
-An event has no free-form field your app can write to on Android. To recognize the events your app created, and avoid deleting anyone else's, attach an extended property to them:
+On Android, an event has no field reserved for your app's own data. To recognize the events your app created, and avoid deleting anyone else's, attach an extended property to them:
 
 ```ts
+const [calendar] = await Calendar.getCalendars(Calendar.EntityTypes.EVENT);
+
 const event = await calendar.createEvent({
   title: 'Team sync',
   startDate: new Date(),
@@ -168,12 +170,12 @@ const properties = await event.getExtendedProperties();
 // [{ name: 'private:my-app-id', value: 'a4f1c2' }]
 ```
 
-These methods are backed by `CalendarContract.ExtendedProperties`, which comes with two constraints:
+These methods read and write `CalendarContract.ExtendedProperties`, which comes with two constraints:
 
-- On a calendar owned by an account, the name has to start with `private:`, which keeps the value readable by that account, or `shared:`, which shares it with the guests of the event. The sync adapter drops any other name on the next sync, so `setExtendedProperty` rejects it instead of letting the value disappear later. Calendars of the local account are never synced and accept any name.
-- The event has to belong to a calendar that has an account, since the calendar provider accepts writes to that table only from the sync adapter of that account.
+- On a calendar owned by an account, the name has to start with `private:` or `shared:`. The `private:` prefix keeps the value readable by that account, and the `shared:` prefix shares it with the guests of the event. Some sync adapters, including Google Calendar's, drop any other name on the next sync, so `setExtendedProperty` rejects it instead of letting the value disappear later. Calendars of the local account are never synced and accept any name.
+- `setExtendedProperty` and `deleteExtendedProperty` need the event to belong to a calendar that has an account. The calendar provider accepts writes to that table only from the sync adapter of that account. Reading with `getExtendedProperties` has no account requirement.
 
-> **Note:** Extended properties are Android-only. On iOS, write to the `url` property of the event instead.
+> **info** Extended properties are Android-only. On iOS, write to the `url` property of the event instead.
 
 ## API
 
