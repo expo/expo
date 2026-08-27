@@ -4,8 +4,8 @@
 **Status:** Draft
 **Systems:** eval harness (new); fixtures; CI (GitHub Actions)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-20
-**Related:** [[0001-agentic-cli-on-expo-cli]]
+**Date:** 2026-08-20 (live tier added 2026-08-27)
+**Related:** [[0001-agentic-cli-on-expo-cli]], [[0022-live-tier]], [[0019-backend-parity-audit]]
 
 ## Summary
 
@@ -15,7 +15,8 @@ Testing infrastructure is built **first**, before feature work [confirmed — Ku
 
 1. **Unit tests (jest).** Same setup as `@expo/cli` (`pnpm test`) [observed — `packages/@expo/cli/package.json`]. Everything deterministic is unit-tested: project-state probe, decision tables, impact classifier, tool input/output schemas, skill discovery.
 2. **E2E CLI tests.** Same pattern as `@expo/cli` (`test:e2e`, `e2e/jest.config.js`) [observed]. Run bins against fixture projects; no model involved. Per the process-boundary constraint in [[0001-agentic-cli-on-expo-cli]], e2e tests spawn the real `expo` CLI as a subprocess and assert on its JSONL events — the events contract is the API under test.
-3. **Evals.** Scenario = fixture project + task prompt + a driving agent + programmatic grader.
+3. **Live CLI tests** (`test:live`, `e2e-live/jest.config.js`) [added 2026-08-27 — [[0022-live-tier]]]. The same published surface, against the **real** thing: a real Metro, a real booted iOS simulator running Expo Go, a real Hermes debugger connection, and the real EAS service on **staging**. Run by nothing automatic — not `test`, not `test:e2e`, not CI — because each suite spends a simulator, an account or a deployment. Its whole reason to exist is the two rules below this list: a stub answers whatever it was written to answer (§A flag is not shipped), and the tier-0 dev-server double carries no inspector (§Tier 0 doubles the dev server, not the app). Everything on the far side of either boundary is unreachable at layers 1–2 by construction, and reachable here.
+4. **Evals.** Scenario = fixture project + task prompt + a driving agent + programmatic grader.
 
 ## Eval tiers
 
@@ -60,12 +61,31 @@ Programmatic and model-free: dev server responds; app boots (via `automation_tak
 - First fixture matrix: latest stable SDK only; three fixtures (Expo Go app, dev-client app, broken variant); iOS-first for simulator scenarios, Android after the harness works.
 - **Tier 0 doubles the dev server, not the app — and where that line falls is named, not left implicit** [confirmed — Kudo, 2026-08-24]. The e2e stub reproduces the protocols `exagent` speaks to the dev server itself: `GET /status` with its project-root header, `GET /json/list`, the manifest and entry bundle, and the `/message` client command socket down to the `version: 2` stamp. It carries **no CDP inspector**, so there is no target to connect to and nothing downstream of a debugger connection is reachable at this tier. That is a deliberate boundary — a double for the inspector proxy would be a double for React Native's runtime, which is the thing under test — and the cost is that a behaviour on the far side of it is unit-only at tier 0 and gets its real coverage from a live run.
 
+  **Where the far side is covered now** [added 2026-08-27]: `e2e-live` ([[0022-live-tier]]). The rule
+  this section states — "the gap is recorded with the live evidence that stands in for it, rather than a
+  tier-0 test that asserts the mock" — is unchanged, and what changed is that the live evidence is a
+  suite somebody can re-run instead of a paragraph in an LLP. A successful `runtime:eval`, a `--verify`
+  text diff, `runtime:errors` proving a runtime *answered*, and `smoke` passing with a screenshot on
+  disk are all filled rows of [[0019-backend-parity-audit]] §The live matrix now. The boundary itself
+  stays exactly where it was: a double for the inspector would be a double for React Native's runtime,
+  which is the thing under test.
+
   The concrete case [observed — 2026-08-24]: the reconnect grace period `runtime:errors` uses (llp/0005 §Peer churn proves the app *acted*) is exercised at tier 0 only as its two halves — `requireConnectedAppAsync` re-reading an empty target list, and `CdpClient` re-reading the list when the selector can make nothing of it — because the failure it answers is a listed target that refuses a CDP connection. It was verified live instead: ten `reload` → `runtime:errors` rounds, five of them after a reload this CLI never performed. The rule this states for the next such case is that the gap is recorded with the live evidence that stands in for it, rather than a tier-0 test that asserts the mock.
 - **A flag is not shipped until it has run against the published binary** [confirmed — Kudo, 2026-08-25]. Anything this CLI verifies against monorepo source must also be run **once** against the binary a user's project would actually get — `npx <package>@latest`, in a project outside this repository — before it ships. Everything above this line tests `exagent` against doubles or against the source in this tree; neither knows what the registry serves.
 
   The incident that names the rule [observed — live, 2026-08-24, wave 6]: `--preset` is an option of `@expo/fingerprint`'s CLI **in this monorepo** and not in 0.20.9, which is what a real SDK 57 project resolves. A real project answered `unknown or unexpected option: --preset` and exited non-zero, so `exagent impact` — which had every unit and e2e test passing against the stub — would have failed against essentially every project that exists. The fix was to forward `--preset` only when the caller names it ([[0011-impact-and-freshness]] §Precision limits), and the general form is: **a surface read from `cli/src/commands/*.ts` is a claim about an unreleased version.** It is the process boundary of [[0001-agentic-cli-on-expo-cli]] read backwards — the boundary that keeps this CLI working across versions is also what hides which version it is talking to.
 
   A double cannot close this, and that is not a gap in the doubles. A stub `fingerprint` accepts whatever it is written to accept, so the e2e tier proves the *shape* of an invocation and never its *availability*; the two questions look identical in a passing test and are not the same question. The same holds for the tier-0 dev-server stub, which §Tier 0 doubles the dev server, not the app already records for a different reason.
+
+  **The executable half** [added 2026-08-27 — [[0022-live-tier]]]: this rule is now a tier rather than
+  only a habit. `pnpm test:live` runs the published *surface* — the ncc bundle, through `bin/exagent.js`
+  — against a real simulator, a real Hermes and the real EAS service, in about a minute per suite, and
+  [[0019-backend-parity-audit]] §The live matrix is the per-command accounting of what has actually run.
+  What that does **not** replace is the sentence above it: the live tier runs the bundle from *this
+  tree*, so "the binary a user's project would actually get" is still one `npx <package>@latest` run in
+  a project outside this repository. The tier narrows what that run has to discover — it does not
+  perform it. The distinction is the same one this section is about, one level up: a surface that works
+  and a version that exists are different claims, and they look identical in a passing suite.
 
   The automated half is a **countable surface**, since no unit test can run a published binary: `src/lint/foreignFlags.ts` collects every option this CLI writes onto a command line — array literals handed to a spawn helper, argvs assembled before one, and the conditional `args.push('--flag')` that the `--preset` fix itself is — and a snapshot pins the list [observed — 2026-08-25, 31 rows]. Adding an option to another CLI's command line is therefore a visible diff in a test rather than a line in a builder, and that diff is where the run above is asked for. Two rows are this CLI re-invoking itself and need no run; they stay in the list because an exclusion list is a place for a real one to hide.
 - Sequencing: feature-set review happens before implementation starts [confirmed — Kudo, 2026-08-20].
