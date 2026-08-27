@@ -8,6 +8,9 @@
   </style>
 
   <style name="Theme.Exponent.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:fitsSystemWindows">false</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">false</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
@@ -17,6 +20,9 @@
   </style>
 
   <style name="Theme.Exponent.Dark" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:fitsSystemWindows">false</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">false</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
