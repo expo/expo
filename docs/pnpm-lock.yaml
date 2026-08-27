@@ -16,21 +16,24 @@ importers:
 
   .:
     dependencies:
+      '@expo/sdk-compatibility':
+        specifier: link:../packages/@expo/sdk-compatibility
+        version: link:../packages/@expo/sdk-compatibility
       '@expo/styleguide':
-        specifier: ^14.2.1
-        version: 14.2.1(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)
+        specifier: ^14.4.0
+        version: 14.4.0(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)
       '@expo/styleguide-base':
-        specifier: ^3.1.6
-        version: 3.1.6(react@19.2.8)
+        specifier: ^3.3.0
+        version: 3.3.0(react@19.2.8)
       '@expo/styleguide-cookie-consent':
-        specifier: ^2.1.7
-        version: 2.1.7(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
+        specifier: ^2.3.0
+        version: 2.3.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
       '@expo/styleguide-icons':
-        specifier: ^4.2.8
-        version: 4.2.8(react@19.2.8)(tailwindcss@4.3.3)
+        specifier: ^4.4.0
+        version: 4.4.0(react@19.2.8)(tailwindcss@4.3.3)
       '@expo/styleguide-search-ui':
-        specifier: ^9.2.2
-        version: 9.2.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)
+        specifier: ^9.5.0
+        version: 9.5.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)
       '@kapaai/react-sdk':
         specifier: ^0.9.6
         version: 0.9.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -765,31 +768,31 @@ packages:
     resolution: {integrity: sha512-eb9xxd/LbuEGSdua4NumCu/McVB9EM+F/JxB9pWgnERw4HQ9XyTNH1KapG6oqLWR8TuRK2LQfzJlmNi94CVobw==}
     engines: {node: '>=12'}
 
-  '@expo/styleguide-base@3.1.6':
-    resolution: {integrity: sha512-5BN59LXcIg/N+EJqr/QipkJbu+DA2zUKPTOHx50r/gWUVZRl8Ct1ULlmalejnO/yQQMeRctWpCE2u8EJ7YgRLw==}
+  '@expo/styleguide-base@3.3.0':
+    resolution: {integrity: sha512-3thu6Hr85uVVaa0vmPhrvLqBNVugfudiDqtWhGjgIUdUXGq4yOwM8uC1aCbmyVE7v6g+rqu8xyim0yoVC8ilVw==}
     peerDependencies:
       react: '>= 19'
 
-  '@expo/styleguide-cookie-consent@2.1.7':
-    resolution: {integrity: sha512-sWBSoC5whUlaaAt92y1w2rUwL9HfgZp9DKHuixtUl11QGiup45t3TT0fSCZPNlAdtfTxZjJpKrFka4aiNqgxAQ==}
+  '@expo/styleguide-cookie-consent@2.3.0':
+    resolution: {integrity: sha512-gFKTfdI51RtH9Bma45JlZF7Ofba8R/QXLBogq8F+zmNycj6dd3y++yK7A0iPc/QX0qoQjSbL5nZnNXItHmRMKQ==}
     peerDependencies:
       react: '>= 19'
 
-  '@expo/styleguide-icons@4.2.8':
-    resolution: {integrity: sha512-eeeNd1yxmZax8h7rfo4BMNWg9TD1AEtzYpljvuceDB8hNzJqUt/TgIbUvbl14bQrOtgLDf/KmbS/12WRzoWgJw==}
+  '@expo/styleguide-icons@4.4.0':
+    resolution: {integrity: sha512-keiOn7Mgl0Aea9ZeFpVO83aSbD/cZGAWiuVgUrtwB9zaINTlpijqMY/o3le9kznmZ1e+42YLgQfg7Dmf93/o4Q==}
     peerDependencies:
       react: '>= 19'
       tailwindcss: ^4.2.2
 
-  '@expo/styleguide-search-ui@9.2.2':
-    resolution: {integrity: sha512-RNVWlOwvSvHDoH006ivnmx0R9Ywoo+04gKkrGW38wkvOA0bflHpVhQYaDilcRF72Qx0DJL05SJ5fo0ANI0Y4Eg==}
+  '@expo/styleguide-search-ui@9.5.0':
+    resolution: {integrity: sha512-5K3iBU+aF8kAVI1/7O4IkeX945K2wrYbv29MvrroyyS4IdEyDmZxkC0Fc0lepUOZ0TnEiJ+goXyZ6C+DSwKn0w==}
     peerDependencies:
       next: '>= 16'
       react: '>= 19'
       tailwindcss: ^4.2.2
 
-  '@expo/styleguide@14.2.1':
-    resolution: {integrity: sha512-pi6Wxauj/2YFa/mb0VBC1PFlakma5z1+qmdItkqSxnjmR7Meo+mIjp6Z6dZ0S9RpyJd598BTu+Jr1rMo8uYdxQ==}
+  '@expo/styleguide@14.4.0':
+    resolution: {integrity: sha512-D6fzGvA+fnKLWNCJpj6B1DepPfIkWs05162aTrd+hlBmdEOMqsZBX7QCeM0wUH+Rx6gXO6goOuJyzNLMTMpRAg==}
     peerDependencies:
       next: '>= 16'
       react: '>= 19'
@@ -4168,6 +4171,7 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -7552,13 +7556,13 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
 
-  '@expo/styleguide-base@3.1.6(react@19.2.8)':
+  '@expo/styleguide-base@3.3.0(react@19.2.8)':
     dependencies:
       '@radix-ui/colors': 3.0.0
       react: 19.2.8
       tailwind-merge: 3.6.0
 
-  '@expo/styleguide-cookie-consent@2.1.7(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))':
+  '@expo/styleguide-cookie-consent@2.3.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))':
     dependencies:
       '@radix-ui/react-accordion': 1.2.16(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@radix-ui/react-slot': 1.3.0(@types/react@19.2.17)(react@19.2.8)
@@ -7573,16 +7577,16 @@ snapshots:
       - react-dom
       - use-sync-external-store
 
-  '@expo/styleguide-icons@4.2.8(react@19.2.8)(tailwindcss@4.3.3)':
+  '@expo/styleguide-icons@4.4.0(react@19.2.8)(tailwindcss@4.3.3)':
     dependencies:
-      '@expo/styleguide-base': 3.1.6(react@19.2.8)
+      '@expo/styleguide-base': 3.3.0(react@19.2.8)
       react: 19.2.8
       tailwindcss: 4.3.3
 
-  '@expo/styleguide-search-ui@9.2.2(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)':
+  '@expo/styleguide-search-ui@9.5.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)':
     dependencies:
-      '@expo/styleguide': 14.2.1(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)
-      '@expo/styleguide-icons': 4.2.8(react@19.2.8)(tailwindcss@4.3.3)
+      '@expo/styleguide': 14.4.0(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)
+      '@expo/styleguide-icons': 4.4.0(react@19.2.8)(tailwindcss@4.3.3)
       '@kapaai/react-sdk': 0.9.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@sanity/client': 7.23.0
       '@sanity/image-url': 2.1.1
@@ -7602,9 +7606,9 @@ snapshots:
       - solid-js
       - vue
 
-  '@expo/styleguide@14.2.1(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)':
+  '@expo/styleguide@14.4.0(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)':
     dependencies:
-      '@expo/styleguide-base': 3.1.6(react@19.2.8)
+      '@expo/styleguide-base': 3.3.0(react@19.2.8)
       next: 16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
       tailwind-merge: 3.6.0

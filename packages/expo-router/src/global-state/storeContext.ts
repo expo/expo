@@ -1,8 +1,19 @@
 'use client';
-import { createContext, use } from 'react';
+import { createContext } from 'react';
+import type { ComponentType } from 'react';
 
-import type { RouterStore } from './store';
+import type { RouteNode } from '../Route';
+import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
+import type { ReactNavigationState, StoreRedirects } from './types';
 
-export const StoreContext = createContext<RouterStore | null>(null);
+export type StoreContextValue = {
+  navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+  linking: ExpoLinkingOptions | undefined;
+  state: ReactNavigationState | undefined;
+  rootComponent: ComponentType<any>;
+  routeNode: RouteNode | null;
+  redirects: StoreRedirects[];
+};
 
-export const useExpoRouterStore = () => use(StoreContext)!;
+export const StoreContext = createContext<StoreContextValue | null>(null);

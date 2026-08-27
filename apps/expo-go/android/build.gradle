@@ -91,6 +91,20 @@ project(":packages:react-native:ReactAndroid").afterEvaluate { reactAndroid ->
   reactAndroid.tasks.named("buildCodegenCLI").configure { it.enabled = false }
 }
 
+// Every module's generateCodegenSchemaFromJavaScript reads react-native-codegen/lib
+// directly, so build it once when it is missing.
+def labCodegenDir = file("$rootDir/../../../react-native-lab/react-native/packages/react-native-codegen")
+tasks.register("buildLabCodegenCli", Exec) {
+  onlyIf { !new File(labCodegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").exists() }
+  workingDir labCodegenDir
+  commandLine "bash", "scripts/oss/build.sh"
+}
+allprojects {
+  tasks.matching { it.name == "generateCodegenSchemaFromJavaScript" }.configureEach {
+    it.dependsOn(":buildLabCodegenCli")
+  }
+}
+
 // Expo Go ships a release build that keeps the JS debugger. React Native gates those native defines
 // behind REACT_NATIVE_DEBUG_OPTIMIZED, and its CMake guard only passes automatically when
 // CMAKE_BUILD_TYPE is Debug. Release maps to RelWithDebInfo, which does not match, so set the flag

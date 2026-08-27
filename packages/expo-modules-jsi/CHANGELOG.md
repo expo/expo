@@ -16,9 +16,11 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `dateFromMilliseconds` failing to compile with "type of expression is ambiguous" under newer toolchains: the unqualified `abs(_:)` in the `Double` overflow guard is ambiguous once C++ interop brings the C `abs` overloads into scope, so use `Double.magnitude` instead. ([#49039](https://github.com/expo/expo/pull/49039) by [@kraenhansen](https://github.com/kraenhansen))
 - [iOS] Fixed `JavaScriptPropNameID(_:string:)` and the array's string-keyed subscript truncating non-ASCII property keys: they passed `String.count` (the grapheme-cluster count) as the UTF-8 byte length to `PropNameID::forUtf8`, so keys like `"café"` or `"🎉"` were built from mangled bytes and no longer matched the intended property. ([#48329](https://github.com/expo/expo/pull/48329) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed the xcframework prebuild failing under Xcode 27 due to new foreign reference ownership warnings emitted for `RuntimeScheduler` constructors. ([#49120](https://github.com/expo/expo/pull/49120) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

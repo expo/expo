@@ -2,16 +2,43 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { ParamListBase } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
-import { useIsFocused } from '../useIsFocused';
+import { IsFocusedContext, useIsFocused } from '../useIsFocused';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+});
+
+test('uses the focus context without a navigation object', () => {
+  const Test = () => {
+    const isFocused = useIsFocused();
+
+    return <>{isFocused ? 'focused' : 'unfocused'}</>;
+  };
+
+  const root = render(
+    <IsFocusedContext.Provider value>
+      <Test />
+    </IsFocusedContext.Provider>
+  );
+
+  expect(root).toMatchInlineSnapshot(`"focused"`);
+});
+
+test('throws without a focus context', () => {
+  const Test = () => {
+    useIsFocused();
+    return null;
+  };
+
+  expect(() => render(<Test />)).toThrow(
+    "Couldn't find a focus context. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
+  );
 });
 
 test('renders correct focus state', () => {
@@ -34,7 +61,12 @@ test('renders correct focus state', () => {
   const navigation = React.createRef<any>();
 
   const root = render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />

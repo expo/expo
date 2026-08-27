@@ -8,6 +8,11 @@ import {
 
 import type { CommonNavigationAction, ParamListBase } from '../../react-navigation/core';
 import {
+  type DefaultRouterOptions,
+  type NavigationAction,
+  type NavigationState,
+  type Router,
+  type RouterFactory,
   TabRouter,
   type TabNavigationState,
   type TabRouterOptions,
@@ -67,9 +72,42 @@ const Nav = unstable_createStandardRouterNavigator<
   Opts,
   TabNavigationState<ParamListBase>,
   EventMap,
-  object,
+  { initialRouteName?: string },
   TabRouterOptions
 >(Content, TabRouter);
+
+type TypelessNavigationState = Readonly<{
+  key: string;
+  routeKeySeq: number;
+  index: number;
+  routeNames: string[];
+  routes: { key: string; name: string; params?: object }[];
+  stale: false;
+}>;
+
+const TypelessRouter: RouterFactory<
+  TypelessNavigationState,
+  NavigationAction,
+  DefaultRouterOptions
+> = () => ({
+  getStateForDeclaredRoutes: (state) => state,
+  getStateForRouteFocus: (state) => state,
+  getStateForAction: (state) => ({
+    state,
+    affectedRouteKey: state.routes[state.index]?.key,
+  }),
+  shouldActionChangeFocus: () => false,
+});
+
+unstable_createStandardRouterNavigator(Content, TypelessRouter);
+
+// A router may omit `type` only when its state has none.
+export type _BaseRouterTypeIsOptional = Expect<
+  Equal<Pick<Router<NavigationState, NavigationAction>, 'type'>, { type?: string }>
+>;
+export type _TypedRouterTypeIsOptional = Expect<
+  Equal<Pick<Router<TabNavigationState<ParamListBase>, NavigationAction>, 'type'>, { type?: 'tab' }>
+>;
 
 export type _HasScreen = Expect<Equal<typeof Nav extends { Screen: unknown } ? true : false, true>>;
 export type _HasProtected = Expect<
@@ -81,6 +119,14 @@ export type _HasProtected = Expect<
 // ---------------------------------------------------------------------------
 
 type Props = ComponentProps<typeof Nav>;
+
+// ---------------------------------------------------------------------------
+// initialRouteName is only supported through unstable_settings
+// ---------------------------------------------------------------------------
+
+export type _ElementLacksInitialRouteName = Expect<
+  Equal<'initialRouteName' extends keyof Props ? true : false, false>
+>;
 
 type ListenersFn = Extract<Props['screenListeners'], (...args: any) => any>;
 type OptionsFn = Extract<Props['screenOptions'], (...args: any) => any>;

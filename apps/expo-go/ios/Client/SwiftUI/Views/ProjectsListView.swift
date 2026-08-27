@@ -93,7 +93,6 @@ class ProjectsListViewModel: ObservableObject {
 
   func refresh() async {
     currentOffset = 0
-    projects = []
     await fetchProjects()
   }
 
@@ -129,6 +128,9 @@ class ProjectsListViewModel: ObservableObject {
 
       hasMore = projects.count < totalCount
     } catch {
+      if (error as? APIError)?.isCancellation == true {
+        return
+      }
       self.error = error
       self.showingError = true
     }

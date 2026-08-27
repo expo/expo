@@ -1,24 +1,19 @@
-import { nanoid } from 'nanoid/non-secure';
-
-import { createParamsFromAction } from './createParamsFromAction';
-import type { ParamListBase } from './types';
-
 type Options = {
+  key: string;
   action: {
     payload: {
       name: string;
       params?: object;
     };
   };
-  routeParamList: ParamListBase;
 };
 
-export function createRouteFromAction({ action, routeParamList }: Options) {
-  const { name } = action.payload;
+export function createRouteFromAction({ action, key }: Options) {
+  const { name, params } = action.payload;
 
   return {
-    key: `${name}-${nanoid()}`,
+    key,
     name,
-    params: createParamsFromAction({ action, routeParamList }),
+    params,
   };
 }

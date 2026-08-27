@@ -398,7 +398,6 @@ it('can use replace navigation', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -408,13 +407,11 @@ it('can use replace navigation', () => {
           ],
           index: 1,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['one', 'two'],
           routes: [
             {
               key: expect.any(String),
               name: 'one',
-              params: undefined,
               path: '/one',
             },
             {
@@ -424,12 +421,13 @@ it('can use replace navigation', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'tab',
         },
       },
     ],
     stale: false,
-    type: 'stack',
+    routeKeySeq: expect.any(Number),
   });
 });
 

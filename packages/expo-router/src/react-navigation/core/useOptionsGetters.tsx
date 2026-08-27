@@ -27,9 +27,9 @@ export function useOptionsGetters({ key, options, navigation }: Options) {
     const hasChildren = Object.keys(optionsGettersFromChildRef.current).length;
 
     if (isFocused && !hasChildren) {
-      onOptionsChange(optionsRef.current ?? {});
+      onOptionsChange(optionsRef.current ?? {}, key);
     }
-  }, [navigation, onOptionsChange]);
+  }, [key, navigation, onOptionsChange]);
 
   React.useEffect(() => {
     optionsRef.current = options;

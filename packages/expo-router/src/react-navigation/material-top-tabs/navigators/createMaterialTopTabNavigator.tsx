@@ -15,8 +15,8 @@ import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
 export interface MaterialTopTabNavigatorCreateProps {
   routeNames: string[];
-  preloadedRouteKeys: string[];
   preload: (name: string) => void;
+  navigateToTabSync: (name: string, params: object | undefined) => void;
 }
 
 export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig &
@@ -35,8 +35,8 @@ function MaterialTopTabNavigatorContent({
   actions,
   emitter,
   routeNames,
-  preloadedRouteKeys,
   preload,
+  navigateToTabSync,
   ...rest
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
@@ -82,7 +82,12 @@ function MaterialTopTabNavigatorContent({
       descriptors={topTabDescriptors}
       emitter={emitter}
       navigateToTab={navigateToTab}
-      preloadedRouteKeys={preloadedRouteKeys}
+      navigateToTabSync={(routeKey) => {
+        const route = state.routes.find((route) => route.key === routeKey);
+        if (route) {
+          navigateToTabSync(route.name, route.params);
+        }
+      }}
     />
   );
 }

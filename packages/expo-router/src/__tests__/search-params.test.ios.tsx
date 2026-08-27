@@ -33,7 +33,6 @@ describe('push', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 5,
             key: expect.any(String),
@@ -42,7 +41,6 @@ describe('push', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                params: undefined,
                 path: '/page',
               },
               {
@@ -83,11 +81,13 @@ describe('push', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -105,7 +105,6 @@ describe('push', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -119,11 +118,13 @@ describe('push', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -160,7 +161,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -172,15 +172,17 @@ describe('navigate', () => {
                 params: {
                   c: 'true',
                 },
-                path: '/page',
+                path: '/page?c=true',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -207,7 +209,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 3,
             key: expect.any(String),
@@ -216,7 +217,6 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                params: undefined,
                 path: '/',
               },
               {
@@ -225,7 +225,7 @@ describe('navigate', () => {
                 params: {
                   page: 'a',
                 },
-                path: undefined,
+                path: '/a',
               },
               {
                 key: expect.any(String),
@@ -233,7 +233,7 @@ describe('navigate', () => {
                 params: {
                   page: 'b',
                 },
-                path: undefined,
+                path: '/b',
               },
               {
                 key: expect.any(String),
@@ -241,15 +241,17 @@ describe('navigate', () => {
                 params: {
                   page: 'c',
                 },
-                path: undefined,
+                path: '/c',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -263,7 +265,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -272,16 +273,17 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                params: undefined,
                 path: '/',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -313,7 +315,6 @@ describe('replace', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 3,
             key: expect.any(String),
@@ -322,7 +323,6 @@ describe('replace', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                params: undefined,
                 path: '/page',
               },
               {
@@ -350,11 +350,13 @@ describe('replace', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 

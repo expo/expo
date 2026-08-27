@@ -9,25 +9,35 @@
 - [iOS] Skip reading and hashing embedded assets on first launch by default, serving them from the app binary instead of copying them into the updates cache. ([#47284](https://github.com/expo/expo/pull/47284) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Allow overriding the package used to detect the installed dev client via the `expo.updates.devClientPackage`. ([#48020](https://github.com/expo/expo/pull/48020) by [@alanjhughes](https://github.com/alanjhughes))
 - Resolve relative asset URLs from `updateUrl` base URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
+- [iOS] Add `updates.excludeFromBackup` config option to exclude the updates directory from device backups. ([#47290](https://github.com/expo/expo/pull/47290) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix the embedded manifest recording the wrong `packagerHash` for assets that ship scale variants iOS does not allow (such as `@1.5x` and `@4x`): the hashes were read by the filtered scale index instead of the asset's own, so those images resolved to an empty URI and rendered blank in release builds. ([#48811](https://github.com/expo/expo/pull/48811) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Fix `expo-dev-client` being detected as installed when it is absent, which enabled `USE_DEV_CLIENT` and printed a `MODULE_NOT_FOUND` trace during `pod install`. ([#49233](https://github.com/expo/expo/pull/49233) by [@dennytosp](https://github.com/dennytosp))
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Fix two launch crashes reachable when a native module resolves the updates controller before `start()` runs: reading `launchedUpdateId` / `launchAssetPath` / `launchAssetUrl()` trapped on an implicitly-unwrapped optional, and the unsynchronized `stateChangeListeners` dictionary could fault while `UpdatesStateMachine` iterated it. ([#48898](https://github.com/expo/expo/pull/48898) by [@spsaucier](https://github.com/spsaucier))
 - [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [iOS] Isolate UpdatesLogReaderTests from concurrent suites. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fix SIGABRT during log purge when the persistent log contains a truncated line: `UpdatesLogReader` guarded on UTF-8 byte length but advanced the string index by Characters, so a line holding only the multi-byte emoji log prefix trapped with "String index is out of bounds". ([#48222](https://github.com/expo/expo/pull/48222) by [@valinagacevschi](https://github.com/valinagacevschi))
 - [Android] Fix SIGABRT when loading a development server URL that has no path (e.g. `http://192.168.1.2:8081`): Android's `URI.resolve` omits the path separator for an empty-path base, so the first segment of a relative asset URL was spliced onto the port and the resulting authority failed to parse. ([#48625](https://github.com/expo/expo/pull/48625) by [@tsapeta](https://github.com/tsapeta))
+- Reject updates whose asset key or file extension contains a path separator, which previously let a manifest write and delete files outside the updates directory. ([#48762](https://github.com/expo/expo/pull/48762), [#48763](https://github.com/expo/expo/pull/48763) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Register the embedded update in a single transaction. An interrupted registration previously left an update row with no launch asset, which is treated as launchable and then fails every cold start with "Launch asset not found for update"; it now leaves no row, so the next launch registers it cleanly. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
+- [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Keep the Room-generated `UpdatesDatabase_Impl` constructor, so minified release builds no longer crash with `NoSuchMethodException` on first database access. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
+- [Android] Replace the "this should never happen" wording in the missing launch asset error with the likely cause and how the state resolves. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
 - Rename the no-update `downloadComplete` state to `downloadCompleteUnavailable` in native update events. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [Android] Use `OkHttpClientProvider` instead of raw `OkHttpClient` in `FileDownloader` so React Native's shared client and its interceptors are applied. ([#46926](https://github.com/expo/expo/pull/46926) by [@cortinico](https://github.com/cortinico))
 - [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - [iOS] Resolved the reload screen's window through the shared scene geometry helper. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Link `libc++` in the test spec so the unit test bundle resolves the C++ symbols it pulls from `ExpoModulesCore`. ([#48762](https://github.com/expo/expo/pull/48762) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.11 - 2026-07-29
 

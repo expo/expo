@@ -9,13 +9,21 @@
 - Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
 - add expo-observe integration ([#47145](https://github.com/expo/expo/pull/47145) by [@Ubax](https://github.com/Ubax))
 - [iOS][Android] Added a `skipOnCacheHit` field to `transition` that skips the fade the first time a cached image appears (`'memory'` for memory-cache hits, `'all'` for any cache hit), so already-loaded images don't re-animate on mount, tab change, or when scrolling back into view. A transition from a `source` change still plays. ([#48181](https://github.com/expo/expo/pull/48181) by [@janicduplessis](https://github.com/janicduplessis))
+- Added an `includeUrlParams` option to the expo-observe integration; reported image URLs now have their query string and fragment removed unless it is enabled, basic-auth credentials are always removed, and only `http(s)`, `file`, and `android.resource` URLs are reported. ([#49083](https://github.com/expo/expo/pull/49083) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
 - [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
+- [Web] Use `textContent` instead of `innerHTML` when injecting image styles, so the style tag is not a Trusted Types sink. ([#48649](https://github.com/expo/expo/pull/48649) by [@VoulgarisLeoni](https://github.com/VoulgarisLeoni))
+- [iOS] Fixed `generateBlurhashAsync` and `generateThumbhashAsync` never settling when the image could not be downloaded. ([#PR](https://github.com/expo/expo/pull/PR) ([#48894](https://github.com/expo/expo/pull/48894) by [@vonovak](https://github.com/vonovak))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
+
+- [iOS] Documented that slow animated WebP decoding is a known reason to set `useAppleWebpCodec` to `false`. ([#PR](https://github.com/expo/expo/pull/PR) by [@expo-bot](https://github.com/expo-bot)) ([#48847](https://github.com/expo/expo/pull/48847) by [@expo-bot](https://github.com/expo-bot))
 
 ## 57.0.1 - 2026-07-15
 
@@ -56,6 +64,7 @@ _This version does not introduce any user-facing changes._
 
 - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Support the `accessibilityElementsHidden` prop. ([#46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ## 56.0.7 — 2026-05-21
 

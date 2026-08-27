@@ -1,45 +1,14 @@
 import { applyRedirects } from '../../getRoutesRedirects';
-import { getNavigateAction } from '../getNavigationAction';
-import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
-import { store } from '../store';
+import type { NavigationState } from '../../react-navigation/routers';
+import { getNavigateAction, type NavigateActionConfig } from '../getNavigationAction';
+import { resolveNavigationDestination } from '../resolveNavigationDestination';
 
-jest.mock('../store', () => ({
-  store: {
-    assertIsReady: jest.fn(),
-    navigationRef: {
-      isReady: jest.fn(() => true),
-      current: {
-        canGoBack: jest.fn(),
-        setParams: jest.fn(),
-        goBack: jest.fn(),
-        getRootState: jest.fn(() => ({
-          routes: [{ key: 'root-key', name: '__root' }],
-          index: 0,
-          key: 'root-nav',
-          type: 'stack',
-          routeNames: ['__root'],
-          stale: false,
-        })),
-        dispatch: jest.fn(),
-      },
-    },
-    state: undefined as any,
-    linking: {
-      getStateFromPath: jest.fn(),
-      config: {},
-    },
-    getRouteInfo: jest.fn(() => ({
-      pathname: '/',
-      segments: [],
-      params: {},
-    })),
-    redirects: [],
-  },
-}));
-
-jest.mock('../stateUtils', () => ({
-  findDivergentState: jest.fn(),
-  getPayloadFromStateRoute: jest.fn(),
+jest.mock('../resolveNavigationDestination', () => ({
+  resolveNavigationDestination: jest.fn(({ action }) => ({
+    ...action,
+    target: 'root-nav',
+    payload: { ...action.payload, name: 'home' },
+  })),
 }));
 
 jest.mock('../../getRoutesRedirects', () => ({
@@ -50,303 +19,151 @@ jest.mock('../../link/href', () => ({
   resolveHrefStringWithSegments: jest.fn((href: string) => href),
 }));
 
-const mockFindDivergentState = findDivergentState as jest.MockedFunction<typeof findDivergentState>;
-const mockGetPayload = getPayloadFromStateRoute as jest.MockedFunction<
-  typeof getPayloadFromStateRoute
->;
 const mockApplyRedirects = applyRedirects as jest.MockedFunction<typeof applyRedirects>;
+const mockResolveNavigationDestination = resolveNavigationDestination as jest.MockedFunction<
+  typeof resolveNavigationDestination
+>;
+// The parser is generic, so Jest cannot infer its complete call signature from this fixture.
+const getStateFromPath = jest.fn((_path: string) => ({
+  routes: [{ name: 'home' }],
+})) as jest.MockedFunction<NonNullable<NavigateActionConfig['linking']>['getStateFromPath']>;
+const config: NavigateActionConfig = {
+  registry: new Map(),
+  routeNode: {
+    type: 'route' as const,
+    route: 'root',
+    contextKey: 'root',
+    children: [],
+    dynamic: null,
+    loadRoute: () => ({}),
+  },
+  linking: {
+    getStateFromPath,
+    config: { screens: {} },
+  },
+  redirects: [],
+};
 
-function setupDefaultMocks() {
-  (store.linking!.getStateFromPath as jest.Mock).mockReturnValue({
-    routes: [{ name: 'home' }],
-  });
-
-  mockFindDivergentState.mockReturnValue({
-    actionState: { routes: [{ name: 'home' }] },
-    navigationState: {
-      key: 'nav-key',
-      type: 'stack',
-      routes: [{ key: 'root-key', name: '__root' }],
-      index: 0,
-      routeNames: ['__root'],
-      stale: false,
-    },
-    actionStateRoute: { name: 'home' },
-    navigationRoutes: [],
-  });
-
-  mockGetPayload.mockReturnValue({
-    screen: 'home',
-    params: {},
-  });
-}
+const navigationState: NavigationState = {
+  stale: false,
+  routeKeySeq: 0,
+  key: 'root-nav',
+  index: 0,
+  routeNames: ['__root'],
+  routes: [{ key: 'root-route', name: '__root' }],
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
-  setupDefaultMocks();
+  mockApplyRedirects.mockImplementation((href) => href);
+  getStateFromPath.mockReturnValue({ routes: [{ name: 'home' }] });
 });
 
 describe(getNavigateAction, () => {
-  it('throws when navigation is not ready (assertIsReady throws)', () => {
-    (store.assertIsReady as jest.Mock).mockImplementationOnce(() => {
-      throw new Error('Not ready');
-    });
-
-    expect(() => getNavigateAction('/home', {})).toThrow('Not ready');
+  it('throws when routes are unavailable', () => {
+    expect(() =>
+      getNavigateAction(
+        '/home',
+        {},
+        { ...config, routeNode: null },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        navigationState
+      )
+    ).toThrow('Attempted to link to route when no routes are present');
   });
 
-  it('throws when navigationRef.current is null', () => {
-    const originalCurrent = store.navigationRef.current;
-    (store.navigationRef as any).current = null;
+  it('forwards configured redirects to applyRedirects', () => {
+    const redirects = [
+      [
+        /^\/from$/,
+        { source: '/from', destination: '/to', destinationContextKey: './to.tsx' },
+        false,
+      ],
+    ] as typeof config.redirects;
 
-    expect(() => getNavigateAction('/home', {})).toThrow(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+    getNavigateAction(
+      '/from',
+      {},
+      { ...config, redirects },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      navigationState
     );
 
-    (store.navigationRef as any).current = originalCurrent;
+    expect(mockApplyRedirects).toHaveBeenCalledWith('/from', redirects);
   });
 
-  it('throws when store.linking is falsy', () => {
-    const originalLinking = store.linking;
-    Object.defineProperty(store, 'linking', { value: null, configurable: true });
+  it('parses the href returned by applyRedirects', () => {
+    mockApplyRedirects.mockReturnValueOnce('/redirected');
 
-    expect(() => getNavigateAction('/home', {})).toThrow(
-      'Attempted to link to route when no routes are present'
+    getNavigateAction(
+      '/from',
+      {},
+      config,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      navigationState
     );
 
-    Object.defineProperty(store, 'linking', { value: originalLinking, configurable: true });
+    expect(getStateFromPath).toHaveBeenCalledWith('/redirected', { screens: {} }, []);
   });
 
-  it('returns undefined when applyRedirects returns undefined', () => {
-    mockApplyRedirects.mockReturnValueOnce(undefined as any);
+  it.each([undefined, { routes: [] }])('returns invalid for an unparseable path', (state) => {
+    getStateFromPath.mockReturnValueOnce(state);
 
-    const result = getNavigateAction('/redirect', {});
-
-    expect(result).toBeUndefined();
-  });
-
-  it('logs error and returns undefined when getStateFromPath returns null', () => {
-    (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce(null);
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    const result = getNavigateAction('/bad-path', {});
-
-    expect(result).toBeUndefined();
-    expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Could not generate a valid navigation state')
-    );
-    errorSpy.mockRestore();
-  });
-
-  it('logs error and returns undefined when getStateFromPath returns empty routes', () => {
-    (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce({ routes: [] });
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    const result = getNavigateAction('/bad-path', {});
-
-    expect(result).toBeUndefined();
-    expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Could not generate a valid navigation state')
-    );
-    errorSpy.mockRestore();
-  });
-
-  it('returns action with type NAVIGATE by default', () => {
-    const result = getNavigateAction('/home', {});
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        type: 'NAVIGATE',
-        target: 'nav-key',
-        payload: expect.objectContaining({
-          name: 'home',
-        }),
-      })
-    );
-  });
-
-  it('PUSH is downgraded to NAVIGATE when target navigator is not a stack', () => {
-    mockFindDivergentState.mockReturnValue({
-      actionState: { routes: [{ name: 'tab1' }] },
-      navigationState: {
-        key: 'tab-nav-key',
-        type: 'tab',
-        routes: [{ key: 'tab1-key', name: 'tab1' }],
-        index: 0,
-        routeNames: ['tab1'],
-        stale: false,
-      },
-      actionStateRoute: { name: 'tab1' },
-      navigationRoutes: [],
+    expect(
+      getNavigateAction(
+        '/bad-path',
+        {},
+        config,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        navigationState
+      )
+    ).toEqual({
+      status: 'invalid',
+      href: '/bad-path',
     });
-
-    const result = getNavigateAction('/tab1', {}, 'PUSH');
-
-    expect(result!.type).toBe('NAVIGATE');
   });
 
-  it('type becomes JUMP_TO when target navigator is expo-tab', () => {
-    mockFindDivergentState.mockReturnValue({
-      actionState: { routes: [{ name: 'tab1' }] },
-      navigationState: {
-        key: 'expo-tab-key',
-        type: 'expo-tab',
-        routes: [{ key: 'tab1-key', name: 'tab1' }],
-        index: 0,
-        routeNames: ['tab1'],
-        stale: false,
-      },
-      actionStateRoute: { name: 'tab1' },
-      navigationRoutes: [],
-    });
+  it('returns the action built by the resolver', () => {
+    const registry = new Map();
 
-    const result = getNavigateAction('/tab1', {});
-
-    expect(result!.type).toBe('JUMP_TO');
-  });
-
-  it('preserves REPLACE when target navigator is drawer', () => {
-    mockFindDivergentState.mockReturnValue({
-      actionState: { routes: [{ name: 'screen1' }] },
-      navigationState: {
-        key: 'drawer-key',
-        type: 'drawer',
-        routes: [{ key: 'screen1-key', name: 'screen1' }],
-        index: 0,
-        routeNames: ['screen1'],
-        stale: false,
-      },
-      actionStateRoute: { name: 'screen1' },
-      navigationRoutes: [],
-    });
-
-    const result = getNavigateAction('/screen1', {}, 'REPLACE');
-
-    expect(result!.type).toBe('REPLACE');
-  });
-
-  it('sets target to navigationState.key', () => {
-    const result = getNavigateAction('/home', {});
-
-    expect(result!.target).toBe('nav-key');
-  });
-
-  it('withAnchor sets initial: false on root and all nested params', () => {
-    mockGetPayload.mockReturnValue({
-      screen: 'home',
-      params: {
-        screen: 'nested',
-        params: {
-          screen: 'deep',
-          params: {},
-        },
-      },
-    });
-
-    const result = getNavigateAction('/home', {}, 'NAVIGATE', true);
-
-    // withAnchor=true → initial should be set to false at every level (inverted logic)
-    const params = result!.payload.params as Record<string, any>;
-    expect(params.initial).toBe(false);
-    expect(params.params.initial).toBe(false);
-    expect(params.params.params.initial).toBe(false);
-  });
-
-  it('isPreviewNavigation adds preview and no-animation params', () => {
-    const isPreviewNavigation = true;
     const result = getNavigateAction(
       '/home',
-      {},
-      'NAVIGATE',
-      false,
-      undefined,
-      isPreviewNavigation
+      { event: 'PUSH' },
+      { ...config, registry },
+      'PUSH',
+      true,
+      true,
+      true,
+      navigationState
     );
 
-    expect(result!.payload.params).toEqual(
-      expect.objectContaining({
-        __internal__expo_router_is_preview_navigation: true,
-        __internal_expo_router_no_animation: true,
-      })
-    );
-  });
-
-  it('passes singular option through to payload', () => {
-    const singular = true;
-
-    const result = getNavigateAction('/home', {}, 'NAVIGATE', false, singular);
-
-    expect(result!.payload.singular).toBe(true);
-  });
-
-  it('PRELOAD uses lookThroughAllTabs=true on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'PRELOAD');
-
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      true // lookThroughAllTabs
-    );
-  });
-
-  it('non-PRELOAD uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'NAVIGATE');
-
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      false
-    );
-  });
-
-  it('REPLACE on stack navigator stays as REPLACE', () => {
-    const result = getNavigateAction('/home', {}, 'REPLACE');
-
-    expect(result!.type).toBe('REPLACE');
-  });
-
-  // `findDivergentState` can return `actionStateRoute: undefined` when the action state has
-  // empty routes (edge case during navigation to an invalid path).
-  it('returns action when actionStateRoute is undefined', () => {
-    mockFindDivergentState.mockReturnValue({
-      actionState: { routes: [] },
-      navigationState: {
-        key: 'nav-key',
-        type: 'stack',
-        routes: [{ key: 'root-key', name: '__root' }],
-        index: 0,
-        routeNames: ['__root'],
-        stale: false,
-      },
-      actionStateRoute: undefined,
-      navigationRoutes: [],
+    expect(result).toEqual({
+      status: 'action',
+      action: expect.objectContaining({ type: 'PUSH', target: 'root-nav' }),
     });
-
-    mockGetPayload.mockReturnValue({ screen: undefined, params: {} });
-
-    const result = getNavigateAction('/home', {});
-
-    expect(mockGetPayload).toHaveBeenCalledWith({});
-    expect(result).toBeDefined();
-  });
-
-  it('PUSH uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'PUSH');
-
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      false
-    );
-  });
-
-  it('REPLACE uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'REPLACE');
-
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      false
+    expect(mockResolveNavigationDestination).toHaveBeenCalledWith(
+      expect.objectContaining({
+        registry,
+        navigationState,
+        action: { type: 'PUSH', payload: { singular: true } },
+        withAnchor: true,
+        internalParams: {
+          __internal__expo_router_is_preview_navigation: true,
+          __internal_expo_router_no_animation: true,
+        },
+      })
     );
   });
 });

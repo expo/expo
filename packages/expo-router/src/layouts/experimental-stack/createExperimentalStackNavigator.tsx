@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use, useMemo } from 'react';
 
+import { getValidInitialRouteName, useRouteNode } from '../../Route';
 import {
   CompositionContext,
   mergeOptions,
@@ -31,7 +32,6 @@ import type {
 
 function ExperimentalStackNavigator({
   id,
-  initialRouteName,
   children,
   layout,
   screenListeners,
@@ -40,6 +40,7 @@ function ExperimentalStackNavigator({
   UNSTABLE_router,
   ...rest
 }: ExperimentalStackNavigatorProps) {
+  const routeNode = useRouteNode();
   const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
@@ -48,7 +49,7 @@ function ExperimentalStackNavigator({
     ExperimentalStackNavigationEventMap
   >(StackRouter, {
     id,
-    initialRouteName,
+    initialRouteName: getValidInitialRouteName(routeNode),
     children,
     layout,
     screenListeners,

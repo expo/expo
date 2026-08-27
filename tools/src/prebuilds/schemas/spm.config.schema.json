@@ -94,11 +94,10 @@
             "enum": [
                 "iOS(.v15)",
                 "iOS(.v16)",
+                "iOS(\"16.4\")",
                 "macOS(.v11)",
                 "tvOS(.v15)",
-                "macCatalyst(.v15)",
-                "iOS(.v15_1)",
-                "tvOS(.v15_1)" ]
+                "macCatalyst(.v15)" ]
         },
         "product": {
             "type": "object",

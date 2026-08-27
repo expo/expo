@@ -3,7 +3,6 @@ import {
   type CommonNavigationAction,
   type DefaultRouterOptions,
   type NavigationState,
-  type Route,
   type Router,
 } from '../../../routers';
 
@@ -22,82 +21,11 @@ function getStateForRouteNamesChange(state: NavigationState, routeNames: string[
   };
 }
 
-export function MockRouter(options: DefaultRouterOptions) {
+export function MockRouter(_options: DefaultRouterOptions) {
   const router: Router<NavigationState, MockActions> = {
     type: 'test',
 
     getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
-
-    getInitialState({ routeNames, routeParamList }) {
-      const index =
-        options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);
-
-      return {
-        stale: false,
-        type: 'test',
-        key: String(MockRouterKey.current++),
-        index,
-        routeNames,
-        routes: routeNames.map((name) => ({
-          name,
-          key: name,
-          params: routeParamList[name],
-        })),
-      };
-    },
-
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state as NavigationState;
-      }
-
-      const routes = state.routes
-        .filter((route) => routeNames.includes(route.name))
-        .map(
-          (route) =>
-            ({
-              ...route,
-              key: route.key || `${route.name}-${MockRouterKey.current++}`,
-              params:
-                routeParamList[route.name] !== undefined
-                  ? {
-                      ...routeParamList[route.name],
-                      ...route.params,
-                    }
-                  : route.params,
-            }) as Route<string>
-        );
-
-      if (routes.length === 0) {
-        routes.push({
-          name: routeNames[0]!,
-          key: `${routeNames[0]}-${MockRouterKey.current++}`,
-          params: routeParamList[routeNames[0]!],
-        });
-      }
-
-      const previousIndex = state.index;
-      const index = Math.min(
-        Math.max(
-          previousIndex != null
-            ? routes.findIndex((route) => route.name === state.routes[previousIndex]?.name)
-            : 0,
-          0
-        ),
-        routes.length - 1
-      );
-
-      return {
-        stale: false,
-        type: 'test',
-        key: String(MockRouterKey.current++),
-        index,
-        routeNames,
-        routes,
-      };
-    },
 
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
@@ -109,17 +37,22 @@ export function MockRouter(options: DefaultRouterOptions) {
       return { ...state, index };
     },
 
-    getStateForAction(state, action, { routeParamList }) {
+    getStateForAction(state, action) {
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
           const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
 
           if (nextState.routes.length !== 0) {
-            return nextState;
+            const result = { ...nextState, type: 'test' };
+            return {
+              state: result,
+              affectedRouteKey: result.routes[result.index]?.key,
+            };
           }
 
-          return {
+          const result = {
             ...nextState,
+            type: 'test',
             index: 0,
             routes: [
               {
@@ -128,16 +61,22 @@ export function MockRouter(options: DefaultRouterOptions) {
               },
             ],
           };
+          return { state: result, affectedRouteKey: result.routes[result.index]?.key };
         }
 
         case 'UPDATE':
-          return { ...state };
+          return {
+            state: { ...state, type: 'test' },
+            affectedRouteKey: state.routes[state.index]?.key,
+          };
 
         case 'NOOP':
-          return state;
+          return {
+            state: { ...state, type: 'test' },
+            affectedRouteKey: state.routes[state.index]?.key,
+          };
 
-        case 'NAVIGATE':
-        case 'NAVIGATE_DEPRECATED': {
+        case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
             return null;
           }
@@ -152,13 +91,7 @@ export function MockRouter(options: DefaultRouterOptions) {
               {
                 name: action.payload.name,
                 key: `${action.payload.name}-${MockRouterKey.current++}`,
-                params:
-                  action.payload.params !== undefined
-                    ? {
-                        ...routeParamList[action.payload.name],
-                        ...action.payload.params,
-                      }
-                    : routeParamList[action.payload.name],
+                params: action.payload.params,
               },
             ];
             index = routes.length - 1;
@@ -180,9 +113,13 @@ export function MockRouter(options: DefaultRouterOptions) {
           }
 
           return {
-            ...state,
-            index,
-            routes,
+            state: {
+              ...state,
+              type: 'test',
+              index,
+              routes,
+            },
+            affectedRouteKey: routes[index]!.key,
           };
         }
 
@@ -192,18 +129,26 @@ export function MockRouter(options: DefaultRouterOptions) {
           }
 
           return {
-            ...state,
-            index: state.index - 1,
+            state: {
+              ...state,
+              type: 'test',
+              index: state.index - 1,
+            },
+            affectedRouteKey: state.routes[state.index - 1]!.key,
           };
         }
 
-        default:
-          return BaseRouter.getStateForAction(state, action);
+        default: {
+          const result = BaseRouter.getStateForAction(state, action);
+          return result === null
+            ? null
+            : { ...result, state: { ...result.state, type: 'test' } };
+        }
       }
     },
 
     shouldActionChangeFocus(action: CommonNavigationAction) {
-      return action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED';
+      return action.type === 'NAVIGATE';
     },
   };
 

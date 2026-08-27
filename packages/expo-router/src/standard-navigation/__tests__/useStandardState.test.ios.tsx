@@ -22,7 +22,7 @@ function makeBuilderState(
     routes,
     type: 'tab',
     stale: false,
-    preloadedRouteKeys: [],
+    routeKeySeq: 0,
   } as unknown as NavigationState;
 }
 

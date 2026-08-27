@@ -12,11 +12,7 @@ export { CurrentRenderContext } from './CurrentRenderContext';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { findFocusedRoute } from './findFocusedRoute';
-/**
- * @deprecated Will be removed in a future SDK.
- */
-export { getActionFromState } from './getActionFromState';
+export { findFocusedRoute } from '../../fork/findFocusedRoute';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -24,11 +20,11 @@ export { getFocusedRouteNameFromRoute } from './getFocusedRouteNameFromRoute';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { getPathFromState } from './getPathFromState';
+export { getPathFromState } from '../../fork/getPathFromState';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { getStateFromPath } from './getStateFromPath';
+export { getStateFromPath } from '../../fork/getStateFromPath';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -41,11 +37,11 @@ export { NavigationContext } from './NavigationContext';
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationHelpersContext } from './NavigationHelpersContext';
-export { NavigationIndependentTree } from './NavigationIndependentTree';
 /**
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationMetaContext } from './NavigationMetaContext';
+export { NavigatorTypeContext } from './NavigatorTypeContext';
 export { NavigationProvider } from './NavigationProvider';
 /**
  * @deprecated Will be removed in a future SDK.
@@ -83,7 +79,6 @@ export { useNavigationBuilder } from './useNavigationBuilder';
  * @deprecated Import `useNavigationContainerRef` from `expo-router` instead. Will be removed in a future SDK.
  */
 export { useNavigationContainerRef } from './useNavigationContainerRef';
-export { useNavigationIndependentTree } from './useNavigationIndependentTree';
 export { useNavigationState } from './useNavigationState';
 export { usePreventRemove } from './usePreventRemove';
 export { usePreventRemoveContext } from './usePreventRemoveContext';
@@ -95,5 +90,5 @@ export { useStateForPath } from './useStateForPath';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { validatePathConfig } from './validatePathConfig';
+export { validatePathConfig } from '../../fork/validatePathConfig';
 export * from '../routers';

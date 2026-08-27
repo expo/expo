@@ -2,9 +2,9 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { NavigationState, Router } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
@@ -204,7 +204,17 @@ test('fires focus and blur events in nested navigator', () => {
   const child = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        routes: [
+          { name: 'first' },
+          { name: 'second' },
+          {
+            name: 'nested',
+            state: { routes: [{ name: 'third' }, { name: 'fourth' }] },
+          },
+        ],
+      }}>
       <TestNavigator ref={parent}>
         <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
@@ -240,8 +250,7 @@ test('fires focus and blur events in nested navigator', () => {
 
   expect(firstFocusCallback).toHaveBeenCalledTimes(1);
 
-  // FIXME: figure out why this is called twice instead of once
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(2);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(1);
   expect(thirdFocusCallback).toHaveBeenCalledTimes(0);
 
   act(() => parent.current.navigate('second'));
@@ -255,9 +264,9 @@ test('fires focus and blur events in nested navigator', () => {
   expect(firstBlurCallback).toHaveBeenCalledTimes(1);
   expect(secondBlurCallback).toHaveBeenCalledTimes(1);
   expect(thirdFocusCallback).toHaveBeenCalledTimes(0);
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'third' }));
+  act(() => child.current.navigate('third'));
 
   expect(fourthBlurCallback).toHaveBeenCalledTimes(2);
   expect(thirdFocusCallback).toHaveBeenCalledTimes(1);
@@ -267,13 +276,16 @@ test('fires focus and blur events in nested navigator', () => {
   expect(firstFocusCallback).toHaveBeenCalledTimes(2);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'fourth' }));
+  act(() => {
+    child.current.navigate('fourth');
+    parent.current.navigate('nested');
+  });
 
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(4);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
   expect(firstBlurCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'third' }));
+  act(() => child.current.navigate('third'));
 
   expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
   expect(fourthBlurCallback).toHaveBeenCalledTimes(3);
@@ -288,7 +300,7 @@ test('fires focus and blur events in nested navigator', () => {
   expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
 
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(4);
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
   expect(fourthBlurCallback).toHaveBeenCalledTimes(3);
 });
 
@@ -299,41 +311,27 @@ test('fires blur event when a route is removed with a delay', async () => {
     return {
       ...router,
 
-      getInitialState({ routeNames, routeParamList }) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0];
-
-        return {
-          stale: false,
-          type: 'test',
-          key: 'stack',
-          index: 0,
-          routeNames,
-          routes: [
-            {
-              key: initialRouteName,
-              name: initialRouteName,
-              params: routeParamList[initialRouteName],
-            },
-          ],
-        };
-      },
-
       getStateForAction(state, action, options) {
         switch (action.type) {
           case 'PUSH':
             return {
-              ...state,
-              index: state.index + 1,
-              routes: [...state.routes, action.payload],
+              state: {
+                ...state,
+                index: state.index + 1,
+                routes: [...state.routes, action.payload],
+              },
+              affectedRouteKey: action.payload.key,
             };
           case 'POP': {
             const routes = state.routes.slice(0, -1);
 
             return {
-              ...state,
-              index: routes.length - 1,
-              routes,
+              state: {
+                ...state,
+                index: routes.length - 1,
+                routes,
+              },
+              affectedRouteKey: routes[routes.length - 1]?.key,
             };
           }
           default:
@@ -453,7 +451,8 @@ test('fires custom events added with addListener', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={createComponent(firstCallback)} />
         <Screen name="second" component={createComponent(secondCallback)} />
@@ -529,7 +528,8 @@ test("doesn't call same listener multiple times with addListener", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
         <Screen name="second" component={Test} />
@@ -567,7 +567,8 @@ test('fires custom events added with listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -640,7 +641,8 @@ test("doesn't call same listener multiple times with listeners", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -690,7 +692,8 @@ test('fires listeners when callback is provided for listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"

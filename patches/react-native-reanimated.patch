@@ -1,8 +1,7 @@
 diff --git a/RNReanimated.podspec b/RNReanimated.podspec
-index 37abb6a484af33171120648db08e6103f37485cb..2ca34f0ab48983186a0a55f352d748dfce74a1fd 100644
 --- a/RNReanimated.podspec
 +++ b/RNReanimated.podspec
-@@ -61,6 +61,7 @@ Pod::Spec.new do |s|
+@@ -67,6 +67,7 @@
        '"$(PODS_ROOT)/Headers/Private/React-Core"',
        '"$(PODS_ROOT)/Headers/Private/Yoga"',
        '"$(PODS_ROOT)/Headers/Public/RNWorklets"',
@@ -10,10 +9,79 @@ index 37abb6a484af33171120648db08e6103f37485cb..2ca34f0ab48983186a0a55f352d748df
      ].join(' '),
      "FRAMEWORK_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes"',
      "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
-@@ -88,5 +89,6 @@ Pod::Spec.new do |s|
+@@ -94,5 +95,6 @@
    install_modules_dependencies(s)
  
    s.dependency 'React-jsi'
 +  s.dependency 'React-jsitooling'
    s.dependency 'React-hermes'
  end
+diff --git a/compatibility.json b/compatibility.json
+--- a/compatibility.json
++++ b/compatibility.json
+@@ -1,11 +1,11 @@
+ {
+   "fabric": {
+     "nightly": {
+-      "react-native": ["0.83", "0.84", "0.85", "0.86"],
++      "react-native": ["0.83", "0.84", "0.85", "0.86", "0.87"],
+       "react-native-worklets": ["nightly"]
+     },
+     "4.5.x": {
+-      "react-native": ["0.83", "0.84", "0.85", "0.86"],
++      "react-native": ["0.83", "0.84", "0.85", "0.86", "0.87"],
+       "react-native-worklets": ["0.10.x"]
+     },
+     "4.4.x": {
+diff --git a/android/build.gradle.kts b/android/build.gradle.kts
+--- a/android/build.gradle.kts
++++ b/android/build.gradle.kts
+@@ -8,9 +8,20 @@
+     id("com.android.library")
+     id("maven-publish")
+     id("com.diffplug.spotless") version "8.4.0"
+-    id("org.jetbrains.kotlin.android")
++    id("org.jetbrains.kotlin.android") apply false
+ }
+ 
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply the plugin when built-in Kotlin is unavailable or explicitly disabled
++// with android.builtInKotlin=false.
++val agpBuiltInKotlin =
++    com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore(".").toInt() >= 9 &&
++        (findProperty("android.builtInKotlin")?.toString()?.toBoolean() ?: true)
++
++if (!agpBuiltInKotlin) {
++    apply(plugin = "org.jetbrains.kotlin.android")
++}
++
+ fun safeExtGet(prop: String, fallback: Any?): Any? =
+     if (rootProject.extensions.extraProperties.has(prop)) rootProject.extensions.extraProperties.get(prop) else fallback
+ 
+@@ -245,10 +256,22 @@
+ }
+ 
+ if (project != rootProject) {
+-    kotlin {
+-        compilerOptions {
+-            jvmTarget = JvmTarget.fromTarget("17")
+-        }
++    // Configured reflectively: depending on the host app this script compiles against
++    // different KGP versions (or, with AGP 9's built-in Kotlin, no usable KGP on the
++    // script classpath at all), so typed references to KGP classes here break script
++    // compilation in some host apps. The extension instance and JvmTarget value must
++    // come from the same class loader, hence Class.forName on the extension's loader.
++    project.extensions.findByName("kotlin")?.let { kotlinExt ->
++        val compilerOptions = kotlinExt.javaClass.getMethod("getCompilerOptions").invoke(kotlinExt)
++        @Suppress("UNCHECKED_CAST")
++        val jvmTargetProperty = compilerOptions.javaClass.getMethod("getJvmTarget").invoke(compilerOptions)
++            as org.gradle.api.provider.Property<Any>
++        val jvmTarget17 = Class.forName(
++            "org.jetbrains.kotlin.gradle.dsl.JvmTarget",
++            true,
++            kotlinExt.javaClass.classLoader,
++        ).getMethod("fromTarget", String::class.java).invoke(null, "17")
++        jvmTargetProperty.set(jvmTarget17)
+     }
+ }
+ 

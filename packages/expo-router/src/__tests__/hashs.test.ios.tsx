@@ -5,6 +5,7 @@ import { router } from '../exports';
 import { store } from '../global-state/router-store';
 import { renderRouter } from '../testing-library';
 import { parseUrlUsingCustomBase } from '../utils/url';
+import { expectCompleteStateToMatch } from './assertCompleteState';
 
 it('can push a hash url', () => {
   renderRouter({
@@ -30,7 +31,6 @@ it('can push a hash url', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 4,
           key: expect.any(String),
@@ -39,7 +39,6 @@ it('can push a hash url', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -76,11 +75,13 @@ it('can push a hash url', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -207,20 +208,32 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: () => <Text testID="index" />,
   });
 
-  expect(store.state).toStrictEqual({
+  expectCompleteStateToMatch(store.state, {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
               path: '/',
             },
           ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
   });
 
   act(() => router.navigate('/?#hash1'));
@@ -233,7 +246,6 @@ it('navigating to the same route with a hash will only rerender the screen', () 
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -245,15 +257,17 @@ it('navigating to the same route with a hash will only rerender the screen', () 
               params: {
                 '#': 'hash1',
               },
-              path: '/',
+              path: '/?#hash1',
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });

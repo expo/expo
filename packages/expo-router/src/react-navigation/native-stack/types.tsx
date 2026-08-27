@@ -815,12 +815,9 @@ export type NativeStackNavigationOptions = {
    * Only supported on iOS and Android.
    */
   orientation?: ScreenProps['screenOrientation'];
+  // TODO(@ubax): Remove this prop
   /**
-   * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-   * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-   * Requires `react-native-screens` version >=3.16.0.
-   *
-   * Only supported on iOS and Android.
+   * @deprecated This option has no effect in Expo Router.
    */
   freezeOnBlur?: boolean;
   /**

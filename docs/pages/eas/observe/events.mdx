@@ -9,7 +9,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 User-defined events let you record arbitrary, named events from your app. Use them to track any signal specific to your app that the built-in performance metrics do not cover.
 
-Events are persisted on-device, batched, and dispatched on the next flush as OpenTelemetry log records. They appear in the **Events** tab of the EAS Observe dashboard and are queryable from the EAS CLI.
+Events are persisted on-device, batched, and dispatched on the next flush as OpenTelemetry log records. They appear in the **Events** page of the EAS Observe dashboard and are queryable from the EAS CLI.
 
 ## Log an event
 
@@ -91,12 +91,19 @@ Observe.logEvent('onboarding.completed', {
   darkSrc="/static/images/expo-observe/observe-log-event-display-name-dark.webp"
 />
 
+## Events emitted by the SDK and integrations
+
+Alongside your own events, you may see events that EAS Observe and its integrations emit:
+
+- Event names that start with `expo.` are reserved for events emitted by EAS Observe itself. For example, `expo.memory.warning` is recorded when iOS delivers a low-memory warning to the app. See [Memory warnings](/eas/observe/reference/metrics/#memory-warnings). `logEvent` drops an event that uses the reserved prefix, and drops attribute keys in the `expo.` namespace, logging a warning in development.
+- Enabled integrations log their own events. For example, the [`expo-image` integration](/eas/observe/integrations/expo-image/) logs `expo-image.oversized` when an image is decoded at a much larger size than the screen can display.
+
 ## View events
 
 In the dashboard: open your project and navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe/events). The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
 
 <ContentSpotlight
-  alt="The Events tab in the EAS Observe dashboard listing distinct event names and their counts."
+  alt="The Events page in the EAS Observe dashboard listing distinct event names and their counts."
   src="/static/images/expo-observe/observe-events-light.webp"
   darkSrc="/static/images/expo-observe/observe-events-dark.webp"
 />
@@ -116,4 +123,4 @@ From the CLI:
   ]}
 />
 
-Run `eas observe:events --help` for the full list of flags (time range, platform, session ID, and more).
+Run `eas observe:events --help` for the full list of flags (time range, platform, session ID, and more). See [Querying with EAS CLI](/eas/observe/eas-cli/) for the other `eas observe` commands.

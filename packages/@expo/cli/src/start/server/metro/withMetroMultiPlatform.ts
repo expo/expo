@@ -180,19 +180,21 @@ function withWebPolyfills(
 
     if (ctx.platform === 'web') {
       try {
-        const rnGetPolyfills: () => string[] = require('react-native/rn-get-polyfills');
+        // TODO(@kitten): Vendor these polyfills. React Native 0.87 removed the public
+        // `react-native/rn-get-polyfills` API, so we now reach directly into
+        // `@react-native/js-polyfills` (matching `@expo/metro-config`) — the opposite of what we
+        // want long-term.
+        const rnGetPolyfills: () => string[] = require('@react-native/js-polyfills');
         return [
           ...virtualModulesPolyfills,
           // Ensure that the error-guard polyfill is included in the web polyfills to
           // make metro-runtime work correctly.
           // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
-          // NOTE(@kitten): This is technically the public API to get polyfills rather than resolving directly into
-          // `@react-native/js-polyfills`. We should really just start vendoring these, but for now, this exclusion works
           ...rnGetPolyfills().filter((x: string) => !x.includes('/console')),
         ];
       } catch (error: any) {
         if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
-          // If react-native is not installed, because we're targeting web, we still continue
+          // If the polyfills aren't installed, because we're targeting web, we still continue
           // This should be rare, but we add it so we don't unnecessarily have a fixed peer dependency on react-native
           return virtualModulesPolyfills;
         } else {
@@ -450,7 +452,6 @@ export function withExtendedResolver(
   ];
 
   const skipMetroMainFieldOverride = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
-  const useExpoUnstableWebModule = env.EXPO_UNSTABLE_WEB_MODAL;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
   const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
   const disableNativeTabsMaterialSymbols = env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
@@ -709,16 +710,6 @@ export function withExtendedResolver(
         });
       const doReplaceStrict = (from: string, to: string | undefined) =>
         doReplace(from, to, { throws: true });
-
-      if (useExpoUnstableWebModule) {
-        const webModalModule = doReplace(
-          'expo-router/build/layouts/_web-modal.js',
-          'expo-router/build/layouts/ExperimentalModalStack.js'
-        );
-        if (webModalModule) {
-          return webModalModule;
-        }
-      }
 
       if (disableNativeTabsMaterialSymbols && platform === 'android') {
         const materialIconConverterModule = doReplace(

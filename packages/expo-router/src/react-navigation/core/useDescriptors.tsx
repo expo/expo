@@ -71,12 +71,9 @@ type Options<
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
-  onAction: (action: NavigationAction) => boolean;
   getState: () => State;
-  setState: (state: State) => void;
   addListener: AddListener;
   addKeyedListener: AddKeyedListener;
-  onRouteFocus: (key: string) => void;
   router: Router<State, NavigationAction>;
   emitter: NavigationEventEmitter<EventMap>;
 };
@@ -102,43 +99,44 @@ export function useDescriptors<
   navigation,
   screenOptions,
   screenLayout,
-  onAction,
   getState,
-  setState,
   addListener,
   addKeyedListener,
-  onRouteFocus,
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } =
-    use(NavigationBuilderContext);
+  const {
+    handleAction,
+    getStateForKey,
+    resetNavigator,
+    onDispatchAction,
+    onOptionsChange,
+    stackRef,
+  } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
-      onAction,
+      handleAction,
+      getStateForKey,
+      resetNavigator,
       addListener,
       addKeyedListener,
-      onRouteFocus,
       onDispatchAction,
       onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
       stackRef,
     }),
     [
       navigation,
-      onAction,
+      handleAction,
+      getStateForKey,
+      resetNavigator,
       addListener,
       addKeyedListener,
-      onRouteFocus,
       onDispatchAction,
       onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
       stackRef,
     ]
   );
@@ -235,8 +233,6 @@ export function useDescriptors<
         route={route}
         screen={screen}
         routeState={routeState}
-        getState={getState}
-        setState={setState}
         options={customOptions}
         clearOptions={clearOptions}
       />
@@ -328,15 +324,11 @@ export function useDescriptors<
       } as DescriptorMap[string];
     }
 
-    const describedRoute =
-      route.params === undefined && config.props.initialParams !== undefined
-        ? { ...route, params: config.props.initialParams }
-        : route;
     const navigation = getNavigation({ key: route.name, name: route.name });
     return {
-      route: describedRoute,
+      route,
       navigation,
-      options: getOptions(describedRoute, navigation, {}),
+      options: getOptions(route, navigation, {}),
       render: () => null,
       routeSource: config.props.routeSource,
     } as DescriptorMap[string];

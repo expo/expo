@@ -18,21 +18,28 @@ export type ExpoTabsProps = ExpoTabsNavigatorOptions;
 export type ExpoTabsNavigatorScreenOptions = {
   detachInactiveScreens?: boolean;
   unmountOnBlur?: boolean;
+  // TODO(@ubax): Remove this prop
+  /**
+   * @deprecated This option has no effect in Expo Router.
+   */
   freezeOnBlur?: boolean;
   lazy?: boolean;
 };
 
-export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<
-  ParamListBase,
-  string | undefined,
-  TabNavigationState<ParamListBase>,
-  ExpoTabsScreenOptions,
-  TabNavigationEventMap,
-  ExpoTabsNavigationProp<ParamListBase>
-> &
+export type ExpoTabsNavigatorOptions = Omit<
+  DefaultNavigatorOptions<
+    ParamListBase,
+    string | undefined,
+    TabNavigationState<ParamListBase>,
+    ExpoTabsScreenOptions,
+    TabNavigationEventMap,
+    ExpoTabsNavigationProp<ParamListBase>
+  > &
+    TabRouterOptions &
+    ExpoTabsNavigatorScreenOptions,
   // Should be set through `unstable_settings`
-  Omit<TabRouterOptions, 'initialRouteName'> &
-  ExpoTabsNavigatorScreenOptions;
+  'initialRouteName'
+>;
 
 export type ExpoTabsNavigationProp<
   ParamList extends ParamListBase,
@@ -102,10 +109,10 @@ export const TabsNavigatorContext = createContext<TabsContextValue['navigation']
  */
 export const TabsStateContext = createContext<TabsContextValue['state']>({
   type: 'tab',
-  preloadedRouteKeys: [],
   history: [],
   index: -1,
   key: '',
+  routeKeySeq: 0,
   stale: false,
   routeNames: [],
   routes: [],

@@ -6,6 +6,8 @@ import { ExpoRoot } from '../ExpoRoot';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { ReactNavigationState } from '../global-state/router-store';
 import { store } from '../global-state/router-store';
+// TODO(@ubax): replace this singleton reader when store ownership has commit/teardown semantics.
+// https://linear.app/expo/issue/ENG-26124
 import { router } from '../imperative-api';
 import { type MockContextConfig, getMockContext } from './mock-config';
 
@@ -56,6 +58,12 @@ Object.defineProperty(exports, 'screen', {
 });
 
 export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] & {
+  initialUrl?: any;
+  linking?: Partial<ExpoLinkingOptions>;
+};
+
+// TODO: Remove `renderAsync` when we migrate to RNTL v14.
+export type RenderRouterAsyncOptions = Parameters<typeof rnTestingLibrary.renderAsync>[1] & {
   initialUrl?: any;
   linking?: Partial<ExpoLinkingOptions>;
 };
@@ -115,6 +123,27 @@ export function renderRouter(
   });
 }
 
+export async function renderRouterAsync(
+  context: MockContextConfig = './app',
+  { initialUrl = '/', linking, ...options }: RenderRouterAsyncOptions = {}
+): Promise<Awaited<ReturnType<typeof rnTestingLibrary.renderAsync>>> {
+  const systemTime = Date.now();
+  jest.useFakeTimers();
+  try {
+    jest.setSystemTime(systemTime);
+  } catch {
+    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+  }
+
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+
+  // TODO: Remove `renderAsync` when we migrate to RNTL v14.
+  return rnTestingLibrary.renderAsync(
+    <ExpoRoot context={getMockContext(context)} location={initialUrl} linking={linking} />,
+    options
+  );
+}
+
 export const testRouter = {
   /** Navigate to the provided pathname and assert the pathname */
   navigate(path: string) {
@@ -145,7 +174,7 @@ export const testRouter = {
   },
   /** Update the current route query params and assert the new pathname */
   setParams(params: Record<string, string>, path?: string) {
-    router.setParams(params);
+    rnTestingLibrary.act(() => router.setParams(params));
     if (path) {
       expect(screen).toHavePathnameWithParams(path);
     }

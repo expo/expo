@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import {
   CommonActions,
   type NavigationAction,
@@ -19,12 +20,10 @@ PrivateValueStore;
 
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
-  onAction: (action: NavigationAction) => boolean;
-  onUnhandledAction: (action: NavigationAction) => void;
+  handleAction: (action: NavigationAction) => void;
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
-  stateRef: React.RefObject<State | null>;
 };
 
 /**
@@ -36,26 +35,24 @@ export function useNavigationHelpers<
   ActionHelpers extends Record<string, () => void>,
   Action extends NavigationAction,
   EventMap extends Record<string, any>,
->({
-  id: navigatorId,
-  onAction,
-  onUnhandledAction,
-  getState,
-  emitter,
-  router,
-  stateRef,
-}: Options<State, Action>) {
+>({ id: navigatorId, handleAction, getState, emitter, router }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
+  const enqueue = useEnqueueRoutingIntent();
 
   return React.useMemo(() => {
-    const dispatch = (op: Action | ((state: State) => Action)) => {
-      const action = typeof op === 'function' ? op(getState()) : op;
+    const dispatchSync = (action: Action) => {
+      handleAction(action);
+    };
 
-      const handled = onAction(action);
-
-      if (!handled) {
-        onUnhandledAction?.(action);
-      }
+    const dispatch = (action: Action) => {
+      enqueue({
+        type: 'NAVIGATOR_ACTION',
+        payload: {
+          action,
+          // The queued action was already constrained to this navigator's action type.
+          dispatchSync: (queuedAction) => dispatchSync(queuedAction as Action),
+        },
+      });
     };
 
     const actions = {
@@ -73,6 +70,7 @@ export function useNavigationHelpers<
       ...parentNavigationHelpers,
       ...helpers,
       dispatch,
+      dispatchSync,
       emit: emitter.emit,
       isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
       canGoBack: () => {
@@ -81,7 +79,6 @@ export function useNavigationHelpers<
         return (
           router.getStateForAction(state, CommonActions.goBack() as Action, {
             routeNames: state.routeNames,
-            routeParamList: {},
             routeGetIdList: {},
           }) !== null ||
           parentNavigationHelpers?.canGoBack() ||
@@ -103,28 +100,10 @@ export function useNavigationHelpers<
         return parentNavigationHelpers;
       },
       getState: (): State => {
-        // FIXME: Workaround for when the state is read during render
-        // By this time, we haven't committed the new state yet
-        // Without this `useSyncExternalStore` will keep reading the old state
-        // This may result in `useNavigationState` or `useIsFocused` returning wrong values
-        // Apart from `useSyncExternalStore`, `getState` should never be called during render
-        if (stateRef.current != null) {
-          return stateRef.current;
-        }
-
         return getState();
       },
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
-  }, [
-    router,
-    parentNavigationHelpers,
-    emitter.emit,
-    getState,
-    onAction,
-    onUnhandledAction,
-    navigatorId,
-    stateRef,
-  ]);
+  }, [enqueue, router, parentNavigationHelpers, emitter.emit, getState, handleAction, navigatorId]);
 }

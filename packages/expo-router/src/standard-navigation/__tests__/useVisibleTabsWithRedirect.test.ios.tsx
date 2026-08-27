@@ -1,7 +1,13 @@
-import { renderHook } from '@testing-library/react-native';
+import { renderHook as renderHookWithoutProvider } from '@testing-library/react-native';
+import { use, type PropsWithChildren } from 'react';
 
 import { useRouteNode } from '../../Route';
-import { router } from '../../imperative-api';
+import type { RoutingIntent } from '../../global-state/routingQueue';
+import {
+  PendingIntentsContext,
+  RoutingQueueProvider,
+} from '../../global-state/routingQueueContext';
+import { useIsPreview } from '../../link/preview/PreviewRouteContext';
 import { useIsFocused } from '../../react-navigation/native';
 import { useBuildHref } from '../useBuildHref';
 import { useVisibleTabsWithRedirect } from '../useVisibleTabsWithRedirect';
@@ -13,6 +19,9 @@ jest.mock('../../react-navigation/native', () => {
   return { ...actualNavigation, useIsFocused: jest.fn() };
 });
 jest.mock('../useBuildHref');
+jest.mock('../../link/preview/PreviewRouteContext', () => ({
+  useIsPreview: jest.fn(),
+}));
 jest.mock('../../Route', () => ({
   ...jest.requireActual('../../Route'),
   useRouteNode: jest.fn(),
@@ -21,6 +30,7 @@ jest.mock('../../Route', () => ({
 const mockedUseIsFocused = useIsFocused as jest.MockedFunction<typeof useIsFocused>;
 const mockedUseBuildHref = useBuildHref as jest.MockedFunction<typeof useBuildHref>;
 const mockedUseRouteNode = useRouteNode as jest.MockedFunction<typeof useRouteNode>;
+const mockedUseIsPreview = useIsPreview as jest.MockedFunction<typeof useIsPreview>;
 
 const routes = [
   { key: 'home-key', name: 'home' },
@@ -36,22 +46,49 @@ const descriptors = {
 };
 const routeNames = routes.map((route) => route.name);
 
-let replaceSpy: jest.SpyInstance;
+function routeNode(initialRouteName: string) {
+  // Only route names are relevant to this hook test fixture.
+  return {
+    initialRouteName,
+    contextKey: './_layout.js',
+    children: routes.map(({ name }) => ({ route: name })),
+  } as ReturnType<typeof useRouteNode>;
+}
+
 let warnSpy: jest.SpyInstance;
 let buildHref: jest.Mock;
+let pendingIntents: RoutingIntent[];
+
+function PendingIntentsProbe() {
+  pendingIntents = use(PendingIntentsContext);
+  return null;
+}
+
+function wrapper({ children }: PropsWithChildren) {
+  return (
+    <RoutingQueueProvider>
+      {children}
+      <PendingIntentsProbe />
+    </RoutingQueueProvider>
+  );
+}
+
+function renderHook<Result>(callback: () => Result) {
+  return renderHookWithoutProvider(callback, { wrapper });
+}
 
 beforeEach(() => {
+  pendingIntents = [];
   buildHref = jest.fn((route) => `/href/${route.name}`);
   mockedUseBuildHref.mockReturnValue(buildHref);
+  mockedUseIsPreview.mockReturnValue(false);
   mockedUseIsFocused.mockReturnValue(true);
   // Prevent route data from leaking between tests.
   mockedUseRouteNode.mockReturnValue(null);
-  replaceSpy = jest.spyOn(router, 'replace').mockImplementation(() => {});
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
 afterEach(() => {
-  replaceSpy.mockRestore();
   warnSpy.mockRestore();
 });
 
@@ -84,9 +121,7 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('redirects an unavailable focused route to the configured visible route', () => {
-    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'settings' } as ReturnType<
-      typeof useRouteNode
-    >);
+    mockedUseRouteNode.mockReturnValue(routeNode('settings'));
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
@@ -96,14 +131,16 @@ describe('useVisibleTabsWithRedirect', () => {
       })
     );
 
-    expect(replaceSpy).toHaveBeenCalledTimes(1);
-    expect(replaceSpy).toHaveBeenCalledWith('/href/settings/index');
+    expect(pendingIntents).toEqual([
+      {
+        type: 'NAVIGATE_TO_HREF',
+        payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
+      },
+    ]);
   });
 
   it('builds the redirect href from the selected route', () => {
-    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'settings' } as ReturnType<
-      typeof useRouteNode
-    >);
+    mockedUseRouteNode.mockReturnValue(routeNode('settings'));
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
@@ -116,21 +153,20 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(buildHref).toHaveBeenCalledWith(routes[1]);
   });
 
-  it('falls back to the first visible route when the configured route is unavailable', () => {
-    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'missing' } as ReturnType<
-      typeof useRouteNode
-    >);
-    renderHook(() =>
-      useVisibleTabsWithRedirect({
-        routes,
-        routeNames,
-        focusedRouteKey: 'hidden-key',
-        descriptors,
-      })
+  it('throws when the configured route is unavailable', () => {
+    mockedUseRouteNode.mockReturnValue(routeNode('missing'));
+    expect(() =>
+      renderHook(() =>
+        useVisibleTabsWithRedirect({
+          routes,
+          routeNames,
+          focusedRouteKey: 'hidden-key',
+          descriptors,
+        })
+      )
+    ).toThrow(
+      'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "home", "settings/index", "hidden", "filesystem". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
     );
-
-    expect(replaceSpy).toHaveBeenCalledTimes(1);
-    expect(replaceSpy).toHaveBeenCalledWith('/href/home');
   });
 
   it('redirects when a navigator with no visible focused route becomes focused', () => {
@@ -146,13 +182,17 @@ describe('useVisibleTabsWithRedirect', () => {
     );
 
     expect(result.current.focusedIndex).toBe(-1);
-    expect(replaceSpy).not.toHaveBeenCalled();
+    expect(pendingIntents).toEqual([]);
 
     mockedUseIsFocused.mockReturnValue(true);
     rerender({});
 
-    expect(replaceSpy).toHaveBeenCalledTimes(1);
-    expect(replaceSpy).toHaveBeenCalledWith('/href/home');
+    expect(pendingIntents).toEqual([
+      {
+        type: 'NAVIGATE_TO_HREF',
+        payload: { href: '/href/home', options: { event: 'REPLACE' } },
+      },
+    ]);
   });
 
   it('does not redirect when the focused route is visible', () => {
@@ -166,7 +206,7 @@ describe('useVisibleTabsWithRedirect', () => {
     );
 
     expect(buildHref).toHaveBeenCalledWith(routes[0]);
-    expect(replaceSpy).not.toHaveBeenCalled();
+    expect(pendingIntents).toEqual([]);
   });
 
   it('does not redirect when there are no visible routes', () => {
@@ -182,7 +222,7 @@ describe('useVisibleTabsWithRedirect', () => {
       })
     );
 
-    expect(replaceSpy).not.toHaveBeenCalled();
+    expect(pendingIntents).toEqual([]);
     expect(warnSpy.mock.calls).toMatchSnapshot();
   });
 
@@ -197,6 +237,26 @@ describe('useVisibleTabsWithRedirect', () => {
     );
 
     expect(result.current.visibleRoutes).toEqual([routes[1], routes[0]]);
-    expect(replaceSpy).toHaveBeenCalledWith('/href/settings/index');
+    expect(pendingIntents).toEqual([
+      {
+        type: 'NAVIGATE_TO_HREF',
+        payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
+      },
+    ]);
+  });
+
+  it('does not redirect inside a link preview', () => {
+    mockedUseIsPreview.mockReturnValue(true);
+
+    renderHook(() =>
+      useVisibleTabsWithRedirect({
+        routes,
+        routeNames,
+        focusedRouteKey: 'hidden-key',
+        descriptors,
+      })
+    );
+
+    expect(pendingIntents).toEqual([]);
   });
 });
