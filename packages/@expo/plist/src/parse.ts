@@ -69,7 +69,7 @@ function isEmptyNode(node: { [key: string]: any }): boolean {
 
 export function parse(xml: string): any {
   // prevent the parser from logging non-fatal errors
-  const doc = new DOMParser({ errorHandler() {} }).parseFromString(xml);
+  const doc = new DOMParser({ errorHandler() {} }).parseFromString(xml.trim(), 'text/xml');
   assert(
     doc.documentElement.nodeName === 'plist',
     'malformed document. First element should be <plist>'
