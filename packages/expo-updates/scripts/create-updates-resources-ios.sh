@@ -4,6 +4,16 @@ set -eo pipefail
 
 CREATE_UPDATES_RESOURCES_MODE="all"
 
+if [[ -n "$__EXPO_CONFIG_MODE" ]]; then
+  CONFIG_MODE="$__EXPO_CONFIG_MODE"
+elif [[ "$EAS_BUILD" == "1" || "$EAS_BUILD" == "true" ]]; then
+  CONFIG_MODE="production"
+elif [[ "$CONFIGURATION" == *Debug* ]]; then
+  CONFIG_MODE="development"
+else
+  CONFIG_MODE="production"
+fi
+
 if [[ "$SKIP_BUNDLING" ]]; then
   echo "SKIP_BUNDLING enabled; skipping create-manifest-ios.sh."
   CREATE_UPDATES_RESOURCES_MODE="only-fingerprint"
@@ -50,5 +60,4 @@ else
   exit 1
 fi
 
-"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createUpdatesResources.js" ios "$PROJECT_ROOT" "$RESOURCE_DEST" "$CREATE_UPDATES_RESOURCES_MODE" "$ENTRY_FILE"
-
+__EXPO_CONFIG_MODE="$CONFIG_MODE" "${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createUpdatesResources.js" ios "$PROJECT_ROOT" "$RESOURCE_DEST" "$CREATE_UPDATES_RESOURCES_MODE" "$ENTRY_FILE"
