@@ -30,6 +30,7 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case remoteAppLoaderHeaderDataError(cause: Error)
   case remoteAppLoaderUnknownError(cause: Error)
   case appLoaderFailedToLoadAllAssets
+  case appLoaderFinishedWithoutManifest
   case appLoaderUnknownError(cause: Error)
   case appLoaderTaskFailedToLaunch(cause: Error?)
   case appLoaderTaskUnexpectedErrorDuringLaunch
@@ -99,6 +100,8 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Error persisting header data to disk: \(cause.localizedDescription)"
     case .appLoaderFailedToLoadAllAssets:
       return "Failed to load all assets"
+    case .appLoaderFinishedWithoutManifest:
+      return "AppLoader finished without a processed update manifest. This is an internal error."
     case let .remoteAppLoaderUnknownError(cause):
       return "Unknown error: \(cause.localizedDescription)"
     case let .appLoaderUnknownError(cause):
