@@ -164,14 +164,41 @@ export async function openUrlAsync(
 
 /** Runs a generic command watches for common errors in order to throw with an expected code. */
 async function openAsync(args: string[], operation: string, signal?: AbortSignal): Promise<string> {
-  const results = await getServer().runDeviceMutationAsync(args, operation, signal);
-  if (
-    results.includes(CANT_START_ACTIVITY_ERROR) ||
-    results.match(/Error: Activity class .* does not exist\./g)
-  ) {
-    throw new CommandError('APP_NOT_INSTALLED', results.substring(results.indexOf('Error: ')));
+  let results: string;
+  try {
+    results = await getServer().runDeviceMutationAsync(args, operation, signal);
+  } catch (error) {
+    const output =
+      error && typeof error === 'object'
+        ? [
+            'stdout' in error ? error.stdout : undefined,
+            'stderr' in error ? error.stderr : undefined,
+            error instanceof Error ? error.message : undefined,
+          ]
+            .filter((value): value is string => typeof value === 'string')
+            .join('\n')
+        : String(error);
+    if (isMissingActivityOutput(output)) {
+      throw new CommandError('APP_NOT_INSTALLED', extractActivityError(output));
+    }
+    throw error;
+  }
+  if (isMissingActivityOutput(results)) {
+    throw new CommandError('APP_NOT_INSTALLED', extractActivityError(results));
   }
   return results;
+}
+
+function isMissingActivityOutput(output: string): boolean {
+  return (
+    output.includes(CANT_START_ACTIVITY_ERROR) ||
+    /Error: Activity class .* does not exist\./.test(output)
+  );
+}
+
+function extractActivityError(output: string): string {
+  const errorIndex = output.indexOf('Error: ');
+  return errorIndex >= 0 ? output.substring(errorIndex) : output;
 }
 
 /** Uninstall an app given its Android package name. */
