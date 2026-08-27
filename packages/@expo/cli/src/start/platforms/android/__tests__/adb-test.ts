@@ -569,6 +569,28 @@ describe(getAttachedDevicesAsync, () => {
     await expect(result).rejects.toBe(reason);
     expect(probe).not.toHaveBeenCalled();
   });
+
+  it('preserves caller cancellation while the diagnostic probe is running', async () => {
+    const controller = new AbortController();
+    const reason = new Error('cancel diagnostics');
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockRejectedValueOnce(
+        new AdbProcessWaitError('discovery timed out', 'device discovery', 'host-request')
+      );
+    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockImplementationOnce(
+      (_endpoint, signal) =>
+        new Promise((_, reject) => {
+          signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+        })
+    );
+
+    const result = getAttachedDevicesAsync({ signal: controller.signal });
+    await Promise.resolve();
+    controller.abort(reason);
+
+    await expect(result).rejects.toBe(reason);
+  });
 });
 
 describe(isBootAnimationCompleteAsync, () => {
