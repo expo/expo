@@ -670,54 +670,29 @@ describe(withExtendedResolver, () => {
     );
   });
 
-  it('resolves assets registry to react-native core on native', async () => {
-    vol.fromJSON({ mock: '' }, '/');
+  it('aliases assets registry to virtual shim', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        mock: '',
+      },
+      '/'
+    );
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       getMetroBundler: getMetroBundlerGetter(),
     });
 
-    for (const moduleName of [
-      'react-native/asset-registry',
+    const result = modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
       '@react-native/assets-registry/registry',
-    ]) {
-      const result = modified.resolver.resolveRequest!(
-        getDefaultRequestContext(),
-        moduleName,
-        'ios'
-      );
+      'ios'
+    );
 
-      expect(result).toEqual({ type: 'empty' });
-      expect(getResolveFunc()).toHaveBeenCalledWith(
-        expect.anything(),
-        'react-native/asset-registry',
-        'ios'
-      );
-    }
-  });
-
-  it('aliases assets registry to virtual shim on web', async () => {
-    vol.fromJSON({ mock: '' }, '/');
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      getMetroBundler: getMetroBundlerGetter(),
+    expect(result).toEqual({
+      filePath: '\0polyfill:assets-registry',
+      type: 'sourceFile',
     });
-
-    for (const moduleName of [
-      'react-native/asset-registry',
-      '@react-native/assets-registry/registry',
-    ]) {
-      const result = modified.resolver.resolveRequest!(
-        getDefaultRequestContext(),
-        moduleName,
-        'web'
-      );
-
-      expect(result).toEqual({
-        filePath: '\0polyfill:assets-registry',
-        type: 'sourceFile',
-      });
-    }
   });
 
   it('aliases async require module to resolved path', async () => {

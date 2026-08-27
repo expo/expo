@@ -180,9 +180,10 @@ function withWebPolyfills(
 
     if (ctx.platform === 'web') {
       try {
-        // `react-native/rn-get-polyfills` used to be the public API for this, but React Native 0.87 dropped that
-        // subpath from its `exports`, so resolve `@react-native/js-polyfills` directly, matching `@expo/metro-config`.
-        // NOTE(@kitten): We should really just start vendoring these, but for now, this exclusion works
+        // TODO(@kitten): Vendor these polyfills. React Native 0.87 removed the public
+        // `react-native/rn-get-polyfills` API, so we now reach directly into
+        // `@react-native/js-polyfills` (matching `@expo/metro-config`) — the opposite of what we
+        // want long-term.
         const rnGetPolyfills: () => string[] = require('@react-native/js-polyfills');
         return [
           ...virtualModulesPolyfills,
@@ -657,17 +658,8 @@ export function withExtendedResolver(
       }
 
       // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
-      if (
-        moduleName === 'react-native/asset-registry' ||
-        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)
-      ) {
-        // Serve a virtual registry on web (`react-native` isn't bundled there) and resolve to
-        // react-native's real registry on native so all consumers share one instance. The legacy
-        // `@react-native/assets-registry` package no longer ships with RN 0.87.
-        if (platform === 'web') {
-          return getAssetRegistryModule();
-        }
-        return getStrictResolver(context, platform)('react-native/asset-registry');
+      if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
+        return getAssetRegistryModule();
       }
 
       if (
