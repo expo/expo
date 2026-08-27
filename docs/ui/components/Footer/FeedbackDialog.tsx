@@ -110,7 +110,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                       <LABEL>Feedback</LABEL>
                       <Textarea
                         autoFocus
-                        className="h-45 resize-none"
+                        className="h-45 resize-none rounded-2xl"
                         characterLimit={1000}
                         value={feedback}
                         onChange={event => {
@@ -125,6 +125,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                       </CALLOUT>
                       <Input
                         type="email"
+                        className="rounded-3xl"
                         placeholder="your@email.com"
                         value={email}
                         onChange={event => {
