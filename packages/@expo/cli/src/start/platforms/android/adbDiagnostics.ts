@@ -101,7 +101,13 @@ function getAdvice(error: unknown, device?: AdbDeviceDiagnostic): string[] {
   if (device?.state === 'offline') {
     advice.push(`Reconnect ${device.pid ? `device ${device.pid}` : 'the device'} and try again.`);
   } else if (device?.state === 'unauthorized') {
-    advice.push('Authorize this computer on the device, then try again.');
+    advice.push(
+      'Authorize this computer on the device, then try again: https://expo.fyi/authorize-android-device'
+    );
+  } else if (device?.state === 'no permissions') {
+    advice.push(
+      'Set up permission to access the device, then reconnect it. On Linux, configure the appropriate udev rules; on Windows, install the appropriate USB driver: https://developer.android.com/studio/run/device.html'
+    );
   } else if (device?.state && device.state !== 'device') {
     advice.push('Wait until ADB reports the device as ready, then try again.');
   }

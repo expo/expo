@@ -46,7 +46,8 @@ describe('ADB diagnostics', () => {
   });
 
   it.each([
-    ['unauthorized', 'Authorize this computer on the device'],
+    ['unauthorized', 'https://expo.fyi/authorize-android-device'],
+    ['no permissions', 'configure the appropriate udev rules'],
     ['authorizing', 'Wait until ADB reports the device as ready'],
     ['future-state', 'Wait until ADB reports the device as ready'],
   ])('preserves %s state in actionable diagnostics', (state, expected) => {
