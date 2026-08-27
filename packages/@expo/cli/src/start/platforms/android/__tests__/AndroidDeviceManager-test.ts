@@ -56,7 +56,30 @@ describe('device resolution', () => {
       device: attached,
     });
     expect(startDeviceAsync).toHaveBeenCalledWith(avd);
-    expect(isDeviceBootedAsync).not.toHaveBeenCalled();
+    expect(isDeviceBootedAsync).toHaveBeenCalledWith(avd);
+  });
+
+  it('does not relaunch an AVD that became attached after inventory', async () => {
+    const avd = asDevice({
+      name: 'Pixel_API_35',
+      type: 'emulator',
+      isLaunchable: true,
+      isBooted: false,
+      isAuthorized: true,
+    });
+    const attached = asDevice({
+      ...avd,
+      pid: 'emulator-5554',
+      state: 'device',
+      isLaunchable: false,
+      isBooted: true,
+    });
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(attached);
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: avd })).resolves.toMatchObject({
+      device: attached,
+    });
+    expect(startDeviceAsync).not.toHaveBeenCalled();
   });
 
   it.each(['offline', 'future-state'])(
@@ -89,7 +112,7 @@ describe('device resolution', () => {
     jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(physical);
 
     await expect(AndroidDeviceManager.resolveAsync({ device: physical })).rejects.toThrow(
-      'Interactive prompt was cancelled.'
+      /Device USB-1 is unauthorized.*Authorize this computer/s
     );
     expect(logUnauthorized).toHaveBeenCalledWith(physical);
     expect(startDeviceAsync).not.toHaveBeenCalled();
