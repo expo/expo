@@ -16,6 +16,12 @@ The installed EAS CLI is too old. [Install or update EAS CLI](/eas/cli/), then i
 
 The commands remain hidden because the API is experimental.
 
+### A recently documented flag is rejected
+
+The EAS Simulator preview changes quickly, and an older EAS CLI can recognize `simulator:start` without recognizing newer flags such as `--name`, `--device`, or the application launch options. Update EAS CLI, then compare the command with the installed help:
+
+<Terminal cmd={['$ eas simulator:start --help']} />
+
 ## Access and project errors
 
 ### EAS Simulator is not enabled for the account
@@ -24,7 +30,7 @@ Check before starting:
 
 <Terminal cmd={['$ eas simulator:availability --json']} />
 
-If `available` is `false`, do not retry `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulator) for access.
+If `available` is `false`, do not retry `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulators) for access.
 
 ### EAS CLI reports that a user account is required
 
@@ -53,6 +59,18 @@ The session is ready when the status is `IN_PROGRESS` and `remoteConfig` is pres
 `--non-interactive` returns after the controller is ready. It does not stop the session. Run:
 
 <Terminal cmd={['$ eas simulator:stop']} />
+
+### Starting a session left the previous session running
+
+`simulator:start` creates a new session by default, even when **.env.eas-simulator** contains another session ID. It replaces the local configuration, but it does not stop the previous remote session.
+
+List active sessions and stop the old one explicitly:
+
+<Terminal
+  cmd={['$ eas simulator:list --status in-progress', '$ eas simulator:stop --id <old-session-id>']}
+/>
+
+Use `--no-force` when you want `simulator:start` to fail instead of creating a new session while the environment already contains an ID. Give every session a descriptive `--name` so it is easy to identify in the list.
 
 ## Controller and tunnel problems
 
@@ -99,9 +117,23 @@ Open an installed app before taking the screenshot:
 
 ## App and build problems
 
+### `Launch options require an application source`
+
+`--launch-arg` and `--open-url` apply to an application installed during session startup. Pass exactly one source with the command:
+
+- `--build-id <build-id>` for an EAS Build
+- `--application-archive-url <url>` for a remote application archive
+- `--expo-go` for the Expo Go version matching the project SDK
+
+For a local `.app` or APK, start a blank session and install it through agent-device or another controller instead.
+
+### Expo Go cannot determine the SDK version
+
+Run the command from an Expo project with a valid app config, or pass `--sdk-version <version>` together with `--expo-go`. The SDK override is not valid with `--build-id` or `--application-archive-url`.
+
 ### The remote device does not contain the app
 
-This is expected. Each session starts with a blank device. Install a local simulator or emulator build, or use `install-from-source` with an EAS Build artifact.
+This is expected when the session starts without `--build-id`, `--application-archive-url`, or `--expo-go`. Install a local simulator or emulator build through the controller, or start a new session with an application source.
 
 ### The screenshot shows old source code
 

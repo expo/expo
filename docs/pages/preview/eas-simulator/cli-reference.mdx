@@ -13,6 +13,8 @@ The `simulator:*` commands are experimental and hidden. Install or update [EAS C
 
 The `--help` flag displays the available options for `simulator:start`.
 
+The start command is also available as `eas simulator`, `eas sim`, and `eas sim:start`. The other commands have matching `eas sim:*` aliases, such as `eas sim:list` and `eas sim:stop`.
+
 ## Commands
 
 | Command                                            | Purpose                                                                  |
@@ -42,7 +44,11 @@ A controller is the tool provisioned with the remote device to install, inspect,
 
 Use [agent-device](/agents/agent-device/) for accessibility-driven device actions and app installation.
 
-<Terminal cmd={['$ eas simulator:start --platform ios --type agent-device --non-interactive']} />
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
 
 </Tab>
 
@@ -50,7 +56,23 @@ Use [agent-device](/agents/agent-device/) for accessibility-driven device action
 
 Use [Argent](/agents/argent/) to run its remote device tools through the session.
 
-<Terminal cmd={['$ eas simulator:start --platform ios --type argent --non-interactive']} />
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type argent --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Appium">
+
+Use Appium when you want to connect an existing Appium client or test suite.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --non-interactive',
+  ]}
+/>
 
 </Tab>
 
@@ -58,15 +80,27 @@ Use [Argent](/agents/argent/) to run its remote device tools through the session
 
 Important flags:
 
-| Flag                | Description                                                                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `-p, --platform`    | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                              |
-| `--type`            | Controller provisioned for the session. Use `agent-device` or `argent` for programmatic control, or `serve-sim` for a browser-only preview |
-| `--package-version` | Controller package version. Defaults to the service's latest version                                                                       |
-| `--out-config-type` | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                  |
-| `--[no-]force`      | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                    |
-| `--non-interactive` | Return after the controller is ready instead of staying attached                                                                           |
-| `--json`            | Print machine-readable output and imply non-interactive mode                                                                               |
+| Flag                        | Description                                                                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p, --platform`            | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                            |
+| `--name`                    | Human-readable session name shown by `simulator:list`, `simulator:get`, and expo.dev                                                     |
+| `--device`                  | iOS Simulator name or UDID, or Android virtual device hardware profile. The runner chooses a device when omitted                         |
+| `--build-id`                | EAS Build to install and launch before the session is ready                                                                              |
+| `--application-archive-url` | Application archive to download, install, and launch before the session is ready                                                         |
+| `--expo-go`                 | Install and launch the Expo Go version that matches the current project's Expo SDK                                                       |
+| `--sdk-version`             | Expo SDK used to select Expo Go. Only valid with `--expo-go`; defaults to the current project SDK                                        |
+| `--launch-arg`              | Argument passed to the installed app when it launches. Repeat the flag for multiple arguments                                            |
+| `--open-url`                | Expo or development-client URL to open in the installed app after launch                                                                 |
+| `--type`                    | Session type. Use `agent-device`, `appium`, or `argent` for programmatic control, or `serve-sim` for a browser-only preview              |
+| `--package-version`         | Controller package version. Defaults to the service's latest version                                                                     |
+| `--max-duration-minutes`    | Automatic session stop time. Custom values are available on paid plans; otherwise the default depends on job priority                    |
+| `--max-idle-time-minutes`   | Stop after this many minutes without session activity. When omitted, the session has no idle timeout and runs until its maximum duration |
+| `--out-config-type`         | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                |
+| `--[no-]force`              | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                  |
+| `--non-interactive`         | Return after the session is ready instead of staying attached                                                                            |
+| `--json`                    | Print machine-readable output and imply non-interactive mode                                                                             |
+
+`--build-id`, `--application-archive-url`, and `--expo-go` are mutually exclusive application sources. `--launch-arg` and `--open-url` require one of those sources because the start command needs an installed application to launch.
 
 The default `dotenv` output writes configuration even when `--json` is used. Use `--out-config-type env` when you explicitly do not want the file.
 
@@ -75,6 +109,7 @@ Common JSON output fields have this shape. The fields inside `remoteConfig` depe
 ```json
 {
   "id": "<session-id>",
+  "name": "Checkout flow screenshots",
   "type": "<controller-type>",
   "deviceRunSessionUrl": "https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>",
   "remoteConfig": {
@@ -151,7 +186,7 @@ Get another session explicitly:
 
 The response includes:
 
-- ID, type, status, and platform
+- ID, name, type, status, and platform
 - Created, started, finished, and updated timestamps
 - The expo.dev simulator session URL
 - Controller connection configuration
@@ -165,11 +200,12 @@ The response includes:
 
 Filters can be repeated:
 
-| Filter       | Values                                     |
-| ------------ | ------------------------------------------ |
-| `--platform` | `ios`, `android`                           |
-| `--type`     | `agent-device`, `argent`, `serve-sim`      |
-| `--status`   | `new`, `in-progress`, `stopped`, `errored` |
+| Filter       | Values                                          |
+| ------------ | ----------------------------------------------- |
+| `--platform` | `ios`, `android`                                |
+| `--type`     | `agent-device`, `appium`, `argent`, `serve-sim` |
+| `--status`   | `new`, `in-progress`, `stopped`, `errored`      |
+| `--name`     | Case-insensitive session name prefix            |
 
 Use `--limit` to control page size and `--after` with the previous response's `endCursor` for pagination.
 
@@ -185,6 +221,8 @@ Stop a specific session:
 
 The stop mutation is idempotent.
 
+Use `--json` for a machine-readable object containing the session `id` and final `status`.
+
 ## **.env.eas-simulator**
 
 The managed file always contains the session ID:
@@ -199,6 +237,7 @@ Controller connection variables depend on the selected type:
 | ------------ | ---------------------------------------------------------------- |
 | agent-device | `AGENT_DEVICE_DAEMON_BASE_URL`, `AGENT_DEVICE_DAEMON_AUTH_TOKEN` |
 | Argent       | `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN`       |
+| Appium       | `APPIUM_URL`, `APPIUM_CAPS`                                      |
 
 Add the file to **.gitignore**:
 
