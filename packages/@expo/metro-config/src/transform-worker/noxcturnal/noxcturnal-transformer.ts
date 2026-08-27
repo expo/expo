@@ -12,6 +12,7 @@ import type {
   TransformResult,
 } from 'noxcturnal';
 
+import type { CacheVaryDim } from '../../cache-vary/ambient';
 import type { Dependency } from '../collect-dependencies';
 import { mayContainReactNativeCodegen } from './codegen';
 import { getHermesV0PreflightConfig } from './configs/hermes-v0';
@@ -19,6 +20,7 @@ import { getHermesV1PreflightConfig } from './configs/hermes-v1';
 import type { ProfilePreflightFacts } from './configs/types';
 import { getWebPreflightConfig } from './configs/web';
 import { getWebViewPreflightConfig } from './configs/webview';
+import { createCacheVaryMetadataPlugin } from './plugins/cache-vary';
 import { createCjsDetectionPlugin } from './plugins/cjs-detection';
 import { createClientServerDirectiveBoundaryPlugin } from './plugins/client-server-directive-boundary';
 import { createClientServerReferenceProxyPlugin } from './plugins/client-server-reference-proxy';
@@ -77,6 +79,7 @@ export interface ExpoTransformPluginData {
   input: NoxcturnalTransformInput;
   sourceFacts: NoxcturnalSourceFacts;
   serverBoundary: ServerBoundaryShared;
+  cacheVary: CacheVaryDim[];
 }
 
 export function sortedUniqueCaptureNames(captures: readonly NodeView[]): string[] {
@@ -116,6 +119,7 @@ function createExpoTransformPluginData(
   return {
     input,
     sourceFacts,
+    cacheVary: [],
     serverBoundary: {
       clientProxy: false,
       moduleServerActions: false,
@@ -871,6 +875,9 @@ function createPipeline(
   }
   if (sourceFacts.hasProcess) {
     addPlugin('process-env', () => createProcessEnvPlugin(nox));
+  }
+  if (sourceFacts.hasDefineCandidate || sourceFacts.hasProcess) {
+    addPlugin('cache-vary-metadata', () => createCacheVaryMetadataPlugin(nox));
   }
   if (!options.dev && sourceFacts.hasPlatform && sourceFacts.hasSelect) {
     addPlugin(`platform-select:${options.platform ?? ''}`, () =>

@@ -8,6 +8,7 @@ import {
   type Noxcturnal,
   type NoxcturnalTransformInput,
 } from '../noxcturnal-transformer';
+import { addCacheVary } from './cache-vary';
 
 const NO_PROCESS_ENV_REPLACEMENT = Symbol('NO_PROCESS_ENV_REPLACEMENT');
 
@@ -73,6 +74,9 @@ export function createProcessEnvPlugin(nox: Noxcturnal): DefinedNativePlugin<Pro
           if (member.scope.hasBinding('process')) return;
           const replacement = processEnvReplacement(name, state);
           if (replacement === NO_PROCESS_ENV_REPLACEMENT) return;
+          if (!state.input.options.dev && name.startsWith('EXPO_PUBLIC_')) {
+            addCacheVary(member.context, { scheme: 'env', name });
+          }
           member.replaceWith(mappedLiteral(member.context, replacement));
         }
       ),
