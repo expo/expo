@@ -30,6 +30,24 @@ public:
     return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
   }
 
+  std::shared_ptr<facebook::react::ShadowNode> createShadowNode(
+    const facebook::react::ShadowNodeFragment &fragment,
+    const facebook::react::ShadowNodeFamily::Shared &family
+  ) const override {
+    auto traits = this->getTraits();
+
+    if (ShadowNodeType::sizesToContent(fragment.props)) {
+      traits.set(facebook::react::ShadowNodeTraits::Trait::LeafYogaNode);
+      traits.set(facebook::react::ShadowNodeTraits::Trait::MeasurableYogaNode);
+    }
+
+    auto shadowNode = std::make_shared<ShadowNodeType>(fragment, family, traits);
+
+    this->adopt(*shadowNode);
+
+    return shadowNode;
+  }
+
   void adopt(facebook::react::ShadowNode &shadowNode) const override {
     react_native_assert(dynamic_cast<ShadowNodeType *>(&shadowNode));
 
@@ -81,6 +99,18 @@ public:
       // Updates yoga style from props and sets the node dirty
       snode->updateYogaProps();
     }
+
+    if (ShadowNodeType::sizesToContent(snode->getProps())) {
+      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
+        snode->getProps());
+      auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
+
+      if (style.alignSelf() != facebook::yoga::Align::FlexStart) {
+        style.setAlignSelf(facebook::yoga::Align::FlexStart);
+        snode->updateYogaProps();
+      }
+    }
+
     facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::adopt(shadowNode);
   }
 };

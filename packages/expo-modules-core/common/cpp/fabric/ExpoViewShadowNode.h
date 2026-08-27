@@ -5,6 +5,13 @@
 #ifdef __cplusplus
 
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
+#include <react/renderer/core/LayoutConstraints.h>
+#include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/graphics/rounding.h>
+
+#include <algorithm>
+#include <cmath>
 
 #include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
@@ -77,7 +84,119 @@ public:
     return {.x = contentOrigin->x - ownOrigin.x, .y = contentOrigin->y - ownOrigin.y};
   }
 
+  // Only `RNHostView` declares `expoInternalSizeFromChildren` so it is used to gate the layout overrides.
+  static bool sizesToContent(const react::Props::Shared &props) {
+    auto const *viewProps = dynamic_cast<const ExpoViewProps *>(props.get());
+
+    if (viewProps == nullptr) {
+      return false;
+    }
+
+    auto const it = viewProps->propsMap.find("expoInternalSizeFromChildren");
+    return it != viewProps->propsMap.end() && it->second.isBool() && it->second.getBool();
+  }
+
+  react::Size measureContent(
+    const react::LayoutContext &layoutContext,
+    const react::LayoutConstraints &layoutConstraints
+  ) const override {
+    if (!sizesToContent(this->getProps())) {
+      return ConcreteViewShadowNode::measureContent(layoutContext, layoutConstraints);
+    }
+
+    auto const *content = hostedContent();
+
+    if (content == nullptr) {
+      return {};
+    }
+
+    auto size = content->measure(layoutContext, hostedContentConstraints(*content));
+
+    // Round up to the next value on the pixel grid, so the frame this node reports is never a
+    // fraction of a pixel smaller than the content laid out inside it. `ParagraphShadowNode` biases
+    // the same way for the views it embeds in a text run.
+    size.width += 0.01f;
+    size.height += 0.01f;
+
+    return react::roundToPixel<&std::ceil>(size, layoutContext.pointScaleFactor);
+  }
+
+  void layout(react::LayoutContext layoutContext) override {
+    ConcreteViewShadowNode::layout(layoutContext);
+
+    if (!sizesToContent(this->getProps())) {
+      return;
+    }
+
+    auto const *content = hostedContent();
+
+    if (content == nullptr) {
+      return;
+    }
+
+    // The same constraints the content was measured with, deliberately not the frame Yoga settled
+    // on. Laying it out at that frame would put the parent back in charge of the content's layout,
+    // which is the dependency this whole path exists to remove.
+    auto const clonedContent = content->clone({});
+
+    static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(
+      layoutContext,
+      hostedContentConstraints(*content)
+    );
+
+    this->replaceChild(*content, clonedContent, 0);
+
+    if (layoutContext.affectedNodes != nullptr) {
+      layoutContext.affectedNodes->push_back(
+        static_cast<const react::LayoutableShadowNode *>(clonedContent.get()));
+    }
+  }
+
 private:
+  const react::LayoutableShadowNode *hostedContent() const {
+    auto const &children = this->getChildren();
+
+    return children.empty()
+      ? nullptr
+      : dynamic_cast<const react::LayoutableShadowNode *>(children.front().get());
+  }
+
+  react::LayoutDirection resolvedLayoutDirection() const {
+    return YGNodeLayoutGetDirection(&this->yogaNode_) == YGDirectionRTL
+      ? react::LayoutDirection::RightToLeft
+      : react::LayoutDirection::LeftToRight;
+  }
+
+  react::LayoutConstraints hostedContentConstraints(const react::ShadowNode &content) const {
+    react::LayoutConstraints constraints{};
+    constraints.layoutDirection = resolvedLayoutDirection();
+
+    auto const *contentProps = dynamic_cast<const react::ViewProps *>(content.getProps().get());
+
+    if (contentProps == nullptr) {
+      return constraints;
+    }
+
+    auto const &style = contentProps->yogaStyle;
+
+    constrainToPoints(style.minDimension(facebook::yoga::Dimension::Width),
+                      constraints.minimumSize.width);
+    constrainToPoints(style.minDimension(facebook::yoga::Dimension::Height),
+                      constraints.minimumSize.height);
+    constrainToPoints(style.maxDimension(facebook::yoga::Dimension::Width),
+                      constraints.maximumSize.width);
+    constrainToPoints(style.maxDimension(facebook::yoga::Dimension::Height),
+                      constraints.maximumSize.height);
+
+    return constraints;
+  }
+
+  static void constrainToPoints(facebook::yoga::StyleSizeLength length, react::Float &constraint) {
+    if (length.isPoints() && length.value().isDefined()) {
+      constraint = std::max<react::Float>(0, length.value().unwrap());
+    }
+  }
+
   void initialize() noexcept {
     auto &viewProps = static_cast<const ExpoViewProps &>(*this->props_);
 
