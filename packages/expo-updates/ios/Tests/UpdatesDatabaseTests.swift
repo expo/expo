@@ -115,6 +115,76 @@ class UpdatesDatabaseTests {
     }
   }
 
+  // MARK: - addNewAssets failure handling
+
+  @Suite("addNewAssets failure handling", .serialized)
+  struct AddNewAssetsFailureTests {
+    var testDatabaseDir: URL
+    var db: UpdatesDatabase
+    var manifest: ExpoUpdatesManifest
+    var config: UpdatesConfig
+
+    init() throws {
+      let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
+      testDatabaseDir = applicationSupportDir!.appendingPathComponent("AddNewAssetsFailureTests")
+
+      try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
+
+      if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
+        try FileManager.default.createDirectory(atPath: testDatabaseDir.path, withIntermediateDirectories: true)
+      }
+
+      db = UpdatesDatabase()
+
+      manifest = ExpoUpdatesManifest(rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": "0eef8214-4833-4089-9dff-b4138a14f196",
+        "createdAt": "2020-11-11T00:17:54.797Z",
+        "launchAsset": ["url": "https://url.to/bundle.js", "contentType": "application/javascript"]
+      ])
+
+      config = try UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      ])
+
+      db.databaseQueue.sync {
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
+      }
+    }
+
+    @Test
+    func `throws and rolls back when a statement fails`() throws {
+      let update = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: manifest,
+        extensions: [:],
+        config: config,
+        database: db
+      )
+
+      let asset = UpdateAsset(key: "bundle-key", type: "js")
+      asset.downloadTime = Date()
+      asset.contentHash = "hash"
+      asset.filename = "bundle.js"
+      asset.isLaunchAsset = true
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update, config: config)
+
+        // force the per-asset join insert to fail
+        _ = try! db.execute(sql: "DROP TABLE updates_assets", withArgs: nil)
+
+        do {
+          try db.addNewAssets([asset], toUpdateWithId: update.updateId)
+          Issue.record("Expected addNewAssets to throw when a statement fails")
+        } catch {}
+
+        // the whole batch must have been rolled back
+        #expect(try! db.asset(withKey: "bundle-key") == nil)
+      }
+    }
+  }
+
   // MARK: - setExtraClientParams
 
   @Suite("setExtraClientParams", .serialized)
