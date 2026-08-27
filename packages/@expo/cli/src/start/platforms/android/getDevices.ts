@@ -5,7 +5,7 @@ import { listAvdsAsync } from './emulator';
 
 /** Get a list of all devices including offline emulators. Asserts if no devices are available. */
 export async function getDevicesAsync(): Promise<Device[]> {
-  const bootedDevices = await getAttachedDevicesAsync();
+  const bootedDevices = await getAttachedDevicesAsync({ shouldShowWaitingMessage: true });
 
   // NOTE(@kitten): We don't assume AVD must succeed or be present, and still allow
   // devices to be discovered and move on

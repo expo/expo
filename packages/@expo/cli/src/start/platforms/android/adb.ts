@@ -242,7 +242,7 @@ export async function getAttachedDevicesAsync({
   signal,
   waitLimitMs,
   probeWaitLimitMs = ADB_HOST_PROBE_WAIT_LIMIT_MS,
-  shouldShowWaitingMessage = true,
+  shouldShowWaitingMessage = false,
 }: {
   server?: ADBServer;
   signal?: AbortSignal;
