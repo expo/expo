@@ -10,9 +10,11 @@ import android.view.ViewParent
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
@@ -178,10 +180,22 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
     return with(density) {
       if (childSize.width > 0 && childSize.height > 0) {
-        Modifier.requiredSize(
-          childSize.width.toDp(),
-          childSize.height.toDp()
-        )
+        // When RNHostView's size is greater than its parent, then parent centers RNHostView and truncates its top and bottom.
+        // e.g. Parent size = 200px, RNHostView size = 300px, the parent will position the RNHostView at center and truncate 50px from top and bottom.
+        // This causes issues where the top of RNHostView can go out of screen.
+        // These scenario mostly happen when a Keyboard opens in a sheet.
+        // https://github.com/expo/expo/issues/49399
+        // Adding wrapContentSize with Alignment.TopCenter and unbounded = true
+        // makes sure that the RNHostView is always positioned at the top of its parent.
+        // Only the vertical axis changes. A matchContents child is measured unconstrained, so it is
+        // routinely wider than its Compose slot, and centering it horizontally is what keeps its
+        // contents lined up with the parent.
+        Modifier
+          .wrapContentSize(Alignment.TopCenter, unbounded = true)
+          .requiredSize(
+            childSize.width.toDp(),
+            childSize.height.toDp()
+          )
       } else {
         Modifier
       }
