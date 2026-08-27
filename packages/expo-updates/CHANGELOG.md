@@ -14,6 +14,7 @@
 - [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch. ([#49456](https://github.com/expo/expo/pull/49456) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Repair ready updates that are missing their launch asset by demoting them to pending during launcher selection, so a corrupted row is skipped and retried instead of failing every launch. ([#49457](https://github.com/expo/expo/pull/49457) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Skip and repair updates that are missing their launch asset instead of selecting them for launch, which previously failed every cold start with "Launch asset not found for update". ([#49470](https://github.com/expo/expo/pull/49470) by [@alanjhughes](https://github.com/alanjhughes), based on [#48733](https://github.com/expo/expo/pull/48733) by [@martintreurnicht](https://github.com/martintreurnicht))
+- [iOS] Fix the embedded manifest recording the wrong `packagerHash` for assets that ship scale variants iOS does not allow (such as `@1.5x` and `@4x`): the hashes were read by the filtered scale index instead of the asset's own, so those images resolved to an empty URI and rendered blank in release builds. ([#48811](https://github.com/expo/expo/pull/48811) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
