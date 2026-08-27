@@ -10,7 +10,7 @@ import { event } from '../events';
 import { ADBServer } from './ADBServer';
 import { isAdbDeviceStateUsable, parseAdbDeviceList } from './adbDeviceList';
 import {
-  createAdbOperationErrorAsync,
+  createAdbOperationError,
   formatAdbDiscoveryError,
   shouldProbeAdbHost,
 } from './adbDiagnostics';
@@ -548,7 +548,7 @@ export async function getPropertyDataForDeviceAsync(
 
     return props;
   } catch (error: any) {
-    throw await createAdbOperationErrorAsync('ADB_PROPERTY', error, device);
+    throw createAdbOperationError('ADB_PROPERTY', error, device);
   }
 }
 
