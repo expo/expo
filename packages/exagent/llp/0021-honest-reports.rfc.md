@@ -547,6 +547,14 @@ JSONL `cli:error` event is *not* emitted here, which is the one thing this path 
 right trade — an envelope on stdout and a stack on stderr, over an event that would cost the exit code
 its meaning.
 
+**One object on stdout wins over an envelope.** Found by running the fix against the published bundle
+rather than by reasoning about it [2026-08-27]: a crash can land *after* the command has printed, and a
+`status --json` that had finished printing then left **two** objects on stdout — so `JSON.parse(stdout)`
+failed on output that was otherwise complete, which is strictly worse than no envelope. The envelope is
+printed only when stdout is still empty (`hasWrittenToStdout`, `src/log.ts`), and stderr says why there
+is none when it is not; the crash report and the exit code are the same either way. The rule underneath
+is llp/0010's and it is the stronger one: a caller told to `JSON.parse` stdout must always be able to.
+
 ## Testing
 
 Every finding above has a test that fails against the code as it shipped:

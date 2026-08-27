@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 
 import { event as cliEvent } from '../events';
 import { EXIT_ERROR, EXIT_NEEDS_HUMAN, exitWithCodeAsync } from '../exitCodes';
-import { error as printToStderr, exit, exception, log, warn } from '../log';
+import { error as printToStderr, exit, exception, hasWrittenToStdout, log, warn } from '../log';
 import { renderForInvoker } from './invoker';
 import { isJsonRequested } from './jsonMode';
 
@@ -444,19 +444,34 @@ export function handleUncaughtException(thrown: unknown): void {
   // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — a run that asked for
   // machine-readable output gets one however it ended, so `JSON.parse` of a crashed `--json`
   // command works the way it does for every other failure.
+  //
+  // **Unless the report already went out.** A crash can land after the command printed, and a second
+  // object on stdout would break `JSON.parse` on output that was otherwise complete — which is worse
+  // than no envelope, because the caller then has neither the report nor the error
+  // [observed while verifying this fix against the published bundle, 2026-08-27: a `status --json`
+  // that had finished printing, crashed afterwards, and left two objects on stdout]. The contract is
+  // one object; the crash is on stderr either way, and the exit code is 1 either way.
   if (isJsonRequested()) {
-    log(
-      JSON.stringify(
-        jsonErrorEnvelope({
-          code: UNCAUGHT_EXCEPTION_CODE,
-          message,
-          needsHuman: null,
-          data: { errorName: error.name, errorCode, stack: error.stack ?? null },
-        }),
-        null,
-        2
-      )
-    );
+    if (hasWrittenToStdout()) {
+      printToStderr(
+        chalk.gray(
+          'This run had already printed its --json report, so the error envelope was not added to stdout: one object on stdout is the contract, and a second would leave nothing there parseable.'
+        )
+      );
+    } else {
+      log(
+        JSON.stringify(
+          jsonErrorEnvelope({
+            code: UNCAUGHT_EXCEPTION_CODE,
+            message,
+            needsHuman: null,
+            data: { errorName: error.name, errorCode, stack: error.stack ?? null },
+          }),
+          null,
+          2
+        )
+      );
+    }
   }
 
   process.exit(EXIT_ERROR);

@@ -21,12 +21,15 @@ jest.mock('2g', () => {
   return { events, flushEventLogger: jest.fn(async () => {}) };
 });
 
+let stdoutHasContent = false;
+
 jest.mock('../../log', () => ({
   exit: jest.fn(),
   exception: jest.fn(),
   error: jest.fn(),
   log: jest.fn(),
   warn: jest.fn(),
+  hasWrittenToStdout: jest.fn(() => stdoutHasContent),
 }));
 
 const execSyncCalls: string[] = [];
@@ -276,6 +279,7 @@ describe(handleUncaughtException, () => {
   beforeEach(() => {
     emitted.length = 0;
     execSyncCalls.length = 0;
+    stdoutHasContent = false;
     jest.clearAllMocks();
     exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {}) as never);
   });
@@ -283,6 +287,7 @@ describe(handleUncaughtException, () => {
   afterEach(() => {
     exitSpy.mockRestore();
     setJsonRequested(false);
+    stdoutHasContent = false;
     Object.defineProperty(process, 'platform', { value: realPlatform, configurable: true });
   });
 
@@ -339,6 +344,24 @@ describe(handleUncaughtException, () => {
     handleUncaughtException(undiciCrash());
 
     expect(jest.mocked(log)).not.toHaveBeenCalled();
+  });
+
+  // Found by running the fix against the published bundle: a `status --json` that had finished
+  // printing, crashed afterwards, and left **two** objects on stdout — so `JSON.parse(stdout)` failed
+  // on output that was otherwise complete, which is worse than no envelope at all.
+  it('does not add a second object to stdout when the report already went out', () => {
+    setJsonRequested(true);
+    stdoutHasContent = true;
+
+    handleUncaughtException(undiciCrash());
+
+    expect(jest.mocked(log)).not.toHaveBeenCalled();
+    // Said out loud on stderr, where the crash report already is: an agent that expected an envelope
+    // has to be told why there is none, rather than left to notice.
+    expect(jest.mocked(logError).mock.calls.map((call) => call.join(' ')).join('\n')).toContain(
+      'not added to stdout'
+    );
+    expect(exitSpy).toHaveBeenCalledWith(EXIT_ERROR);
   });
 
   it('handles something thrown that is not an Error at all', () => {

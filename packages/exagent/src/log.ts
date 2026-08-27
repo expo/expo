@@ -38,7 +38,30 @@ export function warn(...message: string[]): void {
   console.warn(...message.map((value) => chalk.yellow(value)));
 }
 
+/**
+ * Whether anything has gone to stdout on this run.
+ *
+ * @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+ * For the one reader that has to know: the crash handler (`src/utils/errors.ts`). A `--json` run puts
+ * **one** object on stdout, and a crash that lands *after* the command printed its report would add a
+ * second — leaving `JSON.parse(stdout)` broken on output that was otherwise complete. So the envelope
+ * is printed only when stdout is still empty, and the crash is reported on stderr either way
+ * [found by verifying the wave-22 fix against the published bundle, 2026-08-27].
+ */
+let wroteToStdout = false;
+
+/** Whether {@link log} has written anything yet. See {@link wroteToStdout}. */
+export function hasWrittenToStdout(): boolean {
+  return wroteToStdout;
+}
+
+/** Forget what this run printed. For tests, and for nothing else. */
+export function resetStdoutTracking(): void {
+  wroteToStdout = false;
+}
+
 export function log(...message: string[]): void {
+  wroteToStdout = true;
   if (isExiting) {
     process.stdout.write(message.join(' ') + '\n');
     return;

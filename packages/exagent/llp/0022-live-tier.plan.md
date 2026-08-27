@@ -275,6 +275,18 @@ this process can prevent. The live test runs, and the retry is gone with the def
 for. The deterministic reproduction is an e2e test whose stub runner holds its scratch directory the way
 a real one does, red on the code as it shipped: one platform `unknown`.
 
+Both halves were then demonstrated live and **independently**, with the mutex switched off in the bundle
+[2026-08-27]: the collision reproduced on 2 of 3 attempts, and the reason each poisoned platform reported
+was `"bunx eas-cli@latest" failed to deliver the eas CLI: it exited 1 having printed only its own install
+progress ("Resolving dependencies")` — the guard standing where the raw line used to be. With the mutex
+on, five consecutive runs answered both platforms from `eas`.
+
+One thing about the test itself is worth carrying, because it is the shape a live test fails in silently:
+the F93 test **deletes `.expo/exagent-eas-builds.json` first**. Without that, the tests above it have
+warmed the cache, iOS answers from one `readFileSync`, and the concurrent pair the defect needs never
+exists — the test passed while exercising a single lookup [observed — 2026-08-27: `source: "cache"` for
+ios, `"eas"` for android]. A live test whose subject is a *race* has to assert that both sides raced.
+
 ### F94 — MAJOR: an uncaught exception exits 7, which is the needs-human code
 
 `src/utils/errors.ts:353` registers `process.on('uncaughtException', handleTooManyOpenFileErrors)`, and

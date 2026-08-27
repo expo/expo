@@ -199,6 +199,14 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
   // not let a runner's line be quoted as the service's answer even when the two do collide
   // (`looksLikeRunnerNoise`). This test asserts both halves against the real runner.
   it("F93: a build lookup never reports the package runner's progress line as EAS's answer", async () => {
+    // **The cache has to go first**, and this is the whole reason the test says so out loud: by the
+    // time this runs, the tests above have written `.expo/exagent-eas-builds.json`, and a cache hit
+    // costs one `readFileSync` — so iOS answers without a spawn and the concurrent pair the defect
+    // needs never exists [observed — 2026-08-27: `source: "cache"` for ios, `"eas"` for android, so
+    // this test was asserting one lookup]. Deleting it puts both platforms back on the network path,
+    // started milliseconds apart, which is the state F93 was found in.
+    fs.rmSync(path.join(readProjectRoot, '.expo', 'exagent-eas-builds.json'), { force: true });
+
     const result = await runLiveEasAsync(run, readProjectRoot, ['status', '--explain', '--json'], {
       label: 'f93-status-explain',
     });
@@ -209,6 +217,8 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
       expect(platform.reason ?? '').not.toMatch(
         /^(Resolving dependencies|Saved lockfile|Resolved, downloaded and extracted)/
       );
+      // Asked, and answered by the service rather than out of the record this test just removed.
+      expect(platform.source).toBe('eas');
     }
     // And the stronger half, which is the mutex: with both platforms asked at once, both get an
     // answer. This is the assertion that was a coin toss before the fix.
