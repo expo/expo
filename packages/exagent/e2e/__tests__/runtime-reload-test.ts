@@ -444,7 +444,7 @@ describe('an app the command socket cannot see', () => {
     };
   }
 
-  it('reloads the app the debugger target list names, with no peer on the command socket', async () => {
+  it('reloads the app the debugger target list names, when --method runtime asks', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({
       // The app is connected: this is the list every other reading command in this CLI uses.
@@ -458,9 +458,11 @@ describe('an app the command socket cannot see', () => {
     const readXcrun = await installStubXcrunAsync(projectRoot);
 
     try {
-      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
-        env: stubExpoEnv(projectRoot),
-      });
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:reload', '--method', 'runtime', '--json'],
+        { env: stubExpoEnv(projectRoot) }
+      );
 
       expect(result.exitCode).toBe(0);
       const report: ReloadReport = JSON.parse(result.stdout);
@@ -468,17 +470,7 @@ describe('an app the command socket cannot see', () => {
       expect(report.method).toBe('runtime');
       expect(report.verifiedBy).toBe('fresh-debugger-target');
       expect(report.appsReconnected).toBeGreaterThan(0);
-
-      // The dev-server attempt says the two lists disagreed rather than that nothing is connected.
-      const broadcast = report.attempts.find((attempt) => attempt.method === 'dev-server')!;
-      expect(broadcast.ok).toBe(false);
-      expect(broadcast.reason).toContain('1');
-      expect(broadcast.reason).not.toBe(
-        'no app is connected to the dev server, so there is nothing to reload'
-      );
-
-      // And nothing went near a simulator: the app is connected, so force-stopping it is not a
-      // step this command takes on its own.
+      // And nothing went near a simulator.
       expect(readXcrun()).toEqual([]);
     } finally {
       releaseLock();
@@ -489,11 +481,9 @@ describe('an app the command socket cannot see', () => {
   it('never force-stops an app the dev server can see, and says why it did not', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({
+      // The app is connected and the command socket cannot see it, which is the K2 shape.
       targets: [CDP_TARGET],
       messagePeers: {},
-      // A runtime that answers no CDP method at all, so neither mechanism can reach it. This is
-      // the honest dead end, and it must not be answered by stopping the app.
-      inspectorSocket: 'no-debugger',
     });
     const releaseLock = await lockToStubAsync(projectRoot, stub);
     const readXcrun = await installStubXcrunAsync(projectRoot);
@@ -509,12 +499,22 @@ describe('an app the command socket cannot see', () => {
       expect(report.reloaded).toBe(false);
       expect(readXcrun()).toEqual([]);
 
+      // The dev-server attempt says the two lists disagreed rather than that nothing is connected.
+      const broadcast = report.attempts.find((attempt) => attempt.method === 'dev-server')!;
+      expect(broadcast.ok).toBe(false);
+      expect(broadcast.reason).toContain('1 connected app');
+      expect(broadcast.reason).not.toBe(
+        'no app is connected to the dev server, so there is nothing to reload'
+      );
+
       // The device method is in the list, marked as not taken, with the reason — an attempt that
       // is simply absent is a decision a reader cannot see.
       const device = report.attempts.find((attempt) => attempt.method === 'device')!;
       expect(device.ok).toBe(false);
       expect(device.reason).toContain('--method device');
+      // Both deliberate methods are on stderr, with what each one costs.
       expect(result.stderr).toContain('--method device');
+      expect(result.stderr).toContain('--method runtime');
     } finally {
       releaseLock();
       await stub.close();

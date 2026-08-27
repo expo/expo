@@ -250,11 +250,22 @@ Three changes, and the first is the one that matters:
    it is the one this command reasons about. The peer list is a property of a *mechanism*, and an
    empty one now reports what it is — `no client is registered on the dev server's command socket,
    while its debugger target list names N connected app(s)` — rather than claiming the app is gone.
-2. **A third mechanism, `--method runtime`.** `expo.reloadAppAsync()` over the debugger, at the
-   target `runtime:eval` reads. An app this CLI can *read* is an app it can *ask*, which is exactly
-   the case the command socket could not serve. It proves nothing on its own — the debugger has no
-   peer list to churn — so `verifiedBy: fresh-debugger-target` and the proof is the wait that was
-   already there: a runtime registering under a page id the dev server had never used.
+2. **A third mechanism, `--method runtime`, which `auto` never picks.** `expo.reloadAppAsync()` over
+   the debugger, at the target `runtime:eval` reads. An app this CLI can *read* is an app it can
+   *ask*, which is exactly the case the command socket could not serve, and it reloaded Kudo's cloud
+   app. It proves nothing on its own — the debugger has no peer list to churn — so
+   `verifiedBy: fresh-debugger-target` and the proof is the wait that was already there: a runtime
+   registering under a page id the dev server had never used.
+
+   **Why it is opt-in, and this is a live finding rather than caution.** On Expo Go the same call
+   **closes the app**: `runtime:eval "expo.reloadAppAsync()"` took the app off the screen and
+   `/json/list` was still empty thirteen seconds later [observed — Expo Go SDK 57, iOS 26.5
+   simulator `C159CF99-…`, 2026-08-27; the same runtime answered `Object.keys(expo)` with
+   `…,reloadAppAsync,…` a moment before]. One runtime reloads and another quits, the difference is
+   not something this command can read off a target, and a mechanism that sometimes closes the app
+   is not one to run on a caller's behalf — that would have traded the device method's known cost
+   for a less predictable one. So `auto` is the broadcast and, when nothing is connected, the device
+   method; `--method runtime` is a choice, with what it costs on Expo Go in its own `--help`.
 3. **`auto` never force-stops an app the dev server can see.** The device method costs the app's
    state and, on a cloud session, can strand it (§Two things a cloud run leaves behind). It stays
    the answer for "no app is connected at all", where reload and start are the same act, and it is
@@ -273,10 +284,16 @@ every recipe of the form `require('react-native').DevSettings.reload()` is untyp
 `runtime:eval --help`, alongside the note that `runtime:reload` makes the manual call unnecessary.
 An app whose `expo` global has no `reloadAppAsync` is reported as exactly that, with no guessing.
 
-**What is still [inferred].** That this reaches a *cloud* runtime specifically. It is the same CDP
-channel `runtime:eval` used against Kudo's cloud app in the same session, so the connection is
-observed and the reload call over it is not; the e2e proves the mechanism against the stub, and the
-first cloud session that runs it closes this.
+**What is still [inferred].** That `--method runtime` *reloads* rather than closes a runtime that is
+not Expo Go. Kudo's cloud app reloaded from the same call by hand, which is one observation on one
+runtime this session did not have; what this session observed is the Expo Go behaviour, which is the
+opposite. The e2e proves the mechanism against the stub — probe, call, and a fresh target as the only
+proof — and the first dev build somebody runs it against decides whether it can ever be automatic.
+
+**The honest limit of the whole section.** For an app that is connected and whose command socket has
+no client, and which is not one `expo.reloadAppAsync()` reloads, this command has **no**
+non-destructive reload. It says so, and points at the one thing that always works and costs nothing:
+editing a file the app has loaded, which the dev server pushes on its own.
 
 ### Live evidence
 

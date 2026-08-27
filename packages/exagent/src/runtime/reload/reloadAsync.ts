@@ -290,12 +290,14 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     }
 
     // @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — Kudo's cloud loop, K2.
-    // The debugger is the other way to ask an app to reload, and it is the way that reaches the app
-    // this CLI can *see*: the same socket `runtime:eval` uses, on the same target list `status`
-    // reads. It exists because the command socket's client list and the debugger target list
-    // disagree — a cloud app over a tunnel was in the second and not the first — and the old ladder
-    // read the first as the answer and then went looking for a simulator.
-    if (method == null && (options.method === 'auto' || options.method === 'runtime')) {
+    // **Never in `auto`**, and that is a live finding rather than caution: on Expo Go this call
+    // takes the app off the screen and nothing re-registers [observed — Expo Go SDK 57, iOS 26.5
+    // simulator, 2026-08-27: `runtime:eval "expo.reloadAppAsync()"` left `/json/list` empty and the
+    // device on its home screen, 13 s later]. It reloaded a cloud app for Kudo, so the mechanism is
+    // real and runtime-dependent — which makes it a method a caller chooses, not one this command
+    // reaches for on its own. Putting it in `auto` would have traded the device method's cost for a
+    // less predictable one.
+    if (method == null && options.method === 'runtime') {
       const attempt = await reloadOverRuntimeAsync(devServerUrl, options, observedApps);
       attempts.push(attempt);
       if (attempt.ok) {
@@ -580,10 +582,16 @@ const RUNTIME_RELOAD_ANSWER_MS = 4000;
  *
  * @ref llp/0005-runtime-loop-tools.rfc.md §Two lists, one question — Kudo's cloud loop, K2 and K3.
  *
- * The mechanism of last resort that does not stop the app. It goes over the same CDP socket
+ * The mechanism a caller chooses, and never one `auto` reaches for. It goes over the same CDP socket
  * `runtime:eval` uses, at the same target the same `/json/list` names, so an app this CLI can read
  * is an app this can ask — which is exactly the case the command socket could not serve: a cloud
- * app over a tunnel was in the target list and had no peer on `/message`.
+ * app over a tunnel was in the target list and had no peer on `/message`, and this reloaded it.
+ *
+ * **On Expo Go the same call closes the app** [observed — Expo Go SDK 57, iOS 26.5 simulator,
+ * 2026-08-27: the app left the screen and `/json/list` was still empty 13 s later]. That is the
+ * whole reason this is opt-in: one runtime reloads and another quits, the difference is not
+ * something this command can read in advance, and a mechanism that sometimes closes the app is not
+ * one to run on a caller's behalf.
  *
  * It is `expo.reloadAppAsync()` because that is what a Hermes runtime has. There is no `require` and
  * no `import()` in it, so `DevSettings.reload()` is unreachable from an expression; the `expo`
@@ -964,7 +972,7 @@ export function explainReloadFailure(report: ReloadResultJson, options: ReloadOp
       // *not* running, and printing it for a connected app is how a reader was sent to start a
       // second copy of an app this command could see all along.
       report.appsConnected > 0
-        ? `How: the app is connected — ${report.devServerUrl}/json/list names ${report.appsConnected === 1 ? 'it' : `${report.appsConnected} of them`} — so it is not a missing app, it is a runtime neither mechanism could reach. "npx exagent runtime:eval 'Object.keys(expo)'" says what its own expo global offers; "npx exagent runtime:reload --method device" force-stops the app and opens it again, which always works and costs the app's state${options.cloud ? ', and on a cloud session leaves the app closed if the relaunch is refused' : ''}. Editing a file the app has loaded is the other way: the dev server pushes that on its own.`
+        ? `How: the app is connected — ${report.devServerUrl}/json/list names ${report.appsConnected === 1 ? 'it' : `${report.appsConnected} of them`} — so this is not a missing app, it is a runtime the broadcast could not reach. Editing a file the app has loaded is the cheapest way in: the dev server pushes that on its own. The two deliberate methods are "npx exagent runtime:reload --method runtime", which asks the app's own expo.reloadAppAsync to do it and on Expo Go closes the app instead, and "npx exagent runtime:reload --method device", which force-stops the app and opens it again — that always works and costs the app's state${options.cloud ? ', and on a cloud session leaves the app closed if the relaunch is refused' : ''}.`
         : `How: open the app on a device or simulator first ("npx exagent navigate /"), then run this command again. A reload needs an app that is already running: it replaces the JavaScript in one, it does not start one.`,
     ].join('\n');
   }

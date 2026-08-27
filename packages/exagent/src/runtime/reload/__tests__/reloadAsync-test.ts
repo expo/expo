@@ -541,13 +541,6 @@ describe(reloadAsync, () => {
         leftAppStopped: null,
       },
       {
-        method: 'runtime',
-        ok: false,
-        // Nothing to ask: this method reloads a runtime through its debugger, and there is none.
-        reason: expect.stringContaining('no app is connected'),
-        leftAppStopped: null,
-      },
-      {
         method: 'device',
         ok: true,
         reason: expect.stringContaining('simctl terminate'),
@@ -787,7 +780,7 @@ describe('an app the command socket cannot see', () => {
     jest.restoreAllMocks();
   });
 
-  it(`reloads through the debugger when the peer list is empty and a target is not`, async () => {
+  it(`reloads through the debugger when --method runtime asks for it`, async () => {
     writeProject();
     const server = mockDevServer([EXPO_GO_TARGET]);
     mockConnect(fakeSocket([{}]).socket);
@@ -795,7 +788,9 @@ describe('an app the command socket cannot see', () => {
     // The app registers a new runtime after the call, which is the only proof of this method.
     setTimeout(() => server.listing([RELOADED_EXPO_GO_TARGET]), 10).unref();
 
-    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    await expect(
+      reloadAsync(projectRoot, options({ json: true, method: 'runtime' }))
+    ).resolves.toBe(EXIT_OK);
     const report = JSON.parse(printed());
     expect(report).toMatchObject({
       reloaded: true,
@@ -827,8 +822,6 @@ describe('an app the command socket cannot see', () => {
     writeProject();
     mockDevServer([EXPO_GO_TARGET]);
     mockConnect(fakeSocket([{}]).socket);
-    // A runtime that answers nothing this can use, so neither mechanism reloads it.
-    mockCdp({ probe: 'no-expo-global' });
     mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
 
     await expect(reloadAsync(projectRoot, options({ json: true, timeoutMs: 300 }))).resolves.toBe(
@@ -836,11 +829,33 @@ describe('an app the command socket cannot see', () => {
     );
     // Nothing was spawned at all: no simctl, no terminate.
     expect(jest.mocked(spawn)).not.toHaveBeenCalled();
-    const device = JSON.parse(printed()).attempts.find(
+    const report = JSON.parse(printed());
+    const device = report.attempts.find(
       (attempt: { method: string }) => attempt.method === 'device'
     );
     expect(device).toMatchObject({ ok: false });
     expect(device.reason).toContain('--method device');
+    // The debugger method is not in the ladder either: on Expo Go it closes the app, so it is a
+    // method a caller picks.
+    expect(report.attempts.map((attempt: { method: string }) => attempt.method)).toEqual([
+      'dev-server',
+      'device',
+    ]);
+  });
+
+  it(`names both deliberate methods for an app neither the broadcast nor a save can reach`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(fakeSocket([{}]).socket);
+
+    await reloadAsync(projectRoot, options({ timeoutMs: 300 }));
+    const explained = jest.mocked(console.error).mock.calls.flat().join('\n');
+
+    expect(explained).toContain('the app is connected');
+    expect(explained).toContain('--method device');
+    // And what the other one costs on Expo Go, said where the caller is deciding.
+    expect(explained).toContain('--method runtime');
+    expect(explained).toContain('closes the app');
   });
 
   it(`still force-stops it when --method device says so`, async () => {
@@ -868,7 +883,7 @@ describe('an app the command socket cannot see', () => {
     mockConnect(fakeSocket([{}]).socket);
     mockCdp({ probe: 'no-reload-function' });
 
-    await reloadAsync(projectRoot, options({ json: true, timeoutMs: 300 }));
+    await reloadAsync(projectRoot, options({ json: true, timeoutMs: 300, method: 'runtime' }));
     const runtime = JSON.parse(printed()).attempts.find(
       (attempt: { method: string }) => attempt.method === 'runtime'
     );
@@ -892,7 +907,9 @@ describe('an app the command socket cannot see', () => {
       .mockImplementation(() => ({ evaluateAsync }) as any);
     setTimeout(() => server.listing([RELOADED_EXPO_GO_TARGET]), 10).unref();
 
-    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    await expect(
+      reloadAsync(projectRoot, options({ json: true, method: 'runtime' }))
+    ).resolves.toBe(EXIT_OK);
     const report = JSON.parse(printed());
     expect(report.method).toBe('runtime');
     expect(
