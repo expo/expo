@@ -170,13 +170,15 @@ export function buildFreshnessStatus(
 export function fingerprintHashSource(
   fingerprint: Pick<
     FingerprintResult,
-    'source' | 'revalidatedAgainst' | 'computedAt' | 'cacheCaveats'
+    'source' | 'revalidatedAgainst' | 'keyKind' | 'computedAt' | 'ageMs' | 'cacheCaveats'
   >
 ): FingerprintHashSource {
   return {
     source: fingerprint.source ?? null,
     revalidatedAgainst: fingerprint.revalidatedAgainst ?? null,
+    keyKind: fingerprint.keyKind ?? null,
     computedAt: fingerprint.computedAt ?? null,
+    ageMs: fingerprint.ageMs ?? null,
     caveats: fingerprint.source === 'cache' ? (fingerprint.cacheCaveats ?? []) : [],
   };
 }

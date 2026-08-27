@@ -2,8 +2,8 @@ import { vol } from 'memfs';
 
 import {
   APP_CONFIG_FILE_NAMES,
+  FINGERPRINT_KEY_KIND,
   HOISTED_SENTINEL_FILE_NAMES,
-  MAX_NATIVE_MANIFEST_FILES,
   PROJECT_SENTINEL_FILE_NAMES,
   buildFingerprintKeyManifestAsync,
   manifestsMatch,
@@ -13,6 +13,14 @@ const projectRoot = '/workspace/app';
 
 beforeEach(() => {
   vol.reset();
+});
+
+describe('the key kind', () => {
+  // Named rather than described in prose, because the printed report and `--json` both carry it: a
+  // reader is told which check ran, not left to assume the stronger one (llp/0021).
+  it('says what one entry actually is', () => {
+    expect(FINGERPRINT_KEY_KIND).toBe('mtime+size');
+  });
 });
 
 describe('the sentinel list', () => {
@@ -66,7 +74,7 @@ describe('the sentinel list', () => {
 });
 
 describe(buildFingerprintKeyManifestAsync, () => {
-  it('hashes only the sentinels that exist', async () => {
+  it('stamps only the sentinels that exist', async () => {
     vol.fromJSON({
       [`${projectRoot}/package.json`]: '{"name":"app"}',
       [`${projectRoot}/package-lock.json`]: '{"lockfileVersion":3}',
@@ -76,22 +84,59 @@ describe(buildFingerprintKeyManifestAsync, () => {
     const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
 
     expect(Object.keys(manifest.files).sort()).toEqual(['package-lock.json', 'package.json']);
-    expect(manifest.files['package.json']).toMatch(/^sha256:[0-9a-f]{64}$/);
+    // Size and modification time, not a content hash: one `stat` per file, so a 295 KB lockfile
+    // costs what an empty `app.json` costs (llp/0023 §The key is a stamp, not a hash).
+    expect(manifest.files['package.json']).toMatch(/^\d+ \d+(\.\d+)?$/);
     expect(manifest.cacheable).toBe(true);
   });
 
-  it('moves a hash when a sentinel changes and leaves the others alone', async () => {
+  it('moves a stamp when a sentinel changes and leaves the others alone', async () => {
     vol.fromJSON({
       [`${projectRoot}/package.json`]: '{"name":"app"}',
       [`${projectRoot}/yarn.lock`]: 'one',
     });
     const before = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    vol.writeFileSync(`${projectRoot}/yarn.lock`, 'two');
+    // A new length, so the stamp moves on the size alone — an in-memory filesystem can write twice
+    // inside one millisecond, and a test that leaned on the timestamp would pass by luck.
+    vol.writeFileSync(`${projectRoot}/yarn.lock`, 'two and then some');
     const after = await buildFingerprintKeyManifestAsync(projectRoot);
 
     expect(after.files['yarn.lock']).not.toBe(before.files['yarn.lock']);
     expect(after.files['package.json']).toBe(before.files['package.json']);
+    expect(manifestsMatch(before, after)).toBe(false);
+  });
+
+  // @ref llp/0023-fingerprint-caching.rfc.md §What the stamps miss
+  // The honest limit of a stamp, pinned so nobody discovers it as a surprise: an edit that keeps
+  // both the length and the timestamp is invisible here, and the record's TTL is what catches it.
+  it('cannot see an edit that preserved the size and the modification time', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/app.json`]: '{"expo":{"name":"aaa"}}',
+    });
+    const before = await buildFingerprintKeyManifestAsync(projectRoot);
+    const stat = vol.statSync(`${projectRoot}/app.json`);
+
+    vol.writeFileSync(`${projectRoot}/app.json`, '{"expo":{"name":"bbb"}}');
+    vol.utimesSync(`${projectRoot}/app.json`, stat.atime, stat.mtime);
+    const after = await buildFingerprintKeyManifestAsync(projectRoot);
+
+    expect(manifestsMatch(before, after)).toBe(true);
+  });
+
+  it('sees a sentinel that was touched without being changed, and costs a recomputation for it', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/yarn.lock`]: 'unchanged bytes',
+    });
+    const before = await buildFingerprintKeyManifestAsync(projectRoot);
+
+    // What a `git checkout` does. Wrong in the safe direction: a slow answer, never a false one.
+    const touched = new Date(Date.now() + 60_000);
+    vol.utimesSync(`${projectRoot}/yarn.lock`, touched, touched);
+    const after = await buildFingerprintKeyManifestAsync(projectRoot);
+
     expect(manifestsMatch(before, after)).toBe(false);
   });
 
@@ -118,9 +163,9 @@ describe(buildFingerprintKeyManifestAsync, () => {
 
     const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    expect(manifest.files['../pnpm-lock.yaml']).toMatch(/^sha256:/);
-    expect(manifest.files['../pnpm-workspace.yaml']).toMatch(/^sha256:/);
-    expect(manifest.files['../package.json']).toMatch(/^sha256:/);
+    expect(manifest.files['../pnpm-lock.yaml']).toMatch(/^\d+ /);
+    expect(manifest.files['../pnpm-workspace.yaml']).toMatch(/^\d+ /);
+    expect(manifest.files['../package.json']).toMatch(/^\d+ /);
   });
 
   it('does not record an ancestor sentinel twice when the project is its own root', async () => {
@@ -176,7 +221,7 @@ describe(buildFingerprintKeyManifestAsync, () => {
 
     const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    expect(manifest.files['patches/react-native+0.81.0.patch']).toMatch(/^sha256:/);
+    expect(manifest.files['patches/react-native+0.81.0.patch']).toMatch(/^\d+ /);
   });
 
   it('names the dynamic config as something it cannot pin', async () => {
@@ -200,72 +245,60 @@ describe(buildFingerprintKeyManifestAsync, () => {
   });
 });
 
-describe('the native directory manifest', () => {
-  it('is null for a project with no native directories', async () => {
-    vol.fromJSON({ [`${projectRoot}/package.json`]: '{"name":"app"}' });
+// @ref llp/0023-fingerprint-caching.rfc.md §The native directories are not pinned
+//
+// `ios/` and `android/` are deliberately outside the key [decided — Kudo, 2026-08-27]. That makes a
+// native edit invisible to the manifest, which is the reason the record's TTL is short: the expiry
+// is the only thing that catches it. These cases pin that as intended behaviour rather than leaving
+// it to be found.
+describe('the native directories', () => {
+  it('are not in the manifest at all', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/ios/App/AppDelegate.swift`]: 'import UIKit',
+      [`${projectRoot}/android/build.gradle`]: 'gradle',
+    });
 
     const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    expect(manifest.nativeDirs).toEqual({ ios: null, android: null });
+    expect(Object.keys(manifest.files).filter((key) => key.startsWith('ios/'))).toEqual([]);
+    expect(Object.keys(manifest.files).filter((key) => key.startsWith('android/'))).toEqual([]);
+    // Still a usable key for everything else. A bare project is cached like any other.
+    expect(manifest.cacheable).toBe(true);
   });
 
-  it('moves when a nested native file changes', async () => {
+  it('do not move the key when a nested native file changes', async () => {
     vol.fromJSON({
       [`${projectRoot}/package.json`]: '{"name":"app"}',
       [`${projectRoot}/ios/App/AppDelegate.swift`]: 'one',
     });
     const before = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    // A new size, so the digest moves whatever the in-memory filesystem does with mtimes.
-    vol.writeFileSync(`${projectRoot}/ios/App/AppDelegate.swift`, 'one plus more');
+    vol.writeFileSync(`${projectRoot}/ios/App/AppDelegate.swift`, 'one plus a real native change');
     const after = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    expect(before.nativeDirs.ios).toMatch(/^sha256:/);
-    expect(after.nativeDirs.ios).not.toBe(before.nativeDirs.ios);
-    expect(manifestsMatch(before, after)).toBe(false);
+    expect(manifestsMatch(before, after)).toBe(true);
   });
 
-  it('moves when a native directory appears, which is what prebuild does', async () => {
+  it('do not move the key when they appear, which is what prebuild does', async () => {
     vol.fromJSON({ [`${projectRoot}/package.json`]: '{"name":"app"}' });
     const before = await buildFingerprintKeyManifestAsync(projectRoot);
 
     vol.fromJSON({ [`${projectRoot}/android/build.gradle`]: 'gradle' });
     const after = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    expect(manifestsMatch(before, after)).toBe(false);
-  });
-
-  it('ignores the generated trees @expo/fingerprint ignores', async () => {
-    vol.fromJSON({
-      [`${projectRoot}/package.json`]: '{"name":"app"}',
-      [`${projectRoot}/ios/App/AppDelegate.swift`]: 'one',
-      [`${projectRoot}/ios/Pods/Manifest.lock`]: 'pods',
-      [`${projectRoot}/ios/build/output.o`]: 'object',
-      [`${projectRoot}/android/.gradle/cache.bin`]: 'gradle',
-      [`${projectRoot}/android/app/build/output.dex`]: 'dex',
-    });
-    const before = await buildFingerprintKeyManifestAsync(projectRoot);
-
-    vol.writeFileSync(`${projectRoot}/ios/Pods/Manifest.lock`, 'pods changed');
-    vol.writeFileSync(`${projectRoot}/android/.gradle/cache.bin`, 'gradle changed');
-    const after = await buildFingerprintKeyManifestAsync(projectRoot);
-
+    // `exagent dev` drops the whole record after a plan step for exactly this reason
+    // (`src/dev/devAsync.ts`); a prebuild run some other way rides on the expiry.
     expect(manifestsMatch(before, after)).toBe(true);
   });
 
-  it('refuses to be a cache key when the walk is bigger than its budget', async () => {
-    const files: Record<string, string> = {
-      [`${projectRoot}/package.json`]: '{"name":"app"}',
-    };
-    for (let index = 0; index <= MAX_NATIVE_MANIFEST_FILES; index++) {
-      files[`${projectRoot}/ios/file-${index}.txt`] = String(index);
-    }
-    vol.fromJSON(files);
+  it('are named as uncovered, whether or not the project has them', async () => {
+    vol.fromJSON({ [`${projectRoot}/package.json`]: '{"name":"app"}' });
 
-    const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
+    const uncovered = (await buildFingerprintKeyManifestAsync(projectRoot)).uncovered.join('\n');
 
-    expect(manifest.cacheable).toBe(false);
-    expect(manifest.uncovered.join('\n')).toMatch(/ios/);
+    expect(uncovered).toMatch(/ios\/ and android\//);
+    expect(uncovered).toMatch(/expiry/);
   });
 });
 

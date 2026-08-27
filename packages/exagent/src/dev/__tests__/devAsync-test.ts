@@ -5,6 +5,8 @@ import type { FollowUp } from '../../followups';
 import { Log } from '../../log';
 import { emitStartPlan } from '../../plan/emit';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../../plan/lastBuild';
+import { clearFingerprintMemo } from '../../project/fingerprint';
+import { clearFingerprintCache } from '../../project/fingerprintCache';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
 import { runDevServerAsync, type DevServerRun } from '../../start/startAsync';
@@ -23,6 +25,8 @@ jest.mock('../../plan/lastBuild', () => ({
   recordLastBuildFingerprint: jest.fn(),
 }));
 jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
+jest.mock('../../project/fingerprint', () => ({ clearFingerprintMemo: jest.fn() }));
+jest.mock('../../project/fingerprintCache', () => ({ clearFingerprintCache: jest.fn() }));
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn(), spawnExpoAsync: jest.fn() }));
 jest.mock('../../start/startAsync', () => ({ runDevServerAsync: jest.fn() }));
 // A person at a terminal by default, which is the path these tests were written for: the plan's
@@ -330,6 +334,33 @@ describe(devAsync, () => {
         hash: fingerprintHash,
         sources: null,
       });
+    });
+
+    // @ref llp/0023-fingerprint-caching.rfc.md §What invalidates an answer
+    // The pinned files of the fingerprint cache are stamps of the project's config and lockfiles and
+    // say nothing about `ios/` or `android/`, so `expo prebuild` — which creates them — moves
+    // nothing the record is keyed on. Its expiry catches that eventually; dropping both caches after
+    // the step catches it now, for the one prebuild this CLI runs itself.
+    it(`should forget both fingerprint caches after a step that changed the project`, async () => {
+      mockStaleDevClientState();
+
+      await devAsync(projectRoot, resolveDevOptions(['--android']));
+
+      expect(clearFingerprintMemo).toHaveBeenCalledWith(projectRoot);
+      expect(clearFingerprintCache).toHaveBeenCalledWith(projectRoot);
+    });
+
+    it(`should not touch the fingerprint caches when a step failed`, async () => {
+      mockStaleDevClientState();
+      jest.mocked(runExpoAsync).mockResolvedValue(2);
+
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).rejects.toMatchObject({
+        code: 'PLAN_STEP_FAILED',
+      });
+
+      // The plan stopped, so the project is in whatever state the failed step left. Nothing was
+      // *completed*, and a cache dropped here would only cost the next run a second.
+      expect(clearFingerprintCache).not.toHaveBeenCalled();
     });
 
     it(`should not record a fingerprint of a build that failed`, async () => {

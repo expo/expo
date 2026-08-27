@@ -44,7 +44,9 @@ type StatusReport = {
     hashSource: {
       source: 'computed' | 'cache' | null;
       revalidatedAgainst: number | null;
+      keyKind: string | null;
       computedAt: string | null;
+      ageMs: number | null;
       caveats: string[];
     };
     platforms: {
@@ -1409,8 +1411,12 @@ process.exit(1);
       ]);
 
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('from cache, revalidated against');
+      // The kind of check, the count, and the age — the three facts that make a cached answer
+      // weighable rather than merely disclosed (llp/0023 §The report says where the answer came from).
+      expect(result.stdout).toMatch(/from cache, revalidated by mtime\+size of \d+ files?, cached \d+[smh]/);
       expect(result.stdout).toContain('--no-fingerprint-cache');
+      // Never a stronger claim than the check that ran.
+      expect(result.stdout).not.toMatch(/content hash|sha256/i);
     });
 
     it('recomputes after the app config is touched', async () => {
@@ -1530,9 +1536,13 @@ process.exit(1);
       );
     });
 
-    // The bare branch: the sentinel list says nothing about a nested native edit, so the manifest
-    // covers `ios/` and `android/` with a stat walk — measured at 0.7–2.0 ms against ~1.1 s for the
-    // fingerprint it stands in for, which is why bare projects are cached at all (llp/0023).
+    // @ref llp/0023-fingerprint-caching.rfc.md §The native directories are not pinned
+    //
+    // `ios/` and `android/` are outside the key [decided — Kudo, 2026-08-27], and bare projects are
+    // cached like any other. So a nested native edit is **not** seen here, and the record's
+    // ten-minute expiry is the whole of what catches it. These cases assert that as intended
+    // behaviour, through the published CLI, so the day the TTL or the key changes the tests say
+    // which one moved.
     describe('a project with committed native directories', () => {
       /** `dev-client-fresh-app` plus native directories: a fixture with both is not committed. */
       async function setupBareAsync(): Promise<string> {
@@ -1555,7 +1565,7 @@ process.exit(1);
         expect(report.freshness?.hashSource.source).toBe('cache');
       });
 
-      it('recomputes after a nested native edit the sentinel list cannot see', async () => {
+      it('does not see a nested native edit, and says the expiry is what covers it', async () => {
         const projectRoot = await setupBareAsync();
         await reportInAsync(projectRoot);
         clearStubFingerprintInvocations(projectRoot);
@@ -1567,17 +1577,20 @@ process.exit(1);
 
         const report = await reportInAsync(projectRoot);
 
-        expect(spawns(projectRoot)).toEqual(['all']);
-        expect(report.freshness?.hashSource.source).toBe('computed');
+        // A hit, on purpose. The honest half is that the report names the gap rather than hiding it.
+        expect(spawns(projectRoot)).toEqual([]);
+        expect(report.freshness?.hashSource.source).toBe('cache');
+        expect(report.freshness!.hashSource.caveats.join('\n')).toMatch(/ios\/ and android\//);
       });
 
-      it('ignores the generated trees the fingerprint itself ignores', async () => {
+      it('costs a bare project nothing to revalidate, however large its native tree', async () => {
         const projectRoot = await setupBareAsync();
         await reportInAsync(projectRoot);
         clearStubFingerprintInvocations(projectRoot);
 
-        // `ios/Pods` is in `DEFAULT_IGNORE_PATHS` of @expo/fingerprint, so a change there cannot
-        // move the hash and must not cost a recomputation.
+        // Nothing under `ios/` is stat-ed, so a Pods tree — tens of thousands of files on a real
+        // project — is neither read nor a reason to recompute. That is the saving the decision to
+        // leave the native directories out of the key buys, and its cost is the case above.
         await fs.promises.mkdir(path.join(projectRoot, 'ios', 'Pods'), { recursive: true });
         await fs.promises.writeFile(
           path.join(projectRoot, 'ios', 'Pods', 'Manifest.lock'),

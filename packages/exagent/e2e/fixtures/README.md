@@ -82,6 +82,11 @@ sets it is answered out of `.expo/exagent-fingerprint.json` with the old hash. A
 hash to move has to change something the pinned set covers as well, `app.json` being the smallest,
 which is also how a real project moves its hash.
 
+**And it has to change that file's *length*.** The cache pins each file by size and modification
+time, and both an in-memory filesystem and a fast disk can write twice inside one millisecond — so a
+rewrite of the same length moves neither half of the key, and a test that relies on it passes or
+fails by luck. Two flaky tests were found this way. Adding a field to `app.json` is the usual fix.
+
 `node_modules/.bin/fingerprint` is not committed. `installStubFingerprintAsync()` in `../utils.ts`
 writes the shims into the temporary copy, the same way the stub `expo` bin is installed, so the
 executable bits never have to live in git.

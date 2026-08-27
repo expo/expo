@@ -166,8 +166,22 @@ export interface FingerprintHashSource {
   source: 'computed' | 'cache' | null;
   /** How many pinned files a `cache` answer was revalidated against. Null otherwise. */
   revalidatedAgainst: number | null;
+  /**
+   * What kind of check revalidated a `cache` answer — `mtime+size`. Null otherwise.
+   *
+   * Reported, not implied: the check is a stamp comparison and not a content hash, and a reader
+   * weighing the answer needs to know which (llp/0023 §The key is a stamp, not a hash).
+   */
+  keyKind: string | null;
   /** When a `cache` answer was originally computed. Null otherwise. */
   computedAt: string | null;
+  /**
+   * How old a `cache` answer was when it was believed, in milliseconds. Null otherwise.
+   *
+   * The bound on everything the stamps cannot see, so it belongs in the report rather than in the
+   * reader's head.
+   */
+  ageMs: number | null;
   /** What the revalidation could not cover. Empty when nothing was cached. */
   caveats: string[];
 }

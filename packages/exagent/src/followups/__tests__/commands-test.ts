@@ -13,7 +13,9 @@ import { buildStatusFollowUps } from '../status';
 const COMPUTED_FINGERPRINT: FingerprintHashSource = {
   source: 'computed',
   revalidatedAgainst: null,
+  keyKind: null,
   computedAt: null,
+  ageMs: null,
   caveats: [],
 };
 

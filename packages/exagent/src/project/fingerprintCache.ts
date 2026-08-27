@@ -8,9 +8,11 @@
 // whole-project and 0.95 s per platform on a real SDK 57 app, 2026-08-27].
 //
 // A hit is only ever *reported* as a hit (llp/0021 §Honest reports): every consumer receives
-// `source: 'cache'` and the number of files the answer was revalidated against, and the report says
-// so. The record self-expires, so an entry that is wrong for a reason the pinned files cannot see
-// stops being believed within a day whatever anybody does.
+// `source: 'cache'`, the kind of check that revalidated it, how many files it covered, and when the
+// hash was computed — and the printed report says all four. The record self-expires, and that expiry
+// carries more weight here than in most caches: it is the *only* bound on the two things the pinned
+// files cannot see, a native edit under `ios/`/`android/` and an edit that preserved a file's size
+// and modification time.
 
 import fs from 'fs';
 import path from 'path';
@@ -20,6 +22,7 @@ import { debugEvent } from './events';
 import type { FingerprintSource } from './fingerprint';
 import {
   buildFingerprintKeyManifestAsync,
+  FINGERPRINT_KEY_KIND,
   manifestSize,
   manifestsMatch,
   type FingerprintKeyManifest,
@@ -35,20 +38,28 @@ export const FINGERPRINT_CACHE_FILE_NAME = 'exagent-fingerprint.json';
  * rules was revalidated against a different question. A record from another version is dropped
  * rather than migrated: the thing it holds is recomputable in a second.
  */
-export const FINGERPRINT_CACHE_SCHEMA_VERSION = 1;
+export const FINGERPRINT_CACHE_SCHEMA_VERSION = 2;
 
 /**
  * How long an entry may be believed, however well its pinned files revalidate.
  *
- * A day. The pinned set is an approximation of the fingerprint's own walk, and the one input it
- * cannot pin is what a dynamic `app.config.js` *evaluates to* — an environment variable, a file it
- * reads, a date. Without a ceiling such an entry could be believed forever; with one, the mistake
- * is bounded and self-correcting, and a caller who cannot accept it at all passes
- * `--no-fingerprint-cache`. A day is chosen over an hour because the workflow this serves is a
- * working session, and over a week because a wrong answer that survives a weekend is not bounded in
- * any useful sense.
+ * **Ten minutes** [decided — Kudo, 2026-08-27].
+ *
+ * This is the risk bound, not a housekeeping detail, and the number follows from what the manifest
+ * gives up. It pins the sentinel files by size and modification time and does not look at `ios/` or
+ * `android/` at all, so two real changes are invisible to it: a native edit, and an edit that
+ * happened to preserve a file's size and timestamp. The TTL is the whole of what catches those.
+ *
+ * Ten minutes is the shortest window that still keeps the saving. The workflow this serves is an
+ * agent loop that runs `status` many times while working on one change — those runs land seconds
+ * apart, so they are all inside it — and ten minutes is comfortably shorter than the thing a wrong
+ * answer would misdirect, which is a native build. An hour was the top of the range considered and
+ * would let a morning's native edit be missed; a day, the value this shipped with while the manifest
+ * still walked the native directories, is indefensible now that it does not.
+ *
+ * A caller who cannot accept even ten minutes passes `--no-fingerprint-cache`.
  */
-export const FINGERPRINT_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+export const FINGERPRINT_CACHE_TTL_MS = 10 * 60 * 1000;
 
 /** What one cached fingerprint answers with. */
 export interface FingerprintCacheHit {
@@ -56,8 +67,12 @@ export interface FingerprintCacheHit {
   sources: FingerprintSource[] | null;
   /** When the fingerprint CLI computed this hash, so a report never implies it was measured now. */
   computedAt: string;
-  /** How many pinned files and native directories the hit was checked against. */
+  /** How old the entry is, in milliseconds, at the moment it was believed. */
+  ageMs: number;
+  /** How many pinned files the hit was checked against. */
   revalidatedAgainst: number;
+  /** What kind of check that was, so the report cannot overstate it. */
+  keyKind: string;
   /** What the check could not cover, carried through from the manifest. */
   uncovered: string[];
 }
@@ -154,7 +169,9 @@ export async function readFingerprintCacheAsync(
     hash: entry.hash,
     sources: entry.sources,
     computedAt: entry.computedAt,
+    ageMs: age,
     revalidatedAgainst: manifestSize(manifest),
+    keyKind: FINGERPRINT_KEY_KIND,
     uncovered: manifest.uncovered,
   };
 }
@@ -333,20 +350,12 @@ function parseManifest(value: unknown): FingerprintKeyManifest | null {
     return null;
   }
   const manifest = value as Record<string, unknown>;
-  const { files, nativeDirs } = manifest;
+  const { files } = manifest;
   if (files == null || typeof files !== 'object' || Array.isArray(files)) {
     return null;
   }
-  if (nativeDirs == null || typeof nativeDirs !== 'object' || Array.isArray(nativeDirs)) {
-    return null;
-  }
-  const dirs = nativeDirs as Record<string, unknown>;
   return {
     files: files as Record<string, string>,
-    nativeDirs: {
-      ios: typeof dirs.ios === 'string' ? dirs.ios : null,
-      android: typeof dirs.android === 'string' ? dirs.android : null,
-    },
     cacheable: true,
     uncovered: Array.isArray(manifest.uncovered) ? (manifest.uncovered as string[]) : [],
   };

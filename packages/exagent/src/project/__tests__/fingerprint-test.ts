@@ -339,7 +339,9 @@ describe('the cross-run cache', () => {
     await generateAsync('abc123');
     clearFingerprintMemo();
 
-    vol.writeFileSync(`${projectRoot}/package-lock.json`, '{"lockfileVersion":4}');
+    // A different length, so the stamp moves on the size alone: the key is size and modification
+    // time, and an in-memory filesystem can write twice inside one millisecond.
+    vol.writeFileSync(`${projectRoot}/package-lock.json`, '{"lockfileVersion":4,"packages":{}}');
     await expect(generateAsync('def456')).resolves.toMatchObject({
       hash: 'def456',
       source: 'computed',

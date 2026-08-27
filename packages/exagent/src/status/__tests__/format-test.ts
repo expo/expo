@@ -11,7 +11,9 @@ import type { FingerprintHashSource, FreshnessImpact, StatusReport } from '../ty
 const COMPUTED_FINGERPRINT: FingerprintHashSource = {
   source: 'computed',
   revalidatedAgainst: null,
+  keyKind: null,
   computedAt: null,
+  ageMs: null,
   caveats: [],
 };
 
@@ -281,27 +283,73 @@ describe(formatStatusReport, () => {
       );
     }
 
-    it(`should say a cached hash was cached, and what it was checked against`, () => {
+    it(`should say a cached hash was cached, by what check, and how old it is`, () => {
       const rendered = withHashSource({
         source: 'cache',
         revalidatedAgainst: 7,
+        keyKind: 'mtime+size',
         computedAt: '2026-08-27T09:00:00.000Z',
+        ageMs: 4 * 60 * 1000,
         caveats: [],
       });
 
       expect(rendered).toContain('fingerprint: abcdef01 (from cache');
-      expect(rendered).toContain('revalidated against 7 pinned files');
-      expect(rendered).toContain('2026-08-27T09:00:00.000Z');
+      // The **kind** of check, not only the count: `mtime+size` is a stamp comparison and not a
+      // content hash, and a reader about to skip a native build is entitled to know which.
+      expect(rendered).toContain('revalidated by mtime+size of 7 files');
+      // And the age, because it is the whole bound on what the stamps cannot see.
+      expect(rendered).toContain('cached 4m ago');
       // The way out is on the line that makes the claim, so a reader who does not accept it does
       // not have to go looking for the flag.
       expect(rendered).toContain('--no-fingerprint-cache');
+    });
+
+    it(`should never claim a content hash it did not compute`, () => {
+      const rendered = withHashSource({
+        source: 'cache',
+        revalidatedAgainst: 7,
+        keyKind: 'mtime+size',
+        computedAt: null,
+        ageMs: 1000,
+        caveats: [],
+      });
+
+      expect(rendered).not.toMatch(/hash of|content|sha/i);
+    });
+
+    it(`should print an age in seconds under a minute`, () => {
+      expect(
+        withHashSource({
+          source: 'cache',
+          revalidatedAgainst: 3,
+          keyKind: 'mtime+size',
+          computedAt: null,
+          ageMs: 12_400,
+          caveats: [],
+        })
+      ).toContain('cached 12s ago');
+    });
+
+    it(`should print an age over an hour in hours and minutes`, () => {
+      expect(
+        withHashSource({
+          source: 'cache',
+          revalidatedAgainst: 3,
+          keyKind: 'mtime+size',
+          computedAt: null,
+          ageMs: 95 * 60 * 1000,
+          caveats: [],
+        })
+      ).toContain('cached 1h35m ago');
     });
 
     it(`should say nothing at all about a hash it measured`, () => {
       const rendered = withHashSource({
         source: 'computed',
         revalidatedAgainst: null,
+        keyKind: null,
         computedAt: null,
+        ageMs: null,
         caveats: [],
       });
 
@@ -313,7 +361,9 @@ describe(formatStatusReport, () => {
       const rendered = withHashSource({
         source: null,
         revalidatedAgainst: null,
+        keyKind: null,
         computedAt: null,
+        ageMs: null,
         caveats: [],
       });
 
@@ -325,10 +375,12 @@ describe(formatStatusReport, () => {
         withHashSource({
           source: 'cache',
           revalidatedAgainst: 1,
+          keyKind: 'mtime+size',
           computedAt: null,
+          ageMs: 0,
           caveats: [],
         })
-      ).toContain('revalidated against 1 pinned file)');
+      ).toContain('revalidated by mtime+size of 1 file,');
     });
   });
 

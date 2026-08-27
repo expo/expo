@@ -1,21 +1,33 @@
 // @ref llp/0023-fingerprint-caching.rfc.md §What a cached hash is revalidated against
 // The pinned files a cached fingerprint is checked against on the next run.
 //
-// A fingerprint costs about a second because it walks the project and `node_modules`. This module
-// is the cheap approximation of that walk: the small set of files that, between them, decide almost
-// everything the hash is computed from. Content-hash them all and the total is a few milliseconds
-// — measured against ~1.1 s for one `fingerprint:generate` on a real SDK 57 app.
+// A fingerprint costs about a second because it walks the project and `node_modules`. This module is
+// the cheap approximation of that walk: the small set of files that, between them, decide almost
+// everything the hash is computed from — the lockfiles (which is what `node_modules` is a function
+// of), the app config, `eas.json`, `package.json`, and the fingerprint's own settings.
 //
-// **It is an approximation, and it is only allowed to be wrong in one direction.** A file that
-// changed and is not pinned would make a stale hash look current, so the set is chosen to cover
-// every input that can move a hash without also moving one of these — the lockfiles (which is what
-// `node_modules` is a function of), the app config, `eas.json`, `package.json`, the fingerprint's
-// own settings, and for a bare project the native directories themselves. What it cannot cover is
-// listed in `uncovered` and reported rather than hidden (llp/0021 §Honest reports).
+// **Each one is pinned by its size and modification time, not by its contents** [decided — Kudo,
+// 2026-08-27, llp/0023 §The key is a stamp, not a hash]. One `stat` per file rather than one read
+// plus one sha256, which keeps the revalidation flat in the size of the files: a 295 KB
+// `package-lock.json` costs the same as an empty `app.json`.
+//
+// **It is an approximation, and the approximation is not one-sided.** A `git checkout` moves
+// modification times without changing bytes and costs a recomputation — slow, never wrong. The other
+// direction exists too: an edit that preserves both size and modification time is invisible here,
+// and so is everything under `ios/` and `android/`, which this deliberately does not look at. Those
+// are bounded by the record's TTL rather than by this manifest (`FINGERPRINT_CACHE_TTL_MS`), and
+// listed in `uncovered` so a report can say so (llp/0021 §Honest reports).
 
-import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+
+/**
+ * What one manifest entry is, in the words a report uses.
+ *
+ * Carried through to `--json` and to the printed line rather than spelled there, so the report can
+ * never claim a stronger check than the one that ran.
+ */
+export const FINGERPRINT_KEY_KIND = 'mtime+size';
 
 /**
  * Every lockfile spelling a package manager writes, plus the two files that mark a workspace root.
@@ -56,16 +68,16 @@ export const APP_CONFIG_FILE_NAMES = [
 /**
  * The `app.config.*` forms that are evaluated rather than read.
  *
- * Their *contents* are pinned like anything else, and that is not the same as pinning their
- * *result*: a config that reads `process.env` or another file can return something different from
- * an unchanged file. See {@link FingerprintKeyManifest.uncovered}.
+ * Their *stamp* is pinned like anything else, and that is not the same as pinning their *result*: a
+ * config that reads `process.env` or another file can return something different from an untouched
+ * file. See {@link FingerprintKeyManifest.uncovered}.
  */
 const DYNAMIC_APP_CONFIG_NAMES = APP_CONFIG_FILE_NAMES.filter(
   (name) => name !== 'app.json' && name !== 'app.config.json'
 );
 
 /**
- * The files hashed at the project root, when they exist.
+ * The files stamped at the project root, when they exist.
  *
  * `fingerprint.config.js` is in here because `@expo/fingerprint` loads it for `preset`,
  * `ignorePaths`, `sourceSkips` and `extraSources` [observed — `@expo/fingerprint` `src/Config.ts`
@@ -99,67 +111,35 @@ export const HOISTED_SENTINEL_FILE_NAMES = [...LOCKFILE_NAMES, 'package.json'];
 const PATCHES_DIRECTORY = 'patches';
 
 /**
- * How many files the manifest will pin before it gives up on being a cache key.
+ * The native directories this manifest deliberately does not look at.
  *
- * A ceiling rather than a truncation: a manifest that silently stopped covering the rest of a
- * directory would be the one failure mode this whole design exists to avoid. Measured against a
- * real prebuilt scaffold, `ios/` and `android/` together hold 70 files [observed — a blank
- * `create-expo-app` prebuilt for both platforms, 2026-08-27], so the budget is two orders of
- * magnitude above the case it is for.
+ * @ref llp/0023-fingerprint-caching.rfc.md §The native directories are not pinned
+ * A prebuilt project's `ios/` and `android/` hold real native sources, and nothing in the sentinel
+ * list above moves when one of them is edited. Walking them was measured and cheap; it is skipped
+ * anyway [decided — Kudo, 2026-08-27], which makes the record's TTL the only bound on a native edit
+ * going unnoticed. Named here so the manifest can say what it is not covering.
  */
-export const MAX_NATIVE_MANIFEST_FILES = 5000;
+const UNPINNED_NATIVE_DIRECTORIES = ['ios', 'android'];
 
 /**
  * How many files a static config may point at before the manifest gives up on them.
  *
- * `expo-font` can name a lot of files, and hashing a font library on every `status` would spend the
- * saving on the saving's own bookkeeping. Over the cap, the assets are reported as uncovered and
- * the cache is refused rather than kept without them.
+ * `expo-font` can name a lot of files, and stat-ing a font library on every `status` would spend the
+ * saving on the saving's own bookkeeping. Over the cap, the assets are reported as uncovered and the
+ * cache is refused rather than kept without them.
  */
 const MAX_EXTERNAL_FILES = 64;
 
-/**
- * Directory names skipped inside `ios/` and `android/`.
- *
- * Mirrors `DEFAULT_IGNORE_PATHS` of `@expo/fingerprint` [observed — `src/Options.ts`, 2026-08-27]:
- * these are build outputs and per-machine state, which the fingerprint does not hash either, and
- * `ios/Pods` alone can be tens of thousands of files.
- */
-const NATIVE_SKIP_DIRECTORIES = new Set([
-  'Pods',
-  'build',
-  '.gradle',
-  '.cxx',
-  '.swiftpm',
-  'DerivedData',
-  'xcuserdata',
-  'project.xcworkspace',
-  'node_modules',
-]);
-
-/** Files skipped inside `ios/` and `android/`, for the same reason as the directories above. */
-const NATIVE_SKIP_FILES = new Set(['.DS_Store', 'gradlew.bat', '.xcode.env.local']);
-
-/** What a cached fingerprint is revalidated against on the next run. */
+/** What a cached fingerprint is revalidated against. */
 export interface FingerprintKeyManifest {
   /**
-   * Pinned file to content hash, keyed by its path relative to the project root.
+   * Pinned file to its stamp — `"<size> <mtimeMs>"` — keyed by its path relative to the project
+   * root.
    *
-   * A path above the project root keeps its `../` prefix, so the key says where the file was and
-   * two projects in one workspace never collide.
+   * A path above the project root keeps its `../` prefix, so the key says where the file was and two
+   * projects in one workspace never collide.
    */
   files: Record<string, string>;
-  /**
-   * A digest of the stat of everything under `ios/` and `android/`, or null when there is no such
-   * directory.
-   *
-   * Size and modification time rather than content: a prebuilt project's native tree holds binaries
-   * and asset catalogues, and a stat walk of it measured 0.7–2.0 ms against ~1.1 s for the
-   * fingerprint it stands in for [observed — 2026-08-27]. It is the weaker check of the two, and it
-   * is weak in the safe direction: a `git checkout` that restores identical bytes moves the
-   * modification time and costs a recomputation, which is a slow answer rather than a wrong one.
-   */
-  nativeDirs: { ios: string | null; android: string | null };
   /**
    * Whether this manifest may be used as a cache key at all.
    *
@@ -170,8 +150,8 @@ export interface FingerprintKeyManifest {
   /**
    * What this manifest does not pin, in the words a report can print.
    *
-   * Always non-empty: `node_modules` is only pinned through its lockfile, and that is a fact about
-   * every project. A caller that wants no approximation at all passes `cache: false`.
+   * Always non-empty: `node_modules` is only pinned through its lockfile, and `ios/` and `android/`
+   * are not pinned at all. A caller that wants no approximation passes `cache: false`.
    */
   uncovered: string[];
 }
@@ -179,7 +159,7 @@ export interface FingerprintKeyManifest {
 /**
  * Read the pinned files of a project.
  *
- * Never throws: a file that cannot be read is left out of the manifest, which makes the next
+ * Never throws: a file that cannot be stat-ed is left out of the manifest, which makes the next
  * comparison differ and costs a recomputation. Nothing here is allowed to fail a command.
  */
 export async function buildFingerprintKeyManifestAsync(
@@ -205,7 +185,7 @@ export async function buildFingerprintKeyManifestAsync(
   if (external.truncated) {
     cacheable = false;
     uncovered.push(
-      `the ${external.paths.length} asset files this project's config points at, which is more than the ${MAX_EXTERNAL_FILES} this cache will hash on every run`
+      `the ${external.paths.length} asset files this project's config points at, which is more than the ${MAX_EXTERNAL_FILES} this cache will stat on every run`
     );
   } else {
     for (const file of external.paths) {
@@ -216,50 +196,38 @@ export async function buildFingerprintKeyManifestAsync(
   const files: Record<string, string> = {};
   await Promise.all(
     [...candidates].map(async (absolute) => {
-      const hash = await hashFileAsync(absolute);
-      if (hash) {
-        files[manifestKey(projectRoot, absolute)] = hash;
+      const stamp = await stampFileAsync(absolute);
+      if (stamp) {
+        files[manifestKey(projectRoot, absolute)] = stamp;
       }
     })
   );
 
-  const nativeDirs: FingerprintKeyManifest['nativeDirs'] = {
-    ios: null,
-    android: null,
-  };
-  for (const platform of ['ios', 'android'] as const) {
-    const walked = await digestNativeDirAsync(path.join(projectRoot, platform));
-    if (walked.tooLarge) {
-      cacheable = false;
-      uncovered.push(
-        `the contents of ${platform}/, which holds more than ${MAX_NATIVE_MANIFEST_FILES} files this cache would have to stat on every run`
-      );
-      continue;
-    }
-    nativeDirs[platform] = walked.digest;
-  }
+  // Named whether or not this project has them: a managed project can gain them at any time, by way
+  // of `expo prebuild`, and this manifest would not notice either the directories or their contents.
+  const nativeDirs = UNPINNED_NATIVE_DIRECTORIES.map((name) => `${name}/`).join(' and ');
+  uncovered.push(
+    `everything in ${nativeDirs}, which this cache does not look at — a native edit, or a prebuild that creates them, is caught by the cache's own expiry and not by these files`
+  );
 
   const dynamicConfig = DYNAMIC_APP_CONFIG_NAMES.filter((name) => files[name] != null);
   if (dynamicConfig.length) {
     uncovered.push(
-      `what ${dynamicConfig.join(' and ')} evaluates to — its bytes are pinned, and a config that reads environment variables or other files can still answer differently with the same bytes`
+      `what ${dynamicConfig.join(' and ')} evaluates to — its size and modification time are pinned, and a config that reads environment variables or other files can still answer differently without being touched`
     );
   }
 
-  return { files, nativeDirs, cacheable, uncovered };
+  return { files, cacheable, uncovered };
 }
 
 /**
- * Whether two manifests pin exactly the same set of files at exactly the same contents.
+ * Whether two manifests pin exactly the same set of files with exactly the same stamps.
  *
  * A key that gained or lost an entry is a mismatch, not a partial match: a sentinel that appeared
  * (a project that grew an `eas.json`) changes what the fingerprint is of just as much as one whose
  * contents moved.
  */
 export function manifestsMatch(a: FingerprintKeyManifest, b: FingerprintKeyManifest): boolean {
-  if (a.nativeDirs.ios !== b.nativeDirs.ios || a.nativeDirs.android !== b.nativeDirs.android) {
-    return false;
-  }
   const keys = Object.keys(a.files);
   if (keys.length !== Object.keys(b.files).length) {
     return false;
@@ -267,10 +235,9 @@ export function manifestsMatch(a: FingerprintKeyManifest, b: FingerprintKeyManif
   return keys.every((key) => a.files[key] === b.files[key]);
 }
 
-/** How many files a manifest pins, native directories counted as one each. */
+/** How many files a manifest pins. */
 export function manifestSize(manifest: FingerprintKeyManifest): number {
-  const dirs = [manifest.nativeDirs.ios, manifest.nativeDirs.android].filter(Boolean).length;
-  return Object.keys(manifest.files).length + dirs;
+  return Object.keys(manifest.files).length;
 }
 
 /**
@@ -383,7 +350,7 @@ function pluginProps(expo: Record<string, any>, name: string): Record<string, an
 }
 
 /**
- * Every string anywhere in a value, one level of nesting deep.
+ * Every string anywhere in a value, a few levels of nesting deep.
  *
  * The asset fields of the config plugins are spelled several ways — a string, an array of strings,
  * an object of per-density strings — and a manifest that only read one of them would leave the
@@ -401,73 +368,19 @@ function collectStrings(value: unknown, depth = 0): string[] {
   );
 }
 
-/** The content hash of one file, or null when there is no readable file there. */
-async function hashFileAsync(file: string): Promise<string | null> {
-  const contents = await fs.promises.readFile(file).catch(() => null);
-  if (contents == null) {
+/**
+ * The stamp of one file — its size and modification time — or null when there is no file there.
+ *
+ * One `stat`, so a 295 KB lockfile costs what an empty `app.json` costs. Both halves are used
+ * because either alone is weaker for no saving: a same-length edit keeps the size, and a filesystem
+ * with a coarse timestamp keeps the time.
+ */
+async function stampFileAsync(file: string): Promise<string | null> {
+  const stat = await fs.promises.stat(file).catch(() => null);
+  if (!stat || !stat.isFile()) {
     return null;
   }
-  return `sha256:${crypto.createHash('sha256').update(contents).digest('hex')}`;
-}
-
-/**
- * A digest of the size and modification time of every file under one native directory.
- *
- * `{ digest: null }` for a directory that is not there, which is what a managed project has and
- * what makes `prebuild` a cache miss: the key gains a value where it had none.
- */
-async function digestNativeDirAsync(
-  directory: string
-): Promise<{ digest: string | null; tooLarge: boolean }> {
-  const lines: string[] = [];
-  const walked = await walkNativeDirAsync(directory, directory, lines);
-  if (!walked.exists) {
-    return { digest: null, tooLarge: false };
-  }
-  if (walked.tooLarge) {
-    return { digest: null, tooLarge: true };
-  }
-  lines.sort();
-  return {
-    digest: `sha256:${crypto.createHash('sha256').update(lines.join('\n')).digest('hex')}`,
-    tooLarge: false,
-  };
-}
-
-async function walkNativeDirAsync(
-  root: string,
-  directory: string,
-  lines: string[]
-): Promise<{ exists: boolean; tooLarge: boolean }> {
-  const entries = await fs.promises.readdir(directory, { withFileTypes: true }).catch(() => null);
-  if (!entries) {
-    return { exists: false, tooLarge: false };
-  }
-
-  for (const entry of entries) {
-    if (lines.length > MAX_NATIVE_MANIFEST_FILES) {
-      return { exists: true, tooLarge: true };
-    }
-    const absolute = path.join(directory, entry.name);
-    if (entry.isDirectory()) {
-      if (NATIVE_SKIP_DIRECTORIES.has(entry.name)) {
-        continue;
-      }
-      const nested = await walkNativeDirAsync(root, absolute, lines);
-      if (nested.tooLarge) {
-        return { exists: true, tooLarge: true };
-      }
-      continue;
-    }
-    if (!entry.isFile() || NATIVE_SKIP_FILES.has(entry.name)) {
-      continue;
-    }
-    const stat = await fs.promises.stat(absolute).catch(() => null);
-    if (stat) {
-      lines.push(`${path.relative(root, absolute)} ${stat.size} ${stat.mtimeMs}`);
-    }
-  }
-  return { exists: true, tooLarge: lines.length > MAX_NATIVE_MANIFEST_FILES };
+  return `${stat.size} ${stat.mtimeMs}`;
 }
 
 /** The key one pinned file is recorded under: posix-spelled and relative to the project root. */

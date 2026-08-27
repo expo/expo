@@ -18,8 +18,15 @@ Two layers, and they solve different problems:
 
 1. **An in-process memo.** One fingerprint per (project, platform, preset, cache-allowed) per
    process, with concurrent callers sharing one promise.
-2. **A cross-run record** under `.expo/`, revalidated on the next run against the content hashes of
-   the files that can move a fingerprint.
+2. **A cross-run record** under `.expo/`, revalidated on the next run against the **size and
+   modification time** of the files that can move a fingerprint.
+
+The design is deliberately cheap and deliberately incomplete, and the shape of that trade is the
+substance of this document: the key is a stamp rather than a content hash, `ios/` and `android/` are
+outside it altogether, and a **ten-minute expiry** — not the key — is what bounds everything the
+stamps cannot see [decided — Kudo, 2026-08-27]. Every one of those three gives something up, so each
+has a section saying what, and the report is required to say which check answered and how old the
+answer is.
 
 The measured effect is at the bottom, and one half of it is smaller than expected. That is recorded
 rather than rounded up.
@@ -79,10 +86,35 @@ the sources exists to protect. The whole record measures 43 KB for one key on a 
 that ever ran here. A project whose version cannot be read is not cached at all, because a hash
 from another version of the tool is not comparable with this one (llp/0001 §Constraints item 5).
 
+The schema version is **2**. Version 1 keyed on sha256 content hashes and carried a digest of the
+native directories; an entry written under those rules was revalidated against a different question,
+so such a record is dropped rather than migrated. The thing it holds is recomputable in a second.
+
+## The key is a stamp, not a hash
+
+Every pinned file below is recorded as **its size and its modification time**, not as a content
+hash [decided — Kudo, 2026-08-27, after the first implementation shipped sha256]. One `stat` per
+file instead of one read plus one digest, which makes revalidation flat in the size of the files
+rather than linear: on the app measured here — nine pinned files, 1.2 MB between them, most of it one
+799 KB icon — one manifest pass costs **0.025 ms** with stamps against **0.595 ms** with sha256
+[observed — 2026-08-27, 50 passes each]. Both are small; the stamp is the one that stays small when
+a project's lockfile is 3 MB or its splash assets are a dozen photographs.
+
+The trade is that a stamp is a weaker statement about a file, and it is worth being exact about how:
+
+- **A file whose bytes changed almost always changes its stamp**, because an edit that keeps the byte
+  count *and* the timestamp is not something a text editor, a package manager or `git` does.
+- **A file whose bytes did not change can still change its stamp.** `git checkout`, `git stash pop`
+  and a fresh clone all rewrite modification times. That costs a recomputation of a hash that would
+  have come back identical — a slow answer, never a wrong one, and it is the direction to be wrong
+  in.
+- **The remaining case is real and small**: an edit that preserves both size and timestamp is
+  invisible. Nothing in this manifest catches it. The TTL does.
+
 ## What a cached hash is revalidated against
 
 The pinned set — `src/project/fingerprintKeys.ts` — is the cheap approximation of the walk the
-fingerprint does. Content hashes (sha256) of every one of these that exists:
+fingerprint does. A stamp of every one of these that exists:
 
 **Lockfiles**, at the project root and in the nearest ancestor that has one, so a hoisted monorepo
 install is covered: `package-lock.json`, `npm-shrinkwrap.json`, `yarn.lock`, `pnpm-lock.yaml`,
@@ -113,25 +145,52 @@ iOS and Android `googleServicesFile`. These are separate sources of the fingerpr
 statically and never evaluated (llp/0001 §Constraints item 5), capped at 64 files — over the cap the
 project is not cached, rather than cached without them.
 
-**`ios/` and `android/`**, when they exist. See below.
-
-`manifestsMatch` requires the same set at the same hashes. A sentinel that *appeared* or
+`manifestsMatch` requires the same set at the same stamps. A sentinel that *appeared* or
 *disappeared* is a miss, not a partial match.
+
+## The native directories are not pinned
+
+**`ios/` and `android/` are outside the key entirely** [decided — Kudo, 2026-08-27]. Not walked, not
+stat-ed, not counted — and the cache is **not** disabled for the projects that have them. A bare
+project is cached exactly like a managed one.
+
+This is a reversal, and the earlier reasoning is kept because the measurement behind it still stands:
+a prebuilt scaffold's `ios/` and `android/` hold 70 files once the trees `@expo/fingerprint` itself
+ignores are excluded, and a stat walk of both took 0.68–2.03 ms against 0.81–1.12 s for the
+fingerprint it would stand in for [observed — a blank `create-expo-app` prebuilt for both platforms,
+2026-08-27]. The walk was affordable. It was dropped anyway, for what it costs in surface rather than
+in time: an exclusion list transcribed from `@expo/fingerprint`'s `DEFAULT_IGNORE_PATHS`, which is
+another project's private constant and would drift; a file-count ceiling and a "too large to cache"
+branch; and a second kind of key entry to explain in every report. The TTL covers the same ground
+with none of that.
+
+**What it means, plainly: a native edit is invisible to the key.** Edit `ios/AppDelegate.swift` and
+the next `status` answers from the record, with the hash from before the edit, for up to ten minutes.
+Two things make that acceptable rather than merely accepted:
+
+1. **The report says so.** The caveat `everything in ios/ and android/, which this cache does not
+   look at — a native edit, or a prebuild that creates them, is caught by the cache's own expiry and
+   not by these files` is on every hit, in `--json` under `freshness.hashSource.caveats`.
+2. **`exagent dev` drops the record after every plan step it runs** (`src/dev/devAsync.ts`). That
+   covers the one native-surface change this CLI makes itself, which is `expo prebuild`, immediately
+   rather than in ten minutes. A prebuild run some other way rides on the expiry.
 
 ## What invalidates an answer
 
 | Change | Outcome |
 | ------ | ------- |
-| Any pinned file's contents move | recompute |
+| A pinned file's size or modification time moves | recompute |
 | A pinned file appears or disappears | recompute |
-| A file under `ios/`/`android/` changes size or modification time | recompute |
-| `ios/` or `android/` appears — i.e. `expo prebuild` ran | recompute |
+| A pinned file is touched without being changed (`git checkout`) | recompute — the safe direction |
 | `@expo/fingerprint` version differs | recompute |
 | A different platform or preset is asked for | recompute (its own entry) |
-| The record is older than the TTL | recompute |
+| The record is older than {@link FINGERPRINT_CACHE_TTL_MS} | recompute |
 | The record is missing, corrupt, or from another schema version | recompute |
+| A completed `exagent dev` plan step | recompute — the record is dropped outright |
 | A file no sentinel names (`src/**`, `index.js`) changes | **hit** |
-| Anything under `ios/Pods`, `**/build`, `.gradle`, `.cxx` changes | **hit** |
+| Anything under `ios/` or `android/` changes | **hit** — bounded by the TTL only |
+| A prebuild run outside `exagent dev` | **hit** — bounded by the TTL only |
+| An edit that preserved a pinned file's size *and* timestamp | **hit** — bounded by the TTL only |
 | `--no-fingerprint-cache` or `EXAGENT_NO_FINGERPRINT_CACHE` | not read (still written) |
 
 Two mechanical hazards, both found rather than anticipated:
@@ -146,60 +205,50 @@ truncated the file so that all three were lost [observed — e2e, 2026-08-27, be
 are now queued per project within the process and land through a temporary file and a `rename`, so a
 second `exagent` process can never read a half-written record.
 
-## The bare-project decision
+## What the stamps miss, and the dynamic config caveat
 
-The pinned set says nothing about a nested edit to `ios/AppDelegate.swift`. Two options were on the
-table: a cheap manifest of the native directories, or no cross-run caching for bare projects at all.
+Three things can be true of a project without the key noticing. They are collected here because they
+are what the TTL is sized against, and because a caveat only counted in a document is a caveat
+nobody read (llp/0021 §A note only in `--json` is a note nobody read).
 
-**Decided: the manifest (option a).** Justified by measurement on a real prebuilt scaffold — a blank
-`create-expo-app` with `expo prebuild --platform all` [observed — 2026-08-27]:
+1. **A native edit.** `ios/` and `android/` are outside the key, per the section above. This is the
+   largest of the three, and the one `exagent dev` short-circuits for its own prebuild.
+2. **An edit that preserved a pinned file's size and modification time.** Rare — no editor or package
+   manager does it — but it is not impossible, and a stamp cannot see it where a content hash could.
+   That is the cost of the stamp, stated rather than buried.
+3. **What a dynamic config evaluates to.** `app.config.js` and `app.config.ts` are *evaluated*. They
+   can read `process.env`, the date, or another file, so an untouched file can still answer
+   differently — and no property of the file, stamp or hash, can see that. Pinning the environment was
+   considered and rejected: the set of variables a config might read is unbounded, and a cache that
+   pretended to cover them would be worse than one that admits it does not. A project with a dynamic
+   config carries `what app.config.js evaluates to — its size and modification time are pinned, and a
+   config that reads environment variables or other files can still answer differently without being
+   touched` in `uncovered`.
 
-- `ios/` and `android/` hold **70 files** once the ignored trees are excluded.
-- A stat walk of both took **0.68–2.03 ms** across five runs.
-- One `fingerprint:generate` on the same project took **0.81–1.12 s**.
+The mitigations are the same three for all of them, and none is a fix: the manifest **names** what it
+did not cover, the report **says the answer came from a record** and by what check, and the record
+**expires**.
 
-The walk costs about 0.1% of what it saves, so refusing the cache to bare projects would trade a
-second for a millisecond. Bare projects are also the ones where a native build is most expensive, so
-they are the last projects to leave uncached.
+## The TTL is the risk bound
 
-Size and modification time rather than content hashes, because a prebuilt tree holds binaries and
-asset catalogues. That is the weaker check, and it is weak in the **safe** direction: a `git
-checkout` that restores identical bytes moves the modification time and costs a recomputation — a
-slow answer, never a wrong one.
+**Ten minutes** — `FINGERPRINT_CACHE_TTL_MS`.
 
-The excluded directories mirror `DEFAULT_IGNORE_PATHS` of `@expo/fingerprint` [observed —
-`src/Options.ts`, 2026-08-27]: `Pods`, `build`, `.gradle`, `.cxx`, `.swiftpm`, `DerivedData`,
-`xcuserdata`, `project.xcworkspace`, `node_modules`, and the files `.DS_Store`, `gradlew.bat`,
-`.xcode.env.local`. The fingerprint does not hash them either, so a change there cannot move the
-hash. A native tree over 5000 files after those exclusions refuses to be a cache key at all, and
-says so.
+This is not housekeeping. With the native directories out of the key, the expiry is the *only* thing
+standing between a native edit and a `status` that reports the hash from before it. The number
+follows from that:
 
-## The dynamic config caveat
+- **Ten minutes keeps the saving.** The workflow this serves is an agent loop that runs `status` many
+  times while working on one change; those runs land seconds apart, well inside the window, so the
+  38% below survives intact.
+- **Ten minutes is shorter than the thing a wrong answer misdirects.** What a stale `fresh` verdict
+  buys you is a skipped native build, and a native build is minutes. An error that expires faster
+  than the action it would have avoided cannot cost much.
+- **An hour was the top of the range considered** and would let a native edit made before a meeting be
+  missed after it. **A day** — the value this shipped with while the manifest still walked `ios/` and
+  `android/` — is indefensible now that it does not; it was defensible then because the walk, not the
+  clock, was catching native edits.
 
-`app.config.js` and `app.config.ts` are **evaluated**. They can read `process.env`, the date, or
-another file, so the same bytes can produce a different config — and a content hash of the file
-cannot see that. Pinning the environment was considered and rejected: the set of variables a config
-might read is unbounded, and a cache that pretended to cover them would be worse than one that
-admits it does not.
-
-Three mitigations, all of them admissions rather than fixes:
-
-1. **The manifest names it.** A project with a dynamic config carries `what app.config.js evaluates
-   to — its bytes are pinned, and a config that reads environment variables or other files can still
-   answer differently with the same bytes` in `uncovered`, and that list reaches `--json`.
-2. **The report says the answer is cached**, with the count. See below.
-3. **A TTL, so the mistake cannot live forever.**
-
-## The TTL
-
-**24 hours.** An entry older than that is dropped whatever its pinned files say.
-
-An hour was considered and is too short for the thing this serves, which is a working session: the
-agent loop that runs `status` fifty times in an afternoon would pay the second again after every
-coffee. A week was considered and is not a bound in any useful sense — a wrong answer that survives
-a weekend is a wrong answer. A day makes the one class of mistake the pinned files cannot catch
-self-correcting on the timescale a person notices, and `--no-fingerprint-cache` is there for anyone
-who cannot accept it for even one run.
+`--no-fingerprint-cache` is there for a caller who cannot accept even ten minutes.
 
 ## The report says where the answer came from
 
@@ -208,11 +257,11 @@ failure that document exists to prevent, so the provenance travels with the hash
 inferable from the flags.
 
 `FingerprintResult` gains `source: 'computed' | 'cache'`, `memoized`, `revalidatedAgainst`,
-`computedAt` and `cacheCaveats`. `memoized` is deliberately not a third `source`: a memo hit of a
-computed answer is still that computation.
+`keyKind`, `computedAt`, `ageMs` and `cacheCaveats`. `memoized` is deliberately not a third `source`:
+a memo hit of a computed answer is still that computation.
 
-`status --json` carries them under `freshness.hashSource` — `{source, revalidatedAgainst,
-computedAt, caveats}` — and under `probe.fingerprint`, whole. The `cli:status` event carries
+`status --json` carries them under `freshness.hashSource` — `{source, revalidatedAgainst, keyKind,
+computedAt, ageMs, caveats}` — and under `probe.fingerprint`, whole. The `cli:status` event carries
 `fingerprintSource` and `fingerprintRevalidatedAgainst`. **No existing field changed shape.**
 
 The printed report adds one line, and only for a cached answer:
@@ -220,13 +269,24 @@ The printed report adds one line, and only for a cached answer:
 ```
 freshness   ios      local stale (no recorded build) · eas unknown (EAS was not asked — pass --explain)
             android  local stale (no recorded build) · eas unknown (EAS was not asked — pass --explain)
-            fingerprint: bf2d19d9 (from cache, revalidated against 9 pinned files, computed 2026-08-27T20:27:51.185Z) — pass --no-fingerprint-cache to hash the project again
+            fingerprint: bf2d19d9 (from cache, revalidated by mtime+size of 9 files, cached 19s ago) — pass --no-fingerprint-cache to hash the project again
 ```
 
 The asymmetry is the point: `computed` is what a reader already assumes a status report did, and
-`cache` is the claim that needs its evidence attached. The count is what makes it checkable —
-"revalidated against 9 pinned files" can be disagreed with, and "cached" cannot. The way out sits on
-the line that makes the claim, so a reader who does not accept it has nothing to go looking for.
+`cache` is the claim that needs its evidence attached. Three facts make that claim checkable rather
+than reassuring:
+
+- **What kind of check ran.** `mtime+size` is a stamp comparison, not a content hash, and a reader
+  about to skip a native build on the strength of it is entitled to know which. The formatter reads
+  the kind off the result rather than spelling it, so the line cannot outlive a change to the check.
+- **How many files it covered.** "Revalidated by mtime+size of 9 files" can be disagreed with;
+  "cached" cannot.
+- **How old the entry is.** Because the age *is* the bound on everything in the section above, this
+  is the most load-bearing of the three — a reader who sees `cached 8m ago` beside a native edit they
+  made five minutes ago has been told exactly what they need.
+
+The way out sits on the line that makes the claim, so a reader who does not accept it has nothing to
+go looking for.
 
 ## Every consumer can turn it off
 
@@ -245,49 +305,73 @@ what the project may remember, and a measurement is the truest thing to put ther
 `friction/run7/tapapp`, a real SDK 57 Expo Router app, `e8e7e5e096` versus this wave [observed —
 2026-08-27, three to five runs each, warm CLI]:
 
-| Command | Before | After, cold record | After, warm record |
-| ------- | ------ | ------------------ | ------------------ |
-| `status --explain` | 4.46 / 4.71 / 4.87 s | 4.63 / 5.25 / 5.42 s | **2.69 / 2.72 / 2.85 / 2.87 s** |
-| `status` | 1.57 / 1.59 / 1.59 s | — | 1.58 / 1.58 / 1.65 s |
-| `status --dev-server-url <dead port>` | 1.16 / 1.17 / 1.27 s | — | **0.26 / 0.27 / 0.27 / 0.28 / 0.36 s** |
+| Command | Before | After, warm record |
+| ------- | ------ | ------------------ |
+| `status --explain` | 4.46 / 4.71 / 4.87 s | **2.81 / 2.85 / 2.99 / 3.03 s** |
+| `status` | 1.57 / 1.59 / 1.59 s | 1.58 / 1.58 / 1.65 s |
+| `status --dev-server-url <dead port>` | 1.16 / 1.17 / 1.27 s | **0.27 / 0.27 / 0.27 / 0.28 / 0.28 s** |
+
+The cold-record column is left out of the table on purpose, because `--explain` makes two network
+calls and its run-to-run spread (4.6 s to 7.1 s across this session) is wider than anything the cache
+does. Measured where there is no network to hide in — the dead-port row, cold record, alternating
+against `--no-fingerprint-cache` so machine drift cancels — the whole cost of reading the manifest,
+missing, and writing the record is **about 40 ms**: 1.19 / 1.20 / 1.21 s with the cache against
+1.15 / 1.16 / 1.17 s without it.
 
 `status --explain --no-fingerprint-cache` measures 4.50 / 4.51 / 4.65 s, which is the before column:
-the flag genuinely restores the old behaviour rather than approximating it.
+the flag restores the old behaviour rather than approximating it.
 
 Three honest readings of that table:
 
-1. **`--explain` is 38% faster warm** — about 1.8 s of 4.7 s, which is the wave's own goal and is
-   met. Two per-platform fingerprints run *after* the parallel section and before their EAS calls,
+1. **`--explain` is about 38% faster warm** — roughly 1.8 s of 4.7 s, which is the wave's own goal and
+   is met. Two per-platform fingerprints run *after* the parallel section and before their EAS calls,
    so they are additive wall time and removing them shows up directly.
 2. **A default `status` is not faster at all.** The saving is real and hidden: a plain `status` scans
    ports 8081–8085 for a dev server, and that scan costs about 1.3 s — more than the fingerprint it
    runs in parallel with. Pinning the dev-server probe out of the way exposes the same saving
-   plainly: 1.16–1.27 s becomes 0.26–0.36 s, **about 0.9 s and 77%**. The fingerprint was never the
+   plainly: 1.16–1.27 s becomes 0.27–0.28 s, **about 0.9 s and 77%**. The fingerprint was never the
    critical path of a default `status`; the port scan is, and that is the next thing worth a wave.
-3. **The first run is slightly slower**, by something in the region of 0.2–0.6 s and inside the
-   run-to-run noise of `--explain`: reading the pinned files twice and writing 43 KB. Paid once per
-   change, recovered on the next run.
+3. **The first run costs about 40 ms more**, per the isolation above. Paid once per change, recovered
+   on the next run. Moving from sha256 to stamps is what made this number small enough to state: one
+   manifest pass over this project's nine pinned files and 1.2 MB went from 0.595 ms to 0.025 ms.
 
 ## Proof
 
 Unit, `src/project/__tests__/`:
 
-- `fingerprintKeys-test.ts` — the sentinel list itself; a hash that moves and one that does not;
-  the walk up to a hoisted lockfile; the files a static config points at; `patches/`; the dynamic-
-  config caveat; the native-directory digest, its exclusions, and its refusal above the budget.
-- `fingerprintCache-test.ts` — hit, and a miss for each row of the invalidation matrix; the TTL; a
-  corrupt record; a schema-version bump; three concurrent writes keeping all three entries; no
-  temporary file left behind.
+- `fingerprintKeys-test.ts` — that one entry is `mtime+size` and says so; a stamp that moves and one
+  that does not; **the two limits, asserted as limits** — an edit that preserved size and timestamp is
+  a match, and a file touched without being changed is a mismatch; the walk up to a hoisted lockfile;
+  the files a static config points at; `patches/`; the dynamic-config caveat; and the native
+  directories, whose absence from the key is pinned by four cases so nobody meets it as a surprise.
+- `fingerprintCache-test.ts` — hit, and a miss for each row of the invalidation matrix; the TTL; the
+  `keyKind` and `ageMs` a hit reports; a corrupt record; a schema-version bump; three concurrent
+  writes keeping all three entries; no temporary file left behind. The three native-directory cases
+  assert **hits**, with a comment saying which decision they encode, so narrowing the TTL or putting
+  the walk back shows up as a test that changed on purpose.
 - `fingerprint-test.ts` — the memo (sequential, concurrent, per platform, per preset, and never
   across the cache-allowed boundary), `clearFingerprintMemo`, and the cross-run cache end to end.
+- `../dev/__tests__/devAsync-test.ts` — both caches dropped after a completed plan step, and neither
+  touched when a step failed.
+- `../status/__tests__/format-test.ts` — the printed line carries the kind, the count and the age;
+  ages in seconds, minutes and hours; and it never says `content hash` or `sha` for a check that was
+  neither.
 
 E2E, `e2e/__tests__/status-test.ts` §the fingerprint cache — fourteen cases against the published
 CLI. The stub `fingerprint` bin now records every invocation, the way the stub `expo` bin does,
 because the whole subject is a **number of subprocesses**: a memo hit, a cache hit and a
-recomputation all print the same hash. One default run spawns one; `--explain` spawns three; the
-next `--explain` spawns none and says `cache`; touching `app.json` or adding a lockfile spawns
-again; touching `index.js` does not; a version bump does; `--no-fingerprint-cache` and
-`EXAGENT_NO_FINGERPRINT_CACHE` do; a nested native edit does and an `ios/Pods` write does not.
+recomputation all print the same hash. One default run spawns one; `--explain` spawns three; the next
+`--explain` spawns none and says `cache`; touching `app.json` or adding a lockfile spawns again;
+touching `index.js` does not; a version bump does; `--no-fingerprint-cache` and
+`EXAGENT_NO_FINGERPRINT_CACHE` do. And the bare block asserts the shape of the trade in both
+directions: a nested native edit is **not** seen, and the report names the gap; a Pods tree is neither
+stat-ed nor a reason to recompute.
+
+**A note on writing tests against a stamp.** Several of these had to be changed to alter a file's
+*length*, not only its bytes: an in-memory filesystem can write twice inside one millisecond, so a
+same-length rewrite moves neither half of the stamp and the test would pass or fail by luck. Where
+that case matters it is now a test of its own, asserting the limit rather than hiding inside an
+assertion about a miss. Two flaky failures were found this way before they could land.
 
 One existing e2e test had to change, and the reason is this document's caveat in miniature: it moved
 the fingerprint by setting an environment variable the stub reads. An environment variable is not a
@@ -305,3 +389,8 @@ a real project moves its hash.
    remove the first per-platform run. It could remove the revalidation.
 3. **A `--refresh` convention.** This wave spells the escape hatch `--no-fingerprint-cache`, which is
    specific and long. If more caches acquire flags, one shared spelling is worth deciding on.
+4. **Should a native edit be caught by something other than the clock?** The cheapest candidate that
+   is not a walk is stamping the two directories themselves — two `stat` calls, which would catch a
+   prebuild but not an edit inside one. It was left out to keep the key one kind of thing. If
+   ten minutes turns out to be too long in practice, this is the first thing to reach for before
+   shortening it further.

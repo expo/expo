@@ -163,11 +163,19 @@ describe(readFingerprintCacheAsync, () => {
     });
     expect(hit?.sources).toEqual([{ type: 'file', filePath: 'app.json' }]);
     expect(hit?.computedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    // What kind of check, and how old — the two facts a reader needs to weigh a hit, since the
+    // stamps do not cover `ios/`/`android/` and the age is what bounds that (llp/0023).
+    expect(hit?.keyKind).toBe('mtime+size');
+    expect(hit?.ageMs).toBeGreaterThanOrEqual(0);
+    expect(hit?.ageMs).toBeLessThan(FINGERPRINT_CACHE_TTL_MS);
   });
 
   it('misses after a lockfile is touched', async () => {
     await seedAsync();
-    vol.writeFileSync(`${projectRoot}/package-lock.json`, '{"lockfileVersion":4}');
+    // A different length. The stamp is size and modification time, and an in-memory filesystem can
+    // write twice inside one millisecond, so a same-length rewrite here would pass or fail by luck —
+    // it is its own case in `fingerprintKeys-test.ts`, as a limit rather than as a miss.
+    vol.writeFileSync(`${projectRoot}/package-lock.json`, '{"lockfileVersion":4,"packages":{}}');
 
     const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
     await expect(
@@ -180,7 +188,7 @@ describe(readFingerprintCacheAsync, () => {
 
   it('misses after app.json is touched', async () => {
     await seedAsync();
-    vol.writeFileSync(`${projectRoot}/app.json`, '{"expo":{"name":"renamed"}}');
+    vol.writeFileSync(`${projectRoot}/app.json`, '{"expo":{"name":"renamed for a longer name"}}');
 
     const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
     await expect(
@@ -335,19 +343,12 @@ describe(readFingerprintCacheAsync, () => {
     ).resolves.toBeNull();
   });
 
-  it('misses after a native directory appears, which is what prebuild does', async () => {
-    await seedAsync();
-    vol.fromJSON({ [`${projectRoot}/ios/App/AppDelegate.swift`]: 'delegate' });
-
-    const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
-    await expect(
-      readFingerprintCacheAsync(projectRoot, {
-        cliVersion: '0.20.10',
-        manifest,
-      })
-    ).resolves.toBeNull();
-  });
-
+  // @ref llp/0023-fingerprint-caching.rfc.md §The native directories are not pinned
+  //
+  // The next three are **hits**, and that is the design rather than a gap left open: the key says
+  // nothing about `ios/` or `android/`, so the expiry above is the whole of what catches a native
+  // change. They are asserted so that the day somebody narrows the TTL or puts the walk back, the
+  // tests say which behaviour moved.
   it('hits for a bare project whose native files are unchanged', async () => {
     vol.fromJSON({ [`${projectRoot}/ios/App/AppDelegate.swift`]: 'delegate' });
     const manifest = await seedAsync();
@@ -360,7 +361,20 @@ describe(readFingerprintCacheAsync, () => {
     ).resolves.toMatchObject({ hash: 'cached-hash' });
   });
 
-  it('misses for a bare project after a nested native edit', async () => {
+  it('still hits after a native directory appears, which the expiry has to catch', async () => {
+    await seedAsync();
+    vol.fromJSON({ [`${projectRoot}/ios/App/AppDelegate.swift`]: 'delegate' });
+
+    const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
+    await expect(
+      readFingerprintCacheAsync(projectRoot, {
+        cliVersion: '0.20.10',
+        manifest,
+      })
+    ).resolves.toMatchObject({ hash: 'cached-hash' });
+  });
+
+  it('still hits after a nested native edit, which the expiry has to catch', async () => {
     vol.fromJSON({ [`${projectRoot}/ios/App/AppDelegate.swift`]: 'delegate' });
     await seedAsync();
     vol.writeFileSync(`${projectRoot}/ios/App/AppDelegate.swift`, 'delegate, edited');
@@ -371,6 +385,18 @@ describe(readFingerprintCacheAsync, () => {
         cliVersion: '0.20.10',
         manifest,
       })
-    ).resolves.toBeNull();
+    ).resolves.toMatchObject({ hash: 'cached-hash' });
+  });
+
+  it('names what the hit could not cover, native directories included', async () => {
+    const manifest = await seedAsync();
+
+    const hit = await readFingerprintCacheAsync(projectRoot, {
+      cliVersion: '0.20.10',
+      manifest,
+    });
+
+    expect(hit!.uncovered.join('\n')).toMatch(/ios\/ and android\//);
+    expect(hit!.uncovered.join('\n')).toMatch(/node_modules/);
   });
 });

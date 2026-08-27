@@ -15,7 +15,9 @@ import type { FingerprintHashSource, FreshnessStatus } from '../types';
 const COMPUTED_FINGERPRINT: FingerprintHashSource = {
   source: 'computed',
   revalidatedAgainst: null,
+  keyKind: null,
   computedAt: null,
+  ageMs: null,
   caveats: [],
 };
 

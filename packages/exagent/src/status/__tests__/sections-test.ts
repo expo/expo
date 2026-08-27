@@ -125,7 +125,9 @@ describe(buildFreshnessStatus, () => {
           hash: 'abcdef0123456789',
           source: 'cache',
           revalidatedAgainst: 7,
+          keyKind: 'mtime+size',
           computedAt: '2026-08-27T09:00:00.000Z',
+          ageMs: 240_000,
           cacheCaveats: ['the contents of node_modules'],
         },
       }),
@@ -135,7 +137,9 @@ describe(buildFreshnessStatus, () => {
     expect(status.hashSource).toEqual({
       source: 'cache',
       revalidatedAgainst: 7,
+      keyKind: 'mtime+size',
       computedAt: '2026-08-27T09:00:00.000Z',
+      ageMs: 240_000,
       caveats: ['the contents of node_modules'],
     });
   });
@@ -153,7 +157,9 @@ describe(buildFreshnessStatus, () => {
     expect(status.hashSource).toEqual({
       source: 'computed',
       revalidatedAgainst: null,
+      keyKind: null,
       computedAt: null,
+      ageMs: null,
       caveats: [],
     });
   });

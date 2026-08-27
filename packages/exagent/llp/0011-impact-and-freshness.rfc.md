@@ -176,7 +176,9 @@ about any of them would be a regression paid by every caller. `impact` fingerpri
 [[0023-fingerprint-caching]] stores `{hash, sources}` per key in `.expo/exagent-fingerprint.json`,
 because a warm run that kept only the hash would keep the freshness verdict and lose the diff this
 section is about. That record is what makes the fingerprint wrapper's `source: 'computed' | 'cache'`
-field exist, and every consumer here now receives it.
+field exist, and every consumer here now receives it — along with the kind of check that revalidated
+it and how old it is, because that cache pins its files by size and modification time and does not
+look at `ios/` or `android/` at all.
 
 ## The three comparisons
 
