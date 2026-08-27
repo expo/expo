@@ -115,10 +115,10 @@ class ExtendedPropertyRepositoryTest {
 
   // endregion
 
-  // region findByName
+  // region findAllByName
 
   @Test
-  fun `given a name, when findByName, then selects on both EVENT_ID and NAME`() = runTest {
+  fun `given a name, when findAllByName, then selects on both EVENT_ID and NAME`() = runTest {
     // Given
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
@@ -127,10 +127,10 @@ class ExtendedPropertyRepositoryTest {
     } returns emptyCursor()
 
     // When
-    val result = repository.findByName(EventId(42L), "private:x-owner")
+    val result = repository.findAllByName(EventId(42L), "private:x-owner")
 
     // Then
-    Assert.assertNull(result)
+    Assert.assertEquals(emptyList<ExtendedPropertyEntity>(), result)
     Assert.assertEquals(
       "${CalendarContract.ExtendedProperties.EVENT_ID} = ? AND ${CalendarContract.ExtendedProperties.NAME} = ?",
       selectionSlot.captured
@@ -211,6 +211,41 @@ class ExtendedPropertyRepositoryTest {
     repository.upsert(EventId(42L), account, ExtendedPropertyInput("private:x-owner", "mirror-42"))
   }
 
+  @Test
+  fun `given duplicate rows under one name, when upsert, then updates the first and removes the rest`() = runTest {
+    // Given
+    // The table has no unique constraint on (EVENT_ID, NAME), so a name can carry several rows.
+    val updatedUriSlot = slot<Uri>()
+    val deletedUris = mutableListOf<Uri>()
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(
+        CalendarContract.ExtendedProperties._ID to 5L,
+        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
+        CalendarContract.ExtendedProperties.VALUE to "mirror-1"
+      ),
+      mapOf(
+        CalendarContract.ExtendedProperties._ID to 6L,
+        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
+        CalendarContract.ExtendedProperties.VALUE to "mirror-1-duplicate"
+      )
+    )
+    every { contentResolver.update(capture(updatedUriSlot), any(), any(), any()) } returns 1
+    every { contentResolver.delete(capture(deletedUris), any(), any()) } returns 1
+
+    // When
+    val result = repository.upsert(
+      EventId(42L),
+      account,
+      ExtendedPropertyInput(name = "private:x-owner", value = "mirror-2")
+    )
+
+    // Then
+    Assert.assertEquals(ExtendedPropertyId(5L), result)
+    Assert.assertEquals("5", updatedUriSlot.captured.lastPathSegment)
+    Assert.assertEquals(listOf("6"), deletedUris.map { it.lastPathSegment })
+    verify(exactly = 0) { contentResolver.insert(any(), any()) }
+  }
+
   // endregion
 
   // region deleteByName
@@ -248,6 +283,33 @@ class ExtendedPropertyRepositoryTest {
     // Then
     Assert.assertFalse(result)
     verify(exactly = 0) { contentResolver.delete(any(), any(), any()) }
+  }
+
+  @Test
+  fun `given duplicate rows under one name, when deleteByName, then removes every row`() = runTest {
+    // Given
+    val deletedUris = mutableListOf<Uri>()
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(
+        CalendarContract.ExtendedProperties._ID to 5L,
+        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
+        CalendarContract.ExtendedProperties.VALUE to "mirror-42"
+      ),
+      mapOf(
+        CalendarContract.ExtendedProperties._ID to 6L,
+        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
+        CalendarContract.ExtendedProperties.VALUE to "mirror-42-duplicate"
+      )
+    )
+    every { contentResolver.delete(capture(deletedUris), any(), any()) } returns 1
+
+    // When
+    val result = repository.deleteByName(EventId(42L), account, "private:x-owner")
+
+    // Then
+    // Leaving a duplicate behind would make the delete report a success it did not deliver.
+    Assert.assertTrue(result)
+    Assert.assertEquals(listOf("5", "6"), deletedUris.map { it.lastPathSegment })
   }
 
   // endregion

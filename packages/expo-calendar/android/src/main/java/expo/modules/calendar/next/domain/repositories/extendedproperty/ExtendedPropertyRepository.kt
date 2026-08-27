@@ -39,38 +39,51 @@ class ExtendedPropertyRepository(private val contentResolver: ContentResolver) {
     }
   }
 
-  suspend fun findByName(eventId: EventId, name: String): ExtendedPropertyEntity? = withContext(Dispatchers.IO) {
+  /**
+   * Every row stored under [name] on the event. The table has no unique constraint on
+   * (`EVENT_ID`, `NAME`), so a name can carry more than one row: two concurrent writes, or another
+   * app writing the same name, both produce duplicates.
+   */
+  suspend fun findAllByName(eventId: EventId, name: String): List<ExtendedPropertyEntity> = withContext(Dispatchers.IO) {
     contentResolver.safeQuery(
       uri = CalendarContract.ExtendedProperties.CONTENT_URI,
       projection = FULL_PROJECTION,
       selection = "${CalendarContract.ExtendedProperties.EVENT_ID} = ? AND ${CalendarContract.ExtendedProperties.NAME} = ?",
       selectionArgs = arrayOf(eventId.value.toString(), name)
     ).use { cursor ->
-      cursor.takeIf { it.moveToFirst() }
-        ?.toExtendedPropertyEntity(eventId)
+      cursor.asSequence()
+        .map { it.toExtendedPropertyEntity(eventId) }
+        .toList()
     }
   }
 
   /**
-   * Writes [input] on the event, replacing the value of a property of the same name if there is
-   * one — the table itself does not constrain names to be unique per event.
+   * Writes [input] on the event, leaving exactly one row under that name.
+   *
+   * Any duplicate the table already holds under the same name is removed, so a name that ended up
+   * with several rows converges back to one on the next write rather than staying ambiguous.
    */
   suspend fun upsert(
     eventId: EventId,
     account: CalendarAccount,
     input: ExtendedPropertyInput
   ): ExtendedPropertyId = withContext(Dispatchers.IO) {
-    val existing = findByName(eventId, input.name)
-    if (existing != null) {
+    val existing = findAllByName(eventId, input.name)
+    existing.drop(1).forEach { duplicate ->
+      deleteById(duplicate.id, account)
+    }
+
+    val kept = existing.firstOrNull()
+    if (kept != null) {
       val updated = contentResolver.safeUpdate(
-        uri = ContentUris.withAppendedId(CalendarContract.ExtendedProperties.CONTENT_URI, existing.id.value)
+        uri = ContentUris.withAppendedId(CalendarContract.ExtendedProperties.CONTENT_URI, kept.id.value)
           .asSyncAdapter(account),
         values = ContentValues().apply {
           put(CalendarContract.ExtendedProperties.VALUE, input.value)
         }
       ) > 0
       if (updated) {
-        return@withContext existing.id
+        return@withContext kept.id
       }
       // The row was removed between the two calls, so it is written again below.
     }
@@ -85,18 +98,25 @@ class ExtendedPropertyRepository(private val contentResolver: ContentResolver) {
     )
   }
 
+  /**
+   * Removes every row stored under [name] on the event.
+   *
+   * @return whether at least one row was removed.
+   */
   suspend fun deleteByName(
     eventId: EventId,
     account: CalendarAccount,
     name: String
   ): Boolean = withContext(Dispatchers.IO) {
-    val existing = findByName(eventId, name)
-      ?: return@withContext false
-    contentResolver.safeDelete(
-      uri = ContentUris.withAppendedId(CalendarContract.ExtendedProperties.CONTENT_URI, existing.id.value)
-        .asSyncAdapter(account)
-    ) > 0
+    findAllByName(eventId, name)
+      .sumOf { deleteById(it.id, account) } > 0
   }
+
+  private suspend fun deleteById(id: ExtendedPropertyId, account: CalendarAccount): Int =
+    contentResolver.safeDelete(
+      uri = ContentUris.withAppendedId(CalendarContract.ExtendedProperties.CONTENT_URI, id.value)
+        .asSyncAdapter(account)
+    )
 
   private fun ExtendedPropertyInput.toContentValues(eventId: EventId) = ContentValues().apply {
     put(CalendarContract.ExtendedProperties.EVENT_ID, eventId.value)
