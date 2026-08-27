@@ -19,7 +19,7 @@
     "expo-notifications": "~55.0.27",
     "expo-observe": "~0.2.6",
     "expo-splash-screen": "~55.0.25",
-    "expo-updates": "55.0.28",
+    "expo-updates": "55.0.29",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.10"
