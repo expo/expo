@@ -18,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- Normalize the project root to its realpath when creating a fingerprint, so spelling the same project through a symlink (for example `/tmp` vs `/private/tmp` on macOS) no longer leaks `../`-style traversal paths into config-plugin sources and changes the hash. ([#49436](https://github.com/expo/expo/pull/49436) by [@janicduplessis](https://github.com/janicduplessis))
 - Set development mode before loading Expo config and `.env` files. ([#48839](https://github.com/expo/expo/pull/48839) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fixed ignore patterns (built-in and `.fingerprintignore`) not matching on Windows, which made fingerprints differ between Windows machines and EAS builds ("Runtime version mismatch"). ([#46816](https://github.com/expo/expo/pull/46816) by [@blurbyte](https://github.com/blurbyte))
 

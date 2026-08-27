@@ -4,6 +4,7 @@ import { normalizeOptionsAsync } from './Options';
 import { compareSource, sortSources } from './Sort';
 import { createFingerprintFromSourcesAsync } from './hash/Hash';
 import { getHashSourcesAsync } from './sourcer/Sourcer';
+import { maybeGetRealPathAsync } from './sourcer/Utils';
 
 /**
  * Create a fingerprint for a project.
@@ -17,6 +18,10 @@ export async function createFingerprintAsync(
   projectRoot: string,
   options?: Options
 ): Promise<Fingerprint> {
+  // Use the realpath of the project root so that relative source paths - and with them the
+  // resulting hash - do not change with how the caller spelled the path (e.g. through a
+  // symlink like `/tmp` -> `/private/tmp` on macOS).
+  projectRoot = await maybeGetRealPathAsync(projectRoot);
   const opts = await normalizeOptionsAsync(projectRoot, options);
   const sources = await getHashSourcesAsync(projectRoot, opts);
   const normalizedSources = sortSources(dedupSources(sources, projectRoot));
