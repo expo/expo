@@ -272,8 +272,10 @@ describe('exagent dev — the EAS route', () => {
   });
 
   // @ref llp/0015-backend-selection-and-config.rfc.md §Running an `eas` step — the *throwing*
-  // resolver: a plan that chose the cloud cannot do its job without the CLI.
-  it('refuses the run with an install line when no eas binary exists', async () => {
+  // resolver: a plan that chose the cloud cannot do its job without the CLI. Since wave 18 the
+  // ladder's third rung downloads the published one, so reaching this failure takes a `PATH` with
+  // no package runner on it either — which is what the empty `.stub-bin` below is.
+  it('refuses the run when neither an eas binary nor a package runner exists', async () => {
     const projectRoot = await setupFixtureAsync('dev-client-app');
     await installStubFingerprintAsync(projectRoot);
 
@@ -288,7 +290,8 @@ describe('exagent dev — the EAS route', () => {
     expect(result.exitCode).toBe(1);
     const report = JSON.parse(result.stdout);
     expect(report.error.code).toBe('EAS_CLI_MISSING');
-    expect(report.error.suggestedCommand).toBe('npm install -g eas-cli');
+    expect(report.error.message).toContain('no package runner');
+    expect(report.error.suggestedCommand).toBe('npm install --save-dev eas-cli');
   });
 
   // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — the thing on the other side of the

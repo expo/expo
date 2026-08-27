@@ -93,7 +93,9 @@ describe(resolveAuthCliAsync, () => {
       tool: 'eas',
       source: 'runner-eas',
       command: 'npx',
-      prefixArgs: ['eas-cli@latest'],
+      // `--yes` since wave 18: npx prompts before installing a package it has not seen, and this
+      // CLI never attaches stdin, so the prompt would be a hang (`src/utils/easCli.ts`).
+      prefixArgs: ['--yes', 'eas-cli@latest'],
       runner: 'npx',
     });
   });
@@ -113,7 +115,9 @@ describe(resolveAuthCliAsync, () => {
       tool: 'eas',
       source: 'runner-eas',
       command: 'npx',
-      prefixArgs: ['eas-cli@latest'],
+      // `--yes` since wave 18: npx prompts before installing a package it has not seen, and this
+      // CLI never attaches stdin, so the prompt would be a hang (`src/utils/easCli.ts`).
+      prefixArgs: ['--yes', 'eas-cli@latest'],
       runner: 'npx',
     });
   });
@@ -232,10 +236,10 @@ describe(authCliLabel, () => {
         tool: 'eas',
         source: 'runner-eas',
         command: 'npx',
-        prefixArgs: ['eas-cli@latest'],
+        prefixArgs: ['--yes', 'eas-cli@latest'],
         runner: 'npx',
       })
-    ).toBe('npx eas-cli@latest');
+    ).toBe('npx --yes eas-cli@latest');
     // The runner is named, not the path it was found at.
     expect(
       authCliLabel({

@@ -5,7 +5,7 @@
 import { diffFingerprintsAsync, generateFingerprintAsync } from '../project/fingerprint';
 import type { FingerprintDiffItem, FingerprintSource } from '../project/fingerprint';
 import { readLastBuildRecord } from '../plan/lastBuild';
-import type { EasCli } from '../utils/easCli';
+import { easCliArgs, easCliLabel, type EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { looksLikeWrapperCrash, wrapperCrashDetail } from '../utils/wrapperCrash';
 import type { ComparisonSide } from './types';
@@ -191,7 +191,7 @@ export async function compareWithEasBuildAsync(
   buildId: string
 ): Promise<Comparison> {
   const args = buildEasCompareArgs(buildId);
-  const result = await spawnSubprocessAsync(easCli.command, args, {
+  const result = await spawnSubprocessAsync(easCli.command, easCliArgs(easCli, args), {
     cwd: projectRoot,
     output: 'capture',
   });
@@ -214,12 +214,12 @@ export async function compareWithEasBuildAsync(
       error: wrapperCrash
         ? [
             `Could not compare against EAS build ${buildId}.`,
-            `Why: "${[easCli.command, ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}.`,
-            wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCli.command),
+            `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}.`,
+            wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
           ].join('\n')
         : [
             `Could not compare against EAS build ${buildId}.`,
-            `Why: "${[easCli.command, ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}${
+            `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}${
               result.stderr.trim() ? `: ${outputTail(result.stderr)}` : ''
             }`,
             `How: check the id with "npx eas build:list --limit 5 --json --non-interactive", and that this machine is signed in to the account that owns it.`,

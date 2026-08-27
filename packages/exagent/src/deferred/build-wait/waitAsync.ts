@@ -12,7 +12,7 @@
 
 import { outputTail } from '../../deploy/parseOutput';
 import { event } from '../../events';
-import type { EasCli } from '../../utils/easCli';
+import { easCliArgs, easCliLabel, type EasCli } from '../../utils/easCli';
 import { CommandError } from '../../utils/errors';
 import { spawnSubprocessAsync, type SubprocessResult } from '../../utils/subprocess';
 import {
@@ -101,7 +101,7 @@ export async function pollBuildAsync(
   try {
     for (;;) {
       polls++;
-      const result = await spawnSubprocessAsync(easCli.command, args, {
+      const result = await spawnSubprocessAsync(easCli.command, easCliArgs(easCli, args), {
         cwd: projectRoot,
         output: 'capture',
       });
@@ -249,7 +249,12 @@ function pollFailedError(
   easCli: EasCli
 ): CommandError {
   const command = viewCommand(options);
-  const whoami = checkBinaryCommand(easCli.command, ['whoami']);
+  // The runner rung is already written the way a reader would type it; a resolved binary is a path,
+  // which is what needs the quoting (`easCliLabel`).
+  const whoami =
+    easCli.source === 'runner'
+      ? `${easCliLabel(easCli)} whoami`
+      : checkBinaryCommand(easCli.command, ['whoami']);
   const crashed = looksLikeWrapperCrash({ tool: 'eas', ...result });
   const detail = crashed
     ? wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCli.command)

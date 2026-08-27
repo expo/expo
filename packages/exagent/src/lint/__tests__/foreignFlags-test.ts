@@ -71,6 +71,12 @@ describe("the flags this CLI writes onto a command line", () => {
     // normalizes onto a command's own argv, and the three flags `smoke --start` gives `exagent
     // dev`. They are here because leaving them out would mean keeping an exclusion list, which is
     // a place for a real one to hide.
+    //
+    // `--yes  src/utils/easCli.ts` is the one row whose command line belongs to **npm's exec**
+    // rather than to a member of the Expo family: it is what keeps the resolver's runner rung from
+    // stopping on `Ok to proceed?` (llp/0015 §Resolving the EAS CLI). Run as the rule requires
+    // [observed — live, 2026-08-27: `npx --yes eas-cli@latest --version` answered
+    // `eas-cli/22.6.0 darwin-arm64 node-v26.5.0` and exited 0].
     expect(
       sweep.foreignFlags.map(({ flag, file }) => `${flag}  ${file}`).sort()
     ).toMatchInlineSnapshot(`
@@ -94,10 +100,11 @@ describe("the flags this CLI writes onto a command line", () => {
         "--type  src/config/introspectAsync.ts",
         "--type  src/impact/runtimeVersion.ts",
         "--verbose  src/doctor/checkAsync.ts",
-        "--version  src/passthrough/auth.ts",
+        "--version  src/utils/easCli.ts",
         "--wait-ready  src/smoke/smokeAsync.ts",
         "--yes  src/new/createExpo.ts",
         "--yes  src/smoke/smokeAsync.ts",
+        "--yes  src/utils/easCli.ts",
         "-Fpc  src/dev/portListener.ts",
         "-ano  src/dev/portListener.ts",
         "-j  src/navigate/device.ts",

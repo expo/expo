@@ -467,25 +467,35 @@ async function runStepAsync(
  * @ref llp/0015-backend-selection-and-config.rfc.md §Running an `eas` step
  * The EAS CLI is reached as a subprocess like every other member of the family (llp/0001
  * constraint 5), and it is resolved with the *throwing* resolver: a plan that chose the cloud
- * cannot do its job without it, so "no eas binary" is an error with an install line rather than a
- * step that quietly does nothing. The output mode is the plan's own — `inherit` is what makes the
- * EAS CLI's own progress and its credential questions reach the person watching.
+ * cannot do its job without it, so an unreachable CLI is an error rather than a step that quietly
+ * does nothing. Since wave 18 that error is a last resort — the ladder's third rung runs the
+ * published `eas-cli` through `npx`, so a machine that simply never installed it builds anyway, and
+ * a cloud build is a step whose minutes make the first download's a rounding error. The output mode
+ * is the plan's own — `inherit` is what makes the EAS CLI's own progress and its credential
+ * questions reach the person watching.
  */
 async function runEasStepAsync(
   projectRoot: string,
   args: string[],
   output: SubprocessOutput
 ): Promise<StepResult> {
-  const { resolveEasCliOrThrow } = require('../utils/easCli') as typeof import('../utils/easCli');
+  const { resolveEasCliOrThrow, easCliArgs } =
+    require('../utils/easCli') as typeof import('../utils/easCli');
   const { spawnSubprocessAsync } =
     require('../utils/subprocess') as typeof import('../utils/subprocess');
 
   const easCli = resolveEasCliOrThrow(projectRoot);
-  const result = await spawnSubprocessAsync(easCli.command, args, { cwd: projectRoot, output });
+  const result = await spawnSubprocessAsync(easCli.command, easCliArgs(easCli, args), {
+    cwd: projectRoot,
+    output,
+  });
   return {
     exitCode: result.exitCode ?? 1,
     stdout: result.stdout,
     stderr: result.stderr,
+    // The file, as this field promises, which on the runner rung is the runner. Nothing downstream
+    // reads it except the wrapper-crash guard, and a wrapper crash is a claim about a binary
+    // somebody installed under the name `eas` — never about `npx`, which reports its own failures.
     binPath: easCli.command,
   };
 }

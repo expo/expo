@@ -12,7 +12,7 @@
 import path from 'path';
 
 import { fileExistsSync } from '../utils/dir';
-import { resolveEasCliOrThrow } from '../utils/easCli';
+import { resolveInstalledEasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { looksLikeWrapperCrash } from '../utils/wrapperCrash';
 
@@ -92,19 +92,23 @@ async function probeAsync(projectRoot: string, timeoutMs: number): Promise<AuthP
  * could not be run, or what ran was not the EAS CLI. A binary that is not the CLI exits non-zero
  * exactly the way a signed-out one does, and reading that as "signed out" would hand the user a
  * login they do not need — and, worse, would stop a command that had every right to run.
+ *
+ * **The installed rungs only.** `resolveEasCli` would fall through to `npx eas-cli@latest`, which
+ * downloads a CLI to read `~/.expo/state.json` — and the two rungs below this one, the project's own
+ * `expo whoami` and `EXPO_TOKEN`, answer the same question from the same file for free. `status`
+ * promises to be instant and this is one of its sections, so it is the one EAS-backed caller that
+ * declines the runner rung — the same call `askProjectExpoAsync` below already makes for `expo`.
  */
 async function askEasAsync(
   projectRoot: string,
   timeoutMs: number
 ): Promise<AuthPreflight | null> {
-  let command: string;
-  try {
-    command = resolveEasCliOrThrow(projectRoot).command;
-  } catch {
+  const easCli = resolveInstalledEasCli(projectRoot);
+  if (!easCli) {
     return null;
   }
 
-  const result = await spawnSubprocessAsync(command, ['whoami'], {
+  const result = await spawnSubprocessAsync(easCli.command, ['whoami'], {
     cwd: projectRoot,
     output: 'capture',
     timeoutMs,

@@ -491,9 +491,11 @@ describe('exagent build:wait', () => {
       expect(readStubEasInvocations(projectRoot)).toEqual([]);
     });
 
-    it('names the install command when no eas is available', async () => {
+    it('names what to install when neither an eas nor a package runner is available', async () => {
       const projectRoot = await setupAsync();
       // A PATH with nothing on it: the only way to test a missing EAS CLI on a machine that has one.
+      // Since wave 18 it also has to have no `npx` on it, or the resolver would download the
+      // published CLI rather than refusing (llp/0015 §Resolving the EAS CLI).
       const emptyDir = getTemporaryPath();
       await fs.promises.mkdir(emptyDir, { recursive: true });
 
@@ -503,8 +505,8 @@ describe('exagent build:wait', () => {
       });
 
       expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain('EAS CLI is not available');
-      expect(result.stderr).toContain('Try: npm install -g eas-cli');
+      expect(result.stderr).toContain('The EAS CLI could not be reached');
+      expect(result.stderr).toContain('Try: npm install --save-dev eas-cli');
     });
   });
 

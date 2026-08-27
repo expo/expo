@@ -18,9 +18,17 @@ import {
 } from '../easBuilds';
 import type { AuthStatus, PlatformBuild } from '../types';
 
-jest.mock('../../impact/buildCache', () => ({ lookUpCachedBuildAsync: jest.fn() }));
+jest.mock('../../impact/buildCache', () => ({
+  lookUpCachedBuildAsync: jest.fn(),
+  // The real one: it is a pure function of the resolved CLI, and the deadline's reason is the thing
+  // under test in one of these cases.
+  runnerDownloadNote: jest.requireActual('../../impact/buildCache').runnerDownloadNote,
+}));
 jest.mock('../../project/fingerprint', () => ({ generateFingerprintAsync: jest.fn() }));
-jest.mock('../../utils/easCli', () => ({ resolveEasCli: jest.fn() }));
+jest.mock('../../utils/easCli', () => ({
+  ...jest.requireActual('../../utils/easCli'),
+  resolveEasCli: jest.fn(),
+}));
 
 const projectRoot = '/project';
 const recordFile = `${projectRoot}/.expo/${EAS_BUILDS_FILE_NAME}`;
@@ -51,7 +59,7 @@ function iosOf(platforms: PlatformBuild[]): PlatformBuild {
 
 beforeEach(() => {
   vol.reset();
-  jest.mocked(resolveEasCli).mockReturnValue({ command: '/bin/eas', source: 'path' });
+  jest.mocked(resolveEasCli).mockReturnValue({ command: '/bin/eas', prefixArgs: [], source: 'path' });
   jest.mocked(generateFingerprintAsync).mockResolvedValue({ hash: IOS_HASH, sources: [] });
   jest.mocked(lookUpCachedBuildAsync).mockResolvedValue({ state: 'none' });
 });
@@ -153,7 +161,7 @@ describe(readEasBuildsStatusAsync, () => {
 
     expect(generateFingerprintAsync).toHaveBeenCalledWith(projectRoot, { platform: 'ios' });
     expect(lookUpCachedBuildAsync).toHaveBeenCalledWith(
-      { command: '/bin/eas', source: 'path' },
+      { command: '/bin/eas', prefixArgs: [], source: 'path' },
       projectRoot,
       'ios',
       IOS_HASH,

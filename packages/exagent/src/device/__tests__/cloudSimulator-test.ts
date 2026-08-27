@@ -666,7 +666,7 @@ describe(openUrlOnCloudSimulatorAsync, () => {
       projectRoot: '/project',
       url: 'exp://tunnel.example/--/?',
       platform: 'ios',
-      easCli: { command: PROJECT_EAS, source: 'project' },
+      easCli: { command: PROJECT_EAS, prefixArgs: [], source: 'project' },
     });
 
     expect(spawned[0]!.args).toEqual(
@@ -685,7 +685,7 @@ describe(openUrlOnCloudSimulatorAsync, () => {
       projectRoot: '/project',
       url: 'exp://tunnel.example/--/?',
       platform: 'ios',
-      easCli: { command: PROJECT_EAS, source: 'project' },
+      easCli: { command: PROJECT_EAS, prefixArgs: [], source: 'project' },
     });
 
     expect(result.exitCode).toBe(1);
@@ -703,7 +703,7 @@ describe(captureCloudScreenshotAsync, () => {
     await captureCloudScreenshotAsync({
       projectRoot: '/project',
       filePath: '/project/.expo/exagent/shot.png',
-      easCli: { command: PROJECT_EAS, source: 'project' },
+      easCli: { command: PROJECT_EAS, prefixArgs: [], source: 'project' },
     });
 
     expect(spawned[0]!.args).toEqual(

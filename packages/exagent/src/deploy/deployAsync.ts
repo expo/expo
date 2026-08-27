@@ -23,7 +23,13 @@ import {
   UNTRUSTED_OUTPUT_END,
   wrapUntrustedAppOutput,
 } from '../runtime/untrusted';
-import { resolveEasCliOrThrow, type EasCli } from '../utils/easCli';
+import {
+  EAS_CLI_PACKAGE,
+  easCliLabel,
+  easCliPackageRunner,
+  resolveEasCliOrThrow,
+  type EasCli,
+} from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { spawnExpoAsync } from '../utils/expoCli';
 import { toPosixPath } from '../utils/filePath';
@@ -76,7 +82,9 @@ export async function deployAsync(projectRoot: string, options: DeployOptions): 
   const launchCli = nativeRequest ? resolveCreateLaunchCli(projectRoot) : null;
   event('resolved', {
     targets,
-    easCli: easCli?.command ?? null,
+    // The invocation, not the file: on the runner rung the file is `npx`, and an event saying the
+    // EAS CLI resolved to `/opt/homebrew/bin/npx` names the wrong program.
+    easCli: easCli ? easCliLabel(easCli) : null,
     easCliSource: easCli?.source ?? 'none',
     launchCli: launchCli ? [launchCli.command, ...launchCli.args].join(' ') : null,
   });
@@ -308,38 +316,40 @@ async function uploadToEasHostingAsync(
       })
     );
 
-  const first = await run(easCli.command, []);
-  if (first.spawnError || !looksLikeWrapperCrash({ tool: 'eas', ...first })) {
+  const first = await run(easCli.command, easCli.prefixArgs);
+  // The retry has one rung and this run may already be standing on it: when the resolver fell
+  // through to a runner (wave 18), the package it downloaded *is* the EAS CLI, so a failure is the
+  // CLI's own answer and re-running the identical command would only spend the upload twice.
+  if (
+    easCli.source === 'runner' ||
+    first.spawnError ||
+    !looksLikeWrapperCrash({ tool: 'eas', ...first })
+  ) {
     return {
       command: easCli.command,
-      label: easCli.command,
-      prefixArgs: [],
+      label: easCliLabel(easCli),
+      prefixArgs: easCli.prefixArgs,
       result: first,
       afterWrapperCrash: false,
     };
   }
 
-  const { resolvePackageRunner } =
-    require('../utils/packageRunner') as typeof import('../utils/packageRunner');
-  const runner = resolvePackageRunner();
+  const runner = easCliPackageRunner(projectRoot);
   Log.error(
     [
       `The "eas" this project resolves to (${easCli.command}) did not run as the EAS CLI: it exited with code ${first.exitCode} and printed nothing an eas run would print.`,
-      `Trying ${runner.runner} ${EAS_CLI_PACKAGE} instead. Nothing was uploaded by the run that failed.`,
+      `Trying ${easCliLabel(runner)} instead. Nothing was uploaded by the run that failed.`,
     ].join('\n')
   );
-  const retried = await run(runner.command, [EAS_CLI_PACKAGE]);
+  const retried = await run(runner.command, runner.prefixArgs);
   return {
     command: runner.command,
-    label: String(runner.runner),
-    prefixArgs: [EAS_CLI_PACKAGE],
+    label: easCliLabel(runner),
+    prefixArgs: runner.prefixArgs,
     result: retried,
     afterWrapperCrash: true,
   };
 }
-
-/** The package the wrapper-crash fallback runs, pinned to a name rather than to a version. */
-const EAS_CLI_PACKAGE = 'eas-cli@latest';
 
 /**
  * The error for an upload that did not happen.
@@ -354,7 +364,13 @@ function easDeployFailed(upload: EasUpload, output: CapturedOutput): CommandErro
   // A command against the binary that actually ran, which is what a reader has to reproduce —
   // except after a wrapper crash, where the binary that ran is the runner and naming it is the
   // whole point.
-  const whoami = cause?.command ?? checkBinaryCommand(upload.command, [...upload.prefixArgs, 'whoami']);
+  // A runner invocation is already written the way a reader would type it (`easCliLabel`), so it is
+  // used verbatim; a resolved binary is a path, which is what needs the quoting.
+  const whoami =
+    cause?.command ??
+    (upload.prefixArgs.length > 0
+      ? `${upload.label} whoami`
+      : checkBinaryCommand(upload.command, ['whoami']));
   const stillNotTheCli = looksLikeWrapperCrash({ tool: 'eas', ...result });
 
   const error = new CommandError(
@@ -362,7 +378,7 @@ function easDeployFailed(upload: EasUpload, output: CapturedOutput): CommandErro
     [
       `The export was built, but EAS Hosting did not accept it (${howItStopped('eas deploy', result)}).`,
       upload.afterWrapperCrash
-        ? `Note: the "eas" this project resolves to is not the EAS CLI, so this ran ${upload.label} ${EAS_CLI_PACKAGE} instead. What follows is about that run.`
+        ? `Note: the "eas" this project resolves to is not the EAS CLI, so this ran "${upload.label}" instead. What follows is about that run.`
         : '',
       cause
         ? `Why: ${cause.why}`
@@ -370,7 +386,7 @@ function easDeployFailed(upload: EasUpload, output: CapturedOutput): CommandErro
       cause
         ? `How: ${cause.how}`
         : stillNotTheCli
-          ? `How: what ran under the name "eas" is not the EAS CLI, so nothing about accounts applies to it. Look at that file, and reach the real CLI with "npx ${EAS_CLI_PACKAGE} whoami".`
+          ? `How: what ran under the name "eas" is not the EAS CLI, so nothing about accounts applies to it. Look at that file, and reach the real CLI with "npx --yes ${EAS_CLI_PACKAGE} whoami".`
           : `How: check who that CLI is acting as with "${whoami}"; for a headless machine, set EXPO_TOKEN to an access token from expo.dev instead of signing in.`,
       fence(result, output, { tool: 'eas', binPath: upload.command }),
     ]
@@ -379,7 +395,8 @@ function easDeployFailed(upload: EasUpload, output: CapturedOutput): CommandErro
   );
   // Never the broken binary: running it again reproduces the panic, which is the recovery this
   // command had been handing back (F67).
-  error.suggestedCommand = cause?.command ?? (stillNotTheCli ? `npx ${EAS_CLI_PACKAGE} whoami` : whoami);
+  error.suggestedCommand =
+    cause?.command ?? (stillNotTheCli ? `npx --yes ${EAS_CLI_PACKAGE} whoami` : whoami);
   return error;
 }
 
@@ -490,11 +507,11 @@ function easCliUnavailable(command: string, spawnError: NodeJS.ErrnoException): 
     'EAS_CLI_MISSING',
     [
       `Could not run the EAS CLI (${command}), so nothing was shipped.`,
-      `Why: the binary was found but spawning it failed (${spawnError.code ?? spawnError.message}), which usually means a broken or partial install.`,
-      `How: reinstall it with "npm install -g eas-cli", then run this command again.`,
+      `Why: the file was found but spawning it failed (${spawnError.code ?? spawnError.message}), which usually means a broken or partial install.`,
+      `How: add the EAS CLI to the project with "npm install --save-dev eas-cli", then run this command again — the project's own copy is the first thing this command looks for, so it takes precedence over whatever is broken.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npm install -g eas-cli';
+  error.suggestedCommand = 'npm install --save-dev eas-cli';
   return error;
 }
 

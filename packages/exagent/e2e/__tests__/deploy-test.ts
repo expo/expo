@@ -135,10 +135,13 @@ const STUB_NPX_LOG_NAME = 'stub-npx-invocations.jsonl';
 /**
  * Stub `npx`, standing in for the package runner the wrapper falls back to.
  *
- * `deploy` retries through `npx eas-cli@latest` when the `eas` it resolved turns out not to be the
- * EAS CLI (F67), and an e2e test must not download a package or reach the network to exercise that.
- * So this runs the same stub `eas` script, steered by its own environment variables — which is what
- * lets one test make the fallback succeed and another make it fail for a real reason.
+ * `deploy` retries through `npx --yes eas-cli@latest` when the `eas` it resolved turns out not to be
+ * the EAS CLI (F67), and an e2e test must not download a package or reach the network to exercise
+ * that. So this runs the same stub `eas` script, steered by its own environment variables — which is
+ * what lets one test make the fallback succeed and another make it fail for a real reason.
+ *
+ * The leading `--yes` is npx's own and is skipped rather than forwarded: it stops npx prompting
+ * before an install, so it is never part of the `eas` argv (`src/utils/easCli.ts`).
  *
  * - STUB_NPX_EAS_EXIT_CODE: exit code of the fallback run (default 0)
  * - STUB_NPX_EAS_STDERR: what the fallback prints on stderr before a non-zero exit
@@ -156,12 +159,13 @@ fs.appendFileSync(
   JSON.stringify({ args, cwd: process.cwd() }) + '\\n'
 );
 
-if (args[0] !== 'eas-cli@latest') {
-  process.stderr.write('stub npx: nothing here runs ' + args[0] + '\\n');
+const forwarded = args[0] === '--yes' ? args.slice(1) : args;
+if (forwarded[0] !== 'eas-cli@latest') {
+  process.stderr.write('stub npx: nothing here runs ' + forwarded[0] + '\\n');
   process.exit(1);
 }
 
-const result = spawnSync(process.execPath, [${JSON.stringify(easStubPath)}, ...args.slice(1)], {
+const result = spawnSync(process.execPath, [${JSON.stringify(easStubPath)}, ...forwarded.slice(1)], {
   stdio: 'inherit',
   env: {
     ...process.env,
@@ -471,7 +475,7 @@ describe('exagent deploy', () => {
         expect(report.web?.url).toBe(STUB_DEPLOYMENT_URL);
         // The retry, through the runner, with the package named.
         expect(readStubNpxInvocations(projectRoot)).toEqual([
-          { args: ['eas-cli@latest', 'deploy', '--non-interactive'], cwd: projectRoot },
+          { args: ['--yes', 'eas-cli@latest', 'deploy', '--non-interactive'], cwd: projectRoot },
         ]);
       });
 
@@ -653,7 +657,12 @@ describe('exagent deploy', () => {
       });
     });
 
-    it(`should name the install command when no eas is available`, async () => {
+    // @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI
+    // Since wave 18 this failure needs a `PATH` with **no package runner** on it either: with one,
+    // the resolver downloads the published CLI rather than refusing. So the advice changed with the
+    // scenario — the reader who reaches this has no `npx`, and `npm install -g eas-cli` was a
+    // command they could not run either.
+    it(`should name what to install when neither an eas nor a runner is available`, async () => {
       const projectRoot = await setupAsync('go-app');
       // A PATH with nothing on it: the only way to test a missing EAS CLI on a machine that has
       // one installed.
@@ -666,8 +675,9 @@ describe('exagent deploy', () => {
       });
 
       expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain('EAS CLI is not available');
-      expect(result.stderr).toContain('Try: npm install -g eas-cli');
+      expect(result.stderr).toContain('The EAS CLI could not be reached');
+      expect(result.stderr).toContain('no package runner');
+      expect(result.stderr).toContain('Try: npm install --save-dev eas-cli');
       // The export costs minutes, so the missing tool is found before it runs.
       expect(readStubExpoInvocations(projectRoot)).toEqual([]);
     });

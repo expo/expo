@@ -32,7 +32,7 @@ import path from 'path';
 
 import { classifySubprocessFailure } from '../needsHuman/detect';
 import { needsHumanErrorFrom } from '../needsHuman/error';
-import { resolveEasCli, type EasCli } from '../utils/easCli';
+import { easCliArgs, easCliLabel, resolveEasCli, type EasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import {
@@ -557,9 +557,11 @@ export async function probeCloudSessionAsync({
 }: CloudRunOptions & { platform?: CloudPlatform | null }): Promise<CloudSessionProbe> {
   const cli = easCli ?? resolveEasCli(projectRoot);
   if (!cli) {
+    // The resolver's third rung downloads the published CLI, so reaching here means this machine has
+    // no `eas` *and* no `npx` or `bunx` to fetch one with (`src/utils/easCli.ts`).
     return unknownSession(
       null,
-      'no "eas" binary was found in node_modules/.bin or on PATH, so nothing could be asked about a cloud simulator session'
+      'no "eas" binary was found in node_modules/.bin or on PATH, and no package runner ("npx" or "bunx") is on PATH to download one, so nothing could be asked about a cloud simulator session'
     );
   }
 
@@ -768,12 +770,18 @@ async function runEasAsync(
   args: string[],
   { projectRoot, timeoutMs }: { projectRoot: string; timeoutMs: number }
 ): Promise<CloudRunResult> {
-  const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync(cli.command, args, {
-    cwd: projectRoot,
-    timeoutMs,
-  });
+  const { stdout, stderr, exitCode, spawnError } = await spawnCaptureAsync(
+    cli.command,
+    easCliArgs(cli, args),
+    {
+      cwd: projectRoot,
+      timeoutMs,
+    }
+  );
   return {
-    command: ['eas', ...args].join(' '),
+    // How a person would reproduce the step, which on the runner rung is the runner and the package
+    // rather than a bare `eas` this machine does not have.
+    command: [cli.source === 'runner' ? easCliLabel(cli) : 'eas', ...args].join(' '),
     stdout,
     stderr,
     exitCode,
@@ -969,7 +977,7 @@ export function cloudVerbFailedError(
       [
         `Could not run "${result.command}", so ${what}`,
         `Why: ${result.spawnError}`,
-        `How: install the EAS CLI with "npm install -g eas-cli", or add it to the project with "npm install --save-dev eas-cli", then run this command again.`,
+        `How: add the EAS CLI to the project with "npm install --save-dev eas-cli", then run this command again. The project's own copy is the first thing this command looks for, so it takes precedence over whatever could not be spawned.`,
       ].join('\n')
     );
   }
@@ -1055,12 +1063,12 @@ export function easCliMissingError(): CommandError {
   const error = new CommandError(
     'EAS_CLI_MISSING',
     [
-      'The EAS CLI is not available, so a cloud simulator cannot be driven from here.',
-      'Why: no "eas" binary was found in node_modules/.bin or on PATH, and an EAS Simulator session is created and driven entirely through it.',
-      'How: install it once with "npm install -g eas-cli", or add it to the project with "npm install --save-dev eas-cli", then run this command again.',
+      'The EAS CLI could not be reached, so a cloud simulator cannot be driven from here.',
+      'Why: no "eas" binary was found in node_modules/.bin or on PATH, and no package runner ("npx" or "bunx") is on PATH either, so the published eas-cli could not be downloaded to stand in for one — and an EAS Simulator session is created and driven entirely through that CLI.',
+      'How: add the EAS CLI to the project with "npm install --save-dev eas-cli", then run this command again. If that command is also unavailable, PATH is missing the Node.js install that provides npm and npx — fix that first.',
     ].join('\n')
   );
-  error.suggestedCommand = 'npm install -g eas-cli';
+  error.suggestedCommand = 'npm install --save-dev eas-cli';
   return error;
 }
 

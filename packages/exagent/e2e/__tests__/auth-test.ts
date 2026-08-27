@@ -307,6 +307,6 @@ describe('the runner that downloads a CLI this machine does not have', () => {
     });
 
     expect(readInvocations(dir)).toEqual([]);
-    expect(result.stderr).toContain('Using the EAS CLI (npx eas-cli@latest)');
+    expect(result.stderr).toContain('Using the EAS CLI (npx --yes eas-cli@latest)');
   });
 });

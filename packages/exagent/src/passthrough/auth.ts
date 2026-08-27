@@ -27,10 +27,14 @@ import path from 'path';
 
 import type { Command } from '../types';
 import { fileExistsSync } from '../utils/dir';
-import { findExecutableOnPath, spawnSubprocessAsync } from '../utils/subprocess';
+import {
+  easCliPackageRunner,
+  resolveEasCliAsync,
+  type EasCliSource,
+} from '../utils/easCli';
+import { spawnSubprocessAsync } from '../utils/subprocess';
 import { type Invoker } from '../utils/invoker';
 import { resolvePackageRunner } from '../utils/packageRunner';
-import { looksLikeWrapperCrash } from '../utils/wrapperCrash';
 
 /**
  * The commands this module owns.
@@ -73,20 +77,15 @@ export interface AuthCli {
   runner?: Invoker;
 }
 
-/** The package the `npx` fallback runs, pinned to a name rather than to a version. */
-const EAS_CLI_PACKAGE = 'eas-cli@latest';
-
 /**
  * The package `register` falls back to, for the same reason and with a different tradeoff.
  *
- * Unpinned, where {@link EAS_CLI_PACKAGE} carries `@latest`: `npx expo` resolves to the newest
+ * Unpinned, where the EAS rungs' `EAS_CLI_PACKAGE` (`src/utils/easCli.ts`) carries `@latest`: `npx
+ * expo` resolves to the newest
  * `expo` either way, and the version of an SDK downloaded to open a signup page is not a fact worth
  * asserting in a command line a reader may see.
  */
 const EXPO_CLI_PACKAGE = 'expo';
-
-/** How long the PATH candidate has to prove it is the EAS CLI. */
-export const AUTH_PROBE_TIMEOUT_MS = 4000;
 
 /**
  * Which CLI should answer an auth command here.
@@ -97,14 +96,14 @@ export const AUTH_PROBE_TIMEOUT_MS = 4000;
  * project that has an opinion about its Expo version should keep it.
  *
  * The fallback chain only runs when the project has no `expo`: its own `eas-cli`, then an `eas` on
- * `PATH`, then `npx eas-cli@latest`. Local before global before downloaded, the same order
- * `resolveEasCli` uses, because a version the repository pinned is the version that should run.
+ * `PATH`, then the published package through a runner. Local before global before downloaded,
+ * because a version the repository pinned is the version that should run.
  *
- * The `PATH` candidate is the one that gets checked, because it is the one that can be something
- * else entirely — a wrapper, a stale symlink, a shim from another tool. It is asked for its version
- * once, and dropped if it answers the way a wrapper dies rather than the way the CLI does
- * (§`looksLikeWrapperCrash`). The other three need no check: two came out of a `node_modules` that
- * only holds what was installed into it, and the third names the package outright.
+ * **That chain is `resolveEasCliAsync` now** (wave 18). It was written here first, along with the
+ * `PATH` probe below it, and then every other EAS-backed command wanted the same three rungs — so
+ * the ladder moved to `src/utils/easCli.ts` and this function maps its answer onto the shape the
+ * passthrough reports. Nothing about the behaviour changed; what changed is that a machine with no
+ * `eas` now gets the same three rungs from `status`, `deploy` and `dev` as it always got from here.
  *
  * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
  */
@@ -117,51 +116,33 @@ export async function resolveAuthCliAsync(
     return { tool: 'expo', source: 'project-expo', command: projectExpo, prefixArgs: [] };
   }
 
-  const projectEas = projectBin(projectRoot, 'eas');
-  if (projectEas) {
-    return { tool: 'eas', source: 'project-eas', command: projectEas, prefixArgs: [] };
-  }
-
-  const pathEas = findExecutableOnPath('eas', { pathEnv });
-  if (pathEas && (await isRealEasCliAsync(pathEas, projectRoot))) {
-    return { tool: 'eas', source: 'path-eas', command: pathEas, prefixArgs: [] };
-  }
-
-  const resolved = resolvePackageRunner({ pathEnv });
+  // `?? easCliPackageRunner(…)` because this function's contract is to always answer with something
+  // to spawn: the resolver declines the runner rung when the runner is not on `PATH`, and a spawn
+  // that fails with ENOENT prints a truer sentence here than any guess this module could make.
+  const easCli =
+    (await resolveEasCliAsync(projectRoot, { pathEnv })) ??
+    easCliPackageRunner(projectRoot, { pathEnv });
   return {
     tool: 'eas',
-    source: 'runner-eas',
-    command: resolved.command,
-    prefixArgs: [EAS_CLI_PACKAGE],
-    runner: resolved.runner,
+    source: AUTH_SOURCE_OF[easCli.source],
+    command: easCli.command,
+    prefixArgs: easCli.prefixArgs,
+    runner: easCli.runner,
   };
 }
+
+/** How the ladder's rungs are named in the `auth_passthrough` event and in `whoami --json`. */
+const AUTH_SOURCE_OF: Record<EasCliSource, AuthCliSource> = {
+  project: 'project-eas',
+  path: 'path-eas',
+  runner: 'runner-eas',
+};
 
 /** A `node_modules/.bin` entry of this project, or null when it has none. */
 function projectBin(projectRoot: string, name: string): string | null {
   const binName = process.platform === 'win32' ? `${name}.cmd` : name;
   const bin = path.join(projectRoot, 'node_modules', '.bin', binName);
   return fileExistsSync(bin) ? bin : null;
-}
-
-/**
- * Whether the `eas` on `PATH` is really the EAS CLI.
- *
- * `--version` because it is the cheapest question the CLI answers and the one a wrapper is least
- * likely to survive. A candidate that times out or cannot be spawned is *kept*: the check exists to
- * catch a binary that is not the CLI, not to second-guess a slow machine, and `npx` — which
- * downloads — is a worse answer than a slow local one.
- */
-async function isRealEasCliAsync(command: string, cwd: string): Promise<boolean> {
-  const result = await spawnSubprocessAsync(command, ['--version'], {
-    cwd,
-    output: 'capture',
-    timeoutMs: AUTH_PROBE_TIMEOUT_MS,
-  });
-  if (result.spawnError || result.timedOut) {
-    return true;
-  }
-  return !looksLikeWrapperCrash({ tool: 'eas', ...result });
 }
 
 /**

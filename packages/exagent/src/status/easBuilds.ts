@@ -24,12 +24,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import { lookUpCachedBuildAsync } from '../impact/buildCache';
+import { lookUpCachedBuildAsync, runnerDownloadNote } from '../impact/buildCache';
 import type { CachedBuild } from '../impact/types';
 import type { NativePlatform } from '../plan/types';
 import { generateFingerprintAsync } from '../project/fingerprint';
 import { ensureDotExpoProjectDirectoryInitialized } from '../utils/dotExpo';
-import { resolveEasCli } from '../utils/easCli';
+import { resolveEasCli, type EasCli } from '../utils/easCli';
 import type { AuthStatus, BuildsStatus, PlatformBuild } from './types';
 
 /** Platforms the section reports, in print order — the same two `freshness` reports. */
@@ -46,6 +46,19 @@ export const EAS_BUILDS_FILE_NAME = 'exagent-eas-builds.json';
  * on their way. Expiring costs the platform an answer (`unknown`), never the report.
  */
 export const EAS_BUILD_LOOKUP_TIMEOUT_MS = 10_000;
+
+/**
+ * How long the same lookup gets when the EAS CLI has to be **downloaded** first.
+ *
+ * @ref llp/0015-backend-selection-and-config.rfc.md §Resolving the EAS CLI
+ * The runner rung's first run installs the package before the query starts, which no budget written
+ * for a warm CLI can cover. Two answers were possible and this section takes the *middle* one
+ * [decided — 2026-08-27, wave 18]: a wider budget, still bounded, so the common case of a modest
+ * install answers rather than expires — and never the minutes a cold `npm` install can take, because
+ * `status` must not hang. A run that expires anyway says the download was why, and the second run is
+ * warm. Only reached under `--explain`; a default `status` asks EAS nothing at all.
+ */
+export const EAS_BUILD_RUNNER_TIMEOUT_MS = 45_000;
 
 /** What was cached for one platform, and the working tree it was cached for. */
 interface CachedEntry {
@@ -93,8 +106,12 @@ export async function readEasBuildsStatusAsync(
   options: EasBuildsOptions
 ): Promise<BuildsStatus> {
   const record = readEasBuildsRecord(projectRoot);
+  // Once for the whole section rather than once per platform: the answer cannot differ between them,
+  // and the two rungs it may take both touch the filesystem. It is also what lets the deadline below
+  // say *why* a lookup ran out of time.
+  const easCli = options.lookUp ? resolveEasCli(projectRoot) : null;
   const platforms = await Promise.all(
-    PLATFORMS.map((platform) => readPlatformAsync(projectRoot, platform, record, options))
+    PLATFORMS.map((platform) => readPlatformAsync(projectRoot, platform, record, options, easCli))
   );
   return { askedEas: options.lookUp, platforms };
 }
@@ -103,7 +120,8 @@ async function readPlatformAsync(
   projectRoot: string,
   platform: NativePlatform,
   record: EasBuildsRecord,
-  options: EasBuildsOptions
+  options: EasBuildsOptions,
+  easCli: EasCli | null
 ): Promise<PlatformBuild> {
   const cached = record[platform];
   if (cached && options.projectHash && cached.projectHash === options.projectHash) {
@@ -125,13 +143,19 @@ async function readPlatformAsync(
     );
   }
 
-  const deadline = options.timeoutMs ?? EAS_BUILD_LOOKUP_TIMEOUT_MS;
+  const deadline =
+    options.timeoutMs ??
+    (easCli?.source === 'runner' ? EAS_BUILD_RUNNER_TIMEOUT_MS : EAS_BUILD_LOOKUP_TIMEOUT_MS);
   const outcome = await withDeadlineAsync(
-    lookUpPlatformAsync(projectRoot, platform, deadline),
+    lookUpPlatformAsync(projectRoot, platform, deadline, easCli),
     deadline
   );
   if (!outcome) {
-    return unknown(platform, null, `the lookup did not finish within ${deadline}ms`);
+    return unknown(
+      platform,
+      null,
+      `the lookup did not finish within ${deadline}ms${runnerDownloadNote(easCli)}`
+    );
   }
   if (outcome.build) {
     writeEasBuildsEntry(projectRoot, platform, {
@@ -175,7 +199,8 @@ interface LookupOutcome {
 async function lookUpPlatformAsync(
   projectRoot: string,
   platform: NativePlatform,
-  timeoutMs: number
+  timeoutMs: number,
+  easCli: EasCli | null
 ): Promise<LookupOutcome> {
   const fingerprint = await generateFingerprintAsync(projectRoot, { platform });
   if (!fingerprint.hash) {
@@ -187,7 +212,7 @@ async function lookUpPlatformAsync(
   }
 
   const outcome = await lookUpCachedBuildAsync(
-    resolveEasCli(projectRoot),
+    easCli,
     projectRoot,
     platform,
     fingerprint.hash,

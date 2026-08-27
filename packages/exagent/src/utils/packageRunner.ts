@@ -14,6 +14,9 @@
 // reported by Kudo], so a Bun user got npm's exec — a different runner, a different cache, and a
 // slower first run — from a CLI they had reached through Bun.
 
+import path from 'path';
+
+import { fileExistsSync } from './dir';
 import { detectInvoker, type Invoker } from './invoker';
 import { findExecutableOnPath } from './subprocess';
 
@@ -73,6 +76,79 @@ export function resolvePackageRunner({
   const bunx = findExecutableOnPath('bunx', { pathEnv });
   cached = bunx ? { runner: 'bunx', command: bunx } : npx;
   return cached;
+}
+
+/**
+ * Lockfile names per manager, in the order one directory is searched.
+ *
+ * A copy of a *decision*, not an import: the same table `@expo/package-manager`'s
+ * `resolvePackageManager` uses [observed — `packages/@expo/package-manager/src/utils/nodeManagers.ts`],
+ * which `src/deferred/doctor-fix/packageManager.ts` also mirrors. That module is the v1 narrowing's
+ * reference shelf and is imported by nothing (llp/0016 §Deferred is a place), so the four names are
+ * spelled again here rather than reached for across that line.
+ *
+ * The whole table and not just bun's two entries, because the *precedence* is the answer: a project
+ * with both `bun.lock` and `package-lock.json` in one directory installs with bun, and a walk that
+ * only looked for bun's would keep climbing past an npm project into whatever a parent directory has.
+ */
+const LOCKFILES: { manager: string; files: string[] }[] = [
+  { manager: 'bun', files: ['bun.lock', 'bun.lockb'] },
+  { manager: 'yarn', files: ['yarn.lock'] },
+  { manager: 'npm', files: ['package-lock.json'] },
+  { manager: 'pnpm', files: ['pnpm-lock.yaml'] },
+];
+
+/**
+ * Whether the lockfile that governs this project is bun's.
+ *
+ * Walks up, because a package of a monorepo has no lockfile of its own and the workspace root's is
+ * the one that installed it. The first directory holding *any* known lockfile decides.
+ */
+export function projectUsesBun(projectRoot: string): boolean {
+  let dir = path.resolve(projectRoot);
+  // Bounded by the filesystem root: `path.dirname('/')` is `'/'`, which ends the walk.
+  for (;;) {
+    for (const { manager, files } of LOCKFILES) {
+      for (const file of files) {
+        if (fileExistsSync(path.join(dir, file))) {
+          return manager === 'bun';
+        }
+      }
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      return false;
+    }
+    dir = parent;
+  }
+}
+
+/**
+ * The runner a *project's* published packages should be spawned with.
+ *
+ * Two signals, and either one is enough. {@link resolvePackageRunner} answers "which runner started
+ * this process", which is the right question for a package this CLI spawns on its own behalf. It is
+ * not the whole question for a package spawned **into a project**: `exagent status` in a bun app run
+ * from a plain shell was started by neither runner, and downloading `eas-cli` with npm's exec there
+ * puts a second cache and a second copy beside the one bun already manages [confirmed — Kudo,
+ * 2026-08-26: `bunx eas-cli` is what a bun project should get].
+ *
+ * `bunx` still has to be **reachable**, for the reason it does one rung up: "this project installs
+ * with bun" is not the claim "bun is on this PATH", and a spawn of a name that is not there fails
+ * where `npx` would have worked. So npx remains the answer that is true on every machine.
+ *
+ * Not cached, because the answer is per project rather than per process.
+ */
+export function resolvePackageRunnerForProject(
+  projectRoot: string,
+  { env, pathEnv }: { env?: NodeJS.ProcessEnv; pathEnv?: string } = {}
+): PackageRunner {
+  const fromProcess = resolvePackageRunner({ env, pathEnv });
+  if (fromProcess.runner === 'bunx' || !projectUsesBun(projectRoot)) {
+    return fromProcess;
+  }
+  const bunx = findExecutableOnPath('bunx', { pathEnv });
+  return bunx ? { runner: 'bunx', command: bunx } : fromProcess;
 }
 
 /**

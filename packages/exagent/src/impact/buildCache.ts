@@ -7,13 +7,40 @@
 // v22.2.0]. `--json` implies `--non-interactive` there; both are passed anyway, because the
 // implication is the other CLI's and this one does not depend on it.
 
-import type { EasCli } from '../utils/easCli';
+import { easCliArgs, easCliLabel, usesPackageRunner, type EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { looksLikeWrapperCrash, wrapperCrashReason } from '../utils/wrapperCrash';
 import type { CachedBuild } from './types';
 
-/** How long the lookup may take before it is abandoned. */
+/**
+ * How long the lookup may take before it is abandoned, for a caller that names no budget.
+ *
+ * **Unchanged by the runner rung** [decided — 2026-08-27, wave 18]. On a machine with no `eas-cli`
+ * installed the lookup now runs `npx --yes eas-cli@latest`, whose first run installs the package
+ * before the query starts, and that can outlast this. The default stays anyway, because the caller
+ * that takes it is `impact` — an *opportunistic* lookup decorating a report that is complete without
+ * it, run without being asked for. Twenty seconds of a command's time is a fair ceiling on a nicety;
+ * a minute is not.
+ *
+ * The caller that *did* ask — `status --explain` — passes a wider budget of its own
+ * (`EAS_BUILD_RUNNER_TIMEOUT_MS`, `src/status/easBuilds.ts`). Either way a run that expires says the
+ * download was why, via {@link runnerDownloadNote}, and says that the next run is warm — so the cost
+ * of guessing this too low is a re-run, never a wrong answer.
+ */
 export const BUILD_CACHE_TIMEOUT_MS = 20_000;
+
+/**
+ * What a timeout adds to its reason when the CLI was being downloaded rather than merely slow.
+ *
+ * Exported because the two timeouts a lookup can hit are in different modules — this one's, and the
+ * per-platform deadline `status` wraps it in (`src/status/easBuilds.ts`) — and a reader should not
+ * be told two different things about the same minute.
+ */
+export function runnerDownloadNote(easCli: EasCli | null): string {
+  return usesPackageRunner(easCli)
+    ? `, and "${easCliLabel(easCli!)}" was downloading the EAS CLI, which only happens once — running this again should answer`
+    : '';
+}
 
 /**
  * The argv of one build-cache lookup.
@@ -71,28 +98,39 @@ export async function lookUpCachedBuildAsync(
   { timeoutMs = BUILD_CACHE_TIMEOUT_MS }: { timeoutMs?: number } = {}
 ): Promise<BuildLookupOutcome> {
   if (!easCli) {
+    // Reachable only on a machine with no `eas` **and** no package runner to fetch one with: the
+    // resolver's third rung is `npx eas-cli@latest`, so "nothing is installed" is no longer an
+    // answer on its own (`src/utils/easCli.ts`).
     return {
       state: 'unknown',
-      reason: 'no EAS CLI is installed, so nothing here can ask EAS about builds',
+      reason:
+        'no EAS CLI is installed and no package runner ("npx" or "bunx") is on PATH to download one, so nothing here can ask EAS about builds',
     };
   }
   if (!hash) {
     return { state: 'unknown', reason: 'there is no fingerprint to ask about' };
   }
 
-  const result = await spawnSubprocessAsync(easCli.command, buildCacheArgs(platform, hash), {
-    cwd: projectRoot,
-    output: 'capture',
-    timeoutMs,
-  });
+  const result = await spawnSubprocessAsync(
+    easCli.command,
+    easCliArgs(easCli, buildCacheArgs(platform, hash)),
+    {
+      cwd: projectRoot,
+      output: 'capture',
+      timeoutMs,
+    }
+  );
   if (result.spawnError) {
     return {
       state: 'unknown',
-      reason: `the EAS CLI could not be run: ${result.spawnError.message}`,
+      reason: `the EAS CLI could not be run ("${easCliLabel(easCli)}": ${result.spawnError.message})`,
     };
   }
   if (result.timedOut) {
-    return { state: 'unknown', reason: `the lookup did not answer within ${timeoutMs}ms` };
+    return {
+      state: 'unknown',
+      reason: `the lookup did not answer within ${timeoutMs}ms${runnerDownloadNote(easCli)}`,
+    };
   }
   if (result.exitCode !== 0) {
     // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — what answered the spawn is
@@ -103,7 +141,7 @@ export async function lookUpCachedBuildAsync(
     if (looksLikeWrapperCrash({ tool: 'eas', ...result })) {
       return {
         state: 'unknown',
-        reason: wrapperCrashReason({ tool: 'eas', exitCode: result.exitCode }, easCli.command),
+        reason: wrapperCrashReason({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
       };
     }
     return { state: 'unknown', reason: describeLookupFailure(result.stdout, result.stderr) };
@@ -147,11 +185,15 @@ export async function lookUpBuildPlatformAsync(
   if (!easCli) {
     return null;
   }
-  const result = await spawnSubprocessAsync(easCli.command, buildViewArgs(buildId), {
-    cwd: projectRoot,
-    output: 'capture',
-    timeoutMs,
-  });
+  const result = await spawnSubprocessAsync(
+    easCli.command,
+    easCliArgs(easCli, buildViewArgs(buildId)),
+    {
+      cwd: projectRoot,
+      output: 'capture',
+      timeoutMs,
+    }
+  );
   if (result.spawnError || result.timedOut || result.exitCode !== 0) {
     return null;
   }

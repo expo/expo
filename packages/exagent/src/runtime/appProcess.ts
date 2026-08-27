@@ -194,7 +194,9 @@ async function stopAppOnCloudAsync(params: StopAppParams): Promise<StopAppResult
       ok: false,
       verified: false,
       wasAlreadyStopped: false,
-      reason: `could not run "${result.command}": ${result.spawnError}. Install the EAS CLI with "npm install -g eas-cli", or add it to the project with "npm install --save-dev eas-cli".`,
+      // Not an install line for a *missing* CLI: the resolver's third rung downloads the published
+      // one, so what failed here is a file that exists and would not start (`src/utils/easCli.ts`).
+      reason: `could not run "${result.command}": ${result.spawnError}. Add the EAS CLI to the project with "npm install --save-dev eas-cli" — the project's own copy is resolved first, so it takes precedence over whatever could not be spawned.`,
     };
   }
   if (result.exitCode !== 0) {

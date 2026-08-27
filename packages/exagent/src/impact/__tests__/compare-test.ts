@@ -32,7 +32,7 @@ jest.mock('../../project/fingerprint', () => ({
 }));
 
 const projectRoot = '/project';
-const easCli = { command: '/bin/eas', source: 'path' as const };
+const easCli = { command: '/bin/eas', prefixArgs: [], source: 'path' as const };
 
 function mockSpawn(result: Partial<Awaited<ReturnType<typeof spawnSubprocessAsync>>>) {
   jest
