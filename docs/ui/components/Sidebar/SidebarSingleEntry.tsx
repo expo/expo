@@ -39,7 +39,7 @@ export const SidebarSingleEntry = ({
             allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',
             secondary && 'text-sm',
             isActive &&
-              'bg-palette-blue3! font-medium text-link hocus:bg-palette-blue4! hocus:text-link'
+              'bg-selected! font-medium text-default hocus:bg-selected! hocus:text-default'
           )}
           {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
           {...(isActive && mainSection && { 'data-main-section': mainSection })}>
@@ -48,7 +48,7 @@ export const SidebarSingleEntry = ({
             className={mergeClasses(
               'shrink-0',
               secondary ? 'icon-xs' : 'icon-sm',
-              isActive ? 'text-palette-blue11' : 'text-icon-tertiary'
+              isActive ? 'text-icon-default' : 'text-icon-tertiary'
             )}
           />
           <span className={mergeClasses(allowCompactDisplay && 'compact-height:hidden')}>
