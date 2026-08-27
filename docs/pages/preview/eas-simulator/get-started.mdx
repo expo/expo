@@ -147,13 +147,13 @@ Use the iOS web preview without provisioning a programmatic controller.
 
 Give each session a short name that describes its purpose. The name appears in `simulator:list`, `simulator:get`, and on expo.dev, which makes parallel and historical sessions easier to identify.
 
-Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview. Use `--device` to select a specific iOS Simulator name or UDID, or an Android virtual device hardware profile. If the flag is omitted, the remote runner chooses a device.
+Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview. Use `--device` to select a specific iOS Simulator name or unique device identifier (UDID), or an Android virtual device hardware profile. If the flag is omitted, the remote runner chooses a device.
 
 For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. You can also use `--max-idle-time-minutes` to stop after a period without session activity. A custom maximum duration is available on paid plans.
 
 When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
 
-The start command waits for the selected session type to become ready, then writes **.env.eas-simulator**. It also prints:
+The start command waits for the session to become ready, then writes **.env.eas-simulator**. It also prints:
 
 - A direct simulator session page on expo.dev
 - A temporary `webPreviewUrl` for supported iOS sessions
