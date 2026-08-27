@@ -304,6 +304,53 @@ describe(isDeviceBootedAsync, () => {
 });
 
 describe(getAttachedDevicesAsync, () => {
+  it('retries transient empty discovery results', async () => {
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockResolvedValueOnce(deviceListResult(''))
+      .mockResolvedValueOnce(deviceListResult(''))
+      .mockResolvedValueOnce(deviceListResult('USB-1 device usb:1 model:Pixel transport_id:4'));
+
+    await expect(getAttachedDevicesAsync()).resolves.toEqual([
+      expect.objectContaining({ pid: 'USB-1', name: 'Pixel' }),
+    ]);
+    expect(getServer().runHostQueryAsync).toHaveBeenCalledTimes(3);
+  });
+
+  it('uses an AVD name for a booting offline emulator', async () => {
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockResolvedValueOnce(deviceListResult('emulator-5554 offline transport_id:1'));
+    jest.mocked(getServer().runDeviceQueryAsync).mockResolvedValueOnce('Pixel_8a_big\nOK');
+
+    await expect(getAttachedDevicesAsync()).resolves.toEqual([
+      expect.objectContaining({
+        pid: 'emulator-5554',
+        name: 'Pixel_8a_big',
+        state: 'offline',
+        isBooted: false,
+      }),
+    ]);
+  });
+
+  it('keeps healthy devices when an emulator console name query fails', async () => {
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockResolvedValueOnce(
+        deviceListResult(
+          'USB-1 device usb:1 model:Pixel transport_id:4\nemulator-5554 device transport_id:1'
+        )
+      );
+    jest
+      .mocked(getServer().runDeviceQueryAsync)
+      .mockRejectedValueOnce(new Error('could not connect to TCP port 5554: Connection refused'));
+
+    await expect(getAttachedDevicesAsync()).resolves.toEqual([
+      expect.objectContaining({ pid: 'USB-1', name: 'Pixel' }),
+      expect.objectContaining({ pid: 'emulator-5554', name: 'Device emulator-5554' }),
+    ]);
+  });
+
   it(`gets devices`, async () => {
     jest.mocked(getServer().runHostQueryAsync).mockResolvedValueOnce(
       deviceListResult(
@@ -448,10 +495,14 @@ describe(getAttachedDevicesAsync, () => {
 
   it('reports a silent remote endpoint without replacing its owner', async () => {
     process.env.ANDROID_ADB_SERVER_ADDRESS = '192.0.2.10';
-    jest.mocked(getServer().runHostQueryAsync).mockRejectedValueOnce(new Error('discovery failed'));
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockRejectedValue(
+        new AdbProcessWaitError('discovery timed out', 'device discovery', 'host-request')
+      );
     jest
       .spyOn(AdbEndpoint, 'probeAdbHostVersionAsync')
-      .mockResolvedValueOnce({ kind: 'connected-no-reply' });
+      .mockResolvedValue({ kind: 'connected-no-reply' });
 
     await expect(getAttachedDevicesAsync({ probeWaitLimitMs: 5 })).rejects.toThrow(
       /ADB server at tcp:192\.0\.2\.10:5037.*is not responding/
@@ -464,8 +515,10 @@ describe(getAttachedDevicesAsync, () => {
 
   it('reports invalid protocol at the custom selected socket', async () => {
     process.env.ADB_SERVER_SOCKET = 'tcp:localhost:5041';
-    jest.mocked(getServer().runHostQueryAsync).mockRejectedValueOnce(new Error('protocol failure'));
-    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockResolvedValueOnce({
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockRejectedValue(new Error('cannot connect: invalid protocol'));
+    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockResolvedValue({
       kind: 'invalid-protocol',
     });
 
@@ -474,7 +527,7 @@ describe(getAttachedDevicesAsync, () => {
     );
   });
 
-  it('diagnoses a timeout while resolving an attached emulator name', async () => {
+  it('keeps an attached emulator when resolving its name times out', async () => {
     jest
       .mocked(getServer().runHostQueryAsync)
       .mockResolvedValueOnce('List of devices attached\nemulator-5554 device transport_id:1');
@@ -483,11 +536,9 @@ describe(getAttachedDevicesAsync, () => {
       .mockRejectedValueOnce(
         new AdbProcessWaitError('name lookup timed out', 'emulator name query', 'device-service')
       );
-    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockResolvedValueOnce({ kind: 'version' });
-
-    await expect(getAttachedDevicesAsync({ probeWaitLimitMs: 5 })).rejects.toThrow(
-      /ADB server is responding, but emulator name query did not finish/
-    );
+    await expect(getAttachedDevicesAsync({ probeWaitLimitMs: 5 })).resolves.toEqual([
+      expect.objectContaining({ pid: 'emulator-5554', name: 'Device emulator-5554' }),
+    ]);
   });
 
   it('does not probe after explicit caller cancellation', async () => {
@@ -551,14 +602,13 @@ describe(getPropertyDataForDeviceAsync, () => {
       .mockRejectedValueOnce(
         new AdbProcessWaitError('property wait expired', operation, 'device-service')
       );
-    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockResolvedValueOnce({
+    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockResolvedValue({
       kind: 'version',
     });
 
     const result = getPropertyDataForDeviceAsync(asDevice({ pid: '123' }));
-    await expect(result).rejects.toThrow(
-      /ADB server is responding, but device property\/boot query did not finish/
-    );
+    await expect(result).rejects.toThrow('property wait expired');
+    await expect(result).rejects.not.toThrow(/ADB server is responding/);
   });
 
   it(`returns parsed property data`, async () => {
@@ -647,7 +697,7 @@ describe('bounded discovery integration', () => {
           waitLimitMs: 100,
           probeWaitLimitMs: 500,
         })
-      ).rejects.toThrow(/ADB server is responding, but device discovery did not finish/);
+      ).rejects.toThrow(/Expo stopped waiting for the ADB device discovery operation to finish/);
     } finally {
       for (const socket of sockets) socket.destroy();
       await new Promise<void>((resolve, reject) =>

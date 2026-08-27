@@ -8,7 +8,7 @@ import {
 import type { AdbEndpoint, AdbHostProbeResult } from './adbEndpoint';
 import { AdbProcessError, AdbProcessWaitError } from './adbProcess';
 
-export type AdbDeviceDiagnostic = { pid?: string; state?: string };
+export type AdbDeviceDiagnostic = { pid?: string; state?: string; type?: 'emulator' | 'device' };
 
 function formatAdbError(
   error: unknown,
@@ -29,7 +29,10 @@ function formatAdbError(
   }
 
   if (hostProbe && !(error instanceof AdbProcessError && error.spawnFailed)) {
-    details.push(formatHostProbeAdvice(error, endpoint, hostProbe));
+    const hostProbeAdvice = formatHostProbeAdvice(endpoint, hostProbe);
+    if (hostProbeAdvice) {
+      details.push(hostProbeAdvice);
+    }
   }
 
   details.push(...getAdvice(error, device));
@@ -43,9 +46,19 @@ export function formatAdbDeviceError(error: unknown, device: AdbDeviceDiagnostic
 export function formatAdbDiscoveryError(
   error: unknown,
   endpoint: AdbEndpoint,
-  hostProbe: AdbHostProbeResult
+  hostProbe?: AdbHostProbeResult
 ): string {
   return formatAdbError(error, endpoint, hostProbe);
+}
+
+export function shouldProbeAdbHost(error: unknown): boolean {
+  return (
+    error instanceof AdbProcessWaitError ||
+    (error instanceof Error &&
+      /(?:cannot connect|connection refused|server didn't ACK|daemon (?:not running|still not running)|smartsocket)/i.test(
+        error.message
+      ))
+  );
 }
 
 export async function createAdbOperationErrorAsync(
@@ -71,14 +84,14 @@ export async function createAdbOperationErrorAsync(
 }
 
 function formatHostProbeAdvice(
-  error: unknown,
   endpoint: AdbEndpoint | undefined,
   result: AdbHostProbeResult
-): string {
+): string | null {
   const formattedEndpoint = endpoint ? formatAdbEndpoint(endpoint) : 'the configured endpoint';
   switch (result.kind) {
     case 'version':
-      return `The ADB server is responding, but ${error instanceof AdbProcessError ? error.operation : 'the command'} did not finish. Check the device connection and try again.`;
+      // A successful probe after an operation failed cannot explain the earlier failure.
+      return null;
     case 'connected-no-reply':
       return `The ADB server at ${formattedEndpoint} is not responding. Check or restart that server, then try again.`;
     case 'connection-refused':
@@ -98,7 +111,9 @@ function getAdvice(error: unknown, device?: AdbDeviceDiagnostic): string[] {
   if (error instanceof AdbProcessError && error.spawnFailed) {
     advice.push('Check that Android SDK Platform-Tools is installed and ADB is available.');
   }
-  if (device?.state === 'offline') {
+  if (device?.state === 'offline' && device.type === 'emulator') {
+    advice.push('Wait until ADB reports the emulator as ready, then try again.');
+  } else if (device?.state === 'offline') {
     advice.push(`Reconnect ${device.pid ? `device ${device.pid}` : 'the device'} and try again.`);
   } else if (device?.state === 'unauthorized') {
     advice.push(
