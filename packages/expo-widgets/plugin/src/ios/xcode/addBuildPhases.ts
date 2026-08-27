@@ -5,7 +5,11 @@ type BuildPhase = {
   files: { value: string; comment: string }[];
 };
 
-type BuildPhaseType = 'PBXSourcesBuildPhase' | 'PBXCopyFilesBuildPhase' | 'PBXFrameworksBuildPhase';
+type BuildPhaseType =
+  | 'PBXSourcesBuildPhase'
+  | 'PBXCopyFilesBuildPhase'
+  | 'PBXFrameworksBuildPhase'
+  | 'PBXResourcesBuildPhase';
 
 type ProductFile = PBXFile & {
   uuid: string;
@@ -21,11 +25,13 @@ export function addBuildPhases(
     groupName,
     productFile,
     widgetFiles,
+    resourceFiles,
   }: {
     targetUuid: string;
     groupName: string;
     productFile: ProductFile;
     widgetFiles: string[];
+    resourceFiles: string[];
   }
 ) {
   const buildPath = `""`;
@@ -73,6 +79,22 @@ export function addBuildPhases(
   }
   if (!xcodeProject.pbxBuildFileSection()[productFile.uuid]) {
     xcodeProject.addToPbxBuildFileSection(productFile);
+  }
+
+  // Resources build phase. Only added when there is something to copy, so a project without
+  // localized strings keeps the same target structure as before.
+  if (
+    resourceFiles.length > 0 &&
+    !getBuildPhaseObject(xcodeProject, 'PBXResourcesBuildPhase', targetUuid)
+  ) {
+    xcodeProject.addBuildPhase(
+      [...resourceFiles],
+      'PBXResourcesBuildPhase',
+      'Resources',
+      targetUuid,
+      folderType,
+      buildPath
+    );
   }
 
   // Frameworks build phase

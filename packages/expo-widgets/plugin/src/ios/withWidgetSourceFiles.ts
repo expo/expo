@@ -1,4 +1,5 @@
 import plist from '@expo/plist';
+import type { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -95,6 +96,11 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
       const layoutRegistryConfigPath = createLayoutRegistryConfig(widgets, targetDirectory);
       const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
       const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
+      const localeStringsPaths = createLocaleStringsFiles(
+        config.locales,
+        config.modRequest.projectRoot,
+        targetDirectory
+      );
 
       onFilesGenerated([
         entitlementsPath,
@@ -102,6 +108,7 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
         layoutRegistryConfigPath,
         indexSwiftPath,
         ...widgetSwiftPaths,
+        ...localeStringsPaths,
       ]);
 
       return config;
@@ -153,6 +160,74 @@ const createLayoutRegistryConfig = (widgets: WidgetConfig[], targetPath: string)
 
   fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
   return configPath;
+};
+
+const escapeStringsLiteral = (value: string): string =>
+  value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+
+// Collects every string value of one `locales` entry. Values under `ios` and under
+// `ios['Localizable.strings']` override the top level ones. Nested objects are skipped.
+const collectLocaleStrings = (input: unknown): Record<string, string> => {
+  const strings: Record<string, string> = {};
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return strings;
+  }
+  for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
+    if (typeof value === 'string') {
+      strings[key] = value;
+    }
+  }
+  return strings;
+};
+
+const resolveLocaleStrings = (
+  projectRoot: string,
+  source: string | Record<string, any>
+): Record<string, string> => {
+  let json: Record<string, any> = {};
+  if (typeof source === 'string') {
+    try {
+      json = JSON.parse(fs.readFileSync(path.join(projectRoot, source), 'utf8'));
+    } catch {
+      // `withLocales` reads the same file and already warns when it cannot be parsed.
+      return {};
+    }
+  } else {
+    json = source;
+  }
+  return {
+    ...collectLocaleStrings(json),
+    ...collectLocaleStrings(json.ios),
+    ...collectLocaleStrings(json.ios?.['Localizable.strings']),
+  };
+};
+
+// The widget gallery text comes from `.configurationDisplayName(_:)` and `.description(_:)`, which
+// take a `LocalizedStringKey`. SwiftUI resolves that key against the bundle of the running process,
+// and a widget extension is a separate bundle from the app. The `Localizable.strings` that
+// `withLocales` writes for the app target is therefore not visible here, so write one per language
+// into the extension directory as well.
+const createLocaleStringsFiles = (
+  locales: ExpoConfig['locales'] | undefined,
+  projectRoot: string,
+  targetPath: string
+): string[] => {
+  const filePaths: string[] = [];
+  for (const [language, source] of Object.entries(locales ?? {})) {
+    const strings = resolveLocaleStrings(projectRoot, source);
+    if (!Object.keys(strings).length) {
+      continue;
+    }
+    const localeDirectory = path.join(targetPath, `${language}.lproj`);
+    fs.mkdirSync(localeDirectory, { recursive: true });
+    const filePath = path.join(localeDirectory, 'Localizable.strings');
+    const contents = Object.entries(strings)
+      .map(([key, value]) => `"${escapeStringsLiteral(key)}" = "${escapeStringsLiteral(value)}";`)
+      .join('\n');
+    fs.writeFileSync(filePath, `${contents}\n`);
+    filePaths.push(filePath);
+  }
+  return filePaths;
 };
 
 const createInfoPlist = (

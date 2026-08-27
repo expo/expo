@@ -70,6 +70,8 @@ describe('e2e: iOS locales', () => {
           ios: {
             'Localizable.strings': {
               NOTIF_KEY: 'de-notification',
+              // A key that contains a space is only valid when it is quoted.
+              'A sample widget.': 'Ein Beispiel-Widget.',
             },
           },
           android: {
@@ -125,18 +127,23 @@ describe('e2e: iOS locales', () => {
     expect(after[infoPlists[0]!]).toMatchSnapshot();
     // Test that the inlined locale is resolved.
     expect(after[infoPlists[1]!]).toMatch(/spanish-name/);
-    expect(after[infoPlists[2]!]).toMatchInlineSnapshot(`"CFBundleDisplayName = "us-name";"`);
+    expect(after[infoPlists[2]!]).toMatchInlineSnapshot(`""CFBundleDisplayName" = "us-name";"`);
     expect(after[infoPlists[3]!]).toMatchInlineSnapshot(`
-      "CFBundleDisplayName = "us-name";
-      app_name = "us-name";"
+      ""CFBundleDisplayName" = "us-name";
+      "app_name" = "us-name";"
     `);
-    expect(after[infoPlists[4]!]).toMatchInlineSnapshot(`"CFBundleDisplayName = "ar-name";"`);
+    expect(after[infoPlists[4]!]).toMatchInlineSnapshot(`""CFBundleDisplayName" = "ar-name";"`);
     expect(localizableStrings).toStrictEqual([
       'ios/testproject/Supporting/ar.lproj/Localizable.strings',
       'ios/testproject/Supporting/de.lproj/Localizable.strings',
     ]);
-    expect(after[localizableStrings[0]!]).toMatchInlineSnapshot(`"NOTIF_KEY = "ar-notification";"`);
-    expect(after[localizableStrings[1]!]).toMatchInlineSnapshot(`"NOTIF_KEY = "de-notification";"`);
+    expect(after[localizableStrings[0]!]).toMatchInlineSnapshot(
+      `""NOTIF_KEY" = "ar-notification";"`
+    );
+    expect(after[localizableStrings[1]!]).toMatchInlineSnapshot(`
+      ""NOTIF_KEY" = "de-notification";
+      "A sample widget." = "Ein Beispiel-Widget.";"
+    `);
 
     // Test a warning is thrown for an invalid locale JSON file.
     expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(

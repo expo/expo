@@ -58,12 +58,14 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const targetDirectory = path.join(projectRoot, targetName);
     const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
     const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
+    const resourceFiles = relativePaths.filter((file) => file.endsWith('.strings'));
 
     addBuildPhases(xcodeProject, {
       targetUuid: target.uuid,
       groupName,
       productFile,
       widgetFiles: swiftWidgetFiles,
+      resourceFiles,
     });
 
     addPbxGroup(xcodeProject, {

@@ -22,6 +22,7 @@
 - [Android] Refactor to Peek emittables. ([#47411](https://github.com/expo/expo/pull/47411) by [@jakex7](https://github.com/jakex7))
 - [Android] Support Material Colors inside widgets. ([#48454](https://github.com/expo/expo/pull/48454) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose ActivityKit's `isStale` on `LiveActivityEnvironment`. ([#48303](https://github.com/expo/expo/pull/48303) by [@dirkpostma](https://github.com/dirkpostma))
+- [iOS] Copy the app config `locales` strings into the widget extension bundle, so the widget gallery `displayName` and `description` follow the device language.
 
 ### 🐛 Bug fixes
 

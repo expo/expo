@@ -19,6 +19,15 @@ export const withLocales: ConfigPlugin = (config) => {
   });
 };
 
+/**
+ * `.strings` files use the old-style property list syntax, where an unquoted string cannot contain
+ * a space. Quote both sides of every entry and escape the characters that would end the literal, so
+ * that a key such as `Sample Widget` produces a file Xcode can parse.
+ */
+function escapeStringsLiteral(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+}
+
 export async function writeStringsFile({
   localesMap,
   supportingDirectory,
@@ -40,7 +49,9 @@ export async function writeStringsFile({
     const strings = path.join(dir, fileName);
     const buffer = [];
     for (const [plistKey, localVersion] of Object.entries(localizationObj)) {
-      buffer.push(`${plistKey} = "${localVersion}";`);
+      buffer.push(
+        `"${escapeStringsLiteral(plistKey)}" = "${escapeStringsLiteral(String(localVersion))}";`
+      );
     }
     // Write the file to the file system.
     await fs.promises.writeFile(strings, buffer.join('\n'));
