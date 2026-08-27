@@ -119,8 +119,16 @@ export async function startDeviceAsync(
 async function checkEmulatorBootAsync(name: string, signal?: AbortSignal): Promise<Device | null> {
   const bootedDevices = await getAttachedDevicesAsync({ signal, shouldShowWaitingMessage: false });
   const connected = bootedDevices.find((device) => device.name === name);
-  if (connected && (await isBootAnimationCompleteAsync(connected.pid, signal))) {
-    return connected;
+  if (connected) {
+    try {
+      if (await isBootAnimationCompleteAsync(connected.pid, signal)) {
+        return connected;
+      }
+    } catch {
+      if (signal?.aborted) throw signal.reason;
+      // NOTE(@kitten): If `isBootAnimationCompleteAsync` rejects, the device may not have been ready to reply.
+      // Assume we're still waiting for it, so the outer loop can continue checking
+    }
   }
   return null;
 }

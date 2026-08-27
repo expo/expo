@@ -89,6 +89,24 @@ describe(startDeviceAsync, () => {
     });
   });
 
+  it('retries a transient boot property failure', async () => {
+    jest.mocked(ADB.getAttachedDevicesAsync).mockResolvedValue([
+      // @ts-expect-error
+      { name: 'foo', pid: 'emulator-5554' },
+    ]);
+    jest
+      .mocked(ADB.isBootAnimationCompleteAsync)
+      .mockRejectedValueOnce(new Error('property query timed out'))
+      .mockResolvedValueOnce(true);
+    // @ts-expect-error
+    jest.mocked(spawn).mockReturnValueOnce({ unref: jest.fn(), on: jest.fn(), off: jest.fn() });
+
+    await expect(
+      startDeviceAsync({ name: 'foo' }, { timeout: 500, interval: 1 })
+    ).resolves.toMatchObject({ name: 'foo' });
+    expect(ADB.isBootAnimationCompleteAsync).toHaveBeenCalledTimes(2);
+  });
+
   it('keeps boot checks single-flight while an earlier attempt is pending', async () => {
     let resolveFirstCheck!: (devices: ADB.Device[]) => void;
     jest
