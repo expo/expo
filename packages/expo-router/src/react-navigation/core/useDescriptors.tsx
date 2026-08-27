@@ -10,11 +10,7 @@ import type {
   PartialState,
   Router,
 } from '../routers';
-import {
-  type AddKeyedListener,
-  type AddListener,
-  NavigationBuilderContext,
-} from './NavigationBuilderContext';
+import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
@@ -22,6 +18,7 @@ import type {
   Descriptor,
   DescriptorRouteProp,
   EventMapBase,
+  EventMapCore,
   NavigationHelpers,
   NavigationProp,
   RouteConfig,
@@ -74,9 +71,8 @@ type Options<
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
   state: State;
   addListener: AddListener;
-  addKeyedListener: AddKeyedListener;
   router: Router<State, NavigationAction>;
-  emitter: NavigationEventEmitter<EventMap>;
+  emitter: NavigationEventEmitter<EventMapCore<State>>;
 };
 
 /**
@@ -102,14 +98,12 @@ export function useDescriptors<
   screenLayout,
   state,
   addListener,
-  addKeyedListener,
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { handleAction, resetNavigator, onDispatchAction, onOptionsChange } =
-    use(NavigationBuilderContext);
+  const { handleAction, resetNavigator, onOptionsChange } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
@@ -117,19 +111,9 @@ export function useDescriptors<
       handleAction,
       resetNavigator,
       addListener,
-      addKeyedListener,
-      onDispatchAction,
       onOptionsChange,
     }),
-    [
-      navigation,
-      handleAction,
-      resetNavigator,
-      addListener,
-      addKeyedListener,
-      onDispatchAction,
-      onOptionsChange,
-    ]
+    [navigation, handleAction, resetNavigator, addListener, onOptionsChange]
   );
 
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
@@ -138,10 +122,16 @@ export function useDescriptors<
     navigation,
     setOptions,
     router,
-    emitter,
+    // The same runtime emitter handles custom events; this generic only exposes core events here.
+    emitter: emitter as unknown as NavigationEventEmitter<EventMap>,
   });
 
   const cachedRoutes = useRouteCache(routes);
+  const emitRemovalEvent = React.useCallback(
+    (routeKey: string, type: 'removePrevented' | 'removed', action: NavigationAction) =>
+      emitter.emit({ type, target: routeKey, data: { action } }),
+    [emitter]
+  );
 
   const getOptions = (
     route: DescriptorRouteProp<ParamListBase, string>,
@@ -225,6 +215,7 @@ export function useDescriptors<
         routeState={routeState}
         options={customOptions}
         clearOptions={clearOptions}
+        emitRemovalEvent={emitRemovalEvent}
       />
     );
 

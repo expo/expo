@@ -89,22 +89,16 @@ it('keeps intents queued until ready', () => {
 it('processes a queued batch in FIFO order', () => {
   const calls: string[] = [];
   const processIntent = jest.fn((intent: RoutingIntent) => calls.push(actionType(intent)));
-  const dispatchSync = jest.fn(() => calls.push('NAVIGATOR_ACTION'));
   const onDispatch = jest.fn(() => calls.push('onDispatch'));
   const result = renderDrainer(true, processIntent);
 
   act(() => {
     result.enqueue(actionIntent('FIRST'));
-    result.enqueue({
-      type: 'NAVIGATOR_ACTION',
-      payload: { action: { type: 'SECOND' }, dispatchSync },
-      onDispatch,
-    });
+    result.enqueue({ ...actionIntent('SECOND'), onDispatch });
     result.enqueue(actionIntent('THIRD'));
   });
 
-  expect(calls).toEqual(['FIRST', 'onDispatch', 'NAVIGATOR_ACTION', 'THIRD']);
-  expect(dispatchSync).toHaveBeenCalledWith({ type: 'SECOND' });
+  expect(calls).toEqual(['FIRST', 'onDispatch', 'SECOND', 'THIRD']);
 });
 
 it('does not process a batch twice in Strict Mode', () => {

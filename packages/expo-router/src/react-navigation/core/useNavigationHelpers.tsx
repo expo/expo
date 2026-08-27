@@ -49,12 +49,8 @@ export function useNavigationHelpers<
 
     const dispatch = (action: Action) => {
       enqueue({
-        type: 'NAVIGATOR_ACTION',
-        payload: {
-          action,
-          // The queued action was already constrained to this navigator's action type.
-          dispatchSync: (queuedAction) => dispatchSync(queuedAction as Action),
-        },
+        type: 'ACTION',
+        payload: { action, originKey: getState().key },
       });
     };
 

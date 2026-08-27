@@ -28,7 +28,5 @@ export function entry<State extends NavigationState, Action extends NavigationAc
     reduce,
     shouldActionChangeFocus: () => false,
     getStateForRouteFocus: (state) => state,
-    shouldPreventRemove: () => false,
-    emitBeforeRemove: () => {},
   };
 }

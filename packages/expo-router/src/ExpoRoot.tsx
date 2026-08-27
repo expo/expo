@@ -9,15 +9,14 @@ import { useDomComponentNavigation } from './domComponents/useDomComponentNaviga
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { navigationRef } from './global-state/navigationRef';
+import { RemovalPreventionProvider } from './global-state/removalPrevention';
 import { RouterConfigContext } from './global-state/routerConfigContext';
 import { RouterRegistryProvider } from './global-state/routerRegistry';
 import { RoutingQueueProvider } from './global-state/routingQueueContext';
 import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
-import { emit } from './navigationEvents';
 import { Screen } from './primitives';
-import { useClientLayoutEffect } from './react-navigation/core/useClientLayoutEffect';
 import type { LinkingOptions } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
@@ -126,19 +125,6 @@ function ContextNavigator({
   const { routerConfig, rootComponent } = useRouterConfig(context, linking, serverUrl);
   const { linking: linkingConfig, routeNode } = routerConfig;
 
-  useClientLayoutEffect(() => {
-    return navigationRef.addListener('__unsafe_action__', (event) => {
-      const state = navigationRef.getRootState();
-      if (!event.data.noop && state) {
-        emit('actionDispatched', {
-          actionType: event.data.action.type,
-          payload: event.data.action.payload,
-          state,
-        });
-      }
-    });
-  }, []);
-
   useDomComponentNavigation();
 
   // TODO(@ubax): Revisit onboarding once route creation is React-owned.
@@ -160,15 +146,17 @@ function ContextNavigator({
   return (
     <RouterConfigContext.Provider value={routerConfig}>
       <RouterRegistryProvider>
-        <UpstreamNavigationContainer
-          ref={navigationRef}
-          linking={linkingConfig as LinkingOptions<any>}
-          documentTitle={documentTitle}
-          onReady={onNavigationReady}>
-          <WrapperComponent>
-            <Content rootComponent={rootComponent} />
-          </WrapperComponent>
-        </UpstreamNavigationContainer>
+        <RemovalPreventionProvider>
+          <UpstreamNavigationContainer
+            ref={navigationRef}
+            linking={linkingConfig as LinkingOptions<any>}
+            documentTitle={documentTitle}
+            onReady={onNavigationReady}>
+            <WrapperComponent>
+              <Content rootComponent={rootComponent} />
+            </WrapperComponent>
+          </UpstreamNavigationContainer>
+        </RemovalPreventionProvider>
       </RouterRegistryProvider>
     </RouterConfigContext.Provider>
   );

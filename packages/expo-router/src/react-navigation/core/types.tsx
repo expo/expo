@@ -120,8 +120,24 @@ export type EventMapCore<State extends NavigationState> = {
   focus: { data: undefined };
   blur: { data: undefined };
   state: { data: { state: State } };
-  beforeRemove: { data: { action: NavigationAction } };
   removePrevented: { data: { action: NavigationAction } };
+  /**
+   * Emitted after the route is removed and its component unmounts. The listener cannot rely on
+   * component state or update the unmounted component. Since effect cleanup runs before this event,
+   * it must defer unsubscription until the next microtask.
+   *
+   * @example
+   * ```tsx
+   * React.useEffect(() => {
+   *   const unsubscribe = navigation.addListener('removed', (event) => {
+   *     logRemovedRoute(event.data.action);
+   *   });
+   *
+   *   return () => queueMicrotask(unsubscribe);
+   * }, [navigation]);
+   * ```
+   */
+  removed: { data: { action: NavigationAction } };
 };
 
 export type EventArg<
@@ -739,23 +755,6 @@ export type NavigationContainerEventMap = {
    * Event that fires when current options changes.
    */
   options: { data: { options: object } };
-  /**
-   * Event that fires when an action is dispatched.
-   * Only intended for debugging purposes, don't use it for app logic.
-   * This event will be emitted before state changes have been applied.
-   */
-  __unsafe_action__: {
-    data: {
-      /**
-       * The action object that was dispatched.
-       */
-      action: NavigationAction;
-      /**
-       * Whether the action was a no-op, i.e. resulted in any state changes.
-       */
-      noop: boolean;
-    };
-  };
 };
 
 export type ParamListRoute<ParamList extends ParamListBase> = {

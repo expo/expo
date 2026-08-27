@@ -345,13 +345,14 @@ test('uses a no-op navigation object for a preloaded stack screen', () => {
 
   expect(enqueue).toHaveBeenCalledTimes(1);
   expect(enqueue).toHaveBeenCalledWith({
-    type: 'NAVIGATOR_ACTION',
-    payload: expect.objectContaining({
+    type: 'ACTION',
+    payload: {
       action: expect.objectContaining({
         source: expect.any(String),
         type: 'GO_BACK',
       }),
-    }),
+      originKey: expect.any(String),
+    },
   });
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['first']);
 });

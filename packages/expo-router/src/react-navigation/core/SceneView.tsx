@@ -2,7 +2,14 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import type { NavigationState, ParamListBase, PartialState, Route } from '../routers';
+import { PreventRemovalProvider } from '../../global-state/removalPrevention';
+import type {
+  NavigationAction,
+  NavigationState,
+  ParamListBase,
+  PartialState,
+  Route,
+} from '../routers';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import {
   type FocusedRouteState,
@@ -20,6 +27,11 @@ type Props<State extends NavigationState, ScreenOptions extends object> = {
   routeState: NavigationState | PartialState<NavigationState> | undefined;
   options: object;
   clearOptions: () => void;
+  emitRemovalEvent: (
+    routeKey: string,
+    type: 'removePrevented' | 'removed',
+    action: NavigationAction
+  ) => void;
 };
 
 /**
@@ -33,6 +45,7 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   routeState,
   options,
   clearOptions,
+  emitRemovalEvent,
 }: Props<State, ScreenOptions>) {
   const { addOptionsGetter } = useOptionsGetters({
     key: route.key,
@@ -89,24 +102,25 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   );
 
   const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;
-
   return (
-    <NavigationStateContext.Provider value={context}>
-      <NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
-        <EnsureSingleNavigator>
-          <StaticContainer
-            name={screen.name}
-            render={ScreenComponent || screen.children}
-            navigation={navigation}
-            route={route}>
-            {ScreenComponent !== undefined ? (
-              <ScreenComponent navigation={navigation} route={route} />
-            ) : screen.children !== undefined ? (
-              screen.children({ navigation, route })
-            ) : null}
-          </StaticContainer>
-        </EnsureSingleNavigator>
-      </NavigationFocusedRouteStateContext.Provider>
-    </NavigationStateContext.Provider>
+    <PreventRemovalProvider routeKey={route.key} emitRemovalEvent={emitRemovalEvent}>
+      <NavigationStateContext.Provider value={context}>
+        <NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
+          <EnsureSingleNavigator>
+            <StaticContainer
+              name={screen.name}
+              render={ScreenComponent || screen.children}
+              navigation={navigation}
+              route={route}>
+              {ScreenComponent !== undefined ? (
+                <ScreenComponent navigation={navigation} route={route} />
+              ) : screen.children !== undefined ? (
+                screen.children({ navigation, route })
+              ) : null}
+            </StaticContainer>
+          </EnsureSingleNavigator>
+        </NavigationFocusedRouteStateContext.Provider>
+      </NavigationStateContext.Provider>
+    </PreventRemovalProvider>
   );
 }
