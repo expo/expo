@@ -12,18 +12,18 @@ buildscript {
 
   dependencies {
     classpath(expoLibs.apollo.gradle)
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${safeExtGet('kspVersion', '2.3.10')}"
   }
 }
 
 plugins {
   alias libs.plugins.android.library
-  alias libs.plugins.kotlin.android
   alias libs.plugins.download
-  id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
-  id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21" // Use your Kotlin version
+  id("org.jetbrains.kotlin.plugin.compose") version "2.3.20"
+  id("org.jetbrains.kotlin.plugin.serialization") version "2.3.20" // Use your Kotlin version
   id 'expo-module-gradle-plugin'
 }
-apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.devtools.ksp'
 apply from: new File(rootDir, "versioning_linking.gradle")
 apply plugin: 'com.apollographql.apollo'
 
@@ -167,6 +167,7 @@ dependencies {
   implementation 'androidx.core:core-splashscreen:1.0.1'
   implementation 'io.coil-kt:coil-compose:2.6.0'
   implementation "androidx.navigation:navigation-compose:2.8.5"
+  implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0"
   implementation "androidx.compose.ui:ui:1.7.6"
   implementation "androidx.compose.runtime:runtime-saveable:1.7.6"
   implementation "androidx.compose.material3:material3:1.3.1"
@@ -285,10 +286,10 @@ dependencies {
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"
 
-  //dbflow
-  kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  implementation "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  // room (replaced DBFlow, whose kapt-only processor is incompatible with AGP 9's built-in Kotlin)
+  // 2.7+ is required for KSP2, which ksp 2.x uses.
+  implementation "androidx.room:room-runtime:2.8.3"
+  ksp "androidx.room:room-compiler:2.8.3"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 
