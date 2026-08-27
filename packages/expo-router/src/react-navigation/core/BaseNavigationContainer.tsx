@@ -102,14 +102,13 @@ function BaseNavigationContainerInner({
 
   const registry = use(RouterRegistryContext)!;
   const emitter = useEventEmitter<NavigationContainerEventMap>();
-  // TODO(@ubax): investigate if this is really needed
-  const stackRef = React.useRef<string | undefined>(undefined);
   // TODO(@ubax): invoke this callback from global reducer dispatches.
   // https://linear.app/expo/issue/ENG-26123
   const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
+    // TODO(@ubax): Capture dispatch stack traces in the expo-router devtools plugin. https://linear.app/expo/issue/ENG-20826
     emitter.emit({
       type: '__unsafe_action__',
-      data: { action, noop, stack: stackRef.current },
+      data: { action, noop },
     });
   });
 
@@ -243,7 +242,6 @@ function BaseNavigationContainerInner({
       resetNavigator,
       onDispatchAction,
       onOptionsChange,
-      stackRef,
     }),
     [addListener, addKeyedListener, handleAction, onDispatchAction, onOptionsChange, resetNavigator]
   );

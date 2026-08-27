@@ -1,6 +1,5 @@
 'use client';
 import * as React from 'react';
-import { use } from 'react';
 
 import {
   CommonActions,
@@ -9,7 +8,6 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
-import { NavigationBuilderContext } from './NavigationBuilderContext';
 import type { NavigationHelpers, NavigationProp } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
 
@@ -63,6 +61,7 @@ export function useNavigationCache<
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
   const { stackRef } = use(NavigationBuilderContext);
+  const getState = useLatestCallback(() => state);
 
   // Cache object which holds navigation objects for each screen
   // We use `React.useMemo` instead of `React.useRef` coz we want to invalidate it when deps change
@@ -108,24 +107,6 @@ export function useNavigationCache<
       navigation.dispatch({ source: route.key, ...action });
     };
 
-    const withStack = (callback: () => void) => {
-      let isStackSet = false;
-
-      try {
-        if (process.env.NODE_ENV !== 'production' && stackRef && !stackRef.current) {
-          // Capture the stack trace for devtools
-          stackRef.current = new Error().stack;
-          isStackSet = true;
-        }
-
-        callback();
-      } finally {
-        if (isStackSet && stackRef) {
-          stackRef.current = undefined;
-        }
-      }
-    };
-
     const actions = {
       ...router.actionCreators,
       ...CommonActions,
@@ -133,10 +114,8 @@ export function useNavigationCache<
 
     const helpers = Object.keys(actions).reduce<Record<string, () => void>>((acc, name) => {
       acc[name] = (...args: any) =>
-        withStack(() =>
-          // @ts-expect-error: name is a valid key, but TypeScript is dumb
-          dispatch(actions[name](...args))
-        );
+        // @ts-expect-error: name is a valid key, but TypeScript is dumb
+        dispatch(actions[name](...args));
 
       return acc;
     }, {});
@@ -149,8 +128,8 @@ export function useNavigationCache<
       ...helpers,
       // FIXME: too much work to fix the types for now
       ...(emitter.create(route.key) as any),
-      dispatch: (action: NavigationAction) => withStack(() => dispatch(action)),
-      dispatchSync: (action: NavigationAction) => withStack(() => dispatchSync(action)),
+      dispatch,
+      dispatchSync,
       getParent: (id?: string) => {
         if (id !== undefined && id === rest.getId()) {
           // If the passed id is the same as the current navigation id,

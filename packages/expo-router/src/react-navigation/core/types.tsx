@@ -754,10 +754,6 @@ export type NavigationContainerEventMap = {
        * Whether the action was a no-op, i.e. resulted in any state changes.
        */
       noop: boolean;
-      /**
-       * Stack trace of the action, this will only be available during development.
-       */
-      stack: string | undefined;
     };
   };
 };

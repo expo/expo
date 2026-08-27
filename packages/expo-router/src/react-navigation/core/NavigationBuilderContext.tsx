@@ -42,7 +42,6 @@ export const NavigationBuilderContext = React.createContext<{
   addKeyedListener?: AddKeyedListener;
   onDispatchAction: (action: NavigationAction, noop: boolean) => void;
   onOptionsChange: (options: object, routeKey?: string) => void;
-  stackRef?: React.MutableRefObject<string | undefined>;
 }>({
   handleAction: () => undefined,
   resetNavigator: () => undefined,
