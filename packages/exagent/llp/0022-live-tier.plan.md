@@ -173,7 +173,7 @@ back against the file). One real artifact, two answers, both of them the point.
 Written in wave 20 and **not run by its author** then: the staging cloud-session budget belonged to
 another wave, so its rows were marked `runnable` rather than filled, and nothing in the file could be
 read as evidence — which is the rule this whole document is about, applied to itself. Wave 23 ran it,
-three times, and §What the first three runs of it found is what that cost and bought.
+three times, and §What the first four runs of it found is what that cost and bought.
 
 **Every expectation in it comes from wave 19's live run rather than from a type definition.**
 [[0019-backend-parity-audit]]'s cloud rows moved under this suite the day wave 19 landed, and the suite
@@ -232,19 +232,21 @@ only this run's — and it does not read the id first, because the failure worth
 started and whose id this process never learned. Then the public name is released, the dev server
 stopped, the directory deleted.
 
-### What the first three runs of it found
+### What the first four runs of it found
 
-Run by its author in wave 23 [2026-08-27, staging, project `@kudo1/livecheck`, three sessions]. The
-suite went **4/7 → 4/7 → 6/7**, and every red was a defect rather than a flake. Two of the three facts
-above turned out to be about *one session's state* rather than about cloud sessions, which is the
-result worth keeping: a suite written from one captured run is far better than one written from a type,
-and it is still a suite written from one run.
+[2026-08-27, staging, project `@kudo1/livecheck`.] Run 1 is the gated run that opened wave 23; runs 2–4
+are wave 23's own three sessions, which was its whole budget. The suite went **4/7 → 4/7 → 6/7 → 6/7**,
+and every red was a defect rather than a flake. Three of the four facts above turned out to be about
+*one session's state* rather than about cloud sessions, which is the result worth keeping: a suite
+written from one captured run is far better than one written from a type, and it is still a suite
+written from one run.
 
 | Run | Result | What the reds were |
 | --- | --- | --- |
-| 1 | 4/7 | `smoke --cloud` exit 1 refusing its own dev server (F96); both reloads exit 22 after 180 s |
-| 2 | 4/7 | reloads exit **20** in 9 s; `smoke` reporting `deviceBackend: null` (F98) |
-| 3 | 6/7 | one reload red, and by then it was this suite's own stale assertion |
+| 1 | 4/7 | `smoke --cloud` exit 1 refusing its own dev server (F96); both reloads exit 22 after their full 180 s |
+| 2 | 4/7 | with the session started on the project, both reloads exit **20** in 9 s (F97); `smoke` reporting `deviceBackend: null` (F98) |
+| 3 | 6/7 | one reload exit 22 after 180 s while the next one exited 0 in 18.5 s — the pair that is F99 |
+| 4 | 6/7 | the command exits 0 in 48 s; the red is this suite's **own** assertion, written between runs 2 and 3 and made obsolete by the climb it described |
 
 **Fact 2 was incomplete, and that is what cost run 1.** `--expo-go` installs and launches Expo Go;
 nothing has opened the *project* in it. So the first `exp://` URL goes to the **system**, iOS asks

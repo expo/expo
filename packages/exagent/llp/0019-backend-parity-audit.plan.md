@@ -164,8 +164,9 @@ somebody meant, and a test written from a captured payload pins what happened. T
 `runnable` until somebody had run it — a row filled by its own author's confidence is the thing the
 `runnable`/`filled` split exists to make impossible.
 
-**Wave 23 ran it, and the split earned its keep** [2026-08-27, three sessions, 4/7 → 4/7 → 6/7;
-[[0022-live-tier]] §What the first three runs of it found]. Every red was a defect: four of them (F96,
+**Wave 23 ran it, and the split earned its keep** [2026-08-27, its three sessions, taking the suite
+from 4/7 to 6/7;
+[[0022-live-tier]] §What the first four runs of it found]. Every red was a defect: four of them (F96,
 F97, F98, F99), all fixed in that wave. And the column's *premises* moved, which is the part worth
 carrying here — **three of the four facts the suite was built on were about the state of one session
 rather than about cloud sessions.** A session started `--expo-go` but never opened on the project holds
