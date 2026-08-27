@@ -1,11 +1,11 @@
 import { CommandError } from '../../../utils/errors';
 import type { Device } from './adb';
-import { getAttachedDevicesAsync } from './adb';
+import { waitForAttachedDevicesAsync } from './adb';
 import { listAvdsAsync } from './emulator';
 
 /** Get a list of all devices including offline emulators. Asserts if no devices are available. */
 export async function getDevicesAsync(): Promise<Device[]> {
-  const bootedDevices = await getAttachedDevicesAsync({ shouldShowWaitingMessage: true });
+  const bootedDevices = await waitForAttachedDevicesAsync();
 
   // NOTE(@kitten): We don't assume AVD must succeed or be present, and still allow
   // devices to be discovered and move on

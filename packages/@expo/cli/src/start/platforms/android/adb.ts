@@ -74,7 +74,7 @@ const PROP_CPU_ABI_LIST_NAME = 'ro.product.cpu.abilist';
 const PROP_BOOT_ANIMATION_STATE = 'init.svc.bootanim';
 const DEVICE_DISCOVERY_WAIT_LIMIT_MS = 10_000;
 const DEVICE_DISCOVERY_RETRY_DELAY_MS = 200;
-const DEVICE_DISCOVERY_MAX_ATTEMPTS = 3;
+const DEVICE_DISCOVERY_RETRY_WINDOW_MS = 2_000;
 
 let _server: ADBServer | null;
 
@@ -271,21 +271,37 @@ function shellQuote(value: string): string {
 }
 
 // TODO: This is very expensive for some operations.
-export async function getAttachedDevicesAsync({
-  server = getServer(),
-  signal,
-  waitLimitMs,
-  probeWaitLimitMs = ADB_HOST_PROBE_WAIT_LIMIT_MS,
-  shouldShowWaitingMessage = false,
-}: {
+type GetAttachedDevicesOptions = {
   server?: ADBServer;
   signal?: AbortSignal;
   waitLimitMs?: number;
   probeWaitLimitMs?: number;
   shouldShowWaitingMessage?: boolean;
-} = {}): Promise<Device[]> {
+};
+
+export async function getAttachedDevicesAsync(
+  options: GetAttachedDevicesOptions = {}
+): Promise<Device[]> {
+  return getAttachedDevicesWithOptionsAsync(options, false);
+}
+
+export async function waitForAttachedDevicesAsync(): Promise<Device[]> {
+  return getAttachedDevicesWithOptionsAsync({ shouldShowWaitingMessage: true }, true);
+}
+
+async function getAttachedDevicesWithOptionsAsync(
+  {
+    server = getServer(),
+    signal,
+    waitLimitMs,
+    probeWaitLimitMs = ADB_HOST_PROBE_WAIT_LIMIT_MS,
+    shouldShowWaitingMessage = false,
+  }: GetAttachedDevicesOptions,
+  shouldRetryEmptyResult: boolean
+): Promise<Device[]> {
   const discoveryWaitLimitMs = waitLimitMs ?? DEVICE_DISCOVERY_WAIT_LIMIT_MS;
   const discoveryDeadline = Date.now() + discoveryWaitLimitMs;
+  const retryDeadline = Math.min(discoveryDeadline, Date.now() + DEVICE_DISCOVERY_RETRY_WINDOW_MS);
   const waitSignal = AbortSignal.timeout(discoveryWaitLimitMs);
   const operationSignal = signal ? AbortSignal.any([signal, waitSignal]) : waitSignal;
   const endpoint = resolveAdbEndpoint();
@@ -295,8 +311,8 @@ export async function getAttachedDevicesAsync({
       : null;
 
   try {
-    let lastError: unknown;
-    for (let attempt = 0; attempt < DEVICE_DISCOVERY_MAX_ATTEMPTS; attempt++) {
+    while (true) {
+      let retryError: unknown;
       try {
         const output = await server.runHostQueryAsync(
           ['devices', '-l'],
@@ -305,19 +321,27 @@ export async function getAttachedDevicesAsync({
           Math.max(1, discoveryDeadline - Date.now())
         );
         const devices = await parseAttachedDevicesAsync(output, operationSignal);
-        if (devices.length || attempt === DEVICE_DISCOVERY_MAX_ATTEMPTS - 1) {
+        if (devices.length || !shouldRetryEmptyResult) {
           return devices;
         }
       } catch (error) {
         if (operationSignal.aborted && error === operationSignal.reason) throw error;
-        lastError = error;
-        if (!shouldRetryAdbDiscovery(error) || attempt === DEVICE_DISCOVERY_MAX_ATTEMPTS - 1) {
+        if (!shouldRetryAdbDiscovery(error)) {
           throw error;
         }
+        retryError = error;
       }
-      await waitForRetryAsync(DEVICE_DISCOVERY_RETRY_DELAY_MS, operationSignal);
+
+      const retryTimeRemaining = retryDeadline - Date.now();
+      if (retryTimeRemaining <= 0) {
+        if (retryError) throw retryError;
+        return [];
+      }
+      await waitForRetryAsync(
+        Math.min(DEVICE_DISCOVERY_RETRY_DELAY_MS, retryTimeRemaining),
+        operationSignal
+      );
     }
-    throw lastError;
   } catch (error) {
     // Caller cancellation is not a discovery failure, so skip the diagnostic probe
     if (signal?.aborted && error === signal.reason) {
