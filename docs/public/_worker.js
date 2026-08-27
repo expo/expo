@@ -1,3 +1,12 @@
+const NOT_FOUND_MARKDOWN = `# Page not found
+
+No markdown exists for this path. Useful starting points:
+
+- [Documentation index](https://docs.expo.dev/llms.txt)
+- [Sitemap](https://docs.expo.dev/sitemap.xml)
+- [Documentation home](https://docs.expo.dev/)
+`;
+
 function upgradeHelperPairPath(url) {
   if (!/^\/bare\/upgrade\/?$/.test(url.pathname)) return null;
 
@@ -46,7 +55,13 @@ export default {
         }
       }
 
-      return new Response("Not found\n", { status: 404, headers: { Vary: "Accept" } });
+      return new Response(NOT_FOUND_MARKDOWN, {
+        status: 404,
+        headers: {
+          "Content-Type": "text/markdown; charset=utf-8",
+          Vary: "Accept",
+        },
+      });
     }
 
     return env.ASSETS.fetch(request);

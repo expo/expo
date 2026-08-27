@@ -194,6 +194,21 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
   }
   console.log('✓ Markdown 404 response includes Vary: Accept');
 
+  const missingMdType = missingMd.headers.get('content-type') ?? '';
+
+  if (!missingMdType.includes('text/markdown')) {
+    throw new Error(`Expected markdown Content-Type on the 404, got: ${missingMdType}`);
+  }
+
+  const missingMdBody = await missingMd.text();
+
+  if (!missingMdBody.includes('/llms.txt') || !missingMdBody.includes('/sitemap.xml')) {
+    throw new Error(
+      `Expected recovery links on the markdown 404, got: ${missingMdBody.slice(0, 200)}`
+    );
+  }
+  console.log('✓ Markdown 404 responds with a markdown body and recovery links');
+
   // Nonexistent page should also 404
   const notFound = await fetch(`${BASE_URL}/nonexistent-page`, {
     headers: { Accept: 'text/markdown' },
