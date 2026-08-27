@@ -85,7 +85,7 @@ export function FlowDiagram({ nodes, edges, height = 320, minWidth = 700, alt }:
   return (
     <div
       className={mergeClasses(
-        'mb-4 w-full overflow-x-auto overflow-y-hidden rounded-lg border border-default bg-default'
+        'mb-4 w-full overflow-x-auto overflow-y-hidden rounded-3xl border border-default bg-default'
       )}
       data-md="diagram"
       data-md-alt={alt}>
