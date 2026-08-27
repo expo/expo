@@ -29,6 +29,7 @@
 - [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch.
 - [iOS] Repair ready updates that are missing their launch asset by demoting them to pending during launcher selection, so a corrupted row is skipped and retried instead of failing every launch. ([#49457](https://github.com/expo/expo/pull/49457) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Register a downloaded update's assets, links, and ready status in a single transaction, so an interrupted or partially failed registration leaves no partial state behind. ([#49458](https://github.com/expo/expo/pull/49458) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Report a specific launch asset not found error when a launchable update has no linked launch asset, instead of failing silently or, for an update with no assets at all, hanging on the splash screen. ([#49459](https://github.com/expo/expo/pull/49459) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
