@@ -33,9 +33,13 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "typecheck": "tsc -p tsconfig.json && tsc -p e2e/tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json && tsc -p e2e/tsconfig.json && tsc -p e2e-live/tsconfig.json",
     "test": "jest",
     "test:e2e": "jest --config e2e/jest.config.js",
+    "test:live": "jest --config e2e-live/jest.config.js --runInBand",
+    "test:live:local": "jest --config e2e-live/jest.config.js --runInBand live-local",
+    "test:live:eas": "jest --config e2e-live/jest.config.js --runInBand live-eas",
+    "test:live:cloud": "jest --config e2e-live/jest.config.js --runInBand live-cloud",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {

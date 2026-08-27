@@ -2,10 +2,10 @@
 
 **Type:** Plan
 **Status:** Draft
-**Systems:** the e2e tier (`e2e/`); the EAS-backed call sites (`src/dev/devAsync.ts`, `src/impact/buildCache.ts`, `src/impact/compare.ts`, `src/status/easBuilds.ts`, `src/device/cloudSimulator.ts`, `src/passthrough/auth.ts`, `src/deploy/`); the follow-up ladders (`src/followups/`)
+**Systems:** the e2e tier (`e2e/`); the live tier (`e2e-live/`); the EAS-backed call sites (`src/dev/devAsync.ts`, `src/impact/buildCache.ts`, `src/impact/compare.ts`, `src/status/easBuilds.ts`, `src/device/cloudSimulator.ts`, `src/passthrough/auth.ts`, `src/deploy/`); the follow-up ladders (`src/followups/`)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-26
-**Related:** [[0002-testing-and-evals]], [[0015-backend-selection-and-config]], [[0016-v1-scope]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]]
+**Date:** 2026-08-26 (live columns added 2026-08-27)
+**Related:** [[0002-testing-and-evals]], [[0022-live-tier]], [[0015-backend-selection-and-config]], [[0016-v1-scope]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]]
 
 ## Summary
 
@@ -56,6 +56,111 @@ that pins the *plan* an EAS run would produce.
 | project shape: workspace | — | one deploy case | **e2e (2)** |
 | project shape: no project | — | none | **e2e (3) — found bug 6** |
 | project shape: not an Expo app | — | none | **e2e (2) + 1 skipped, see below; closed by [[0020-not-an-expo-app]] — 9 rows now** |
+
+## The live matrix
+
+[added 2026-08-27, wave 20 — [[0022-live-tier]]] The matrix above asks whether a command ran against a
+**stub** of its backend's binary. This one asks the next question, which is the one §What is still not
+tested left open in as many words: **has it ever run for real, and where is the evidence.**
+
+One row per v1 command, four columns. What each cell means, and the distinctions are load-bearing:
+
+- **`stub-e2e`** — a whole `exagent` process ran against a stub `expo`/`eas`/dev server (`e2e/`).
+- **`live-local`** — ran against a real Metro, a real booted iOS simulator, real Expo Go, real Hermes.
+- **`live-eas`** — ran against the real EAS service on staging.
+- **`live-cloud`** — ran against a real EAS Simulator session.
+- **`filled`** — asserted by a run somebody has seen green. Green means green on macOS/iOS/Expo Go.
+- **`runnable`** — the test exists and nobody has run it. **Not evidence.** Every `live-cloud` cell is
+  this today: the suite was written in wave 20 and the staging cloud-session budget belonged to another
+  wave. It becomes `filled` when the lead runs it.
+- **`open`** — this tier could test it and does not yet. The reason is in the cell.
+- **`n/a`** — the command has no such backend, so the column is not a gap.
+- **`unreachable`** — the tier cannot cross the boundary. Reason in the cell, and these are the rows
+  that matter most, because they are the ones a "fully tested" claim would be quietly wrong about.
+
+| Command | stub-e2e | live-local | live-eas | live-cloud |
+| --- | --- | --- | --- | --- |
+| `new` | filled | **filled** — scaffolds + installs, per run | n/a | runnable (its own scaffold) |
+| `install --check` | filled | **filled** — real registry resolution, `check.report` non-null (F76) | n/a | n/a |
+| `install` (adds a package) | filled | open — every run would install from the registry; the `--check` path proves the wrapper | n/a | n/a |
+| `typecheck` (fresh project) | unit only — a stub `expo` writes no `expo-env.d.ts` | **filled** — exit 20 + `generatedTypes` naming the file (F64) | n/a | n/a |
+| `typecheck` (after `dev`) | filled | **filled** — same command, exit 0, `generatedTypes: null` | n/a | n/a |
+| `doctor` | filled | **filled** — real expo-doctor, `parse: "full"`, 21 checks, protocol exit code (F68) | n/a | n/a |
+| `status` (report) | filled | **filled** — real 40-hex fingerprint from the resolved `@expo/fingerprint` | **filled** — `auth` agrees with `whoami` (F65) | n/a |
+| `status --assert` | filled | **filled** — 22 on a project with no recorded build | n/a | n/a |
+| `status --explain` (build lookup) | filled | n/a | **filled** — real build found by fingerprint, **+ found F93** | n/a |
+| `status --explain --build <id>` | filled | n/a | **filled** — the id is echoed (F66) | n/a |
+| `dev --detach --wait-ready` | filled | **filled** — and the port still answers 8 s later (F61) | n/a | n/a |
+| `dev` (attached, blocking) | filled | open — the suite has no use for a foreground server; `--detach` is the agent-facing shape | n/a | n/a |
+| `dev` (EAS plan run) | filled (wave 19) | n/a | unreachable — the plan's EAS step is a native build, which no v1 command creates | n/a |
+| `dev --tunnel` | filled | open — needs `@expo/ngrok`, so it is gated into `live-cloud` where it is required | n/a | runnable — S3 (`tunnelUrl: null`) is checked in `beforeAll` |
+| `dev:logs` | filled | **filled** — reads the real bundler error the gates refused on | n/a | n/a |
+| `dev:stop` | filled | **filled** — process gone, port free after | n/a | n/a |
+| `start` | filled | open — `expo start` verbatim; `dev` covers the same subprocess with a plan around it | n/a | n/a |
+| `navigate` (local) | filled | **filled** — `simctl openurl`, route check, `attached: true` | n/a | n/a |
+| `navigate` (bad route) | filled | **filled** — exit 1, `ROUTE_NOT_FOUND`, real sitemap in the message | n/a | n/a |
+| `navigate --print-url` | filled | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | n/a | runnable (implied by the tunnel path) |
+| `navigate --cloud` | filled | n/a | n/a | **runnable** — asserts the link, **not** `attached` (S11) |
+| `runtime:eval` | filled (6, failure paths only) | **filled** — returns `2` from real Hermes; the row §What is still not tested called unreachable | n/a | unreachable — no `--cloud` on `eval` (correct), and S11 anyway |
+| `runtime:errors` | filled (6) | **filled** — `runtimeReadable: true` from a real debugger | n/a | unreachable — same |
+| `runtime:tree` | filled | **filled** — `disabled`, `groupSize`, `placeholder` on real nodes (F69, F70) | n/a | unreachable — same |
+| `runtime:tap` (3 refusal bands) | filled | **filled** — disabled / ambiguous / no-handler, all 20 | n/a | unreachable — same |
+| `runtime:tap --verify` | unreachable — no CDP at tier 0 | **filled** — interpolated **and** single-string Text in the diff (F63) | n/a | unreachable — same |
+| `runtime:type` | filled | **filled** — types into a real input; `editable={false}` → 20 | n/a | unreachable — same |
+| `runtime:reload` (local) | filled | **filled** — `verifiedBy: "message-socket-peers"`, real reconnect | n/a | n/a |
+| `runtime:reload --cloud` | filled (2) | n/a | n/a | **runnable** — asserts the contract, not the outcome (wave 19 in flight) |
+| `runtime:stop` (local) | filled | **filled** — `wasRunning: true`, Expo Go terminated on the named udid | n/a | n/a |
+| `runtime:stop --cloud` | filled | n/a | n/a | **runnable** — `wasRunning` may be null and that is honest (S13) |
+| `smoke` (pass) | unreachable — the runtime and screenshot phases need an app | **filled** — 8 phases, screenshot on disk | n/a | n/a |
+| `smoke` (broken bundle) | filled | **filled** — 20, later phases skipped, `lab.tsx` named | n/a | n/a |
+| `smoke --cloud` | filled (2) | n/a | n/a | **runnable** — and every follow-up stays on `--cloud` (bug 5) |
+| break-and-fix cycle (6 gates) | partial — the refusal only | **filled** — 6 gates to 20 and back to green, no restart (F62) | n/a | n/a |
+| `deploy --web` | filled | n/a | **filled** — URL 200, HTML title, entry bundle serves the fixture's marker | n/a |
+| `deploy --native` (launch) | filled | n/a | open — it runs `eas build`, which bills a worker; one deploy per run is the budget | n/a |
+| `whoami` | filled | n/a | **filled** — staging session file named (S6), `--json` object | n/a |
+| `login` / `logout` / `register` | filled | unreachable — they mutate the machine's session, which a test suite must not | unreachable — same | n/a |
+| `inspect:build-log` (binary in) | filled | n/a | **filled** — a real brotli-served EAS log → 22 (S8) | n/a |
+| `inspect:build-log` (decoded) | filled | n/a | **filled** — same log decoded → phase located, line checked back against the file | n/a |
+| `inspect:build-log <build-id>` | n/a | n/a | unreachable — reserved; eas-cli has no `build:logs` | n/a |
+| `inspect:config-plugins` | filled | open — no backend dimension, and the stub tier runs the real config loader already | n/a | n/a |
+| `skills:*`, `agents:setup` | filled | open — filesystem only; nothing about them is a second process boundary | n/a | n/a |
+| forwarded `expo` set | filled | open — a forward is argv assembly, which is what the stub tier is for | n/a | n/a |
+| native EAS build **creation** | n/a | n/a | **unreachable in v1** — verified: no v1 command creates one. `deploy --native` runs create-launch; `inspect:build-log` takes no id | n/a |
+| Android, anywhere | filled (posix) | **unreachable today** — the suite is iOS/Expo Go; the harness has no Android gate yet | n/a | n/a |
+| Windows | filled (`tier0-windows`) | unreachable — no simulator, and this tier is macOS-gated | unreachable — same gate | unreachable — same |
+| CDP on a cloud simulator | n/a | n/a | n/a | **unreachable — S11, upstream.** The app runs and registers zero targets over both the local and the tunnel URL |
+
+### What the live columns changed
+
+**Provably real now, and was stub-only before** — 23 cells, and the four that could not have been
+reached at any lower tier at all: a successful `runtime:eval`; `--verify` seeing a text diff;
+`runtime:errors` proving a runtime answered rather than that a list was empty; and `smoke` passing with
+a screenshot on disk. [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app named all
+four as the cost of that boundary; this is the tier that pays it.
+
+**Still stub-only, by choice** — `install` adding a package, `start`, `dev` attached,
+`inspect:config-plugins`, `skills:*`, `agents:setup`, the forwarded set. Each is argv assembly or
+filesystem work with no second process boundary, which is exactly what the stub tier is good at. These
+are `open`, not gaps.
+
+**Unreachable, and worth saying out loud** — build creation (impossible in v1); `login`/`logout`/
+`register` (a suite must not mutate the machine's session); CDP on a cloud simulator (S11, upstream);
+Android and Windows at the live tier. A claim that the v1 surface is "fully tested live" would be wrong
+about every one of these, which is why they have rows.
+
+**Found by filling the columns** — two, both unreachable from any tier below
+([[0022-live-tier]] §The findings this tier arrived with):
+
+- **F93.** `status --explain` reports bun's install progress as EAS's answer about the caller's builds,
+  on 3 of 6 runs. Same class as bug 3 below, one process boundary further out — and it is the fifth
+  time this audit has found that **the reason a lookup prints is whatever the tool on the other side of
+  the spawn last said**, which is a pattern now rather than an incident. What is new is that the tool
+  on the other side is this CLI's *own* choice of package runner, not something it found on the machine.
+- **F94.** Every uncaught exception exits **7** — the code the exit table reserves for needs-human —
+  with a raw Node stack and no envelope, because the `uncaughtException` handler rethrows everything it
+  does not recognise. No fixture can produce the input (the crash observed came out of Node's socket
+  layer), so this row could not have been filled at any lower tier and was not a gap anybody could have
+  closed there.
 
 ## The bugs
 
@@ -114,17 +219,26 @@ cross.
   `src/__tests__/exitCodes-test.ts` sweeps the loadable source so the claim cannot quietly stop being
   true. Nothing was wrong with the code: `build:wait` is deferred, and a declined plan exits 0 by
   explicit decision ([[0008-guardrails]] §Plan-with-cost dry run). The constant stays defined.
-- **A successful `runtime:eval` is unreachable at tier 0**, unchanged from
-  [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app. What this wave *did* add is
-  the third inspector state — a socket that answers every method `-32601` — which is a double for a
-  runtime having no debugger rather than for a runtime, and is what makes the 22-not-0 rule testable
-  at this tier.
-- **No live `eas build`, `eas deploy` or simulator session runs anywhere in this suite**, which is
-  the same boundary every EAS-backed command stops at. §A flag is not shipped until it has run
-  against the published binary of [[0002-testing-and-evals]] is the rule that covers the gap, and it
-  is a manual step.
+- ~~**A successful `runtime:eval` is unreachable at tier 0**~~ — still true *at tier 0*, and no longer
+  untested: **closed** [2026-08-27] by `e2e-live`, where it returns `2` from real Hermes
+  ([[0022-live-tier]] §live-local). The tier-0 statement stands unchanged from
+  [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app — what changed is that the
+  boundary now has a tier on the other side of it rather than a note. What the earlier wave added at
+  tier 0 is the third inspector state — a socket that answers every method `-32601` — which is a double
+  for a runtime having no debugger rather than for a runtime, and is what makes the 22-not-0 rule
+  testable at this tier.
+- ~~**No live `eas build`, `eas deploy` or simulator session runs anywhere in this suite**~~ —
+  **closed for `eas deploy` and the read side, and reclassified for the rest** [2026-08-27]:
+  [[0022-live-tier]] is the tier, §The live matrix is the accounting, and `pnpm test:live:eas` runs
+  `deploy --web` and the whole build read side against staging on demand. Two parts do not close and
+  are now recorded as unreachable rather than untested: **build creation**, which no v1 command does,
+  and the **cloud session**, whose suite is written and not yet run. §A flag is not shipped until it has
+  run against the published binary is still a manual step for the *published version* — the live tier
+  runs the published *surface* from this tree, which narrows what that run has to discover rather than
+  replacing it.
 - **The `--cloud` platform mismatch.** A session has one platform; `smoke --cloud --android` against
-  an iOS session is refused by `navigate`'s own path and is not asserted for `smoke`.
+  an iOS session is refused by `navigate`'s own path and is not asserted for `smoke`. `live-cloud`
+  asserts the `navigate` half; the `smoke` half is still open.
 - **Windows.** Everything here runs on posix in the local loop; the `tier0-windows` job is what
   covers the `.cmd` shim half, and the space-in-path suite is the one most likely to find something
   there.

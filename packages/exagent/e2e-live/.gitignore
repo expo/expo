@@ -1,0 +1,3 @@
+# Per-run evidence: the full output of every invocation a live run made. Kept on disk so a red run
+# leaves something to read, and never committed — it is a fact about one moment on one machine.
+.artifacts/
