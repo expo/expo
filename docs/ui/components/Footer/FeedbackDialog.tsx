@@ -79,7 +79,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                     Your feedback will help us make our docs better. Thanks for sharing!
                   </CALLOUT>
                 </div>
-                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-3">
+                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-6">
                   <Dialog.Close asChild>
                     <Button type="submit">Done</Button>
                   </Dialog.Close>
@@ -91,7 +91,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                   event.preventDefault();
                   sendFeedback();
                 }}>
-                <div className="px-6 py-5">
+                <div className="p-6">
                   <div className="flex justify-between">
                     <RawH2 className="my-0!">Share your feedback</RawH2>
                     <Dialog.Close asChild>
@@ -144,7 +144,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                     </InlineHelp>
                   )}
                 </div>
-                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-3">
+                <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-6">
                   <Dialog.Close asChild>
                     <Button theme="quaternary">No thanks</Button>
                   </Dialog.Close>
