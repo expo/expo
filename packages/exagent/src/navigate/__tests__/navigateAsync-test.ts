@@ -358,6 +358,9 @@ describe(navigateAsync, () => {
       attached: null,
       attachWaitedMs: 0,
       attachRecovered: false,
+      // Null on a local device: the dialog this field is about is what an unattended cloud session
+      // raises, and no alert is read on a machine that has somebody at it.
+      attachAlert: null,
       reversedPort: null,
       command: 'xcrun simctl openurl IOS-1 exp://127.0.0.1:8081/--/profile/42',
       exitCode: 0,
@@ -397,6 +400,7 @@ describe(navigateAsync, () => {
 
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'appId',
+      'attachAlert',
       'attachRecovered',
       'attachWaitedMs',
       'attached',
@@ -885,7 +889,8 @@ describe(navigateAsync, () => {
       });
       expect(Object.keys(report).sort()).toEqual([
         'appId',
-        'attachRecovered',
+        'attachAlert',
+      'attachRecovered',
         'attachWaitedMs',
         'attached',
         'command',

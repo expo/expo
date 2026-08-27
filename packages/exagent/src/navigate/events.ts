@@ -11,6 +11,8 @@ declare module '2g' {
     'navigate:adb_reverse_failed': { reason: string };
     /** The app was stopped and the link opened again, because nothing had attached. */
     'navigate:attach_recovery': { appId: string; stopped: boolean };
+    /** The system dialog a cloud open raised, as it was read and as it was answered (S10). */
+    'navigate:attach_alert': { found: boolean; accepted: boolean };
     'navigate:route_checked': {
       checked: boolean;
       ok: boolean | null;

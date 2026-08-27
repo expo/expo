@@ -7,6 +7,7 @@
 // code it gives a device that refused the link.
 import chalk from 'chalk';
 
+import { AGENT_DEVICE_SPEC } from '../device/cloudSimulator';
 import { event as cliEvent } from '../events';
 import { EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import {
@@ -19,7 +20,12 @@ import {
 import * as Log from '../log';
 import type { DevServerSource } from '../runtime/devServer';
 import { openInPhrase } from './connectUrl';
-import { openRouteAsync, resolveRouteUrlAsync, type OpenRouteResult } from './openRoute';
+import {
+  openRouteAsync,
+  resolveRouteUrlAsync,
+  type AlertCheck,
+  type OpenRouteResult,
+} from './openRoute';
 import type { NavigateOptions } from './resolveOptions';
 import type { RouteCheckJson } from './routeCheck';
 
@@ -121,6 +127,16 @@ export interface NavigateResultJson {
   /** Whether the app had to be stopped and the link opened again to get there. */
   attachRecovered: boolean;
   /**
+   * The system dialog this run's own link raised on a cloud session, or null when none was sought.
+   *
+   * Only ever non-null for `--cloud`, and only when nothing attached inside the budget: the dialog
+   * is what an unattended `open` of a custom-scheme URL produces on iOS (S10), and `found` beside
+   * `accepted` is the pair that says whether it was in the way and whether this run cleared it.
+   *
+   * @see src/navigate/openRoute.ts §resolveOpenDialogAsync
+   */
+  attachAlert: AlertCheck | null;
+  /**
    * State-aware next actions, empty when the device refused the link or they are suppressed.
    *
    * @see llp/0009-smart-followups.rfc.md §Design
@@ -198,6 +214,7 @@ export async function navigateAsync(
       attached: opened.attach.confirmed,
       attachWaitedMs: opened.attach.waitedMs,
       attachRecovered: opened.attach.recovered,
+      attachAlert: opened.attach.alert,
       followups,
     };
     // The object is the whole of stdout, so the output can be piped into a parser. The failure
@@ -364,6 +381,7 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
       attached: null,
       attachWaitedMs: 0,
       attachRecovered: false,
+      attachAlert: null,
       followups,
     };
     Log.log(JSON.stringify(report, null, 2));
@@ -429,7 +447,21 @@ function reachLine(hostType: string | null): string {
   );
 }
 
-/** The what / why / how for a link that was delivered and produced no connected app. */
+/**
+ * The what / why / how for a link that was delivered and produced no connected app.
+ *
+ * **The cloud clauses are not decoration** (S10, and the first live-cloud run). On an EAS Simulator
+ * session the most common cause of this exact outcome is not the app at all: iOS asks "Open in
+ * 'Expo Go'?" and nothing on an unattended device answers it. This run reads and answers that dialog
+ * itself (`openRoute.ts §resolveOpenDialogAsync`), so the report says which of the three states it
+ * found — answered, some other alert, or none — and names the verb a reader can run by hand either
+ * way. A report that left the dialog unmentioned sent readers to debug a bundle that was never
+ * fetched.
+ *
+ * The screen-reading suggestion follows the backend rather than the platform, for llp/0019 bug 5's
+ * reason: `--platform ios` is a local flag, and a host that reached for a cloud session may have no
+ * local device to run it against.
+ */
 function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): string {
   const reverseClause =
     opened.reverse?.ran && opened.reverse.ok === false
@@ -437,6 +469,19 @@ function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): 
       : opened.reverse?.ok
         ? ` The dev server's port was forwarded onto the device first, so the app could reach it.`
         : '';
+
+  const alert = opened.attach.alert;
+  const alertClause = alert == null ? '' : ` And the device's own screen: ${alert.reason}.`;
+  const cloud = opened.deviceBackend === 'cloud';
+  const alertHow =
+    alert?.accepted === true
+      ? ` The dialog this link raised was accepted and the app still did not connect, so the next thing to look at is the screen rather than the modal.`
+      : cloud
+        ? ` On a cloud session the usual cause is a system dialog nothing answered — read it with "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} alert get" and answer it with "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} alert accept".`
+        : '';
+  const look = cloud
+    ? 'npx exagent smoke --cloud --no-route-check'
+    : `npx exagent smoke --platform ${opened.platform} --no-route-check`;
 
   return [
     chalk.red(
@@ -446,7 +491,7 @@ function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): 
       opened.attach.recovered
         ? ' The app was stopped and the link opened a second time, and that did not attach either.'
         : ''
-    }`,
-    `How: look at what the dev server was asked for with "npx exagent dev:logs", and at the screen with "npx exagent smoke --platform ${opened.platform} --no-route-check". A first bundle on a cold device can take longer than this wait — raise it with --attach-timeout 90s. Pass --no-wait-attach to report only what the device tool said, which is what this command used to do.`,
+    }${alertClause}`,
+    `How: look at what the dev server was asked for with "npx exagent dev:logs", and at the screen with "${look}". A first bundle on a cold device can take longer than this wait — raise it with --attach-timeout 90s. Pass --no-wait-attach to report only what the device tool said, which is what this command used to do.${alertHow}`,
   ].join('\n');
 }

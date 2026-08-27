@@ -19,9 +19,14 @@ import {
   type DevServerReach,
 } from '../dev/advertisedUrl';
 import {
+  AGENT_DEVICE_SPEC,
+  acceptCloudAlertAsync,
   cloudNeedsTunnelError,
   cloudVerbFailedError,
+  isOpenInAppAlert,
   openUrlOnCloudSimulatorAsync,
+  readCloudAlertAsync,
+  readControllerError,
 } from '../device/cloudSimulator';
 import { event as cliEvent } from '../events';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
@@ -223,8 +228,34 @@ export interface AttachCheck {
   targets: number;
   /** Whether the app was stopped and the link opened a second time. */
   recovered: boolean;
+  /**
+   * What the system dialog on a cloud session turned out to be, or null when none was looked for.
+   *
+   * @see AlertCheck — and llp/0005 §The dialog nobody is there to answer.
+   */
+  alert: AlertCheck | null;
   /** Why it is not confirmed, or null when it is. */
   reason: string | null;
+}
+
+/**
+ * The one system dialog this command answers, and what it took to establish that it was the one.
+ *
+ * `found` and `accepted` are separate facts because the interesting case is `found: true` with
+ * `accepted: false` — an alert was on the screen and it was **not** the one this run's own link
+ * raised, so it was left alone and named instead.
+ */
+export interface AlertCheck {
+  /** Whether the device was asked what alert it had. */
+  checked: boolean;
+  /** Whether the controller reported an alert at all. */
+  found: boolean;
+  /** Whether this run answered it. */
+  accepted: boolean;
+  /** The controller command that read it, for reproducing the step by hand. */
+  command: string;
+  /** What happened, in the words of whichever layer said it. */
+  reason: string;
 }
 
 /**
@@ -582,6 +613,15 @@ const ATTACH_POLL_MS = 500;
  * The recovery is one force-stop and one fresh link, and only on Android: Expo Go's error screen
  * keeps the process alive and does not retry the manifest fetch, so a second intent into it changes
  * nothing. Automatic rather than suggested, because the state it clears is one this command caused.
+ *
+ * **On a cloud session there is a second recovery, for a second cause** (S10). The link is handed to
+ * the system, iOS asks "Open in 'Expo Go'?", and on a device nobody is sitting in front of, that
+ * dialog is never answered — so nothing loads, and the honest `attached: false` this produces is
+ * about a modal rather than about the app [observed — live staging, 2026-08-26, where
+ * `agent-device alert accept` proved the causality; and again live cloud, 2026-08-27, 60.9 s].
+ *
+ * @see resolveOpenDialogAsync — why answering it is this command's to do, and what stops that from
+ * becoming "answer any system prompt".
  */
 async function confirmAttachAsync({
   projectRoot,
@@ -606,6 +646,7 @@ async function confirmAttachAsync({
       waitedMs: 0,
       targets: 0,
       recovered: false,
+      alert: null,
       reason: 'this run did not wait for the app to attach',
     };
   }
@@ -616,6 +657,7 @@ async function confirmAttachAsync({
       waitedMs: 0,
       targets: 0,
       recovered: false,
+      alert: null,
       reason: 'the device refused the deep link, so nothing was opened to wait for',
     };
   }
@@ -638,6 +680,21 @@ async function confirmAttachAsync({
 
   let targets = await waitAsync(startedAt + budgetMs);
   let recovered = false;
+  let alert: AlertCheck | null = null;
+
+  // The cloud recovery, before the Android one: a modal that is never answered blocks whatever the
+  // force-stop-and-relink would do next, so the dialog has to come off the screen first.
+  if (targets === 0 && device.backend === 'cloud') {
+    alert = await resolveOpenDialogAsync({
+      projectRoot,
+      platform: device.platform,
+      appLabel: options.appId ?? EXPO_GO_DIALOG_LABEL,
+    });
+    debugEvent('attach_alert', { found: alert.found, accepted: alert.accepted });
+    if (alert.accepted) {
+      targets = await waitAsync(Date.now() + budgetMs);
+    }
+  }
 
   // The gate is the **platform**, not the machine. It used to be `local-android`, because the
   // recovery is a force-stop and the first cut of the cloud backend believed the controller had no
@@ -681,13 +738,111 @@ async function confirmAttachAsync({
     waitedMs,
     targets,
     recovered,
+    alert,
     reason:
       targets > 0
         ? null
         : `no ${device.platform} app registered a debugger target on ${devServerUrl} within ${waitedMs}ms${
             recovered ? ', including after the app was stopped and the link opened again' : ''
-          }`,
+          }${alert?.accepted ? ', including after the system dialog this link raised was accepted' : ''}`,
   };
+}
+
+/**
+ * The name the "Open in …?" dialog carries for Expo Go, which is its display name and not its id.
+ *
+ * Matched loosely by {@link isOpenInAppAlert} — the bundle id's last component matches too — so a
+ * run that knows only `host.exp.Exponent` still recognises the dialog.
+ */
+const EXPO_GO_DIALOG_LABEL = 'Expo Go';
+
+/**
+ * Read the alert on a cloud session's device, and answer the one this run's own link raised.
+ *
+ * **Why this command answers a system dialog at all.** llp/0008 keeps this CLI out of the business
+ * of granting permissions on somebody's behalf, and that is not what this is. The caller ran
+ * `--cloud <route>`, which *is* the instruction "open this route on the cloud simulator". iOS then
+ * asked whether it may do the thing that was just asked for, on a machine in a datacenter with
+ * nobody in front of it. Answering it completes the requested action and authorises nothing beyond
+ * it — and the precedent is one file up: the Android stuck-app recovery is already automatic rather
+ * than suggested, "because the state it clears is one this command caused" [decided — wave 23,
+ * llp/0005 §The dialog nobody is there to answer].
+ *
+ * **What keeps that from becoming "answer any prompt".** Four gates, and all four are cheap:
+ *
+ *  1. only on `--cloud` — a dialog on the machine at somebody's desk has somebody at it;
+ *  2. only after **this run's own** open exited 0;
+ *  3. only when nothing attached within the caller's budget, so the happy path spends no verb;
+ *  4. the alert is **read before it is answered**, and answered only when it names the app the URL
+ *     was for. Anything else is reported and left on the screen.
+ *
+ * Never throws: a controller that refuses the read is a fact about the device, and this is a
+ * recovery inside a check that already has an honest answer without it.
+ */
+async function resolveOpenDialogAsync({
+  projectRoot,
+  platform,
+  appLabel,
+}: {
+  projectRoot: string;
+  platform: NavigatePlatform;
+  appLabel: string;
+}): Promise<AlertCheck> {
+  const read = await readCloudAlertAsync({ projectRoot }).catch((error: unknown) => ({
+    command: `${AGENT_DEVICE_SPEC} alert get`,
+    stdout: '',
+    stderr: error instanceof Error ? error.message : String(error),
+    exitCode: null,
+    spawnError: null,
+    binPath: null,
+  }));
+  const output = `${read.stdout}\n${read.stderr}`;
+  const base = { checked: true, command: read.command };
+
+  // The controller's own empty answer: exit 1, `Error (COMMAND_FAILED): alert not found`
+  // [observed — `agent-device@latest alert get`, 2026-08-27]. Not a failure of this step.
+  if (read.exitCode !== 0) {
+    const controller = readControllerError(output);
+    return {
+      ...base,
+      found: false,
+      accepted: false,
+      reason:
+        controller?.message.toLowerCase().includes('not found') === true
+          ? 'the device had no alert on it, so nothing was blocking the link'
+          : `the alert on the device could not be read (${controller?.message ?? (firstLine(read.stderr) || `exit ${read.exitCode ?? 'on a signal'}`)})`,
+    };
+  }
+  if (!isOpenInAppAlert(output, appLabel)) {
+    return {
+      ...base,
+      found: true,
+      accepted: false,
+      // Named rather than answered, and named with what it said: an alert this run did not cause is
+      // not this run's to dismiss, and a reader who can see its text can decide.
+      reason: `an alert was on the device and it does not name ${appLabel}, so it is not the dialog this link raised and it was left alone: ${firstLine(read.stdout) || firstLine(read.stderr)}`,
+    };
+  }
+
+  const accepted = await acceptCloudAlertAsync({ projectRoot }).catch(() => null);
+  if (accepted == null || accepted.exitCode !== 0) {
+    return {
+      ...base,
+      found: true,
+      accepted: false,
+      reason: `the "open in ${appLabel}" dialog was on the device and the controller refused to accept it (${accepted == null ? 'the verb could not be run' : (readControllerError(`${accepted.stderr}\n${accepted.stdout}`)?.message ?? `exit ${accepted.exitCode ?? 'on a signal'}`)})`,
+    };
+  }
+  return {
+    ...base,
+    found: true,
+    accepted: true,
+    reason: `the system asked whether to open the link in ${appLabel} — a dialog nothing on a ${platform} cloud simulator is there to answer — and this run accepted it`,
+  };
+}
+
+function firstLine(text: string): string {
+  return text.trim().split('\n')[0] ?? '';
 }
 
 /** The application id to force-stop, resolved the way `runtime:stop` resolves it. */

@@ -44,6 +44,9 @@ const STUB_EAS_LOG_NAME = 'stub-eas-simulator-invocations.jsonl';
  *   wording the real CLI uses
  * - STUB_SIM_AVAILABLE: `false` for an account without the feature
  * - STUB_SIM_EXEC_EXIT: exit code of `simulator:exec`, for a session that refuses the verb
+ * - STUB_SIM_ALERT: the text `alert get` answers with. Unset means the controller's own empty
+ *   answer — exit 1 and `Error (COMMAND_FAILED): alert not found`, which is what it prints on a
+ *   device with nothing on screen [observed — `agent-device@latest alert get`, 2026-08-27]
  * - STUB_SIM_CRASH: `1` to behave like a wrapper that is not the EAS CLI at all — exit 101 with a
  *   Rust backtrace and nothing an `eas` run would ever print
  */
@@ -118,6 +121,23 @@ if (args[0] === 'simulator:exec') {
     process.stdout.write(
       JSON.stringify({ success: true, data: { session: 'default', message: 'Closed: default' } }) +
         '\\n'
+    );
+    process.exit(0);
+  }
+  // The alert verbs. \`get\` on a device with nothing on screen is a **refusal**, verbatim
+  // [observed — \`agent-device@latest alert get\`, 2026-08-27], which is what makes it safe to ask
+  // speculatively: the read costs a non-zero exit rather than an action.
+  if (args.includes('alert')) {
+    if (args[args.length - 1] === 'get') {
+      if (!process.env.STUB_SIM_ALERT) {
+        process.stderr.write('Error (COMMAND_FAILED): alert not found\\n');
+        process.exit(1);
+      }
+      process.stdout.write(process.env.STUB_SIM_ALERT + '\\n');
+      process.exit(0);
+    }
+    process.stdout.write(
+      JSON.stringify({ success: true, data: { message: 'Accepted' } }) + '\\n'
     );
     process.exit(0);
   }
@@ -374,6 +394,99 @@ describe('exagent navigate --cloud', () => {
     expect(result.stderr).toContain('The cloud simulator refused the command');
     expect(result.stderr).toContain('COMMAND_FAILED');
     expect(result.stderr).not.toContain('may not be the one the installed eas-cli has');
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The dialog nobody is there to answer — S10.
+  //
+  // The link went to the system, the system asked "Open in 'Expo Go'?", and on an unattended cloud
+  // device nothing answered it — so `attached` was false for a reason that had nothing to do with
+  // the app [observed — live staging, 2026-08-26; again live cloud, 2026-08-27, 60.9 s]. The dialog
+  // is one this command's own open produced, so this command answers it, and only it: the alert is
+  // **read first**, and accepted only when it names the app the URL was for.
+  it(`answers the open-in-app dialog its own link raised, and then looks again`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+    const stub = await startStubDevServerAsync({
+      targets: [],
+      projectRoot,
+      manifestOrigin: 'https://stub-tunnel.example',
+    });
+    const releaseLock = await holdDevLockAsync(projectRoot, {
+      url: stub.url,
+      port: stub.port,
+      pid: process.pid,
+      startedAt: new Date().toISOString(),
+      projectRoot,
+    });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['navigate', '/', '--cloud', '--attach-timeout', '2s', '--json', '--no-followups'],
+        {
+          reject: false,
+          env: { STUB_SIM_ALERT: `Open in "Expo Go"?\nCancel / Open` },
+        }
+      );
+
+      const verbs = easInvocations(projectRoot)
+        .filter((argv) => argv[0] === 'simulator:exec')
+        .map((argv) => argv.slice(3));
+      // Read before acted on: the order is the guarantee, not a nicety.
+      expect(verbs).toContainEqual(['alert', 'get']);
+      expect(verbs).toContainEqual(['alert', 'accept']);
+      expect(verbs.findIndex((v) => v[1] === 'get')).toBeLessThan(
+        verbs.findIndex((v) => v[1] === 'accept')
+      );
+
+      const report = JSON.parse(result.stdout);
+      // Nothing ever attaches to this stub, so the outcome is still the honest 22 — what changed is
+      // that the report now says the dialog was in the way and was answered.
+      expect(report.attachAlert).toMatchObject({ found: true, accepted: true });
+      expect(result.stderr).toContain('dialog');
+    } finally {
+      await releaseLock();
+      await stub.close();
+    }
+  });
+
+  // The other half, and the one that keeps this inside llp/0008: an alert this command did not
+  // cause is not this command's to answer. `alert get` finding nothing is the common case — the
+  // controller refuses it outright — and no `accept` may follow.
+  it(`accepts nothing when the device has no alert on it`, async () => {
+    const projectRoot = await setupAsync('go-app');
+    await writeSessionFileAsync(projectRoot, 'sess-e2e');
+    const stub = await startStubDevServerAsync({
+      targets: [],
+      projectRoot,
+      manifestOrigin: 'https://stub-tunnel.example',
+    });
+    const releaseLock = await holdDevLockAsync(projectRoot, {
+      url: stub.url,
+      port: stub.port,
+      pid: process.pid,
+      startedAt: new Date().toISOString(),
+      projectRoot,
+    });
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['navigate', '/', '--cloud', '--attach-timeout', '2s', '--json', '--no-followups'],
+        { reject: false }
+      );
+
+      const verbs = easInvocations(projectRoot)
+        .filter((argv) => argv[0] === 'simulator:exec')
+        .map((argv) => argv.slice(3));
+      expect(verbs).toContainEqual(['alert', 'get']);
+      expect(verbs).not.toContainEqual(['alert', 'accept']);
+      expect(JSON.parse(result.stdout).attachAlert).toMatchObject({
+        found: false,
+        accepted: false,
+      });
+    } finally {
+      await releaseLock();
+      await stub.close();
+    }
   });
 
   // A cloud simulator is on EAS's network, so a loopback host in the link resolves to a machine in

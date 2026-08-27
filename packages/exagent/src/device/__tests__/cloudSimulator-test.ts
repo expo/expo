@@ -28,6 +28,7 @@ import {
   CLOUD_SIMULATOR_WAITLIST_URL,
   DRIVABLE_SESSION_TYPE,
   buildAvailabilityArgs,
+  buildCloudAlertArgs,
   buildCloudOpenUrlArgs,
   buildCloudScreenshotArgs,
   buildCloudStopAppArgs,
@@ -38,6 +39,7 @@ import {
   cloudSessionUnknownError,
   cloudVerbFailedError,
   cloudVerbNotSupportedError,
+  isOpenInAppAlert,
   isActiveSessionStatus,
   openUrlOnCloudSimulatorAsync,
   parseAvailabilityJson,
@@ -323,6 +325,62 @@ describe('the argv of every eas simulator invocation', () => {
   it(`checks availability read-only, so nothing is billed to find out`, () => {
     expect(buildAvailabilityArgs()).toEqual(['simulator:availability', '--json']);
     expect(buildAvailabilityArgs()).not.toContain('simulator:start');
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The dialog nobody is there to answer — S10.
+  // The subcommand is the whole argv: `agent-device alert [get|accept|dismiss|wait] [timeout]`
+  // [observed — `agent-device@latest help alert`, 2026-08-27]. No `--platform`, for the reason the
+  // screenshot verb takes none — the flag is documented on `open`/`install`/`apps` and nowhere else.
+  it(`reads and answers a platform alert through the controller's own subcommands`, () => {
+    expect(buildCloudAlertArgs({ action: 'get' })).toEqual([
+      'simulator:exec',
+      'npx',
+      AGENT_DEVICE_SPEC,
+      'alert',
+      'get',
+    ]);
+    expect(buildCloudAlertArgs({ action: 'accept' })).toEqual([
+      'simulator:exec',
+      'npx',
+      AGENT_DEVICE_SPEC,
+      'alert',
+      'accept',
+    ]);
+    expect(buildCloudAlertArgs({ action: 'get' })).not.toContain('--platform');
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The dialog nobody is there to answer
+//
+// The gate that keeps `navigate --cloud` from answering *any* system prompt. What `alert get` prints
+// for a present alert has not been seen by anything in this package, so this reads the output as
+// text rather than parsing a shape invented here — and it says no to everything that does not name
+// the app whose URL the run just sent.
+describe(isOpenInAppAlert, () => {
+  it(`recognises the dialog iOS raises for a custom-scheme URL`, () => {
+    expect(isOpenInAppAlert(`Open in "Expo Go"?\nCancel / Open`, 'Expo Go')).toBe(true);
+  });
+
+  it(`matches a bundle id against the display name the dialog uses`, () => {
+    // The caller knows `host.exp.Exponent` and the dialog says "Exponent" or "Expo Go"; the id's
+    // last component is what the two have in common.
+    expect(isOpenInAppAlert('Open in "Exponent"?', 'host.exp.Exponent')).toBe(true);
+  });
+
+  it(`says no to an alert that names some other app`, () => {
+    expect(isOpenInAppAlert('Open in "Safari"?', 'Expo Go')).toBe(false);
+  });
+
+  // The case this gate exists for: a permission prompt is not an "open in" confirmation, and
+  // answering one would grant something the caller never asked for (llp/0008).
+  it(`says no to a permission prompt, which is not this command's to answer`, () => {
+    expect(
+      isOpenInAppAlert('"Expo Go" Would Like to Send You Notifications', 'Expo Go')
+    ).toBe(false);
+  });
+
+  it(`says no to the controller's own empty answer`, () => {
+    expect(isOpenInAppAlert('Error (COMMAND_FAILED): alert not found', 'Expo Go')).toBe(false);
   });
 });
 

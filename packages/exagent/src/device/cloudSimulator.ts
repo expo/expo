@@ -252,6 +252,71 @@ export function buildCloudScreenshotArgs({ filePath }: { filePath: string }): st
 }
 
 /**
+ * The system alert, as the controller reads and answers one.
+ *
+ * `agent-device alert [get|accept|dismiss|wait] [timeout]`, and the subcommand is the whole argv
+ * [observed — `agent-device@latest help alert`, run offline, 2026-08-27: "Inspect, wait for, accept,
+ * or dismiss a platform alert. Use get before acting when the alert content matters; accept and
+ * dismiss change the active alert state."].
+ *
+ * **What `get` answers when there is no alert**, which is the branch that decides whether this is
+ * safe to run speculatively: exit **1** with `Error (COMMAND_FAILED): alert not found`
+ * [observed — 2026-08-27, `agent-device@latest alert get` against a runner with nothing on screen].
+ * So a read costs a refusal rather than an action, and a run that finds no alert accepts nothing.
+ *
+ * No `--platform`: the flag table carries the platform binding on `open`/`install`/`apps`, and
+ * sending one where it is not documented is how an experimental CLI answers "unknown option"
+ * (§`buildCloudScreenshotArgs`).
+ */
+export function buildCloudAlertArgs({
+  action,
+}: {
+  action: 'get' | 'accept' | 'dismiss';
+}): string[] {
+  return ['simulator:exec', 'npx', AGENT_DEVICE_SPEC, 'alert', action];
+}
+
+/**
+ * Whether an alert the controller read is iOS asking to open a URL in a named app.
+ *
+ * The alert this exists for is the one S10 is: "Open in 'Expo Go'?", which SpringBoard raises when a
+ * custom-scheme URL is handed to the system, and which nothing on an unattended cloud device answers
+ * [observed — live staging, 2026-08-26, S10; `agent-device alert accept` proved the causality].
+ *
+ * **Read as text rather than parsed**, deliberately. What `alert get` prints for a *present* alert
+ * has not been seen by anything in this package — only the empty answer has — so a parser for it
+ * would be a shape invented here and then trusted. Two substrings the dialog cannot lack are what
+ * is asked for instead: the word `open`, and the name of the app whose URL this run just sent. An
+ * alert that names neither is some other dialog, and answering an unknown system prompt is granting
+ * something the caller did not ask for — so it is reported and left alone.
+ *
+ * @param output everything `alert get` wrote, stdout and stderr together.
+ * @param appLabel the app the URL was for, e.g. `Expo Go` or `host.exp.Exponent`.
+ */
+export function isOpenInAppAlert(output: string, appLabel: string): boolean {
+  const text = output.toLowerCase();
+  if (!text.includes('open')) {
+    return false;
+  }
+  // Both the display name and the bundle id are accepted: the dialog says "Expo Go" and the caller
+  // knows `host.exp.Exponent`, so the id is matched by its last component too.
+  const names = [appLabel, appLabel.split('.').pop() ?? appLabel]
+    .map((name) => name.trim().toLowerCase())
+    .filter((name) => name.length >= 3);
+  return names.some((name) => text.includes(name));
+}
+
+/** Read the alert on the session's device. Exit 1 with "alert not found" when there is none. */
+export function readCloudAlertAsync(options: CloudRunOptions): Promise<CloudRunResult> {
+  return runCloudVerbAsync(buildCloudAlertArgs({ action: 'get' }), options);
+}
+
+/** Answer the alert on the session's device with its default accept action. */
+export function acceptCloudAlertAsync(options: CloudRunOptions): Promise<CloudRunResult> {
+  return runCloudVerbAsync(buildCloudAlertArgs({ action: 'accept' }), options);
+}
+
+/**
  * Ending the app on the session's device, and not the session.
  *
  * `--shutdown` is never passed, and that is the safety of this function: it would stop the
