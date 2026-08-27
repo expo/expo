@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch. ([#49456](https://github.com/expo/expo/pull/49456) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Repair ready updates that are missing their launch asset by demoting them to pending during launcher selection, so a corrupted row is skipped and retried instead of failing every launch. ([#49457](https://github.com/expo/expo/pull/49457) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
