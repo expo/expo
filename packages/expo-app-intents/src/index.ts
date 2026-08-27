@@ -14,21 +14,18 @@ const MAX_SEEN_INVOCATION_IDS = 100;
 
 /**
  * Returns whether App Intents are available on this device.
- * Returns `false` on Android, and web.
- * @platform ios
+ * Returns `false` on Android and web.
  */
 export function isAvailable(): boolean {
   return ExpoAppIntents != null;
 }
 
 /**
- * Adds a listener invoked for live App Intent invocations dispatched while JavaScript is
- * observing.
+ * Adds a listener for live App Intent invocations dispatched while JavaScript is observing.
  *
- * > Use [`getPendingInvocationsAsync()`](#appintentsgetpendinginvocationsasync) or
- * > [`useAppIntents()`](#appintentsuseappintentshandler) to read invocations recorded while
- * > JavaScript was not running.
- * @platform ios
+ * > Pending invocations recorded while JavaScript was not running are available through
+ * > [`getPendingInvocationsAsync()`](#appintentsgetpendinginvocationsasync) or
+ * > [`useAppIntents()`](#useappintentshandler).
  */
 export function addAppIntentListener(
   listener: (invocation: AppIntentInvocation) => void
@@ -52,19 +49,19 @@ function callAppIntentsHandler(
 }
 
 /**
- * Calls `handler` once with the pending invocations recorded while JavaScript was cold, then
- * again for every new invocation received while the component is mounted.
+ * Calls `handler` once with the pending invocations recorded while JavaScript was not running,
+ * then again for every new invocation received while the component is mounted.
  *
  * `newIntent` is `null` for the initial pending snapshot. Later calls include the current
  * pending snapshot and the new invocation that triggered the call. The initial call is always
  * delivered first, and new invocations are delivered one at a time in arrival order.
- * Pending invocations are not removed automatically; call
+ * Pending invocations are not removed automatically. The handler must call
  * [`removePendingInvocationAsync(id)`](#appintentsremovependinginvocationasyncid)
  * after handling each one. The queue holds at most 100 invocations, and once it is full the oldest
  * are dropped to make room, so a handler that never removes them does eventually lose invocations.
  *
- * The handler is called with an empty snapshot, and never again, when App Intents are unavailable.
- * @platform ios
+ * When App Intents are unavailable, this hook calls the handler with an empty snapshot and does
+ * not call it again.
  */
 export function useAppIntents(handler: AppIntentsHandler): void {
   const handlerRef = useRef(handler);
@@ -143,13 +140,14 @@ export function useAppIntents(handler: AppIntentsHandler): void {
 
 /**
  * Returns invocations that have not been removed from the pending queue yet, oldest first.
- * Resolves with an empty array when App Intents are unavailable.
+ * The returned promise is fulfilled with an empty array when App Intents are unavailable.
  *
- * At most 100 invocations are kept. An app that never removes them keeps only the newest 100.
+ * The queue keeps at most 100 invocations. An app that never removes them keeps only the newest
+ * 100.
  *
- * Rejects when the stored queue cannot be read, which means the invocations waiting in it are not
- * delivered. The queue starts empty afterwards, so a later call succeeds.
- * @platform ios
+ * The returned promise is rejected when the stored queue cannot be read. In this case, the
+ * invocations waiting in the queue are not delivered. The queue starts empty afterward, so a later
+ * call succeeds.
  */
 export async function getPendingInvocationsAsync(): Promise<AppIntentInvocation[]> {
   if (!ExpoAppIntents) {
@@ -162,11 +160,9 @@ export async function getPendingInvocationsAsync(): Promise<AppIntentInvocation[
  * Removes a handled invocation so it is no longer delivered or returned as pending.
  * Does nothing when App Intents are unavailable.
  *
- * Rejects when the stored queue cannot be read or written, so a failure to forget a handled
- * invocation is not mistaken for success. A rejection caused by an unreadable queue leaves nothing
- * pending at all: the unreadable data is set aside, so every invocation that was waiting in it is
- * gone, not only this one.
- * @platform ios
+ * The returned promise is rejected when the stored queue cannot be read or written. A rejection
+ * caused by an unreadable queue leaves nothing pending. The native layer sets aside the unreadable
+ * data, so it removes every invocation that was waiting in the queue instead of only this one.
  */
 export async function removePendingInvocationAsync(id: string): Promise<void> {
   if (!ExpoAppIntents) {
@@ -178,7 +174,6 @@ export async function removePendingInvocationAsync(id: string): Promise<void> {
 /**
  * Removes all pending invocations.
  * Does nothing when App Intents are unavailable.
- * @platform ios
  */
 export async function clearPendingInvocationsAsync(): Promise<void> {
   if (!ExpoAppIntents) {
@@ -188,18 +183,17 @@ export async function clearPendingInvocationsAsync(): Promise<void> {
 }
 
 /**
- * Replaces the entity catalog of the given kind and asks the system to re-train
+ * Replaces the entity catalog of the given kind and asks the system to retrain
  * parameterized shortcut phrases against the new values.
  *
- * The native store is UserDefaults-backed, so it's recommended to keep catalogs compact. For large
- * datasets such as thousands of contacts, songs, or other items, store the full
- * data in your app and publish only the subset that Siri and Shortcuts need.
+ * The native store uses `UserDefaults`, which is best suited to compact catalogs. For large
+ * datasets, such as thousands of contacts or songs, apps should store the full data locally and
+ * publish only the subset that Siri and Shortcuts need.
  *
- * When `kind` or a provided entity is invalid, the whole catalog is rejected, and the previous
- * one kept. The `kind` is invalid when it is empty or whitespace-only. An entity is invalid when
- * its `id` or `title` is empty or whitespace-only, or when another entity in the catalog has the
- * same `id`.
- * @platform ios
+ * When `kind` or an entity is invalid, the returned promise is rejected and the previous catalog
+ * remains available. The `kind` is invalid when it is empty or contains only whitespace. An entity
+ * is invalid when its `id` or `title` is empty or contains only whitespace. An entity is also
+ * invalid when another entity in the catalog has the same `id`.
  */
 export async function setEntityCatalogAsync(
   kind: string,
@@ -213,11 +207,10 @@ export async function setEntityCatalogAsync(
 
 /**
  * Returns the current entity catalog of the given kind.
- * Resolves with an empty array when the kind was never published, and when App Intents are
- * unavailable.
+ * The returned promise is fulfilled with an empty array when the kind was never published or App
+ * Intents are unavailable.
  *
- * Rejects when the stored catalog cannot be read.
- * @platform ios
+ * The returned promise is rejected when the stored catalog cannot be read.
  */
 export async function getEntityCatalogAsync(kind: string): Promise<AppIntentEntity[]> {
   if (!ExpoAppIntents) {
@@ -229,11 +222,10 @@ export async function getEntityCatalogAsync(kind: string): Promise<AppIntentEnti
 /**
  * Asks the system to re-evaluate App Shortcut phrases and parameter values.
  *
- * Throws `UnavailabilityError` when App Intents are unavailable, and throws when they are available
- * but the app has no `AppShortcutsProvider`, and so nothing to refresh. Publishing a catalog with
+ * The returned promise is rejected with `UnavailabilityError` when App Intents are unavailable. It
+ * is also rejected when the app has no `AppShortcutsProvider` to refresh. Publishing a catalog with
  * [`setEntityCatalogAsync()`](#appintentssetentitycatalogasynckind-entities) also refreshes
  * shortcuts.
- * @platform ios
  */
 export async function refreshShortcutsAsync(): Promise<void> {
   if (!ExpoAppIntents) {

@@ -1,55 +1,58 @@
 /**
  * A single recorded App Intent invocation.
  *
- * Invocations are persisted natively until removed with `removePendingInvocationAsync`, so
- * delivery is at-least-once and handlers must be idempotent per `id`.
+ * The native layer persists each invocation until `removePendingInvocationAsync` removes it.
+ * Delivery is at-least-once, so handlers must be idempotent for each `id`.
  */
 export type AppIntentInvocation = {
   /**
-   * Unique identifier of this invocation. Use it to remove the invocation after handling.
+   * Identifies this invocation. Callers use the value to remove the invocation after handling it.
    */
   id: string;
   /**
-   * The invocation name passed to `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift.
+   * Contains the invocation name passed to
+   * `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift.
    */
   name: string;
   /**
-   * Parameters passed from the native intent.
+   * Contains the parameters passed from the native intent.
    */
   params: Record<string, unknown>;
   /**
-   * Unix timestamp in milliseconds at which the intent ran.
+   * Indicates when the intent ran as a Unix timestamp in milliseconds.
    */
   createdAt: number;
 };
 
 /**
- * Handles a snapshot of pending invocations and, after the initial call, the new invocation
- * that triggered this handler call.
+ * Handles a snapshot of pending invocations. After the initial call, it also receives the new
+ * invocation that triggered the handler.
  */
-export type AppIntentsHandler = (
-  pendingIntents: AppIntentInvocation[],
-  newIntent: AppIntentInvocation | null
-) => void | Promise<void>;
+export interface AppIntentsHandler {
+  (
+    pendingIntents: AppIntentInvocation[],
+    newIntent: AppIntentInvocation | null
+  ): void | Promise<void>;
+}
 
 /**
- * An entity exposed to App Intents parameter queries.
+ * Represents an entity exposed to App Intents parameter queries.
  */
 export type AppIntentEntity = {
   /**
-   * Stable unique identifier.
+   * Identifies the entity with a stable value.
    */
   id: string;
   /**
-   * Display name shown by Siri and the Shortcuts app, and matched against speech.
+   * Specifies the display name that Siri and the Shortcuts app show and match against speech.
    */
   title: string;
   /**
-   * Optional secondary text shown in disambiguation UI.
+   * Specifies optional secondary text for the disambiguation UI.
    */
   subtitle?: string;
   /**
-   * Alternative spoken names that resolve to this entity.
+   * Provides alternative spoken names that resolve to this entity.
    */
   synonyms?: string[];
 };
