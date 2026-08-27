@@ -3,12 +3,17 @@ import chalk from 'chalk';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
 import { ora } from '../../../utils/ora';
 import { event } from '../events';
 import { ADBServer } from './ADBServer';
 import { isAdbDeviceStateUsable, parseAdbDeviceList } from './adbDeviceList';
-import { createAdbOperationErrorAsync, formatAdbDiscoveryError } from './adbDiagnostics';
+import {
+  createAdbOperationErrorAsync,
+  formatAdbDiscoveryError,
+  shouldProbeAdbHost,
+} from './adbDiagnostics';
 import {
   ADB_HOST_PROBE_WAIT_LIMIT_MS,
   AdbHostProbeResult,
@@ -68,6 +73,8 @@ const PROP_CPU_ABI_LIST_NAME = 'ro.product.cpu.abilist';
 // http://developer.android.com/ndk/guides/abis.html
 const PROP_BOOT_ANIMATION_STATE = 'init.svc.bootanim';
 const DEVICE_DISCOVERY_WAIT_LIMIT_MS = 10_000;
+const DEVICE_DISCOVERY_RETRY_DELAY_MS = 200;
+const DEVICE_DISCOVERY_MAX_ATTEMPTS = 3;
 
 let _server: ADBServer | null;
 
@@ -278,33 +285,58 @@ export async function getAttachedDevicesAsync({
   shouldShowWaitingMessage?: boolean;
 } = {}): Promise<Device[]> {
   const discoveryWaitLimitMs = waitLimitMs ?? DEVICE_DISCOVERY_WAIT_LIMIT_MS;
+  const discoveryDeadline = Date.now() + discoveryWaitLimitMs;
   const waitSignal = AbortSignal.timeout(discoveryWaitLimitMs);
   const operationSignal = signal ? AbortSignal.any([signal, waitSignal]) : waitSignal;
   const endpoint = resolveAdbEndpoint();
-  const spinner = shouldShowWaitingMessage ? ora('Waiting for ADB device discovery').start() : null;
+  const spinner =
+    shouldShowWaitingMessage && isInteractive()
+      ? ora('Waiting for ADB device discovery').start()
+      : null;
 
   try {
-    const output = await server.runHostQueryAsync(
-      ['devices', '-l'],
-      'device discovery',
-      signal,
-      discoveryWaitLimitMs
-    );
-    return await parseAttachedDevicesAsync(output, operationSignal);
+    let lastError: unknown;
+    for (let attempt = 0; attempt < DEVICE_DISCOVERY_MAX_ATTEMPTS; attempt++) {
+      try {
+        const output = await server.runHostQueryAsync(
+          ['devices', '-l'],
+          'device discovery',
+          signal,
+          Math.max(1, discoveryDeadline - Date.now())
+        );
+        const devices = await parseAttachedDevicesAsync(output, operationSignal);
+        if (devices.length || attempt === DEVICE_DISCOVERY_MAX_ATTEMPTS - 1) {
+          return devices;
+        }
+      } catch (error) {
+        if (operationSignal.aborted && error === operationSignal.reason) throw error;
+        lastError = error;
+        if (!shouldRetryAdbDiscovery(error) || attempt === DEVICE_DISCOVERY_MAX_ATTEMPTS - 1) {
+          throw error;
+        }
+      }
+      await waitForRetryAsync(DEVICE_DISCOVERY_RETRY_DELAY_MS, operationSignal);
+    }
+    throw lastError;
   } catch (error) {
     // Caller cancellation is not a discovery failure, so skip the diagnostic probe
     if (signal?.aborted && error === signal.reason) {
       throw error;
     }
 
-    let hostProbe: AdbHostProbeResult;
-    try {
-      const probeSignal = AbortSignal.timeout(probeWaitLimitMs);
-      hostProbe = await probeAdbHostVersionAsync(endpoint, probeSignal);
-    } catch {
-      hostProbe = {
-        kind: 'connection-failure',
-      };
+    let hostProbe: AdbHostProbeResult | undefined;
+    if (shouldProbeAdbHost(error) && !operationSignal.aborted) {
+      try {
+        const probeSignal = AbortSignal.any([
+          operationSignal,
+          AbortSignal.timeout(probeWaitLimitMs),
+        ]);
+        hostProbe = await probeAdbHostVersionAsync(endpoint, probeSignal);
+      } catch {
+        hostProbe = {
+          kind: 'connection-failure',
+        };
+      }
     }
     throw new CommandError('ADB_DISCOVERY', formatAdbDiscoveryError(error, endpoint, hostProbe));
   } finally {
@@ -339,11 +371,15 @@ async function parseAttachedDevicesAsync(output: string, signal: AbortSignal): P
           ? deviceInfo.find((field) => field.startsWith('model:'))?.slice('model:'.length)
           : undefined;
         name = model || `Device ${pid}`;
-      } else if (isUsable) {
-        // Given a usable emulator pid, get the AVD name for matching the attached transport.
-        name = (await getAdbNameForDeviceIdAsync({ pid }, signal)) ?? '';
       } else {
-        name = `Device ${pid}`;
+        // Resolve names in every emulator state so booting transports merge with AVD inventory.
+        // A broken emulator console must not discard otherwise healthy attached devices.
+        try {
+          name = (await getAdbNameForDeviceIdAsync({ pid }, signal)) || `Device ${pid}`;
+        } catch (error) {
+          if (signal.aborted && error === signal.reason) throw error;
+          name = `Device ${pid}`;
+        }
       }
 
       return {
@@ -359,6 +395,31 @@ async function parseAttachedDevicesAsync(output: string, signal: AbortSignal): P
       };
     })
   );
+}
+
+function shouldRetryAdbDiscovery(error: unknown): boolean {
+  return (
+    !(error instanceof Error && error.name === 'AbortError') &&
+    error instanceof Error &&
+    /(?:cannot connect|connection refused|server didn't ACK|daemon (?:not running|still not running)|smartsocket)/i.test(
+      error.message
+    )
+  );
+}
+
+function waitForRetryAsync(delayMs: number, signal: AbortSignal): Promise<void> {
+  if (signal.aborted) return Promise.reject(signal.reason);
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      signal.removeEventListener('abort', handleAbort);
+      resolve();
+    }, delayMs);
+    const handleAbort = () => {
+      clearTimeout(timeout);
+      reject(signal.reason);
+    };
+    signal.addEventListener('abort', handleAbort, { once: true });
+  });
 }
 
 /**

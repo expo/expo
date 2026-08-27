@@ -1,4 +1,3 @@
-import { CommandError } from '../../../../utils/errors';
 import { getAttachedDevicesAsync } from '../adb';
 import { listAvdsAsync } from '../emulator';
 import { getDevicesAsync, mergeDevices } from '../getDevices';
@@ -13,7 +12,9 @@ jest.mock('../emulator', () => ({
 it(`asserts no devices are available`, async () => {
   jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([]);
   jest.mocked(listAvdsAsync).mockResolvedValueOnce([]);
-  await expect(getDevicesAsync()).rejects.toThrow(CommandError);
+  await expect(getDevicesAsync()).rejects.toMatchObject({
+    code: 'ANDROID_NO_DEVICES',
+  });
   expect(getAttachedDevicesAsync).toHaveBeenCalledWith({ shouldShowWaitingMessage: true });
   expect(listAvdsAsync).toHaveBeenCalled();
 });

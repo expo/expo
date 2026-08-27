@@ -23,6 +23,16 @@ describe('ADB diagnostics', () => {
     expect(message).not.toContain('tcp:127.0.0.1:5037');
   });
 
+  it('does not infer a cause from a successful post-failure host probe', () => {
+    const message = formatAdbDiscoveryError(
+      new AdbProcessError('device discovery failed', 'device discovery', 'host-request'),
+      localEndpoint,
+      { kind: 'version' }
+    );
+
+    expect(message).toBe('device discovery failed');
+  });
+
   it('identifies remote, unsupported, device-state, and discovery/use-race contexts', () => {
     const message = formatAdbDeviceError(new Error('error: device not found'), {
       pid: 'serial-1',
@@ -43,6 +53,17 @@ describe('ADB diagnostics', () => {
         { kind: 'unsupported' }
       )
     ).toContain('Check ADB_SERVER_SOCKET and try again');
+  });
+
+  it('uses boot advice instead of USB reconnect advice for offline emulators', () => {
+    const message = formatAdbDeviceError(new Error('emulator is offline'), {
+      pid: 'emulator-5554',
+      state: 'offline',
+      type: 'emulator',
+    });
+
+    expect(message).toContain('Wait until ADB reports the emulator as ready');
+    expect(message).not.toContain('Reconnect device emulator-5554');
   });
 
   it.each([
