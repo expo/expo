@@ -212,7 +212,73 @@ export async function resolveDevServerReachAsync(projectRoot: string): Promise<D
     readDevServerLockAsync(projectRoot),
     Promise.resolve(readDevServerLogSync(projectRoot)),
   ]);
-  return resolveDevServerReach(captured, lock);
+  const fromLog = resolveDevServerReach(captured, lock);
+  if (fromLog.advertised != null || lock == null) {
+    return fromLog;
+  }
+  // The log is not the only place the host is written. `Waiting on <url>` is printed once, by a
+  // *terminal* run — a detached `--tunnel` run's log did not contain the tunnel host at all while
+  // the tunnel was up [observed — live staging, 2026-08-26, S3], so every command that needed the
+  // address a device uses reported null and asked the caller for `--dev-server-url`.
+  //
+  // The dev server itself still knows: it builds the manifest's `launchAsset.url` from
+  // `getDevServerUrl()`, which is the tunnel origin whenever a tunnel is running. One request to a
+  // dev server this project has a lock for answers it.
+  // @ref llp/0021-honest-reports.rfc.md §The tunnel host the log never held
+  const fromManifest = await fetchAdvertisedUrlAsync(lock.url);
+  return fromManifest == null
+    ? fromLog
+    : { advertised: fromManifest, running: true, reason: null };
+}
+
+/** How long the manifest request may take before the host counts as unknown. */
+const MANIFEST_TIMEOUT_MS = 2500;
+
+/**
+ * The dev server URL a running dev server builds its own manifest from, or null.
+ *
+ * `accept: application/json` for the same reason `runtime`'s bundle check asks for it: the same
+ * manifest is served as `multipart/mixed` to an Expo Updates client, and nothing here has a reason
+ * to parse multipart framing to reach an object it can ask for directly.
+ *
+ * Never throws. A dev server that is starting, gone, or not an Expo dev server answers null, and
+ * the caller says the host is unknown rather than inventing one.
+ */
+export async function fetchAdvertisedUrlAsync(
+  devServerOrigin: string,
+  { platform = 'ios', timeoutMs = MANIFEST_TIMEOUT_MS }: { platform?: string; timeoutMs?: number } = {}
+): Promise<AdvertisedDevServerUrl | null> {
+  const manifestUrl = `${devServerOrigin.replace(/\/+$/, '')}/`;
+  let payload: unknown;
+  try {
+    const response = await fetch(manifestUrl, {
+      headers: { 'expo-platform': platform, accept: 'application/json' },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!response.ok) {
+      return null;
+    }
+    payload = await response.json();
+  } catch {
+    return null;
+  }
+
+  const launchAsset = (payload as { launchAsset?: { url?: unknown } } | null)?.launchAsset;
+  if (typeof launchAsset?.url !== 'string' || !launchAsset.url) {
+    return null;
+  }
+  try {
+    // Resolved against the manifest URL, because the dev server answers with a path-relative URL
+    // when the request carried a `Forwarded` header [observed — `ManifestMiddleware`].
+    const parsed = new URL(launchAsset.url, manifestUrl);
+    return {
+      url: parsed.origin,
+      host: parsed.host,
+      hostType: classifyDevServerHost(parsed.hostname),
+    };
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -224,7 +290,21 @@ export async function resolveDevServerReachAsync(projectRoot: string): Promise<D
  */
 export const ADVERTISED_LOG_LINES = 5000;
 
-/** The `Waiting on <url>` line, as a parsed URL, or null when this line is not one. */
+/**
+ * The `Waiting on <url>` line, as a parsed URL, or null when this line is not one.
+ *
+ * **The scheme in that line is not always the dev server's.** With the v2 tunnel active,
+ * `getDevServerUrl()` builds the URL with no scheme option, so it picks up the *deep-link* scheme of
+ * the app config and prints `exp+dailywords-grok://<tunnel host>` [observed — 2026-08-27, and
+ * reproduced against this monorepo's own `UrlCreator`; llp/0010 §Upstream asks records the ask].
+ * `URL.origin` is the string `"null"` for every non-special scheme, so reading it produced
+ * `tunnelUrl: "null"` — a report field carrying the word rather than a null.
+ *
+ * So the host is taken as the fact the line carries, and the origin is rebuilt: `http`/`https` are
+ * kept when the line had one, and anything else becomes `https` for a tunnel host and `http`
+ * otherwise — the same rule `devClientConnectUrl` applies, because a tunnel terminates TLS and a LAN
+ * address does not.
+ */
 function parseWaitingOn(rawLine: string): AdvertisedDevServerUrl | null {
   // The CLI underlines the URL, and a caller may hand over lines that were never stripped.
   const match = WAITING_ON.exec(stripVTControlCharacters(rawLine));
@@ -237,9 +317,17 @@ function parseWaitingOn(rawLine: string): AdvertisedDevServerUrl | null {
   } catch {
     return null;
   }
-  return {
-    url: parsed.origin,
-    host: parsed.host,
-    hostType: classifyDevServerHost(parsed.hostname),
-  };
+  if (!parsed.host) {
+    // A URL with no authority at all names no dev server — `exp+app:///--/route` is a route link.
+    return null;
+  }
+
+  const hostType = classifyDevServerHost(parsed.hostname);
+  const scheme =
+    parsed.protocol === 'http:' || parsed.protocol === 'https:'
+      ? parsed.protocol.slice(0, -1)
+      : hostType === 'tunnel'
+        ? 'https'
+        : 'http';
+  return { url: `${scheme}://${parsed.host}`, host: parsed.host, hostType };
 }

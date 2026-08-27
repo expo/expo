@@ -7,7 +7,7 @@
 import { vol } from 'memfs';
 
 import type { BundlerReadyResult } from '../../runtime/waitReady';
-import { buildDetachSpawn, notReadyError } from '../detachAsync';
+import { buildDetachSpawn, notReadyError, resolveDetachFailure } from '../detachAsync';
 import { detachedLogPath, openDetachedLogSync, readDetachedLogSync } from '../logFile';
 import { resolveDevLogsOptions, DEFAULT_LOG_TAIL_LINES } from '../resolveLogsOptions';
 import { resolveDevOptions } from '../resolveOptions';
@@ -79,6 +79,60 @@ describe(buildDetachSpawn, () => {
       '--port',
       '8195',
     ]);
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now — friction run
+// 7's F61 and live staging's S4. Three facts in, one verdict out.
+describe(resolveDetachFailure, () => {
+  const healthy = { exited: false, verdict: null, statusAnswering: true };
+
+  it(`should let a live child with a live bundler through`, () => {
+    expect(resolveDetachFailure(healthy)).toBeNull();
+  });
+
+  it(`should let a run that never claimed readiness through`, () => {
+    expect(resolveDetachFailure({ ...healthy, statusAnswering: null })).toBeNull();
+  });
+
+  it(`should refuse a child that has exited`, () => {
+    expect(resolveDetachFailure({ ...healthy, exited: true })).toBe('child-exited');
+  });
+
+  // The handoff block is printed by a process on its way out, so it settles the question before
+  // the exit itself has been observed — which is the whole race the finding is about.
+  it(`should prefer the child's own scenario over the bare exit`, () => {
+    expect(
+      resolveDetachFailure({
+        exited: true,
+        verdict: { scenario: 'macos-automation', message: 'macOS refused' },
+        statusAnswering: false,
+      })
+    ).toBe('needs-human');
+  });
+
+  it(`should refuse on the scenario alone, before the exit is seen`, () => {
+    expect(
+      resolveDetachFailure({
+        ...healthy,
+        verdict: { scenario: 'expo-prompt', message: 'Input is required' },
+      })
+    ).toBe('needs-human');
+  });
+
+  // A failure with no handoff is not a needs-human one, however it is worded.
+  it(`should refuse a child whose log holds an error and no scenario`, () => {
+    expect(
+      resolveDetachFailure({
+        exited: true,
+        verdict: { scenario: null, message: 'CommandError: the plan stopped' },
+        statusAnswering: true,
+      })
+    ).toBe('child-exited');
+  });
+
+  it(`should refuse a bundler that stopped answering under a live child`, () => {
+    expect(resolveDetachFailure({ ...healthy, statusAnswering: false })).toBe('not-answering');
   });
 });
 

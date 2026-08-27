@@ -22,6 +22,7 @@
 // has no account yet runs this once in their life [confirmed — Kudo, 2026-08-26]. So `register`
 // keeps the `npx expo` rung the other three gave up, and says on stderr that it is paying for it.
 
+import os from 'os';
 import path from 'path';
 
 import type { Command } from '../types';
@@ -203,6 +204,35 @@ export function resolveRegisterCli(
 }
 
 /**
+ * The session file the CLI family will actually read.
+ *
+ * Not a constant. `~/.expo/state.json` is the usual answer and it was printed as though it were the
+ * only one: under `EXPO_STAGING=1` the whole family reads `~/.expo-staging/state.json`, so a notice
+ * naming the first is a notice about a file the run never touched [observed — live staging, S6].
+ *
+ * The same three rules the family uses, in the same order [observed — `@expo/cli`
+ * `api/user/UserSettings.ts` `getExpoHomeDirectory`, and eas-cli resolves the same directory]:
+ * `__UNSAFE_EXPO_HOME_DIRECTORY` wins, then `EXPO_STAGING`, then `EXPO_LOCAL`.
+ */
+export function sessionFilePath(env: NodeJS.ProcessEnv = process.env): string {
+  const home = os.homedir();
+  const unsafeHome = env.__UNSAFE_EXPO_HOME_DIRECTORY;
+  const directory = unsafeHome
+    ? unsafeHome
+    : isTruthy(env.EXPO_STAGING)
+      ? path.join(home, '.expo-staging')
+      : isTruthy(env.EXPO_LOCAL)
+        ? path.join(home, '.expo-local')
+        : path.join(home, '.expo');
+  return path.join(directory, 'state.json');
+}
+
+/** How the Expo family reads a boolean environment variable [`boolish`, @expo/cli]. */
+function isTruthy(value: string | undefined): boolean {
+  return value === '1' || value === 'true';
+}
+
+/**
  * How an invocation is written when it has to be named in output.
  *
  * A resolved binary is named by its path, because *which* `eas` ran is the fact a reader needs. A
@@ -234,7 +264,7 @@ export function authFallbackNotice(cli: AuthCli, command: string): string | null
   }
   return [
     `Using the EAS CLI (${authCliLabel(cli)}) for "${command}": this directory has no expo package.`,
-    `Both CLIs sign in to the same account — the session lives in ~/.expo/state.json and is shared between them [observed — @expo/cli "api/user/UserSettings.ts" and eas-cli "utils/paths.js" resolve the same file].`,
+    `Both CLIs sign in to the same account — the session lives in ${sessionFilePath()} and is shared between them [observed — @expo/cli "api/user/UserSettings.ts" and eas-cli "utils/paths.js" resolve the same file].`,
   ].join('\n');
 }
 
@@ -284,6 +314,16 @@ export function exagentAuthPassthrough(command: string): Command {
         Log.error(notice);
       }
 
+      // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
+      // The one thing a forwarded command cannot forward: `--json` is this CLI's contract and
+      // neither `expo whoami` nor `eas whoami` has such a flag, so the flag reached the other CLI,
+      // was ignored, and an agent that asked for one object got a line of prose at exit 0
+      // [observed — live staging, S7]. `whoami` is a *read*, so this one can be answered here.
+      if (command === 'whoami' && args.includes('--json')) {
+        process.exitCode = await printWhoamiJsonAsync(projectRoot, cli, args);
+        return;
+      }
+
       // Both CLIs spell all four verbs the same way, so the command word is the command word.
       process.exitCode = await runInheritedAsync(
         cli.command,
@@ -292,4 +332,66 @@ export function exagentAuthPassthrough(command: string): Command {
       );
     })().catch(logCmdError);
   };
+}
+
+/**
+ * The machine shape of `exagent whoami --json`.
+ *
+ * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one object on stdout, every key
+ * always present, and a fact the run does not have is null.
+ */
+export interface WhoamiResultJson {
+  /** Whether the CLI that answered says this machine is signed in. */
+  loggedIn: boolean;
+  /** The account name, or null when the answer named none. */
+  user: string | null;
+  /** Which CLI answered, e.g. `expo whoami`. */
+  source: string;
+  /** The session file that CLI reads, which `EXPO_STAGING` moves. */
+  sessionFile: string;
+  /** The invocation that answered, so a reader can run the same thing by hand. */
+  cli: string;
+}
+
+/**
+ * Answer `whoami --json` from the same CLI the forwarded form would have run.
+ *
+ * Captured rather than inherited, which is the difference from every other path in this module:
+ * this run owns stdout, and the prose the CLI prints is the thing being turned into the object.
+ * `--json` is dropped from the argv it forwards, because neither CLI has it.
+ *
+ * The exit code stays the answering CLI's, so the two forms of this command agree: a signed-out
+ * machine is `1` here exactly as it is without `--json`.
+ */
+async function printWhoamiJsonAsync(
+  projectRoot: string,
+  cli: AuthCli,
+  args: string[]
+): Promise<number> {
+  const Log = require('../log') as typeof import('../log');
+  const { parseWhoamiUser } =
+    require('../needsHuman/preflight') as typeof import('../needsHuman/preflight');
+
+  const forwarded = args.filter((arg) => arg !== '--json');
+  const result = await spawnSubprocessAsync(
+    cli.command,
+    [...cli.prefixArgs, 'whoami', ...forwarded],
+    { cwd: projectRoot, output: 'capture' }
+  );
+
+  const report: WhoamiResultJson = {
+    loggedIn: result.exitCode === 0,
+    user: result.exitCode === 0 ? parseWhoamiUser(result.stdout) : null,
+    source: `${cli.tool} whoami`,
+    sessionFile: sessionFilePath(),
+    cli: authCliLabel(cli),
+  };
+  Log.log(JSON.stringify(report, null, 2));
+  // What the CLI said, on stderr, where it cannot break the parse: a signed-out machine's reason
+  // is its own sentence and this object does not carry prose.
+  const said = `${result.stderr}${result.stdout}`.trim();
+  if (result.exitCode !== 0 && said) {
+    Log.error(said);
+  }
+  return result.exitCode ?? 1;
 }

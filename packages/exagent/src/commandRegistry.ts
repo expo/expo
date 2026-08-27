@@ -468,7 +468,7 @@ export const helpSections: HelpSection[] = [
   {
     title: 'Account',
     commands: authCommands,
-    note: "No project needed: these act on the ~/.expo session, which the expo and eas CLIs share. In an Expo project they run the project's expo; anywhere else login, logout and whoami run the EAS CLI, and register runs npx expo, because the EAS CLI has no register.",
+    note: "No project needed: these act on the ~/.expo session, which the expo and eas CLIs share. In an Expo project they run the project's expo; anywhere else login, logout and whoami run the EAS CLI, and register runs npx expo, because the EAS CLI has no register. Their options are forwarded untouched, so an option this CLI does not know is reported by the CLI that ran — the one exception is whoami --json, which this CLI answers itself with one object.",
   },
   {
     title: 'Expo CLI (fallback to npx expo <command>)',

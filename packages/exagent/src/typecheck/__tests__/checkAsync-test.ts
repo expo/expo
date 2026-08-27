@@ -120,6 +120,7 @@ describe(runTypeCheckAsync, () => {
       errorCount: 0,
       errors: [],
       durationMs: 0,
+      generatedTypes: null,
     });
     expect(spawn).not.toHaveBeenCalled();
   });
@@ -201,5 +202,69 @@ describe(runTypeCheckAsync, () => {
     await expect(runTypeCheckAsync(projectRoot)).rejects.toMatchObject({
       code: 'TYPECHECK_CLI_NOT_RUNNABLE',
     });
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §A generated file is not a mistake in the code —
+// friction run 7, F64. A brand-new project's first gate was red for a file the Expo CLI writes, and
+// the follow-up said to fix two files that were both correct.
+describe('a declaration file the project expects and does not have', () => {
+  /** A TypeScript project whose `tsconfig.json` includes the generated file. */
+  function withExpoTsConfig(files: Record<string, string> = {}) {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      [`${projectRoot}/tsconfig.json`]: JSON.stringify({
+        extends: 'expo/tsconfig.base',
+        include: ['**/*.ts', '**/*.tsx', '.expo/types/**/*.ts', 'expo-env.d.ts'],
+      }),
+      [`${projectRoot}/node_modules/.bin/tsc`]: '#!/bin/sh',
+      [`${projectRoot}/src/app/index.tsx`]: '',
+      ...files,
+    });
+  }
+
+  it(`should name the missing file and the command that writes it`, async () => {
+    withExpoTsConfig();
+    answers({
+      exitCode: 2,
+      stdout: `src/constants/theme.ts(6,8): error TS2882: Cannot find module or type declarations for side-effect import of '@/global.css'.\n`,
+    });
+
+    const report = await runTypeCheckAsync(projectRoot);
+
+    expect(report.errorCount).toBe(1);
+    expect(report.generatedTypes).toEqual({
+      file: 'expo-env.d.ts',
+      referencedBy: 'tsconfig.json',
+      command: 'npx exagent dev --detach --wait-ready',
+    });
+  });
+
+  it(`should say nothing once the file exists`, async () => {
+    withExpoTsConfig({ [`${projectRoot}/expo-env.d.ts`]: '/// <reference types="expo/types" />' });
+    answers({ exitCode: 2, stdout: `src/a.ts(1,1): error TS2304: Cannot find name 'nope'.\n` });
+
+    expect((await runTypeCheckAsync(projectRoot)).generatedTypes).toBeNull();
+  });
+
+  // The note explains diagnostics. A run with none has nothing to explain, and a line about a file
+  // that cost nothing is noise on a green report.
+  it(`should say nothing on a run that found no errors`, async () => {
+    withExpoTsConfig();
+    answers({ exitCode: 0 });
+
+    expect((await runTypeCheckAsync(projectRoot)).generatedTypes).toBeNull();
+  });
+
+  it(`should say nothing for a project whose config never names it`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      [`${projectRoot}/tsconfig.json`]: '{"include": ["src"]}',
+      [`${projectRoot}/node_modules/.bin/tsc`]: '#!/bin/sh',
+      [`${projectRoot}/src/app/index.tsx`]: '',
+    });
+    answers({ exitCode: 2, stdout: `src/a.ts(1,1): error TS2304: Cannot find name 'nope'.\n` });
+
+    expect((await runTypeCheckAsync(projectRoot)).generatedTypes).toBeNull();
   });
 });

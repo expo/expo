@@ -17,14 +17,17 @@ import type { FreshnessStatus } from '../types';
 function freshness(...classes: (ImpactClass | null)[]): FreshnessStatus {
   return {
     hash: 'abc',
-    comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null },
+    comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null, platform: null },
     changedFiles: null,
     ota: null,
     platforms: classes.map((impactClass, index) => ({
       platform: index === 0 ? ('ios' as const) : ('android' as const),
+      backend: 'local' as const,
       state: 'stale' as const,
       detail: '',
       recordedHash: impactClass ? 'recorded-hash' : null,
+      buildId: null,
+      buildProfile: null,
       impact: {
         class: impactClass,
         fingerprintChanged: impactClass !== 'js-only',

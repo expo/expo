@@ -100,6 +100,28 @@ names are settled and the projection and the `--verify` diff are the guesses.
 
 `true` or absent, never `false`: a command that is not marked is the ordinary case, and `unstable: false` beside twenty entries with nothing would read as a claim somebody made rather than as the default.
 
+## `doctor`'s exit code belongs to the protocol
+
+`doctor:check` wraps a tool with an exit-code contract of its own: `expo-doctor` exits **1** when any
+check fails [observed — `packages/expo-doctor/src/doctor.ts`]. This command mirrored that code, on
+the argument that inventing one would hide the tool's own answer — and its help documented the
+mirroring as deliberate.
+
+**Reversed** [decided — wave 17, friction run 7's F68]. [[0010-agent-conventions]] §Exit codes gives
+`1` one meaning across the whole surface: *the tool did not work*. `doctor` was the only gate using
+it for *the tool worked and the project has a problem*, which `typecheck` and `smoke` both report as
+`20` — so `exagent doctor --bogus` and a project with one failing check were indistinguishable, and
+an agent could not use `doctor` as a gate without parsing prose.
+
+So: **0** when every check passed, **20** when any failed, and **1** only for a run that produced no
+code of its own (a signalled or killed check established nothing about the project, which really is a
+tool failure). Nothing is hidden — expo-doctor's own code stays on the `exitCode` field of `--json`
+and on the `cli:doctor_check` event, which is where a caller that wants it can read it.
+
+The general rule this settles: **a forwarded exit code is handed back verbatim only where this CLI
+adds no verdict of its own.** `doctor:check` parses the report, counts the checks and decides what to
+say about them — it has a verdict, so it owes the protocol's code.
+
 ## What this costs
 
 - **A wait that only needs the bundler is now a whole smoke run.** A CI job with no device has no cheaper gate than `typecheck`. If that turns out to bite, `dev:wait` comes back, or `smoke` grows the flags that cut it down — which is its re-entry criterion.

@@ -39,9 +39,13 @@ type StatusReport = {
     error?: string;
     platforms: {
       platform: 'ios' | 'android';
+      /** `local` for this machine's own record, `eas` for what EAS has (llp/0021). */
+      backend: 'local' | 'eas';
       state: 'fresh' | 'stale' | 'unknown';
       detail: string;
       recordedHash: string | null;
+      buildId: string | null;
+      buildProfile: string | null;
       impact: {
         class: 'js-only' | 'dev-client-compatible' | 'needs-native-build' | null;
         fingerprintChanged: boolean | null;
@@ -63,6 +67,8 @@ type StatusReport = {
     source: 'flag' | 'lock' | 'log' | 'default' | 'scan';
     ready: boolean | null;
     projectRootMatched: boolean | null;
+    /** The URLs that open the app on a device, encoded the way the launcher parses them (K7c). */
+    openUrls: { target: string; label: string; url: string }[];
     reason?: string;
   } | null;
   builds: {
@@ -326,9 +332,15 @@ describe('exagent status', () => {
 
       // No `fingerprint` bin is installed for this fixture, so nothing can be compared.
       expect(report.freshness?.hash).toBeNull();
-      expect(report.freshness?.platforms.map((platform) => platform.state)).toEqual([
-        'unknown',
-        'unknown',
+      // Four entries: backend × platform (llp/0021 §Freshness has two axes). The two local axes
+      // have no fingerprint to compare; the two EAS axes were never asked.
+      expect(
+        report.freshness?.platforms.map((platform) => `${platform.platform} ${platform.backend} ${platform.state}`)
+      ).toEqual([
+        'ios local unknown',
+        'ios eas unknown',
+        'android local unknown',
+        'android eas unknown',
       ]);
     });
 
@@ -390,8 +402,13 @@ describe('exagent status', () => {
       ]);
 
       expect(result.exitCode).toBe(0);
-      // Status is read-only: it never invokes the `expo` CLI.
-      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+      // Status is read-only. The one `expo` it runs is `whoami`, and only when the EAS CLI could
+      // not answer who this machine is: both CLIs read the same session file, and a report that
+      // said "nothing could answer" while `exagent whoami` printed the name was the finding
+      // (F65). Nothing else is invoked, and nothing is started.
+      expect(readStubExpoInvocations(projectRoot).map((invocation) => invocation.args)).toEqual([
+        ['whoami'],
+      ]);
     });
 
     it('emits the status event for a driving agent', async () => {
@@ -450,7 +467,9 @@ describe('exagent status', () => {
       const report = await reportAsync('dev-client-fresh-app');
 
       expect(report.freshness?.hash).toBe(FIXTURE_FINGERPRINT_HASH);
-      const ios = report.freshness?.platforms.find((platform) => platform.platform === 'ios');
+      const ios = report.freshness?.platforms.find(
+        (platform) => platform.platform === 'ios' && platform.backend === 'local'
+      );
       expect(ios).toMatchObject({ state: 'fresh', recordedHash: FIXTURE_FINGERPRINT_HASH });
     });
 
@@ -472,9 +491,12 @@ describe('exagent status', () => {
 
       expect(result.exitCode).toBe(0);
       const report: StatusReport = JSON.parse(result.stdout);
-      expect(report.freshness?.platforms.every((platform) => platform.state === 'stale')).toBe(
-        true
-      );
+      // The local axis of both platforms. The EAS axis was not asked on this run and says so.
+      expect(
+        report.freshness?.platforms
+          .filter((platform) => platform.backend === 'local')
+          .every((platform) => platform.state === 'stale')
+      ).toBe(true);
     });
 
     it('reports a failing fingerprint tool as an unknown freshness, still exiting 0', async () => {
@@ -553,7 +575,9 @@ process.stdout.write(JSON.stringify({ hash, sources }) + '\\n');
     }
 
     function iosImpact(report: StatusReport) {
-      return report.freshness!.platforms.find((platform) => platform.platform === 'ios')!.impact;
+      return report.freshness!.platforms.find(
+        (platform) => platform.platform === 'ios' && platform.backend === 'local'
+      )!.impact;
     }
 
     it('classifies an added native module without spawning anything', async () => {
@@ -694,7 +718,9 @@ process.stdout.write(JSON.stringify({
 
       const report = await reportInAsync(projectRoot, ['--explain'], env);
 
-      const ios = report.freshness!.platforms.find((platform) => platform.platform === 'ios')!;
+      const ios = report.freshness!.platforms.find(
+        (platform) => platform.platform === 'ios' && platform.backend === 'local'
+      )!;
       expect(ios.impact!.changedSources).toEqual([
         expect.objectContaining({
           op: 'added',
@@ -1100,6 +1126,50 @@ process.exit(1);
       ).toBe(ANDROID_HASH);
     });
 
+    // @ref llp/0021-honest-reports.rfc.md §Freshness has two axes — K7(b) and K7(d). The report
+    // called this project `ios: stale (no recorded build)` while EAS held a development-simulator
+    // build made from this exact fingerprint [observed — Kudo's cloud loop, 2026-08-27].
+    it('reports a matching EAS build as fresh on the eas axis, and names it', async () => {
+      const projectRoot = await setupWithEasAsync();
+
+      const report = await reportInAsync(projectRoot, ['--explain'], {
+        STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
+      });
+
+      const axis = (platform: string, backend: string) =>
+        report.freshness!.platforms.find(
+          (entry) => entry.platform === platform && entry.backend === backend
+        )!;
+
+      expect(axis('ios', 'eas')).toMatchObject({
+        state: 'fresh',
+        buildId: BUILD_ID,
+        buildProfile: 'simulator',
+      });
+      expect(axis('ios', 'eas').detail).toContain('simulator build');
+      // The local axis answers its own question, from this project's own record, and never carries
+      // an EAS build: the two are reported apart, which is the whole point of the split.
+      expect(axis('ios', 'local').buildId).toBeNull();
+      expect(axis('ios', 'local').detail).not.toContain('simulator');
+      // The stub answers the same list for both platforms, so android's axis is fresh too; what
+      // matters is that the two axes are reported apart.
+      expect(axis('android', 'eas').state).toBe('fresh');
+    });
+
+    it('says on the eas axis when EAS was asked and has nothing', async () => {
+      const projectRoot = await setupWithEasAsync();
+
+      const report = await reportInAsync(projectRoot, ['--explain'], {
+        STUB_EAS_BUILD_LIST: '[]',
+      });
+
+      const iosEas = report.freshness!.platforms.find(
+        (entry) => entry.platform === 'ios' && entry.backend === 'eas'
+      )!;
+      expect(iosEas).toMatchObject({ state: 'stale', buildId: null });
+      expect(iosEas.detail).toContain('no finished build');
+    });
+
     it('pins the argv of the lookup that crossed the process boundary', async () => {
       const projectRoot = await setupWithEasAsync();
       await reportInAsync(projectRoot, ['--explain']);
@@ -1347,7 +1417,10 @@ process.exit(1);
 
       expect(result.exitCode).toBe(0);
       const report: StatusReport = JSON.parse(result.stdout);
-      expect(report.devServer).toEqual({
+      // `toMatchObject` and then the one key that cannot be pinned: `openUrls` carries this
+      // machine's LAN address, and a test that asserted one would pass or fail by which network the
+      // suite is on. What it *can* pin is the form — Expo Go's, for a project with no dev client.
+      expect(report.devServer).toMatchObject({
         url: devServer.url,
         running: true,
         appsConnected: 1,
@@ -1361,6 +1434,22 @@ process.exit(1);
         hostType: null,
         tunnelUrl: null,
       });
+      expect(Object.keys(report.devServer!).sort()).toEqual([
+        'appsConnected',
+        'appsListed',
+        'appsStale',
+        'hostType',
+        'openUrls',
+        'projectRootMatched',
+        'ready',
+        'running',
+        'source',
+        'tunnelUrl',
+        'url',
+      ]);
+      expect(
+        report.devServer!.openUrls.every((connect) => connect.url.startsWith('exp://'))
+      ).toBe(true);
     });
 
     // The readiness probe of status is short and never waits for a bundle, so this asserts the
@@ -1377,7 +1466,7 @@ process.exit(1);
           stub.url,
         ]);
 
-        expect(JSON.parse(result.stdout).devServer).toEqual({
+        expect(JSON.parse(result.stdout).devServer).toMatchObject({
           url: stub.url,
           running: true,
           appsConnected: 1,
@@ -1539,7 +1628,7 @@ process.exit(1);
         const report: StatusReport = JSON.parse(result.stdout);
         // An ephemeral port, so no scan of 8081-8085 could have found it — and `source` now says
         // which step did.
-        expect(report.devServer).toEqual({
+        expect(report.devServer).toMatchObject({
           url: devServer.url,
           running: true,
           appsConnected: 1,

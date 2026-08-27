@@ -23,12 +23,15 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: {
-      comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+      comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
       changedFiles: null,
       hash: 'abcdef0123456789',
       platforms: [
         {
           platform: 'ios',
+          backend: 'local' as const,
+          buildId: null,
+          buildProfile: null,
           state: 'stale',
           detail: 'no recorded build',
           recordedHash: null,
@@ -36,6 +39,9 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
         },
         {
           platform: 'android',
+          backend: 'local' as const,
+          buildId: null,
+          buildProfile: null,
           state: 'fresh',
           detail: 'matches abcdef01',
           recordedHash: 'abcdef0123456789',
@@ -57,6 +63,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
+      openUrls: [],
     },
     device: {
       state: 'present',
@@ -106,11 +113,15 @@ describe(formatStatusReport, () => {
   it(`should print one line per section, like git status`, () => {
     const lines = report(mockReport()).split('\n');
 
-    expect(lines).toHaveLength(8);
+    // Nine, not eight: the freshness section is one line **per platform** now, because it carries
+    // two backends per platform (llp/0021 §Freshness has two axes).
+    expect(lines).toHaveLength(9);
     expect(lines.map((text) => text.split(/\s{2,}/)[0])).toEqual([
       'project',
       'expo go',
       'freshness',
+      // The continuation line of the freshness block, which carries no label of its own.
+      '',
       'dev server',
       'device',
       'skills',
@@ -194,21 +205,59 @@ describe(formatStatusReport, () => {
     expect(line(report, 'expo go')).toContain('(1 reason)');
   });
 
-  it(`should print the freshness of every platform with its detail`, () => {
-    expect(line(mockReport(), 'freshness')).toContain('ios: stale (no recorded build)');
-    expect(line(mockReport(), 'freshness')).toContain('android: fresh (matches abcdef01)');
+  // @ref llp/0021-honest-reports.rfc.md §Freshness has two axes — K7(d). One line per platform,
+  // one entry per backend, because the two answers disagree routinely and the disagreement is the
+  // answer: `stale (no recorded build)` beside a matching EAS build is what sent Kudo's cloud loop
+  // looking for a build it already had.
+  it(`should print the freshness of every platform per backend`, () => {
+    const rendered = report(mockReport());
+
+    expect(rendered).toContain('ios      local stale (no recorded build)');
+    expect(rendered).toContain('android  local fresh (matches abcdef01)');
   });
 
-  it(`should print the fingerprint error on the freshness line`, () => {
-    const report = mockReport({
+  it(`should print both axes of a platform on its own line`, () => {
+    const base = mockReport();
+    const rendered = report(
+      mockReport({
+        freshness: {
+          ...base.freshness!,
+          platforms: [
+            base.freshness!.platforms[0]!,
+            {
+              platform: 'ios',
+              backend: 'eas',
+              state: 'fresh',
+              detail: 'simulator build 21d7d434 matches this fingerprint',
+              recordedHash: null,
+              buildId: '21d7d434-6495-4e74-b8c7-68ecd0dff489',
+              buildProfile: 'simulator',
+              impact: null,
+            },
+          ],
+        },
+      })
+    );
+
+    const iosLine = rendered.split('\n').find((text) => text.includes('ios      '))!;
+    expect(iosLine).toContain('local stale');
+    expect(iosLine).toContain('eas fresh');
+    expect(iosLine).toContain('simulator build 21d7d434');
+  });
+
+  it(`should print the fingerprint error under the freshness block`, () => {
+    const value = mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: null,
         error: 'fingerprint CLI not found\nInstall @expo/fingerprint',
         platforms: [
           {
             platform: 'ios',
+            backend: 'local' as const,
+            buildId: null,
+            buildProfile: null,
             state: 'unknown',
             detail: 'no fingerprint tool',
             recordedHash: null,
@@ -216,6 +265,9 @@ describe(formatStatusReport, () => {
           },
           {
             platform: 'android',
+            backend: 'local' as const,
+            buildId: null,
+            buildProfile: null,
             state: 'unknown',
             detail: 'no fingerprint tool',
             recordedHash: null,
@@ -226,23 +278,27 @@ describe(formatStatusReport, () => {
       },
     });
 
-    expect(line(report, 'freshness')).toContain('unknown');
-    expect(line(report, 'freshness')).toContain('fingerprint CLI not found');
-    // The line stays one line, even for a multi-line error.
-    expect(line(report, 'freshness')).not.toContain('Install @expo/fingerprint');
+    const rendered = report(value);
+    expect(rendered).toContain('unknown');
+    // Under the platforms it explains, still one line whatever the error's own shape.
+    expect(rendered).toContain('fingerprint CLI not found');
+    expect(rendered).not.toContain('Install @expo/fingerprint');
   });
 
   it(`should keep a long fingerprint error on one line`, () => {
     const error = `The @expo/fingerprint CLI is not installed in this project, so the native surface cannot be hashed. Install it with "npx expo install @expo/fingerprint".`;
-    const report = mockReport({
+    const value = mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: null,
         error,
         platforms: [
           {
             platform: 'ios',
+            backend: 'local' as const,
+            buildId: null,
+            buildProfile: null,
             state: 'unknown',
             detail: 'no fingerprint tool',
             recordedHash: null,
@@ -253,10 +309,11 @@ describe(formatStatusReport, () => {
       },
     });
 
-    expect(line(report, 'freshness')).toContain('The @expo/fingerprint CLI is not installed');
-    expect(line(report, 'freshness')).toContain('…');
+    const rendered = report(value);
+    expect(rendered).toContain('The @expo/fingerprint CLI is not installed');
+    expect(rendered).toContain('…');
     // The full message is in the `--json` report, under `freshness` and `probe`.
-    expect(line(report, 'freshness')).not.toContain('npx expo install');
+    expect(rendered).not.toContain('npx expo install');
   });
 
   it(`should print the dev server, how it was found, its bundler and its connected apps`, () => {
@@ -278,6 +335,7 @@ describe(formatStatusReport, () => {
         projectRootMatched: null,
         hostType: null,
         tunnelUrl: null,
+        openUrls: [],
       },
     });
 
@@ -298,6 +356,7 @@ describe(formatStatusReport, () => {
         projectRootMatched: true,
         hostType: null,
         tunnelUrl: null,
+        openUrls: [],
       },
     });
 
@@ -318,6 +377,7 @@ describe(formatStatusReport, () => {
         projectRootMatched: false,
         hostType: null,
         tunnelUrl: null,
+        openUrls: [],
       },
     });
 
@@ -338,6 +398,7 @@ describe(formatStatusReport, () => {
         projectRootMatched: null,
         hostType: null,
         tunnelUrl: null,
+        openUrls: [],
         reason: 'fetch failed',
       },
     });
@@ -448,8 +509,9 @@ describe(formatStatusReport, () => {
       const value = mockReport({ skills: { agentIds: null, discovered: 0, linked: 0 } });
 
       expect(report(value)).not.toContain('skills');
-      // The seven lines that are facts about the project stay.
-      expect(report(value).split('\n')).toHaveLength(7);
+      // The lines that are facts about the project stay — one per section, and one more for the
+      // second platform of the freshness block.
+      expect(report(value).split('\n')).toHaveLength(8);
     });
 
     it(`stays for an agent that was selected, however few skills there are`, () => {
@@ -526,12 +588,52 @@ describe(formatStatusReport, () => {
           projectRootMatched: true,
           hostType: 'tunnel',
           tunnelUrl: 'http://abc.boltexpo.dev',
+          openUrls: [],
           appsListed: 0,
           appsStale: 0,
         },
       });
 
       expect(line(value, 'dev server')).toContain('tunnel http://abc.boltexpo.dev');
+    });
+
+    // @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's
+    // K7(c) and K8: the line a tunnelled `expo start` prints for itself is
+    // `exp+app://<tunnel host>`, which opens the launcher rather than the app and which no HTTP
+    // client can use. This is the string that works, under the address it was built from.
+    it(`prints the encoded URL that opens the app, under the tunnel`, () => {
+      const value = mockReport({
+        devServer: {
+          url: 'http://127.0.0.1:8081',
+          running: true,
+          appsConnected: 0,
+          source: 'lock',
+          ready: true,
+          projectRootMatched: true,
+          hostType: 'tunnel',
+          tunnelUrl: 'https://x8fj2.on.staging.expo.app',
+          openUrls: [
+            {
+              target: 'dev-build',
+              label: 'development build',
+              url: 'exp+dailywords-grok://expo-development-client/?url=https%3A%2F%2Fx8fj2.on.staging.expo.app',
+            },
+          ],
+          appsListed: 0,
+          appsStale: 0,
+        },
+      });
+
+      const rendered = report(value);
+      expect(rendered).toContain('open in development build:');
+      expect(rendered).toContain(
+        'exp+dailywords-grok://expo-development-client/?url=https%3A%2F%2Fx8fj2.on.staging.expo.app'
+      );
+    });
+
+    // A local run's own `url` is the whole answer, and a second copy of it would be noise.
+    it(`prints no open URL for a run a device off this machine cannot reach`, () => {
+      expect(report(mockReport())).not.toContain('open in');
     });
 
     it(`says nothing extra for a plain local run`, () => {
@@ -560,13 +662,16 @@ describe('the impact line', () => {
       };
     return mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: 'abcdef0123456789',
         ota: null,
         platforms: [
           {
             platform: 'ios',
+            backend: 'local' as const,
+            buildId: null,
+            buildProfile: null,
             state: 'stale',
             detail: 'no recorded build',
             recordedHash: null,
@@ -574,6 +679,9 @@ describe('the impact line', () => {
           },
           {
             platform: 'android',
+            backend: 'local' as const,
+            buildId: null,
+            buildProfile: null,
             state: 'stale',
             detail: 'no recorded build',
             recordedHash: null,
@@ -637,13 +745,16 @@ describe('the --explain detail', () => {
   function withSources(count: number): StatusReport {
     return mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: 'abcdef0123456789',
         ota: null,
         platforms: [
           {
             platform: 'ios',
+            backend: 'local' as const,
+            buildId: null,
+            buildProfile: null,
             state: 'stale',
             detail: 'no recorded build',
             recordedHash: null,
@@ -698,7 +809,7 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
-          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
           hash: 'abcdef0123456789',
           platforms: [],
@@ -721,7 +832,7 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
-          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
           hash: 'abcdef0123456789',
           platforms: [],
@@ -815,6 +926,25 @@ describe('the eas build line', () => {
     expect(rendered).toContain('EAS project not configured.');
   });
 
+  // @ref llp/0021-honest-reports.rfc.md §A note nobody reads is not a note — live
+  // staging, S9. The clipped end of this sentence is the clause that says what to do.
+  it(`prints a reason too long for the line under it, rather than clipping it`, () => {
+    const reason =
+      'the eas at /Users/somebody/.tuft-bin/eas exited 101 and printed nothing an eas run would print, so it may not be the real CLI — check that file';
+
+    const rendered = report(
+      mockReport({
+        builds: {
+          askedEas: true,
+          platforms: [{ ...notAskedAndroid, platform: 'ios', reason }],
+        },
+      })
+    );
+
+    expect(rendered).toContain(reason);
+    expect(rendered).not.toContain('…');
+  });
+
   it(`prints the section note when the section could not be read at all`, () => {
     const rendered = line(
       mockReport({ builds: null, errors: { builds: 'the record is unreadable' } }),
@@ -822,6 +952,31 @@ describe('the eas build line', () => {
     );
 
     expect(rendered).toContain('unavailable: the record is unreadable');
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §A note nobody reads is not a note — friction
+// run 7's F66. `status --explain --build abc123` printed an ordinary report and exit 0, with the id
+// nowhere on it, while the JSON carried the whole reason the comparison never happened.
+describe('a section that printed a line and still failed', () => {
+  const failure = [
+    'Could not compare against EAS build abc123.',
+    'Why: "eas fingerprint:compare --build-id abc123" exited with 1.',
+    'How: check the id with "npx eas build:list --limit 5 --json --non-interactive".',
+  ].join('\n');
+
+  it(`prints the failure, in full, in the text report`, () => {
+    const rendered = report(mockReport({ errors: { freshness: failure } }));
+
+    // Every line of it: the actionable half of one of these sentences is usually the last one, and
+    // clipping it to a line width is what left the text report with the useless half (S9).
+    for (const line of failure.split('\n')) {
+      expect(rendered).toContain(line);
+    }
+  });
+
+  it(`says nothing extra when no section failed`, () => {
+    expect(report(mockReport())).not.toContain('note');
   });
 });
 

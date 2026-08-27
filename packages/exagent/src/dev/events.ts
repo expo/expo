@@ -11,7 +11,9 @@ declare module '2g' {
     };
     // @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization
     'dev:detach_spawn': { logFile: string; argv: string[] };
-    'dev:stop_lock_read': { held: boolean; pid: number | null };
+    // `ownsTarget` is false for a lock this project holds on a port other than the one `--port`
+    // named: the lock was read and deliberately not acted on (llp/0021 §`--port` names the target).
+    'dev:stop_lock_read': { held: boolean; pid: number | null; ownsTarget: boolean };
     'dev:stop_signalled': { pid: number; signal: string; ok: boolean };
     // The three checks, separately, because the conclusion is drawn from the first two and the
     // third is the one that used to be able to overrule them (llp/0005 §A port number is not one

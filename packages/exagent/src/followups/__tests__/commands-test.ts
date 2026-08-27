@@ -36,6 +36,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       projectRootMatched: null,
       hostType: null,
       tunnelUrl: null,
+      openUrls: [],
     },
     device: {
       state: 'present',
@@ -80,6 +81,7 @@ describe(buildStatusFollowUps, () => {
           projectRootMatched: true,
           hostType: null,
           tunnelUrl: null,
+          openUrls: [],
         },
       })
     );
@@ -102,6 +104,7 @@ describe(buildStatusFollowUps, () => {
           projectRootMatched: true,
           hostType: null,
           tunnelUrl: null,
+          openUrls: [],
         },
       })
     );
@@ -119,11 +122,29 @@ describe(buildStatusFollowUps, () => {
         freshness: {
           hash: 'project-hash',
           platforms: [
-            { platform: 'ios', state: freshness, detail: '', recordedHash: null, impact: null },
-            { platform: 'android', state: 'unknown', detail: '', recordedHash: null, impact: null },
+            {
+              platform: 'ios',
+              backend: 'local' as const,
+              state: freshness,
+              detail: '',
+              recordedHash: null,
+              buildId: null,
+              buildProfile: null,
+              impact: null,
+            },
+            {
+              platform: 'android',
+              backend: 'local' as const,
+              state: 'unknown',
+              detail: '',
+              recordedHash: null,
+              buildId: null,
+              buildProfile: null,
+              impact: null,
+            },
           ],
           ota: null,
-          comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null },
+          comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
         },
         builds: {
@@ -250,6 +271,7 @@ describe(buildStatusFollowUps, () => {
           projectRootMatched: true,
           hostType: null,
           tunnelUrl: null,
+          openUrls: [],
         },
         skills: { agentIds: ['claude-code'], discovered: 3, linked: 0 },
         expoGo: { compatible: false, reasonCount: 1 },

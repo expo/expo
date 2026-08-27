@@ -7,8 +7,11 @@ import type { FingerprintDiffItem } from '../../project/fingerprint';
 import { spawnSubprocessAsync } from '../../utils/subprocess';
 import {
   buildCacheArgs,
+  buildViewArgs,
   findCachedBuildAsync,
+  lookUpBuildPlatformAsync,
   lookUpCachedBuildAsync,
+  parseBuildPlatform,
   parseCachedBuild,
 } from '../buildCache';
 import {
@@ -522,6 +525,50 @@ describe(lookUpCachedBuildAsync, () => {
     await expect(lookUpCachedBuildAsync(easCli, projectRoot, 'ios', 'abc')).resolves.toMatchObject({
       state: 'unknown',
     });
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §One build is one platform — live staging, S1.
+describe(parseBuildPlatform, () => {
+  it(`should read the platform of one build:view payload`, () => {
+    expect(parseBuildPlatform(JSON.stringify({ id: 'build-1', platform: 'IOS' }))).toBe('ios');
+  });
+
+  it(`should read it off the first entry of a list, which is the other shape`, () => {
+    expect(parseBuildPlatform(JSON.stringify(recordedList))).toBe('ios');
+  });
+
+  it.each([['not json'], ['{'], ['{}'], ['{"platform": 7}'], ['{"platform": "WEB"}']])(
+    `should answer null rather than guess for %p`,
+    (stdout) => {
+      expect(parseBuildPlatform(stdout)).toBeNull();
+    }
+  );
+});
+
+describe(lookUpBuildPlatformAsync, () => {
+  it(`should ask EAS about the one build`, async () => {
+    mockSpawn({ stdout: JSON.stringify({ id: 'build-1', platform: 'ANDROID' }) });
+
+    await expect(lookUpBuildPlatformAsync(easCli, projectRoot, 'build-1')).resolves.toBe('android');
+    expect(spawnSubprocessAsync).toHaveBeenCalledWith(
+      easCli.command,
+      buildViewArgs('build-1'),
+      expect.anything()
+    );
+  });
+
+  // Never a guess and never a throw: the caller attributes the comparison to no platform, which is
+  // an answer a reader can act on. A wrong platform is not.
+  it(`should answer null when the lookup failed`, async () => {
+    mockSpawn({ exitCode: 1, stderr: 'no such build' });
+
+    await expect(lookUpBuildPlatformAsync(easCli, projectRoot, 'build-1')).resolves.toBeNull();
+  });
+
+  it(`should answer null when there is no EAS CLI to ask`, async () => {
+    await expect(lookUpBuildPlatformAsync(null, projectRoot, 'build-1')).resolves.toBeNull();
+    expect(spawnSubprocessAsync).not.toHaveBeenCalled();
   });
 });
 

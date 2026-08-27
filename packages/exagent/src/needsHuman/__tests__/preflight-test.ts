@@ -157,6 +157,88 @@ describe(readAuthPreflightAsync, () => {
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({ loggedIn: null });
   });
 
+  // @ref llp/0021-honest-reports.rfc.md §Two CLIs read one session file — friction run
+  // 7, F65. `status` said "nothing could answer" on a machine whose `eas` was a shim, while
+  // `exagent whoami` printed the account name in the same directory.
+  describe('the project’s own Expo CLI, when the EAS CLI could not answer', () => {
+    /** A project with both bins, and a `whoami` answer per binary. */
+    function mockBothAsync(answers: {
+      eas: Partial<subprocess.SubprocessResult>;
+      expo: Partial<subprocess.SubprocessResult>;
+    }) {
+      vol.fromJSON({
+        [`${projectRoot}/node_modules/.bin/eas`]: '#!/bin/sh',
+        [`${projectRoot}/node_modules/.bin/expo`]: '#!/bin/sh',
+      });
+      return jest
+        .spyOn(subprocess, 'spawnSubprocessAsync')
+        .mockImplementation(async (command: string) => ({
+          exitCode: 0,
+          stdout: '',
+          stderr: '',
+          ...(command.endsWith('expo') || command.endsWith('expo.cmd')
+            ? answers.expo
+            : answers.eas),
+        }) as never);
+    }
+
+    it('reports the account the Expo CLI named, and says which CLI answered', async () => {
+      mockBothAsync({
+        // The shim: exits the way a wrapper dies, printing nothing an eas run would print.
+        eas: { exitCode: 101, stderr: 'Stack backtrace:\n   2: tuft::main\n' },
+        expo: { exitCode: 0, stdout: 'kudochien\n' },
+      });
+
+      await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
+        loggedIn: true,
+        user: 'kudochien',
+        source: 'expo whoami',
+      });
+    });
+
+    it('reports a signed-out machine the Expo CLI answered for', async () => {
+      mockBothAsync({
+        eas: { exitCode: null, spawnError: Object.assign(new Error('nope'), { code: 'EACCES' }) },
+        expo: { exitCode: 1, stderr: 'Not logged in\n' },
+      });
+
+      await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
+        loggedIn: false,
+        user: null,
+        source: 'expo whoami',
+      });
+    });
+
+    // The EAS CLI answered, so there is nothing left to ask: a second spawn would cost a status
+    // report time for a fact it already has.
+    it('is not asked when the EAS CLI answered', async () => {
+      const spawned = mockBothAsync({
+        eas: { exitCode: 0, stdout: 'kudo\n' },
+        expo: { exitCode: 0, stdout: 'somebody-else\n' },
+      });
+
+      await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({
+        user: 'kudo',
+        source: 'eas whoami',
+      });
+      expect(spawned).toHaveBeenCalledTimes(1);
+    });
+
+    // `resolveExpoCli` would fall back to a package runner, which downloads the whole SDK to read
+    // one JSON file. `status` promises to be instant.
+    it('never reaches for a package runner when the project has no expo', async () => {
+      withProjectEas();
+      const spawned = mockWhoami({ exitCode: 101, stderr: 'Stack backtrace:\n' });
+
+      await expect(readAuthPreflightAsync(projectRoot)).resolves.toEqual({
+        loggedIn: null,
+        user: null,
+        source: null,
+      });
+      expect(spawned).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('spawns once however often it is asked', async () => {
     withProjectEas();
     const spawned = mockWhoami({ exitCode: 0, stdout: 'kudo\n' });

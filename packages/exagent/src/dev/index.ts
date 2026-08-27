@@ -34,6 +34,7 @@ export const exagentDev: Command = async (argv) => {
         `--yes               Run a plan that builds without asking for confirmation`,
         `--json              Print the plan as JSON, for --plan and for a run`,
         `--port <number>     Port for the dev server, so a busy 8081 needs no answer`,
+        `--tunnel, --lan, --localhost   How a device reaches the dev server; passed to expo start`,
         `--ios, --android, --web   Platform to plan for; the host decides when none is named`,
         `--eas, --local      Where the native build runs: in the cloud on EAS, or on this machine`,
         `--go, --dev-client  Which app to run the project in, when both would work`,

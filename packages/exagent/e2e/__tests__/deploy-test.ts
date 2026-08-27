@@ -129,6 +129,63 @@ if (args[0] === 'deploy') {
 process.exit(0);
 `;
 
+/** Name of the file the stub `npx` bin appends one JSON line to per invocation. */
+const STUB_NPX_LOG_NAME = 'stub-npx-invocations.jsonl';
+
+/**
+ * Stub `npx`, standing in for the package runner the wrapper falls back to.
+ *
+ * `deploy` retries through `npx eas-cli@latest` when the `eas` it resolved turns out not to be the
+ * EAS CLI (F67), and an e2e test must not download a package or reach the network to exercise that.
+ * So this runs the same stub `eas` script, steered by its own environment variables — which is what
+ * lets one test make the fallback succeed and another make it fail for a real reason.
+ *
+ * - STUB_NPX_EAS_EXIT_CODE: exit code of the fallback run (default 0)
+ * - STUB_NPX_EAS_STDERR: what the fallback prints on stderr before a non-zero exit
+ */
+function stubNpx(easStubPath: string): string {
+  return `#!/usr/bin/env node
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+
+const args = process.argv.slice(2);
+fs.appendFileSync(
+  path.join(process.cwd(), ${JSON.stringify(STUB_NPX_LOG_NAME)}),
+  JSON.stringify({ args, cwd: process.cwd() }) + '\\n'
+);
+
+if (args[0] !== 'eas-cli@latest') {
+  process.stderr.write('stub npx: nothing here runs ' + args[0] + '\\n');
+  process.exit(1);
+}
+
+const result = spawnSync(process.execPath, [${JSON.stringify(easStubPath)}, ...args.slice(1)], {
+  stdio: 'inherit',
+  env: {
+    ...process.env,
+    STUB_EAS_EXIT_CODE: process.env.STUB_NPX_EAS_EXIT_CODE || '0',
+    STUB_EAS_STDERR: process.env.STUB_NPX_EAS_STDERR || '',
+  },
+});
+process.exit(result.status === null ? 1 : result.status);
+`;
+}
+
+/** Every recorded invocation of the stub `npx` bin. */
+function readStubNpxInvocations(projectRoot: string): { args: string[]; cwd: string }[] {
+  const logPath = path.join(projectRoot, STUB_NPX_LOG_NAME);
+  if (!fs.existsSync(logPath)) {
+    return [];
+  }
+  return fs
+    .readFileSync(logPath, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
+}
+
 /**
  * Copy a fixture and install the stub `eas` bin into the `.stub-bin` directory that
  * `stubExpoEnv()` puts on `PATH`, so `eas` resolves to the stub the same way `expo` does.
@@ -143,6 +200,10 @@ async function setupAsync(fixtureName: string): Promise<string> {
   const stubScript = path.join(binDir, 'eas-stub.js');
   await fs.promises.writeFile(stubScript, STUB_EAS);
   await installStubBinAsync(binDir, 'eas', stubScript);
+  // And the runner, so the wrapper-crash fallback stays inside the sandbox.
+  const npxScript = path.join(binDir, 'npx-stub.js');
+  await fs.promises.writeFile(npxScript, stubNpx(stubScript));
+  await installStubBinAsync(binDir, 'npx', npxScript);
   // The real path, because that is what a subprocess reports as its working directory: on macOS
   // the temporary directory is reached through a symlink.
   return fs.promises.realpath(projectRoot);
@@ -385,27 +446,60 @@ describe('exagent deploy', () => {
     // A `.tuft-bin/eas`, a stale link, or any wrapper under that name is not the EAS CLI, and its
     // output is not EAS output. Quoting a Rust backtrace under "What the tool printed" tells the
     // reader the EAS CLI reported a missing file [observed — friction run, 2026-08-23].
-    it(`should say the binary is not the CLI instead of quoting its crash`, async () => {
-      const projectRoot = await setupAsync('go-app');
+    //
+    // @ref llp/0021-honest-reports.rfc.md §Route around a binary that is not the CLI
+    // Friction run 7's F67 is the other half: the run stopped there and handed back a `Try:` line
+    // that ran the same broken file again. A run that never was the CLI uploaded nothing, so the
+    // retry through the package runner is safe — and it is the only rung left.
+    describe('an "eas" that is not the EAS CLI', () => {
+      /** The env of a machine whose `eas` is a wrapper that panics. */
+      const shimEnv = {
+        STUB_EAS_EXIT_CODE: '101',
+        STUB_EAS_STDERR:
+          'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   0: <std::backtrace::Backtrace>::create\n   2: tuft::main',
+      };
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
-        env: {
-          STUB_EAS_EXIT_CODE: '101',
-          STUB_EAS_STDERR:
-            'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   0: <std::backtrace::Backtrace>::create\n   2: tuft::main',
-        },
-        reject: false,
+      it(`should deploy through the package runner instead`, async () => {
+        const projectRoot = await setupAsync('go-app');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+          env: shimEnv,
+        });
+
+        expect(result.exitCode).toBe(0);
+        const report: DeployReport = JSON.parse(result.stdout);
+        expect(report.web?.url).toBe(STUB_DEPLOYMENT_URL);
+        // The retry, through the runner, with the package named.
+        expect(readStubNpxInvocations(projectRoot)).toEqual([
+          { args: ['eas-cli@latest', 'deploy', '--non-interactive'], cwd: projectRoot },
+        ]);
       });
 
-      expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain('failed to run at all');
-      expect(result.stderr).toContain('this may not be the real CLI');
-      expect(result.stderr).not.toContain('What the tool printed');
-      expect(result.stderr).not.toContain('tuft::main');
-      // The same failure, as data: the envelope carries the message a person read.
-      expect(JSON.parse(result.stdout).error).toMatchObject({
-        code: 'EAS_DEPLOY_FAILED',
-        message: expect.stringContaining('failed to run at all'),
+      it(`should never hand back a command that runs the broken binary`, async () => {
+        const projectRoot = await setupAsync('go-app');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+          env: {
+            ...shimEnv,
+            // The fallback ran, and the real CLI refused it for a reason of its own.
+            STUB_NPX_EAS_EXIT_CODE: '1',
+            STUB_NPX_EAS_STDERR: 'EAS project not configured.',
+          },
+          reject: false,
+        });
+
+        expect(result.exitCode).toBe(1);
+        // The shim is named as what it is, and its panic is never quoted as EAS output.
+        expect(result.stderr).toContain('did not run as the EAS CLI');
+        expect(result.stderr).not.toContain('tuft::main');
+        // The EAS CLI's own sentence decides the diagnosis, not the exit signature (S2).
+        expect(result.stderr).toContain('not linked');
+        const { error } = JSON.parse(result.stdout);
+        expect(error).toMatchObject({
+          code: 'EAS_DEPLOY_FAILED',
+          suggestedCommand: 'npx eas init',
+        });
+        expect(error.message).not.toContain('.stub-bin');
       });
     });
 

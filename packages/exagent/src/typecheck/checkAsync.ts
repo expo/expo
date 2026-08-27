@@ -11,6 +11,7 @@ import { stripVTControlCharacters } from 'util';
 import { fileExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { spawnSubprocessAsync } from '../utils/subprocess';
+import { findMissingGeneratedTypesSync } from './generatedTypes';
 import { parseTscOutput } from './parseTscOutput';
 import type { TypeCheckReport } from './types';
 
@@ -141,6 +142,7 @@ export async function runTypeCheckAsync(projectRoot: string): Promise<TypeCheckR
     errorCount: 0,
     errors: [],
     durationMs: 0,
+    generatedTypes: null,
   });
 
   // Three states, and only one of them is "nothing to check" (llp/0010 §The fourth: `typecheck`).
@@ -195,6 +197,9 @@ export async function runTypeCheckAsync(projectRoot: string): Promise<TypeCheckR
     errorCount: errors.length,
     errors,
     durationMs,
+    // Only when something failed: the note explains diagnostics, and a run with none needs no
+    // explanation of them (F64).
+    generatedTypes: errors.length > 0 ? findMissingGeneratedTypesSync(projectRoot) : null,
   };
 }
 

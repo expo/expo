@@ -149,6 +149,24 @@ describe('exagent dev --plan', () => {
       expect(plan.steps[0]!.reason).toContain('opens it on a booted iOS simulator');
     });
 
+    // @ref llp/0015-backend-selection-and-config.rfc.md §The plan approved is the plan run —
+    // friction run 7's F71 and live staging's S5. The plan printed `expo start --go` while the run
+    // executed `expo start --go --tunnel`, so what an agent approved was not what happened.
+    it('prints every forwarded flag, because the plan approved is the plan run', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, [
+        'dev',
+        '--plan',
+        '--json',
+        '--tunnel',
+      ]);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.steps.map((step) => step.argv)).toEqual([
+        ['expo', 'start', '--go', '--tunnel'],
+      ]);
+    });
+
     it('admits that a plain start opens nothing, and names what does', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json']);

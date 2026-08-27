@@ -46,6 +46,8 @@ export function formatStatusReport(report: StatusReport): string {
     ...impactLines(report),
     // The per-source list and the OTA verdict, under `--explain` only.
     ...explainLines(report),
+    // What a section could not do, even when it had something else to say.
+    ...sectionNoteLines(report),
     // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
     // Printed only when it says something, for the reason the skills line is: a default run has
     // nothing cached and asked nobody, and `ios: unknown · android: unknown (EAS was not asked)` is
@@ -55,6 +57,8 @@ export function formatStatusReport(report: StatusReport): string {
       ? [row('eas build', report.builds, buildsLine, report, 'builds')]
       : []),
     row('dev server', report.devServer, devServerLine, report, 'devServer'),
+    // Under the dev server it points at, because that is the address it was built from.
+    ...(report.devServer ? openUrlLines(report.devServer) : []),
     row('device', report.device, deviceLine, report, 'device'),
     // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
     // The one section that can have nothing to say at all. A project whose dependencies ship no
@@ -129,11 +133,15 @@ function impactLines(report: StatusReport): string[] {
     // they really say the same thing. Written as an escape: a raw control character in
     // source makes git treat the file as binary.
     const key = `${platform.impact.class}\u0000${platform.impact.reason}`;
+    // The backend is named only when it is the EAS one: `local` is what every other line of this
+    // report is about, and labelling it everywhere would be a word repeated to make one rare case
+    // legible (llp/0021 §Freshness has two axes).
+    const label = platform.backend === 'eas' ? `${platform.platform} (eas)` : platform.platform;
     const existing = grouped.get(key);
     if (existing) {
-      existing.platforms.push(platform.platform);
+      existing.platforms.push(label);
     } else {
-      grouped.set(key, { platforms: [platform.platform], impact: platform.impact });
+      grouped.set(key, { platforms: [label], impact: platform.impact });
     }
   }
 
@@ -288,7 +296,12 @@ function buildsLine(builds: BuildsStatus): string {
     if (platform.state === 'none') {
       return `${platform.platform}: ${chalk.dim('none')}`;
     }
-    return `${platform.platform}: ${chalk.yellow('unknown')}${platform.reason ? chalk.dim(` (${summarize(platform.reason)})`) : ''}`;
+    // A reason too long for this line is printed under it rather than clipped: the actionable half
+    // of "the eas at … exited 101 and printed nothing an eas run would print, so it may not be the
+    // real CLI — check that file" is the last clause, and that is the clause a width cut removed
+    // [observed — live staging, S9].
+    const inline = platform.reason && !isLongReason(platform.reason) ? ` (${platform.reason})` : '';
+    return `${platform.platform}: ${chalk.yellow('unknown')}${chalk.dim(inline)}`;
   });
 
   // One command, for the first platform that has one: a line cannot carry two, and the `--json`
@@ -297,7 +310,21 @@ function buildsLine(builds: BuildsStatus): string {
   if (first?.buildId) {
     facts.push(chalk.cyan(`npx eas build:download --build-id ${first.buildId}`));
   }
-  return facts.join(SEPARATOR);
+
+  const lines = [facts.join(SEPARATOR)];
+  for (const platform of builds.platforms) {
+    if (platform.state === 'unknown' && platform.reason && isLongReason(platform.reason)) {
+      lines.push(
+        `${' '.repeat(LABEL_WIDTH)}${chalk.dim(`${platform.platform}: ${platform.reason}`)}`
+      );
+    }
+  }
+  return lines.join('\n');
+}
+
+/** Whether a reason is too long to ride on the line it belongs to. */
+function isLongReason(reason: string): boolean {
+  return reason.length > ERROR_MAX_LENGTH || reason.includes('\n');
 }
 
 /** Whether the skills line would say anything: an agent is selected, or a skill was found. */
@@ -326,6 +353,46 @@ function unavailableLine(report: StatusReport, name: StatusSectionName): string 
   return chalk.yellow(error ? `unavailable: ${summarize(error)}` : 'unavailable');
 }
 
+/** Sections that print their own line and can still be carrying a failure. */
+const SECTIONS_WITH_VALUES: readonly StatusSectionName[] = [
+  'project',
+  'expoGo',
+  'freshness',
+  'builds',
+  'devServer',
+  'device',
+  'skills',
+  'auth',
+  'next',
+];
+
+/**
+ * What a section could not do, for a section that printed a line anyway.
+ *
+ * `unavailableLine` only speaks for a section that is **null**, so a failure recorded against a
+ * section that still had facts to report reached `--json` and nothing else: `status --explain
+ * --build abc123` printed an ordinary report, exit 0, with the id nowhere on it, while the JSON
+ * carried the whole reason the comparison never happened [observed — friction run 7, F66].
+ *
+ * Printed whole, indented, and never summarized: this is the half a reader has to act on, and
+ * clipping it at a line width is what left the text report with the useless half of the sentence
+ * [live staging, S9].
+ */
+function sectionNoteLines(report: StatusReport): string[] {
+  const indent = ' '.repeat(LABEL_WIDTH);
+  const lines: string[] = [];
+  for (const name of SECTIONS_WITH_VALUES) {
+    const error = report.errors[name];
+    if (!error || report[name] == null) {
+      continue;
+    }
+    const [first, ...rest] = error.split('\n');
+    lines.push(`${chalk.dim(`${name} note`.padEnd(LABEL_WIDTH))}${chalk.yellow(first ?? '')}`);
+    lines.push(...rest.map((line) => `${indent}${chalk.yellow(line)}`));
+  }
+  return lines;
+}
+
 function projectLine(project: ProjectStatus): string {
   const dirs = (['ios', 'android'] as const).filter((platform) => project.nativeDirs[platform]);
   // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
@@ -351,16 +418,36 @@ function expoGoLine(expoGo: ExpoGoStatus): string {
   return chalk.yellow(`not compatible (${expoGo.reasonCount} ${reasons})`);
 }
 
+/** Width of the platform column of the freshness block. */
+const PLATFORM_WIDTH = 9;
+
+/**
+ * The freshness of every platform, one line per platform and one entry per backend.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §Freshness has two axes
+ * Two axes on one line, because the two disagree routinely and the disagreement is the answer: a
+ * project whose fingerprint matches a finished EAS build needs no build here, and the one-axis line
+ * called it `ios: stale (no recorded build)` [observed — Kudo's cloud loop, 2026-08-27, K7]. One
+ * line per platform rather than four facts on one, because four is past what a reader scans.
+ */
 function freshnessLine(freshness: FreshnessStatus): string {
-  const platforms = freshness.platforms.map((platform) => {
-    const state = platform.state === 'fresh' ? chalk.green('fresh') : chalk.yellow(platform.state);
-    return `${platform.platform}: ${state}${platform.detail ? ` (${platform.detail})` : ''}`;
+  const indent = ' '.repeat(LABEL_WIDTH);
+  const platforms = [...new Set(freshness.platforms.map((entry) => entry.platform))];
+  const lines = platforms.map((platform, index) => {
+    const axes = freshness.platforms
+      .filter((entry) => entry.platform === platform)
+      .map((entry) => {
+        const state =
+          entry.state === 'fresh' ? chalk.green('fresh') : chalk.yellow(entry.state);
+        return `${chalk.dim(entry.backend)} ${state}${entry.detail ? ` (${entry.detail})` : ''}`;
+      });
+    return `${index === 0 ? '' : indent}${platform.padEnd(PLATFORM_WIDTH)}${axes.join(SEPARATOR)}`;
   });
-  // The fingerprint error explains every `unknown` above it, so it belongs on the same line.
+  // The fingerprint error explains every `unknown` above it, so it belongs under them.
   if (freshness.error) {
-    platforms.push(chalk.dim(`fingerprint error: ${summarize(freshness.error)}`));
+    lines.push(`${indent}${chalk.dim(`fingerprint error: ${summarize(freshness.error)}`)}`);
   }
-  return platforms.join(SEPARATOR);
+  return lines.join('\n');
 }
 
 function devServerLine(devServer: DevServerStatus): string {
@@ -406,6 +493,25 @@ function devServerLine(devServer: DevServerStatus): string {
  */
 function reachFact(devServer: DevServerStatus): string | null {
   return devServer.tunnelUrl ? `${chalk.green('tunnel')} ${devServer.tunnelUrl}` : null;
+}
+
+/**
+ * The URL that opens the app, under the address it was built from.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's
+ * Only for a dev server a device off this machine can reach, which is the case where the address
+ * above is not the thing to copy — and the case where the line `expo start` prints for itself is a
+ * URL nothing can open [K7(c), K8]. One line per app, because a development build and Expo Go take
+ * different URLs and a reader with one installed needs to see which is which.
+ */
+function openUrlLines(devServer: DevServerStatus): string[] {
+  if (devServer.hostType !== 'tunnel' || !devServer.openUrls.length) {
+    return [];
+  }
+  const indent = ' '.repeat(LABEL_WIDTH);
+  return devServer.openUrls.map(
+    (connect) => `${indent}${chalk.dim(`open in ${connect.label}:`)} ${chalk.cyan(connect.url)}`
+  );
 }
 
 /**

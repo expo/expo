@@ -125,6 +125,70 @@ describe('exagent typecheck', () => {
     expect(calls[0]!.cwd).toContain(path.basename(path.dirname(projectRoot)));
   });
 
+  // @ref llp/0021-honest-reports.rfc.md §A generated file is not a mistake in the code
+  // Friction run 7, F64: the first gate an agent runs after `exagent new` was red, and the only
+  // next action offered was to fix two files that were both correct.
+  it(`should name the generated file the project is missing, and the command that writes it`, async () => {
+    const projectRoot = await setupTypeScriptProjectAsync();
+    // The tsconfig `create-expo` scaffolds: it includes a file the Expo CLI generates.
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'tsconfig.json'),
+      JSON.stringify({ include: ['**/*.ts', '**/*.tsx', 'expo-env.d.ts'] })
+    );
+
+    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(20);
+    const payload = JSON.parse(result.stdout);
+    expect(payload.generatedTypes).toEqual({
+      file: 'expo-env.d.ts',
+      referencedBy: 'tsconfig.json',
+      command: 'npx exagent dev --detach --wait-ready',
+    });
+    // The rung that can work comes first, and the one that says "fix the diagnostics" is gone.
+    expect(payload.followups.map((followup: any) => followup.id)).toEqual([
+      'typecheck-generate-types',
+      'typecheck-rerun',
+    ]);
+  });
+
+  it(`should print that note above the diagnostics in the human report`, async () => {
+    const projectRoot = await setupTypeScriptProjectAsync();
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'tsconfig.json'),
+      JSON.stringify({ include: ['**/*.ts', 'expo-env.d.ts'] })
+    );
+
+    const result = await executeExagentAsync(projectRoot, ['typecheck'], { reject: false });
+
+    expect(result.stdout).toContain('expo-env.d.ts is missing');
+    expect(result.stdout.indexOf('expo-env.d.ts is missing')).toBeLessThan(
+      result.stdout.indexOf('src/app/notes.tsx')
+    );
+    // The `Suggested next:` section goes to stdout in text mode, like the report above it.
+    expect(result.stdout).toContain('npx exagent dev --detach --wait-ready');
+  });
+
+  it(`should say nothing about it once that file exists`, async () => {
+    const projectRoot = await setupTypeScriptProjectAsync();
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'tsconfig.json'),
+      JSON.stringify({ include: ['**/*.ts', 'expo-env.d.ts'] })
+    );
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'expo-env.d.ts'),
+      '/// <reference types="expo/types" />'
+    );
+
+    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+      reject: false,
+    });
+
+    expect(JSON.parse(result.stdout).generatedTypes).toBeNull();
+  });
+
   it(`should exit 0 when the project type-checks`, async () => {
     const projectRoot = await setupTypeScriptProjectAsync();
 

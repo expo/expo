@@ -90,7 +90,12 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
 }
 
 /**
- * Whether this project's own recorded build for the platform no longer matches.
+ * Whether the build this machine recorded for the platform no longer matches.
+ *
+ * The **local** axis, deliberately, where the report's own freshness line now carries both
+ * (llp/0021 §Freshness has two axes): the rung this gates is the *download*, and it exists exactly
+ * for "the app installed here is stale **and** EAS has the one that is not". Reading the effective
+ * answer would hide the rung in the one state it is for.
  *
  * `stale` only, never `unknown`: an `unknown` freshness means no fingerprint could be computed
  * here, and a download offered on the strength of nothing would be a guess about which app is
@@ -98,6 +103,8 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
  */
 function isStale(report: StatusReport, platform: 'ios' | 'android'): boolean {
   return (
-    report.freshness?.platforms.find((entry) => entry.platform === platform)?.state === 'stale'
+    report.freshness?.platforms.find(
+      (entry) => entry.platform === platform && entry.backend === 'local'
+    )?.state === 'stale'
   );
 }

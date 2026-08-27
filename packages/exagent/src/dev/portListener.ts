@@ -11,6 +11,7 @@
 // inventing one.
 
 import { spawnCaptureAsync } from '../utils/spawnCapture';
+import { isPortBindableAsync } from './portCollision';
 
 /** How long the lookup may take before it is abandoned, in milliseconds. */
 const LOOKUP_TIMEOUT_MS = 2000;
@@ -37,6 +38,23 @@ export async function findPortListenerAsync(port: number): Promise<PortListener 
     // result: a machine that cannot start `lsof` at all is the same answer as one with no `lsof`.
     return null;
   }
+}
+
+/**
+ * Whether *something* holds this port, without asking who.
+ *
+ * The lookup above is best effort, and a null from it means two very different things: the port is
+ * quiet, or the port is busy and this machine would not say by whom. `dev:stop` used to report the
+ * first for both — "nothing is listening on port 8195" about a port a `python3 -m http.server` was
+ * on [observed — friction run 7, F72]. A bind attempt settles it without naming anyone: a port that
+ * cannot be bound is a port in use.
+ *
+ * Only the loopback interface, which is the same interface every other check in `dev:stop` uses.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §`--port` names the target
+ */
+export async function isPortInUseAsync(port: number): Promise<boolean> {
+  return !(await isPortBindableAsync(port));
 }
 
 /** `lsof -nP -iTCP:<port> -sTCP:LISTEN -FpcR` — one field per line, which is the parseable form. */

@@ -1,11 +1,19 @@
-// @ref llp/0010-agent-conventions.rfc.md §Exit codes — a forwarded code is handed back verbatim.
+// @ref llp/0010-agent-conventions.rfc.md §Exit codes
+// @ref llp/0016-v1-scope.rfc.md §doctor's exit code belongs to the protocol
 //
-// `doctor:check` is a wrapper around a tool that already has an exit-code contract: `expo-doctor`
-// exits 1 when any check fails [observed — `packages/expo-doctor/src/doctor.ts` ends on `Log.exit`].
-// Inventing a code of this CLI's own here would hide the one the tool reported, so the run mirrors
-// it, exactly as `dev` mirrors `expo prebuild`.
+// `doctor:check` wraps a tool that has an exit-code contract of its own: `expo-doctor` exits 1 when
+// any check fails [observed — `packages/expo-doctor/src/doctor.ts` ends on `Log.exit`]. This command
+// used to mirror that code, on the argument that hiding the tool's own answer would be worse.
+//
+// **The protocol wins** [decided — wave 17, friction run 7's F68]. `1` means "the tool did not
+// work" everywhere else in this surface, and `doctor` was the only gate that used it for "the tool
+// worked and the project has a problem" — the same outcome `typecheck` and `smoke` report as `20`.
+// An agent branching on exit codes could not use `doctor` as a gate at all without parsing prose.
+// Nothing is hidden by the change: expo-doctor's own code stays on the `exitCode` field of the
+// report and on the `cli:doctor_check` event.
 
 import { event } from '../events';
+import { EXIT_ERROR, EXIT_OK, EXIT_OUTCOME_FAILED } from '../exitCodes';
 import { buildDoctorCheckFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
 import { runDoctorCheckAsync } from './checkAsync';
@@ -21,7 +29,9 @@ export interface DoctorCheckOptions {
 /**
  * Run the checks and report them on all three channels.
  *
- * @returns the exit code to leave with, which is `expo-doctor`'s own.
+ * @returns the exit code to leave with: `0` when every check passed, `20` when any failed, and `1`
+ * only for a run that produced no code of its own — a signalled or killed check established
+ * nothing about the project, which is a tool failure rather than a verdict.
  */
 export async function printDoctorCheckAsync(
   projectRoot: string,
@@ -50,6 +60,10 @@ export async function printDoctorCheckAsync(
   reportFollowUps('doctor:check', followups, { json: !!options.json });
 
   // A signalled or never-started run has no code of its own; `runDoctorCheckAsync` already threw
-  // for the second case, so this is the first one, and a stopped check did not pass.
-  return report.exitCode ?? 1;
+  // for the second case, so this is the first one — and a check that was stopped mid-run is a tool
+  // that did not work, not a project that failed.
+  if (report.exitCode == null) {
+    return EXIT_ERROR;
+  }
+  return report.exitCode === 0 ? EXIT_OK : EXIT_OUTCOME_FAILED;
 }

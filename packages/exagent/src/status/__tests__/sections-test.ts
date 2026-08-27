@@ -3,16 +3,24 @@ import type { LastBuildFingerprints } from '../../plan/types';
 import type { ProjectState } from '../../project/types';
 import type { DevServerProbe } from '../../runtime/devServer';
 import {
+  applyEasFreshness,
+  applyOpenUrls,
   buildDevServerStatus,
   buildExpoGoStatus,
   buildFreshnessStatus,
   buildLocalDeviceStatus,
   buildNextActionStatus,
   buildProjectStatus,
+  effectivePlatformFreshness,
   resolveDefaultPlatform,
   type DevServerReadiness,
 } from '../sections';
-import type { DevServerStatus, LocalDeviceStatus } from '../types';
+import type {
+  DevServerStatus,
+  FreshnessStatus,
+  LocalDeviceStatus,
+  PlatformBuild,
+} from '../types';
 
 const projectRoot = '/project';
 
@@ -102,6 +110,38 @@ describe(buildExpoGoStatus, () => {
 });
 
 describe(buildFreshnessStatus, () => {
+  /** The entry for one axis, which is what every assertion below is about. */
+  function axis(status: FreshnessStatus, platform: 'ios' | 'android', backend: 'local' | 'eas') {
+    return status.platforms.find(
+      (entry) => entry.platform === platform && entry.backend === backend
+    )!;
+  }
+
+  // @ref llp/0021-honest-reports.rfc.md §Freshness has two axes — K7(d). Backend × platform.
+  it(`should report one entry per backend per platform`, () => {
+    const status = buildFreshnessStatus(mockState(), {});
+
+    expect(status.platforms.map((entry) => `${entry.platform} ${entry.backend}`)).toEqual([
+      'ios local',
+      'ios eas',
+      'android local',
+      'android eas',
+    ]);
+  });
+
+  // `unknown`, never `stale`: the whole finding is that "this machine has no record" was reported
+  // as the answer to a question about EAS.
+  it(`should report the eas axis as unasked until something asks`, () => {
+    const status = buildFreshnessStatus(mockState(), {});
+
+    expect(axis(status, 'ios', 'eas')).toMatchObject({
+      state: 'unknown',
+      detail: expect.stringContaining('--explain'),
+      buildId: null,
+      impact: null,
+    });
+  });
+
   it(`should report both platforms as unknown when there is no fingerprint`, () => {
     const state = mockState({ fingerprint: { hash: null, error: 'fingerprint CLI not found' } });
 
@@ -109,18 +149,28 @@ describe(buildFreshnessStatus, () => {
 
     expect(status.hash).toBeNull();
     expect(status.error).toBe('fingerprint CLI not found');
-    expect(status.platforms.map((platform) => platform.state)).toEqual(['unknown', 'unknown']);
+    expect(status.platforms.map((platform) => platform.state)).toEqual([
+      'unknown',
+      'unknown',
+      'unknown',
+      'unknown',
+    ]);
   });
 
   it(`should report a platform without a recorded build as stale`, () => {
     const status = buildFreshnessStatus(mockState(), {});
 
-    expect(status.platforms).toMatchObject([
-      { platform: 'ios', state: 'stale', detail: 'no recorded build', recordedHash: null },
-      { platform: 'android', state: 'stale', detail: 'no recorded build', recordedHash: null },
-    ]);
+    expect(axis(status, 'ios', 'local')).toMatchObject({
+      state: 'stale',
+      detail: 'no recorded build',
+      recordedHash: null,
+    });
+    expect(axis(status, 'android', 'local')).toMatchObject({
+      state: 'stale',
+      detail: 'no recorded build',
+    });
     // Nothing to compare against is not a class. See llp/0011 §Two commands, one classifier.
-    expect(status.platforms[0]!.impact).toMatchObject({
+    expect(axis(status, 'ios', 'local').impact).toMatchObject({
       class: null,
       reason: expect.stringContaining('no build is recorded for ios'),
     });
@@ -131,20 +181,23 @@ describe(buildFreshnessStatus, () => {
 
     const status = buildFreshnessStatus(mockState(), lastBuild);
 
-    expect(status.platforms[0]).toMatchObject({
+    expect(axis(status, 'ios', 'local')).toMatchObject({
       platform: 'ios',
+      backend: 'local' as const,
+      buildId: null,
+      buildProfile: null,
       state: 'fresh',
       detail: 'matches abcdef01',
       recordedHash: 'abcdef0123456789',
     });
     // Only the platform with a record can be proven fresh.
-    expect(status.platforms[1]!.state).toBe('stale');
+    expect(axis(status, 'android', 'local').state).toBe('stale');
   });
 
   it(`should report a platform whose recorded build differs as stale`, () => {
     const status = buildFreshnessStatus(mockState(), { android: '99999999deadbeef' });
 
-    const android = status.platforms[1]!;
+    const android = axis(status, 'android', 'local');
     expect(android.state).toBe('stale');
     expect(android.detail).toContain('99999999');
     expect(android.recordedHash).toBe('99999999deadbeef');
@@ -152,6 +205,128 @@ describe(buildFreshnessStatus, () => {
 
   it(`should report the fingerprint hash it compared against`, () => {
     expect(buildFreshnessStatus(mockState(), {}).hash).toBe('abcdef0123456789');
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §Freshness has two axes — K7(b). A development-simulator
+// build whose fingerprint matches is the case the old report called "stale (no recorded build)".
+describe(applyEasFreshness, () => {
+  function easBuild(overrides: Partial<PlatformBuild> = {}): PlatformBuild {
+    return {
+      platform: 'ios',
+      state: 'found',
+      fingerprintHash: 'abcdef0123456789',
+      buildId: '21d7d434-6495-4e74-b8c7-68ecd0dff489',
+      createdAt: '2026-08-19T17:37:12.674Z',
+      buildProfile: 'simulator',
+      buildUrl: 'https://expo.dev/artifacts/eas/x.tar.gz',
+      source: 'eas',
+      reason: null,
+      ...overrides,
+    };
+  }
+
+  it(`should report a matching EAS build as fresh, and name it`, () => {
+    const status = buildFreshnessStatus(mockState(), {});
+
+    applyEasFreshness(status, { askedEas: true, platforms: [easBuild()] });
+
+    const entry = status.platforms.find(
+      (one) => one.platform === 'ios' && one.backend === 'eas'
+    )!;
+    expect(entry.state).toBe('fresh');
+    expect(entry.buildId).toBe('21d7d434-6495-4e74-b8c7-68ecd0dff489');
+    expect(entry.detail).toContain('simulator build');
+    // The local axis is untouched: this machine still has no record, and that is also true.
+    expect(status.platforms.find((one) => one.platform === 'ios' && one.backend === 'local')!.state).toBe(
+      'stale'
+    );
+  });
+
+  it(`should report an EAS that has no such build as stale on that axis`, () => {
+    const status = buildFreshnessStatus(mockState(), {});
+
+    applyEasFreshness(status, {
+      askedEas: true,
+      platforms: [easBuild({ state: 'none', buildId: null, buildProfile: null })],
+    });
+
+    expect(
+      status.platforms.find((one) => one.platform === 'ios' && one.backend === 'eas')
+    ).toMatchObject({ state: 'stale', detail: expect.stringContaining('no finished build') });
+  });
+
+  it(`should keep the reason of a lookup that could not answer`, () => {
+    const status = buildFreshnessStatus(mockState(), {});
+
+    applyEasFreshness(status, {
+      askedEas: true,
+      platforms: [easBuild({ state: 'unknown', buildId: null, reason: 'not signed in' })],
+    });
+
+    expect(
+      status.platforms.find((one) => one.platform === 'ios' && one.backend === 'eas')
+    ).toMatchObject({ state: 'unknown', detail: 'not signed in' });
+  });
+
+  it(`should leave an axis a --build comparison already claimed`, () => {
+    const status = buildFreshnessStatus(mockState(), {});
+    const entry = status.platforms.find(
+      (one) => one.platform === 'ios' && one.backend === 'eas'
+    )!;
+    entry.impact = {
+      class: 'js-only',
+      fingerprintChanged: false,
+      reason: 'the named build matches',
+      changedCount: null,
+      changedSources: null,
+    };
+    entry.state = 'fresh';
+    entry.detail = 'matches EAS build abc123';
+
+    applyEasFreshness(status, {
+      askedEas: true,
+      platforms: [easBuild({ state: 'none', buildId: null })],
+    });
+
+    expect(entry.detail).toBe('matches EAS build abc123');
+  });
+});
+
+describe(effectivePlatformFreshness, () => {
+  it(`should answer with the freshest axis, whichever it is`, () => {
+    const status = buildFreshnessStatus(mockState(), {});
+    applyEasFreshness(status, {
+      askedEas: true,
+      platforms: [
+        {
+          platform: 'ios',
+          state: 'found',
+          fingerprintHash: 'abcdef0123456789',
+          buildId: 'build-1',
+          createdAt: null,
+          buildProfile: 'simulator',
+          buildUrl: null,
+          source: 'eas',
+          reason: null,
+        },
+      ],
+    });
+
+    // Local says stale, EAS says fresh: a finished build that matches answers "does this need a
+    // native build" whichever place the build is (K7(b)).
+    expect(effectivePlatformFreshness(status, 'ios')).toMatchObject({
+      backend: 'eas',
+      state: 'fresh',
+    });
+    expect(effectivePlatformFreshness(status, 'android')).toMatchObject({
+      backend: 'local',
+      state: 'stale',
+    });
+  });
+
+  it(`should answer null for a platform nothing reported`, () => {
+    expect(effectivePlatformFreshness(null, 'ios')).toBeNull();
   });
 });
 
@@ -177,6 +352,7 @@ describe(buildDevServerStatus, () => {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
+      openUrls: [],
     });
   });
 
@@ -194,6 +370,7 @@ describe(buildDevServerStatus, () => {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
+      openUrls: [],
     });
   });
 
@@ -213,6 +390,7 @@ describe(buildDevServerStatus, () => {
       projectRootMatched: null,
       hostType: null,
       tunnelUrl: null,
+      openUrls: [],
       reason: 'fetch failed',
     });
   });
@@ -256,6 +434,7 @@ describe(buildNextActionStatus, () => {
       projectRootMatched: true,
       hostType: null,
       tunnelUrl: null,
+      openUrls: [],
     });
 
     expect(next.rule).toBe('not-expo-app');
@@ -317,6 +496,7 @@ describe(buildNextActionStatus, () => {
         projectRootMatched: true,
         hostType: null,
         tunnelUrl: null,
+        openUrls: [],
         ...overrides,
       };
     }
@@ -577,6 +757,7 @@ describe('buildNextActionStatus with a cloud session on record', () => {
     projectRootMatched: true,
     appsConnected: 0,
     tunnelUrl: 'https://abc.ngrok.app',
+    openUrls: [],
     reason: null,
   } as never;
 
@@ -620,5 +801,130 @@ describe('buildNextActionStatus with a cloud session on record', () => {
     );
 
     expect(next.command).not.toContain('--cloud');
+  });
+
+  // @ref llp/0021-honest-reports.rfc.md §Advice for the device the loop is actually on — K7(a).
+  // With a cloud app connected, this section answered `exagent smoke` — a command that looks for a
+  // simulator on this machine, on a run whose device is in the cloud.
+  it(`keeps the gate on the cloud when the app that is connected is there`, () => {
+    const withApp = { ...(devServer as object), appsConnected: 1 } as never;
+
+    const next = buildNextActionStatus(state, {} as never, 'ios', withApp, absentDevice, null, true);
+
+    expect(next.command).toBe('exagent smoke --cloud');
+    expect(next.why).toContain('EAS Simulator session');
+  });
+
+  it(`keeps the plain gate when the app is on this machine`, () => {
+    const withApp = { ...(devServer as object), appsConnected: 1 } as never;
+    const presentDevice = {
+      state: 'present',
+      platform: 'ios',
+      deviceId: 'SIM-1',
+      name: 'iPhone 17',
+      reason: null,
+    } as never;
+
+    const next = buildNextActionStatus(
+      state,
+      {} as never,
+      'ios',
+      withApp,
+      presentDevice,
+      null,
+      true
+    );
+
+    expect(next.command).toBe('exagent smoke');
+  });
+
+  // A probe that could not run is not evidence of a local device, and the caller has *told* this
+  // project where its device is. `navigate /` on that machine opens nothing.
+  it(`names the cloud when the device probe could not answer`, () => {
+    const unknownDevice = {
+      state: 'unknown',
+      platform: null,
+      deviceId: null,
+      name: null,
+      reason: 'no platform tool answered',
+    } as never;
+
+    const next = buildNextActionStatus(
+      state,
+      {} as never,
+      'ios',
+      devServer,
+      unknownDevice,
+      null,
+      true
+    );
+
+    expect(next.command).toBe('exagent navigate / --cloud');
+    expect(next.why).toContain('could not answer');
+  });
+
+  // Without a session there is nothing in the cloud to name, so an unanswered probe keeps the old
+  // rung: this CLI has not been shown that there is no device here.
+  it(`leaves the local rung alone when nothing named a cloud session`, () => {
+    const unknownDevice = {
+      state: 'unknown',
+      platform: null,
+      deviceId: null,
+      name: null,
+      reason: 'no platform tool answered',
+    } as never;
+
+    const next = buildNextActionStatus(
+      state,
+      {} as never,
+      'ios',
+      devServer,
+      unknownDevice,
+      null,
+      false
+    );
+
+    expect(next.command).toBe('exagent navigate /');
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's — K7(c).
+describe(applyOpenUrls, () => {
+  const tunnelled: DevServerStatus = {
+    url: 'http://127.0.0.1:8081',
+    running: true,
+    appsConnected: 0,
+    appsListed: 0,
+    appsStale: 0,
+    source: 'lock',
+    ready: true,
+    projectRootMatched: true,
+    hostType: 'tunnel',
+    tunnelUrl: 'https://x8fj2.on.staging.expo.app',
+    openUrls: [],
+  };
+
+  it(`builds the encoded launcher URL of a development build over the tunnel`, () => {
+    const devServer = { ...tunnelled };
+
+    applyOpenUrls(devServer, mockState({ usesDevClient: true }), 'exp+dailywords-grok');
+
+    expect(devServer.openUrls).toEqual([
+      {
+        target: 'dev-build',
+        label: 'development build',
+        // https inside the parameter, because a tunnel terminates TLS — the same string
+        // `UrlCreator.constructDevClientUrl` builds.
+        url: 'exp+dailywords-grok://expo-development-client/?url=https%3A%2F%2Fx8fj2.on.staging.expo.app',
+      },
+    ]);
+  });
+
+  it(`leaves a dev server that is not running alone`, () => {
+    const devServer = { ...tunnelled, running: false };
+
+    applyOpenUrls(devServer, mockState(), 'exp+app');
+
+    expect(devServer.openUrls).toEqual([]);
   });
 });

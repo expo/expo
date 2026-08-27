@@ -3,6 +3,7 @@
 
 import chalk from 'chalk';
 
+import { describeMissingGeneratedTypes } from './generatedTypes';
 import type { TypeCheckReport, TypeError } from './types';
 
 /** Width of the label column, matching `exagent status` and `inspect:config-plugins`. */
@@ -32,6 +33,13 @@ export function formatTypeCheckReport(report: TypeCheckReport): string {
 
   if (report.errorCount === 0) {
     return lines.join('\n');
+  }
+
+  // Above the diagnostics, not below them: it changes what they mean, and a reader who meets it
+  // after twenty errors has already started editing the wrong file (F64).
+  if (report.generatedTypes) {
+    lines.push(row('Generated', chalk.yellow(report.generatedTypes.file + ' is missing')));
+    lines.push(chalk.dim(describeMissingGeneratedTypes(report.generatedTypes)));
   }
 
   lines.push('');

@@ -37,7 +37,7 @@ import * as Log from '../log';
 import { PACKAGER_STATUS_READY } from '../runtime/waitReady';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import { debugEvent, event } from './events';
-import { findPortListenerAsync, type PortListener } from './portListener';
+import { findPortListenerAsync, isPortInUseAsync, type PortListener } from './portListener';
 import { isProcessAlive } from './processLiveness';
 import type { DevStopOptions } from './resolveStopOptions';
 
@@ -93,7 +93,13 @@ export interface DevStopResultJson {
   port: number | null;
   /** Origin the dev server listened on, when a lock named one. */
   url: string | null;
-  /** Whether a lock answered for it: the difference between this CLI's dev server and a stranger's. */
+  /**
+   * Whether a lock answered for **the target**: this CLI's dev server or a stranger's.
+   *
+   * False when this project holds a lock for a different port than `--port` named, because that
+   * lock is not evidence about the port this run acted on (F60). The lock's own port is named in
+   * {@link detail} instead.
+   */
   lockHeld: boolean;
   /** Signal that was sent, or null when nothing was signalled. */
   signal: string | null;
@@ -142,11 +148,26 @@ export interface DevStopResultJson {
 export async function devStopAsync(projectRoot: string, options: DevStopOptions): Promise<number> {
   const startedAt = Date.now();
   const lock = await readDevServerLockAsync(projectRoot);
-  debugEvent('stop_lock_read', { held: lock != null, pid: lock?.pid ?? null });
 
-  const report = lock
-    ? await stopLockedDevServerAsync(lock, options, startedAt)
-    : await stopUnlockedDevServerAsync(options, startedAt);
+  // `--port` names the target, and a lock is only evidence about the port it holds.
+  //
+  // This used to be `lock ? locked : unlocked`, which meant `--port 8195` signalled the pid of the
+  // dev server on 8190 and reported `Stopped yes` naming a port the caller never asked about
+  // [observed — friction run 7, F60]. It is the one destructive verb in this surface, so a target
+  // it was not given is the one thing it must never act on: when `--port` disagrees with the lock,
+  // the lock is set aside and the port is answered for on its own evidence.
+  // @ref llp/0021-honest-reports.rfc.md §`--port` names the target
+  const lockOwnsTarget = lock != null && (options.port == null || lock.port === options.port);
+  debugEvent('stop_lock_read', {
+    held: lock != null,
+    pid: lock?.pid ?? null,
+    ownsTarget: lockOwnsTarget,
+  });
+
+  const report =
+    lock != null && lockOwnsTarget
+      ? await stopLockedDevServerAsync(lock, options, startedAt)
+      : await stopUnlockedDevServerAsync(options, startedAt, lock);
 
   report.followups = followUpsEnabled(options.followups) ? buildFollowUps(report) : [];
 
@@ -233,15 +254,21 @@ async function stopLockedDevServerAsync(
 }
 
 /**
- * No lock answered. Either nothing is running, or something this CLI did not start is.
+ * No lock answered *for the target*. Either nothing is running, or something this CLI did not
+ * start is.
  *
  * The two are told apart by the port, and the difference matters more than it looks: killing a
  * listener nobody asked about is the one thing this command must not do by accident. So the
  * default is to report it, name its pid if the machine will say, and stop.
+ *
+ * @param elsewhereLock a lock this project holds for a *different* port than `--port` named. It is
+ * reported and never acted on: naming it is what tells a caller their own dev server is on another
+ * port, and acting on it is F60.
  */
 async function stopUnlockedDevServerAsync(
   options: DevStopOptions,
-  startedAt: number
+  startedAt: number,
+  elsewhereLock: DevServerLockInfo | null = null
 ): Promise<DevStopResultJson> {
   const port = options.port ?? null;
   const base: DevStopResultJson = {
@@ -272,8 +299,13 @@ async function stopUnlockedDevServerAsync(
   base.pid = listener?.pid ?? null;
   base.url = isDevServer ? `http://127.0.0.1:${port}` : null;
 
-  if (listener == null && !isDevServer) {
-    base.detail = `no dev-server lock answered for this project, and nothing is listening on port ${port}`;
+  // A null listener means one of two things — the port is quiet, or the port is busy and this
+  // machine would not say by whom — and only the first is "nothing was running" (F72). The bind
+  // attempt is what tells them apart, and it is only needed when nothing else has already answered.
+  const inUse = isDevServer || listener != null || (await isPortInUseAsync(port));
+
+  if (!inUse) {
+    base.detail = `no dev-server lock answered for this project, and nothing is listening on port ${port}${lockElsewhereClause(elsewhereLock)}`;
     base.waitedMs = Date.now() - startedAt;
     return base;
   }
@@ -313,16 +345,36 @@ async function stopUnlockedDevServerAsync(
         ? 'unnamed-process'
         : 'foreign-process'
     : null;
-  base.detail = [
-    `port ${port} is`,
-    isDevServer ? 'answering as an Expo dev server' : 'in use',
-    listener != null
-      ? `by pid ${listener.pid} (${listener.command})`
-      : 'by a process this machine would not name',
-    'and no lock answers for it, so it was not started by this CLI',
-  ].join(' ');
+  // Two sentences, because they are two different facts and the old one blurred them: a dev server
+  // this CLI did not start is not the same thing as a stranger on the port, and only the first is
+  // something `--force` could ever stop.
+  base.detail = isDevServer
+    ? [
+        `port ${port} is answering as an Expo dev server`,
+        listener != null
+          ? `run by pid ${listener.pid} (${listener.command})`
+          : 'run by a process this machine would not name',
+        `and no lock answers for it, so it was not started by this CLI`,
+      ].join(' ') + lockElsewhereClause(elsewhereLock)
+    : `no Expo dev server answered on port ${port}; ` +
+      (listener != null
+        ? `pid ${listener.pid} (${listener.command}) is listening and is not one`
+        : `something is listening and is not one — this machine would not name the process holding the port`) +
+      lockElsewhereClause(elsewhereLock);
   base.waitedMs = Date.now() - startedAt;
   return base;
+}
+
+/**
+ * The clause that names this project's dev server when it is somewhere other than `--port`.
+ *
+ * Reported so that the caller who mistyped a port learns where their own dev server actually is,
+ * rather than being told only that the port they named holds a stranger.
+ */
+function lockElsewhereClause(lock: DevServerLockInfo | null): string {
+  return lock == null
+    ? ''
+    : `. This project's own dev-server lock is on port ${lock.port} (pid ${lock.pid}), which is not the port this run named — nothing there was signalled`;
 }
 
 /**
@@ -527,12 +579,24 @@ function printHumanReport(report: DevStopResultJson): void {
 /** The what / why / how for a dev server that is still running. */
 function explainFailure(report: DevStopResultJson, options: DevStopOptions): string {
   if (report.reason === 'foreign-dev-server') {
+    // `url` is set on this path exactly when the port answered `packager-status:running`, which is
+    // the difference between "someone else's dev server" and "not a dev server at all". They need
+    // different advice: `--force` can stop the first and will always decline the second.
+    const answeredAsDevServer = report.url != null;
     return [
-      chalk.red(`The dev server on port ${report.port} was not stopped.`),
-      `Why: ${report.detail}. Stopping a process this CLI did not start would be killing something nobody in this command asked about — a second project's dev server on that port is the ordinary case.`,
+      chalk.red(
+        answeredAsDevServer
+          ? `The dev server on port ${report.port} was not stopped.`
+          : `Nothing was stopped on port ${report.port}.`
+      ),
+      answeredAsDevServer
+        ? `Why: ${report.detail}. Stopping a process this CLI did not start would be killing something nobody in this command asked about — a second project's dev server on that port is the ordinary case.`
+        : `Why: ${report.detail}. This command stops Expo dev servers, so it will not signal a process that has not shown it is one.`,
       report.forceRefusedBy
         ? forceRefusedHow(report, report.forceRefusedBy)
-        : `How: stop it where it was started, or run this command again with --force, which stops it only when the port answers as an Expo dev server ${report.pid != null ? `and pid ${report.pid} looks like one` : 'and its process can be identified'}.`,
+        : answeredAsDevServer
+          ? `How: stop it where it was started, or run this command again with --force, which stops it only when the port answers as an Expo dev server ${report.pid != null ? `and pid ${report.pid} looks like one` : 'and its process can be identified'}.`
+          : `How: stop whatever holds that port where it was started, or name the port your dev server is really on with --port. --force would be declined here for the same reason, and "npx exagent status --json" reports which dev server this project would talk to.`,
     ].join('\n');
   }
   // Two failures wear this reason, and only one of them is answered by a bigger hammer. Sending

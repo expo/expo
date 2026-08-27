@@ -8,7 +8,7 @@ import { isTunnelCurrent, type DevServerReach } from '../dev/advertisedUrl';
 import type { LocalDeviceProbe } from '../device/localDevice';
 import { resolveLanHost } from '../followups/network';
 import { classifyAgainstRecordedBuild, type RecordedImpact } from '../impact/fromRecord';
-import { buildConnectUrls, openInPhrase } from '../navigate/connectUrl';
+import { buildConnectUrls, openInPhrase, type ConnectUrl } from '../navigate/connectUrl';
 import { decideExpoGoTarget } from '../navigate/target';
 import { decideStartPlan } from '../plan/decide';
 import type { LastBuildRecord } from '../plan/lastBuild';
@@ -16,6 +16,7 @@ import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../pla
 import type { ProjectState, StartPlan } from '../project/types';
 import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
 import type {
+  BuildsStatus,
   DevServerStatus,
   ExpoGoStatus,
   FreshnessComparison,
@@ -120,7 +121,10 @@ export function buildFreshnessStatus(
   { explain = false }: { explain?: boolean } = {}
 ): FreshnessStatus {
   const { hash, error } = state.fingerprint;
-  const platforms = PLATFORMS.map((platform) =>
+  // Backend × platform, in print order: this project's own record first, because it is the axis
+  // that costs nothing, then the EAS axis, which starts as "not asked" and is filled in by
+  // {@link applyEasFreshness} once the build lookup has run (K7).
+  const platforms = PLATFORMS.flatMap((platform) => [
     platformFreshness(
       platform,
       hash,
@@ -129,14 +133,17 @@ export function buildFreshnessStatus(
         ? null
         : classifyAgainstRecordedBuild(platform, record[platform] ?? null, state.fingerprint),
       explain
-    )
-  );
+    ),
+    unaskedEasFreshness(platform),
+  ]);
   // The base every headline above was measured against. `--build <id>` replaces it in the caller,
   // which is also where the network call that would need lives.
   const comparison: FreshnessComparison = {
     kind: 'last-build',
     label: 'last build recorded by exagent',
     buildId: null,
+    // No `--build` was passed, so there is no build whose platform this could be about.
+    platform: null,
   };
   // `ota` and `changedFiles` are filled in by the caller: one costs a subprocess, and the other is
   // only read when the fingerprint said the native surface did not move.
@@ -160,41 +167,119 @@ function platformFreshness(
         changedSources: explain ? impact.changedSources : null,
       }
     : null;
-
-  if (hash == null) {
-    return {
-      platform,
-      state: 'unknown',
-      detail: 'no fingerprint tool',
-      recordedHash,
-      impact: headline,
-    };
-  }
-  if (recordedHash == null) {
-    return {
-      platform,
-      state: 'stale',
-      detail: 'no recorded build',
-      recordedHash,
-      impact: headline,
-    };
-  }
-  if (recordedHash !== hash) {
-    return {
-      platform,
-      state: 'stale',
-      detail: `changed since ${shortHash(recordedHash)}`,
-      recordedHash,
-      impact: headline,
-    };
-  }
-  return {
+  const base = {
     platform,
-    state: 'fresh',
-    detail: `matches ${shortHash(hash)}`,
+    backend: 'local' as const,
     recordedHash,
+    buildId: null,
+    buildProfile: null,
     impact: headline,
   };
+
+  if (hash == null) {
+    return { ...base, state: 'unknown', detail: 'no fingerprint tool' };
+  }
+  if (recordedHash == null) {
+    return { ...base, state: 'stale', detail: 'no recorded build' };
+  }
+  if (recordedHash !== hash) {
+    return { ...base, state: 'stale', detail: `changed since ${shortHash(recordedHash)}` };
+  }
+  return { ...base, state: 'fresh', detail: `matches ${shortHash(hash)}` };
+}
+
+/**
+ * The EAS axis of a platform before anything has asked EAS.
+ *
+ * `unknown`, never `stale`: the whole finding is that "this machine has no record of a build" was
+ * being reported as the answer to a question about EAS (K7). A default run does not pay for the
+ * lookup, and saying so is cheaper and truer than either verdict.
+ */
+function unaskedEasFreshness(platform: NativePlatform): PlatformFreshness {
+  return {
+    platform,
+    backend: 'eas',
+    state: 'unknown',
+    detail: 'EAS was not asked — pass --explain',
+    recordedHash: null,
+    buildId: null,
+    buildProfile: null,
+    impact: null,
+  };
+}
+
+/**
+ * Fold the EAS build lookup into the freshness section's `eas` axis.
+ *
+ * One source of truth and no second network call: `readEasBuildsStatusAsync` already asked EAS
+ * whether it has a finished build for **this exact fingerprint** (that hash is the lookup key), so a
+ * `found` is the definition of fresh on this axis — including the development-simulator build that
+ * the old report called `stale (no recorded build)` [K7(b)].
+ *
+ * Mutates in place, like the other two folds in `statusAsync`, and never touches an entry a
+ * `--build <id>` comparison has already claimed: an answer the caller asked for by name outranks
+ * one this CLI went looking for.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §Freshness has two axes
+ */
+export function applyEasFreshness(
+  freshness: FreshnessStatus,
+  builds: BuildsStatus | null
+): void {
+  if (!builds) {
+    return;
+  }
+  for (const entry of freshness.platforms) {
+    if (entry.backend !== 'eas' || entry.impact != null || entry.buildId != null) {
+      continue;
+    }
+    const lookup = builds.platforms.find((one) => one.platform === entry.platform);
+    if (!lookup) {
+      continue;
+    }
+    if (lookup.state === 'found') {
+      entry.state = 'fresh';
+      entry.buildId = lookup.buildId;
+      entry.buildProfile = lookup.buildProfile;
+      entry.detail = [
+        lookup.buildProfile ? `${lookup.buildProfile} build` : 'a finished build',
+        lookup.buildId ? shortHash(lookup.buildId) : null,
+        'matches this fingerprint',
+      ]
+        .filter(Boolean)
+        .join(' ');
+      continue;
+    }
+    if (lookup.state === 'none') {
+      entry.state = 'stale';
+      entry.detail = 'EAS has no finished build for this fingerprint';
+      continue;
+    }
+    entry.state = 'unknown';
+    entry.detail = lookup.reason ?? 'EAS could not be asked';
+  }
+}
+
+/**
+ * The freshness of a platform across both axes: the **freshest** answer wins.
+ *
+ * The question every caller of this actually has is "does this platform need a native build", and a
+ * finished build that matches answers it whichever place the build is [K7(b)]. `fresh` beats
+ * `stale` beats `unknown`, and the entry is returned rather than the state so a caller can say
+ * *which* axis answered — a report that said `fresh` without naming the backend would have traded
+ * one confusion for another.
+ */
+export function effectivePlatformFreshness(
+  freshness: FreshnessStatus | null,
+  platform: NativePlatform
+): PlatformFreshness | null {
+  const entries = (freshness?.platforms ?? []).filter((entry) => entry.platform === platform);
+  if (!entries.length) {
+    return null;
+  }
+  const rank = (state: PlatformFreshness['state']) =>
+    state === 'fresh' ? 2 : state === 'stale' ? 1 : 0;
+  return entries.reduce((best, entry) => (rank(entry.state) > rank(best.state) ? entry : best));
 }
 
 /** What the dev-server section reports beyond reachability, gathered by the caller. */
@@ -239,6 +324,9 @@ export function buildDevServerStatus(
   const reachFields = {
     hostType: reach?.advertised?.hostType ?? null,
     tunnelUrl,
+    // Filled in by {@link applyOpenUrls} once the project's own state and scheme are known: this
+    // section is built from a probe that runs before them (K7(c)).
+    openUrls: [],
   };
 
   if (running) {
@@ -262,6 +350,55 @@ export function buildDevServerStatus(
     ...reachFields,
   };
   return probe.reason ? { ...status, reason: probe.reason } : status;
+}
+
+/**
+ * Every URL that points an app at this dev server, as a device would use it.
+ *
+ * One resolver for the two places that need it — the `openUrls` of the dev-server section and the
+ * address the next action hands over — so a reader can never be given two different strings for the
+ * same thing. The tunnel host wins over the LAN address, because a tunnel is the one that works
+ * from anywhere.
+ */
+function resolveConnectUrls(
+  devServer: Pick<DevServerStatus, 'url' | 'tunnelUrl'>,
+  state: ProjectState,
+  scheme: string | null,
+  { targetAppIds = [] }: { targetAppIds?: string[] } = {}
+): ConnectUrl[] {
+  const target = decideExpoGoTarget({
+    targetAppIds,
+    hasNativeDirs: state.nativeDirs.ios || state.nativeDirs.android,
+    usesDevClient: state.usesDevClient,
+  });
+  const tunnelHost = devServer.tunnelUrl ? hostOf(devServer.tunnelUrl) : null;
+  return buildConnectUrls({
+    host: tunnelHost ?? lanHostForPort(portOf(devServer.url)),
+    hostType: tunnelHost ? 'tunnel' : 'lan',
+    scheme,
+    isExpoGo: target.isExpoGo,
+    certain: target.certain,
+  });
+}
+
+/**
+ * Fill in the URLs that open this project's app on a device, once the project is known.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §The scheme in "Waiting on" is not the dev server's
+ * The **encoded** launcher URL, which is what a development build needs and what the line a
+ * tunnelled `expo start` prints for itself is not [K7(c), K8]. Mutates in place, like the other
+ * folds in `statusAsync`: the dev-server probe runs before the project probe, and threading the
+ * project through it would make the probe wait for something it does not use.
+ */
+export function applyOpenUrls(
+  devServer: DevServerStatus | null,
+  state: ProjectState,
+  scheme: string | null
+): void {
+  if (!devServer?.running) {
+    return;
+  }
+  devServer.openUrls = resolveConnectUrls(devServer, state, scheme);
 }
 
 /** The device section: what this machine has to open an app on. */
@@ -362,11 +499,28 @@ function verifyAction(
   if (!devServer?.running || devServer.projectRootMatched === false) {
     return null;
   }
+
+  // @ref llp/0021-honest-reports.rfc.md §Advice for the device the loop is actually on
+  // A cloud loop is not a local loop with a longer wire. Every rung below drives a **local**
+  // simulator or an attached device, and on a run whose app was on an EAS Simulator over a tunnel
+  // this section answered `smoke` and `navigate /` — commands that reach for a device this machine
+  // does not have [observed — Kudo's cloud loop, 2026-08-27, K7(a)].
+  //
+  // `!== 'present'` rather than `=== 'absent'`: with a session on record, a probe that could not
+  // run is not a reason to name the local path — the caller has told this project where its device
+  // is, and that is stronger evidence than a missing `simctl`.
+  const cloudLoop = cloudSession && device?.state !== 'present';
+
   if (devServer.appsConnected > 0) {
-    return {
-      command: VERIFY_COMMAND,
-      why: 'a dev server is running with an app connected, so check that its bundle builds instead of starting a second server',
-    };
+    return cloudLoop
+      ? {
+          command: `${VERIFY_COMMAND} --cloud`,
+          why: 'a dev server is running with an app connected and this project has an EAS Simulator session, so the gate runs against that session — a plain "smoke" would look for a simulator on this machine',
+        }
+      : {
+          command: VERIFY_COMMAND,
+          why: 'a dev server is running with an app connected, so check that its bundle builds instead of starting a second server',
+        };
   }
 
   // @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
@@ -375,17 +529,22 @@ function verifyAction(
   // device was a *cloud* simulator reached over a tunnel, so the useful answer is not a command at
   // all: it is the URL something else opens [observed — 2026-08-24].
   //
+  // A session on record beats every address below it, because it is the one rung that is a
+  // **command this CLI can run**: the URLs are things a person has to open somewhere else.
+  if (cloudLoop) {
+    return {
+      command: `${OPEN_APP_COMMAND} --cloud`,
+      why: `no app is connected and ${
+        device?.state === 'absent'
+          ? 'this machine has no booted simulator or attached device'
+          : 'this machine\'s device tools could not answer'
+      }, so this opens the app on this project's EAS Simulator session instead — it needs a tunnelled dev server, and the session bills until "npx eas simulator:stop"`,
+    };
+  }
+
   // `absent` only, never `unknown`: a probe that could not run establishes nothing, and turning a
   // working suggestion off on the strength of a missing `adb` would be the same mistake backwards.
   if (device?.state === 'absent') {
-    // A session on record beats every address below it, because it is the one rung that is a
-    // **command this CLI can run**: the URLs are things a person has to open somewhere else.
-    if (cloudSession) {
-      return {
-        command: `${OPEN_APP_COMMAND} --cloud`,
-        why: 'no app is connected and this machine has no booted simulator or attached device, so this opens the app on this project\'s EAS Simulator session instead — it needs a tunnelled dev server, and the session bills until "npx eas simulator:stop"',
-      };
-    }
     return noLocalDeviceAction(devServer, state, scheme);
   }
 
@@ -413,22 +572,10 @@ function noLocalDeviceAction(
   const noDevice =
     'no dev server client is attached and this machine has no booted simulator or attached device, so nothing here can open the app';
 
-  const target = decideExpoGoTarget({
-    // Zero apps are connected — that is the branch this is in — so the dev server has nothing to
-    // say about which app it would be.
-    targetAppIds: [],
-    hasNativeDirs: state.nativeDirs.ios || state.nativeDirs.android,
-    usesDevClient: state.usesDevClient,
-  });
-
+  // Zero apps are connected — that is the branch this is in — so the dev server has nothing to say
+  // about which app it would be, and `targetAppIds` stays empty.
+  const connect = resolveConnectUrls(devServer, state, scheme);
   const tunnelHost = devServer.tunnelUrl ? hostOf(devServer.tunnelUrl) : null;
-  const connect = buildConnectUrls({
-    host: tunnelHost ?? lanHostForPort(portOf(devServer.url)),
-    hostType: tunnelHost ? 'tunnel' : 'lan',
-    scheme,
-    isExpoGo: target.isExpoGo,
-    certain: target.certain,
-  });
 
   if (connect.length === 1) {
     const [only] = connect;

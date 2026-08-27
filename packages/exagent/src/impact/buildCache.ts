@@ -112,6 +112,84 @@ export async function lookUpCachedBuildAsync(
 }
 
 /**
+ * The argv that asks EAS what one build is.
+ *
+ * `eas build:view <id> --json --non-interactive` [inferred — eas-cli documents `build:view` as the
+ * command that shows one build, and `--json` implies `--non-interactive` on its siblings; **not yet
+ * run against the published binary**, llp/0002 §A flag is not shipped until it has run against the
+ * published binary]. Every caller treats a failure as "not established", so a spelling this CLI got
+ * wrong costs the platform attribution and never the report.
+ */
+export function buildViewArgs(buildId: string): string[] {
+  return ['build:view', buildId, '--json', '--non-interactive'];
+}
+
+/**
+ * Which platform an EAS build was made for, or null when nothing established it.
+ *
+ * The fact `status --explain --build <id>` was missing. A build is made for exactly one platform,
+ * and the comparison against it was being copied onto **both** — so an iOS
+ * development-simulator build was reported as able to run android code [observed — live staging,
+ * 2026-08-26, S1].
+ *
+ * **Never throws and never fails a command.** No EAS CLI, no account, a build id that is not
+ * this account's, a payload in a shape this version cannot read: all null, and the caller says the
+ * platform was not established rather than guessing one.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §One build is one platform
+ */
+export async function lookUpBuildPlatformAsync(
+  easCli: EasCli | null,
+  projectRoot: string,
+  buildId: string,
+  { timeoutMs = BUILD_CACHE_TIMEOUT_MS }: { timeoutMs?: number } = {}
+): Promise<'ios' | 'android' | null> {
+  if (!easCli) {
+    return null;
+  }
+  const result = await spawnSubprocessAsync(easCli.command, buildViewArgs(buildId), {
+    cwd: projectRoot,
+    output: 'capture',
+    timeoutMs,
+  });
+  if (result.spawnError || result.timedOut || result.exitCode !== 0) {
+    return null;
+  }
+  return parseBuildPlatform(result.stdout);
+}
+
+/**
+ * Read the platform out of an `eas build:view --json` payload.
+ *
+ * The payload is one `BuildFragment` object rather than the array `build:list` prints, so both
+ * shapes are accepted: a caller that ends up with a list is reading the same field off its first
+ * entry. `IOS`/`ANDROID` is how the GraphQL enum spells it, and the field is optional here for the
+ * reason every field of another CLI's payload is: a shape that moved must answer null, not throw.
+ */
+export function parseBuildPlatform(stdout: string): 'ios' | 'android' | null {
+  const start = stdout.search(/[[{]/);
+  if (start < 0) {
+    return null;
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(stdout.slice(start));
+  } catch {
+    return null;
+  }
+  const build = Array.isArray(parsed) ? parsed[0] : parsed;
+  if (build == null || typeof build !== 'object') {
+    return null;
+  }
+  const platform = (build as Record<string, unknown>).platform;
+  if (typeof platform !== 'string') {
+    return null;
+  }
+  const normalized = platform.toLowerCase();
+  return normalized === 'ios' || normalized === 'android' ? normalized : null;
+}
+
+/**
  * Why a lookup that ran did not answer, in the words the EAS CLI used.
  *
  * **stdout before stderr**, which is the opposite of the usual order and is what the CLI actually

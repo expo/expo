@@ -128,14 +128,18 @@ function readEvents(eventsFile: string): any[] {
 }
 
 describe('exagent doctor:check', () => {
-  it('mirrors the exit code of a run with failing checks', async () => {
+  // @ref llp/0016-v1-scope.rfc.md §doctor's exit code belongs to the protocol — friction run 7,
+  // F68. This command used to mirror expo-doctor's `1`, which is the code llp/0010 reserves for "the
+  // tool did not work". A failed check is an outcome, so it is `20`, like `typecheck` and `smoke`;
+  // expo-doctor's own code stays on the payload.
+  it('exits 20 for a failed check, and keeps expo-doctor’s own code in the payload', async () => {
     const projectRoot = await setupAsync('go-app');
 
     const result = await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
       reject: false,
     });
 
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(20);
     const payload: DoctorPayload = JSON.parse(result.stdout);
     expect(payload).toMatchObject({ passed: 1, failed: 2, parse: 'full', exitCode: 1 });
     // `--verbose` is what makes the passing checks nameable at all.
@@ -201,7 +205,7 @@ describe('exagent doctor:check', () => {
 
     const result = await executeExagentAsync(projectRoot, ['doctor:check'], { reject: false });
 
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(20);
     expect(result.stdout).toContain('Checks       1/3 passed');
     expect(result.stdout).toContain('Failed       2');
     expect(result.stdout).toContain('Parse        full');
@@ -218,7 +222,14 @@ describe('exagent doctor:check', () => {
 
     const result = await executeExagentAsync(projectRoot, ['doctor:check'], { reject: false });
 
-    expect(result.stdout).toContain('npx expo install --check');
+    // This CLI's own command, not the Expo CLI's: it runs the same check and adds the structured
+    // `check` object the rest of the surface expects (F78).
+    // The advice itself is still quoted verbatim above — those are expo-doctor's words, and
+    // rewriting them would be putting a sentence in another tool's mouth. What changes is the
+    // command this CLI offers to run.
+    const suggested = result.stdout.slice(result.stdout.indexOf('Suggested next:'));
+    expect(suggested).toContain('npx exagent install --check');
+    expect(suggested).not.toContain('npx expo install --check');
     expect(result.stdout).not.toContain('doctor:fix');
   });
 
@@ -236,7 +247,7 @@ describe('exagent doctor:check', () => {
   });
 
   // A parse that found nothing must not report zeroes that look like a clean project.
-  it('admits a failed parse, keeps raw, and still mirrors the exit code', async () => {
+  it('admits a failed parse, keeps raw, and still reports the failed outcome', async () => {
     const projectRoot = await setupAsync('go-app');
 
     const result = await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
@@ -244,7 +255,7 @@ describe('exagent doctor:check', () => {
       reject: false,
     });
 
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(20);
     const payload: DoctorPayload = JSON.parse(result.stdout);
     expect(payload).toMatchObject({ passed: 0, failed: 0, checks: [], parse: 'failed' });
     expect(payload.raw).toContain('TypeError: Cannot read properties of undefined');

@@ -5,6 +5,7 @@
 // its diagnostics read back as data.
 
 import type { FollowUp } from '../followups/types';
+import type { MissingGeneratedTypes } from './generatedTypes';
 
 /** One diagnostic the compiler reported. */
 export interface TypeError {
@@ -46,6 +47,15 @@ export interface TypeCheckReport {
   errors: TypeError[];
   /** How long the compiler took, in milliseconds. `0` when it never ran. */
   durationMs: number;
+  /**
+   * A generated declaration file the project expects and does not have, or null.
+   *
+   * Non-null only for a run that *found* diagnostics: the file is what some of them are about, and
+   * on a green run its absence has cost nothing and is not worth a line. A brand-new project's
+   * first `typecheck` is red for this reason alone (F64), and "fix the diagnostics above" is advice
+   * for a problem the caller cannot fix by editing the files named.
+   */
+  generatedTypes: MissingGeneratedTypes | null;
 }
 
 /** What the command prints under `--json`. */

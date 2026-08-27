@@ -18,7 +18,6 @@ import { needsHumanErrorFrom } from '../needsHuman/error';
 import { emitStartPlan } from '../plan/emit';
 import { event as planEvent } from '../plan/events';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../plan/lastBuild';
-import { isPlatformFlag } from '../plan/platformFlags';
 import { resolveStartPlanAsync } from '../plan/resolveAsync';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { probeProjectStateAsync } from '../project/probe';
@@ -37,6 +36,7 @@ import {
 } from '../utils/wrapperCrash';
 import { confirmPlanAsync } from './confirmPlan';
 import { event as devEvent } from './events';
+import { forwardedStepArgs, withForwardedExpoArgs } from './forwardedArgs';
 import {
   detectPortCollision,
   findFreePortAsync,
@@ -68,7 +68,7 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   // typed, this host and the toolchain probe. The backend is chosen **here**, before the plan is
   // printed, so the steps an agent approves are the steps that run — never swapped mid-run
   // (llp/0008 §Plan-with-cost dry run).
-  const plan = await resolveStartPlanAsync(projectRoot, state, {
+  const resolved = await resolveStartPlanAsync(projectRoot, state, {
     platform: options.platform ?? resolveDefaultPlatform(state),
     // Only the flag the caller typed reaches `expo start`, and only that form opens the app on a
     // device. The default above says what to *build* for and never appears on a command line.
@@ -77,6 +77,18 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
     requestedBackend: options.buildBackend,
     requestedTarget: options.runTarget,
   });
+
+  // @ref llp/0015-backend-selection-and-config.rfc.md §The plan approved is the plan run
+  // Here, before anything is printed. The options a caller typed for `expo start` used to be folded
+  // in while the step ran, so `--plan --tunnel` printed a command without `--tunnel` and the run
+  // passed it [observed — friction run 7, F71; live staging, S5].
+  const { plan, dropped } = withForwardedExpoArgs(resolved, options.expoArgs);
+  if (dropped.length) {
+    const last = plan.steps[plan.steps.length - 1]!;
+    Log.warn(
+      `The plan ends with "${last.argv.join(' ')}" instead of "expo start", so these options were not passed on: ${dropped.join(' ')}. Run "exagent start ${dropped.join(' ')}" once the app is installed, or pass them to "npx ${last.argv.join(' ')}" yourself.`
+    );
+  }
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command
   // `--plan` stops here, so its follow-ups are about the plan itself and the plan object is the
@@ -675,25 +687,10 @@ async function resolveRunFollowUpsAsync(
  */
 function resolveStepArgs(step: PlanStep, options: DevOptions, isLast: boolean): string[] {
   assertRunnableStep(step);
-  const args = step.argv.slice(1);
-  if (!isLast || !options.expoArgs.length) {
-    return args;
-  }
-
-  if (step.argv[0] !== 'expo' || step.argv[1] !== 'start') {
-    // The platform flags were already acted on: they picked the platform this step builds for.
-    const dropped = options.expoArgs.filter((arg) => !isPlatformFlag(arg));
-    if (dropped.length) {
-      Log.warn(
-        `The plan ends with "${step.argv.join(' ')}" instead of "expo start", so these options were not passed on: ${dropped.join(' ')}. Run "exagent start ${dropped.join(' ')}" once the app is installed, or pass them to "npx ${step.argv.join(' ')}" yourself.`
-      );
-    }
-    return args;
-  }
-
-  // The plan already sets the flags it needs (`--go`, `--dev-client`, `--web`), so a user who
-  // passed the same flag does not get it twice.
-  return [...args, ...options.expoArgs.filter((arg) => !args.includes(arg))];
+  // Idempotent, and folded in a second time on purpose: the plan the run reads already carries the
+  // forwarded options (`withForwardedExpoArgs`, above), and a flag the argv holds is never added
+  // twice. What this call is still for is the assertion above and a step that was rebuilt since.
+  return forwardedStepArgs(step, options.expoArgs, { isLast }).args;
 }
 
 /** Steps that start a dev server, and so get the skill sync of the `exagent start` wrapper. */
