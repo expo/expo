@@ -70,6 +70,25 @@ describe(parseAdbDeviceList, () => {
       },
     ]);
   });
+
+  it('ignores ADB trace lines written alongside the device list', () => {
+    expect(
+      parseAdbDeviceList(
+        [
+          'List of devices attached',
+          'adb D adb_client.cpp:393] adb_query: host:devices-l',
+          'emulator-5554 device transport_id:1',
+        ].join('\n')
+      )
+    ).toEqual([
+      {
+        serial: 'emulator-5554',
+        state: 'device',
+        metadata: ['transport_id:1'],
+        transportId: '1',
+      },
+    ]);
+  });
 });
 
 describe('ADB device state predicates', () => {
