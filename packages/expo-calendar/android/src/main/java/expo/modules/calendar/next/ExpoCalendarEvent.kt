@@ -161,10 +161,11 @@ class ExpoCalendarEvent(
       return
     }
     throw ExtendedPropertyNameNotSyncSafeException(
-      "Extended property name `$name` has no visibility prefix, and this event belongs to the `${account.type}` account `${account.name}`. " +
-        "The value would be stored on the device and dropped by the sync adapter on the next sync, without an error, " +
-        "because only names prefixed `${ExtendedPropertyName.PRIVATE_PREFIX}` or `${ExtendedPropertyName.SHARED_PREFIX}` survive a server round trip. " +
-        "Use `${ExtendedPropertyName.PRIVATE_PREFIX}$name` to keep the value readable by this account only, " +
+      "Extended property name `$name` has no visibility prefix, and this event belongs to an account of type `${account.type}`. " +
+        "Sync adapters such as Google Calendar's keep only names prefixed `${ExtendedPropertyName.PRIVATE_PREFIX}` or " +
+        "`${ExtendedPropertyName.SHARED_PREFIX}`, and drop the rest on the next sync without reporting an error, " +
+        "so the value would be stored on the device and disappear later. " +
+        "Use `${ExtendedPropertyName.PRIVATE_PREFIX}$name` to keep the value readable by the owning account only, " +
         "or `${ExtendedPropertyName.SHARED_PREFIX}$name` to share it with the guests of the event."
     )
   }
