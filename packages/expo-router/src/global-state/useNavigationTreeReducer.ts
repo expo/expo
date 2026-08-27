@@ -221,7 +221,6 @@ export function useNavigationTreeReducer({
     () => ({ registry, routeNode, linking, redirects }),
     [registry, routeNode, linking, redirects]
   );
-  const stateRef = React.useRef(state);
   const previousRegistryRef = React.useRef(registry);
 
   const processAction = React.useCallback(
@@ -246,17 +245,12 @@ export function useNavigationTreeReducer({
     warnIfScreenParam(params);
     process({ type: 'ACTION', payload: { action, originKey } });
   });
-  const getState = React.useCallback(() => stateRef.current, []);
-  const getStateForKey = React.useCallback(
-    (key: string) => findStateByKey(stateRef.current, key),
-    []
-  );
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     process({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
 
   React.useInsertionEffect(() => {
-    stateRef.current = state;
+    // TODO(@ubax): Check if this is still needed
     onStateChangeInsertion?.(state);
   }, [onStateChangeInsertion, state]);
 
@@ -272,8 +266,6 @@ export function useNavigationTreeReducer({
 
   return {
     state,
-    getState,
-    getStateForKey,
     resetNavigator,
     handleAction,
     processIntent,

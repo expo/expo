@@ -1,10 +1,15 @@
-import { act, render } from '@testing-library/react-native';
+import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { ParamListBase } from '../../routers';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
-import { IsFocusedContext, useIsFocused } from '../useIsFocused';
+import {
+  FocusedRouteKeyContext,
+  IsFocusedContext,
+  useIsFocused,
+  useIsRouteFocused,
+} from '../useIsFocused';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
@@ -40,6 +45,30 @@ test('throws without a focus context', () => {
     "Couldn't find a focus context. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
   );
 });
+
+test.each([
+  { routeKey: undefined, parentIsFocused: undefined, focusedRouteKey: 'route', expected: true },
+  { routeKey: undefined, parentIsFocused: false, focusedRouteKey: 'route', expected: false },
+  { routeKey: undefined, parentIsFocused: true, focusedRouteKey: 'route', expected: true },
+  { routeKey: 'route', parentIsFocused: undefined, focusedRouteKey: 'route', expected: true },
+  { routeKey: 'route', parentIsFocused: true, focusedRouteKey: 'other', expected: false },
+  { routeKey: 'route', parentIsFocused: false, focusedRouteKey: 'route', expected: false },
+])(
+  'returns $expected for route $routeKey with parent focus $parentIsFocused and focused route $focusedRouteKey',
+  ({ routeKey, parentIsFocused, focusedRouteKey, expected }) => {
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <IsFocusedContext.Provider value={parentIsFocused}>
+        <FocusedRouteKeyContext.Provider value={focusedRouteKey}>
+          {children}
+        </FocusedRouteKeyContext.Provider>
+      </IsFocusedContext.Provider>
+    );
+
+    const { result } = renderHook(() => useIsRouteFocused(routeKey), { wrapper });
+
+    expect(result.current).toBe(expected);
+  }
+);
 
 test('renders correct focus state', () => {
   const TestNavigator = (props: any): any => {

@@ -7,11 +7,12 @@ import { findRouteNodeAndParamsForState, type RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
-import { store } from '../../global-state/router-store';
 import { StoreContext } from '../../global-state/storeContext';
+import type { ReactNavigationState } from '../../global-state/types';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
+import { RootNavigationStateContext } from '../../react-navigation/core/RootNavigationStateContext';
 import {
   NavigationContext,
   type NavigationProp,
@@ -28,6 +29,7 @@ export function HrefPreview({ href }: { href: Href }) {
   // TODO(@ubax): Extract `linking` and `routeNode` into separate contexts to avoid unrelated rerenders.
   const { segments: routeSegments } = useRouteInfo();
   const { linking, routeNode } = use(StoreContext) ?? {};
+  const rootNavigationState = use(RootNavigationStateContext);
   const hrefState = useMemo(
     () => getStateForHref(href, { segments: routeSegments }, linking),
     [href, routeSegments, linking]
@@ -37,7 +39,7 @@ export function HrefPreview({ href }: { href: Href }) {
   let isProtected = false;
   if (hrefState?.routes[index]?.name === INTERNAL_SLOT_NAME) {
     let routerState: typeof hrefState | undefined = hrefState;
-    let rnState = store.state;
+    let rnState: ReactNavigationState | undefined = rootNavigationState;
     while (routerState && rnState) {
       const routerRoute: ResultState['routes'][number] = routerState.routes[0]!;
       // When the route we want to show is not present in react-navigation state

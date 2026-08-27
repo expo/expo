@@ -37,7 +37,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   const { addOptionsGetter } = useOptionsGetters({
     key: route.key,
     options,
-    navigation,
   });
 
   // Clear options set by this screen when it is unmounted

@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { isRoutePreloadedInStack } from '../../utils/stack';
 import {
   CommonActions,
   type NavigationAction,
@@ -21,7 +20,6 @@ type Options<
 > = {
   routes: State['routes'];
   routeNames: State['routeNames'];
-  getState: () => State;
   navigation: NavigationHelpers<ParamListBase> &
     Partial<NavigationProp<ParamListBase, string, any, any, any>>;
   setOptions: (
@@ -47,6 +45,9 @@ type NavigationCache<
  * Hook to cache navigation objects for each screen in the navigator.
  * It's important to cache them to make sure navigation objects don't change between renders.
  * This lets us apply optimizations like `React.memo` to minimize re-rendering screens.
+ * Exception: a route's navigation object changes identity once when the route is promoted from
+ * preloaded to active.
+ * TODO(@ubax): consider resolving `isPreloaded` at call time to keep one object per route.
  */
 export function useNavigationCache<
   State extends NavigationState,
@@ -56,7 +57,6 @@ export function useNavigationCache<
 >({
   routes,
   routeNames,
-  getState,
   navigation,
   setOptions,
   router,
@@ -70,20 +70,19 @@ export function useNavigationCache<
   const cache = React.useMemo(
     () => ({ current: {} as NavigationCache<State, ScreenOptions, EventMap> }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getState, navigation, setOptions, emitter]
+    [navigation, setOptions, emitter]
   );
 
   // Keep name-keyed placeholders stable after their real route keys are created.
-  const validKeys = new Set([...routes.map((route) => route.key), ...routeNames]);
+  const routeKeys = [...routes.map((route) => route.key), ...routeNames];
+  const validKeys = new Set(routeKeys.flatMap((key) => [key, `p\0${key}`]));
   cache.current = Object.fromEntries(
     Object.entries(cache.current).filter(([key]) => validKeys.has(key))
   );
 
-  const createNavigation = (route: { key: string; name: string }) => {
+  const createNavigation = (route: { key: string; name: string }, isPreloaded: boolean) => {
     const dispatchSync = (action: NavigationAction) => {
-      const state = getState();
-
-      if (isRoutePreloadedInStack(state, route)) {
+      if (isPreloaded) {
         if (process.env.NODE_ENV !== 'production') {
           console.warn(
             `Ignored a navigation action dispatched from the preloaded screen '${route.name}'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching.`
@@ -97,8 +96,7 @@ export function useNavigationCache<
     };
 
     const dispatch = (action: NavigationAction) => {
-      const state = getState();
-      if (isRoutePreloadedInStack(state, route)) {
+      if (isPreloaded) {
         if (process.env.NODE_ENV !== 'production') {
           console.warn(
             `Ignored a navigation action dispatched from the preloaded screen '${route.name}'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching.`
@@ -171,7 +169,7 @@ export function useNavigationCache<
       isFocused: () => {
         const state = rest.getState();
 
-        if (state.routes[state.index]!.key !== route.key) {
+        if (state.routes[state.index]?.key !== route.key) {
           return false;
         }
 
@@ -184,14 +182,15 @@ export function useNavigationCache<
     return navigationItem;
   };
 
-  return (route: { key: string; name: string }) => {
-    const cachedNavigation = cache.current[route.key];
+  return (route: { key: string; name: string }, isPreloaded: boolean) => {
+    const key = `${isPreloaded ? 'p\0' : ''}${route.key}`;
+    const cachedNavigation = cache.current[key];
     if (cachedNavigation) {
       return cachedNavigation;
     }
 
-    const navigation = createNavigation(route);
-    cache.current[route.key] = navigation;
+    const navigation = createNavigation(route, isPreloaded);
+    cache.current[key] = navigation;
     return navigation;
   };
 }

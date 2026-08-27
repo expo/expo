@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { isRoutePreloadedInStack } from '../../utils/stack';
 import type {
   NavigationAction,
   NavigationState,
@@ -71,7 +72,7 @@ type Options<
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
-  getState: () => State;
+  state: State;
   addListener: AddListener;
   addKeyedListener: AddKeyedListener;
   router: Router<State, NavigationAction>;
@@ -99,7 +100,7 @@ export function useDescriptors<
   navigation,
   screenOptions,
   screenLayout,
-  getState,
+  state,
   addListener,
   addKeyedListener,
   router,
@@ -107,20 +108,13 @@ export function useDescriptors<
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const {
-    handleAction,
-    getStateForKey,
-    resetNavigator,
-    onDispatchAction,
-    onOptionsChange,
-    stackRef,
-  } = use(NavigationBuilderContext);
+  const { handleAction, resetNavigator, onDispatchAction, onOptionsChange, stackRef } =
+    use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
       handleAction,
-      getStateForKey,
       resetNavigator,
       addListener,
       addKeyedListener,
@@ -131,7 +125,6 @@ export function useDescriptors<
     [
       navigation,
       handleAction,
-      getStateForKey,
       resetNavigator,
       addListener,
       addKeyedListener,
@@ -144,7 +137,6 @@ export function useDescriptors<
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
     routes,
     routeNames,
-    getState,
     navigation,
     setOptions,
     router,
@@ -270,7 +262,7 @@ export function useDescriptors<
   >;
 
   const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
-    const navigation = getNavigation(route);
+    const navigation = getNavigation(route, isRoutePreloadedInStack(state, route));
 
     if (screens[route.name] === undefined) {
       acc[route.key] = {
@@ -318,13 +310,13 @@ export function useDescriptors<
     if (!config) {
       return {
         route,
-        navigation: getNavigation({ key: route.name, name: route.name }),
+        navigation: getNavigation({ key: route.name, name: route.name }, false),
         options: {} as ScreenOptions,
         render: () => null,
       } as DescriptorMap[string];
     }
 
-    const navigation = getNavigation({ key: route.name, name: route.name });
+    const navigation = getNavigation({ key: route.name, name: route.name }, false);
     return {
       route,
       navigation,
