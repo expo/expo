@@ -261,3 +261,52 @@ export function networkGate(): Gate {
     return missing(`https://staging.expo.dev could not be reached: ${error.message}`);
   }
 }
+
+/**
+ * The second opt-in `live-cloud` needs, and why it is not a prerequisite.
+ *
+ * Every other gate in this file is a fact about the machine. This one is an *intention*, because
+ * `live-cloud`'s prerequisites can all hold on a machine whose owner did not mean to start a billing
+ * EAS Simulator session from a test run. A session bills from `eas simulator` until
+ * `eas simulator:stop`, so it is asked for by name or not at all.
+ */
+export function cloudOptInGate(): Gate {
+  return process.env.EXAGENT_LIVE_CLOUD === '1'
+    ? ok
+    : missing(
+        'EXAGENT_LIVE_CLOUD=1 is not set — an EAS Simulator session bills from start to stop, so this suite never runs without being asked for by name'
+      );
+}
+
+/**
+ * A way to give the dev server an origin a datacenter can reach — and **not** `@expo/ngrok`.
+ *
+ * A cloud simulator cannot load `exp://127.0.0.1:<port>`, and cannot load a LAN address either. The
+ * documented answer is `expo start --tunnel`, and on this machine that answer does not work: the Expo
+ * CLI logs `Tunnel URL not found … falling back to LAN URL` twelve times and then exits 1 on
+ * `TypeError: Cannot read properties of undefined (reading 'body')` with a pointer at ngrok's status
+ * page [observed — wave19-live, `01-dev-tunnel.err`, 2026-08-27]. So the gate is not "is ngrok
+ * installed": it is "is there a way to publish a local port", which here is `tuft host`.
+ *
+ * `EXAGENT_LIVE_PUBLIC_ORIGIN` is the escape hatch for a machine with a different one — a reverse
+ * proxy, a Cloudflare tunnel, an ngrok that actually starts. The suite sets `EXPO_PACKAGER_PROXY_URL`
+ * to whatever this resolves to; wave 19 taught `src/dev/advertisedUrl.ts` to read a proxy origin out
+ * of the dev server's manifest, because a proxied run prints `Waiting on http://localhost:<port>` and
+ * names the real origin only in `launchAsset.url`.
+ */
+export function publicOriginGate(): Gate {
+  if (process.env.EXAGENT_LIVE_PUBLIC_ORIGIN) {
+    return ok;
+  }
+  try {
+    execFileSync('tuft', ['host', 'list'], { stdio: 'ignore', timeout: 60_000 });
+    return ok;
+  } catch {
+    return missing(
+      'no way to publish a local port: "tuft host" could not run, and EXAGENT_LIVE_PUBLIC_ORIGIN is ' +
+        'not set. A cloud simulator cannot reach 127.0.0.1 or a LAN address, and "expo start --tunnel" ' +
+        'does not start on this machine (@expo/ngrok exits 1 — see wave19-live/01-dev-tunnel.err), so ' +
+        'the dev server needs a proxy origin instead'
+    );
+  }
+}

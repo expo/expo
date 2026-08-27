@@ -93,14 +93,16 @@ One row per v1 command, four columns. What each cell means, and the distinctions
 | `dev --detach --wait-ready` | filled | **filled** — and the port still answers 8 s later (F61) | n/a | n/a |
 | `dev` (attached, blocking) | filled | open — the suite has no use for a foreground server; `--detach` is the agent-facing shape | n/a | n/a |
 | `dev` (EAS plan run) | filled (wave 19) | n/a | unreachable — the plan's EAS step is a native build, which no v1 command creates | n/a |
-| `dev --tunnel` | filled | open — needs `@expo/ngrok`, so it is gated into `live-cloud` where it is required | n/a | runnable — S3 (`tunnelUrl: null`) is checked in `beforeAll` |
+| `dev --tunnel` | filled | **unreachable on this machine** — `@expo/ngrok` exits 1 (`Tunnel URL not found` ×12, then `Cannot read properties of undefined`) [wave19-live] | n/a | n/a — `live-cloud` uses a **proxy origin** (`EXPO_PACKAGER_PROXY_URL` + `tuft host`) instead, which is the path wave 19 proved |
+| `dev` with a **proxy origin** | none — a stub dev server advertises nothing | open — `live-local` has no use for a public origin | n/a | **runnable** — `EXPO_PACKAGER_PROXY_URL` + `tuft host add`, and the origin is checked before a session is billed |
+| cloud session start (`--expo-go`) | n/a | n/a | n/a | **runnable** — `eas simulator … --expo-go`; without the flag the session has no app and every `open` is `LSApplicationWorkspaceErrorDomain error 115` [wave19-live] |
 | `dev:logs` | filled | **filled** — reads the real bundler error the gates refused on | n/a | n/a |
 | `dev:stop` | filled | **filled** — process gone, port free after | n/a | n/a |
 | `start` | filled | open — `expo start` verbatim; `dev` covers the same subprocess with a plan around it | n/a | n/a |
 | `navigate` (local) | filled | **filled** — `simctl openurl`, route check, `attached: true` | n/a | n/a |
 | `navigate` (bad route) | filled | **filled** — exit 1, `ROUTE_NOT_FOUND`, real sitemap in the message | n/a | n/a |
-| `navigate --print-url` | filled | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | n/a | runnable (implied by the tunnel path) |
-| `navigate --cloud` | filled | n/a | n/a | **runnable** — asserts the link, **not** `attached` (S11) |
+| `navigate --print-url` | filled | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | n/a | **runnable** — `beforeAll` uses it to prove the public origin took (`hostType: "tunnel"`) before billing a session |
+| `navigate --cloud` | filled | n/a | n/a | **runnable** — `deviceBackend: "cloud"`, the URL on the public origin, the `open` at exit 0 (the half `--expo-go` fixed); **not** `attached` (S11) |
 | `runtime:eval` | filled (6, failure paths only) | **filled** — returns `2` from real Hermes; the row §What is still not tested called unreachable | n/a | unreachable — no `--cloud` on `eval` (correct), and S11 anyway |
 | `runtime:errors` | filled (6) | **filled** — `runtimeReadable: true` from a real debugger | n/a | unreachable — same |
 | `runtime:tree` | filled | **filled** — `disabled`, `groupSize`, `placeholder` on real nodes (F69, F70) | n/a | unreachable — same |
@@ -108,9 +110,10 @@ One row per v1 command, four columns. What each cell means, and the distinctions
 | `runtime:tap --verify` | unreachable — no CDP at tier 0 | **filled** — interpolated **and** single-string Text in the diff (F63) | n/a | unreachable — same |
 | `runtime:type` | filled | **filled** — types into a real input; `editable={false}` → 20 | n/a | unreachable — same |
 | `runtime:reload` (local) | filled | **filled** — `verifiedBy: "message-socket-peers"`, real reconnect | n/a | n/a |
-| `runtime:reload --cloud` | filled (2) | n/a | n/a | **runnable** — asserts the contract, not the outcome (wave 19 in flight) |
+| `runtime:reload --cloud` | filled (wave 19) | n/a | n/a | **runnable** — wave 19's contract field by field: `method: "device"`, `verifiedBy: "dev-server-bundle"`, `bundlesAfterReload.observed`, `commandSocketClients` a number, `dev-server` recorded as *not tried* |
+| `runtime:reload --cloud --route` | filled | n/a | n/a | **runnable** — the route is echoed and the link opened is the one it names (llp/0021) |
 | `runtime:stop` (local) | filled | **filled** — `wasRunning: true`, Expo Go terminated on the named udid | n/a | n/a |
-| `runtime:stop --cloud` | filled | n/a | n/a | **runnable** — `wasRunning` may be null and that is honest (S13) |
+| `runtime:stop --cloud` | filled | n/a | n/a | **runnable** — `wasRunning` may be null and that is honest (S13), and the session is still listed afterwards (S12) |
 | `smoke` (pass) | unreachable — the runtime and screenshot phases need an app | **filled** — 8 phases, screenshot on disk | n/a | n/a |
 | `smoke` (broken bundle) | filled | **filled** — 20, later phases skipped, `lab.tsx` named | n/a | n/a |
 | `smoke --cloud` | filled (2) | n/a | n/a | **runnable** — and every follow-up stays on `--cloud` (bug 5) |
@@ -145,8 +148,20 @@ are `open`, not gaps.
 
 **Unreachable, and worth saying out loud** — build creation (impossible in v1); `login`/`logout`/
 `register` (a suite must not mutate the machine's session); CDP on a cloud simulator (S11, upstream);
-Android and Windows at the live tier. A claim that the v1 surface is "fully tested live" would be wrong
-about every one of these, which is why they have rows.
+`expo start --tunnel` on this machine at all (`@expo/ngrok` exits 1); Android and Windows at the live
+tier. A claim that the v1 surface is "fully tested live" would be wrong about every one of these, which
+is why they have rows.
+
+**The cloud column is `runnable`, and its expectations came from a live run rather than from a type**
+[rewritten 2026-08-27, after wave 19 landed]. Wave 19 changed what a cloud reload *is* — a two-verb
+relaunch verified by `verifiedBy: "dev-server-bundle"`, with `commandSocketClients` beside
+`appsConnected` because the two disagree exactly there — and it changed how the dev server becomes
+reachable at all, because the tunnel this column originally assumed does not start on this machine. Both
+rewrites were made against wave 19's captured payloads (`wave19-live/`), not against the new source. The
+distinction matters for the same reason this whole audit does: a test written from a type pins what
+somebody meant, and a test written from a captured payload pins what happened. The column stays
+`runnable` until somebody has run it — a row filled by its own author's confidence is the thing the
+`runnable`/`filled` split exists to make impossible.
 
 **Found by filling the columns** — two, both unreachable from any tier below
 ([[0022-live-tier]] §The findings this tier arrived with):

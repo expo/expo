@@ -32,7 +32,42 @@ Everything needs the bundle built first: **`pnpm build`**.
 | --- | --- |
 | `live-local` | macOS; a **booted** iOS simulator with **Expo Go** installed; network (npm, for the scaffold's install) |
 | `live-eas` | `EXPO_STAGING=1`; a staging session in `~/.expo-staging/state.json`; `bunx` or `npx`; network to `staging.expo.dev`; an EAS-linked project on disk with finished builds and at least one ERRORED build (default `~/Developer/DailyWords-Grok`, override with `EXAGENT_LIVE_EAS_PROJECT`) |
-| `live-cloud` | everything `live-eas` needs, **plus** `EXAGENT_LIVE_CLOUD=1` and a resolvable `@expo/ngrok` |
+| `live-cloud` | everything `live-eas` needs, **plus** `EXAGENT_LIVE_CLOUD=1` and a way to publish a local port — `tuft host`, or an origin of your own in `EXAGENT_LIVE_PUBLIC_ORIGIN` |
+
+### Two things about `live-cloud` that cost somebody an hour each
+
+Both are live facts from wave 19, not preferences, and the suite is built around them.
+
+**A tunnel is not how the dev server gets a public origin here.** A cloud simulator cannot load
+`exp://127.0.0.1:<port>` — that is the loopback of the machine that opens the link, and that machine is
+in a datacenter — and cannot load a LAN address either. The documented answer is
+`expo start --tunnel`, and **it does not work on this machine**: the Expo CLI logs `Tunnel URL not found
+… falling back to LAN URL` twelve times and then exits 1 on `TypeError: Cannot read properties of
+undefined (reading 'body')`, pointing at ngrok's status page [observed — `wave19-live/01-dev-tunnel.err`].
+What works is a proxy origin:
+
+```bash
+tuft host add 8500 --name my-live-run          # → https://my-live-run.tuft.host
+EXPO_PACKAGER_PROXY_URL=https://my-live-run.tuft.host \
+  npx exagent dev --detach --wait-ready --port 8500
+```
+
+The suite does this itself, and checks the origin actually took — `navigate / --print-url` has to report
+`hostType: "tunnel"` — **before** it starts anything that bills. A proxied dev server prints
+`Waiting on http://localhost:<port>` and names the real origin only in its manifest, which is why wave 19
+taught `src/dev/advertisedUrl.ts` to read the manifest.
+
+**A bare cloud session has no Expo Go on it — always `--expo-go`.** A session started without it comes
+up with nothing installed: `apps --platform ios` lists only the controller's own test runner, and every
+`open` of an `exp://` URL fails with `LSApplicationWorkspaceErrorDomain error 115` [observed —
+`wave19-live/08-open-plain.json`]. The command is also `eas simulator`, not `eas simulator:start` — that
+is the name in the CLI's own manifest and the one carrying the flag:
+
+```bash
+npx eas simulator --platform ios --type agent-device --expo-go --non-interactive --name exagent-live
+```
+
+A project with a development build of its own passes `--build-id <id>` instead.
 
 ### The hard guard
 
@@ -49,7 +84,8 @@ was dropped somewhere between the gate and the spawn has.
 | `EXAGENT_LIVE_CLOUD=1` | the second opt-in for `live-cloud`, because its prerequisites can all hold on a machine whose owner did not mean to start a billing session |
 | `EXAGENT_LIVE_UDID` | which booted simulator to use, when several are |
 | `EXAGENT_LIVE_EAS_PROJECT` | the EAS-linked project `live-eas` copies and reads builds from |
-| `EXAGENT_LIVE_PORT` | first dev-server port (default `8500`) |
+| `EXAGENT_LIVE_PUBLIC_ORIGIN` | an origin that already forwards to the dev-server port, for `live-cloud` on a machine without `tuft host`. Supplied origins are not torn down by the cleanup |
+| `EXAGENT_LIVE_PORT` | first dev-server port to *try* (default `8500`); each run binds the first free one upward from there |
 | `EXAGENT_LIVE_TEMP_DIR` | root of the scratch area (default `os.tmpdir()`). **Must be outside every git checkout** — asserted at startup, because EAS uploads walk up to the git root |
 | `EXAGENT_LIVE_KEEP=1` | keep the scratch project after the run, for debugging |
 
@@ -77,7 +113,7 @@ Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
 | --- | --- | --- | --- |
 | `live-local` | ~60 s (measured 58 s, 30 tests, 38 `exagent` runs) | none | nothing: the dev server is stopped, the app terminated, the scratch project deleted |
 | `live-eas` | ~50 s (measured, 9 tests) | one EAS Hosting preview deployment per run | one deployment under `@kudo1/livecheck`. Idempotent: EAS Hosting gives each deploy its own preview URL, so a re-run adds one and changes nothing that existed. No native build — no v1 command creates one |
-| `live-cloud` | not yet measured | one EAS Simulator session, billed from `simulator:start` to `simulator:stop` | nothing, if `afterAll` ran. The session is stopped unconditionally, including when this process never learned its id |
+| `live-cloud` | **not yet measured**; budget several minutes — wave 19 saw one cloud reload take 90 s and another 15 s, and this suite does two | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
 
 ## Evidence
 

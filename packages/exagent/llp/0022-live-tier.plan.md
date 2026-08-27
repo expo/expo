@@ -170,29 +170,67 @@ back against the file). One real artifact, two answers, both of them the point.
 
 ## live-cloud: written, gated, and not yet run
 
-Implemented in this wave and **not run** in it: the staging cloud-session budget belonged to another
-wave while this was being written, and `runtime:reload --cloud`'s behaviour was changing underneath it.
-The matrix marks these rows `runnable` rather than filled. Nothing in that file may be read as evidence
-until somebody has seen it green — which is the same rule this whole document is about, applied to
+Written in this wave and **not run by its author**: the staging cloud-session budget belonged to another
+wave. The matrix marks these rows `runnable` rather than filled, and nothing in that file may be read as
+evidence until somebody has seen it green — which is the rule this whole document is about, applied to
 itself.
 
-Two facts decide what the suite can ever assert:
+**Every expectation in it comes from wave 19's live run rather than from a type definition.**
+[[0019-backend-parity-audit]]'s cloud rows moved under this suite the day wave 19 landed, and the suite
+was rewritten against `wave19-live/`'s JSON rather than against the shape the source suggested. That is
+the same distinction §Why the two tiers below it cannot do this is about, one level in: a test written
+from a type is a test of what somebody meant, and a test written from a captured payload is a test of
+what happened.
 
-- **A cloud simulator needs a tunnelled dev server**, because `exp://127.0.0.1:<port>` names the
-  loopback of the machine that opens it and that machine is in a datacenter. So `@expo/ngrok` is a
-  prerequisite gate, and S3 — `tunnelUrl: null` while the tunnel is up — is checked in `beforeAll` and
-  fails the suite with that finding's name if it is still true.
-- **The runtime loop is inoperable against a cloud simulator today.** S11: the app runs and registers
-  zero CDP targets over both the local and the tunnel URL. So `navigate --cloud` asserts that the link
-  was opened and must **not** assert `attached`; exit 22 with `attached: false` is the honest outcome,
-  and a test demanding `attached: true` would be asserting a fix nobody has made. There is deliberately
-  no `runtime:eval --cloud` test, because the flag does not exist — correctly. What the suite pins is
-  that the CLI is honest about a wall that is upstream of it.
+Three facts from that run decide what the suite does and what it may claim.
+
+**1. A tunnel is not how the dev server gets a public origin — not on this machine.** A cloud simulator
+cannot load `exp://127.0.0.1:<port>` (the loopback named there is a datacenter's) and cannot load a LAN
+address either. `expo start --tunnel` is the documented answer and it **fails here**: `Tunnel URL not
+found … falling back to LAN URL` twelve times, then exit 1 on `TypeError: Cannot read properties of
+undefined (reading 'body')` and a pointer at ngrok's status page [observed — `wave19-live/01-dev-tunnel.err`,
+2026-08-27]. What works is a **proxy origin**: a public name for the port (`tuft host add`) and
+`EXPO_PACKAGER_PROXY_URL` so the dev server advertises it. So the prerequisite gate is not "is ngrok
+installed" — it is "is there a way to publish a local port", with `EXAGENT_LIVE_PUBLIC_ORIGIN` as the
+escape hatch for a machine with a different one.
+
+This also moved where the address is read from. A proxied dev server prints
+`Waiting on http://localhost:<port>` and names the real origin only in its manifest's `launchAsset.url`,
+so reading the log gave `hostType: localhost` and a refusal to open the app on a simulator that could
+have loaded it — which is S3's second face. Wave 19 taught `src/dev/advertisedUrl.ts` to prefer the
+manifest when it names a tunnel, and the suite checks the origin took (`navigate / --print-url` must
+report `hostType: "tunnel"`) **before** it starts anything that bills.
+
+**2. A bare cloud session has no app on it.** Started without `--expo-go` a session comes up with
+nothing installed: `apps --platform ios` lists only the controller's own test runner, and every `open` of
+an `exp://` URL fails with `LSApplicationWorkspaceErrorDomain error 115` — the simulator has nothing
+registered for the scheme [observed — `wave19-live/08-open-plain.json`]. The command is also
+`eas simulator` rather than `eas simulator:start`: that is the name in the CLI's own manifest and the one
+carrying the flag. A project with a development build of its own passes `--build-id <id>` instead.
+
+**3. A cloud reload is a relaunch, proved on the dev server.** Wave 19's contract, which this suite
+asserts field by field: `method: "device"`, `verifiedBy: "dev-server-bundle"`,
+`bundlesAfterReload.observed: true` with the bundler's own line as the evidence, and the `dev-server`
+attempt recorded as **not tried** with a reason. The field that makes it legible is
+`commandSocketClients` beside `appsConnected`, because the two disagree exactly here — an app bundling
+over a proxy is in the debugger list and holds *zero* clients on the command socket, so `Apps connected
+1` above a broadcast that reached nobody described two different worlds with one number
+([[0005-runtime-loop-tools]] §Two lists, one question). The suite asserts it is a *number* rather than a
+value: "nobody asked" and "nobody is registered" are the two answers that field exists to keep apart.
+
+**What the suite still may not assert: `attached`.** S11 — a cloud simulator registers zero CDP targets
+over both the local and the proxy origin — so `navigate --cloud` asserts the link was opened and nothing
+more; exit 22 with `attached: false` is the honest outcome, and a test demanding `attached: true` would
+be asserting a fix nobody has made. There is deliberately no `runtime:eval --cloud` test, because the
+flag does not exist — correctly. What the suite pins is that the CLI is honest about a wall upstream of
+it, and the branch that would notice the wall moving is written into the test.
 
 It is gated **twice**: on prerequisites, like every suite, and on `EXAGENT_LIVE_CLOUD=1`, because its
 prerequisites can all hold on a machine whose owner did not mean to start a billing session from a test
-run. The session is stopped in `afterAll` unconditionally, without reading the session id first: the
-failure worth guarding is a session that started and whose id this process never learned.
+run. Cleanup ends the expensive thing first: the session is stopped unconditionally — with `--id`, so
+only this run's — and it does not read the id first, because the failure worth guarding is a session that
+started and whose id this process never learned. Then the public name is released, the dev server
+stopped, the directory deleted.
 
 ## The findings this tier arrived with
 
