@@ -26,10 +26,11 @@
 - [Android] Register the embedded update in a single transaction. An interrupted registration previously left an update row with no launch asset, which is treated as launchable and then fails every cold start with "Launch asset not found for update"; it now leaves no row, so the next launch registers it cleanly. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
 - [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Keep the Room-generated `UpdatesDatabase_Impl` constructor, so minified release builds no longer crash with `NoSuchMethodException` on first database access. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch.
+- [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch. ([#49456](https://github.com/expo/expo/pull/49456) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Repair ready updates that are missing their launch asset by demoting them to pending during launcher selection, so a corrupted row is skipped and retried instead of failing every launch. ([#49457](https://github.com/expo/expo/pull/49457) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Register a downloaded update's assets, links, and ready status in a single transaction, so an interrupted or partially failed registration leaves no partial state behind. ([#49458](https://github.com/expo/expo/pull/49458) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Report a specific launch asset not found error when a launchable update has no linked launch asset, instead of failing silently or, for an update with no assets at all, hanging on the splash screen. ([#49459](https://github.com/expo/expo/pull/49459) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Preserve the cached update's launch failure as the emergency launch reason when the remote check finds no new update, instead of replacing it with the generic AppLoaderTask error. ([#49460](https://github.com/expo/expo/pull/49460) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
