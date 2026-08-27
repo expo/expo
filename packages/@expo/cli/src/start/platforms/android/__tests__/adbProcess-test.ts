@@ -62,6 +62,18 @@ describe(runAdbDeviceQueryAsync, () => {
     });
   });
 
+  it('does not spawn a command when the caller signal is already aborted', async () => {
+    const controller = new AbortController();
+    const reason = new Error('already cancelled');
+    controller.abort(reason);
+
+    await expect(
+      runAdbDeviceMutationAsync('adb', ['install'], 'app install', controller.signal)
+    ).rejects.toBe(reason);
+    expect(spawnAsync).not.toHaveBeenCalled();
+    expect(event).not.toHaveBeenCalled();
+  });
+
   it('maps wait-policy expiry after observing graceful cleanup', async () => {
     const pending = createPendingSpawn();
     jest.mocked(spawnAsync).mockReturnValueOnce(pending);
