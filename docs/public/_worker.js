@@ -55,6 +55,11 @@ export default {
         }
       }
 
+      const passthrough = await env.ASSETS.fetch(request);
+      if (passthrough.status >= 300 && passthrough.status < 400) {
+        return passthrough;
+      }
+
       return new Response(NOT_FOUND_MARKDOWN, {
         status: 404,
         headers: {

@@ -361,6 +361,19 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
     );
   }
   console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
+
+  const mdRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build`, {
+    headers: { Accept: 'text/markdown' },
+    redirect: 'manual',
+  });
+  const mdLocation = mdRedirect.headers.get('location') ?? '';
+
+  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-eas')) {
+    throw new Error(
+      `Expected the markdown request to pass through the page redirect, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request passes through page redirects');
 }
 
 async function testHtmlNotFoundAsync(): Promise<void> {
