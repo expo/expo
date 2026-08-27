@@ -220,6 +220,46 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
   console.log('✓ Nonexistent page returns 404');
 }
 
+async function testAcceptQualityValuesAsync(): Promise<void> {
+  console.log('\n--- Testing Accept header q-values ---');
+
+  const htmlPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/html;q=0.9, text/markdown;q=0.1' },
+  });
+  const htmlPreferredBody = await htmlPreferred.text();
+
+  if (!htmlPreferredBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when it carries the higher q, got: ' + htmlPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ HTML with the higher q is served over markdown');
+
+  const markdownRejected = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0, text/html' },
+  });
+  const markdownRejectedBody = await markdownRejected.text();
+
+  if (!markdownRejectedBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when markdown has q=0, got: ' + markdownRejectedBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with q=0 is never served');
+
+  const markdownPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0.9, text/html;q=0.1' },
+  });
+  const markdownPreferredBody = await markdownPreferred.text();
+
+  if (!markdownPreferredBody.includes('Test Markdown Content')) {
+    throw new Error(
+      'Expected markdown when it carries the higher q, got: ' + markdownPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with the higher q is served');
+}
+
 async function testUpgradePairNegotiationAsync(): Promise<void> {
   console.log('\n--- Testing upgrade helper version-pair negotiation ---');
 
@@ -398,6 +438,7 @@ async function mainAsync(): Promise<void> {
     await testDirectMarkdownAccessAsync();
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
+    await testAcceptQualityValuesAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
     await testHtmlNotFoundAsync();

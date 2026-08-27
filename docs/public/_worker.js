@@ -7,6 +7,35 @@ No markdown exists for this path. Useful starting points:
 - [Documentation home](https://docs.expo.dev/)
 `;
 
+function acceptsMarkdown(accept) {
+  let markdownListed = false;
+  let markdownQuality = 0;
+  let htmlQuality = 0;
+
+  for (const entry of accept.split(",")) {
+    const [type, ...params] = entry.split(";");
+    const name = type.trim().toLowerCase();
+
+    let quality = 1;
+    for (const param of params) {
+      const [key, value] = param.split("=");
+      if (key.trim().toLowerCase() === "q") {
+        quality = Number(value);
+        if (!Number.isFinite(quality)) quality = 0;
+      }
+    }
+
+    if (name === "text/markdown") {
+      markdownListed = true;
+      markdownQuality = Math.max(markdownQuality, quality);
+    } else if (name === "text/html" || name === "text/*" || name === "*/*") {
+      htmlQuality = Math.max(htmlQuality, quality);
+    }
+  }
+
+  return markdownListed && markdownQuality > 0 && markdownQuality >= htmlQuality;
+}
+
 function upgradeHelperPairPath(url) {
   if (!/^\/bare\/upgrade\/?$/.test(url.pathname)) return null;
 
@@ -27,7 +56,7 @@ export default {
     const pairPath = upgradeHelperPairPath(url);
 
     const wantsMarkdown =
-      accept.includes("text/markdown") ||
+      acceptsMarkdown(accept) ||
       (pairPath !== null && /\.md$/.test(url.searchParams.get("toSdk") || ""));
 
     if (wantsMarkdown) {
