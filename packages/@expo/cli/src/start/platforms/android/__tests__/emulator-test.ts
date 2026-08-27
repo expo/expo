@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { spawn } from 'child_process';
 
 import * as ADB from '../adb';
+import { AdbProcessWaitError } from '../adbProcess';
 import { listAvdsAsync, startDeviceAsync } from '../emulator';
 
 jest.mock('../../../../log');
@@ -96,7 +97,13 @@ describe(startDeviceAsync, () => {
     ]);
     jest
       .mocked(ADB.isBootAnimationCompleteAsync)
-      .mockRejectedValueOnce(new Error('property query timed out'))
+      .mockRejectedValueOnce(
+        new AdbProcessWaitError(
+          'property query timed out',
+          'device property/boot query',
+          'device-service'
+        )
+      )
       .mockResolvedValueOnce(true);
     // @ts-expect-error
     jest.mocked(spawn).mockReturnValueOnce({ unref: jest.fn(), on: jest.fn(), off: jest.fn() });
@@ -105,6 +112,20 @@ describe(startDeviceAsync, () => {
       startDeviceAsync({ name: 'foo' }, { timeout: 500, interval: 1 })
     ).resolves.toMatchObject({ name: 'foo' });
     expect(ADB.isBootAnimationCompleteAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it('preserves a permanent boot property failure', async () => {
+    const failure = new Error('getprop is unavailable');
+    jest.mocked(ADB.getAttachedDevicesAsync).mockResolvedValue([
+      // @ts-expect-error
+      { name: 'foo', pid: 'emulator-5554' },
+    ]);
+    jest.mocked(ADB.isBootAnimationCompleteAsync).mockRejectedValueOnce(failure);
+    // @ts-expect-error
+    jest.mocked(spawn).mockReturnValueOnce({ unref: jest.fn(), on: jest.fn(), off: jest.fn() });
+
+    await expect(startDeviceAsync({ name: 'foo' })).rejects.toBe(failure);
+    expect(ADB.isBootAnimationCompleteAsync).toHaveBeenCalledTimes(1);
   });
 
   it('keeps boot checks single-flight while an earlier attempt is pending', async () => {
