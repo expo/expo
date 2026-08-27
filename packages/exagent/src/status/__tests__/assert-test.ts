@@ -6,7 +6,19 @@
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
 import type { ImpactClass } from '../../impact/types';
 import { buildAssertStatus, strongestClass } from '../assert';
-import type { FreshnessStatus } from '../types';
+import type { FingerprintHashSource, FreshnessStatus } from '../types';
+/**
+ * A fingerprint this run measured, which is what every case here assumes unless it says otherwise.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+ */
+const COMPUTED_FINGERPRINT: FingerprintHashSource = {
+  source: 'computed',
+  revalidatedAgainst: null,
+  computedAt: null,
+  caveats: [],
+};
+
 
 /**
  * A freshness section with one entry per class.
@@ -19,6 +31,7 @@ function freshness(...classes: (ImpactClass | null)[]): FreshnessStatus {
     hash: 'abc',
     comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null, platform: null },
     changedFiles: null,
+    hashSource: COMPUTED_FINGERPRINT,
     ota: null,
     platforms: classes.map((impactClass, index) => ({
       platform: index === 0 ? ('ios' as const) : ('android' as const),

@@ -261,6 +261,16 @@ declare module '2g' {
       /** Whether this run was allowed to call EAS, i.e. `--explain` was passed. */
       easBuildsAsked: boolean;
       /**
+       * Where the project fingerprint came from: `computed` or `cache`.
+       *
+       * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+       * A cached hash is not a measurement of the project now, so the stream says which it was
+       * rather than leaving a consumer to assume (llp/0021).
+       */
+      fingerprintSource: string | null;
+      /** How many pinned files a cached hash was revalidated against. Null when it was computed. */
+      fingerprintRevalidatedAgainst: number | null;
+      /**
        * What the change since the last recorded build costs, per platform.
        *
        * `js-only`, `dev-client-compatible`, `needs-native-build`, or `null` when nothing could be

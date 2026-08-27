@@ -14,6 +14,7 @@ export const exagentStatus: Command = async (argv) => {
       '--build': String,
       '--dev-server-url': String,
       '--no-followups': Boolean,
+      '--no-fingerprint-cache': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -36,6 +37,7 @@ export const exagentStatus: Command = async (argv) => {
         `                          Needs --explain, because it asks the service.`,
         `--dev-server-url <url>    Dev server to probe (default: the project's own, then 8081-8085)`,
         `--no-followups            Leave the suggested follow-up commands out of the report`,
+        `--no-fingerprint-cache    Hash the project again instead of revalidating the cached hash`,
         `-h, --help                Usage info`,
       ].join('\n'),
       [
@@ -45,9 +47,16 @@ export const exagentStatus: Command = async (argv) => {
         chalk`  running with an app connected, which agent skills are linked, and the command that`,
         chalk`  would get the app onto a device.`,
         '',
-        chalk`  Nothing is started or built, and nothing in the project is changed — {bold --explain} caches`,
-        chalk`  its answer under {bold .expo}, and that is the only thing this command ever writes. It always`,
-        chalk`  exits 0, so a script can read the report without branching on the exit code.`,
+        chalk`  Nothing is started or built, and nothing in the project is changed — the only thing this`,
+        chalk`  command writes is its own caches under {bold .expo}. It always exits 0, so a script can read`,
+        chalk`  the report without branching on the exit code.`,
+        '',
+        chalk`  The fingerprint is cached per platform and revalidated against the files that can move`,
+        chalk`  it — every lockfile, the app config, {bold eas.json}, {bold package.json}, the fingerprint's own`,
+        chalk`  settings, and {bold ios/} and {bold android/} when they exist. A run answered from that record says`,
+        chalk`  so, with the number of files it was checked against; {bold --no-fingerprint-cache} hashes the`,
+        chalk`  project again instead. What the record cannot pin is what a dynamic {bold app.config.js}`,
+        chalk`  evaluates to, so entries are believed for at most a day.`,
         '',
         chalk`  The {bold impact} line says what has changed since the last build this CLI made, and what`,
         chalk`  that costs: {bold js-only}, {bold dev-client-compatible}, or {bold needs-native-build}. It is computed`,
@@ -103,6 +112,9 @@ export const exagentStatus: Command = async (argv) => {
       assert: assertClass,
       buildId,
       followups: !args['--no-followups'],
+      // Undefined rather than `true` when the flag is absent, so `EXAGENT_NO_FINGERPRINT_CACHE`
+      // still decides: a flag that was not passed states nothing.
+      fingerprintCache: args['--no-fingerprint-cache'] ? false : undefined,
     });
   })().catch(logCmdError);
 };

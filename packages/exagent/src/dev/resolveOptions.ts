@@ -16,6 +16,7 @@ const EXAGENT_ONLY_FLAGS = [
   '--local',
   '--no-agent-skills',
   '--no-followups',
+  '--no-fingerprint-cache',
   '--plan',
   '--yes',
   '--json',
@@ -60,6 +61,16 @@ export interface DevOptions {
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
   followups: boolean;
+  /**
+   * Whether the probe's fingerprint may be answered out of the project's own `.expo` record
+   * (`--no-fingerprint-cache` clears it).
+   *
+   * @see llp/0023-fingerprint-caching.rfc.md
+   * The hash this command reads decides whether the plan contains a build, so the flag exists here
+   * for the same reason it exists on `status`: a caller who wants the plan decided on a measurement
+   * rather than on a revalidated record can say so.
+   */
+  fingerprintCache: boolean;
   /** Approve a plan with build-class steps up front (`--yes`), so no confirmation is asked for. */
   yes: boolean;
   /**
@@ -131,6 +142,7 @@ export function resolveDevOptions(argv: string[]): DevOptions {
     runTarget: resolveRunTarget(argv),
     json: argv.includes('--json'),
     followups: !argv.includes('--no-followups'),
+    fingerprintCache: !argv.includes('--no-fingerprint-cache'),
     yes: argv.includes('--yes'),
     port: resolvePort(argv),
     detach,

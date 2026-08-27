@@ -12,12 +12,14 @@ import path from 'node:path';
 import { WebSocketServer } from 'ws';
 
 import {
+  clearStubFingerprintInvocations,
   executeExagentAsync,
   holdDevLockAsync,
   installStubBinAsync,
   installStubEasRunnerAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
+  readStubFingerprintInvocations,
   setupFixtureAsync,
   startStubDevServerAsync,
   writeAgentSelectionAsync,
@@ -38,6 +40,13 @@ type StatusReport = {
   freshness: {
     hash: string | null;
     error?: string;
+    /** Where `hash` came from, per llp/0023 §The report says where the answer came from. */
+    hashSource: {
+      source: 'computed' | 'cache' | null;
+      revalidatedAgainst: number | null;
+      computedAt: string | null;
+      caveats: string[];
+    };
     platforms: {
       platform: 'ios' | 'android';
       /** `local` for this machine's own record, `eas` for what EAS has (llp/0021). */
@@ -1236,6 +1245,17 @@ process.exit(1);
         STUB_EAS_BUILD_LIST: JSON.stringify([FINISHED_BUILD]),
       });
 
+      // Two changes, and both are the point. `STUB_FINGERPRINT_HASH` is what makes the stub print a
+      // different hash, and `app.json` is what makes the *fingerprint* cache recompute at all: an
+      // environment variable is not a file, so a run that only set it would be answered out of
+      // `.expo/exagent-fingerprint.json` with the old hash and this section's cache would still
+      // match (llp/0023 §What invalidates an answer). A real project moves its hash by changing a
+      // file, which is what the second line stands in for.
+      const configPath = path.join(projectRoot, 'app.json');
+      const config = JSON.parse(await fs.promises.readFile(configPath, 'utf8'));
+      config.expo.orientation = 'landscape';
+      await fs.promises.writeFile(configPath, JSON.stringify(config));
+
       const report = await reportInAsync(projectRoot, [], {
         STUB_FINGERPRINT_HASH: 'aaaabbbbccccddddeeeeffff0000111122223333',
       });
@@ -1325,6 +1345,248 @@ process.exit(1);
 
       const report = await reportInAsync(projectRoot, ['--explain'], env);
       expect(report.followups.map((followup) => followup.id)).toContain('cached-build');
+    });
+  });
+
+  // @ref llp/0023-fingerprint-caching.rfc.md
+  //
+  // The whole subject is a number of subprocesses. A memo hit, a cache hit and a recomputation all
+  // print the same hash, so the stub `fingerprint` bin's invocation log is what these assert on —
+  // and the report line beside it, because an answer from a record must say so (llp/0021).
+  describe('the fingerprint cache', () => {
+    /** How many times the fingerprint CLI was spawned, and with which platforms. */
+    function spawns(projectRoot: string): string[] {
+      return readStubFingerprintInvocations(projectRoot).map((invocation) => {
+        const index = invocation.args.indexOf('--platform');
+        return index < 0 ? 'all' : invocation.args[index + 1]!;
+      });
+    }
+
+    it('computes one fingerprint on a first default run', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(spawns(projectRoot)).toEqual(['all']);
+      expect(report.freshness?.hashSource.source).toBe('computed');
+      expect(report.freshness?.hashSource.revalidatedAgainst).toBeNull();
+    });
+
+    it('computes three under --explain: the project, then one per platform', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+
+      await reportInAsync(projectRoot, ['--explain']);
+
+      // The cost this wave is about. The project hash answers freshness; the EAS build lookup needs
+      // a per-platform hash, because a build is made for one platform (`src/status/easBuilds.ts`).
+      expect(spawns(projectRoot).sort()).toEqual(['all', 'android', 'ios']);
+    });
+
+    it('spawns nothing on the next run and says the answer came from a record', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot, ['--explain']);
+      clearStubFingerprintInvocations(projectRoot);
+
+      const report = await reportInAsync(projectRoot, ['--explain']);
+
+      expect(spawns(projectRoot)).toEqual([]);
+      expect(report.freshness?.hash).toBe(FIXTURE_FINGERPRINT_HASH);
+      expect(report.freshness?.hashSource.source).toBe('cache');
+      expect(report.freshness!.hashSource.revalidatedAgainst!).toBeGreaterThan(0);
+      expect(report.freshness?.hashSource.computedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      // Never silent about what the revalidation could not cover.
+      expect(report.freshness!.hashSource.caveats.join('\n')).toMatch(/node_modules/);
+    });
+
+    it('says so in the human report too, with the count and the way out', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot);
+
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('from cache, revalidated against');
+      expect(result.stdout).toContain('--no-fingerprint-cache');
+    });
+
+    it('recomputes after the app config is touched', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot);
+      clearStubFingerprintInvocations(projectRoot);
+
+      const configPath = path.join(projectRoot, 'app.json');
+      const config = JSON.parse(await fs.promises.readFile(configPath, 'utf8'));
+      config.expo.orientation = 'landscape';
+      await fs.promises.writeFile(configPath, JSON.stringify(config));
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(spawns(projectRoot)).toEqual(['all']);
+      expect(report.freshness?.hashSource.source).toBe('computed');
+    });
+
+    it('recomputes after a lockfile appears', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot);
+      clearStubFingerprintInvocations(projectRoot);
+
+      // A sentinel the project did not have. A key that *gained* an entry is a miss, because a
+      // project that grew a lockfile changed what its node_modules is a function of.
+      await fs.promises.writeFile(
+        path.join(projectRoot, 'package-lock.json'),
+        '{"lockfileVersion":3}'
+      );
+
+      await reportInAsync(projectRoot);
+
+      expect(spawns(projectRoot)).toEqual(['all']);
+    });
+
+    it('still answers from the record after a file no sentinel names is touched', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot);
+      clearStubFingerprintInvocations(projectRoot);
+
+      // JavaScript is not a fingerprint source, and the whole point of the pinned set is that a
+      // change to it costs nothing.
+      await fs.promises.writeFile(path.join(projectRoot, 'index.js'), '// edited\n');
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(spawns(projectRoot)).toEqual([]);
+      expect(report.freshness?.hashSource.source).toBe('cache');
+    });
+
+    it('recomputes after the fingerprint CLI is upgraded', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot);
+      clearStubFingerprintInvocations(projectRoot);
+
+      // A hash from another version of the tool is not comparable with this one
+      // (llp/0001 §Constraints item 5), so the entry is dropped rather than believed.
+      const manifestPath = path.join(
+        projectRoot,
+        'node_modules',
+        '@expo',
+        'fingerprint',
+        'package.json'
+      );
+      const manifest = JSON.parse(await fs.promises.readFile(manifestPath, 'utf8'));
+      manifest.version = '0.21.0';
+      await fs.promises.writeFile(manifestPath, JSON.stringify(manifest));
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(spawns(projectRoot)).toEqual(['all']);
+      expect(report.freshness?.hashSource.source).toBe('computed');
+    });
+
+    it('recomputes when --no-fingerprint-cache is passed', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot);
+      clearStubFingerprintInvocations(projectRoot);
+
+      const report = await reportInAsync(projectRoot, ['--no-fingerprint-cache']);
+
+      expect(spawns(projectRoot)).toEqual(['all']);
+      expect(report.freshness?.hashSource.source).toBe('computed');
+    });
+
+    it('recomputes when EXAGENT_NO_FINGERPRINT_CACHE is set', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      await reportInAsync(projectRoot);
+      clearStubFingerprintInvocations(projectRoot);
+
+      // The variable is for the paths that have no flag of their own — a probe inside another
+      // command — so it has to work on the ones that do as well.
+      const report = await reportInAsync(projectRoot, [], { EXAGENT_NO_FINGERPRINT_CACHE: '1' });
+
+      expect(spawns(projectRoot)).toEqual(['all']);
+      expect(report.freshness?.hashSource.source).toBe('computed');
+    });
+
+    it('writes the record under .expo, keyed per platform', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+
+      await reportInAsync(projectRoot, ['--explain']);
+
+      const record = JSON.parse(
+        await fs.promises.readFile(
+          path.join(projectRoot, '.expo', 'exagent-fingerprint.json'),
+          'utf8'
+        )
+      );
+      expect(Object.keys(record.entries).sort()).toEqual([
+        'all|default',
+        'android|default',
+        'ios|default',
+      ]);
+      expect(Object.keys(record.entries['all|default'].keyManifest.files)).toEqual(
+        expect.arrayContaining(['package.json', 'app.json', '.gitignore'])
+      );
+    });
+
+    // The bare branch: the sentinel list says nothing about a nested native edit, so the manifest
+    // covers `ios/` and `android/` with a stat walk — measured at 0.7–2.0 ms against ~1.1 s for the
+    // fingerprint it stands in for, which is why bare projects are cached at all (llp/0023).
+    describe('a project with committed native directories', () => {
+      /** `dev-client-fresh-app` plus native directories: a fixture with both is not committed. */
+      async function setupBareAsync(): Promise<string> {
+        const projectRoot = await setupAsync('dev-client-fresh-app');
+        await fs.promises.mkdir(path.join(projectRoot, 'ios', 'App'), { recursive: true });
+        await fs.promises.writeFile(
+          path.join(projectRoot, 'ios', 'App', 'AppDelegate.swift'), 'import UIKit\n'
+        );
+        return projectRoot;
+      }
+
+      it('answers from the record when the native tree is unchanged', async () => {
+        const projectRoot = await setupBareAsync();
+        await reportInAsync(projectRoot);
+        clearStubFingerprintInvocations(projectRoot);
+
+        const report = await reportInAsync(projectRoot);
+
+        expect(spawns(projectRoot)).toEqual([]);
+        expect(report.freshness?.hashSource.source).toBe('cache');
+      });
+
+      it('recomputes after a nested native edit the sentinel list cannot see', async () => {
+        const projectRoot = await setupBareAsync();
+        await reportInAsync(projectRoot);
+        clearStubFingerprintInvocations(projectRoot);
+
+        await fs.promises.writeFile(
+          path.join(projectRoot, 'ios', 'App', 'AppDelegate.swift'),
+          'import UIKit\n// a native change no lockfile records\n'
+        );
+
+        const report = await reportInAsync(projectRoot);
+
+        expect(spawns(projectRoot)).toEqual(['all']);
+        expect(report.freshness?.hashSource.source).toBe('computed');
+      });
+
+      it('ignores the generated trees the fingerprint itself ignores', async () => {
+        const projectRoot = await setupBareAsync();
+        await reportInAsync(projectRoot);
+        clearStubFingerprintInvocations(projectRoot);
+
+        // `ios/Pods` is in `DEFAULT_IGNORE_PATHS` of @expo/fingerprint, so a change there cannot
+        // move the hash and must not cost a recomputation.
+        await fs.promises.mkdir(path.join(projectRoot, 'ios', 'Pods'), { recursive: true });
+        await fs.promises.writeFile(
+          path.join(projectRoot, 'ios', 'Pods', 'Manifest.lock'),
+          'PODS: []\n'
+        );
+
+        expect((await reportInAsync(projectRoot)).freshness?.hashSource.source).toBe('cache');
+        expect(spawns(projectRoot)).toEqual([]);
+      });
     });
   });
 

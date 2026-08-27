@@ -899,6 +899,11 @@ describe(printStatusAsync, () => {
       impact: { ios: null, android: null },
       assertion: null,
       easBuildsAsked: false,
+      // @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+      // Null here because this suite mocks the probe, so no fingerprint call stated a source. A
+      // real run always carries one.
+      fingerprintSource: null,
+      fingerprintRevalidatedAgainst: null,
       skillsDiscovered: 0,
       skillsLinked: 0,
       sectionErrors: [],

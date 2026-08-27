@@ -96,6 +96,13 @@ export interface EasBuildsOptions {
   projectHash: string | null;
   /** Overrides {@link EAS_BUILD_LOOKUP_TIMEOUT_MS}, for tests. */
   timeoutMs?: number;
+  /**
+   * Whether the per-platform fingerprint below may come out of the project's `.expo` record.
+   *
+   * @see llp/0023-fingerprint-caching.rfc.md — this is the section that pays for *two* of the three
+   * fingerprints a `status --explain` used to compute, so it is the one the cache helps most.
+   */
+  fingerprintCache?: boolean;
 }
 
 /**
@@ -151,7 +158,7 @@ async function readPlatformAsync(
     options.timeoutMs ??
     (mayDownloadEasCli(easCli) ? EAS_BUILD_RUNNER_TIMEOUT_MS : EAS_BUILD_LOOKUP_TIMEOUT_MS);
   const outcome = await withDeadlineAsync(
-    lookUpPlatformAsync(projectRoot, platform, deadline, easCli),
+    lookUpPlatformAsync(projectRoot, platform, deadline, easCli, options.fingerprintCache),
     deadline
   );
   if (!outcome) {
@@ -204,9 +211,13 @@ async function lookUpPlatformAsync(
   projectRoot: string,
   platform: NativePlatform,
   timeoutMs: number,
-  easCli: EasCli | null
+  easCli: EasCli | null,
+  fingerprintCache: boolean | undefined
 ): Promise<LookupOutcome> {
-  const fingerprint = await generateFingerprintAsync(projectRoot, { platform });
+  const fingerprint = await generateFingerprintAsync(projectRoot, {
+    platform,
+    cache: fingerprintCache,
+  });
   if (!fingerprint.hash) {
     return {
       fingerprintHash: null,

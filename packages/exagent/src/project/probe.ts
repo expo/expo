@@ -12,6 +12,18 @@ import {
 } from './nodeModules';
 import type { ProjectState } from './types';
 
+export interface ProbeOptions {
+  /**
+   * Whether the fingerprint may be answered out of the project's `.expo` record.
+   *
+   * Undefined leaves the decision to `EXAGENT_NO_FINGERPRINT_CACHE`; false is what
+   * `--no-fingerprint-cache` sets, and makes this probe spawn the fingerprint CLI.
+   *
+   * @see llp/0023-fingerprint-caching.rfc.md
+   */
+  fingerprintCache?: boolean;
+}
+
 /**
  * Gather the state of a project.
  *
@@ -19,7 +31,10 @@ import type { ProjectState } from './types';
  * is reported as `null` (with an error for the fingerprint), so an agent always receives a
  * complete state object it can reason about.
  */
-export async function probeProjectStateAsync(projectRoot: string): Promise<ProjectState> {
+export async function probeProjectStateAsync(
+  projectRoot: string,
+  options: ProbeOptions = {}
+): Promise<ProjectState> {
   const packageJson = await readProjectPackageJsonAsync(projectRoot);
   const dependencyNames = listDependencyNames(packageJson);
 
@@ -29,7 +44,7 @@ export async function probeProjectStateAsync(projectRoot: string): Promise<Proje
     isInstalledDependencyAsync(projectRoot, dependencyNames, 'expo-dev-client'),
     isInstalledDependencyAsync(projectRoot, dependencyNames, 'react-native-web'),
     checkExpoGoCompatibilityAsync(projectRoot),
-    generateFingerprintAsync(projectRoot),
+    generateFingerprintAsync(projectRoot, { cache: options.fingerprintCache }),
   ]);
 
   return {

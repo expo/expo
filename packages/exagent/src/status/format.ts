@@ -447,7 +447,36 @@ function freshnessLine(freshness: FreshnessStatus): string {
   if (freshness.error) {
     lines.push(`${indent}${chalk.dim(`fingerprint error: ${summarize(freshness.error)}`)}`);
   }
+  const provenance = fingerprintProvenance(freshness);
+  if (provenance) {
+    lines.push(`${indent}${chalk.dim(provenance)}`);
+  }
   return lines.join('\n');
+}
+
+/**
+ * The line that says where the hash above came from, or nothing when it was measured here.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+ * @ref llp/0021-honest-reports.rfc.md
+ * Printed only for a cached answer, and that asymmetry is the point: `computed` is what a reader
+ * already assumes a status report did, and `cache` is the claim that needs its evidence attached.
+ * The count is what makes it checkable — "revalidated against 7 pinned files" can be disagreed
+ * with, and "cached" cannot.
+ */
+function fingerprintProvenance(freshness: FreshnessStatus): string | null {
+  const { source, revalidatedAgainst, computedAt } = freshness.hashSource;
+  if (source !== 'cache') {
+    return null;
+  }
+  const pinned =
+    revalidatedAgainst == null
+      ? 'the files it was recorded against'
+      : `${revalidatedAgainst} pinned ${pluralize(revalidatedAgainst, 'file', 'files')}`;
+  const when = computedAt ? `, computed ${computedAt}` : '';
+  // The same eight characters the freshness details show, so the two read as one hash.
+  const hash = freshness.hash ? freshness.hash.slice(0, 8) : 'unknown';
+  return `fingerprint: ${hash} (from cache, revalidated against ${pinned}${when}) — pass --no-fingerprint-cache to hash the project again`;
 }
 
 function devServerLine(devServer: DevServerStatus): string {

@@ -71,6 +71,17 @@ same hash — that pair is what makes the project look freshly built. Two enviro
 test steer it without editing the fixture: `STUB_FINGERPRINT_HASH` prints a different hash, which
 simulates a changed native surface, and `STUB_FINGERPRINT_EXIT_CODE` makes the tool fail.
 
+**It also records every invocation**, one JSON line in `stub-fingerprint-invocations.jsonl`, read
+with `readStubFingerprintInvocations()`. That log is the only way to observe the fingerprint caching
+of `llp/0023` from outside: a memo hit, a cache hit and a recomputation all print the same hash and
+differ only in how many subprocesses ran.
+
+**`STUB_FINGERPRINT_HASH` is not a way to move the fingerprint of a cached project.** An environment
+variable is not a file, and the cross-run cache is revalidated against files — so a run that only
+sets it is answered out of `.expo/exagent-fingerprint.json` with the old hash. A test that needs the
+hash to move has to change something the pinned set covers as well, `app.json` being the smallest,
+which is also how a real project moves its hash.
+
 `node_modules/.bin/fingerprint` is not committed. `installStubFingerprintAsync()` in `../utils.ts`
 writes the shims into the temporary copy, the same way the stub `expo` bin is installed, so the
 executable bits never have to live in git.

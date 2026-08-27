@@ -20,6 +20,7 @@ import { event as planEvent } from '../plan/events';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../plan/lastBuild';
 import { resolveStartPlanAsync } from '../plan/resolveAsync';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
+import { clearFingerprintMemo } from '../project/fingerprint';
 import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { resolveStartFollowUpsAsync } from '../start/followUps';
@@ -62,7 +63,9 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
     return await devDetachAsync(projectRoot, options);
   }
 
-  const state = await probeProjectStateAsync(projectRoot);
+  const state = await probeProjectStateAsync(projectRoot, {
+    fingerprintCache: options.fingerprintCache,
+  });
   // @ref llp/0015-backend-selection-and-config.rfc.md §The selection
   // One call that folds in everything outside the project: the developer's config, the flags they
   // typed, this host and the toolchain probe. The backend is chosen **here**, before the plan is
@@ -329,6 +332,12 @@ async function executePlanAsync(
     }
 
     recordBuildOf(projectRoot, step, state);
+    // @ref llp/0023-fingerprint-caching.rfc.md §What invalidates an answer
+    // After the step, not before: an install, a prebuild or a build has just changed the project,
+    // and every fingerprint this process measured is a statement about the project as it was. The
+    // cross-run record needs no help here — a prebuild moves the pinned files that key it — but the
+    // memo would answer the next caller with the hash from before the step.
+    clearFingerprintMemo(projectRoot);
   }
 
   return { exitCode, devServer, failure: null };

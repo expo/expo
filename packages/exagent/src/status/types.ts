@@ -152,9 +152,35 @@ export interface FreshnessComparison {
   platform: 'ios' | 'android' | null;
 }
 
+/**
+ * Where a fingerprint hash came from.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+ * @ref llp/0021-honest-reports.rfc.md
+ * A hash read off the project's own record is not a measurement of the project now, and a report
+ * that printed the two the same way would be claiming a fresh reading it did not take. So the
+ * source rides along with the hash, and a cached one carries the count that makes it checkable.
+ */
+export interface FingerprintHashSource {
+  /** `computed` for a `fingerprint:generate` this run made, `cache` for the `.expo` record. */
+  source: 'computed' | 'cache' | null;
+  /** How many pinned files a `cache` answer was revalidated against. Null otherwise. */
+  revalidatedAgainst: number | null;
+  /** When a `cache` answer was originally computed. Null otherwise. */
+  computedAt: string | null;
+  /** What the revalidation could not cover. Empty when nothing was cached. */
+  caveats: string[];
+}
+
 export interface FreshnessStatus {
   /** Current fingerprint of the native surface, or null when the tool is unavailable. */
   hash: string | null;
+  /**
+   * Where {@link hash} came from: measured now, or read off the project's record.
+   *
+   * Always present, so no consumer has to infer it from which flags were passed.
+   */
+  hashSource: FingerprintHashSource;
   /** Why the fingerprint is unavailable. */
   error?: string;
   platforms: PlatformFreshness[];

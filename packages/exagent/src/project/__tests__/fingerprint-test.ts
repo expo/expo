@@ -5,6 +5,7 @@ import path from 'path';
 
 import {
   buildGenerateArgs,
+  clearFingerprintMemo,
   diffItemSource,
   generateFingerprintAsync,
   parseDiffItems,
@@ -49,6 +50,9 @@ function writeFingerprintBin(name = 'fingerprint') {
 beforeEach(() => {
   mockPlatform('darwin');
   vol.reset();
+  // One fingerprint per key per *process*, and a test file is one process: without this, the second
+  // test to ask for the same key would be answered by the first test's memo and spawn nothing.
+  clearFingerprintMemo();
 });
 
 afterEach(() => {
@@ -85,7 +89,10 @@ describe(generateFingerprintAsync, () => {
     child.stdout.emit('data', JSON.stringify({ sources: [], hash: 'abc123' }));
     child.emit('close', 0, null);
 
-    await expect(promise).resolves.toEqual({ hash: 'abc123', sources: [] });
+    // @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+    // `source` rides along on every answer, so no consumer has to guess whether a hash was measured
+    // now or read off a record.
+    await expect(promise).resolves.toEqual({ hash: 'abc123', sources: [], source: 'computed' });
     expect(spawn).toHaveBeenCalledWith(
       projectBin('fingerprint'),
       ['fingerprint:generate', projectRoot],
@@ -102,7 +109,7 @@ describe(generateFingerprintAsync, () => {
     child.stdout.emit('data', `${JSON.stringify({ hash: 'def456' })}\n`);
     child.emit('close', 0, null);
 
-    await expect(promise).resolves.toEqual({ hash: 'def456', sources: null });
+    await expect(promise).resolves.toEqual({ hash: 'def456', sources: null, source: 'computed' });
   });
 
   it(`should report a missing CLI without spawning anything`, async () => {
@@ -153,8 +160,230 @@ describe(generateFingerprintAsync, () => {
     await expect(promise).resolves.toEqual({
       hash: null,
       sources: null,
+      source: 'computed',
       error: expect.stringContaining('ENOENT'),
     });
+  });
+});
+
+// @ref llp/0023-fingerprint-caching.rfc.md §Layer 1 — one fingerprint per key per process
+describe('the in-process memo', () => {
+  it(`should spawn once for two sequential calls with the same key`, async () => {
+    writeFingerprintBin();
+    const first = mockSpawn();
+
+    const promise = generateFingerprintAsync(projectRoot);
+    first.stdout.emit('data', JSON.stringify({ hash: 'abc123', sources: [] }));
+    first.emit('close', 0, null);
+    await promise;
+
+    await expect(generateFingerprintAsync(projectRoot)).resolves.toMatchObject({
+      hash: 'abc123',
+      source: 'computed',
+      memoized: true,
+    });
+    expect(spawn).toHaveBeenCalledTimes(1);
+  });
+
+  it(`should share one spawn between concurrent callers`, async () => {
+    // F93's lesson at the fingerprint boundary: the probe, the freshness section and the build
+    // lookup all start at once, so two callers racing for the same key must join one promise
+    // rather than start two subprocesses.
+    writeFingerprintBin();
+    const child = mockSpawn();
+
+    const first = generateFingerprintAsync(projectRoot);
+    const second = generateFingerprintAsync(projectRoot);
+    child.stdout.emit('data', JSON.stringify({ hash: 'abc123', sources: [] }));
+    child.emit('close', 0, null);
+
+    await expect(first).resolves.toMatchObject({ hash: 'abc123' });
+    await expect(second).resolves.toMatchObject({ hash: 'abc123' });
+    expect(spawn).toHaveBeenCalledTimes(1);
+  });
+
+  it(`should keep the platforms apart`, async () => {
+    writeFingerprintBin();
+    const child = mockSpawn();
+
+    const ios = generateFingerprintAsync(projectRoot, { platform: 'ios' });
+    const android = generateFingerprintAsync(projectRoot, {
+      platform: 'android',
+    });
+    child.stdout.emit('data', JSON.stringify({ hash: 'abc123', sources: [] }));
+    child.emit('close', 0, null);
+    await Promise.all([ios, android]);
+
+    expect(spawn).toHaveBeenCalledTimes(2);
+  });
+
+  it(`should keep the presets apart`, async () => {
+    writeFingerprintBin();
+    const child = mockSpawn();
+
+    const balanced = generateFingerprintAsync(projectRoot, {
+      preset: 'balanced',
+    });
+    const strict = generateFingerprintAsync(projectRoot, { preset: 'strict' });
+    child.stdout.emit('data', JSON.stringify({ hash: 'abc123', sources: [] }));
+    child.emit('close', 0, null);
+    await Promise.all([balanced, strict]);
+
+    expect(spawn).toHaveBeenCalledTimes(2);
+  });
+
+  it(`should never answer a caller that asked for no cache out of the memo of one that did`, async () => {
+    writeFingerprintBin();
+    const child = mockSpawn();
+
+    const cached = generateFingerprintAsync(projectRoot);
+    const fresh = generateFingerprintAsync(projectRoot, { cache: false });
+    child.stdout.emit('data', JSON.stringify({ hash: 'abc123', sources: [] }));
+    child.emit('close', 0, null);
+    await Promise.all([cached, fresh]);
+
+    expect(spawn).toHaveBeenCalledTimes(2);
+  });
+
+  it(`should spawn again after the memo is cleared`, async () => {
+    writeFingerprintBin();
+    const first = mockSpawn();
+
+    const promise = generateFingerprintAsync(projectRoot);
+    first.stdout.emit('data', JSON.stringify({ hash: 'abc123', sources: [] }));
+    first.emit('close', 0, null);
+    await promise;
+
+    // What a command that mutates the project calls: a prebuild, an install or a build makes every
+    // answer above it a statement about a project that no longer exists.
+    clearFingerprintMemo(projectRoot);
+    const second = mockSpawn();
+    const again = generateFingerprintAsync(projectRoot);
+    second.stdout.emit('data', JSON.stringify({ hash: 'def456', sources: [] }));
+    second.emit('close', 0, null);
+
+    await expect(again).resolves.toMatchObject({ hash: 'def456' });
+    expect(spawn).toHaveBeenCalledTimes(2);
+  });
+});
+
+// @ref llp/0023-fingerprint-caching.rfc.md §Layer 2 — the cross-run cache
+describe('the cross-run cache', () => {
+  /** A project complete enough to be cached: sentinels to pin, and a CLI version to key on. */
+  function writeCacheableProject() {
+    writeFingerprintBin();
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/package-lock.json`]: '{"lockfileVersion":3}',
+      [`${projectRoot}/app.json`]: '{"expo":{"name":"app"}}',
+      [`${projectRoot}/node_modules/@expo/fingerprint/package.json`]: '{"version":"0.20.10"}',
+    });
+  }
+
+  /**
+   * Answer every spawn with `hash`, whenever it happens.
+   *
+   * The generate now reads the pinned files before it spawns, so a test that emitted on the child
+   * up front would be feeding a subprocess that does not exist yet. This answers on the spawn
+   * itself, which is also what a real subprocess does.
+   */
+  function answerSpawnsWith(hash: string, { exitCode = 0 } = {}) {
+    jest.mocked(spawn).mockImplementation((() => {
+      const child = Object.assign(new EventEmitter(), {
+        stdout: new EventEmitter(),
+        stderr: new EventEmitter(),
+      });
+      setImmediate(() => {
+        if (exitCode === 0) {
+          child.stdout.emit('data', JSON.stringify({ hash, sources: [{ type: 'file' }] }));
+        } else {
+          child.stderr.emit('data', 'boom\n');
+        }
+        child.emit('close', exitCode, null);
+      });
+      return child;
+    }) as any);
+  }
+
+  /** Run one generate against a stubbed subprocess that prints `hash`. */
+  function generateAsync(
+    hash: string,
+    options: Parameters<typeof generateFingerprintAsync>[1] = {}
+  ) {
+    answerSpawnsWith(hash);
+    return generateFingerprintAsync(projectRoot, options);
+  }
+
+  it(`should serve the next process out of the record it wrote`, async () => {
+    writeCacheableProject();
+    await expect(generateAsync('abc123')).resolves.toMatchObject({
+      source: 'computed',
+    });
+    expect(spawn).toHaveBeenCalledTimes(1);
+
+    clearFingerprintMemo();
+    const cached = await generateFingerprintAsync(projectRoot);
+
+    expect(cached).toMatchObject({
+      hash: 'abc123',
+      source: 'cache',
+      revalidatedAgainst: expect.any(Number),
+    });
+    expect(cached.revalidatedAgainst).toBeGreaterThan(0);
+    expect(cached.sources).toEqual([{ type: 'file' }]);
+    expect(spawn).toHaveBeenCalledTimes(1);
+  });
+
+  it(`should recompute after a lockfile changes`, async () => {
+    writeCacheableProject();
+    await generateAsync('abc123');
+    clearFingerprintMemo();
+
+    vol.writeFileSync(`${projectRoot}/package-lock.json`, '{"lockfileVersion":4}');
+    await expect(generateAsync('def456')).resolves.toMatchObject({
+      hash: 'def456',
+      source: 'computed',
+    });
+    expect(spawn).toHaveBeenCalledTimes(2);
+  });
+
+  it(`should not be read when the caller asked for no cache`, async () => {
+    writeCacheableProject();
+    await generateAsync('abc123');
+    clearFingerprintMemo();
+
+    await expect(generateAsync('def456', { cache: false })).resolves.toMatchObject({
+      hash: 'def456',
+      source: 'computed',
+    });
+    expect(spawn).toHaveBeenCalledTimes(2);
+  });
+
+  it(`should not be written by a run that failed`, async () => {
+    writeCacheableProject();
+    answerSpawnsWith('never printed', { exitCode: 1 });
+    await expect(generateFingerprintAsync(projectRoot)).resolves.toMatchObject({
+      hash: null,
+    });
+
+    clearFingerprintMemo();
+    await expect(generateAsync('abc123')).resolves.toMatchObject({
+      source: 'computed',
+    });
+    expect(spawn).toHaveBeenCalledTimes(2);
+  });
+
+  it(`should be skipped whole for a project with no fingerprint CLI version to key on`, async () => {
+    writeFingerprintBin();
+    vol.fromJSON({ [`${projectRoot}/package.json`]: '{"name":"app"}' });
+
+    await generateAsync('abc123');
+    clearFingerprintMemo();
+
+    await expect(generateAsync('def456')).resolves.toMatchObject({
+      hash: 'def456',
+    });
+    expect(spawn).toHaveBeenCalledTimes(2);
   });
 });
 

@@ -157,6 +157,28 @@ describe(readEasBuildsStatusAsync, () => {
   });
 
   // The reason the lookup needs a fingerprint run of its own: the hash `status` has covers both
+  // @ref llp/0023-fingerprint-caching.rfc.md §Every consumer can turn it off
+  // This section pays for two of the three fingerprints a `status --explain` computes, so a caller
+  // who refused the cache has to be refused it here too — or the flag would only apply to a third
+  // of the cost it is about.
+  it(`should pass a refused cache through to both platforms`, async () => {
+    await readEasBuildsStatusAsync(projectRoot, {
+      lookUp: true,
+      auth: signedIn,
+      projectHash: PROJECT_HASH,
+      fingerprintCache: false,
+    });
+
+    expect(generateFingerprintAsync).toHaveBeenCalledWith(projectRoot, {
+      platform: 'ios',
+      cache: false,
+    });
+    expect(generateFingerprintAsync).toHaveBeenCalledWith(projectRoot, {
+      platform: 'android',
+      cache: false,
+    });
+  });
+
   // platforms, and an EAS build carries a per-platform one.
   it(`should look the per-platform fingerprint up, not the project one`, async () => {
     await readEasBuildsStatusAsync(projectRoot, {
@@ -165,7 +187,10 @@ describe(readEasBuildsStatusAsync, () => {
       projectHash: PROJECT_HASH,
     });
 
-    expect(generateFingerprintAsync).toHaveBeenCalledWith(projectRoot, { platform: 'ios' });
+    expect(generateFingerprintAsync).toHaveBeenCalledWith(projectRoot, {
+      platform: 'ios',
+      cache: undefined,
+    });
     expect(lookUpCachedBuildAsync).toHaveBeenCalledWith(
       {
     command: 'npx',

@@ -45,10 +45,14 @@ export interface Comparison {
 export async function compareWithLastBuildAsync(
   projectRoot: string,
   platform: 'ios' | 'android',
-  { preset }: { preset?: string } = {}
+  { preset, fingerprintCache }: { preset?: string; fingerprintCache?: boolean } = {}
 ): Promise<Comparison> {
   const recorded = readLastBuildRecord(projectRoot)[platform];
-  const head = await generateFingerprintAsync(projectRoot, { platform, preset });
+  const head = await generateFingerprintAsync(projectRoot, {
+    platform,
+    preset,
+    cache: fingerprintCache,
+  });
 
   const headSide: ComparisonSide = { label: 'working tree', hash: head.hash };
   const baseSide: ComparisonSide = {

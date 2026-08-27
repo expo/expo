@@ -170,7 +170,9 @@ describe(devAsync, () => {
 
       await devAsync(projectRoot, resolveDevOptions(['--plan']));
 
-      expect(probeProjectStateAsync).toHaveBeenCalledWith(projectRoot);
+      expect(probeProjectStateAsync).toHaveBeenCalledWith(projectRoot, {
+        fingerprintCache: true,
+      });
       expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
         mode: 'plan',
         json: false,
