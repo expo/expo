@@ -890,13 +890,26 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   });
 }
 
-export function insertAgentInstructionsAfterH1(markdown: string, block: string): string {
+export function insertAgentInstructionsAfterH1(
+  markdown: string,
+  block: string,
+  description?: string | null
+): string {
   const h1 = markdown.match(/^# .*$/m);
   if (h1?.index === undefined) {
     return `${block}\n${markdown}`;
   }
 
-  const insertAt = h1.index + h1[0].length;
+  let insertAt = h1.index + h1[0].length;
+
+  if (description) {
+    const normalize = (text: string) => text.replace(/\\/g, '').replace(/\s+/g, ' ').trim();
+    const paragraph = markdown.slice(insertAt).match(/^\n+([^\n]+)/);
+    if (paragraph && normalize(paragraph[1]).startsWith(normalize(description).slice(0, 40))) {
+      insertAt += paragraph[0].length;
+    }
+  }
+
   return `${markdown.slice(0, insertAt)}\n\n${block.trimEnd()}${markdown.slice(insertAt)}`;
 }
 

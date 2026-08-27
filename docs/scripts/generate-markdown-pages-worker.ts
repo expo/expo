@@ -152,7 +152,10 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     const pageNote = buildPageSpecificNote(pathname);
 
     if (agentInstructions) {
-      markdown = insertAgentInstructionsAfterH1(markdown, agentInstructions);
+      const description = frontmatter
+        ?.match(/^description: (.*)$/m)?.[1]
+        ?.replace(/^["']|["']$/g, '');
+      markdown = insertAgentInstructionsAfterH1(markdown, agentInstructions, description);
     }
 
     const parts: string[] = [];

@@ -50,6 +50,39 @@ describe('insertAgentInstructionsAfterH1', () => {
 
     expect(result).toBe(`${block}\n${markdown}`);
   });
+
+  it('keeps the description paragraph attached to the title', () => {
+    const markdown = '# Create a project\n\nLearn how to create a new Expo project.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'Learn how to create a new Expo project.'
+    );
+
+    expect(result).toBe(
+      '# Create a project\n\nLearn how to create a new Expo project.\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nBody.'
+    );
+  });
+
+  it('matches a description paragraph that turndown escaped', () => {
+    const markdown = '# Page\n\nUse \\[brackets\\] carefully.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block, 'Use [brackets] carefully.');
+
+    expect(result.indexOf('carefully.')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+  });
+
+  it('inserts below the H1 when the next paragraph is not the description', () => {
+    const markdown = '# Page title\n\nRegular first paragraph.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'A description not on the page.'
+    );
+
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(
+      result.indexOf('Regular first paragraph.')
+    );
+  });
 });
 
 describe('convertMdxInstructionToMarkdown', () => {
