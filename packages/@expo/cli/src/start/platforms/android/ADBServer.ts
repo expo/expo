@@ -6,14 +6,15 @@ import { assertSdkRoot } from './AndroidSdk';
 import {
   AdbProcessWaitError,
   runAdbDeviceMutationAsync,
-  runAdbDeviceQueryAsync,
   runAdbHostQueryAsync,
   runBoundedAdbDeviceQueryAsync,
+  runBoundedAdbDeviceMutationAsync,
   runBoundedAdbHostQueryAsync,
 } from './adbProcess';
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 const PROPERTY_QUERY_WAIT_LIMIT_MS = 10_000;
+const DEVICE_QUERY_WAIT_LIMIT_MS = 10_000;
 
 export class ADBServer {
   /** Returns the command line reference to ADB. */
@@ -35,7 +36,8 @@ export class ADBServer {
   async runDeviceQueryAsync(
     args: string[],
     operation: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    waitLimitMs: number = DEVICE_QUERY_WAIT_LIMIT_MS
   ): Promise<string> {
     const adb = this.getAdbExecutablePath();
 
@@ -44,22 +46,27 @@ export class ADBServer {
 
     event('adb_server_run', { command: [adb, ...args].join(' ') });
     const result = await this.resolveAdbPromise(
-      runAdbDeviceQueryAsync(adb, args, operation, signal)
+      runBoundedAdbDeviceQueryAsync(adb, args, operation, waitLimitMs, signal)
     );
-    return [result.stdout, result.stderr].join('\n');
+    assertValidAdbUserOutput(result);
+    return result.stdout;
   }
 
   async runDeviceMutationAsync(
     args: string[],
     operation: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    waitLimitMs?: number
   ): Promise<string> {
     const adb = this.getAdbExecutablePath();
     event('adb_server_run', { command: [adb, ...args].join(' ') });
     const result = await this.resolveAdbPromise(
-      runAdbDeviceMutationAsync(adb, args, operation, signal)
+      waitLimitMs == null
+        ? runAdbDeviceMutationAsync(adb, args, operation, signal)
+        : runBoundedAdbDeviceMutationAsync(adb, args, operation, waitLimitMs, signal)
     );
-    return [result.stdout, result.stderr].join('\n');
+    assertValidAdbUserOutput(result);
+    return result.stdout;
   }
 
   async runHostQueryAsync(
@@ -94,6 +101,7 @@ export class ADBServer {
         signal
       )
     );
+    assertValidAdbUserOutput(result);
     event('adb_file_output', { output: result.stdout });
     return result.stdout;
   }
@@ -110,8 +118,9 @@ export class ADBServer {
       if (error.signal === 'SIGINT') {
         throw new AbortCommandError();
       }
-      if (error.status === 255 && error.stdout.includes('Bad user number')) {
-        const userNumber = error.stdout.match(/Bad user number: (.+)/)?.[1] ?? env.EXPO_ADB_USER;
+      const processOutput = [error.stdout, error.stderr].filter(Boolean).join('\n');
+      if (error.status === 255 && processOutput.includes('Bad user number')) {
+        const userNumber = processOutput.match(/Bad user number: (.+)/)?.[1] ?? env.EXPO_ADB_USER;
         throw new CommandError(
           'EXPO_ADB_USER',
           `Invalid ADB user number "${userNumber}" set with environment variable EXPO_ADB_USER. Run "adb shell pm list users" to see valid user numbers.`
@@ -126,5 +135,16 @@ export class ADBServer {
       error.message = errorMessage;
       throw error;
     }
+  }
+}
+
+function assertValidAdbUserOutput(result: { stdout: string; stderr: string }): void {
+  if (!env.EXPO_ADB_USER) return;
+  const output = [result.stdout, result.stderr].filter(Boolean).join('\n');
+  if (/Bad user number|(?:user .* does not exist|no user with id)/i.test(output)) {
+    throw new CommandError(
+      'EXPO_ADB_USER',
+      `Invalid ADB user number "${env.EXPO_ADB_USER}" set with environment variable EXPO_ADB_USER. Run "adb shell pm list users" to see valid user numbers.`
+    );
   }
 }

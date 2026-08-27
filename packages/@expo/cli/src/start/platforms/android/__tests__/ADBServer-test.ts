@@ -107,7 +107,7 @@ describe('runDeviceQueryAsync', () => {
     server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
     server.getAdbExecutablePath = jest.fn(() => 'adb');
     await expect(server.runDeviceQueryAsync(['foo', 'bar'], 'test query')).resolves.toBe(
-      'did thing\n'
+      'did thing'
     );
     expect(server.getAdbExecutablePath).toHaveBeenCalledTimes(1);
     expect(server.resolveAdbPromise).toHaveBeenCalledTimes(1);
@@ -115,7 +115,7 @@ describe('runDeviceQueryAsync', () => {
     expect(spawnAsync).toHaveBeenCalledWith('adb', ['foo', 'bar']);
   });
 
-  it('preserves stdout-before-stderr combined output', async () => {
+  it('keeps diagnostic stderr out of parsed query output', async () => {
     jest.mocked(spawnAsync).mockResolvedValueOnce({
       stdout: 'machine-readable output',
       stderr: 'diagnostic output',
@@ -126,8 +126,25 @@ describe('runDeviceQueryAsync', () => {
     server.getAdbExecutablePath = jest.fn(() => 'adb');
 
     await expect(server.runDeviceQueryAsync(['devices', '-l'], 'device query')).resolves.toBe(
-      'machine-readable output\ndiagnostic output'
+      'machine-readable output'
     );
+  });
+
+  it('rejects a nonexistent ADB user reported with a successful exit', async () => {
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
+      stdout: '',
+      stderr: 'Error: user 99 does not exist',
+      status: 0,
+      signal: null,
+    } as any);
+    const server = new ADBServer();
+    server.getAdbExecutablePath = jest.fn(() => 'adb');
+
+    await expect(
+      server.runDeviceQueryAsync(['shell', 'pm', 'list', 'packages'], 'query')
+    ).rejects.toMatchObject({
+      code: 'EXPO_ADB_USER',
+    });
   });
 });
 describe('getFileOutputAsync', () => {
@@ -163,6 +180,27 @@ describe('getFileOutputAsync', () => {
     );
   });
 
+  it('maps bad ADB users reported on stderr', async () => {
+    const server = new ADBServer();
+    await expect(
+      server.resolveAdbPromise(
+        Promise.reject({
+          status: 255,
+          stderr: 'java.lang.IllegalArgumentException: Bad user number: FUNKY',
+        })
+      )
+    ).rejects.toMatchObject({ code: 'EXPO_ADB_USER' });
+  });
+
+  it('formats status failures without stdout', async () => {
+    const server = new ADBServer();
+    const error = { status: 255, stderr: 'device rejected command' };
+
+    await expect(server.resolveAdbPromise(Promise.reject(error))).rejects.toMatchObject({
+      message: 'device rejected command',
+    });
+  });
+
   it('does not block scheduled JavaScript while a property query is pending', async () => {
     let resolveSpawn!: (result: any) => void;
     jest.mocked(spawnAsync).mockReturnValueOnce(
@@ -188,7 +226,7 @@ describe('getFileOutputAsync', () => {
   });
 });
 
-describe('unbounded commands', () => {
+describe('bounded commands', () => {
   jest.setTimeout(10_000);
 
   class FixtureADBServer extends ADBServer {
@@ -206,9 +244,9 @@ describe('unbounded commands', () => {
     jest.mocked(spawnAsync).mockImplementation(jest.requireActual('@expo/spawn-async'));
   });
 
-  it('allows a finite command to run without a default deadline', async () => {
+  it('allows a finite command to finish within the default deadline', async () => {
     await expect(new FixtureADBServer().runDeviceQueryAsync(['finite'], 'finite')).resolves.toBe(
-      'completed\n'
+      'completed'
     );
   });
 
