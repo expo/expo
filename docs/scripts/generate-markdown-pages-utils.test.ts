@@ -12,8 +12,45 @@ import {
   convertMdxInstructionToMarkdown,
   extractFrontmatter,
   findMdxSource,
+  insertAgentInstructionsAfterH1,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
+
+describe('insertAgentInstructionsAfterH1', () => {
+  const block =
+    '<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n';
+
+  it('inserts the block below the first H1', () => {
+    const markdown = '# Page title\n\nFirst paragraph.\n\n## First section\n\nMore.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(
+      '# Page title\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nFirst paragraph.\n\n## First section\n\nMore.'
+    );
+  });
+
+  it('targets the first H1 even when content precedes it', () => {
+    const markdown = 'Intro line.\n\n# Page title\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result.indexOf('# Page title')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(result.indexOf('Body.'));
+  });
+
+  it('prepends the block when no H1 exists', () => {
+    const markdown = 'This page redirects to another page.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+
+  it('does not treat an H2 as an H1', () => {
+    const markdown = '## Only a section heading\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+});
 
 describe('convertMdxInstructionToMarkdown', () => {
   it('converts scene JSX components and inlines helper MDX', () => {

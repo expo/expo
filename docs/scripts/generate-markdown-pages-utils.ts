@@ -890,6 +890,16 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   });
 }
 
+export function insertAgentInstructionsAfterH1(markdown: string, block: string): string {
+  const h1 = markdown.match(/^# .*$/m);
+  if (h1?.index === undefined) {
+    return `${block}\n${markdown}`;
+  }
+
+  const insertAt = h1.index + h1[0].length;
+  return `${markdown.slice(0, insertAt)}\n\n${block.trimEnd()}${markdown.slice(insertAt)}`;
+}
+
 /**
  * Post-process the markdown output to clean up common artifacts.
  */
