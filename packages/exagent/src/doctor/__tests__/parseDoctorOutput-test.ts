@@ -186,7 +186,7 @@ describe(parseDoctorOutput, () => {
 
 describe(extractAdviceAction, () => {
   it.each([
-    // @ref llp/0021-stop-and-readiness-honesty.rfc.md §The next action is this CLI's — friction
+    // @ref llp/0021-honest-reports.rfc.md §The next action is this CLI's — friction
     // run 7, F78. The advice is written for a person and names the Expo CLI; this CLI has the same
     // check, and adds the structured `check` object the rest of the surface expects.
     [

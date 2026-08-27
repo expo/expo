@@ -815,7 +815,7 @@ describe('the eas build line', () => {
     expect(rendered).toContain('EAS project not configured.');
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §A note nobody reads is not a note — live
+  // @ref llp/0021-honest-reports.rfc.md §A note nobody reads is not a note — live
   // staging, S9. The clipped end of this sentence is the clause that says what to do.
   it(`prints a reason too long for the line under it, rather than clipping it`, () => {
     const reason =
@@ -844,7 +844,7 @@ describe('the eas build line', () => {
   });
 });
 
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §A note nobody reads is not a note — friction
+// @ref llp/0021-honest-reports.rfc.md §A note nobody reads is not a note — friction
 // run 7's F66. `status --explain --build abc123` printed an ordinary report and exit 0, with the id
 // nowhere on it, while the JSON carried the whole reason the comparison never happened.
 describe('a section that printed a line and still failed', () => {

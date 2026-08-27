@@ -1,4 +1,4 @@
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §A generated file is not a mistake in the code
+// @ref llp/0021-honest-reports.rfc.md §A generated file is not a mistake in the code
 // The type declarations an Expo app has before anything has generated them.
 //
 // A brand-new `exagent new` project fails `exagent typecheck` [observed — friction run 7, F64]:

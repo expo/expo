@@ -122,7 +122,7 @@ describe('auth commands outside an Expo project', () => {
     expect(result.stderr).toContain(path.join(os.homedir(), '.expo', 'state.json'));
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Name the session file this run will read —
+  // @ref llp/0021-honest-reports.rfc.md §Name the session file this run will read —
   // live staging, S6. The whole family reads `.expo-staging` under this variable.
   it(`should name the staging session file under EXPO_STAGING`, async () => {
     const dir = await setupBareDirAsync(['eas']);

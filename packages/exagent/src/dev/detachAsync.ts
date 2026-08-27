@@ -242,7 +242,7 @@ export async function devDetachAsync(
   // between left the caller with `Bundler ready` and exit 0 for a dev server that was gone
   // [observed — friction run 7, F61; live staging, S4]. `ready: true` is only ever printed for a
   // process that is alive and a `/status` that still answers, here, now.
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Readiness is a claim about now
+  // @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now
   const verdict = readChildVerdictSync(projectRoot);
   const failure = resolveDetachFailure({
     exited: hasExited(),

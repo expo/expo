@@ -1,4 +1,4 @@
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §A detached child's own verdict
+// @ref llp/0021-honest-reports.rfc.md §A detached child's own verdict
 // What the detached child concluded, read back out of its log.
 //
 // A detached run has two processes and one caller, and only one of them prints to the caller's

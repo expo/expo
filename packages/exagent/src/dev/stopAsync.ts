@@ -156,7 +156,7 @@ export async function devStopAsync(projectRoot: string, options: DevStopOptions)
   // [observed — friction run 7, F60]. It is the one destructive verb in this surface, so a target
   // it was not given is the one thing it must never act on: when `--port` disagrees with the lock,
   // the lock is set aside and the port is answered for on its own evidence.
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target
+  // @ref llp/0021-honest-reports.rfc.md §`--port` names the target
   const lockOwnsTarget = lock != null && (options.port == null || lock.port === options.port);
   debugEvent('stop_lock_read', {
     held: lock != null,

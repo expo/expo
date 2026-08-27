@@ -235,7 +235,7 @@ describe('exagent dev --detach', () => {
     expect(await readDevLockAsync(projectRoot)).toBeNull();
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Readiness is a claim about now
+  // @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now
   //
   // Friction run 7's F61 and live staging's S4, which are one finding: the child had already
   // classified the stop, written the scenario and the what/why/how into its log, and exited — while

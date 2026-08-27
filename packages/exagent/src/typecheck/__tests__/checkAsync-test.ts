@@ -205,7 +205,7 @@ describe(runTypeCheckAsync, () => {
   });
 });
 
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §A generated file is not a mistake in the code —
+// @ref llp/0021-honest-reports.rfc.md §A generated file is not a mistake in the code —
 // friction run 7, F64. A brand-new project's first gate was red for a file the Expo CLI writes, and
 // the follow-up said to fix two files that were both correct.
 describe('a declaration file the project expects and does not have', () => {

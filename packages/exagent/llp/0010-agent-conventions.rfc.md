@@ -936,6 +936,13 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   Carrying the class through would retire §One error, one shape, whichever document answered.
   Reporting the file the way the native bundler reports it — relative to the project root, rather
   than `${projectRoot}/${error.filename}` — would retire the other half.
+- A **standalone typegen command**, so `expo-env.d.ts` and `.expo/types/` can be generated without
+  starting a dev server. Today `startTypescriptTypeGenerationAsync` runs only when Metro instantiates
+  [observed — `@expo/cli` `start/server/metro/MetroBundlerDevServer.ts`, SDK 57], and the command
+  table has no verb for it — so a brand-new project's `tsconfig.json` includes a file that does not
+  exist, and the first type check of every new app is red for a reason that is not in its code
+  (llp/0021 §A generated file is not a mistake in the code). Worked around by *reporting* the case:
+  nothing in this CLI writes another package's template.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.
 - Emit `devserver:url` in a **released** SDK. The event already exists on `main` with exactly the

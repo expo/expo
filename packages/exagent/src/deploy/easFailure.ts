@@ -1,5 +1,5 @@
 // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §Read the tool's own sentence before guessing
+// @ref llp/0021-honest-reports.rfc.md §Read the tool's own sentence before guessing
 // Why `eas deploy` stopped, read out of what it said.
 //
 // The upload used to be diagnosed from its *exit signature* alone: one `Why:` line, written once,

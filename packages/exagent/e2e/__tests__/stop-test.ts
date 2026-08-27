@@ -218,7 +218,7 @@ describe('exagent dev:stop', () => {
     }
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // @ref llp/0021-honest-reports.rfc.md §`--port` names the target — friction run 7,
   // F60. This is the assertion the finding is about, and it needs a real lock and a real process:
   // `--port` named one port, the lock named another, and the lock won.
   it('leaves the lock alone when --port names a different port', async () => {
@@ -259,7 +259,7 @@ describe('exagent dev:stop', () => {
     }
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // @ref llp/0021-honest-reports.rfc.md §`--port` names the target — friction run 7,
   // F72. "Nothing is listening" was reported about a port a plain TCP server was on.
   it('does not claim a busy port is quiet', async () => {
     const projectRoot = await setupFixtureAsync('go-app');

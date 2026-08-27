@@ -290,7 +290,7 @@ interface EasUpload {
  * fallback the auth commands already use is the answer: a run that never was the CLI uploaded
  * nothing, so retrying it through `<runner> eas-cli@latest` is safe, and it is the only rung left.
  *
- * @ref llp/0021-stop-and-readiness-honesty.rfc.md §Route around a binary that is not the CLI
+ * @ref llp/0021-honest-reports.rfc.md §Route around a binary that is not the CLI
  */
 async function uploadToEasHostingAsync(
   projectRoot: string,

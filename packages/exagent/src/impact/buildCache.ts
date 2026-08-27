@@ -136,7 +136,7 @@ export function buildViewArgs(buildId: string): string[] {
  * this account's, a payload in a shape this version cannot read: all null, and the caller says the
  * platform was not established rather than guessing one.
  *
- * @ref llp/0021-stop-and-readiness-honesty.rfc.md §One build is one platform
+ * @ref llp/0021-honest-reports.rfc.md §One build is one platform
  */
 export async function lookUpBuildPlatformAsync(
   easCli: EasCli | null,

@@ -224,7 +224,7 @@ export async function resolveDevServerReachAsync(projectRoot: string): Promise<D
   // The dev server itself still knows: it builds the manifest's `launchAsset.url` from
   // `getDevServerUrl()`, which is the tunnel origin whenever a tunnel is running. One request to a
   // dev server this project has a lock for answers it.
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §The tunnel host the log never held
+  // @ref llp/0021-honest-reports.rfc.md §The tunnel host the log never held
   const fromManifest = await fetchAdvertisedUrlAsync(lock.url);
   return fromManifest == null
     ? fromLog

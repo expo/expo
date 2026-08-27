@@ -157,7 +157,7 @@ describe(readAuthPreflightAsync, () => {
     await expect(readAuthPreflightAsync(projectRoot)).resolves.toMatchObject({ loggedIn: null });
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Two CLIs read one session file — friction run
+  // @ref llp/0021-honest-reports.rfc.md §Two CLIs read one session file — friction run
   // 7, F65. `status` said "nothing could answer" on a machine whose `eas` was a shim, while
   // `exagent whoami` printed the account name in the same directory.
   describe('the project’s own Expo CLI, when the EAS CLI could not answer', () => {

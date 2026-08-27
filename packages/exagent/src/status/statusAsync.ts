@@ -400,7 +400,7 @@ async function refineFreshnessAsync(
  * Compare the working tree against one EAS build, and make that the headline's base.
  *
  * @ref llp/0011-impact-and-freshness.rfc.md §The three comparisons
- * @ref llp/0021-stop-and-readiness-honesty.rfc.md §One build is one platform
+ * @ref llp/0021-honest-reports.rfc.md §One build is one platform
  * `eas fingerprint:compare --build-id` takes **no platform**, because a build was made for exactly
  * one and which one is a fact about the build rather than a question to ask. That used to mean the
  * one answer was copied onto *every* platform, which reported an iOS simulator build as able to run

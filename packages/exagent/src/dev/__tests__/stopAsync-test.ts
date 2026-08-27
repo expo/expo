@@ -261,7 +261,7 @@ describe(devStopAsync, () => {
     expect(JSON.parse(printed()).detail).toContain('--port');
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // @ref llp/0021-honest-reports.rfc.md §`--port` names the target — friction run 7,
   // F60. The one destructive verb in the surface acted on a port the caller did not name.
   describe('--port names the target, and the lock does not overrule it', () => {
     beforeEach(() => {
@@ -310,7 +310,7 @@ describe(devStopAsync, () => {
     });
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target — friction run 7,
+  // @ref llp/0021-honest-reports.rfc.md §`--port` names the target — friction run 7,
   // F72. "Nothing is listening" is a claim, and it was made about a port something was on.
   describe('a port this machine will not name a listener for', () => {
     beforeEach(() => {

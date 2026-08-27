@@ -125,7 +125,7 @@ describe('exagent typecheck', () => {
     expect(calls[0]!.cwd).toContain(path.basename(path.dirname(projectRoot)));
   });
 
-  // @ref llp/0021-stop-and-readiness-honesty.rfc.md §A generated file is not a mistake in the code
+  // @ref llp/0021-honest-reports.rfc.md §A generated file is not a mistake in the code
   // Friction run 7, F64: the first gate an agent runs after `exagent new` was red, and the only
   // next action offered was to fix two files that were both correct.
   it(`should name the generated file the project is missing, and the command that writes it`, async () => {

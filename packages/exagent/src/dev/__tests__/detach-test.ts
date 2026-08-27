@@ -82,7 +82,7 @@ describe(buildDetachSpawn, () => {
   });
 });
 
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §Readiness is a claim about now — friction run
+// @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now — friction run
 // 7's F61 and live staging's S4. Three facts in, one verdict out.
 describe(resolveDetachFailure, () => {
   const healthy = { exited: false, verdict: null, statusAnswering: true };

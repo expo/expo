@@ -528,7 +528,7 @@ describe(lookUpCachedBuildAsync, () => {
   });
 });
 
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §One build is one platform — live staging, S1.
+// @ref llp/0021-honest-reports.rfc.md §One build is one platform — live staging, S1.
 describe(parseBuildPlatform, () => {
   it(`should read the platform of one build:view payload`, () => {
     expect(parseBuildPlatform(JSON.stringify({ id: 'build-1', platform: 'IOS' }))).toBe('ios');

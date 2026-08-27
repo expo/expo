@@ -1,5 +1,5 @@
 // @ref llp/0015-backend-selection-and-config.rfc.md §The plan approved is the plan run
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §The plan has to carry the forwarded flags
+// @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags
 // Folding the `expo start` options a caller typed into the plan that gets printed.
 //
 // `exagent dev` forwards what it does not own to the `expo start` its plan ends with, and it used to

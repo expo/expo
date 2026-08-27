@@ -447,7 +447,7 @@ describe('exagent deploy', () => {
     // output is not EAS output. Quoting a Rust backtrace under "What the tool printed" tells the
     // reader the EAS CLI reported a missing file [observed — friction run, 2026-08-23].
     //
-    // @ref llp/0021-stop-and-readiness-honesty.rfc.md §Route around a binary that is not the CLI
+    // @ref llp/0021-honest-reports.rfc.md §Route around a binary that is not the CLI
     // Friction run 7's F67 is the other half: the run stopped there and handed back a `Try:` line
     // that ran the same broken file again. A run that never was the CLI uploaded nothing, so the
     // retry through the package runner is safe — and it is the only rung left.

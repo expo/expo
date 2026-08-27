@@ -51,7 +51,7 @@ export async function findPortListenerAsync(port: number): Promise<PortListener 
  *
  * Only the loopback interface, which is the same interface every other check in `dev:stop` uses.
  *
- * @ref llp/0021-stop-and-readiness-honesty.rfc.md §`--port` names the target
+ * @ref llp/0021-honest-reports.rfc.md §`--port` names the target
  */
 export async function isPortInUseAsync(port: number): Promise<boolean> {
   return !(await isPortBindableAsync(port));

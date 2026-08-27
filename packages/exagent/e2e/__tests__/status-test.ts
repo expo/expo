@@ -390,8 +390,13 @@ describe('exagent status', () => {
       ]);
 
       expect(result.exitCode).toBe(0);
-      // Status is read-only: it never invokes the `expo` CLI.
-      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+      // Status is read-only. The one `expo` it runs is `whoami`, and only when the EAS CLI could
+      // not answer who this machine is: both CLIs read the same session file, and a report that
+      // said "nothing could answer" while `exagent whoami` printed the name was the finding
+      // (F65). Nothing else is invoked, and nothing is started.
+      expect(readStubExpoInvocations(projectRoot).map((invocation) => invocation.args)).toEqual([
+        ['whoami'],
+      ]);
     });
 
     it('emits the status event for a driving agent', async () => {

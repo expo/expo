@@ -1,4 +1,4 @@
-// @ref llp/0021-stop-and-readiness-honesty.rfc.md §Read the tool's own sentence before guessing
+// @ref llp/0021-honest-reports.rfc.md §Read the tool's own sentence before guessing
 // Live staging's S2 and friction run 7's F67: the upload was diagnosed from its exit signature, so
 // an unlinked project was told it was not signed in while the real cause sat in the raw output.
 
