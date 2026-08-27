@@ -20,7 +20,8 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
    * Notification data will be in activity.intent.extras
    */
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
-    val extras = activity.intent?.extras ?: return
+    val intent = activity.intent ?: return
+    val extras = intent.extras ?: return
     // only actions that have opensAppToForeground: true are handled here
     if (extras.containsKey(NOTIFICATION_RESPONSE_KEY) || extras.containsKey(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)) {
       Log.d("ReactNativeJS", "[native] ExpoNotificationLifecycleListener contains an unmarshalled notification response. Skipping.")
@@ -30,6 +31,11 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
       return
     }
     DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onCreate:", extras)
+    // The launch intent outlives this callback - it stays on the activity and becomes the task's
+    // base intent - so a later recreation hands the same response to onCreate again. Mark it
+    // consumed, the way onNewIntent already does for the two response keys above. `getExtras()`
+    // returned a copy, so the bundle passed on below is unaffected.
+    intent.removeExtra(GOOGLE_MESSAGE_ID_KEY)
     NotificationManager.onNotificationResponseFromExtras(extras)
   }
 
@@ -53,6 +59,9 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
         return false
       }
       DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onNewIntent:", extras)
+      // `ReactActivity` calls `setIntent(intent)` around this callback, so this intent becomes the
+      // activity's current one and would replay on recreation just like the onCreate case above.
+      intent.removeExtra(GOOGLE_MESSAGE_ID_KEY)
       NotificationManager.onNotificationResponseFromExtras(extras)
     }
     return false

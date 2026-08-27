@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Clear the consumed FCM extra from the launch intent, so a notification response is no longer delivered again when the activity is recreated or the task is relaunched from its base intent. ([#49117](https://github.com/expo/expo/pull/49117) by [@sang88ho](https://github.com/sang88ho))
 - [Android] Prevented `onUserLeaveHint` from firing when a notification tap opens the app, which made picture-in-picture implementations enter PiP unexpectedly. ([#48471](https://github.com/expo/expo/pull/48471) by [@stareezy-1](https://github.com/stareezy-1))
 - [iOS] Avoid warning when an aborted push token registration request rejects with a native fetch cancellation error. ([#48547](https://github.com/expo/expo/pull/48547) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
 - [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws on some OEM ROMs. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))
