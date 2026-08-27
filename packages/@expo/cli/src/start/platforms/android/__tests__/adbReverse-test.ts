@@ -43,7 +43,8 @@ describe(startAdbReverseAsync, () => {
       1,
       ['-s', 'FA8251A00720', 'reverse', 'tcp:3000', 'tcp:3000'],
       'reverse port',
-      undefined
+      expect.any(AbortSignal),
+      2_000
     );
   });
   it(`reverses multiple ports`, async () => {
@@ -63,7 +64,8 @@ describe(startAdbReverseAsync, () => {
       1,
       ['-s', 'emulator-5554', 'reverse', 'tcp:3000', 'tcp:3000'],
       'reverse port',
-      undefined
+      expect.any(AbortSignal),
+      2_000
     );
   });
 
@@ -143,7 +145,8 @@ describe(stopAdbReverseAsync, () => {
       1,
       ['-s', 'FA8251A00720', 'reverse', '--remove', 'tcp:3000'],
       'remove reverse port',
-      undefined
+      undefined,
+      2_000
     );
   });
 
