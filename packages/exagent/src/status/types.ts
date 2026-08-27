@@ -103,8 +103,23 @@ export interface FreshnessComparison {
   kind: 'last-build' | 'eas-build';
   /** What a person would call the base: `last build recorded by exagent`, `EAS build <id>`. */
   label: string;
-  /** The build id, for `eas-build`. Null otherwise. */
+  /**
+   * The build id, for `eas-build`. Null otherwise.
+   *
+   * Written before the comparison runs, so a `--build <id>` that failed still echoes the target
+   * the caller named (F66).
+   */
   buildId: string | null;
+  /**
+   * Which platform the comparison is an answer about, or null when nothing established it.
+   *
+   * `eas fingerprint:compare --build-id` takes no platform, so this is the *build's* platform,
+   * asked of EAS — or the one the caller named with `--platform`. Null means the comparison is
+   * attributed to no platform at all, and every platform's impact says it was not compared: one
+   * build is one platform, and copying its verdict onto both said an iOS build could run android
+   * code [live staging, S1].
+   */
+  platform: 'ios' | 'android' | null;
 }
 
 export interface FreshnessStatus {
@@ -276,8 +291,15 @@ export interface AuthStatus {
   loggedIn: boolean | null;
   /** The account name, when something knew it. */
   user: string | null;
-  /** What answered. Null when nothing did. */
-  source: 'eas whoami' | 'EXPO_TOKEN' | null;
+  /**
+   * What answered. Null when nothing did.
+   *
+   * Both CLIs are asked, in that order, because they read the same session file and only the first
+   * one can be a stranger: a machine whose `eas` was a broken shim reported "nothing could answer"
+   * while `exagent whoami` printed the name (F65). The source is reported so a reader knows which
+   * CLI the answer came from.
+   */
+  source: 'eas whoami' | 'expo whoami' | 'EXPO_TOKEN' | null;
 }
 
 export interface NextActionStatus {

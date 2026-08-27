@@ -2,6 +2,7 @@ import fs from 'fs';
 import { vol } from 'memfs';
 
 import { event } from '../../events';
+import { lookUpBuildPlatformAsync } from '../../impact/buildCache';
 import { compareWithEasBuildAsync } from '../../impact/compare';
 import { refineWithChangedFilesAsync } from '../../impact/fromRecord';
 import { resolveRuntimeVersionAsync } from '../../impact/runtimeVersion';
@@ -50,6 +51,12 @@ jest.mock('../../impact/fromRecord', () => ({
   refineWithChangedFilesAsync: jest.fn(async () => null),
 }));
 jest.mock('../../impact/compare', () => ({ compareWithEasBuildAsync: jest.fn() }));
+// Which platform the named build was made for. One EAS call, on the `--build` path only, and a
+// null from it means the comparison is attributed to no platform at all (S1).
+jest.mock('../../impact/buildCache', () => ({
+  ...(jest.requireActual('../../impact/buildCache') as object),
+  lookUpBuildPlatformAsync: jest.fn(async () => null),
+}));
 jest.mock('../../utils/easCli', () => ({ resolveEasCliOrThrow: jest.fn(() => ({ command: '/bin/eas', source: 'path' })) }));
 jest.mock('../../impact/runtimeVersion', () => ({
   resolveRuntimeVersionAsync: jest.fn(async () => ({
@@ -603,7 +610,12 @@ describe(collectStatusReportAsync, () => {
       });
     });
 
-    it(`should name the build as the base and put its answer on every platform`, async () => {
+    // @ref llp/0021-stop-and-readiness-honesty.rfc.md §One build is one platform — live staging,
+    // S1. The one comparison used to be copied onto every platform, which reported an iOS
+    // simulator build as able to run android code.
+    it(`should put the build's answer on the build's platform only`, async () => {
+      jest.mocked(lookUpBuildPlatformAsync).mockResolvedValue('ios');
+
       const report = await collectStatusReportAsync(projectRoot, {
         ...options,
         explain: true,
@@ -619,13 +631,53 @@ describe(collectStatusReportAsync, () => {
         kind: 'eas-build',
         label: 'EAS build build-1',
         buildId: 'build-1',
+        platform: 'ios',
       });
+      const byPlatform = new Map(
+        report.freshness!.platforms.map((platform) => [platform.platform, platform.impact])
+      );
+      expect(byPlatform.get('ios')).toMatchObject({
+        class: 'needs-native-build',
+        fingerprintChanged: true,
+      });
+      // A stated non-answer, never the other platform's verdict.
+      expect(byPlatform.get('android')).toMatchObject({
+        class: null,
+        fingerprintChanged: null,
+        reason: expect.stringContaining('not compared'),
+      });
+    });
+
+    it(`should compare nothing when the build's platform could not be established`, async () => {
+      // Set here rather than left to the factory: `clearMocks` clears calls, not implementations.
+      jest.mocked(lookUpBuildPlatformAsync).mockResolvedValue(null);
+
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        explain: true,
+        buildId: 'build-1',
+      });
+
+      expect(report.freshness?.comparison.platform).toBeNull();
       for (const platform of report.freshness!.platforms) {
         expect(platform.impact).toMatchObject({
-          class: 'needs-native-build',
-          fingerprintChanged: true,
+          class: null,
+          reason: expect.stringContaining('could not be established'),
         });
       }
+    });
+
+    // The caller said which platform they mean, and no lookup overrules a stated fact.
+    it(`should take the platform the caller named without asking EAS`, async () => {
+      const report = await collectStatusReportAsync(projectRoot, {
+        ...options,
+        explain: true,
+        buildId: 'build-1',
+        platform: 'android',
+      });
+
+      expect(lookUpBuildPlatformAsync).not.toHaveBeenCalled();
+      expect(report.freshness?.comparison.platform).toBe('android');
     });
 
     // The `fresh`/`stale` state is about the project's own record, and `--build` asks a different
@@ -645,6 +697,8 @@ describe(collectStatusReportAsync, () => {
     });
 
     it(`should compose with --assert, gating on the build comparison`, async () => {
+      jest.mocked(lookUpBuildPlatformAsync).mockResolvedValue('ios');
+
       const report = await collectStatusReportAsync(projectRoot, {
         ...options,
         explain: true,

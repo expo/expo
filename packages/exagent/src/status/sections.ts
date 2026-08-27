@@ -137,6 +137,8 @@ export function buildFreshnessStatus(
     kind: 'last-build',
     label: 'last build recorded by exagent',
     buildId: null,
+    // No `--build` was passed, so there is no build whose platform this could be about.
+    platform: null,
   };
   // `ota` and `changedFiles` are filled in by the caller: one costs a subprocess, and the other is
   // only read when the fingerprint said the native surface did not move.

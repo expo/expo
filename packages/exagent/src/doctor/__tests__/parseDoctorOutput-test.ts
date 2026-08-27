@@ -186,13 +186,16 @@ describe(parseDoctorOutput, () => {
 
 describe(extractAdviceAction, () => {
   it.each([
+    // @ref llp/0021-stop-and-readiness-honesty.rfc.md §The next action is this CLI's — friction
+    // run 7, F78. The advice is written for a person and names the Expo CLI; this CLI has the same
+    // check, and adds the structured `check` object the rest of the surface expects.
     [
       "Use 'npx expo install --check' to review and upgrade your dependencies.",
-      'npx expo install --check',
+      'npx exagent install --check',
     ],
     [
       'Upgrade to React Native 0.86.2 or later. For Expo projects, run `npx expo install --fix` to align them.',
-      'npx expo install --fix',
+      'npx exagent install --fix',
     ],
     [
       'Resolve schema errors in your app config. Learn more: https://docs.expo.dev/workflow/configuration/',
@@ -230,13 +233,13 @@ describe(buildDoctorCheckFollowUps, () => {
     // In the order the checks ran, capped at the three llp/0009 allows.
     expect(followups).toHaveLength(3);
     expect(followups.map((followup) => followup.command)).toEqual([
-      'npx expo install --fix',
+      'npx exagent install --fix',
       'https://docs.expo.dev/workflow/configuration/',
-      'npx expo install --check',
+      'npx exagent install --check',
     ]);
     expect(followups[0]).toEqual({
-      id: 'doctor-advice-expo-install-fix',
-      command: 'npx expo install --fix',
+      id: 'doctor-advice-exagent-install-fix',
+      command: 'npx exagent install --fix',
       why: 'Check for Expo SDK versions affected by Hermes V1 regressions',
     });
   });
@@ -264,8 +267,8 @@ describe(buildDoctorCheckFollowUps, () => {
 
     expect(buildDoctorCheckFollowUps(report(raw, 1))).toEqual([
       {
-        id: 'doctor-advice-expo-install-fix',
-        command: 'npx expo install --fix',
+        id: 'doctor-advice-exagent-install-fix',
+        command: 'npx exagent install --fix',
         why: 'Check one',
       },
     ]);

@@ -400,11 +400,14 @@ async function refineFreshnessAsync(
  * Compare the working tree against one EAS build, and make that the headline's base.
  *
  * @ref llp/0011-impact-and-freshness.rfc.md §The three comparisons
+ * @ref llp/0021-stop-and-readiness-honesty.rfc.md §One build is one platform
  * `eas fingerprint:compare --build-id` takes **no platform**, because a build was made for exactly
- * one and which one is a fact about the build rather than a question to ask. So this replaces every
- * platform's headline with the one answer and says so through `freshness.comparison` — the
- * `fresh`/`stale` states are left alone, because they are about the project's own record and that
- * question did not change.
+ * one and which one is a fact about the build rather than a question to ask. That used to mean the
+ * one answer was copied onto *every* platform, which reported an iOS simulator build as able to run
+ * android code [observed — live staging, 2026-08-26, S1]. So the build's own platform is asked for,
+ * and only that platform's headline is replaced; the others say they were not compared. The
+ * `fresh`/`stale` states are left alone on all of them, because they are about the project's own
+ * record and that question did not change.
  */
 async function compareAgainstEasBuildAsync(
   projectRoot: string,
@@ -415,18 +418,36 @@ async function compareAgainstEasBuildAsync(
   const { compareWithEasBuildAsync } =
     require('../impact/compare') as typeof import('../impact/compare');
   const { classifyFingerprintDiff } = require('../impact/classify') as typeof import('../impact/classify');
+  const { lookUpBuildPlatformAsync } =
+    require('../impact/buildCache') as typeof import('../impact/buildCache');
 
   const buildId = options.buildId!;
-  const comparison = await compareWithEasBuildAsync(
-    resolveEasCliOrThrow(projectRoot),
-    projectRoot,
-    buildId
-  );
+  // Before the call, so a comparison that fails still echoes the target the caller named. It used
+  // to be written afterwards, so a failed `--build abc123` left `buildId: null` behind and the id
+  // appeared nowhere in the report [observed — friction run 7, F66].
+  freshness.comparison = {
+    kind: 'eas-build',
+    label: `EAS build ${buildId}`,
+    buildId,
+    platform: null,
+  };
+
+  const easCli = resolveEasCliOrThrow(projectRoot);
+  // The caller's own `--platform` wins: they said which platform they mean, and no lookup overrules
+  // a fact somebody stated. Otherwise EAS is asked, and a lookup that answers nothing leaves the
+  // comparison attributed to no platform rather than to both.
+  // `--platform web` is not one of the two an EAS build can be for, so it says nothing here.
+  const named =
+    options.platform === 'ios' || options.platform === 'android' ? options.platform : null;
+  const [comparison, buildPlatform] = await Promise.all([
+    compareWithEasBuildAsync(easCli, projectRoot, buildId),
+    named ?? lookUpBuildPlatformAsync(easCli, projectRoot, buildId),
+  ]);
   if (comparison.error) {
     throw new Error(comparison.error);
   }
 
-  freshness.comparison = { kind: 'eas-build', label: `EAS build ${buildId}`, buildId };
+  freshness.comparison.platform = buildPlatform;
 
   const classified = comparison.items ? classifyFingerprintDiff(comparison.items) : null;
   const impact: FreshnessImpact = {
@@ -446,8 +467,35 @@ async function compareAgainstEasBuildAsync(
   };
 
   for (const platform of freshness.platforms) {
-    platform.impact = impact;
+    platform.impact =
+      platform.platform === buildPlatform
+        ? impact
+        : notComparedImpact(buildId, buildPlatform, platform.platform);
   }
+}
+
+/**
+ * The headline of a platform the `--build` comparison was not about.
+ *
+ * A stated non-answer rather than a copied one. `class: null` is what the rest of this report uses
+ * for "nothing was established", and `--assert` already exits 22 on it instead of gating on a guess
+ * (llp/0011 §Two commands, one classifier).
+ */
+function notComparedImpact(
+  buildId: string,
+  buildPlatform: 'ios' | 'android' | null,
+  platform: NativePlatform
+): FreshnessImpact {
+  return {
+    class: null,
+    fingerprintChanged: null,
+    reason:
+      buildPlatform == null
+        ? `not compared — the comparison was against EAS build ${buildId}, and which platform that build was made for could not be established, so nothing here is an answer about ${platform}`
+        : `not compared — EAS build ${buildId} is an ${buildPlatform} build, and one build is one platform`,
+    changedCount: null,
+    changedSources: null,
+  };
 }
 
 /**

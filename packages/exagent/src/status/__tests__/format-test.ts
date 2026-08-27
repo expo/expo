@@ -23,7 +23,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: {
-      comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+      comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
       changedFiles: null,
       hash: 'abcdef0123456789',
       platforms: [
@@ -202,7 +202,7 @@ describe(formatStatusReport, () => {
   it(`should print the fingerprint error on the freshness line`, () => {
     const report = mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: null,
         error: 'fingerprint CLI not found\nInstall @expo/fingerprint',
@@ -236,7 +236,7 @@ describe(formatStatusReport, () => {
     const error = `The @expo/fingerprint CLI is not installed in this project, so the native surface cannot be hashed. Install it with "npx expo install @expo/fingerprint".`;
     const report = mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: null,
         error,
@@ -560,7 +560,7 @@ describe('the impact line', () => {
       };
     return mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: 'abcdef0123456789',
         ota: null,
@@ -637,7 +637,7 @@ describe('the --explain detail', () => {
   function withSources(count: number): StatusReport {
     return mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
         hash: 'abcdef0123456789',
         ota: null,
@@ -698,7 +698,7 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
-          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
           hash: 'abcdef0123456789',
           platforms: [],
@@ -721,7 +721,7 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
-          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null },
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
           hash: 'abcdef0123456789',
           platforms: [],
@@ -822,6 +822,31 @@ describe('the eas build line', () => {
     );
 
     expect(rendered).toContain('unavailable: the record is unreadable');
+  });
+});
+
+// @ref llp/0021-stop-and-readiness-honesty.rfc.md §A note nobody reads is not a note — friction
+// run 7's F66. `status --explain --build abc123` printed an ordinary report and exit 0, with the id
+// nowhere on it, while the JSON carried the whole reason the comparison never happened.
+describe('a section that printed a line and still failed', () => {
+  const failure = [
+    'Could not compare against EAS build abc123.',
+    'Why: "eas fingerprint:compare --build-id abc123" exited with 1.',
+    'How: check the id with "npx eas build:list --limit 5 --json --non-interactive".',
+  ].join('\n');
+
+  it(`prints the failure, in full, in the text report`, () => {
+    const rendered = report(mockReport({ errors: { freshness: failure } }));
+
+    // Every line of it: the actionable half of one of these sentences is usually the last one, and
+    // clipping it to a line width is what left the text report with the useless half (S9).
+    for (const line of failure.split('\n')) {
+      expect(rendered).toContain(line);
+    }
+  });
+
+  it(`says nothing extra when no section failed`, () => {
+    expect(report(mockReport())).not.toContain('note');
   });
 });
 

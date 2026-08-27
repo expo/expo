@@ -123,7 +123,7 @@ describe(buildStatusFollowUps, () => {
             { platform: 'android', state: 'unknown', detail: '', recordedHash: null, impact: null },
           ],
           ota: null,
-          comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null },
+          comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
         },
         builds: {

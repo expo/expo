@@ -42,13 +42,34 @@ export function extractAdviceAction(check: DoctorCheck): string | null {
     const quoted = (match[1] ?? match[2] ?? match[3] ?? '').trim();
     const [tool] = quoted.split(/\s+/);
     if (tool && COMMAND_TOOLS.includes(tool) && quoted.includes(' ')) {
-      return quoted;
+      return preferExagent(quoted);
     }
   }
 
   const url = URL.exec(advice);
   // Prose puts a period after a sentence-final URL, and it is not part of the URL.
   return url ? url[0].replace(/[.,)]+$/, '') : null;
+}
+
+/**
+ * Advice this CLI has a command of its own for.
+ *
+ * expo-doctor's advice is written for a person, so it names the Expo CLI: `npx expo install --check`
+ * [observed — friction run 7, F78]. The reader of a `Suggested next:` line here is usually an agent
+ * driving *this* CLI, and `exagent install --check` runs the same check and adds the structured
+ * `check` object the rest of the surface expects. Nothing else is rewritten: a rewrite is a claim
+ * that the two commands do the same thing, and this is the only pair where that has been verified
+ * (`src/install/`).
+ */
+const EXAGENT_EQUIVALENTS: readonly { advice: RegExp; command: string }[] = [
+  { advice: /^(?:npx\s+)?expo\s+install\s+--check$/, command: 'npx exagent install --check' },
+  { advice: /^(?:npx\s+)?expo\s+install\s+--fix$/, command: 'npx exagent install --fix' },
+];
+
+/** The same action, spelled as this CLI's command when this CLI has one. */
+function preferExagent(action: string): string {
+  const equivalent = EXAGENT_EQUIVALENTS.find((entry) => entry.advice.test(action));
+  return equivalent?.command ?? action;
 }
 
 /** What to do about the checks that failed, at most one action per check. */

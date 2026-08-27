@@ -46,6 +46,8 @@ export function formatStatusReport(report: StatusReport): string {
     ...impactLines(report),
     // The per-source list and the OTA verdict, under `--explain` only.
     ...explainLines(report),
+    // What a section could not do, even when it had something else to say.
+    ...sectionNoteLines(report),
     // @ref llp/0004-smart-start-and-project-state.rfc.md §The EAS build lookup, and why it is opt-in
     // Printed only when it says something, for the reason the skills line is: a default run has
     // nothing cached and asked nobody, and `ios: unknown · android: unknown (EAS was not asked)` is
@@ -324,6 +326,46 @@ function row<Section>(
 function unavailableLine(report: StatusReport, name: StatusSectionName): string {
   const error = report.errors[name];
   return chalk.yellow(error ? `unavailable: ${summarize(error)}` : 'unavailable');
+}
+
+/** Sections that print their own line and can still be carrying a failure. */
+const SECTIONS_WITH_VALUES: readonly StatusSectionName[] = [
+  'project',
+  'expoGo',
+  'freshness',
+  'builds',
+  'devServer',
+  'device',
+  'skills',
+  'auth',
+  'next',
+];
+
+/**
+ * What a section could not do, for a section that printed a line anyway.
+ *
+ * `unavailableLine` only speaks for a section that is **null**, so a failure recorded against a
+ * section that still had facts to report reached `--json` and nothing else: `status --explain
+ * --build abc123` printed an ordinary report, exit 0, with the id nowhere on it, while the JSON
+ * carried the whole reason the comparison never happened [observed — friction run 7, F66].
+ *
+ * Printed whole, indented, and never summarized: this is the half a reader has to act on, and
+ * clipping it at a line width is what left the text report with the useless half of the sentence
+ * [live staging, S9].
+ */
+function sectionNoteLines(report: StatusReport): string[] {
+  const indent = ' '.repeat(LABEL_WIDTH);
+  const lines: string[] = [];
+  for (const name of SECTIONS_WITH_VALUES) {
+    const error = report.errors[name];
+    if (!error || report[name] == null) {
+      continue;
+    }
+    const [first, ...rest] = error.split('\n');
+    lines.push(`${chalk.dim(`${name} note`.padEnd(LABEL_WIDTH))}${chalk.yellow(first ?? '')}`);
+    lines.push(...rest.map((line) => `${indent}${chalk.yellow(line)}`));
+  }
+  return lines;
 }
 
 function projectLine(project: ProjectStatus): string {

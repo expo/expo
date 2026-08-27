@@ -9,6 +9,9 @@
 // Nothing here ever throws. A preflight that cannot run is not an answer of "no": it is no answer,
 // and the caller falls back to recognising the failure when it happens (layer 3).
 
+import path from 'path';
+
+import { fileExistsSync } from '../utils/dir';
 import { resolveEasCliOrThrow } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { looksLikeWrapperCrash } from '../utils/wrapperCrash';
@@ -19,8 +22,16 @@ export interface AuthPreflight {
   loggedIn: boolean | null;
   /** The account name, when something knew it. */
   user: string | null;
-  /** What answered. Null when nothing did. */
-  source: 'eas whoami' | 'EXPO_TOKEN' | null;
+  /**
+   * What answered. Null when nothing did.
+   *
+   * `expo whoami` is the second rung, and it exists because the first one can be a stranger: on a
+   * machine whose `eas` was a broken shim, `status` reported `auth unknown (nothing could answer)`
+   * while `exagent whoami` printed the account name in the same directory [observed — friction run
+   * 7, F65]. Both CLIs read the same `~/.expo/state.json`, so the second question is the same
+   * question asked of the CLI the project actually installed.
+   */
+  source: 'eas whoami' | 'expo whoami' | 'EXPO_TOKEN' | null;
 }
 
 /**
@@ -63,12 +74,34 @@ export function resetAuthPreflightCache(): void {
 }
 
 async function probeAsync(projectRoot: string, timeoutMs: number): Promise<AuthPreflight> {
+  const fromEas = await askEasAsync(projectRoot, timeoutMs);
+  if (fromEas) {
+    return fromEas;
+  }
+  // The EAS CLI could not be asked, or what answered was not the EAS CLI. The project's own Expo
+  // CLI reads the same session file, and it is the rung `exagent whoami` uses (`passthrough/auth.ts`
+  // §resolveAuthCliAsync), so the two commands stop disagreeing about who this machine is (F65).
+  const fromExpo = await askProjectExpoAsync(projectRoot, timeoutMs);
+  return fromExpo ?? fromTokenAlone();
+}
+
+/**
+ * What `eas whoami` said, or null when it said nothing about the account.
+ *
+ * Null covers three cases and each is "no answer" rather than "signed out": there is no EAS CLI, it
+ * could not be run, or what ran was not the EAS CLI. A binary that is not the CLI exits non-zero
+ * exactly the way a signed-out one does, and reading that as "signed out" would hand the user a
+ * login they do not need — and, worse, would stop a command that had every right to run.
+ */
+async function askEasAsync(
+  projectRoot: string,
+  timeoutMs: number
+): Promise<AuthPreflight | null> {
   let command: string;
   try {
     command = resolveEasCliOrThrow(projectRoot).command;
   } catch {
-    // No EAS CLI on this machine: nothing can be asked, so only the variable is left.
-    return fromTokenAlone();
+    return null;
   }
 
   const result = await spawnSubprocessAsync(command, ['whoami'], {
@@ -77,23 +110,48 @@ async function probeAsync(projectRoot: string, timeoutMs: number): Promise<AuthP
     timeoutMs,
   });
 
-  if (result.spawnError || result.timedOut) {
-    return fromTokenAlone();
-  }
-  // A binary that is not the EAS CLI answers nothing about the account. It exits non-zero like a
-  // signed-out CLI does, and reading that as "signed out" would hand the user a login they do not
-  // need — and, worse, would stop a command that had every right to run. `null` is the honest
-  // answer, and the caller falls back to recognising a real failure when it happens (layer 3).
-  if (looksLikeWrapperCrash({ tool: 'eas', ...result })) {
-    return fromTokenAlone();
+  if (result.spawnError || result.timedOut || looksLikeWrapperCrash({ tool: 'eas', ...result })) {
+    return null;
   }
   if (result.exitCode !== 0) {
     // The CLI answered, and the answer was no — including a run with an `EXPO_TOKEN` that the
     // service rejected, which is exactly the case a bare "the variable is set" would get wrong.
     return { loggedIn: false, user: null, source: 'eas whoami' };
   }
-
   return { loggedIn: true, user: parseUser(result.stdout), source: 'eas whoami' };
+}
+
+/**
+ * What the **project's own** `expo whoami` said, or null when it said nothing.
+ *
+ * The project's `node_modules/.bin/expo` and nothing else. `resolveExpoCli` would fall back to a
+ * package runner, which downloads the whole SDK to read one JSON file [observed — 2026-08-26,
+ * `passthrough/auth.ts`], and `status` promises to be instant: a report is not worth a minute and a
+ * network install.
+ */
+async function askProjectExpoAsync(
+  projectRoot: string,
+  timeoutMs: number
+): Promise<AuthPreflight | null> {
+  const binName = process.platform === 'win32' ? 'expo.cmd' : 'expo';
+  const bin = path.join(projectRoot, 'node_modules', '.bin', binName);
+  if (!fileExistsSync(bin)) {
+    return null;
+  }
+
+  const result = await spawnSubprocessAsync(bin, ['whoami'], {
+    cwd: projectRoot,
+    output: 'capture',
+    timeoutMs,
+    env: { CI: '1' },
+  });
+  if (result.spawnError || result.timedOut || looksLikeWrapperCrash({ tool: 'expo', ...result })) {
+    return null;
+  }
+  if (result.exitCode !== 0) {
+    return { loggedIn: false, user: null, source: 'expo whoami' };
+  }
+  return { loggedIn: true, user: parseUser(result.stdout), source: 'expo whoami' };
 }
 
 /**
