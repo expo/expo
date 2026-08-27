@@ -102,7 +102,7 @@ One row per v1 command, four columns. What each cell means, and the distinctions
 | `navigate` (local) | filled | **filled** — `simctl openurl`, route check, `attached: true` | n/a | n/a |
 | `navigate` (bad route) | filled | **filled** — exit 1, `ROUTE_NOT_FOUND`, real sitemap in the message | n/a | n/a |
 | `navigate --print-url` | filled | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | n/a | **runnable** — `beforeAll` uses it to prove the public origin took (`hostType: "tunnel"`) before billing a session |
-| `navigate --cloud` | filled | n/a | n/a | **runnable** — `deviceBackend: "cloud"`, the URL on the public origin, the `open` at exit 0 (the half `--expo-go` fixed); **not** `attached` (S11) |
+| `navigate --cloud` | filled | n/a | n/a | **filled** — `deviceBackend: "cloud"`, the URL on the public origin, the `open` at exit 0, and `attached: true` in 206 ms on a session started with `--open-url` [2026-08-27]. `attached` is asserted permissively — a cold first bundle over a proxy may outlive the wait — but a run that does not attach must have looked for the S10 dialog |
 | `runtime:eval` | filled (6, failure paths only) | **filled** — returns `2` from real Hermes; the row §What is still not tested called unreachable | n/a | unreachable — no `--cloud` on `eval` (correct), and S11 anyway |
 | `runtime:errors` | filled (6) | **filled** — `runtimeReadable: true` from a real debugger | n/a | unreachable — same |
 | `runtime:tree` | filled | **filled** — `disabled`, `groupSize`, `placeholder` on real nodes (F69, F70) | n/a | unreachable — same |
@@ -110,13 +110,13 @@ One row per v1 command, four columns. What each cell means, and the distinctions
 | `runtime:tap --verify` | unreachable — no CDP at tier 0 | **filled** — interpolated **and** single-string Text in the diff (F63) | n/a | unreachable — same |
 | `runtime:type` | filled | **filled** — types into a real input; `editable={false}` → 20 | n/a | unreachable — same |
 | `runtime:reload` (local) | filled | **filled** — `verifiedBy: "message-socket-peers"`, real reconnect | n/a | n/a |
-| `runtime:reload --cloud` | filled (wave 19) | n/a | n/a | **runnable** — wave 19's contract field by field: `method: "device"`, `verifiedBy: "dev-server-bundle"`, `bundlesAfterReload.observed`, `commandSocketClients` a number, `dev-server` recorded as *not tried* |
-| `runtime:reload --cloud --route` | filled | n/a | n/a | **runnable** — the route is echoed and the link opened is the one it names (llp/0021) |
+| `runtime:reload --cloud` | filled (wave 19) | n/a | n/a | **filled** — exit 0, `verifiedBy: "dev-server-bundle"`, `iOS Bundled 40ms`, in 18.5 s and 48 s on two runs [2026-08-27]. **Not** wave 19's field-by-field contract: `method: "device"` was that session's state, and the assertion is now the *ladder* — rung 1 always taken and always reporting what the socket held, the relaunch reloading from either state |
+| `runtime:reload --cloud --route` | filled | n/a | n/a | **filled** — `exp://<public-host>/--/lab` opened and echoed, exit 0 in 18.5 s and 26.5 s [2026-08-27]. The landing open of a socket-rung reload goes through the third URL path F96's audit found, so this row is what would have caught it |
 | `runtime:stop` (local) | filled | **filled** — `wasRunning: true`, Expo Go terminated on the named udid | n/a | n/a |
 | `runtime:stop --cloud` | filled | n/a | n/a | **runnable** — `wasRunning` may be null and that is honest (S13), and the session is still listed afterwards (S12) |
 | `smoke` (pass) | unreachable — the runtime and screenshot phases need an app | **filled** — 8 phases, screenshot on disk | n/a | n/a |
 | `smoke` (broken bundle) | filled | **filled** — 20, later phases skipped, `lab.tsx` named | n/a | n/a |
-| `smoke --cloud` | filled (2) | n/a | n/a | **runnable** — and every follow-up stays on `--cloud` (bug 5) |
+| `smoke --cloud` | filled (2) | n/a | n/a | **filled** — exit 22 at the `runtime` phase, `deviceBackend: "cloud"`, a 64 KB PNG through the session's controller, every follow-up on `--cloud` [2026-08-27]. It found F96 (exit 1 refusing its own dev server) and F98 (`deviceBackend: null` beside that PNG) |
 | break-and-fix cycle (6 gates) | partial — the refusal only | **filled** — 6 gates to 20 and back to green, no restart (F62) | n/a | n/a |
 | `deploy --web` | filled | n/a | **filled** — URL 200, HTML title, entry bundle serves the fixture's marker | n/a |
 | `deploy --native` (launch) | filled | n/a | open — it runs `eas build`, which bills a worker; one deploy per run is the budget | n/a |
@@ -131,7 +131,7 @@ One row per v1 command, four columns. What each cell means, and the distinctions
 | native EAS build **creation** | n/a | n/a | **unreachable in v1** — verified: no v1 command creates one. `deploy --native` runs create-launch; `inspect:build-log` takes no id | n/a |
 | Android, anywhere | filled (posix) | **unreachable today** — the suite is iOS/Expo Go; the harness has no Android gate yet | n/a | n/a |
 | Windows | filled (`tier0-windows`) | unreachable — no simulator, and this tier is macOS-gated | unreachable — same gate | unreachable — same |
-| CDP on a cloud simulator | n/a | n/a | n/a | **unreachable — S11, upstream.** The app runs and registers zero targets over both the local and the tunnel URL |
+| CDP on a cloud simulator | n/a | n/a | n/a | **S11 amended, 2026-08-27** — the app registers a debugger target *and* a command-socket client once the project is loaded, so CDP is reachable there; `smoke --cloud`'s `runtime` phase still answered `No target found.` at that moment, which is a timing question rather than the wall S11 described. What is upstream and unreachable is narrower: the `/message` reload broadcast does not reload Expo Go there, and takes the app's socket client with it |
 
 ### What the live columns changed
 
@@ -147,7 +147,8 @@ filesystem work with no second process boundary, which is exactly what the stub 
 are `open`, not gaps.
 
 **Unreachable, and worth saying out loud** — build creation (impossible in v1); `login`/`logout`/
-`register` (a suite must not mutate the machine's session); CDP on a cloud simulator (S11, upstream);
+`register` (a suite must not mutate the machine's session); the `/message` reload broadcast on a cloud
+simulator (upstream; the narrowed remains of S11);
 `expo start --tunnel` on this machine at all (`@expo/ngrok` exits 1); Android and Windows at the live
 tier. A claim that the v1 surface is "fully tested live" would be wrong about every one of these, which
 is why they have rows.
@@ -159,9 +160,20 @@ relaunch verified by `verifiedBy: "dev-server-bundle"`, with `commandSocketClien
 reachable at all, because the tunnel this column originally assumed does not start on this machine. Both
 rewrites were made against wave 19's captured payloads (`wave19-live/`), not against the new source. The
 distinction matters for the same reason this whole audit does: a test written from a type pins what
-somebody meant, and a test written from a captured payload pins what happened. The column stays
-`runnable` until somebody has run it — a row filled by its own author's confidence is the thing the
+somebody meant, and a test written from a captured payload pins what happened. The column stayed
+`runnable` until somebody had run it — a row filled by its own author's confidence is the thing the
 `runnable`/`filled` split exists to make impossible.
+
+**Wave 23 ran it, and the split earned its keep** [2026-08-27, three sessions, 4/7 → 4/7 → 6/7;
+[[0022-live-tier]] §What the first three runs of it found]. Every red was a defect: four of them (F96,
+F97, F98, F99), all fixed in that wave. And the column's *premises* moved, which is the part worth
+carrying here — **three of the four facts the suite was built on were about the state of one session
+rather than about cloud sessions.** A session started `--expo-go` but never opened on the project holds
+no command-socket client and shows no attach; one started with `--open-url` holds both. So `method:
+"device"` was never a property of the cloud, and neither was S11. The rows below are corrected, and
+`live-cloud` is **`runnable` still**, for the narrowest possible reason: the last assertion was fixed
+against the third run's artifact with the session budget spent, so the corrected suite is a suite that
+has not been run.
 
 **Found by filling the columns** — two, both unreachable from any tier below
 ([[0022-live-tier]] §The findings this tier arrived with):

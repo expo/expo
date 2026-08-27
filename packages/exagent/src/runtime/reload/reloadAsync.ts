@@ -517,7 +517,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
         devServerUrl,
         targetAppIds: before.targets.map((target) => target.appId).filter(Boolean),
       });
-      attempts.push(withRelaunchCost(cloud.attempt, observedApps));
+      attempts.push(withRelaunchCost(cloud.attempt, observedApps, { climbed: broadcastUnproved }));
       device = cloud.device;
       cloudUrl = cloud.url;
       if (cloud.attempt.ok) {
@@ -528,7 +528,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
       }
     } else if (relaunchRung) {
       const attempt = await reloadOnDeviceAsync(projectRoot, options, devServerUrl);
-      attempts.push(withRelaunchCost(attempt.attempt, observedApps));
+      attempts.push(withRelaunchCost(attempt.attempt, observedApps, { climbed: broadcastUnproved }));
       device = attempt.device;
       if (attempt.attempt.ok) {
         method = 'device';
@@ -789,14 +789,27 @@ function describeNoReconnection({
  * for it by name; now the ladder spends it when nothing cheaper can reach the app, so the report is
  * where the cost has to be visible. Only when an app was **there** to lose state: a relaunch that
  * started an app that was not running cost nothing.
+ *
+ * **And it says which of the two reasons the rung was reached for** (F99). There are two, they are
+ * not interchangeable, and the first live run of the climb printed the wrong one: "no client was
+ * registered on the dev server's command socket" over a payload whose own `commandSocketClients`
+ * was `1` [observed — live cloud, 2026-08-27]. A reader who checks the number against the sentence
+ * finds the report arguing with itself, which is the class of thing llp/0021 exists to remove.
  */
-function withRelaunchCost(attempt: ReloadAttempt, connectedApps: number): ReloadAttempt {
+function withRelaunchCost(
+  attempt: ReloadAttempt,
+  connectedApps: number,
+  { climbed }: { climbed: boolean }
+): ReloadAttempt {
   if (!attempt.ok || connectedApps === 0) {
     return attempt;
   }
+  const why = climbed
+    ? "the reload was broadcast to a client on the dev server's command socket and nothing was seen to come of it, so the app was relaunched instead"
+    : "no client was registered on the dev server's command socket, so the app was relaunched instead";
   return {
     ...attempt,
-    reason: `no client was registered on the dev server's command socket, so the app was relaunched instead — which costs the app's JavaScript state: ${attempt.reason}`,
+    reason: `${why} — which costs the app's JavaScript state: ${attempt.reason}`,
   };
 }
 

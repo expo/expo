@@ -40,11 +40,19 @@
 //     the app it just launched. Wave 19's working session was in exactly that state before any
 //     exagent command touched it.
 //
-// What this suite still may not assert: `attached`. S11 — a cloud simulator registers zero CDP targets
-// over both the local and the proxy origin — so `navigate --cloud` asserts the link was opened and
-// nothing more, and there is deliberately no `runtime:eval --cloud` test, because the flag does not
-// exist. That is correct, and what this suite pins is that the CLI is honest about a wall upstream of
-// it.
+// **S11 is amended, and this is where it was amended.** It said a cloud simulator registers zero CDP
+// targets over both origins, so `navigate --cloud` could assert the link was opened and nothing more.
+// With the session started on the project (fact 4) the app registers a debugger target *and* a
+// command-socket client, and `navigate --cloud` confirmed the attach in 206 ms [observed —
+// 2026-08-27]. S11 was a session whose app had never loaded. So `attached` is still not *required* —
+// a cold first bundle over a proxy can outlive the wait, and 22 with `attached: false` stays honest —
+// but the run that does not attach now has to have looked at the screen for the dialog (S10), which is
+// what the branch below asserts.
+//
+// The wall that is left is narrower and upstream: the `/message` reload broadcast does not reload Expo
+// Go on a cloud simulator over a proxied origin, and it takes the app's command-socket client with it.
+// There is deliberately no `runtime:eval --cloud` test, because the flag does not exist — correctly.
+// What this suite pins is that the CLI reaches the rung that works and is honest about what it saw.
 //
 // Cost: an EAS Simulator session bills from start to stop. Hence two opt-ins — `test:live:cloud` and
 // `EXAGENT_LIVE_CLOUD=1` — one session started in `beforeAll`, reused by every test, and stopped in
@@ -368,18 +376,23 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     }
   });
 
-  // @ref llp/0005-runtime-loop-tools.rfc.md §One ladder, chosen by the command socket.
+  // @ref llp/0005-runtime-loop-tools.rfc.md §One ladder, chosen by the command socket, and §The
+  // ladder climbs.
   //
-  // **What this asserts is the ladder, not a rung**, and that is a correction the first two live runs
-  // between them forced. Written against wave 19 it pinned `method: 'device'` — the relaunch —
-  // because wave 19's session held **zero** clients on the dev server's command socket and the
-  // broadcast reached nobody. With the session started on the project (fact 4), the same command
-  // reported `appsConnected: 1` and `commandSocketClients: 1`: the app registers on that socket
-  // through the proxy after all [observed — live cloud, 2026-08-27]. So the rung a cloud session
-  // takes is not a constant, and a test that pinned one was asserting the state of one session.
+  // **What this asserts is the ladder, not the state of one session**, and three live runs between
+  // them forced that. Written against wave 19, it read as "a cloud session holds no client on the
+  // command socket, so the relaunch is the rung". Then the session was started on the project
+  // (fact 4) and the same command reported `commandSocketClients: 1` — the app does register on that
+  // socket through the proxy. The broadcast then reached that client and **nothing happened**: no
+  // fresh debugger target and no bundle for the whole 180 s budget, while the very next command
+  // found the socket empty, climbed to the relaunch, and exited 0 in 18.5 s
+  // [observed — 2026-08-27, artifacts 005 and 006 of `live-cloud-…T19-17-35-037Z`]. That pair is
+  // F99: `auto` used to stop at a rung it had tried.
   //
-  // What is invariant is the rule: the socket picks the rung, and whichever ran has to prove itself.
-  it('runtime:reload --cloud reloads the app and proves it, on whichever rung the socket picked', async () => {
+  // So both entry states are real and the reload is the relaunch from either. That the broadcast
+  // does not reload Expo Go on a cloud simulator is upstream of this CLI; what is asserted here is
+  // that the command reaches the rung that works and proves what it did.
+  it('runtime:reload --cloud reloads the app and proves it, climbing to the rung that works', async () => {
     const result = await runLiveEasAsync(
       run,
       projectRoot,
@@ -402,23 +415,32 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     // is registered" are the two answers this field exists to keep apart.
     expect(typeof report.commandSocketClients).toBe('number');
 
-    // The rung, and the one fact that picked it. This is the assertion that would have caught wave
-    // 19's premise going stale: it reads the socket count out of the same report.
+    // **Rung 1 is always taken, and it is always the socket that says what it found.** The rung is
+    // never skipped on the strength of `--cloud` — wave 21's correction — so this attempt exists on
+    // every run, whichever state the session is in.
     const attempts = Object.fromEntries(report.attempts.map((a: any) => [a.method, a]));
-    if (report.commandSocketClients > 0) {
-      expect(report.method).toBe('dev-server');
-      expect(attempts['dev-server']).toBeTruthy();
-    } else {
-      expect(report.method).toBe('device');
-      // Rung 1 ran and had nobody to broadcast to, and the attempt says so rather than being skipped
-      // on the strength of `--cloud` — wave 21's correction.
-      expect(attempts['dev-server'].ok).toBe(false);
-      expect(attempts['dev-server'].reason).toContain('nothing to broadcast to');
-      expect(attempts.device.ok).toBe(true);
-      // The cloud relaunch is two verbs, and the reason names both — that is the mechanism, quoted.
-      expect(attempts.device.reason).toContain('--relaunch');
-      expect(attempts.device.reason).toContain('open');
-    }
+    expect(attempts['dev-server']).toBeTruthy();
+    expect(attempts['dev-server'].ok).toBe(false);
+    expect(attempts['dev-server'].reason).toContain(
+      report.commandSocketClients > 0 ? 'did not act on it' : 'nothing to broadcast to'
+    );
+
+    // **And the relaunch is what reloads a cloud session, from either state.** Both of them have
+    // now been seen live, hours apart, on the same suite: zero clients on the socket (wave 19's
+    // state), and one client that took the broadcast and did nothing with it — 180 s of a 180 s
+    // budget, until the ladder learned to climb (F97, F99, 2026-08-27). So this asserts rung 2 and
+    // its two verbs, and does not pretend to know which state the session will be in.
+    expect(report.method).toBe('device');
+    expect(attempts.device.ok).toBe(true);
+    // The cloud relaunch is two verbs, and the reason names both — that is the mechanism, quoted.
+    expect(attempts.device.reason).toContain('--relaunch');
+    expect(attempts.device.reason).toContain('open');
+    // The cost the rung spent, and the reason it was reached for — which has to agree with the
+    // socket count in the same object.
+    expect(attempts.device.reason).toContain("costs the app's JavaScript state");
+    expect(attempts.device.reason).toContain(
+      report.commandSocketClients > 0 ? 'nothing was seen to come of it' : 'no client was registered'
+    );
   });
 
   it('runtime:reload --cloud --route puts the app on the route it names', async () => {

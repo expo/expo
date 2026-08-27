@@ -61,13 +61,21 @@ taught `src/dev/advertisedUrl.ts` to read the manifest.
 up with nothing installed: `apps --platform ios` lists only the controller's own test runner, and every
 `open` of an `exp://` URL fails with `LSApplicationWorkspaceErrorDomain error 115` [observed —
 `wave19-live/08-open-plain.json`]. The command is also `eas simulator`, not `eas simulator:start` — that
-is the name in the CLI's own manifest and the one carrying the flag:
+is the name in the CLI's own manifest and the one carrying the flag.
+
+**And `--expo-go` alone is not enough — always `--open-url` too.** It installs and *launches* Expo Go;
+nothing has opened the **project** in it. So the first `exp://` URL goes to the system, iOS asks
+"Open in 'Expo Go'?", and on a device nobody is watching, that modal is the whole story: `navigate
+--cloud` exit 22 after 60.9 s with the `open` verb having exited 0, then two 180 s reloads that served
+no bundle [observed — this suite's first run, 2026-08-27]. With `--open-url` the runner opens the URL in
+the app it just launched, and the same command exits 0 in 17.1 s with `attached: true` in 206 ms:
 
 ```bash
-npx eas simulator --platform ios --type agent-device --expo-go --non-interactive --name exagent-live
+npx eas simulator --platform ios --type agent-device --expo-go \
+  --open-url "exp://<public-host>" --non-interactive --name exagent-live
 ```
 
-A project with a development build of its own passes `--build-id <id>` instead.
+A project with a development build of its own passes `--build-id <id>` instead of `--expo-go`.
 
 ### The hard guard
 
@@ -113,7 +121,7 @@ Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
 | --- | --- | --- | --- |
 | `live-local` | ~60 s (measured 58 s, 30 tests, 38 `exagent` runs) | none | nothing: the dev server is stopped, the app terminated, the scratch project deleted |
 | `live-eas` | ~50 s (measured, 9 tests) | one EAS Hosting preview deployment per run | one deployment under `@kudo1/livecheck`. Idempotent: EAS Hosting gives each deploy its own preview URL, so a re-run adds one and changes nothing that existed. No native build — no v1 command creates one |
-| `live-cloud` | **not yet measured**; budget several minutes — wave 19 saw one cloud reload take 90 s and another 15 s, and this suite does two | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
+| `live-cloud` | **~4 min measured** (237 s, 7 tests) — and variable: one cloud reload took 18.5 s, another 48 s, and an unproved one spent its whole 180 s `--timeout` | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
 
 ## Evidence
 
@@ -137,9 +145,12 @@ export produced, a log line that appeared inside a generous bound.
   shim half at the stub tier).
 - **Native builds.** No v1 command creates an EAS build [observed — staging-live, 2026-08-26], so
   every claim about build *creation* is untested here and cannot be tested here.
-- **The runtime loop on a cloud simulator.** S11: a cloud simulator registers zero CDP targets, so
-  `live-cloud` asserts that the link was opened and is honest about not attaching. The wall is
-  upstream.
+- **The reload broadcast on a cloud simulator.** Narrower than S11, which said a cloud simulator
+  registers zero CDP targets — it registers a debugger target *and* a command-socket client once the
+  project is loaded, and `navigate --cloud` confirms the attach in ~200 ms [observed — 2026-08-27]. What
+  does not work is the `/message` reload broadcast: it does not reload Expo Go there, and it takes the
+  app's command-socket client with it. Upstream. `runtime:reload --cloud` climbs to the relaunch, which
+  does work, and `live-cloud` asserts that rather than a rung.
 - **That the registry serves this.** This tier runs the ncc bundle from *this working tree*. It is the
   published *surface*, not a published *version*. `llp/0002`'s rule — one run of `npx <pkg>@latest` in
   a project outside this repository, before shipping — is still a manual step, and this tier narrows

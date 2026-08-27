@@ -691,8 +691,14 @@ describe(reloadAsync, () => {
     // was needed.
     expect(report.attempts.map((attempt) => attempt.method)).toEqual(['dev-server', 'device']);
     expect(report.attempts[0]!.reason).toContain('did not act on it');
-    // And the cost is on the attempt that spent it, never silent.
+    // And the cost is on the attempt that spent it, never silent — with the reason the rung was
+    // actually reached for. The first live run of this climb printed "no client was registered on
+    // the dev server's command socket" over a payload whose own `commandSocketClients` was 1, which
+    // is a report arguing with itself.
     expect(report.attempts[1]!.reason).toContain("costs the app's JavaScript state");
+    expect(report.attempts[1]!.reason).toContain('nothing was seen to come of it');
+    expect(report.attempts[1]!.reason).not.toContain('no client was registered');
+    expect(report.commandSocketClients).toBe(1);
   });
 
   // The other half: a pinned rung is still a pinned rung. A caller who asked for the broadcast and

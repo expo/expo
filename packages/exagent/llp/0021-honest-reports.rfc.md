@@ -158,6 +158,60 @@ explains why something must work, in a place no test can reach:
   separately and names its proof (`verifiedBy: dev-server-bundle`), so the next reader can see which
   fact is an observation and which is the mechanism that ran.
 
+### One URL source, two callers
+
+Wave 23, F96, and the deciding pair of lines is in one artifact directory
+[observed — live cloud, 2026-08-27, `live-cloud-…T18-27-42-028Z`]:
+
+```
+003-print-url.txt   "url": "exp://exagent-live-8500.tuft.host/--/?",  "hostType": "tunnel"
+007-smoke-cloud.txt CommandError: … a cloud simulator cannot load exp://127.0.0.1:8500/--/?
+```
+
+Same project, same dev server, same run, three minutes apart. `navigate` read the manifest and got the
+public host; `smoke` did not and refused the link it had built itself.
+
+**The cause is one option carrying two facts.** `openRouteAsync` takes `devServerUrl` and skips the
+manifest lookup whenever it is set — correctly, for a `--dev-server-url` the caller pinned: they named
+the host they want reached, and substituting this project's tunnel host would answer a different
+question. But `smoke` discovers this project's dev server in its first phase and hands the URL to its
+route phase, and *that* URL is a finding of the run rather than a caller's instruction. One field held
+both, and the safe reading of the field silenced the lookup.
+
+So the URL and its **provenance** are two fields now (`devServerUrlSource: 'flag' | 'discovered'`), and
+the rule is stated where it can be read: the reach lookup is suppressed for a caller's flag and for
+nothing else. The general form — and it is the second time this corpus has hit it — **a value and where
+it came from are two facts, and a report or a decision that keeps only the first cannot tell a caller's
+instruction from its own finding.** The same shape produced the `devServerSource` field this CLI already
+reports for exactly this reason.
+
+**The audit the fix demanded found a third path.** `runtime:reload`'s landing open built the URL itself,
+under a doc comment saying it did so "exactly as `navigate` does" — true when written, false since the
+manifest lookup arrived. It never showed on a cloud relaunch, whose own verb carries the route, and it
+is exactly wrong for a phone on another network and for a `--route` reload that reloaded over the
+command socket. **A comment claiming two code paths agree is a claim with a shelf life**; three
+constructions of one URL is two too many, and there is now one source with three callers.
+
+### The device a run used, in the field that names it
+
+Wave 23, F98 [observed — live cloud, 2026-08-27]. `smoke --cloud --json` on a healthy app:
+
+```
+"deviceId": null, "deviceBackend": null
+"screenshot": { "command": "eas simulator:exec npx agent-device@latest screenshot …", "bytes": 64416 }
+```
+
+The run drove a billed cloud session and photographed it, and the two fields a reader checks for "which
+device was this about" said none was involved. The mechanism: a healthy app opens nothing — the `app`
+phase finds it already connected and the `route` phase is skipped — so the two phases that set those
+fields never ran, and the device the *screenshot* phase resolved for itself was reported nowhere but
+inside the screenshot.
+
+The rule: **a fact a run establishes belongs in the field that names it, whichever step established
+it.** A field filled by only some of the paths that can learn it is worse than one that is always
+absent, because a reader cannot tell "not known" from "not reached". The null is still kept for the
+case it is true of — no device was found — and that case has its own test.
+
 ## The plan has to carry the forwarded flags
 
 `dev --plan --json --tunnel` printed `argv: ["expo","start","--go"]` while the run executed

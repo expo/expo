@@ -514,9 +514,102 @@ relaunch**, and which flag every suggested command keeps.
 **What it costs, said out loud.** Rung 2 replaces the app's process, so the JavaScript state is gone.
 Before wave 21 `auto` refused to spend that on a connected app and named `--method device` for a
 caller who meant it; now the ladder spends it when nothing cheaper can reach the app, and the
-*attempt* carries the cost: `no client was registered on the dev server's command socket, so the app
-was relaunched instead — which costs the app's JavaScript state: <the commands that ran>`. Only when
-there was an app to lose state — a relaunch that *started* an app cost nothing, and says nothing.
+*attempt* carries the cost: `<why the rung was reached> — which costs the app's JavaScript state:
+<the commands that ran>`. Only when there was an app to lose state — a relaunch that *started* an app
+cost nothing, and says nothing.
+
+### A broadcast that was delivered is a mechanism that ran
+
+Wave 23, F97 [observed — live cloud, 2026-08-27]. A broadcast has **three** outcomes and the code had
+two. The socket can refuse it — no connection, a protocol version the dev server does not speak, an
+empty peer list — or the frame can go out and the app be seen to come back, or the frame can go out
+and nothing be seen. The third was reported as the first: `ok: false`, no mechanism, exit `20`
+("nothing ran"), and the run then **skipped the two observations that exist for exactly this state**.
+The payload said so in as many words: `bundlesAfterReload.reason: "nothing watched the dev server
+output: no mechanism ran, so there was nothing to watch for"`, on a run with `commandSocketClients: 1`
+that had spent 8.9 s of a 180 s budget.
+
+So an attempt carries **`delivered`** beside `ok`: whether the action reached the app, which is not
+whether it worked. A delivered-and-unproved broadcast is a mechanism whose own proof is missing —
+`method: 'dev-server'`, `mechanismProof: null` — and the shared observations decide, which is `22`
+rather than `20` and matches the exit-code rule this document already stated. `delivered` is null for
+every rung where delivery is not a separate question: `simctl terminate` naming a process that is not
+there fails, and there is no "delivered but unproved" for it.
+
+### The ladder climbs
+
+Wave 23, F99, and the one pair of live runs that settled it [observed — 2026-08-27, live cloud,
+artifacts 005 and 006 of `live-cloud-…T19-17-35-037Z`]:
+
+| Run | Socket | Rung | Result |
+| --- | --- | --- | --- |
+| `runtime:reload --cloud` | `commandSocketClients: 1` | 1 only | exit **22** after the whole 180 s: no fresh debugger target, no bundle |
+| `runtime:reload --cloud --route /lab`, seconds later | `commandSocketClients: 0` | 1 then 2 | exit **0** in 18.5 s, `verifiedBy: dev-server-bundle`, `iOS Bundled 42ms` |
+
+Read together those two rows say one thing: the broadcast took the app's client off the command socket
+and did not reload it, and the relaunch — the rung the *next* command reached because the socket was
+then empty — worked. `auto` stopping at a rung it had already tried made the command fail on a state
+its own second rung handled.
+
+**So `auto` climbs.** Rung 2 is now reached from two states, not one: the socket held no client, or the
+broadcast was delivered and proved nothing. The second is this document's own rule applied honestly —
+the app's state is spent "when nothing cheaper can reach the app", and a frame nobody acted on inside
+its window is exactly that. Three things bound it:
+
+- **A pinned `--method` never climbs.** A caller who named one rung excluded the others, cost and all.
+- **Only an unproved rung climbs.** A broadcast whose churn *was* observed is a reload, and nothing
+  follows it.
+- **The attempt says which of the two states it was reached for.** The first cut printed `no client was
+  registered on the dev server's command socket` over a payload whose own `commandSocketClients` was
+  `1` — a report arguing with itself, which is what llp/0021 exists to remove.
+
+**What stays upstream.** That the `/message` broadcast does not reload Expo Go on an EAS cloud
+simulator over a proxied origin is not this CLI's to fix, and it is not S11: the app registers a
+debugger target *and* a command-socket client there, both of which S11 said it would not. What this
+CLI owes that state is the rung that works, which is now what it takes.
+
+### The dialog nobody is there to answer
+
+Wave 23, from S10 and the first two live runs of the cloud tier. An `exp://` URL handed to the
+**system** on an iOS simulator raises "Open in 'Expo Go'?", and on an EAS Simulator session nobody is
+in front of the screen. The link is delivered — the `open` verb exits 0 — and nothing loads:
+`navigate --cloud` exit 22 after 60.9 s, then two 180 s reloads that served no bundle
+[observed — 2026-08-27; and staging, 2026-08-26, S10, where `agent-device alert accept` proved the
+causality].
+
+**Two layers, and the cheaper one is the session's own start.** `eas simulator … --expo-go` installs
+and launches Expo Go; nothing has opened the *project* in it, so the first `exp://` URL still goes to
+the system. `--open-url exp://<host>` is the runner opening the URL in the app it just launched
+[observed — `eas simulator --help`, eas-cli@latest, 2026-08-27: "URL to open in the installed
+application after it launches"], and that is the state wave 19's working session was in before any
+exagent command touched it (`wave19-live/12-open-session.json`, `open host.exp.Exponent`). The live
+suite starts its session that way, and `navigate --cloud` went from exit 22 in 60.9 s to exit 0 in
+17.1 s with `attached: true` in 206 ms.
+
+**And `navigate --cloud` answers the dialog itself.** The decision, and it is a decision about
+llp/0008 rather than about iOS: the caller ran `--cloud <route>`, which *is* the instruction "open this
+route on the cloud simulator". iOS then asked whether it may do the thing that was just asked for.
+Answering completes the requested action and authorises nothing beyond it. The precedent is in the same
+function: the Android stuck-app recovery is automatic rather than suggested, "because the state it
+clears is one this command caused" — and this state is one this command caused too. Four gates keep it
+to the one dialog:
+
+1. only on `--cloud`; a dialog on the machine at somebody's desk has somebody at it;
+2. only after **this run's own** open exited 0;
+3. only when nothing attached inside the caller's budget, so the happy path spends no verb;
+4. the alert is **read before it is answered** — `alert get` — and accepted only when it names the app
+   the URL was for. Anything else is reported and left on the screen.
+
+The fourth gate is what keeps this from being "answer any prompt", and it is read as **text** rather
+than parsed: what `alert get` prints for a *present* alert has not been seen by anything in this
+package, so a parser for it would be a shape invented here and then trusted. What has been seen is the
+empty answer — exit **1**, `Error (COMMAND_FAILED): alert not found` [observed —
+`agent-device@latest alert get`, 2026-08-27] — which is what makes the read safe to run speculatively:
+it costs a refusal rather than an action.
+
+`attachAlert` carries the three states — answered, some other alert, none — and the what/why/how names
+the dialog and the two verbs by hand when nothing attaches anyway. A report that left the dialog
+unmentioned sent readers to debug a bundle that was never fetched.
 
 **The verification is identical on every rung**, which is the other half of "one ladder". Two
 observations, watched on one budget, either of which is a reload:

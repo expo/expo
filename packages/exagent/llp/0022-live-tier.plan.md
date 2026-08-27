@@ -168,12 +168,12 @@ EAS serves it (brotli, so binary → exit 22, because "no error located" for bin
 passed — S8), and the same log decoded (→ exit 0, failing phase located, and the reported line checked
 back against the file). One real artifact, two answers, both of them the point.
 
-## live-cloud: written, gated, and not yet run
+## live-cloud: written, gated, and now run
 
-Written in this wave and **not run by its author**: the staging cloud-session budget belonged to another
-wave. The matrix marks these rows `runnable` rather than filled, and nothing in that file may be read as
-evidence until somebody has seen it green — which is the rule this whole document is about, applied to
-itself.
+Written in wave 20 and **not run by its author** then: the staging cloud-session budget belonged to
+another wave, so its rows were marked `runnable` rather than filled, and nothing in the file could be
+read as evidence — which is the rule this whole document is about, applied to itself. Wave 23 ran it,
+three times, and §What the first three runs of it found is what that cost and bought.
 
 **Every expectation in it comes from wave 19's live run rather than from a type definition.**
 [[0019-backend-parity-audit]]'s cloud rows moved under this suite the day wave 19 landed, and the suite
@@ -231,6 +231,62 @@ run. Cleanup ends the expensive thing first: the session is stopped unconditiona
 only this run's — and it does not read the id first, because the failure worth guarding is a session that
 started and whose id this process never learned. Then the public name is released, the dev server
 stopped, the directory deleted.
+
+### What the first three runs of it found
+
+Run by its author in wave 23 [2026-08-27, staging, project `@kudo1/livecheck`, three sessions]. The
+suite went **4/7 → 4/7 → 6/7**, and every red was a defect rather than a flake. Two of the three facts
+above turned out to be about *one session's state* rather than about cloud sessions, which is the
+result worth keeping: a suite written from one captured run is far better than one written from a type,
+and it is still a suite written from one run.
+
+| Run | Result | What the reds were |
+| --- | --- | --- |
+| 1 | 4/7 | `smoke --cloud` exit 1 refusing its own dev server (F96); both reloads exit 22 after 180 s |
+| 2 | 4/7 | reloads exit **20** in 9 s; `smoke` reporting `deviceBackend: null` (F98) |
+| 3 | 6/7 | one reload red, and by then it was this suite's own stale assertion |
+
+**Fact 2 was incomplete, and that is what cost run 1.** `--expo-go` installs and launches Expo Go;
+nothing has opened the *project* in it. So the first `exp://` URL goes to the **system**, iOS asks
+"Open in 'Expo Go'?", and nobody answers — `navigate --cloud` exit 22 after 60.9 s with the `open` verb
+having exited 0, then two 180 s reloads that served no bundle. `eas simulator … --open-url exp://<host>`
+is the runner opening the URL in the app it just launched, which is the state wave 19's *working*
+session was in before any exagent command touched it. With it: exit 0 in 17.1 s, `attached: true` in
+206 ms. [[0005-runtime-loop-tools]] §The dialog nobody is there to answer records the layered fix.
+
+**Fact 3 was one session's state, and S11 with it.** With the project actually loaded, the same commands
+reported `appsConnected: 1` **and** `commandSocketClients: 1` — the app registers a debugger target and
+a command-socket client through the proxy, both of which S11 said it would not, and `navigate --cloud`
+confirmed the attach in 206 ms. So `method: "device"` was never a property of a cloud session; it was a
+property of a session whose app had never loaded. The suite now asserts the **ladder** — rung 1 is always
+taken and always reports what the socket held, and the relaunch is what reloads a cloud session from
+either state — rather than the state of one session.
+
+**S11 is amended, not closed.** What remains true is narrower and belongs upstream: the `/message`
+reload broadcast does not reload Expo Go on a cloud simulator over a proxied origin, and it takes the
+app's command-socket client with it. That is the wall, and the CLI's answer to it is F99 — the ladder
+climbing to the rung that works ([[0005-runtime-loop-tools]] §The ladder climbs).
+
+**The four defects, all fixed in this wave**, recorded in [[0021-honest-reports]] (§One URL source, two
+callers, §The device a run used) and [[0005-runtime-loop-tools]] (§A broadcast that was delivered is a
+mechanism that ran, §The ladder climbs):
+
+- **F96 MAJOR** — `smoke --cloud` built its device URL from the dev server's *listening* address while
+  `navigate`, on the same dev server minutes earlier, built it from the manifest. One option was
+  carrying both a URL and the claim that a caller had named it.
+- **F97 MAJOR** — a broadcast delivered to a registered client, with no churn inside its window, was
+  reported as "no mechanism ran": exit 20, and the two observations that answer that state were skipped
+  outright.
+- **F98 MODERATE** — `smoke --json` reported `deviceBackend: null` beside the `eas simulator:exec …
+  screenshot` that had just photographed a billed session.
+- **F99 MAJOR** — `auto` stopped at a rung it had tried. The next command, finding the socket empty,
+  climbed and exited 0 in 18.5 s on the state its predecessor had failed on.
+
+**What run 3's one red was.** `method` pinned to `dev-server` whenever the socket held a client — an
+assertion written between run 2 and run 3, before the ladder learned to climb, and made obsolete by the
+climb it was written to describe. Corrected against run 3's own artifact. **The corrected suite has not
+been re-run live**: wave 23's session budget was three and it spent three, so the row that says 7/7 is
+the next run's to write, and nothing here claims it.
 
 ## The findings this tier arrived with
 
@@ -372,6 +428,16 @@ the label's own count, which is the claim the rung actually establishes.
   and its live test passes on a run where the crash never fires. The unit tests are what pin the
   handler; the live test is what proves the handler meets a crash it could not have been given by a
   fixture. Neither is the other's substitute.
+- **live-cloud has not been seen 7/7.** Wave 23 took it to 6/7 and corrected the last assertion against
+  that run's own artifact, with the session budget spent. The corrected suite is a suite that has not
+  been run, which is precisely the state this document refuses to call evidence — so the next run of
+  `test:live:cloud` is what closes it, and it is one session.
+- **A suite written from one live run carries that run's state as if it were a law.** Three of
+  live-cloud's four founding facts were about a session whose app had never loaded, and two of them were
+  wrong about cloud sessions in general — including one, S11, that a whole document had been built on.
+  A captured payload is the right source for a live assertion (§What a live assertion is allowed to be)
+  and it is still one sample; where a fact could be a *state* rather than a property, assert the rule
+  that chose it and read the state out of the same report.
 
 ## The rule this states
 
