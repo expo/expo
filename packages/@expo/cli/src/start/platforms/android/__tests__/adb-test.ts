@@ -322,6 +322,33 @@ describe(getAttachedDevicesAsync, () => {
     expect(getServer().runHostQueryAsync).toHaveBeenCalledTimes(5);
   });
 
+  it('reports the daemon failure that drove retries when discovery runs out of time', async () => {
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockRejectedValueOnce(new Error('cannot connect to daemon at tcp:5037: Connection refused'))
+      .mockResolvedValueOnce(deviceListResult('emulator-5554 device transport_id:1'));
+    jest.mocked(getServer().runDeviceQueryAsync).mockImplementationOnce(
+      (_args, _operation, signal) =>
+        new Promise((_resolve, reject) => {
+          signal!.addEventListener('abort', () => reject(signal!.reason), { once: true });
+        })
+    );
+
+    await expect(
+      getAttachedDevicesAsync({ waitLimitMs: 400, probeWaitLimitMs: 5 })
+    ).rejects.toThrow(/cannot connect to daemon at tcp:5037: Connection refused/);
+    expect(getServer().runHostQueryAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not report an earlier daemon failure once a later attempt lists no devices', async () => {
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockRejectedValueOnce(new Error('cannot connect to daemon at tcp:5037: Connection refused'))
+      .mockResolvedValue(deviceListResult(''));
+
+    await expect(waitForAttachedDevicesAsync()).resolves.toEqual([]);
+  });
+
   it('uses an AVD name for a booting offline emulator', async () => {
     jest
       .mocked(getServer().runHostQueryAsync)

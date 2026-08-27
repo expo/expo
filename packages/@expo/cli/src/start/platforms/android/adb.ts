@@ -310,9 +310,9 @@ async function getAttachedDevicesWithOptionsAsync(
       ? ora('Waiting for ADB device discovery').start()
       : null;
 
+  let retryError: unknown;
   try {
     while (true) {
-      let retryError: unknown;
       try {
         const output = await server.runHostQueryAsync(
           ['devices', '-l'],
@@ -324,6 +324,7 @@ async function getAttachedDevicesWithOptionsAsync(
         if (devices.length || !shouldRetryEmptyResult) {
           return devices;
         }
+        retryError = undefined;
       } catch (error) {
         if (operationSignal.aborted && error === operationSignal.reason) throw error;
         if (!shouldRetryAdbDiscovery(error)) {
@@ -342,11 +343,16 @@ async function getAttachedDevicesWithOptionsAsync(
         operationSignal
       );
     }
-  } catch (error) {
+  } catch (caughtError) {
     // Caller cancellation is not a discovery failure, so skip the diagnostic probe
-    if (signal?.aborted && error === signal.reason) {
-      throw error;
+    if (signal?.aborted && caughtError === signal.reason) {
+      throw caughtError;
     }
+
+    const error =
+      retryError != null && operationSignal.aborted && caughtError === operationSignal.reason
+        ? retryError
+        : caughtError;
 
     let hostProbe: AdbHostProbeResult | undefined;
     if (shouldProbeAdbHost(error) && !operationSignal.aborted) {
