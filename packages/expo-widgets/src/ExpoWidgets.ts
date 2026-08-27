@@ -30,6 +30,9 @@ class LiveActivityStub {
   getId(): string {
     return '';
   }
+  getContentState(): { name: string; props?: string } | null {
+    return null;
+  }
   async update(_props?: string): Promise<void> {}
   async end(
     _dismissalPolicy?: string,

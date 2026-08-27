@@ -12,6 +12,19 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
+  func getContentState() -> [String: Any]? {
+    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
+      return nil
+    }
+
+    let state = activity.content.state
+    var contentState: [String: Any] = ["name": state.name]
+    if let props = state.props {
+      contentState["props"] = props
+    }
+    return contentState
+  }
+
   func update(props: String?, staleDate: Date?) async throws {
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)

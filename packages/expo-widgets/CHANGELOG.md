@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Expose content state on Live Activity instances. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@coffee-cup](https://github.com/coffee-cup))
 - [iOS] Expose stable ActivityKit identifiers on Live Activity instances. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
 - [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))

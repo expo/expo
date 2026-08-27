@@ -5,6 +5,7 @@ import ExpoWidgetsModule from './ExpoWidgets';
 import type {
   ExpoWidgetsEvents,
   LiveActivityComponent,
+  LiveActivityContentState,
   LiveActivityDismissalPolicy,
   NativeLiveActivity,
   NativeLiveActivityFactory,
@@ -108,6 +109,20 @@ export class LiveActivity<T extends object = object> {
    */
   getId(): string {
     return this.nativeLiveActivity.getId();
+  }
+
+  /**
+   * Returns the content state the Live Activity was started with or last updated to display.
+   * This also works for activities started remotely via push-to-start, whose content the app
+   * has not otherwise seen.
+   * @returns The current content state, or `null` if the activity is no longer active.
+   */
+  getContentState(): LiveActivityContentState<T> | null {
+    const state = this.nativeLiveActivity.getContentState();
+    if (!state) {
+      return null;
+    }
+    return { name: state.name, props: state.props ? (JSON.parse(state.props) as T) : null };
   }
 
   /**
