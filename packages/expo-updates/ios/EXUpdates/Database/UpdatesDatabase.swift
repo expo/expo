@@ -444,7 +444,23 @@ public final class UpdatesDatabase: NSObject {
     )
 
     let rows = try execute(sql: sql, withArgs: [config.scopeKey])
-    return rows.map { row in
+
+    // A ready row with no launch asset is corrupt (e.g. from an interrupted registration) and
+    // would fail every launch. Demote it for the loader to retry instead of offering it.
+    var launchableRows: [[String: Any?]] = []
+    for row in rows {
+      let status: NSNumber = row.requiredValue(forKey: "status")
+      let launchAssetId: NSNumber? = row.optionalValue(forKey: "launch_asset_id")
+      if status.intValue == UpdateStatus.StatusReady.rawValue && launchAssetId == nil {
+        let updateId: UUID = row.requiredValue(forKey: "id")
+        let demoteSql = "UPDATE updates SET status = ?1 WHERE id = ?2;"
+        _ = try execute(sql: demoteSql, withArgs: [UpdateStatus.StatusPending.rawValue, updateId])
+      } else {
+        launchableRows.append(row)
+      }
+    }
+
+    return launchableRows.map { row in
       update(withRow: row, config: config)
     }
   }
