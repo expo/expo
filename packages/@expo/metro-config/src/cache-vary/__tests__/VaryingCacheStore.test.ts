@@ -399,6 +399,26 @@ describe('foreign data and degradation', () => {
     await expect(store.get(key)).resolves.toEqual(artifactA);
   });
 
+  it('propagates a failed variant read', async () => {
+    process.env.EXPO_PUBLIC_URL = 'a';
+    const { inner, store } = makeStores();
+    const key = makeKey();
+    await store.get(key);
+    await store.set(
+      key,
+      makeTransformResult('code-a', [['EXPO_PUBLIC_URL', fingerprintEnv('EXPO_PUBLIC_URL')]])
+    );
+
+    process.env.EXPO_PUBLIC_URL = 'b';
+    const innerGet = inner.get.bind(inner);
+    jest
+      .spyOn(inner, 'get')
+      .mockImplementationOnce(innerGet)
+      .mockRejectedValueOnce(new Error('io'));
+
+    await expect(store.get(key)).rejects.toThrow('io');
+  });
+
   it('passes css.skipCache values through as a full no-op, preserving the pending write target', async () => {
     process.env.EXPO_PUBLIC_URL = 'a';
     const { inner, store } = makeStores();
