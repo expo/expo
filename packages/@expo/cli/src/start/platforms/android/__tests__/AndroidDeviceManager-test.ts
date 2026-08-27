@@ -6,6 +6,7 @@ import {
   installAsync,
   isDeviceBootedAsync,
   launchActivityAsync,
+  logUnauthorized,
   openUrlAsync,
 } from '../adb';
 import { startDeviceAsync } from '../emulator';
@@ -58,7 +59,7 @@ describe('device resolution', () => {
     expect(isDeviceBootedAsync).not.toHaveBeenCalled();
   });
 
-  it.each(['offline', 'unauthorized', 'future-state'])(
+  it.each(['offline', 'future-state'])(
     'rejects an attached %s transport without entering the AVD launch path',
     async (state) => {
       const physical = asDevice({
@@ -67,7 +68,7 @@ describe('device resolution', () => {
         type: 'device',
         state,
         isLaunchable: false,
-        isAuthorized: state !== 'unauthorized',
+        isAuthorized: true,
       });
 
       await expect(AndroidDeviceManager.resolveAsync({ device: physical })).rejects.toThrow(state);
@@ -75,6 +76,24 @@ describe('device resolution', () => {
       expect(isDeviceBootedAsync).not.toHaveBeenCalled();
     }
   );
+
+  it('preserves the dedicated authorization flow for an attached unauthorized device', async () => {
+    const physical = asDevice({
+      name: 'Device USB-1',
+      pid: 'USB-1',
+      type: 'device',
+      state: 'unauthorized',
+      isLaunchable: false,
+      isAuthorized: false,
+    });
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(physical);
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: physical })).rejects.toThrow(
+      'Interactive prompt was cancelled.'
+    );
+    expect(logUnauthorized).toHaveBeenCalledWith(physical);
+    expect(startDeviceAsync).not.toHaveBeenCalled();
+  });
 
   it('reports disappearance after discovery without launching or replaying', async () => {
     const physical = asDevice({
