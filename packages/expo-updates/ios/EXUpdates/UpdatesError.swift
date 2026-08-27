@@ -43,6 +43,7 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case appLauncherWithDatabaseAssetCopyFailed
   case appLauncherWithDatabaseUnknownError(cause: Error)
   case appLauncherNoLaunchableUpdates(cause: Error?)
+  case appLauncherLaunchAssetNotFound(updateId: UUID)
   case embeddedAppLoaderEmbeddedManifestLoadFailed
   case startupProcedureDidFinishWithError(cause: Error)
   case startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: Error)
@@ -128,6 +129,8 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Unknown error: \(cause.localizedDescription)"
     case let .appLauncherNoLaunchableUpdates(cause):
       return "No launchable updates found in database: \(cause?.localizedDescription ?? "Unknown error")"
+    case let .appLauncherLaunchAssetNotFound(updateId):
+      return "Launch asset not found for update \(updateId). The update cannot launch and will be repaired at the next app launch."
     case .embeddedAppLoaderEmbeddedManifestLoadFailed:
       return "Failed to load embedded manifest. Make sure you have configured expo-updates correctly."
     case let .startupProcedureDidFinishWithError(cause):
