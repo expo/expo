@@ -10,6 +10,7 @@
 
 - [ios] Forward notification center calls to a `UNUserNotificationCenterDelegate` that another library set, so that both libraries keep working. ([#48313](https://github.com/expo/expo/pull/48313) by [@vonovak](https://github.com/vonovak))
 - [ios] Add support for grouping notifications via `threadIdentifier`. ([#49429](https://github.com/expo/expo/pull/49429) by [@vonovak](https://github.com/vonovak))
+- [android] Add support for grouping notifications via `threadIdentifier`. ([#43388](https://github.com/expo/expo/pull/43388) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
