@@ -131,9 +131,17 @@ export function buildNavigateFollowUps({
             ? `xcrun simctl io ${deviceId} screenshot screen.png`
             : `${adbPath} -s ${deviceId} exec-out screencap -p > screen.png`,
       why:
-        on === 'cloud'
-          ? 'Captures the screen this route opened on the cloud simulator and downloads it here, so the change can be checked as it renders.'
-          : 'Captures the screen this route opened, so the change can be checked as it renders.',
+        // @ref llp/0009 §Design — friction run 7, F79. `navigate` returns when the app has
+        // *attached*, and attaching is not rendering: the app then fetches and evaluates the
+        // bundle. Run at once, this captured the Expo Go splash and "Loading project…", and the
+        // screen was ready about twelve seconds later [observed — friction run 7, n1/n2-lab.png].
+        // `smoke` waits for that before its own capture; here the wait is the caller's, so what
+        // this line owes them is the fact and something to wait *on* rather than a number of
+        // seconds — a cold bundle on a slow machine takes as long as it takes.
+        (on === 'cloud'
+          ? 'Captures the screen this route opened on the cloud simulator and downloads it here, so the change can be checked as it renders. '
+          : 'Captures the screen this route opened, so the change can be checked as it renders. ') +
+        'The app may still be loading its bundle: this route was opened a moment ago, and a cold start takes seconds, so run "npx exagent runtime:tree" first and capture once it lists the screen — otherwise the picture is of the splash.',
     },
     {
       id: 'runtime-errors',

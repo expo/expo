@@ -153,7 +153,7 @@ export async function runtimeStopAsync(
     followups: [],
   };
   report.followups =
-    result.ok && followUpsEnabled(options.followups) ? buildFollowUps(report) : [];
+    result.ok && followUpsEnabled(options.followups) ? buildStopFollowUps(report) : [];
 
   event('stop_app_done', {
     stopped: report.stopped,
@@ -219,8 +219,11 @@ export async function runtimeStopAsync(
  *
  * `navigate /` leads because starting it again is the only thing this state is for, and it is the
  * one command that both starts the app and puts it somewhere known.
+ *
+ * Exported for its own test: the one branch that matters is the three-way on `wasRunning`, and the
+ * `null` arm is only reachable on a cloud session.
  */
-function buildFollowUps(report: RuntimeStopResultJson): FollowUp[] {
+export function buildStopFollowUps(report: RuntimeStopResultJson): FollowUp[] {
   // A mismatch gets the corrected command and nothing else. The old list led with `navigate /`
   // here, which starts an app while the one the caller meant to stop is still running — advice
   // built on the assumption that the requested id was the right one (friction run 4, F42).
@@ -240,9 +243,16 @@ function buildFollowUps(report: RuntimeStopResultJson): FollowUp[] {
     {
       id: 'navigate',
       command: `npx exagent navigate /${onCloud ? ' --cloud' : ''}`,
-      why: report.wasRunning
-        ? `The app is stopped, so this starts it again on the root route with a clean JavaScript runtime${onCloud ? ', on the same cloud simulator session' : ''}.`
-        : `The app was not running, so this is what starts it on the root route${onCloud ? ', on the same cloud simulator session' : ''}.`,
+      // Three arms, not two. `wasRunning: null` is the cloud case — the controller closes the app
+      // in front and says nothing about which id that was — and a falsy check read it as `false`,
+      // so the follow-up asserted "The app was not running" about an app that was [live staging,
+      // S13: Expo Go was running, `wasRunning: null`, and the line said it was not].
+      why:
+        report.wasRunning == null
+          ? `Whether the app was running is not something the session's controller reports, so this starts it on the root route either way${onCloud ? ', on the same cloud simulator session' : ''}.`
+          : report.wasRunning
+            ? `The app is stopped, so this starts it again on the root route with a clean JavaScript runtime${onCloud ? ', on the same cloud simulator session' : ''}.`
+            : `The app was not running, so this is what starts it on the root route${onCloud ? ', on the same cloud simulator session' : ''}.`,
     },
   ];
 }

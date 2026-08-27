@@ -4,9 +4,12 @@
 // command, so they are pinned here and must not depend on what the log held: an agent reading
 // `failure` on a clean log gets `null`, never a missing key.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
-import { buildExplainReport } from '../explainAsync';
+import { EXIT_OUTCOME_TIMEOUT } from '../../../exitCodes';
+import { CommandError } from '../../../utils/errors';
+import { buildExplainReport, explainAsync } from '../explainAsync';
 import { readLogFileAsync } from '../readLog';
 import type { ExplainOptions } from '../resolveOptions';
 
@@ -153,5 +156,81 @@ describe('the fixtures directory', () => {
       // from a construction without running anything.
       expect(readme).toContain(file);
     }
+  });
+});
+
+// @ref llp/0012-build-explain.rfc.md §Is this a log at all — live staging, S8.
+//
+// A brotli-encoded EAS log saved without decoding it was read as a clean build: exit 0,
+// `failure: null`, and ~10 KB of control characters in `logTail`. Nothing about that input was a
+// log, and "no error located" is the one answer that must not be given for it.
+describe('input that is not a log', () => {
+  let temporaryDir: string;
+  beforeAll(() => {
+    temporaryDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exagent-notalog-'));
+  });
+  afterAll(() => {
+    fs.rmSync(temporaryDir, { recursive: true, force: true });
+  });
+
+  /** High-entropy bytes with no line structure, which is what an undecoded brotli body is. */
+  function writeCompressed(): string {
+    const file = path.join(temporaryDir, 'build.log.br');
+    fs.writeFileSync(
+      file,
+      Buffer.from(Array.from({ length: 4000 }, (_unused, index) => index % 256))
+    );
+    return file;
+  }
+
+  it('exits 22 rather than reporting a clean build', async () => {
+    const file = writeCompressed();
+    const error = await explainAsync({
+      ...BASE_OPTIONS,
+      source: { kind: 'file', path: file },
+    }).then(
+      () => null,
+      (caught: CommandError) => caught
+    );
+
+    expect(error).toBeInstanceOf(CommandError);
+    expect(error!.code).toBe('LOG_NOT_TEXT');
+    expect(error!.exitCode).toBe(EXIT_OUTCOME_TIMEOUT);
+  });
+
+  it('names brotli and the decode, because that is what EAS serves', async () => {
+    const file = writeCompressed();
+    const error = (await explainAsync({
+      ...BASE_OPTIONS,
+      source: { kind: 'file', path: file },
+    }).catch((caught: CommandError) => caught)) as CommandError;
+
+    expect(error.message).toMatch(/brotli/i);
+    expect(error.message).toMatch(/Why:/);
+    expect(error.message).toMatch(/How:/);
+    expect(error.message).toContain(file);
+  });
+
+  it('never puts the bytes it refused into its own output', async () => {
+    const file = writeCompressed();
+    const error = (await explainAsync({
+      ...BASE_OPTIONS,
+      source: { kind: 'file', path: file },
+    }).catch((caught: CommandError) => caught)) as CommandError;
+
+    // The message says how it decided and quotes none of what it read.
+    const controlCharacters = [...error.message].filter(
+      (character) => character.charCodeAt(0) < 0x20 && character !== '\n'
+    );
+    expect(controlCharacters).toEqual([]);
+  });
+
+  it('still reads a text log that happens to be named .br', async () => {
+    const file = path.join(temporaryDir, 'decoded.br');
+    fs.writeFileSync(file, '> Task :app:compileDebugKotlin\nBUILD FAILED\n');
+
+    await expect(
+      explainAsync({ ...BASE_OPTIONS, source: { kind: 'file', path: file }, json: true })
+    ).resolves.toBeUndefined();
   });
 });

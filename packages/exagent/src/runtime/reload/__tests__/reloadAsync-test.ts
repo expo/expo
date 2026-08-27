@@ -8,7 +8,12 @@ import {
   connectMessageSocketAsync,
   type MessageSocketPeers,
 } from '../../messageSocket';
-import { reloadAsync, reloadOverDevServerAsync } from '../reloadAsync';
+import {
+  explainReloadFailure,
+  reloadAsync,
+  reloadOverDevServerAsync,
+  type ReloadResultJson,
+} from '../reloadAsync';
 import type { ReloadOptions } from '../resolveOptions';
 
 jest.mock('../../../devLock', () => ({
@@ -527,8 +532,19 @@ describe(reloadAsync, () => {
       deviceId: 'IOS-1',
     });
     expect(report.attempts).toEqual([
-      { method: 'dev-server', ok: false, reason: expect.stringContaining('no app is connected') },
-      { method: 'device', ok: true, reason: expect.stringContaining('simctl terminate') },
+      {
+        method: 'dev-server',
+        ok: false,
+        reason: expect.stringContaining('no app is connected'),
+        leftAppStopped: null,
+      },
+      {
+        method: 'device',
+        ok: true,
+        reason: expect.stringContaining('simctl terminate'),
+        // The relaunch worked, so nothing was left stopped.
+        leftAppStopped: null,
+      },
     ]);
   });
 
@@ -658,5 +674,79 @@ describe(`${reloadAsync.name} and the platform it checks the bundle for`, () => 
     expect(platformsAsked).toEqual(['android']);
     expect(JSON.parse(printed()).bundlePlatformSource).toBe('connected-app');
     expect(JSON.parse(printed()).bundlePlatforms).toEqual(['android']);
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do — live
+// staging, S12.
+//
+// The device fallback is a force-stop and a relaunch. When the relaunch is refused, the app is left
+// **closed** — and on a cloud session the controller's own session app is what was closed, which
+// nothing in this command can restore. The report said only "The app was not reloaded", so a reader
+// was left with a session they could not use and no idea that this run is what emptied it.
+describe(explainReloadFailure, () => {
+  function strandedReport(): ReloadResultJson {
+    return {
+      reloaded: false,
+      method: null,
+      verifiedBy: null,
+      devServerUrl: 'http://127.0.0.1:8081',
+      devServerSource: 'flag',
+      appsConnected: 0,
+      appsReconnected: 0,
+      bundle: { checked: true, ok: true, platform: 'ios', url: null, error: null, reason: null },
+      bundlePlatforms: ['ios'],
+      bundlePlatformSource: 'flag',
+      route: null,
+      routeCheck: { checked: false, ok: null, route: null, reason: 'no --route', routes: [] } as any,
+      url: null,
+      platform: 'ios',
+      deviceId: 'session-1',
+      attempts: [
+        {
+          method: 'dev-server',
+          ok: false,
+          reason: 'the reload was broadcast, but no client reconnected within 8000ms',
+          leftAppStopped: null,
+        },
+        {
+          method: 'device',
+          ok: false,
+          reason: 'the app was stopped, but the device refused the link that would start it again',
+          leftAppStopped: 'host.exp.Exponent',
+        },
+      ],
+      waitedMs: 12_000,
+      followups: [],
+    };
+  }
+
+  it(`says the app was left closed, which is a state this run produced`, () => {
+    const explained = explainReloadFailure(strandedReport(), options({ cloud: true }));
+
+    expect(explained).toMatch(/left .*(closed|not running)/i);
+    expect(explained).toContain('host.exp.Exponent');
+  });
+
+  it(`hands back the command that reopens it by hand on a cloud session`, () => {
+    const explained = explainReloadFailure(strandedReport(), options({ cloud: true }));
+
+    expect(explained).toContain('eas simulator:exec');
+    expect(explained).toContain('open host.exp.Exponent');
+  });
+
+  it(`does not claim a cloud session for a local run`, () => {
+    const explained = explainReloadFailure(strandedReport(), options({ cloud: false }));
+
+    expect(explained).toContain('host.exp.Exponent');
+    expect(explained).not.toContain('eas simulator:exec');
+    expect(explained).toContain('npx exagent navigate /');
+  });
+
+  it(`says nothing about a stopped app when the fallback never stopped one`, () => {
+    const report = strandedReport();
+    report.attempts = [report.attempts[0]!];
+
+    expect(explainReloadFailure(report, options({ cloud: true }))).not.toMatch(/left/i);
   });
 });

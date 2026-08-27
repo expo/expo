@@ -822,6 +822,52 @@ describe(cloudVerbFailedError, () => {
     expect(error.code).toBe('CLOUD_SIMULATOR_TOOL_MISSING');
     expect(error.message).toContain('spawn eas ENOENT');
   });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Finding the session — live staging, S14.
+  //
+  // `DEVICE_IN_USE` means the device is **held**, and the caller's `how` said the opposite: "a
+  // session can end between the moment it was listed and the moment a verb reaches it. Start a new
+  // one if it has." Starting a second session bills a second machine and leaves this one held.
+  const inUse = {
+    ...base,
+    stderr: 'Error (DEVICE_IN_USE): Device is already in use by session "default".',
+  };
+
+  it(`says the device is held rather than that the session may have ended`, () => {
+    const error = cloudVerbFailedError(inUse, {
+      what: 'the deep link was not opened.',
+      how: 'Check the session is still running with "npx eas simulator:list --status in-progress" — a session can end between the moment it was listed and the moment a verb reaches it. Start a new one if it has.',
+    });
+
+    expect(error.code).toBe('CLOUD_SIMULATOR_DEVICE_REFUSED');
+    expect(error.message).toContain('DEVICE_IN_USE');
+    expect(error.message).not.toMatch(/start a new one/i);
+    expect(error.message).toMatch(/did not end|still up|holding/i);
+  });
+
+  it(`names the session that holds the device, which the controller said`, () => {
+    const error = cloudVerbFailedError(inUse, { what: 'nothing was opened.', how: 'Check it.' });
+
+    expect(error.message).toContain('"default"');
+    expect(error.message).toContain('--session default');
+  });
+
+  it(`never suggests starting a session, because that bills a second machine`, () => {
+    const error = cloudVerbFailedError(inUse, { what: 'nothing was opened.', how: 'Check it.' });
+
+    expect(error.message).not.toContain('simulator:start');
+    expect(error.suggestedCommand).not.toContain('simulator:start');
+  });
+
+  it(`leaves every other controller refusal with the caller's own how`, () => {
+    const error = cloudVerbFailedError(
+      { ...base, stderr: 'Error (COMMAND_FAILED): Simulator device failed to open myapp://.' },
+      { what: 'nothing was opened.', how: 'Check the scheme is registered.' }
+    );
+
+    expect(error.message).toContain('Check the scheme is registered.');
+    expect(error.message).not.toContain('--session');
+  });
 });
 
 describe(cloudVerbNotSupportedError, () => {

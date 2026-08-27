@@ -17,6 +17,7 @@
 
 import chalk from 'chalk';
 
+import { AGENT_DEVICE_SPEC } from '../../device/cloudSimulator';
 import { event as cliEvent } from '../../events';
 import { buildReloadFollowUps, followUpsEnabled, reportFollowUps, type FollowUp } from '../../followups';
 import * as Log from '../../log';
@@ -85,6 +86,15 @@ export interface ReloadAttempt {
   ok: boolean;
   /** Why it did not work, or what it did. Never null: an attempt always has something to say. */
   reason: string;
+  /**
+   * The application id this attempt stopped and could not start again, or null.
+   *
+   * The device method is a force-stop and a relaunch, so a relaunch that is refused leaves the app
+   * **closed** — a state this command produced and used to say nothing about [live staging, S12: a
+   * cloud session was left with no app running, and the report said only "The app was not
+   * reloaded"]. Null for every attempt that stopped nothing, including a stop that itself failed.
+   */
+  leftAppStopped: string | null;
 }
 
 /**
@@ -381,7 +391,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   }
 
   if (exitCode !== EXIT_OK) {
-    Log.error(explainFailure(report, options));
+    Log.error(explainReloadFailure(report, options));
   }
 
   reportFollowUps('runtime:reload', followups, { json });
@@ -407,7 +417,12 @@ export async function reloadOverDevServerAsync(
     churnTimeoutMs?: number;
   } = {}
 ): Promise<ReloadAttempt> {
-  const failed = (reason: string): ReloadAttempt => ({ method: 'dev-server', ok: false, reason });
+  const failed = (reason: string): ReloadAttempt => ({
+    method: 'dev-server',
+    ok: false,
+    reason,
+    leftAppStopped: null,
+  });
 
   let socket: DevServerMessageSocket;
   try {
@@ -491,6 +506,7 @@ async function reloadOnDeviceAsync(
         method: 'device',
         ok: false,
         reason: error instanceof Error ? error.message.split('\n')[0]! : String(error),
+        leftAppStopped: null,
       },
       device: null,
     };
@@ -507,7 +523,13 @@ async function reloadOnDeviceAsync(
   });
   if (!stopped.ok) {
     return {
-      attempt: { method: 'device', ok: false, reason: `${stopped.command} failed: ${stopped.reason}` },
+      attempt: {
+        method: 'device',
+        ok: false,
+        reason: `${stopped.command} failed: ${stopped.reason}`,
+        // The stop is what failed, so the app is where it was.
+        leftAppStopped: null,
+      },
       device,
     };
   }
@@ -521,6 +543,8 @@ async function reloadOnDeviceAsync(
         method: 'device',
         ok: false,
         reason: `the app was stopped, but the device refused the link that would start it again (${opened?.command ?? 'no command ran'})`,
+        // Stopped and not started: the app is off the screen because of this run.
+        leftAppStopped: appId,
       },
       device,
     };
@@ -531,6 +555,7 @@ async function reloadOnDeviceAsync(
       method: 'device',
       ok: true,
       reason: `${stopped.command}, then ${opened.command}`,
+      leftAppStopped: null,
     },
     device,
   };
@@ -669,8 +694,34 @@ function printHumanReport(report: ReloadResultJson, options: ReloadOptions): voi
   Log.log(lines.join('\n'));
 }
 
+/**
+ * What this run left behind, when the fallback stopped the app and could not start it again.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §What the cloud backend can and cannot do — live
+ * staging, S12.
+ *
+ * Said out loud because it is a state the command *produced*: the app is not on the screen, and on a
+ * cloud session the reopen this command would use is the one that just failed — so the recovery is a
+ * command a person runs, and the fallback is not redesigned here. Empty for a run that stopped
+ * nothing.
+ */
+function explainStrandedApp(report: ReloadResultJson, options: ReloadOptions): string[] {
+  const appId = report.attempts.find((attempt) => attempt.leftAppStopped != null)?.leftAppStopped;
+  if (appId == null) {
+    return [];
+  }
+  return [
+    options.cloud
+      ? `The app was left closed: the device fallback stopped ${appId} on the cloud session and the relaunch was refused, so the session is still billing with nothing running on it, and this command cannot put it back — the reopen it would use is the one that just failed.`
+      : `The app was left closed: the device fallback stopped ${appId} and the relaunch was refused, so nothing is running on the device now.`,
+    options.cloud
+      ? `To reopen it by hand, run "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} open ${appId}" — opening the application id rather than a deep link avoids the "Open in Expo Go?" dialog that nothing can answer on a cloud device. "npx eas simulator:stop" ends the session and its billing.`
+      : `Run "npx exagent navigate /" to open it again.`,
+  ];
+}
+
 /** The what / why / how for a reload that did not end where it was supposed to. */
-function explainFailure(report: ReloadResultJson, options: ReloadOptions): string {
+export function explainReloadFailure(report: ReloadResultJson, options: ReloadOptions): string {
   // The refusal comes first, because nothing was attempted: an attempts list that is empty for
   // this reason must not read as "no method worked" (friction run 4, F38).
   if (report.bundle.ok === false) {
@@ -699,6 +750,7 @@ function explainFailure(report: ReloadResultJson, options: ReloadOptions): strin
     return [
       chalk.red(`The app was not reloaded.`),
       `Why: ${report.attempts.map((attempt) => `${attempt.method} — ${attempt.reason}`).join('; ') || 'no method was tried'}.`,
+      ...explainStrandedApp(report, options),
       `How: open the app on a device or simulator first ("npx exagent navigate /"), then run this command again. A reload needs an app that is already running: it replaces the JavaScript in one, it does not start one.`,
     ].join('\n');
   }

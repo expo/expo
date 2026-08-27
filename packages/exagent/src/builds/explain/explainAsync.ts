@@ -7,6 +7,7 @@
 // the command gives.
 
 import { event } from '../../events';
+import { EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
 import { buildExplainFollowUps, followUpsEnabled, reportFollowUps } from '../../followups';
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
@@ -33,6 +34,10 @@ export async function explainAsync(options: ExplainOptions): Promise<void> {
 
   if (read.lines.length === 0) {
     throw emptyLogError(options);
+  }
+  // Before anything is extracted, and before a byte of it is quoted anywhere.
+  if (!read.looksLikeText) {
+    throw notALogError(options, read.controlRatio);
   }
 
   const report = buildExplainReport(read, options);
@@ -101,6 +106,35 @@ export function buildExplainReport(read: ReadLogResult, options: ExplainOptions)
     logTail: logTail(read.lines),
     followups,
   };
+}
+
+/**
+ * The error for a source that is not a log.
+ *
+ * @ref llp/0012-build-explain.rfc.md §Is this a log at all — live staging, S8.
+ *
+ * Exit `22` rather than `20`, and never `0`: nothing about the build was measured, so this is
+ * llp/0010's "nothing was shown to be wrong and nothing was proved right" — the same code
+ * `status --assert` uses for a project it cannot measure. `20` would say the build failed, and the
+ * old answer, `0` with `failure: null`, said it passed.
+ *
+ * The refusal quotes **none** of what it read. That is the other half of the finding: the report
+ * carried ten kilobytes of control characters into `logTail`, where a terminal renders them as
+ * anything at all and an agent has to carry them through its own context.
+ */
+function notALogError(options: ExplainOptions, controlRatio: number): CommandError {
+  const where = options.source.kind === 'file' ? options.source.path : 'the data on stdin';
+  const error = new CommandError(
+    'LOG_NOT_TEXT',
+    [
+      `${where} is not a build log, so nothing was read from it.`,
+      `Why: ${Math.round(controlRatio * 100)}% of the start of it is control characters, which no log contains — this is binary, and the usual reason is a log that is still compressed. EAS serves build logs brotli-encoded, so a response saved without decoding it looks exactly like this. Reporting "no error located" for it would say the build passed.`,
+      `How: decode it first — "brotli --decompress --output build.log build.log.br", or "curl --compressed" when fetching it — then pass the decoded file with "--file build.log". "npx eas build:view <id>" prints where a build's logs are.`,
+    ].join('\n')
+  );
+  error.exitCode = EXIT_OUTCOME_TIMEOUT;
+  error.suggestedCommand = 'npx exagent inspect:build-log --help';
+  return error;
 }
 
 /**

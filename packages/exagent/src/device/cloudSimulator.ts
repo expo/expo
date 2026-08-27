@@ -935,6 +935,30 @@ export function cloudNeedsTunnelError(url: string, hostType: string | null): Com
  * scheme no app on it had registered; sending that reader to `--help` would have had them checking
  * a command that was already correct.
  */
+/**
+ * What to do about a device the controller says is already in use.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Finding the session — live staging, S14.
+ *
+ * `DEVICE_IN_USE` is the one controller refusal whose remedy is in its own message: it names the
+ * session that holds the device. The general advice for a refused verb — "a session can end between
+ * the moment it was listed and the moment a verb reaches it; start a new one if it has" — is the
+ * opposite of the truth here, and acting on it bills a second machine and leaves this one held.
+ *
+ * The session name is read out of the controller's sentence rather than assumed: the observed one is
+ * `Device is already in use by session "default".` [observed — live, 2026-08-26], and a message that
+ * stops carrying a name falls back to advice that names none.
+ */
+function heldDeviceHow(message: string): string {
+  const session = /session\s+["']([^"']+)["']/.exec(message)?.[1] ?? null;
+  return [
+    session
+      ? `The device is held by the session named ${JSON.stringify(session)}, so bind this verb to that session — the controller takes --session ${session} — or wait for whatever is holding it to let go.`
+      : `The device is held by another session, so bind this verb to the session that holds it (the controller takes --session <name>), or wait for it to let go.`,
+    `Do not start a second session: that bills another machine and leaves this one held. "npx eas simulator:list --status in-progress" shows which sessions are up.`,
+  ].join(' ');
+}
+
 export function cloudVerbFailedError(
   result: CloudRunResult,
   { what, how }: { what: string; how: string }
@@ -953,14 +977,20 @@ export function cloudVerbFailedError(
   // The controller's own refusal, which is a fact about the **device** rather than about the argv.
   const controller = readControllerError(`${result.stderr}\n${result.stdout}`);
   if (controller) {
+    // One controller code carries its own remedy, and the general `how` is the opposite of it.
+    const held = controller.code === 'DEVICE_IN_USE' ? heldDeviceHow(controller.message) : null;
     const error = new CommandError(
       'CLOUD_SIMULATOR_DEVICE_REFUSED',
       [
         `The cloud simulator refused the command, so ${what}`,
-        `Why: the session's controller ran and answered ${controller.code} — "${controller.message}" — so the command reached the device and the device is what said no. This is not a syntax problem: "${result.command}" was accepted and executed.`,
-        `How: ${how}`,
+        `Why: the session's controller ran and answered ${controller.code} — "${controller.message}" — so the command reached the device and the device is what said no. This is not a syntax problem: "${result.command}" was accepted and executed.${
+          held ? ` The session did not end: the device is up and something else is holding it.` : ''
+        }`,
+        `How: ${held ?? how}`,
       ].join('\n')
     );
+    // The listing either way: for a session that may have ended it is how to find out, and for a
+    // held device it is how to see which session is holding it. Neither starts anything.
     error.suggestedCommand = 'npx eas simulator:list --status in-progress';
     return error;
   }

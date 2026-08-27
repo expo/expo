@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 
 import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../devLock';
-import { runtimeStopAsync } from '../stopAsync';
+import { buildStopFollowUps, runtimeStopAsync, type RuntimeStopResultJson } from '../stopAsync';
 import type { RuntimeStopOptions } from '../resolveStopOptions';
 
 jest.mock('../../devLock', () => ({
@@ -303,5 +303,57 @@ describe(runtimeStopAsync, () => {
     expect(JSON.parse(printed()).followups).toEqual([
       { id: 'navigate', command: 'npx exagent navigate /', why: expect.any(String) },
     ]);
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §What `close` will not tell you — live staging, S13.
+//
+// On a cloud session `wasRunning` is null: the controller closes the app in front and answers the
+// same way whatever application id it was given. The follow-up read that null as `false` and
+// asserted "The app was not running" while Expo Go was running on the session.
+describe(buildStopFollowUps, () => {
+  function report(overrides: Partial<RuntimeStopResultJson> = {}): RuntimeStopResultJson {
+    return {
+      stopped: true,
+      wasRunning: true,
+      platform: 'ios',
+      deviceBackend: 'local-ios',
+      deviceId: 'IOS-1',
+      bundleId: 'host.exp.Exponent',
+      bundleIdSource: 'dev-server',
+      bundleIdReason: 'the dev server named it',
+      command: 'xcrun simctl terminate IOS-1 host.exp.Exponent',
+      reason: null,
+      connectedAppIds: [],
+      appIdMismatch: false,
+      followups: [],
+      ...overrides,
+    };
+  }
+
+  it(`says the app is stopped when this command is what stopped it`, () => {
+    expect(buildStopFollowUps(report())[0]!.why).toContain('The app is stopped');
+  });
+
+  it(`says the app was not running only when that was established`, () => {
+    expect(buildStopFollowUps(report({ wasRunning: false }))[0]!.why).toContain(
+      'The app was not running'
+    );
+  });
+
+  it(`claims neither when the controller reported neither`, () => {
+    const why = buildStopFollowUps(
+      report({ wasRunning: null, deviceBackend: 'cloud', deviceId: 'session-1' })
+    )[0]!.why;
+
+    expect(why).not.toContain('The app was not running');
+    expect(why).toMatch(/not something the session's controller reports/);
+    expect(why).toContain('cloud simulator session');
+  });
+
+  it(`still carries --cloud into the command it suggests`, () => {
+    expect(
+      buildStopFollowUps(report({ wasRunning: null, deviceBackend: 'cloud' }))[0]!.command
+    ).toBe('npx exagent navigate / --cloud');
   });
 });

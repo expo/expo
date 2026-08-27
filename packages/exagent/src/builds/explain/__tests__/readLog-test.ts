@@ -139,7 +139,14 @@ describe('readLogStreamAsync', () => {
 
   it('has nothing to report for an empty stream', async () => {
     const read = await readLogStreamAsync(streamOf([]));
-    expect(read).toEqual({ lines: [], bytes: 0, truncated: false, droppedLines: 0 });
+    expect(read).toEqual({
+      lines: [],
+      bytes: 0,
+      truncated: false,
+      droppedLines: 0,
+      looksLikeText: true,
+      controlRatio: 0,
+    });
   });
 });
 
@@ -169,5 +176,61 @@ describe('readLogFileAsync', () => {
     await expect(readLogFileAsync(path.join(temporaryDir, 'nope.log'))).rejects.toMatchObject({
       suggestedCommand: 'npx exagent inspect:build-log --help',
     });
+  });
+});
+
+// @ref llp/0012-build-explain.rfc.md §Is this a log at all — live staging, S8.
+//
+// EAS serves a build log **brotli-encoded**, and a caller who saved the response without decoding it
+// handed this command 26 KB of compressed bytes. It answered exit 0 with `failure: null` — "the log
+// was read and nothing failed" — and put ~10 KB of control characters into `logTail`. The two
+// samples that settle the threshold were measured: the undecoded response was 55% control characters
+// and the same log decoded was 0% [observed — staging evidence 35 and 37, 2026-08-26].
+describe('whether the input is a log at all', () => {
+  it('reads a real log as text', async () => {
+    const read = await readLogStreamAsync(
+      streamOf(['> Task :app:compileDebugKotlin\nBUILD FAILED\n'])
+    );
+
+    expect(read).toMatchObject({ looksLikeText: true, controlRatio: 0 });
+  });
+
+  // The ANSI codes are stripped before anything is counted, so a colour-per-word log is text. Count
+  // them raw and a Gradle run with colour on would be refused as binary.
+  it('reads an ANSI-coloured log as text', async () => {
+    const coloured = Array.from(
+      { length: 40 },
+      (_, index) => `[31m[1mERROR[22m[39m line ${index}`
+    ).join('\n');
+
+    expect(await readLogStreamAsync(streamOf([coloured]))).toMatchObject({ looksLikeText: true });
+  });
+
+  it('does not read compressed bytes as a log', async () => {
+    // High-entropy bytes with no line structure, which is what an undecoded brotli body is.
+    const compressed = Array.from({ length: 4000 }, (_, index) =>
+      String.fromCharCode(index % 256)
+    ).join('');
+
+    const read = await readLogStreamAsync(streamOf([compressed]));
+    expect(read.looksLikeText).toBe(false);
+    expect(read.controlRatio).toBeGreaterThan(0.02);
+  });
+
+  it('does not read a NUL-padded binary as a log', async () => {
+    const binary = ' '.repeat(400) + 'BUILD FAILED';
+
+    expect(await readLogStreamAsync(streamOf([binary]))).toMatchObject({ looksLikeText: false });
+  });
+
+  it('does not read bytes that decoded to replacement characters as a log', async () => {
+    // What invalid UTF-8 becomes once it has been through a decoder.
+    const mojibake = '�'.repeat(200) + 'BUILD FAILED';
+
+    expect(await readLogStreamAsync(streamOf([mojibake]))).toMatchObject({ looksLikeText: false });
+  });
+
+  it('judges an empty stream as text, because emptiness has its own error', async () => {
+    expect(await readLogStreamAsync(streamOf([]))).toMatchObject({ looksLikeText: true });
   });
 });

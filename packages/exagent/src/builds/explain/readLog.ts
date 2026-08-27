@@ -77,6 +77,38 @@ function unwrapEasRecord(line: string): string {
   }
 }
 
+/**
+ * How many characters of the start are measured to decide whether this is text.
+ *
+ * The start, because a caller who piped the wrong thing piped the wrong thing from its first byte,
+ * and because the decision has to be cheap enough to make on a hundred-megabyte log.
+ */
+const TEXT_SAMPLE_CHARS = 8_192;
+
+/**
+ * The share of control characters above which the input is not a log.
+ *
+ * Measured rather than guessed: an EAS build log saved without decoding its brotli body was **55%**
+ * control characters, and the same log decoded was **0%** [observed — live staging, 2026-08-26,
+ * evidence 35 and 37]. Two per cent leaves room for the odd stray byte a real log carries and is
+ * nowhere near either measurement.
+ */
+const MAX_CONTROL_RATIO = 0.02;
+
+/**
+ * Whether a character is one a log does not contain.
+ *
+ * Tab, newline and carriage return are excluded because a log is made of them. `�` is here
+ * because it is what invalid UTF-8 becomes when it is decoded — so a compressed body that has been
+ * through a decoder is caught by the same rule as one that has not.
+ */
+function isControlCharacter(character: string): boolean {
+  const code = character.charCodeAt(0);
+  return (code < 0x20 && character !== '\t' && character !== '\n' && character !== '\r') ||
+    code === 0x7f ||
+    code === 0xfffd;
+}
+
 export interface ReadLogResult {
   /** The lines kept, ANSI stripped, newest last. */
   lines: string[];
@@ -86,6 +118,17 @@ export interface ReadLogResult {
   truncated: boolean;
   /** How many lines were dropped from the front. */
   droppedLines: number;
+  /**
+   * Whether what arrived looks like text at all.
+   *
+   * False for a log that was never decoded: EAS serves one brotli-encoded, and a caller who saved
+   * the response as-is got exit 0, `failure: null` and ten kilobytes of control characters in
+   * `logTail` [live staging, S8]. Measured on {@link TEXT_SAMPLE_CHARS} characters of the start,
+   * **after** the ANSI codes are stripped — count them raw and a colourful Gradle log fails this.
+   */
+  looksLikeText: boolean;
+  /** The share of control characters in the sample, for a report that says how it decided. */
+  controlRatio: number;
 }
 
 /**
@@ -104,8 +147,21 @@ export async function readLogStreamAsync(stream: NodeJS.ReadableStream): Promise
   let droppedLines = 0;
   let carry = '';
 
+  let sampledChars = 0;
+  let controlChars = 0;
+
   const push = (raw: string) => {
     const stripped = stripVTControlCharacters(unwrapEasRecord(raw));
+    // Sampled here rather than on the raw chunk: the ANSI codes are gone by this point, and the
+    // newline this line was cut on is one a log is made of.
+    if (sampledChars < TEXT_SAMPLE_CHARS) {
+      for (const character of stripped.slice(0, TEXT_SAMPLE_CHARS - sampledChars)) {
+        sampledChars++;
+        if (isControlCharacter(character)) {
+          controlChars++;
+        }
+      }
+    }
     const line =
       stripped.length > MAX_LINE_LENGTH
         ? stripped.slice(0, MAX_LINE_LENGTH) + LINE_TRUNCATION_MARKER
@@ -140,7 +196,17 @@ export async function readLogStreamAsync(stream: NodeJS.ReadableStream): Promise
     droppedLines += excess;
   }
 
-  return { lines, bytes, truncated: droppedLines > 0, droppedLines };
+  // Nothing sampled is nothing to judge: an empty stream is text, and `explainAsync` has its own
+  // error for it — reporting "this is not a log" for an empty one would name the wrong problem.
+  const controlRatio = sampledChars === 0 ? 0 : controlChars / sampledChars;
+  return {
+    lines,
+    bytes,
+    truncated: droppedLines > 0,
+    droppedLines,
+    looksLikeText: controlRatio <= MAX_CONTROL_RATIO,
+    controlRatio,
+  };
 }
 
 /**

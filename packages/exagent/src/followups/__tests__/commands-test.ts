@@ -317,6 +317,27 @@ describe(buildNavigateFollowUps, () => {
     expect(ids(followups)).toEqual(['screenshot', 'runtime-errors']);
     expect(followups[0]!.command).toBe('adb -s emulator-5554 exec-out screencap -p > screen.png');
   });
+
+  // @ref llp/0009-smart-followups.rfc.md §Design — friction run 7, F79. `navigate` returns when the
+  // app has *attached*, which is not when it has rendered: run immediately, the screenshot caught
+  // the Expo Go splash and "Loading project…", and the screen was ready about twelve seconds later.
+  it(`says the app may still be loading when the screenshot is taken`, () => {
+    const screenshot = buildNavigateFollowUps({ platform: 'ios', deviceId: 'IOS-1' })[0]!;
+
+    expect(screenshot.why).toMatch(/still be loading|not finished loading/i);
+    // And what to wait for, which is a command rather than a number of seconds.
+    expect(screenshot.why).toContain('npx exagent runtime:tree');
+  });
+
+  it(`says it for a cloud session too, where the load is slower rather than faster`, () => {
+    const screenshot = buildNavigateFollowUps({
+      backend: 'cloud',
+      platform: 'ios',
+      deviceId: 'sess-1',
+    })[0]!;
+
+    expect(screenshot.why).toMatch(/still be loading|not finished loading/i);
+  });
 });
 
 describe(buildRuntimeErrorsFollowUps, () => {
