@@ -8,10 +8,8 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
-#include <react/renderer/graphics/rounding.h>
 
 #include <algorithm>
-#include <cmath>
 
 #include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
@@ -110,15 +108,7 @@ public:
       return {};
     }
 
-    auto size = content->measure(layoutContext, hostedContentConstraints(*content));
-
-    // Round up to the next value on the pixel grid, so the frame this node reports is never a
-    // fraction of a pixel smaller than the content laid out inside it. `ParagraphShadowNode` biases
-    // the same way for the views it embeds in a text run.
-    size.width += 0.01f;
-    size.height += 0.01f;
-
-    return react::roundToPixel<&std::ceil>(size, layoutContext.pointScaleFactor);
+    return content->measure(layoutContext, hostedContentConstraints(*content));
   }
 
   void layout(react::LayoutContext layoutContext) override {
