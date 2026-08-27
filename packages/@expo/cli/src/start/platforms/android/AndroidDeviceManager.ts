@@ -79,7 +79,12 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     // Only detached AVD inventory entries may enter the emulator launch path
     if (this.device.isLaunchable) {
       const attachedDevice = await AndroidDebugBridge.isDeviceBootedAsync(this.device);
-      this.device = attachedDevice ?? (await startDeviceAsync(this.device));
+      if (attachedDevice) {
+        this.assertDeviceStateIsUsable(attachedDevice);
+        this.device = attachedDevice;
+      } else {
+        this.device = await startDeviceAsync(this.device);
+      }
     } else {
       this.assertDeviceStateIsUsable(this.device);
       const attachedDevice = await AndroidDebugBridge.isDeviceBootedAsync(this.device);

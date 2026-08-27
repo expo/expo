@@ -82,6 +82,54 @@ describe('device resolution', () => {
     expect(startDeviceAsync).not.toHaveBeenCalled();
   });
 
+  it('reports a booting AVD that became attached after inventory as unready', async () => {
+    const avd = asDevice({
+      name: 'Pixel_API_35',
+      type: 'emulator',
+      isLaunchable: true,
+      isBooted: false,
+      isAuthorized: true,
+    });
+    const booting = asDevice({
+      ...avd,
+      pid: 'emulator-5554',
+      state: 'offline',
+      isLaunchable: false,
+      isAuthorized: false,
+    });
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(booting);
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: avd })).rejects.toThrow(
+      /emulator-5554 is in state offline.*Wait until ADB reports the emulator as ready/s
+    );
+    expect(startDeviceAsync).not.toHaveBeenCalled();
+    expect(logUnauthorized).not.toHaveBeenCalled();
+  });
+
+  it('keeps the authorization flow for an unauthorized AVD that became attached', async () => {
+    const avd = asDevice({
+      name: 'Pixel_API_35',
+      type: 'emulator',
+      isLaunchable: true,
+      isBooted: false,
+      isAuthorized: true,
+    });
+    const attached = asDevice({
+      ...avd,
+      pid: 'emulator-5554',
+      state: 'unauthorized',
+      isLaunchable: false,
+      isAuthorized: false,
+    });
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(attached);
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: avd })).rejects.toThrow(
+      /emulator-5554 is unauthorized.*Authorize this computer/s
+    );
+    expect(logUnauthorized).toHaveBeenCalledWith(attached);
+    expect(startDeviceAsync).not.toHaveBeenCalled();
+  });
+
   it.each(['offline', 'future-state'])(
     'rejects an attached %s transport without entering the AVD launch path',
     async (state) => {
