@@ -18,7 +18,7 @@ export function ProjectStructure() {
   const [selected, setSelected] = useState('app');
 
   return (
-    <div className="overflow-hidden rounded-md border border-default text-default">
+    <div className="overflow-hidden rounded-3xl border border-default text-default">
       <div className="flex border-b border-default bg-subtle p-3 pl-4">
         <HEADLINE>Files</HEADLINE>
       </div>
