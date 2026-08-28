@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Use an explicit development or production mode when Expo Updates commands load app config.
+
 ### 🎉 New features
 
 - [iOS] Skip reading and hashing embedded assets on first launch by default, serving them from the app binary instead of copying them into the updates cache. ([#47284](https://github.com/expo/expo/pull/47284) by [@alanjhughes](https://github.com/alanjhughes))
