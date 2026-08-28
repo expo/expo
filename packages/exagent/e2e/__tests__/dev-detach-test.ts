@@ -14,6 +14,7 @@ import path from 'node:path';
 
 import {
   executeExagentAsync,
+  installStubFingerprintAsync,
   readDevLockAsync,
   setupFixtureAsync,
   stubExpoEnv,
@@ -99,6 +100,7 @@ describe('exagent dev --detach', () => {
         'alreadyRunning',
         'followups',
         'logFile',
+        'phase',
         'pid',
         'port',
         'portMoved',
@@ -108,6 +110,62 @@ describe('exagent dev --detach', () => {
         'url',
         'waitedMs',
       ]);
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+  // F125. The dev-server lock is taken at the *start* of the dev-server step, and for `expo run:*`
+  // that step builds the app before it serves anything — so a plan whose compiler is still running
+  // publishes a port nothing listens on, and this command used to report it as a dev server that
+  // had started [observed — wave 29, `evidence/10-dev-detach-android.json`].
+  //
+  // `bare-app`, whose plan is the single step `expo run:ios` (`plan-test.ts`), and a stub that
+  // stays alive without ever logging a port — which is what a compiler looks like from here. The
+  // lock lands on its fallback port `PORT_WATCH_TIMEOUT_MS` in, and that wait is why this test is
+  // the slow one in this file: it is the wait the finding is about.
+  it('says the plan is building rather than that a dev server started', async () => {
+    const projectRoot = await setupFixtureAsync('bare-app');
+    await installStubFingerprintAsync(projectRoot);
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--ios', '--json'],
+        {
+          env: {
+            ...stubExpoEnv(projectRoot),
+            // Longer than the port watch, so the step is still running when the lock is published:
+            // a build holds the lock for minutes after it appears.
+            STUB_EXPO_DELAY_MS: '45000',
+          },
+        }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(report.phase).toBe('building');
+      // The port is still reported — it is where the dev server will be — and it is not claimed to
+      // be one: `ready` was never asked for, and nothing here says a dev server started.
+      expect(report.ready).toBeNull();
+      expect(report.url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('says a plain dev-server plan is serving', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        { env: detachEnv(projectRoot, 8397) }
+      );
+
+      expect(JSON.parse(result.stdout).phase).toBe('serving');
     } finally {
       await cleanUpAsync(projectRoot);
     }

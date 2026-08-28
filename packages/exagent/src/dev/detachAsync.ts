@@ -34,8 +34,10 @@ import { requestsTunnel } from '../start/followUps';
 import { CommandError } from '../utils/errors';
 import { fetchAdvertisedUrlAsync, readDevServerLogSync } from './advertisedUrl';
 import {
+  parseDetachedChildPhase,
   parseDetachedChildVerdict,
   VERDICT_LOG_LINES,
+  type DetachedChildPhase,
   type DetachedChildVerdict,
 } from './childVerdict';
 import { event } from './events';
@@ -75,6 +77,17 @@ export interface DevDetachResultJson {
   projectRootMatched: boolean | null;
   /** A dev server was already running for this project, so nothing was started. */
   alreadyRunning: boolean;
+  /**
+   * Which half of its plan the detached run is in: `building`, or `serving`.
+   *
+   * @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+   * **F125.** {@link url} is where the dev server *will* listen, not always where one is: the lock
+   * is published when the dev-server step starts, and for `expo run:ios` or `expo run:android` that
+   * step builds and installs the app before it serves anything. So a plan whose compiler is still
+   * running publishes a port nothing answers on, and a caller that reads {@link url} alone goes
+   * looking for a dev server that is ten minutes away. `serving` whenever nothing says otherwise.
+   */
+  phase: 'building' | 'serving';
   /**
    * The port this run was moved off, and the one it landed on. Null when it did not move.
    *
@@ -230,7 +243,10 @@ export async function devDetachAsync(
     ready = result.ready;
     projectRootMatched = result.projectRootMatched;
     if (!result.ready) {
-      throw notReadyError(lock, logFile, result);
+      // @ref ./childVerdict.ts §parseDetachedChildPhase — F125. The child's own log says which half
+      // of its plan it is in, and a plan that is compiling has not started a dev server for this
+      // report to describe.
+      throw notReadyError(lock, logFile, result, readChildPhaseSync(projectRoot));
     }
   }
 
@@ -326,6 +342,19 @@ const LIVENESS_PROBE_TIMEOUT_MS = 2000;
 function readChildVerdictSync(projectRoot: string): DetachedChildVerdict | null {
   const read = readDetachedLogSync(projectRoot, VERDICT_LOG_LINES);
   return read == null ? null : parseDetachedChildVerdict(read.lines);
+}
+
+/**
+ * Which half of its plan the child is in, read out of the same log.
+ *
+ * `PHASE_LOG_LINES` rather than the verdict's window: the plan table is printed *first*, and a
+ * `run:*` step writes thousands of lines of compiler output over it. A log this run truncated is
+ * still short at the top, and a window that misses the table reads as `serving`, which is the
+ * wording this has always had.
+ */
+function readChildPhaseSync(projectRoot: string): DetachedChildPhase {
+  const read = readDetachedLogSync(projectRoot, PHASE_LOG_LINES);
+  return read == null ? { phase: 'serving', step: null } : parseDetachedChildPhase(read.lines);
 }
 
 /**
@@ -493,8 +522,10 @@ function reportDetached(
     ready,
     projectRootMatched,
     alreadyRunning,
-    // Read from the child's own log, which is the only channel it has to this process. A run that
-    // started nothing has no log of its own to read a move out of.
+    // Read from the child's own log, which is the only channel it has to this process (F125 and
+    // F48-4 both). The phase is read even for a run that started nothing: the question "is this
+    // project's dev server listening" is the same question whoever started it.
+    phase: readChildPhaseSync(projectRoot).phase,
     portMoved: alreadyRunning ? null : readPortMoveSync(projectRoot),
     tunnelUrl,
     waitedMs: Date.now() - startedAt,
@@ -508,6 +539,7 @@ function reportDetached(
     pid: report.pid,
     ready: report.ready,
     alreadyRunning: report.alreadyRunning,
+    phase: report.phase,
     // The port that was asked for, so an agent reading only the stream sees the same fact the
     // report carries rather than a port it has no way to question.
     portMovedFrom: report.portMoved?.from ?? null,
@@ -536,6 +568,16 @@ function reportDetached(
  */
 const PORT_MOVE_LOG_LINES = 500;
 
+/**
+ * How many lines of the child's log are searched for its plan: all of them.
+ *
+ * The plan table is printed *first*, and the `run:*` step this matters for writes thousands of
+ * lines of compiler output over it — so a tail, which is what `readDetachedLogSync` gives, would
+ * miss it on exactly the run this exists for. The whole file is read either way; the number only
+ * decides how much of it is handed back.
+ */
+const PHASE_LOG_LINES = Number.MAX_SAFE_INTEGER;
+
 /** The port move the detached child announced in its log, or null when it announced none. */
 function readPortMoveSync(projectRoot: string): PortMove | null {
   const read = readDetachedLogSync(projectRoot, PORT_MOVE_LOG_LINES);
@@ -544,10 +586,16 @@ function readPortMoveSync(projectRoot: string): PortMove | null {
 
 function printHumanReport(report: DevDetachResultJson): void {
   const label = (name: string) => name.padEnd(13);
-  const lines = [
-    `${label('Dev server')}${report.url}${report.alreadyRunning ? ' · already running' : ' · detached'}`,
-    `${label('Process')}${report.pid}`,
-  ];
+  // @ref llp/0004 §What a development build costs the plan — F125. The URL stays on this line
+  // because it is the one the dev server will answer on, and the words after it stop it being read
+  // as a dev server that is up: a plan that is compiling has not started one.
+  const where =
+    report.phase === 'building'
+      ? ' · not listening yet — the plan is still building'
+      : report.alreadyRunning
+        ? ' · already running'
+        : ' · detached';
+  const lines = [`${label('Dev server')}${report.url}${where}`, `${label('Process')}${report.pid}`];
   // Right under the URL, because that URL is the thing the move made stale: every command and
   // every link a caller had already written names the port that was asked for, not this one.
   if (report.portMoved) {
@@ -679,8 +727,18 @@ function notStartedError(
 export function notReadyError(
   lock: DevServerLockInfo,
   logFile: string,
-  result: BundlerReadyResult
+  result: BundlerReadyResult,
+  phase: DetachedChildPhase = { phase: 'serving', step: null }
 ): CommandError {
+  // @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now — F125. A plan whose
+  // dev-server step is `expo run:*` holds the lock while a compiler runs, so every sentence below
+  // would otherwise be false at once: nothing started, nothing is on that port, and "the dev server
+  // is still running" would describe Gradle. The wording follows the phase, and nothing else here
+  // changes: the wait really did give up, and the exit code is the same.
+  if (phase.phase === 'building') {
+    return stillBuildingError(lock, logFile, result, phase);
+  }
+
   const strangerAnswered = result.projectRootMatched === false;
   const error = new CommandError(
     'DEV_DETACH_NOT_READY',
@@ -700,6 +758,36 @@ export function notReadyError(
     ].join('\n')
   );
   error.suggestedCommand = 'npx exagent smoke';
+  return error;
+}
+
+/**
+ * The failure for a `--wait-ready` that ran out while the plan was still compiling.
+ *
+ * @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+ * F125. Nothing has gone wrong: the child is building, the build is the expensive step it was asked
+ * to run, and the only thing that failed is a wait whose budget is much shorter than a local build.
+ * So this says what is happening and which step is doing it, and it does not offer `smoke`, which
+ * cannot measure a bundler that has not started, or the split-stack note, which is about two
+ * listeners on a port nothing is listening on yet.
+ */
+function stillBuildingError(
+  lock: DevServerLockInfo,
+  logFile: string,
+  result: BundlerReadyResult,
+  phase: DetachedChildPhase
+): CommandError {
+  const step = phase.step ?? 'the build step';
+  const error = new CommandError(
+    'DEV_DETACH_NOT_READY',
+    [
+      `No dev server is listening on ${lock.url} yet: the plan is still building, at "${step}" (pid ${lock.pid}), and --wait-ready gave up after ${result.waitedMs}ms.`,
+      `Why: "${step}" is one command that builds the app, installs it, and only then starts the dev server. The port above is published when that step *starts*, so it names where the dev server will be rather than where one is — and a local build takes many minutes, which is longer than this wait. The build has not failed and it has not stopped; it is still going, in the process this command started.`,
+      `How: watch it with "npx exagent dev:logs" (the file is ${logFile}) and run "npx exagent status" when it is done — the dev server answers on ${lock.url} the moment the build finishes. Stop the build with "npx exagent dev:stop". To avoid the wait entirely, build once with "npx exagent dev --android --yes" in a terminal: a recorded build makes the next detached run a dev server rather than a compiler.`,
+    ].join('\n')
+  );
+  error.exitCode = EXIT_OUTCOME_FAILED;
+  error.suggestedCommand = 'npx exagent dev:logs';
   return error;
 }
 

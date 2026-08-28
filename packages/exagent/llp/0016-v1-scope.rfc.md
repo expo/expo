@@ -31,7 +31,7 @@ presses a button. They ship marked experimental, on the same rule as `smoke`.
 | `doctor` / `doctor:check`      | **keep**                          | expo-doctor, normalized                                                 |
 | `dev` / `dev:stop` / `dev:logs` | **keep**                         | the plan engine, plus `--detach`, `--port`, `--wait-ready`              |
 | `start`                        | **keep**                          | `expo start` and nothing else                                           |
-| `navigate` (+`--print-url`, `--cloud`) | **keep**                  | the only way to open a route on a device                                |
+| `navigate` (+`--print-url`, `--cloud`) | **keep**                  | the only way to open a route on a device — and, on a development build with nothing loaded, the only way to *load* one ([[0005-runtime-loop-tools]] §On a development build, `navigate` goes launcher-first) |
 | `runtime:eval` / `:errors` / `:reload` / `:stop` | **keep**         | the runtime loop, cloud flags included                                  |
 | `runtime:tree` / `:tap` / `:type` | **added**, marked experimental | driving the app, gated on a live spike and taken after it returned GO ([[0014-interaction-spike]], [[0018-interaction-commands]]) |
 | `smoke`                        | **keep**, marked experimental     | the whole gate in one command                                           |

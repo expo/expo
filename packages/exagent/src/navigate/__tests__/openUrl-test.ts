@@ -81,6 +81,65 @@ describe(openUrlOnDeviceAsync, () => {
     expect(result.exitCode).toBe(0);
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server — F123, and the
+  // one thing about the Android launcher open that is not a matter of which URL is sent.
+  //
+  // A BROWSABLE ACTION_VIEW intent carrying the dev launcher's URL reaches `DevLauncherController.
+  // handleIntent` on an app that is **not running**, and that path dies:
+  // `java.lang.NullPointerException … DevLauncherController.createAppIntent` on
+  // `expo-dev-launcher`, leaving the app on `DevLauncherErrorActivity`
+  // [observed — 2026-08-28, the emulator of `live-devclient`, and again in wave 29's
+  // `evidence/63-devlauncher-npe.txt`]. The same URL handed to `MainActivity` **by component**
+  // loads the bundle and attaches in about three seconds, on the same device in the same minute.
+  //
+  // That is exactly what `expo start --dev-client --android` does, and this is its command:
+  // `am start -f 0x20000000 -n <app>/.MainActivity -d <url>`
+  // [reference — `@expo/cli` `src/start/platforms/android/adb.ts` §launchActivityAsync].
+  it(`should launch a named activity by component, the way the Expo CLI opens a dev client`, async () => {
+    const child = mockSpawn();
+
+    const promise = openUrlOnDeviceAsync({
+      platform: 'android',
+      deviceId: 'emulator-5554',
+      url: 'demoapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081',
+      launchActivity: 'com.example.demo/.MainActivity',
+    });
+    child.emit('close', 0, null);
+    await promise;
+
+    expect(spawnedArgv()).toEqual([
+      'adb',
+      '-s',
+      'emulator-5554',
+      'shell',
+      'am',
+      'start',
+      // FLAG_ACTIVITY_SINGLE_TOP, so an app already at the top of the stack is not relaunched.
+      '-f',
+      '0x20000000',
+      '-n',
+      'com.example.demo/.MainActivity',
+      '-d',
+      `'demoapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081'`,
+    ]);
+  });
+
+  // iOS has one way in — `simctl openurl` — and it is what the Expo CLI uses there too.
+  it(`should ignore a launch activity on iOS`, async () => {
+    const child = mockSpawn();
+
+    const promise = openUrlOnDeviceAsync({
+      platform: 'ios',
+      deviceId: 'SIM-1',
+      url: 'demoapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081',
+      launchActivity: 'com.example.demo/.MainActivity',
+    });
+    child.emit('close', 0, null);
+    await promise;
+
+    expect(spawnedArgv()[1]).toBe('simctl');
+  });
+
   it(`should report a failing device command instead of throwing`, async () => {
     const child = mockSpawn();
 

@@ -120,6 +120,32 @@ exit 7 and the full machine-readable handoff. Its `detectedBy` is a new value,
 **`detached-child-log`**: the stop was not observed by this process, it was relayed, and a reader of
 a handoff deserves to know which. Everything else is exit 20 with the log tail fenced.
 
+### And its phase, on the same channel
+
+[added — wave 30, 2026-08-28, for F125. Design in [[0004-smart-start-and-project-state]] §What a
+development build costs the plan → the phase decision; code in `parseDetachedChildPhase`.]
+
+The rule this section states — a claim about **now**, checked at the moment of return — had one hole
+left in it, and a development build is where it shows. The dev-server lock is taken at the *start* of
+the plan's dev-server step, and `expo run:ios` / `expo run:android` is one subprocess that builds,
+installs and only then serves. So the lock answered a second into a ten-minute Gradle build, and
+`--wait-ready` gave up against a port nothing listens on and reported `The dev server started on
+http://127.0.0.1:8081 (pid 29996) … The dev server is still running — this is about the wait, not
+about the server.` Nothing was started and nothing was listening [observed — wave 29,
+`evidence/10-dev-detach-android.json`].
+
+**The decision.** The wording tracks the plan's phase: `building` ⇒ say building and name the step;
+`serving` ⇒ started. The exit code and the effect do not change — the wait really did give up, and
+the child really is still building.
+
+**The channel is this one**, deliberately. The verdict above is read out of the child's log because
+that is the only channel a detached child has to its parent, and the phase is read out of the same
+log, out of two formats this CLI already owns: the **plan table** of `src/plan/format.ts` says which
+step holds the lock, and the **install marker** of `src/dev/buildEvidence.ts` — F121's own — says
+whether that step's compiler has finished. Nothing new is printed and no second channel exists to
+drift. `serving` is the answer whenever nothing says otherwise, because guessing `building` would put
+a sentence about a compiler into the report of a dev server that never had one.
+
 ### The tunnel host the log never held
 
 `tunnelUrl` was null while the tunnel was up [S3]. The scrape looks for `Waiting on <url>`, and a

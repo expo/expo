@@ -211,6 +211,39 @@ describe('exagent dev', () => {
       });
     });
 
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+    // F121, end to end and in the order it bit: build, install, launch failure, then the next
+    // plan. `expo run:*` is one subprocess doing all three, and the fifteen minutes it spends are
+    // the compiler's — so a plan that runs it a second time because the *launch* failed is the
+    // whole cost of this bug [observed — wave 29, `evidence/08-plan-after-successful-build.txt`].
+    it('records the build when the launch after it failed, so the next plan skips it', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      const env = { STUB_FINGERPRINT_HASH: CHANGED_HASH, STUB_EXPO_RUN_LAUNCH_FAILS: '1' };
+
+      const built = await executeExagentAsync(projectRoot, ['dev', '--ios'], {
+        env,
+        reject: false,
+      });
+
+      // The launch failure is still reported as one: the exit code is the Expo CLI's own, and the
+      // build being kept does not make a failed step a success.
+      expect(built.exitCode).toBe(1);
+      expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
+      expect(readLastBuildRecord(projectRoot)).toMatchObject({
+        ios: { hash: CHANGED_HASH },
+      });
+
+      const next = await executeExagentAsync(projectRoot, ['dev', '--plan', '--ios', '--json'], {
+        env,
+      });
+      expect(next.exitCode).toBe(0);
+      const plan = JSON.parse(next.stdout);
+      // The whole point: one step, and it is the dev server.
+      expect(plan.steps.map((step: { argv: string[] }) => step.argv)).toEqual([
+        ['expo', 'start', '--dev-client', '--ios'],
+      ]);
+    });
+
     it('runs only the dev server when the recorded build still matches', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
       const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);

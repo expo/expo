@@ -36,6 +36,7 @@ import {
   wrapperCrashDetail,
   type WrapperCrashTool,
 } from '../utils/wrapperCrash';
+import { appReachedDevice } from './buildEvidence';
 import { confirmPlanAsync } from './confirmPlan';
 import { event as devEvent } from './events';
 import { forwardedStepArgs, withForwardedExpoArgs } from './forwardedArgs';
@@ -216,6 +217,13 @@ interface StepFailure {
   devServerStep: boolean;
   /** What the step exited with, which is the `expo` CLI's own code. */
   exitCode: number;
+  /**
+   * Whether this failed step's build was recorded anyway, because its app reached a device.
+   *
+   * The one thing a reader of a failed `expo run:*` cannot see for themselves, and the one that
+   * decides what the next command costs: fifteen minutes, or seconds (F121, `./buildEvidence.ts`).
+   */
+  buildRecorded: boolean;
   stdout: string;
   stderr: string;
   /**
@@ -309,11 +317,20 @@ async function executePlanAsync(
     planEvent('start_plan_step_exit', { id: step.id, code: exitCode });
 
     if (exitCode !== 0) {
+      // @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+      // F121, and **before** the needs-human throw below rather than after it: `expo run:*` builds,
+      // installs and launches in one subprocess, and a launch that failed is not a build that did.
+      // A build whose app is on the device is a fact of its own, so it is recorded here, and the
+      // step failure below is reported exactly as it was. The `macos-automation` recovery — "drop
+      // --ios and run npx exagent dev --yes" — is a dev server now instead of the same fifteen
+      // minutes over again, which is what made that handoff wrong rather than merely incomplete.
+      const buildRecorded = recordBuildReachedDevice(projectRoot, step, state, result);
       const failure: StepFailure = {
         step,
         args,
         devServerStep,
         exitCode,
+        buildRecorded,
         stdout: result.stdout,
         stderr: result.stderr,
         // A dev-server step answers with a `DevServerRun`, which resolved no binary of its own.
@@ -561,6 +578,13 @@ function stopPromptFor(
         `The plan stopped at "${failure.step.id}": macOS refused "${invocation}" permission to control Simulator.app.`,
         `Why: --ios makes the Expo CLI drive Simulator.app through AppleScript, and macOS refuses an application that has not been granted Automation permission. The Expo CLI does not catch that rejection, so it ends the whole "expo start" process${failure.devServerStep ? ' — the dev server this run started exited with it, and nothing is listening for this project now' : ''}.`,
         `How: grant the permission in System Settings › Privacy & Security › Automation, then run this command again. To keep going without it, drop --ios and open the app the way that needs no Automation grant: "npx exagent dev --yes" to start the dev server, then "npx exagent navigate /", which deep-links through "xcrun simctl openurl".`,
+        // @ref llp/0004 §What a development build costs the plan — F121. The `How:` above is the
+        // recovery that used to walk straight back into a fifteen-minute rebuild, because the build
+        // this run finished was not recorded. It is now, and the reader is told so on the line that
+        // sends them there.
+        failure.buildRecorded
+          ? `Note: the app it built is installed on the simulator already, so that build is recorded and "npx exagent dev --yes" starts a dev server rather than building again.`
+          : '',
         said ? `\nWhat the tool printed:\n${said}` : '',
       ]
         .filter(Boolean)
@@ -656,6 +680,12 @@ function planStepFailedError(
       failure.devServerStep
         ? `Why: that step is the one that starts the dev server, and its process has exited, so no dev server is running for this project. The exit code above is the ${cliNameOf(failure.step)} CLI's own, not this command's.`
         : `Why: every later step of the plan depends on this one, so nothing after it ran. The exit code above is the ${cliNameOf(failure.step)} CLI's own, not this command's.`,
+      // @ref llp/0004 §What a development build costs the plan — said out loud because it is the
+      // fact that decides what the next command costs, and nothing in the tool's own output says
+      // it. Without this line the reader re-runs a step whose expensive half already worked.
+      failure.buildRecorded
+        ? `Note: the app it built is installed on the device, so that build is recorded — the next "npx exagent dev" starts a dev server for it instead of building again.`
+        : '',
       `How: run the command above yourself to see it fail with its whole output, or run "npx exagent dev --plan" to see the steps this plan is made of.`,
       wrapperCrash
         ? wrapperCrashDetail({ tool, exitCode: failure.exitCode }, failure.binPath!)
@@ -758,6 +788,36 @@ function recordBuildOf(projectRoot: string, step: PlanStep, state: ProjectState)
       sources: state.fingerprint.sources ?? null,
     });
   }
+}
+
+/**
+ * Record the build of a step that **failed**, when its own output shows the app reached a device.
+ *
+ * @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+ * The other half of {@link recordBuildOf}, and the whole of F121. `expo run:*` is one subprocess
+ * that builds, installs and launches, so its exit code is the *launch's* answer as often as the
+ * compiler's — and a plan that rebuilds because the launch failed spends fifteen minutes to change
+ * nothing. What is read is the install (`./buildEvidence.ts`), because the record is a claim about
+ * the app on a device rather than about a binary in a build directory.
+ *
+ * @returns whether a build was recorded, which is what the failure report has to say out loud.
+ */
+function recordBuildReachedDevice(
+  projectRoot: string,
+  step: PlanStep,
+  state: ProjectState,
+  result: StepResult
+): boolean {
+  if (resolveBuildPlatform(step) == null) {
+    return false;
+  }
+  if (!appReachedDevice(`${result.stdout}\n${result.stderr}`)) {
+    return false;
+  }
+  recordBuildOf(projectRoot, step, state);
+  // Only when something was written: a project with no fingerprint records nothing, and a report
+  // that promised the next plan would skip the build would be promising the opposite of the truth.
+  return state.fingerprint.hash != null;
 }
 
 function resolveBuildPlatform(step: PlanStep): NativePlatform | null {

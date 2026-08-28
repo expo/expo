@@ -13,6 +13,8 @@
 // parses it back, the same way `formatPortMove`/`parsePortMove` are pinned as a pair. The parent's
 // report goes silently wrong the moment the two drift.
 
+import { appReachedDevice } from './buildEvidence';
+
 /** How many lines of the child's log are searched for its verdict. */
 export const VERDICT_LOG_LINES = 400;
 
@@ -80,4 +82,80 @@ export function parseDetachedChildVerdict(
     .trim();
 
   return { scenario, message };
+}
+
+/**
+ * Which half of its plan the detached child is in.
+ *
+ * @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+ * **F125.** The dev-server lock is taken by the wrapper at the *start* of its dev-server step, and
+ * for `expo run:ios` or `expo run:android` that step is one subprocess that builds, installs and
+ * only then serves. So the lock answers a second in, publishing a port nothing is listening on for
+ * the next ten minutes — and the parent reported `The dev server started on http://127.0.0.1:8081
+ * (pid 29996)` for a run that had started no dev server at all
+ * [observed — wave 29, `evidence/10-dev-detach-android.json`].
+ *
+ * "The lock is held" and "a dev server is listening" are two facts, and this is the second one, read
+ * off the same channel as the child's verdict rather than out of a second one: the child's log holds
+ * the plan it printed before it ran anything.
+ */
+export interface DetachedChildPhase {
+  /**
+   * `building` while the plan's dev-server step is still compiling, `serving` otherwise.
+   *
+   * `serving` is the answer whenever nothing says otherwise — a log with no plan in it, and a plan
+   * whose dev-server step is a plain `expo start`. Guessing `building` would put a sentence about a
+   * compiler into the report of a dev server that never had one.
+   */
+  phase: 'building' | 'serving';
+  /** The plan's dev-server step, as it was printed (`expo run:android`), or null for no plan. */
+  step: string | null;
+}
+
+/**
+ * One numbered row of the plan table `formatStartPlan` prints: `  2. expo run:android  ~minutes`.
+ *
+ * The command runs to the end of the run of two-or-more spaces that separates it from the time
+ * class, which is how that table is laid out — the columns are padded, so a single space is inside
+ * an argument and two are between columns.
+ */
+const PLAN_STEP_ROW = /^\s*\d+\.\s+((?:expo|eas)(?:\s\S+)*?)(?:\s{2,}|\s*$)/;
+
+/** The plan steps that start a dev server, which is when the lock is taken (`devAsync.ts`). */
+const DEV_SERVER_COMMANDS = ['start', 'run:ios', 'run:android'];
+
+/** The dev-server steps that build the app first, and so hold the lock while a compiler runs. */
+const BUILDING_COMMANDS = ['run:ios', 'run:android'];
+
+/**
+ * Read the plan out of the child's log and say which half of it is running.
+ *
+ * Pure over the lines, like {@link parseDetachedChildVerdict}, and reading the same two formats
+ * this CLI owns: the plan table of `src/plan/format.ts`, and the install marker of
+ * `./buildEvidence.ts` — the one that already decides whether a `run:*` step got its app onto a
+ * device (F121). Together they answer the only question the parent has: is the compiler still
+ * running, or is what follows it.
+ *
+ * @param rawLines the child's log, ANSI stripped, oldest first.
+ */
+export function parseDetachedChildPhase(rawLines: readonly string[]): DetachedChildPhase {
+  const lines = rawLines.flatMap((line) => line.split('\n'));
+
+  // The **last** dev-server step of the plan, which is the one the lock belongs to: a plan is a
+  // list run in order, and only its last step serves.
+  let step: string | null = null;
+  for (const line of lines) {
+    const command = PLAN_STEP_ROW.exec(line)?.[1]?.trim();
+    if (command && DEV_SERVER_COMMANDS.includes(command.split(/\s+/)[1] ?? '')) {
+      step = command;
+    }
+  }
+  if (step == null || !BUILDING_COMMANDS.includes(step.split(/\s+/)[1] ?? '')) {
+    return { phase: 'serving', step };
+  }
+
+  // The install is what says the compiler finished: it is the next thing `expo run:*` does, and it
+  // is the marker F121 already reads for exactly that reason. After it, the same step is starting a
+  // dev server, and a bundler that has not answered yet is about the wait rather than about a build.
+  return { phase: appReachedDevice(lines.join('\n')) ? 'serving' : 'building', step };
 }

@@ -586,14 +586,16 @@ somebody's terminal, and there was never going to be a file.
 
 Exit codes: `dev --detach` exits `0` when a dev server is up (started or already there), `1` when
 the child never published a lock, and `1` when `--wait-ready` gave up — the server is still running
-there, which the message says. `dev:logs` exits `0` for a log and `1` (`NO_DEV_LOG`) when the
-project has none.
+there, which the message says, *unless* the plan is still compiling, and then the message says that
+instead (§What a development build costs the plan → the phase decision). `dev:logs` exits `0` for a
+log and `1` (`NO_DEV_LOG`) when the project has none.
 
-## What a development build costs the plan, and two ways it reports wrong
+## What a development build costs the plan, and two ways it reported wrong
 
-[added 2026-08-28, wave 29, from the first live pass over `expo-dev-client`. Both open, both
-reported rather than fixed, and both are about a plan whose last step is a **build** rather than a
-dev server — which is the shape every dev-client plan has and no Expo Go plan does.]
+[added 2026-08-28, wave 29, from the first live pass over `expo-dev-client`. Both are about a plan
+whose last step is a **build** rather than a dev server — which is the shape every dev-client plan
+has and no Expo Go plan does. **Both decided and fixed in wave 30**; the two decisions are at the
+end of each part, and what precedes them is the observation as it was recorded.]
 
 **F121 (MAJOR) — a build that succeeded and installed the app is not recorded, so the next plan
 builds again.** `recordBuildOf` runs only after a step exits 0, and `expo run:*` is one subprocess
@@ -617,6 +619,39 @@ is not a bug fix. What is *observed* and worth carrying either way: the record i
 step — so `exagent dev --android` followed by `exagent dev:stop` does record the build, and that is
 the sequence that makes a second run cheap.
 
+### Decision: a build is recorded when the app reaches the device, whatever the launch then does
+
+[decided — wave 30, 2026-08-28. Implemented in `src/dev/buildEvidence.ts` and
+`devAsync.ts §recordBuildReachedDevice`.]
+
+The record is written at **build-step success**, and a launch failure afterwards is its own reported
+fact. A step that failed still has its output read, and a build whose app got onto the device is
+recorded before the step failure — or the needs-human handoff — is thrown.
+
+**The install line is what is read, not the compiler's.** Of the three candidates above, the one
+that matches what the record *means* is the app being on the device: `resolveBuildPlatform` already
+refuses to record an `eas build` because "a cloud build ends in an artifact that nothing here has
+installed", and `› Build Succeeded` on its own is a claim about a build directory. The install
+always follows a build that worked, so reading it asserts both facts at once. The lines belong to
+`@expo/cli` and are pinned against the source that prints them — ``Log.log(chalk.gray`› Installing
+${binaryPath}`)`` in `run/ios/launchApp.ts` and `run/android/runAndroidAsync.ts`, and
+`› Failed to locate binary file, installing with Gradle...` for an APK the CLI could not name. The
+`›` prefix is the whole guard against `Installing Android SDK Build-Tools 36 in …`, which the Gradle
+toolchain download prints and which says nothing about this project.
+
+Two consequences, both stated out loud in the report because nothing in the tool's own output says
+them:
+
+- the step failure gains `Note: the app it built is installed on the device, so that build is
+  recorded — the next "npx exagent dev" starts a dev server for it instead of building again`;
+- `macos-automation`'s handoff gains the same sentence, on the line whose `How:` sends the reader to
+  `npx exagent dev --yes`. That recovery used to walk back into the fifteen minutes.
+
+**What is deliberately not recorded.** A build that compiled and died before the install: the record
+would then say a device has an app it has not got. And anything in `inherit` output mode, where
+nothing is captured — that is the one mode with a person watching the build happen, and it keeps the
+behaviour it had.
+
 **F125 (MODERATE) — `dev --detach --wait-ready` reports a dev server that is still compiling.** The
 lock is taken by the wrapper at the *start* of its step, and for a `run:*` step that step is a
 ten-minute Gradle build. So the lock answers a second in, publishing its fallback port, the parent
@@ -627,6 +662,37 @@ Nothing is listening and nothing was started [observed — `10-dev-detach-androi
 1 and the child does keep building, so the *effect* is right and the report is not. The lock's
 published port is a fallback when the dev server has not named one yet, and "the lock is held" and
 "a dev server is listening" are two facts this path collapses into one.
+
+### Decision: the wording tracks the plan's phase
+
+[decided — wave 30, 2026-08-28. Implemented in `src/dev/childVerdict.ts
+§parseDetachedChildPhase` and `detachAsync.ts §stillBuildingError`; see also
+[[0021-honest-reports]] §Readiness is a claim about now.]
+
+A detached run may not say "the dev server started on `<url>`" while the plan is still compiling.
+`building` ⇒ say building, and name the step; `serving` ⇒ started. The phase is read off the
+**child's own log**, which is the channel wave 17 already opened for its verdict rather than a second
+one, and it needs no new output: the log holds the plan table this CLI printed, and
+
+- the lock is only ever taken by the plan's **dev-server step** (`isDevServerStep`), so a log whose
+  dev-server step is `expo run:*` is a log of a step that builds before it serves;
+- whether that build has finished is the **install marker of F121 above** — the next thing
+  `expo run:*` does. Before it, `building`; after it, `serving`.
+
+`serving` is the answer whenever nothing says otherwise — a log with no plan in it, a plan whose
+dev-server step is a plain `expo start` — because guessing `building` would put a sentence about a
+compiler into the report of a dev server that never had one.
+
+The `--wait-ready` failure of a building plan says what is happening, names the step, and drops two
+things that were wrong for it: `npx exagent smoke`, which cannot measure a bundler that has not
+started, and the split-stack `lsof` note, which is about two listeners on a port nothing is
+listening on yet. It recovers into `npx exagent dev:logs`. The exit code does not change — the wait
+really did give up.
+
+The same fact reaches the report of a run that asked for no readiness: `dev --detach --json` carries
+`phase`, and its human line reads `<url> · not listening yet — the plan is still building` in place
+of `· detached`. `--wait-ready` is the path the finding was filed against, and a caller reading
+`url` alone is misled by exactly the same amount without it.
 
 ## A busy port is not a step only a person can complete
 

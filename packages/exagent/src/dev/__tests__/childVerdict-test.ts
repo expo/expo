@@ -1,5 +1,7 @@
-import { parseDetachedChildVerdict } from '../childVerdict';
+import { parseDetachedChildPhase, parseDetachedChildVerdict } from '../childVerdict';
 import { needsHumanError } from '../../needsHuman/error';
+import { formatStartPlan } from '../../plan/format';
+import type { StartPlan } from '../../project/types';
 import { formatNeedsHumanBlock } from '../../utils/errors';
 
 /**
@@ -73,5 +75,67 @@ describe(parseDetachedChildVerdict, () => {
 
   it(`should answer null for an empty log`, () => {
     expect(parseDetachedChildVerdict([])).toBeNull();
+  });
+});
+
+// @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+// F125. The plan table is a format of this CLI's own (`src/plan/format.ts`), so it round-trips the
+// same way the verdict does: the log is built by `formatStartPlan` and read back here.
+describe(parseDetachedChildPhase, () => {
+  /** The child's log, as `formatStartPlan` writes it, for a plan of the given steps. */
+  function planLog(steps: { argv: string[]; reason: string }[], ...after: string[]): string[] {
+    const plan: StartPlan = {
+      rule: 'bare-stale',
+      target: 'bare',
+      reasons: ['Expo SDK 57.0.17.'],
+      buildLocation: null,
+      steps: steps.map((step, index) => ({
+        id: `step-${index}`,
+        argv: step.argv,
+        reason: step.reason,
+        timeClass: 'minutes',
+        runsOn: null,
+      })),
+    };
+    return [...formatStartPlan(plan).split('\n'), ...after];
+  }
+
+  const RUN_ANDROID = { argv: ['expo', 'run:android'], reason: 'Builds and installs the app.' };
+  const PREBUILD = { argv: ['expo', 'prebuild', '--platform', 'android'], reason: 'Generates it.' };
+  const START = { argv: ['expo', 'start', '--dev-client'], reason: 'Starts the dev server.' };
+
+  // The whole of F125: the lock is taken at the *start* of the dev-server step, and for a `run:*`
+  // step that step is a ten-minute Gradle build. So a published port is not a listening one.
+  it(`reads a plan still on its build step as building`, () => {
+    expect(parseDetachedChildPhase(planLog([PREBUILD, RUN_ANDROID], 'Building app...'))).toEqual({
+      phase: 'building',
+      step: 'expo run:android',
+    });
+  });
+
+  // The install is what says the compiler finished (`./buildEvidence.ts`, F121's own marker), and
+  // after it the same step is starting a dev server rather than building one.
+  it(`reads the same plan as serving once the app is on the device`, () => {
+    expect(
+      parseDetachedChildPhase(
+        planLog([PREBUILD, RUN_ANDROID], '› Installing /tmp/app.apk', 'Starting Metro Bundler')
+      )
+    ).toEqual({ phase: 'serving', step: 'expo run:android' });
+  });
+
+  it(`reads a plan whose only step is the dev server as serving`, () => {
+    expect(parseDetachedChildPhase(planLog([START]))).toEqual({
+      phase: 'serving',
+      step: 'expo start --dev-client',
+    });
+  });
+
+  // A log with no plan in it says nothing about a phase, and guessing "building" would put a
+  // sentence about a compiler into the report of a dev server that never had one.
+  it(`reads a log with no plan in it as serving`, () => {
+    expect(parseDetachedChildPhase(['Starting project at /project'])).toEqual({
+      phase: 'serving',
+      step: null,
+    });
   });
 });

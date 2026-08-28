@@ -101,6 +101,25 @@ export interface NavigateResultJson {
   /** Exit code of that command: non-zero means the device refused the deep link. */
   exitCode: number | null;
   /**
+   * The dev launcher URL that was opened **before** {@link url}, or null when none was.
+   *
+   * Two links are delivered when the target is a development build with nothing loaded: this one
+   * gets the app running against the dev server, and {@link url} then navigates it. Null in every
+   * other case — Expo Go, an app that is already attached, no dev server to point at, and any run
+   * that waits for nothing (`--no-wait-attach`), because the bundle this fetches takes seconds and a
+   * route link delivered into that gap reaches an app that has not finished loading.
+   *
+   * @see llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server — F123.
+   */
+  launch: {
+    url: string;
+    command: string;
+    exitCode: number | null;
+    /** Whether an app attached after it, which is what made the route link worth sending. */
+    attached: boolean;
+    waitedMs: number;
+  } | null;
+  /**
    * Whether the route was checked against the project's routes, and what the check said.
    *
    * Always `ok: true` or `ok: null` here: a route the project has not got is a failure, so it
@@ -209,6 +228,7 @@ export async function navigateAsync(
       appId: opened.appId,
       command: opened.command,
       exitCode: opened.exitCode,
+      launch: opened.launch,
       routeCheck: opened.routeCheck,
       reversedPort: opened.reverse?.ok ? opened.reverse.port : null,
       attached: opened.attach.confirmed,
@@ -249,6 +269,21 @@ export async function navigateAsync(
             ]
           : []),
         chalk`{dim  ${opened.command}}`,
+        // Above `App`, in the order the two links went out. Without this line the report names one
+        // URL for a run that delivered two, and the reader cannot tell a navigation from a cold
+        // load — which is the difference between "the app moved" and "the app started" (F123).
+        ...(opened.launch
+          ? [
+              chalk`{bold Launch} ${opened.launch.url}`,
+              chalk`{dim  the app was not loaded, so the dev launcher URL was opened first · ${
+                opened.launch.exitCode === 0
+                  ? opened.launch.attached
+                    ? `it attached after ${opened.launch.waitedMs}ms`
+                    : `nothing attached within ${opened.launch.waitedMs}ms`
+                  : `the device refused it (exit ${opened.launch.exitCode ?? 'on a signal'})`
+              }}`,
+            ]
+          : []),
         chalk`{bold App} ${
           opened.attach.confirmed === true
             ? chalk.green('attached') +
@@ -372,6 +407,8 @@ async function printRouteUrlAsync(projectRoot: string, options: NavigateOptions)
       appId: options.appId ?? null,
       command: null,
       exitCode: null,
+      // Nothing was opened, so neither of the two links this command can deliver was.
+      launch: null,
       routeCheck: resolved.routeCheck,
       // Nothing was opened, so nothing downstream of the device happened. `adb reverse` belongs to
       // opening a loopback link on an Android device (F50) and this run opened none; `attached` is

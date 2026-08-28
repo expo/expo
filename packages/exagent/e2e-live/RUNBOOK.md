@@ -83,10 +83,11 @@ reads the dev server's log.
 
 **Its prerequisite is an artifact, not a project.** Every other suite scaffolds; a development build
 costs about fifteen minutes of Gradle, and no suite here may spend that. So somebody runs
-`npx exagent dev --android --yes` in a project once, then `npx exagent dev:stop` — **both**, because
-the build record is written when the `expo run:android` step exits, which is when its dev server
-stops rather than when the compiler finishes (F121). The gate checks the installed package *and* the
-record, and a missing record is the difference between a 25-second suite and a fifteen-minute one.
+`npx exagent dev --android --yes` in a project once. Since wave 30 that is enough on its own: the
+build record is written when the app reaches the device, so a launch that then fails — or a run you
+stop with Ctrl-C — still leaves a recorded build (F121). Before it you had to let the step *exit*,
+which meant `npx exagent dev:stop` as well. The gate checks the installed package *and* the record,
+and a missing record is the difference between a 25-second suite and a fifteen-minute one.
 
 **It drives somebody else's project, in place.** It makes no EAS call, so the scratch-outside-git
 rule does not apply, and what it writes is what the CLI writes to any project it serves: `.expo/`.
@@ -100,11 +101,11 @@ minutes apart on one simulator: Expo Go attached inside 4 s, the dev launcher UR
 after 24 s [wave 29, `evidence/27-clean-connect-url.png`]. The iOS rows were filled by hand with the
 dialog answered and live in `llp/0019`; a suite that needed somebody at the screen would never run.
 
-**It carries one skipped test, and that is the finding.** `F123: opens the app it can see is not
-loaded` — `navigate` opens `<scheme>://<route>` at an app that is not loaded, while its own payload
-says nothing is connected and holds the launcher URL that would load it. Exit 22 after 90.6 s. Per
-§When a live test fails it is skipped with the evidence rather than asserted down to what the CLI
-does.
+**It carried one skipped test, and wave 30 turned it into an assertion.** `F123` — `navigate` opened
+`<scheme>://<route>` at an app that was not loaded, while its own payload said nothing was connected
+and held the launcher URL that would load it: exit 22 after 90.6 s. The contract was decided
+(launcher first, then the route link, both reported), and the test now reads `loads a development
+build that is not running, then navigates it` and passes in about 3 s. The suite is **15 tests**.
 
 ### Two things about `live-cloud` that cost somebody an hour each
 
@@ -197,7 +198,7 @@ Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
 | --- | --- | --- | --- |
 | `live-local` | ~60 s (measured 58 s, 30 tests, 38 `exagent` runs) | none | nothing: the dev server is stopped, the app terminated, the scratch project deleted |
 | `live-android` | **~103 s measured** (24 tests, 36 `exagent` runs) — of which ~40 s is the emulator boot; ~80 s against an emulator that was already up | none | nothing, **unless the emulator was already booted**: an emulator this run started is killed, one it found is left as it was. The dev server is stopped, Expo Go force-stopped on the emulator and terminated on the simulator, the scratch project deleted |
-| `live-devclient` | **~25 s measured** (14 tests + 1 skipped, 25 `exagent` runs) against an emulator that is already up and an app that is already built | none | the named project's dev server is stopped and its development build is force-stopped; the project itself, its `.expo/` and the installed app are left as they were |
+| `live-devclient` | **~25 s measured** (15 tests, 26 `exagent` runs) against an emulator that is already up and an app that is already built | none | the named project's dev server is stopped and its development build is force-stopped; the project itself, its `.expo/` and the installed app are left as they were |
 | `live-eas` | ~50 s (measured, 9 tests) | one EAS Hosting preview deployment per run | one deployment under `@kudo1/livecheck`. Idempotent: EAS Hosting gives each deploy its own preview URL, so a re-run adds one and changes nothing that existed. No native build — no v1 command creates one |
 | `live-cloud` | **~4 min measured** (237 s, 7 tests) — and variable: one cloud reload took 18.5 s, another 48 s, and an unproved one spent its whole 180 s `--timeout` | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
 

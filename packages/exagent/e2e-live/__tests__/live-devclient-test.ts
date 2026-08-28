@@ -405,25 +405,39 @@ describeDevClient('live-devclient: the loop on a real Android development build'
     expect(stopped).toBe(true);
   });
 
-  // The finding this suite carries, and it is left failing rather than adjusted, per
-  // [[0022-live-tier]] §When a live test fails: a live tier whose assertions are edited down to
-  // whatever the CLI currently does is a stub tier with a longer runtime.
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server — F123, and the
+  // one assertion in this file that runs against an app deliberately **not** running.
   //
-  // **F123 — `navigate` opens the route link at an app that is not loaded.** With nothing connected
-  // and a project that depends on `expo-dev-client`, `navigate /` reports
+  // Wave 29 left this skipped because it was a contract question rather than a bug: with nothing
+  // connected and a project that depends on `expo-dev-client`, `navigate /` reported
   // `target: "no app is connected to the dev server, and the project depends on expo-dev-client"`,
-  // computes the launcher URL into its own `connect` array — and then opens `<scheme>://`, which is
-  // the link for an app that is *already* running against a dev server. Nothing loads, and the
-  // command spends its whole attach budget: exit 22 after **90.6 s** on Android with no dialog
-  // anywhere in it [observed — wave 29, `evidence/61-navigate-after-stop-android.json`]. It is the
-  // one command every follow-up names as the way to open the app, including `runtime:stop`'s own.
-  it.skip('F123: opens the app it can see is not loaded', async () => {
+  // computed the launcher URL into its own `connect` array — and then opened `<scheme>://`, the
+  // link for an app that is *already* running against a dev server. Exit 22 after **90.6 s** on
+  // Android with no dialog anywhere in it [observed — wave 29,
+  // `evidence/61-navigate-after-stop-android.json`]. It is the one command every follow-up names as
+  // the way to open the app, including `runtime:stop`'s own.
+  //
+  // Decided in wave 30: launcher first, then the route link, and both are reported. The precondition
+  // is the whole point — the app is stopped before this runs, which is the state the ladder is for.
+  it('loads a development build that is not running, then navigates it', async () => {
+    // The state under test, made rather than hoped for. `runtime:stop` above may have left the app
+    // down or a later run may have brought it back, and a test that only works from one of those is
+    // a coin toss ([[0022-live-tier]] §What a live assertion is allowed to be).
+    await runLiveAsync(run, projectRoot, ['runtime:stop', '--android', '--json'], {
+      label: 'f123-stop-first',
+    });
+
     const result = await runLiveAsync(run, projectRoot, ['navigate', '/', '--android', '--json'], {
       label: 'f123-navigate-cold',
     });
-    expectExit(result, 0);
+    expectExit(result, 0, 'the launcher URL loads the app, so the route link reaches a loaded app');
     const report = parseJson(result);
-    expect(report.url).toContain('expo-development-client');
+    // Two links, in order: the launcher's, which loads the bundle…
+    expect(report.launch.url).toContain(`${project.scheme}://expo-development-client/?url=`);
+    expect(report.launch.exitCode).toBe(0);
+    expect(report.launch.attached).toBe(true);
+    // …and the route link, which is what was asked for.
+    expect(report.url).toBe(`${project.scheme}://`);
     expect(report.attached).toBe(true);
   });
 });

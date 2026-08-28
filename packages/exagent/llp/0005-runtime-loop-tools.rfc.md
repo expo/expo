@@ -904,6 +904,55 @@ installed.
 `status.next` cannot carry a labelled pair on one line, so where it would have to it names
 `exagent navigate / --print-url` instead, which prints both.
 
+### On a development build, `navigate` goes launcher-first
+
+Decision [decided — wave 30, 2026-08-28; the finding is F123, from the wave-29 live pass]. The
+section above got the *printing* right and left the *acting* wrong. `navigate` computed the launcher
+URL into its own `connect` array and then opened `<scheme>://<route>` at an app it had just reported
+was not there — `target: "no app is connected to the dev server, and the project depends on
+expo-dev-client"` — spent its whole attach budget, and exited `22` after **90.6 s** on Android with
+no dialog anywhere in it [observed — wave 29, `evidence/61-navigate-after-stop-android.json`]. It is
+the command every follow-up in this CLI names as the way to open the app, including `runtime:stop`'s
+own.
+
+The contract now: **when the target is a development build and no app is attached, the launcher URL
+is opened first, the existing attach budget is spent waiting for the app, and then the route link is
+opened.** Both opens are reported — `launch` in `--json`, a `Launch` line above `App` in the human
+summary — because two links were delivered and naming one of them describes half the run. When an
+app **is** attached, nothing changes: it understands the route link, and reloading it would throw
+away the state the caller is navigating within.
+
+Four conditions gate it, and each rules out a case where loading first would be wrong: a development
+build (Expo Go's `exp://<host>` already carries the dev server); nothing attached; a launcher URL
+exists (`buildConnectUrls` returns none without a dev server *and* a scheme); and a budget to wait
+with. The last one is why `smoke` and `--no-wait-attach` keep exactly the behaviour they had — the
+launcher fetches a bundle, and a route link delivered into that gap reaches an app that has not
+finished loading.
+
+**Two things on Android that no choice of URL can express**, and the fix is incomplete without
+either [both observed — 2026-08-28, `live-devclient`'s emulator, with the dev server and app of the
+suite]:
+
+1. **The launcher URL goes to `MainActivity` by component, not as a link.** A BROWSABLE
+   `ACTION_VIEW` intent carrying it reaches `DevLauncherController.handleIntent`, and on an app that
+   is *not running* that path throws — `java.lang.NullPointerException … createAppIntent` — and
+   leaves the app on `DevLauncherErrorActivity` with `am start` having exited 0. The same URL sent as
+   `am start -f 0x20000000 -n <package>/.MainActivity -d <url>` loads the bundle and attaches in
+   about three seconds, on the same device in the same minute. That is what
+   `expo start --dev-client --android` does [reference — `@expo/cli`
+   `src/start/platforms/android/adb.ts` §launchActivityAsync], and it is why the route link stays a
+   link while the launcher URL does not. The activity is `<app id>/.MainActivity`, from `--app-id` or
+   the app config; a project whose application id cannot be read falls back to the link.
+2. **The port that is forwarded is the dev server's, not the route link's.** §The device's loopback
+   is not this machine's reverses the loopback port *of the URL being opened*, and
+   `<scheme>://expo-development-client/?url=…` has no loopback host of its own — so nothing was
+   forwarded and the launcher fetched its bundle from a port on the device. When this ladder fires,
+   the reverse reads the dev server's origin instead.
+
+Result on the emulator that produced the finding: exit `0` in **3.0 s**, `launch.attached: true`
+after 2.6 s, `reversedPort: 8560`, and `attached: true` 82 ms after the route link
+[observed — wave 30, `live-devclient` `026-f123-navigate-cold.txt`].
+
 ## Resolving a URL without a device
 
 Decision [confirmed — Kudo, 2026-08-25]. `exagent navigate <route> --print-url` resolves everything
@@ -1773,6 +1822,13 @@ LAN or behind a tunnel is already reachable, and reversing its port would point 
 itself — and a refusal is reported rather than fatal, because the link that follows is what turns
 "the reverse failed" into a failure a reader can see.
 
+**Which URL's port** [amended — wave 30, 2026-08-28, F123]. The rule above reads the loopback host
+*of the URL being opened*, and that is right for a route link. The dev launcher's URL carries the
+dev server inside its `url` parameter and is addressed to `expo-development-client`, which is not a
+loopback host — so on the run that opens it (§On a development build, `navigate` goes
+launcher-first) the reverse reads the **dev server's own origin** instead. Without that, the
+launcher fetched its bundle from a port on the device: F50's shape, one URL further out.
+
 ### An exit code from a device tool is not an app that is running
 
 The same finding's other half. `navigate` now waits for an app **on this platform** to register a
@@ -2027,8 +2083,10 @@ app from a crashing one and `runtime:errors --android --fail-on-error` can.
 
 ### F123 — `navigate` opens the route link at an app that is not loaded
 
-[open, MAJOR, found 2026-08-28, wave 29. Reported rather than fixed: the recovery is a ladder, and
-which rung an exit code belongs to is a contract decision.]
+[**fixed — wave 30, 2026-08-28**; found 2026-08-28, wave 29, MAJOR. Reported rather than fixed in
+wave 29 because the recovery is a ladder and which rung an exit code belongs to is a contract
+decision; that decision is §On a development build, `navigate` goes launcher-first, and what follows
+is the finding as it was measured.]
 
 §Pointing an app at this dev server states the rule this breaks, in `connectUrl.ts`'s own header:
 **a connect URL is not a route link.** `<scheme>://<route>` navigates an app that is *already*
@@ -2067,6 +2125,16 @@ never reached is 20 or 22, and whether the second open is skipped for the root r
 first is already complete). Expo Go needs none of it — `exp://<host>/--/<route>` loads *and*
 navigates in one URL, which is why nothing noticed.
 
+**How wave 30 answered those** (§On a development build, `navigate` goes launcher-first). Two opens
+with a wait between them, exactly as sketched. `attached` keeps meaning what it has always meant —
+an app of this platform holds a debugger target when the run ends — and the launcher's own wait is
+reported separately as `launch.attached`, so "the app came up" and "the route was delivered to it"
+stay two facts. The exit codes are unchanged: nothing new can fail, and a run where nothing attaches
+is the 22 it already was. The second open is **not** skipped for the root route: the launcher loads
+whatever the app last had, which is not necessarily `/`, and one extra intent costs milliseconds.
+Live: exit 0 in 3.0 s where the finding above is 90.6 s [`live-devclient`
+`026-f123-navigate-cold.txt`].
+
 ### The wall was Expo Go's, not Android's
 
 [added 2026-08-28, wave 29. Measured on `tuft-pixel`, one dev server, an Expo SDK 57 project with a
@@ -2087,6 +2155,7 @@ emulator, answers everything Expo Go refuses:
 | `runtime:reload` | rung 1, verified with no CDP anywhere in it | exit 0 in 1.3–2.4 s, rung 1, `Android Bundled 29ms …` as the bundle proof |
 | `runtime:stop` | Expo Go's package | **the project's own package**, `bundleIdSource: "dev-server"`, `pidof` empty after |
 | `navigate /explore` | `exp://…/--/explore` | `dcapp://explore`, and `runtime:tree` reports `focusedScreen: "explore"` afterwards |
+| `navigate /` with nothing loaded | one URL loads *and* navigates | **two opens** — the launcher URL by component, then the route link (F123, fixed in wave 30) |
 | `smoke` | **22 on a working app** — the `runtime` phase cannot measure | **exit 0, `outcome: "passed"`, all eight phases `ok`** [`56-smoke-android-devclient.json`] |
 
 Two things this changes, and one it does not:

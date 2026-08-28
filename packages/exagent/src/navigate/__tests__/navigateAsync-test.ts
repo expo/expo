@@ -364,6 +364,9 @@ describe(navigateAsync, () => {
       reversedPort: null,
       command: 'xcrun simctl openurl IOS-1 exp://127.0.0.1:8081/--/profile/42',
       exitCode: 0,
+      // Expo Go, so one link and nothing to load first: `exp://<host>` carries the dev server it
+      // is for, which is exactly what a development build's route link does not (F123).
+      launch: null,
       routeCheck: {
         checked: false,
         ok: null,
@@ -413,6 +416,7 @@ describe(navigateAsync, () => {
       'exitCode',
       'followups',
       'hostType',
+      'launch',
       'platform',
       'printUrl',
       'resolution',
@@ -902,6 +906,7 @@ describe(navigateAsync, () => {
         'exitCode',
         'followups',
         'hostType',
+        'launch',
         'platform',
         'printUrl',
         'resolution',
@@ -1034,5 +1039,256 @@ describe(`${navigateAsync.name} on Android`, () => {
     ).resolves.toBe(0);
 
     expect(JSON.parse(printed()).attached).toBeNull();
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server — F123.
+//
+// A development build with nothing connected used to be handed `<scheme>://<route>`, which is the
+// link for an app that is **already** loaded against a dev server. So the app that this command had
+// just decided was not there stayed not there, the whole attach budget was spent, and the run exited
+// 22 after 90.6 s — while holding, in its own `connect` array, the launcher URL that would have
+// loaded it [observed — wave 29, `evidence/61-navigate-after-stop-android.json`].
+describe(`${navigateAsync.name} on a development build that is not loaded`, () => {
+  /** A project that depends on `expo-dev-client`, so the target decision is a development build. */
+  function mockDevClientProject() {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({
+        name: 'demo',
+        dependencies: { 'expo-dev-client': '5.0.0' },
+      }),
+      [`${projectRoot}/node_modules/expo-dev-client/package.json`]: '{"name":"expo-dev-client"}',
+      [`${projectRoot}/app.json`]: JSON.stringify({
+        expo: { slug: 'demo', scheme: 'demoapp', android: { package: 'com.example.demo' } },
+      }),
+    });
+  }
+
+  const DEV_BUILD_TARGET = {
+    id: 'a1',
+    appId: 'com.example.demo',
+    deviceName: 'sdk_gphone64_arm64 - 15 - API 35',
+    webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=a1&page=1',
+  };
+
+  /** The launcher URL this project's development build parses, as `connectUrl.ts` builds it. */
+  const LAUNCHER_URL = 'demoapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081';
+
+  /**
+   * Every URL this run handed to a device, in order.
+   *
+   * Read off the `am start` intents rather than asserted by call index: the number of `adb` and
+   * `simctl` calls around them belongs to device discovery and to the target-name index, and a test
+   * about *which links were opened* must not be a test of how many probes ran.
+   */
+  function openedUrls(): string[] {
+    return jest
+      .mocked(spawn)
+      .mock.calls.map(([, args]) => (args as string[]).join(' '))
+      .filter((line) => line.includes('://'))
+      .map((line) => line.match(/'([^']*:\/\/[^']*)'/)?.[1] ?? line);
+  }
+
+  /**
+   * Answer `/json/list` with nothing until the nth request, then with `targets`.
+   *
+   * The state this whole case is about: the app is not connected when the command starts, and it
+   * connects because something loaded it. A dev server that answered with the app from the first
+   * request could not tell the launcher open from the route one.
+   */
+  function mockDevServerConnectingAt(nth: number, targets: unknown[]) {
+    let calls = 0;
+    globalThis.fetch = (async () => ({
+      ok: true,
+      json: async () => (++calls >= nth ? targets : []),
+    })) as unknown as typeof fetch;
+  }
+
+  it(`opens the launcher URL first, then the route link`, async () => {
+    mockDevClientProject();
+    mockDevServerConnectingAt(3, [DEV_BUILD_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES }, //        adb devices -l
+      { stdout: '8081' }, //             adb reverse
+      { stdout: 'Starting: Intent' }, //  am start — the launcher
+      { stdout: '' }, //                 simctl list (device index)
+      { stdout: ADB_DEVICES }, //        adb devices -l (device index)
+      { stdout: 'Starting: Intent' }, //  am start — the route link
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 5_000 }))
+    ).resolves.toBe(0);
+
+    // The launcher first, because it is the one that loads the bundle, and the route link after
+    // it, because that is what was asked for.
+    expect(openedUrls()).toEqual([LAUNCHER_URL, 'demoapp://profile/42']);
+  });
+
+  // The other half of F123, and the half no URL can express: a BROWSABLE `ACTION_VIEW` intent
+  // carrying the launcher URL reaches `DevLauncherController.handleIntent`, which throws on an app
+  // that is not running — `NullPointerException … createAppIntent`, and the app lands on
+  // `DevLauncherErrorActivity` [observed — 2026-08-28, `live-devclient`'s own emulator: the same
+  // URL sent by component attached in three seconds, sent as a VIEW intent it never attached].
+  // So the launcher URL goes to `MainActivity` by component, and the route link stays a link.
+  it(`hands the launcher URL to the main activity, and the route link to a VIEW intent`, async () => {
+    mockDevClientProject();
+    mockDevServerConnectingAt(3, [DEV_BUILD_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(projectRoot, options({ platform: 'android', attachTimeoutMs: 5_000 }))
+    ).resolves.toBe(0);
+
+    const launcher = jest
+      .mocked(spawn)
+      .mock.calls.map(([, args]) => (args as string[]).join(' '))
+      .find((line) => line.includes('expo-development-client'));
+    expect(launcher).toContain('-n com.example.demo/.MainActivity');
+    expect(launcher).not.toContain('android.intent.action.VIEW');
+    expect(openedUrls()).toEqual([LAUNCHER_URL, 'demoapp://profile/42']);
+  });
+
+  // The dev server's own port, not the route link's: `demoapp://expo-development-client/?url=…`
+  // has no loopback host of its own, so reading the URL forwarded nothing and the launcher fetched
+  // its bundle from a port on the *device* (F50's shape, one URL further out).
+  it(`reverses the dev server's port before the launcher open`, async () => {
+    mockDevClientProject();
+    mockDevServerConnectingAt(3, [DEV_BUILD_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(
+        projectRoot,
+        options({ platform: 'android', attachTimeoutMs: 5_000, json: true })
+      )
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(printed()).reversedPort).toBe(8081);
+  });
+
+  it(`reports both opens`, async () => {
+    mockDevClientProject();
+    mockDevServerConnectingAt(3, [DEV_BUILD_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(
+        projectRoot,
+        options({ platform: 'android', attachTimeoutMs: 5_000, json: true })
+      )
+    ).resolves.toBe(0);
+
+    const report = JSON.parse(printed());
+    expect(report.url).toBe('demoapp://profile/42');
+    expect(report.launch).toMatchObject({
+      url: 'demoapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081',
+      exitCode: 0,
+      attached: true,
+    });
+    expect(report.attached).toBe(true);
+  });
+
+  // The other half of the contract: an app that **is** attached understands the route link, and
+  // loading it again would throw away the state the caller is navigating within.
+  it(`opens only the route link when an app is already attached`, async () => {
+    mockDevClientProject();
+    mockDevServer([DEV_BUILD_TARGET]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(
+        projectRoot,
+        options({ platform: 'android', attachTimeoutMs: 5_000, json: true })
+      )
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(printed()).launch).toBeNull();
+    expect(openedUrls()).toEqual(['demoapp://profile/42']);
+  });
+
+  // Expo Go is a different application with a different URL, and `exp://<host>` already carries the
+  // dev server: there is nothing to load first, and this ladder must not fire for it.
+  it(`opens only the route link for Expo Go`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+      [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+    });
+    mockDevServerConnectingAt(3, [{ ...DEV_BUILD_TARGET, appId: 'host.exp.exponent' }]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+      { stdout: '' },
+      { stdout: ADB_DEVICES },
+    ]);
+
+    await expect(
+      navigateAsync(
+        projectRoot,
+        options({ platform: 'android', attachTimeoutMs: 5_000, json: true })
+      )
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(printed()).launch).toBeNull();
+    expect(openedUrls()).toEqual(['exp://127.0.0.1:8081/--/profile/42']);
+  });
+
+  // `--no-wait-attach` and `smoke` both pass no budget, and the launcher open is only worth
+  // anything with one: the bundle it fetches takes seconds, and a route link delivered into that
+  // gap lands on an app that has not finished loading.
+  it(`does not launch first when nothing will be waited for`, async () => {
+    mockDevClientProject();
+    mockDevServer([]);
+    mockSpawnQueue([
+      { stdout: ADB_DEVICES },
+      { stdout: '8081' },
+      { stdout: 'Starting: Intent' },
+    ]);
+
+    await expect(
+      navigateAsync(
+        projectRoot,
+        options({ platform: 'android', attachTimeoutMs: 0, json: true })
+      )
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(printed()).launch).toBeNull();
+    expect(openedUrls()).toEqual(['demoapp://profile/42']);
   });
 });

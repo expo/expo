@@ -374,6 +374,63 @@ describe(devAsync, () => {
       expect(recordLastBuildFingerprint).not.toHaveBeenCalled();
     });
 
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+    // F121. `expo run:*` is one subprocess that builds, installs *and* serves, and the record used
+    // to be written only when all three worked — so a run whose app is on the device and whose
+    // launch then failed left the next plan planning another fifteen minutes
+    // [observed — wave 29, `evidence/07-dev-build-ios-2.log`]. The build is a fact of its own.
+    it(`should record the build when the step failed after installing the app`, async () => {
+      mockStaleDevClientState();
+      jest.mocked(runDevServerAsync).mockResolvedValue(
+        devServerRun({
+          exitCode: 1,
+          stdout: '› Build Succeeded\n› Installing on iPhone 17 Pro\n› Opening on iPhone 17 Pro',
+          stderr: 'Error: osascript -e tell app "System Events" exited with non-zero code: 1',
+        })
+      );
+
+      // Exit 7, because that is what the observed run was: the launch step is `osascript`, and the
+      // Automation refusal is a stop only a person can clear. The record is written **before** that
+      // handoff is thrown — its own `How:` sends the reader to `npx exagent dev --yes`, which used
+      // to be the same fifteen minutes over again.
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).rejects.toMatchObject({
+        exitCode: 7,
+        message: expect.stringContaining('the app it built is installed on the simulator already'),
+      });
+
+      expect(recordLastBuildFingerprint).toHaveBeenCalledWith(projectRoot, 'ios', {
+        hash: fingerprintHash,
+        sources: null,
+      });
+    });
+
+    // The launch failure is still reported — it is its own fact — and the report says the build
+    // was kept, because "run it again" costs fifteen minutes if that sentence is missing.
+    it(`should say the build was recorded in the failure it reports`, async () => {
+      mockStaleDevClientState();
+      jest.mocked(runDevServerAsync).mockResolvedValue(
+        devServerRun({ exitCode: 1, stdout: '› Build Succeeded\n› Installing on iPhone 17 Pro' })
+      );
+
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).rejects.toMatchObject({
+        code: 'PLAN_STEP_FAILED',
+        message: expect.stringContaining('the app it built is installed'),
+      });
+    });
+
+    it(`should not record a build for a step that installed nothing`, async () => {
+      mockStaleDevClientState();
+      jest.mocked(runDevServerAsync).mockResolvedValue(
+        devServerRun({ exitCode: 1, stdout: '› Build Succeeded', stderr: 'error: code signing' })
+      );
+
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).rejects.toMatchObject({
+        exitCode: 1,
+      });
+
+      expect(recordLastBuildFingerprint).not.toHaveBeenCalled();
+    });
+
     it(`should not record anything when the fingerprint is unavailable`, async () => {
       mockStaleDevClientState({ fingerprint: { hash: null, error: 'fingerprint failed' } });
 

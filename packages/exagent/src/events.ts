@@ -529,6 +529,14 @@ declare module '2g' {
       /** The project already had a dev server, so nothing was started. */
       alreadyRunning: boolean;
       /**
+       * `building` while the plan's dev-server step is still compiling, `serving` otherwise.
+       *
+       * `url` is where the dev server *will* listen, not always where one is: the lock is published
+       * when the dev-server step starts, and `expo run:*` builds and installs before it serves
+       * (llp/0004 §What a development build costs the plan, F125).
+       */
+      phase: 'building' | 'serving';
+      /**
        * The busy port this run was moved off, or null when it did not move — and also null when
        * it moved off a port the Expo CLI declined to name. `port` above is where it landed.
        */
@@ -644,6 +652,14 @@ declare module '2g' {
        * (llp/0005 §Android, F50). `exitCode` only ever answered the first.
        */
       attached: boolean | null;
+      /**
+       * The dev launcher URL this run opened **before** `url`, or null when it opened none.
+       *
+       * Non-null exactly when the app was not loaded and a development build was the target, which
+       * is the ladder of F123: `url` navigates an app that is running, and this is what gets it
+       * running (llp/0005 §Pointing an app at this dev server).
+       */
+      launchUrl: string | null;
     };
     /**
      * A route resolved to a URL with nothing opened (`navigate --print-url`).

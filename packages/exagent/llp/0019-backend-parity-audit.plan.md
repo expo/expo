@@ -119,9 +119,9 @@ build rows say `by hand` with their evidence, which is a weaker claim than `fill
 | `dev` with a **proxy origin** | none — a stub dev server advertises nothing | open — `live-local` has no use for a public origin | open — `adb reverse` is the local answer and it is asserted by the `navigate` row | n/a | **runnable** — `EXPO_PACKAGER_PROXY_URL` + `tuft host add`, and the origin is checked before a session is billed | open — `adb reverse` is the local answer here too |
 | cloud session start (`--expo-go`) | n/a | n/a | n/a | n/a | **runnable** — `eas simulator … --expo-go`; without the flag the session has no app and every `open` is `LSApplicationWorkspaceErrorDomain error 115` [wave19-live] | n/a |
 | `dev:logs` | filled | **filled** — reads the real bundler error the gates refused on | **filled** — carries the `Android Bundled` line, and the `.android.ts` break | n/a | n/a | open — read by the reload proof rather than asserted directly |
-| `dev:stop` | filled | **filled** — process gone, port free after | **filled** — port free after; F94's trigger tolerated the same way | n/a | n/a | **filled** — run twice per suite, and it is what writes the build record after a `run:*` step (F121) |
+| `dev:stop` | filled | **filled** — process gone, port free after | **filled** — port free after; F94's trigger tolerated the same way | n/a | n/a | **filled** — run twice per suite. It used to be what wrote the build record after a `run:*` step; since wave 30 the record is written when the app reaches the device, so a stop is no longer part of it (F121) |
 | `start` | filled | open — `expo start` verbatim; `dev` covers the same subprocess with a plan around it | open — same reason as the column left | n/a | n/a | open — same reason as the columns left |
-| `navigate` (local) | filled | **filled** — `simctl openurl`, route check, `attached: true` | **filled** — `reversedPort` (F50), `attached: true`, the resolved `adb` in the command (F49), and the wait it names is one Android can run (**found F104**) | n/a | n/a | **filled** — `dcapp://explore`, `target` naming the development build, and `runtime:tree` reporting `focusedScreen: "explore"` **after** it, which is the check `navigate` does not make for itself. **F123** is the same command with nothing connected |
+| `navigate` (local) | filled | **filled** — `simctl openurl`, route check, `attached: true` | **filled** — `reversedPort` (F50), `attached: true`, the resolved `adb` in the command (F49), and the wait it names is one Android can run (**found F104**) | n/a | n/a | **filled** — `dcapp://explore`, `target` naming the development build, and `runtime:tree` reporting `focusedScreen: "explore"` **after** it, which is the check `navigate` does not make for itself. **F123** is the same command with nothing connected — since wave 30 it opens the launcher URL first and is `filled` too: `launch.attached: true` in 2.6 s, then `attached: true` on the route link |
 | `navigate` (bad route) | filled | **filled** — exit 1, `ROUTE_NOT_FOUND`, real sitemap in the message | open — the sitemap has no platform; asserted once, in the column left | n/a | n/a | open — the sitemap has no app dimension |
 | `navigate --print-url` | filled | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | open — same reason as the column left | n/a | **runnable** — `beforeAll` uses it to prove the public origin took (`hostType: "tunnel"`) before billing a session | open — asserted by the `status` row |
 | `navigate --cloud` | filled | n/a | n/a | n/a | **filled** — `deviceBackend: "cloud"`, the URL on the public origin, the `open` at exit 0, and `attached: true` in 206 ms on a session started with `--open-url` [2026-08-27]. `attached` is asserted permissively — a cold first bundle over a proxy may outlive the wait — but a run that does not attach must have looked for the S10 dialog | n/a |
@@ -151,7 +151,7 @@ build rows say `by hand` with their evidence, which is a weaker claim than `fill
 | `skills:*`, `agents:setup` | filled | open — filesystem only; nothing about them is a second process boundary | open — same reason as the column left | n/a | n/a | open — same reason as the columns left |
 | forwarded `expo` set | filled | open — a forward is argv assembly, which is what the stub tier is for | open — same reason as the column left | n/a | n/a | **this is where F120 was found** — a plan ending in `expo run:*` forwards nothing, and the follow-ups were quoting the caller’s arguments anyway |
 | native EAS build **creation** | n/a | n/a | n/a | **unreachable in v1** — verified: no v1 command creates one. `deploy --native` runs create-launch; `inspect:build-log` takes no id | n/a | n/a |
-| Android, anywhere | filled (posix) | **unreachable today** — the suite is iOS/Expo Go; the harness has no Android gate yet | **this column** — `live-android`, 24 tests, 103 s including the emulator boot [2026-08-27]. What is still not run on Android: a **development build** (which is what would give it a debugger), a **physical device**, and `--tunnel` | n/a | n/a | **this column** — 14 tests, 25 s, on a development build. What is still not run: a development build on **iOS** inside a suite, and a physical device |
+| Android, anywhere | filled (posix) | **unreachable today** — the suite is iOS/Expo Go; the harness has no Android gate yet | **this column** — `live-android`, 24 tests, 103 s including the emulator boot [2026-08-27]. What is still not run on Android: a **development build** (which is what would give it a debugger), a **physical device**, and `--tunnel` | n/a | n/a | **this column** — 15 tests, 25 s, on a development build. What is still not run: a development build on **iOS** inside a suite, and a physical device |
 | Windows | filled (`tier0-windows`) | unreachable — no simulator, and this tier is macOS-gated | unreachable — the emulator and `adb` exist there, and nobody has run this suite on one | unreachable — same gate | unreachable — same | unreachable — same gate |
 | CDP on a cloud simulator | n/a | n/a | n/a | n/a | **S11 amended, 2026-08-27** — the app registers a debugger target *and* a command-socket client once the project is loaded, so CDP is reachable there; `smoke --cloud`'s `runtime` phase still answered `No target found.` at that moment, which is a timing question rather than the wall S11 described. What is upstream and unreachable is narrower: the `/message` reload broadcast does not reload Expo Go there, and takes the app's socket client with it | n/a |
 
@@ -169,9 +169,9 @@ Expo Go's, not Android's — `xcrun simctl openurl` of a development build's sch
 | Command | Result |
 | --- | --- |
 | `install expo-dev-client` | exit 0, `impact: native-module`, `action: prebuild-and-build`, and the next `dev --plan` moves from `expo-go` to `dev-client-stale` |
-| `dev --ios` (the real build) | `Build Succeeded`, installed on the simulator, then exit **7** `macos-automation` at `expo run:ios`'s own `osascript` — and no build recorded, which is **F121** |
+| `dev --ios` (the real build) | `Build Succeeded`, installed on the simulator, then exit **7** `macos-automation` at `expo run:ios`'s own `osascript` — and no build recorded, which is **F121**. Fixed in wave 30: the same run records the build and the handoff says so |
 | `status` | `openUrls` is the dev launcher URL only, `target: "dev-build"` |
-| `navigate /` (nothing connected) | exit **22** after 45.4 s, `url: "dcapp://"` — **F123** |
+| `navigate /` (nothing connected) | exit **22** after 45.4 s, `url: "dcapp://"` — **F123**. Fixed in wave 30; the iOS dialog still stands in front of the launcher open here, and the Android measurement is in `live-devclient` |
 | `navigate /lab` (app connected) | exit **0**, `attached: true` in 79 ms, and the app **did not move** — the dialog was on screen and `attached` was satisfied by the target that was already there |
 | `runtime:eval "1+1"` | exit 0, `value: 2` |
 | `runtime:tree` | exit 0, 10 nodes, `disabled` / `disabledOn: "editable"` |
@@ -221,9 +221,10 @@ at exit 0 with all eight phases `ok`. Nothing in the CLI changed to make that tr
 result: the refusal is reached by asking the runtime what it carries rather than by knowing the
 platform, so the design was already right and only the measurement was missing. Filling the column
 cost six findings — **F120**, **F122** and **F126** fixed in the wave, **F121**, **F123** and
-**F125** open — and three of them are reachable only through a dev-client plan, because a
-development build makes the plan's **last step a build rather than a dev server** and every
-assumption `dev` makes about that step was written for `expo start`.
+**F125** left open for a contract decision and all three fixed in **wave 30** [2026-08-28] — and
+three of them are reachable only through a dev-client plan, because a development build makes the
+plan's **last step a build rather than a dev server** and every assumption `dev` makes about that
+step was written for `expo start`.
 
 **The Android column was the emptiest row in this table, and filling it cost seven findings**
 [added 2026-08-27, wave 25]. `Android, anywhere` read `unreachable today — the harness has no Android

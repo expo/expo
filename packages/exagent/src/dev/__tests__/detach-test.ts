@@ -284,4 +284,46 @@ describe(notReadyError, () => {
       'npx exagent smoke'
     );
   });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §What a development build costs the plan
+  // F125. The lock is taken at the *start* of the dev-server step, and for `expo run:android` that
+  // step is a ten-minute Gradle build — so the port it publishes is not a port anything listens on
+  // yet. Every sentence of the report above was then false at once: nothing was started, nothing
+  // was on 8081, and "the dev server is still running" described a compiler
+  // [observed — wave 29, `evidence/10-dev-detach-android.json`].
+  describe('a plan that is still building', () => {
+    const building = { phase: 'building', step: 'expo run:android' } as const;
+
+    it(`does not say a dev server started`, () => {
+      const message = notReadyError(lock, '/project/.expo/dev.log', readyResult(), building).message;
+
+      expect(message).not.toContain('The dev server started on');
+      expect(message).not.toContain('The dev server is still running');
+    });
+
+    it(`says what the plan is doing, and which step is doing it`, () => {
+      const message = notReadyError(lock, '/project/.expo/dev.log', readyResult(), building).message;
+
+      expect(message).toContain('expo run:android');
+      expect(message).toContain('still building');
+      // The reason the port is published at all, which is the part nothing else can explain.
+      expect(message).toContain('builds the app, installs it, and only then starts the dev server');
+    });
+
+    // The split-stack note is about two listeners on one port, and nothing is listening here. On
+    // this path it would send the reader to `lsof` for a socket that does not exist yet.
+    it(`leaves out the note about two listeners on one port`, () => {
+      const message = notReadyError(lock, '/project/.expo/dev.log', readyResult(), building).message;
+
+      expect(message).not.toContain('lsof -nP');
+    });
+
+    // `smoke` cannot measure a bundler that has not started. What the reader can do is watch the
+    // build, which is the one thing that is actually happening.
+    it(`recovers into the log the build is being written to`, () => {
+      expect(
+        notReadyError(lock, '/project/.expo/dev.log', readyResult(), building).suggestedCommand
+      ).toBe('npx exagent dev:logs');
+    });
+  });
 });

@@ -11,6 +11,12 @@ declare module '2g' {
     'navigate:adb_reverse_failed': { reason: string };
     /** The app was stopped and the link opened again, because nothing had attached. */
     'navigate:attach_recovery': { appId: string; stopped: boolean };
+    /**
+     * The dev launcher's URL was opened before the route link, because nothing was loaded (F123).
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+     */
+    'navigate:dev_launcher_opened': { url: string; exitCode: number };
     /** The system dialog a cloud open raised, as it was read and as it was answered (S10). */
     'navigate:attach_alert': { found: boolean; accepted: boolean };
     'navigate:route_checked': {

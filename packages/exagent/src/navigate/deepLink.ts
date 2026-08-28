@@ -298,6 +298,27 @@ export interface BuildOpenUrlCommandParams {
   /** Android only: scopes the intent to one package to skip the chooser dialog. */
   appId?: string;
   /**
+   * Android only: the activity to hand the URL to, as `<package>/<activity>`.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+   * **What this is for, and why it is not the same as {@link appId}.** A BROWSABLE `ACTION_VIEW`
+   * intent is how a *link* reaches an app, and it is right for a route link. It is wrong for the
+   * dev launcher's own URL on an app that is not running: that reaches
+   * `DevLauncherController.handleIntent`, and on a cold start that path throws
+   * `java.lang.NullPointerException … createAppIntent` and leaves the app on
+   * `DevLauncherErrorActivity` [observed — 2026-08-28, `live-devclient`'s emulator; wave 29,
+   * `evidence/63-devlauncher-npe.txt`]. Handing the same URL to `MainActivity` by component starts
+   * the app *with* the URL, which loads the bundle and attaches in about three seconds.
+   *
+   * It is what `expo start --dev-client --android` does, and this is its command
+   * [reference — `@expo/cli` `src/start/platforms/android/adb.ts` §launchActivityAsync]:
+   * `am start -f 0x20000000 -n <activity> -d <url>`. `appId` is not passed with it — the component
+   * already names the package, which is a stronger scoping than the trailing package filter.
+   *
+   * Ignored on iOS, which has one way in and uses it for both kinds of link.
+   */
+  launchActivity?: string;
+  /**
    * The `adb` to spawn, as `src/device/adb.ts` resolved it.
    *
    * Absent means the bare name, which keeps the pure command table readable; a live run passes the
@@ -323,8 +344,9 @@ export interface BuildOpenUrlCommandParams {
  * Build the device command that opens a URL.
  *
  * iOS uses `xcrun simctl openurl`. Android uses an ACTION_VIEW intent through `adb shell am
- * start`. The Android URL is quoted for the on-device shell, because `adb shell` re-parses its
- * arguments there.
+ * start` — unless {@link BuildOpenUrlCommandParams.launchActivity} names an activity, and then the
+ * URL is handed to *that component*, which is the only way a cold dev launcher takes it. The
+ * Android URL is quoted for the on-device shell, because `adb shell` re-parses its arguments there.
  */
 export function buildOpenUrlCommand({
   platform,
@@ -333,6 +355,7 @@ export function buildOpenUrlCommand({
   appId,
   adb,
   backend,
+  launchActivity,
 }: BuildOpenUrlCommandParams): OpenUrlCommand {
   if (backend === 'cloud') {
     const args = buildCloudOpenUrlArgs({ url, platform });
@@ -349,13 +372,17 @@ export function buildOpenUrlCommand({
             'shell',
             'am',
             'start',
-            '-a',
-            'android.intent.action.VIEW',
-            '-c',
-            'android.intent.category.BROWSABLE',
+            ...(launchActivity
+              ? // FLAG_ACTIVITY_SINGLE_TOP: an activity already at the top of the stack takes the
+                // new intent rather than being launched a second time, which is what makes this
+                // safe to send at an app that may or may not be running. @see launchActivity
+                ['-f', '0x20000000', '-n', launchActivity]
+              : ['-a', 'android.intent.action.VIEW', '-c', 'android.intent.category.BROWSABLE']),
             '-d',
             quoteForDeviceShell(url),
-            ...(appId != null && appId.length > 0 ? [appId] : []),
+            // The component already names the package, so the trailing package filter would only
+            // repeat it — and `am start` rejects it as an extra operand alongside `-n`.
+            ...(!launchActivity && appId != null && appId.length > 0 ? [appId] : []),
           ],
           display: '',
         };

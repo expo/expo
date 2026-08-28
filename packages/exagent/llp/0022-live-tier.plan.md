@@ -220,8 +220,8 @@ asynchronous** and `pidof` still answers for a beat after the `adb shell` exits.
 
 ## live-devclient: the app the other four suites do not run
 
-The fifth suite [added 2026-08-28, wave 29]. **14 tests, 25 s, free**, plus one skipped that carries
-a finding. It runs the v1 runtime loop against a real **development build** on the emulator
+The fifth suite [added 2026-08-28, wave 29]. **15 tests, 25 s, free** — 14 plus the one that carried
+F123 as a skipped finding, unskipped in wave 30 once the contract was decided and green since. It runs the v1 runtime loop against a real **development build** on the emulator
 `live-android` uses — and it is the suite that answers a question this document had been asking of
 itself since §What this does not close was written: *"a development build on either platform — which
 on Android is the one thing that would give it a debugger, so every refusal `live-android` asserts is
@@ -247,9 +247,10 @@ has already built, and the gate is two facts rather than one —
 
 The second half is not belt and braces. `exagent dev` plans a **build** for a platform with no
 recorded fingerprint, so a project whose app is installed and whose record is missing would send
-`beforeAll` into the fifteen minutes the gate exists to avoid. And the two really are separable:
-the record is written when the `expo run:android` step *exits*, which is when its dev server is
-stopped rather than when the compiler finishes (F121).
+`beforeAll` into the fifteen minutes the gate exists to avoid. And the two really are separable —
+which is what F121 was about. Since wave 30 the record is written when the **app reaches the
+device**, so `npx exagent dev --android --yes` alone is enough to satisfy the gate; before it, the
+`expo run:android` step had to *exit*, which meant stopping its dev server too.
 
 **It uses the project in place.** The scratch-outside-git rule exists because `eas deploy` and
 `eas build` upload by walking to the git root, and this suite makes no EAS call at all. What it
@@ -270,8 +271,9 @@ written down rather than left blank.
 
 ### What it found
 
-Six findings, two fixed in the wave and four reported. The two fixed are the ones whose rule was
-already written down somewhere and simply not applied:
+Six findings, three fixed in the wave and three reported. **All three of the reported ones were
+decided and fixed in wave 30** [2026-08-28], and each is marked below. The three fixed in wave 29
+are the ones whose rule was already written down somewhere and simply not applied:
 
 - **F120 MODERATE, fixed** — `dev` warned `these options were not passed on: --port 8901` and then
   printed a development-build connect URL naming **8901**, for a plan whose `expo run:ios` was about
@@ -288,14 +290,23 @@ already written down somewhere and simply not applied:
   bundle proof kept the reporter's platform tag and filtered on nothing, so the *other* app on the
   same dev server proved this one's reload. F53 and F100's shape, one signal further out. With the
   filter the same command is 22 with the reason naming what did bundle, which is the honest answer.
-- **F123 MAJOR, open** — `navigate` opens the *route* link at an app that is not loaded, having said
-  in the same payload that nothing is connected and having computed the launcher URL that would load
-  it. Exit 22 after 90.6 s on Android, where no dialog can be blamed. Reported rather than fixed
-  because the recovery is a two-open ladder with contract questions in it.
-- **F121 MAJOR, open** and **F125 MODERATE, open** — a build that succeeded and installed is not
-  recorded when the launch step fails, so the next plan rebuilds; and `dev --detach --wait-ready`
-  reports "the dev server started on <url>" while the plan is still compiling.
-  [[0004-smart-start-and-project-state]] §What a development build costs the plan.
+- **F123 MAJOR, fixed in wave 30** — `navigate` opens the *route* link at an app that is not loaded,
+  having said in the same payload that nothing is connected and having computed the launcher URL that
+  would load it. Exit 22 after 90.6 s on Android, where no dialog can be blamed. Reported rather than
+  fixed in wave 29 because the recovery is a two-open ladder with contract questions in it; the
+  answers are [[0005-runtime-loop-tools]] §On a development build, `navigate` goes launcher-first.
+  The skipped test this suite carried is now the assertion it was written to be: **exit 0 in 3.0 s**.
+- **F121 MAJOR, fixed in wave 30** and **F125 MODERATE, fixed in wave 30** — a build that succeeded
+  and installed is not recorded when the launch step fails, so the next plan rebuilds; and
+  `dev --detach --wait-ready` reports "the dev server started on <url>" while the plan is still
+  compiling. Both decisions are in [[0004-smart-start-and-project-state]] §What a development build
+  costs the plan.
+
+**What the three wave-30 fixes share, and it is not incidental.** All three read a fact off a
+**subprocess's output** that no exit code carries: the install line that says the app reached the
+device (F121), the same line reused to say a compiler has finished (F125), and — for F123 — the
+device's own answer that a link was delivered to the wrong activity. The dev-client shape is what
+made all three visible, and §What it found's structural note below is the reason.
 
 Three of the six are only reachable through a dev-client plan, and the reason is structural rather
 than incidental: **a development build makes the plan's last step a build rather than a dev server.**
