@@ -14,6 +14,7 @@
 import { commandSummary } from '../commandRegistry';
 import * as Log from '../log';
 import { color } from '../utils/color';
+import { ON_RAMP_FOOTER } from './onRamp';
 import type { CommandHelp } from './types';
 
 /**
@@ -22,7 +23,7 @@ import type { CommandHelp } from './types';
  * "One screen" as a number. It is not a formatting preference: a block that scrolls is one whose
  * head — the summary and the usage — is gone by the time the reader reaches the examples, and the
  * blocks this replaced were 60 to 110 lines of which most was rationale. The cap is what keeps the
- * rationale in the how-to and in the LLPs instead of creeping back one paragraph at a time.
+ * rationale in the `workflow` topic and in the LLPs instead of creeping back one paragraph at a time.
  */
 export const MAX_HELP_LINES = 60;
 
@@ -34,9 +35,6 @@ export const MAX_HELP_LINES = 60;
  * time. The number is what the honest limits of the hardest command need and no more.
  */
 export const MAX_NOTE_LINES = 14;
-
-/** The pointer every help block ends with. The on-ramp is one command away from every command. */
-export const HOW_TO_POINTER = 'npx exagent help how-to';
 
 /** Indent of a section's head, and of the lines under it. */
 const HEAD_INDENT = '  ';
@@ -70,7 +68,7 @@ export function renderCommandHelp(name: string, help: CommandHelp): string {
         ])
       : []),
     ...(help.notes?.length ? section('Notes', help.notes.flatMap((note) => note.split('\n'))) : []),
-    `${HEAD_INDENT}Learn the loop: ${HOW_TO_POINTER}`,
+    `${HEAD_INDENT}${ON_RAMP_FOOTER}`,
     '',
   ];
   return lines.join('\n');

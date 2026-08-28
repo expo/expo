@@ -18,22 +18,22 @@ describe('npx exagent --help', () => {
     projectRoot = await setupFixtureAsync('go-app');
   });
 
-  it('leads with the loop, and points at the on-ramp', async () => {
+  it('leads with the steps, and points at the on-ramp', async () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('The loop');
-    expect(result.stdout).toContain('npx exagent help how-to');
+    expect(result.stdout).toContain('What to run, in order');
+    expect(result.stdout).toContain('New here? npx exagent help workflow');
     // The map is what says which command comes first, which the listing cannot say.
-    expect(result.stdout).toContain('orient');
+    expect(result.stdout).toContain('1  Check the project');
     expect(result.stdout).toContain('status');
-    expect(result.stdout).toContain('gate');
+    expect(result.stdout).toContain("4  Verify before you're done");
     expect(result.stdout).toContain('smoke');
   });
 });
 
 // The on-ramp is the thing a caller has to find *before* they know anything, so it answers to the
-// word (`help how-to`), to the flag (`--how-to`), and — being a command — to the space form too.
+// topic name, and every near miss is answered with the line that works rather than with a listing.
 describe('the on-ramp', () => {
   let projectRoot: string;
 
@@ -41,34 +41,54 @@ describe('the on-ramp', () => {
     projectRoot = await setupFixtureAsync('go-app');
   });
 
-  it.each([[['help', 'how-to']], [['--how-to']], [['help:how-to']]])(
-    'answers %j with the same screen',
-    async (argv) => {
-      const result = await executeExagentAsync(projectRoot, argv, { reject: false });
+  it('answers `help workflow` with the whole protocol', async () => {
+    const result = await executeExagentAsync(projectRoot, ['help', 'workflow']);
 
-      if (argv[0] === 'help:how-to') {
-        // `help` is a top-level command rather than a group, so the colon form is not a name this
-        // CLI has. It has to fail loudly rather than print something — and name the one that works.
-        expect(result.exitCode).not.toBe(0);
-        expect(result.all).toContain('npx exagent help');
-        return;
-      }
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('What to run, in order');
+    // The four things a driving agent has to know before its first command is worth running.
+    expect(result.stdout).toContain('Exit codes');
+    expect(result.stdout).toContain('--json');
+    expect(result.stdout).toContain('Try:');
+    expect(result.stdout).toContain('npx exagent status --explain');
+  });
 
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('The loop');
-      // The four things a driving agent has to know before its first command is worth running.
-      expect(result.stdout).toContain('Exit codes');
-      expect(result.stdout).toContain('--json');
-      expect(result.stdout).toContain('Try:');
-      expect(result.stdout).toContain('npx exagent status --explain');
+  // A topic is a positional, so the wrong shapes are a colon, a bare verb, and the name this topic
+  // had for one unpublished day. Each is one hop from the line that works.
+  it.each([['help:workflow'], ['workflow'], ['help:how-to'], ['how-to'], ['--how-to']])(
+    'sends %s to `npx exagent help workflow`',
+    async (typed) => {
+      const result = await executeExagentAsync(projectRoot, [typed], { reject: false });
+
+      expect(result.exitCode).not.toBe(0);
+      expect(result.all).toContain('Try: npx exagent help workflow');
     }
   );
 
   it('names the exit-code bands an agent branches on', async () => {
-    const result = await executeExagentAsync(projectRoot, ['help', 'how-to']);
+    const result = await executeExagentAsync(projectRoot, ['help', 'workflow']);
 
     for (const code of ['0', '1', '7', '20', '22']) {
       expect(result.stdout).toContain(`  ${code}   `);
+    }
+  });
+
+  // The steps are the registry's own data, printed by both screens. Two screens that each claim to
+  // say what to run first are two screens that will one day disagree.
+  it('states the same steps as the top-level screen', async () => {
+    const topic = await executeExagentAsync(projectRoot, ['help', 'workflow']);
+    const listing = await executeExagentAsync(projectRoot, ['--help']);
+
+    for (const title of [
+      'Check the project',
+      'Start the app',
+      'Edit and reload',
+      "Verify before you're done",
+      'Release',
+      'One-time setup',
+    ]) {
+      expect(topic.stdout).toContain(title);
+      expect(listing.stdout).toContain(title);
     }
   });
 });

@@ -400,16 +400,25 @@ describe('exagent', () => {
   // The listing says which commands exist; the map above it says which one to run first, and the
   // on-ramp under the map teaches the protocol. A caller who has never seen this CLI needs all
   // three, in that order, on the first screen they are given.
-  it('puts the loop and the on-ramp above the listing', async () => {
+  it('puts the steps and the on-ramp above the listing', async () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.all).toContain('The loop');
-    expect(result.all).toContain('npx exagent help how-to');
-    for (const stage of ['orient', 'run', 'iterate', 'gate', 'ship', 'once']) {
-      expect(result.all).toContain(stage);
+    expect(result.all).toContain('What to run, in order');
+    expect(result.all).toContain('New here? npx exagent help workflow');
+    for (const title of [
+      'Check the project',
+      'Start the app',
+      'Edit and reload',
+      "Verify before you're done",
+      'Release',
+      'One-time setup',
+    ]) {
+      expect(result.all).toContain(title);
     }
-    expect(result.all.indexOf('The loop')).toBeLessThan(result.all.indexOf('Develop'));
+    expect(result.all.indexOf('What to run, in order')).toBeLessThan(
+      result.all.indexOf('Develop')
+    );
   });
 
   it('prints the package version with `--version`', async () => {

@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft — implemented
-**Systems:** the help template (`src/help/types.ts`, `src/help/format.ts`); the on-ramp (`src/help/howTo.ts`, `src/help/index.ts`); the registry's summaries, workflow map and listing (`src/commandRegistry.ts`); the palette (`src/utils/color.ts`); the launcher (`src/cli.ts`); the follow-up block (`src/followups/format.ts`); the status report (`src/status/format.ts`); the template lint (`src/help/__tests__/template-test.ts`)
+**Systems:** the help template (`src/help/types.ts`, `src/help/format.ts`); the on-ramp (`src/help/onRamp.ts`, `src/help/topics.ts`, `src/help/workflow.ts`, `src/help/index.ts`); the registry's summaries, workflow map and listing (`src/commandRegistry.ts`); the palette (`src/utils/color.ts`); the launcher (`src/cli.ts`); the follow-up block (`src/followups/format.ts`); the status report (`src/status/format.ts`); the template lint (`src/help/__tests__/template-test.ts`)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-28
 **Related:** [[0006-agent-native-cli-surface]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0001-agentic-cli-on-expo-cli]]
@@ -40,7 +40,7 @@ One shape for every `npx exagent <command> --help`, in the order a caller needs 
   JSON (--json)     stdout, stderr, and every top-level key — where --json exists
   Notes             the honest limits and this command's own exit codes
 
-  Learn the loop: npx exagent help how-to
+  New here? npx exagent help workflow
 ```
 
 The decision that makes it enforceable: a help block is **data**, not a string. `CommandHelp`
@@ -60,7 +60,7 @@ loads every spec and asserts:
 
 The two caps are the load-bearing part. `Notes` is the only section with no shape of its own, so it
 is where a wall of prose grows back one paragraph at a time; the cap is what sends the rationale to
-the how-to and to the LLPs instead.
+the `workflow` topic and to the LLPs instead.
 
 The examples are checked twice over. The template test checks their shape; the existing
 suggested-command sweep (`src/lint/`) already reads every `npx exagent …` string literal in `src/`
@@ -76,26 +76,51 @@ listing stays one line per command.
 
 ## The workflow map
 
-`exagent --help` leads with the loop, above the listing:
+`exagent --help` leads with what to run, above the listing:
 
 ```
-  The loop
-    orient   status                what this project is, and what to run next
-    run      dev --detach          start the dev server, keep this terminal
-             navigate /            open a route in the app on a device
-    iterate  runtime:reload        after your edit, run the code on disk
-             runtime:errors        what the app threw, over a time window
-             runtime:tap <testID>  tap it; --verify says what changed
-    gate     smoke                 bundle, type-check and boot, in one go
-    ship     deploy                publish the web app to EAS Hosting
-    once     new <directory>       create a project
-             install <package>     add it at the version this SDK wants
-             agents:setup          write AGENTS.md, link the agent skills
+  What to run, in order
+    1  Check the project
+         status                what this project is, and what to run next
+    2  Start the app
+         dev --detach          start the dev server, keep this terminal
+         navigate /            open a route in the app on a device
+    3  Edit and reload
+         runtime:reload        after your edit, run the code on disk
+         runtime:errors        what the app threw, over a time window
+         runtime:tree          what is on screen, and its testIDs
+         runtime:tap <testID>  tap it; --verify says what changed
+    4  Verify before you're done
+         smoke                 bundle, boot and error window, one exit code
+         typecheck             the type errors neither of those can see
+         doctor                what expo-doctor finds wrong with the setup
+    5  Release
+         deploy                publish the web app to EAS Hosting
+
+       One-time setup
+         new <directory>       create a project
+         install <package>     add it at the version this SDK wants
+         agents:setup          write AGENTS.md, link the agent skills
 ```
 
-Six stages, because six is how many decisions there are between an unopened project and a shipped
-one. The map is **data** (`workflow` in `src/commandRegistry.ts`) and a unit test resolves every
-rung, so a rename cannot leave the map naming a command that no longer exists.
+**The titles are plain phrases, never labels.** The first version of this map read `orient · run ·
+iterate · gate · ship · once` — six one-word labels, which is a vocabulary a reader has to be taught
+before the map means anything [confirmed — Kudo, 2026-08-28: "i'm not clear specifically what they
+mean"]. The rule the wording is held to, and the one to apply to anything that joins it: **if a title
+needs a legend, it is the wrong title.** The titles are consequently pinned by a unit test — the rule
+is a judgment rather than a property, so what a test can offer is putting the rule in front of the
+next person who reworders one — alongside a property half that rules out the six words that failed.
+
+The title sits above its commands rather than in a third column, because the titles are sentences
+now and three columns of prose does not fit on a terminal. `One-time setup` is a block of its own
+rather than a sixth step: a reader following numbers is following a sequence, and "create a project"
+does not come after "release".
+
+Five steps, because five is how many there are between an unopened project and a released one. The
+map is **data** (`workflow` and `oneTimeSetup` in `src/commandRegistry.ts`) and a unit test resolves
+every rung, so a rename cannot leave the map naming a command that no longer exists. The on-ramp
+prints the same data with `npx exagent ` in front of it: two screens that each claim to say what to
+run first are two screens that will one day disagree.
 
 The listing under it keeps its sections but loses its prose: one line per command, the summary in a
 column, and at most one short note per section. The Account block used to carry a five-sentence
@@ -104,26 +129,45 @@ paragraph about which of two CLIs answers `whoami` where; that sentence is now i
 
 ## The on-ramp
 
-`npx exagent help how-to` is one screen written for an agent that has never seen this CLI: the loop
-as five numbered steps, which commands read and which act, the five exit-code bands and what to do
-about each, the `--json` contract including the failure envelope, the `Try:` convention, and the one
-command that asks EAS anything. Every help block ends with a pointer to it, and so does the
-top-level screen.
+`npx exagent help workflow` is one screen written for an agent that has never seen this CLI: the
+five steps, which commands read and which act, the five exit-code bands and what to do about each,
+the `--json` contract including the failure envelope, the `Try:` convention, and the one command
+that asks EAS anything. Every help block ends with `New here? npx exagent help workflow`, and so
+does the top-level screen.
 
-It is a **command** rather than only a flag, because `help` is the word somebody types when they
-have been handed a CLI and nothing else. `exagent help` prints the top-level screen, `exagent help
-how-to` the on-ramp, and `exagent help <command>` that command's own help — by resolving the name
-through `resolveCommand` and running the command with `--help`, so there is no second place for a
-help block to come from. `--how-to` works on the launcher and on `help` itself.
+**A topic is a positional argument, not a flag.** `git help workflows`, `npm help folders`: a topic
+is a thing you ask *for*, and asking for it by name is how every CLI a reader already knows spells
+it. A flag would have made the on-ramp an option *of* the help command rather than a thing the help
+command is *about*, and it would have needed a second flag for every topic that follows. This
+replaced a `--how-to` flag that existed for one unpublished day [confirmed — Kudo, 2026-08-28].
 
-`help:how-to` is the colon convention applied to a command that takes an argument, and is the first
-thing an agent that has learned this CLI's naming types [found by the wave-34 naive-agent walk]. It
-is in the absent-capability table with the line that works, because the edit distance to any real
-name is far too large for the nearest-match rules to reach it.
+**And it is `workflow`, not `how-to`.** A topic is named after what it is *about*; `how-to` names
+the genre of the document instead, which tells a reader nothing about whether it is the one they
+want.
 
-The acceptance test for this file is not a unit test. It is a **naive-agent walk**: start a scratch
-project and drive the whole loop using only what `exagent -h` and the how-to say. Every place the
-walk had to guess is a defect in this text.
+`help` is a **command**, because that is the word somebody types when they have been handed a CLI
+and nothing else. `exagent help` prints the top-level screen, `exagent help <topic>` a topic, and
+`exagent help <command>` that command's own help — by resolving the name through `resolveCommand`
+and running the command with `--help`, so there is no second place for a help block to come from.
+Topics are looked up first, so a command that one day takes a topic's word cannot take its answer.
+
+The mechanism is a list (`src/help/topics.ts`), so `help` stays **one registry entry** however many
+topics there come to be, and `exagent help --help` names them without a second list to maintain.
+Only `workflow` ships: the exit-code table and the `--json` contract live inside it, where a reader
+meets them in the order they need them, and splitting them out before anybody has asked would be
+three screens where one is being read. The name itself is one string, `ON_RAMP_TOPIC` in
+`src/help/onRamp.ts`, which is a module with no imports so that both the registry and the topic can
+read it.
+
+Five spellings that are not the on-ramp are answered with the one that is, through the
+absent-capability table: `help:workflow` (the colon convention applied to a positional topic — the
+first thing an agent that has learned this CLI's naming types), the bare `workflow`, and
+`help:how-to`, `how-to` and `--how-to` from the day the topic had the other name. Edit distance
+reaches none of them, so the table is the only thing that can.
+
+The acceptance test for this screen is not a unit test. It is a **naive-agent walk**: start a
+scratch project and drive the whole loop using only what `exagent -h` and this topic say. Every
+place the walk had to guess is a defect in this text.
 
 ## Colors are for humans
 
@@ -164,5 +208,8 @@ The report was already one fact per line, so this is a narrow pass rather than a
   the help text is documentation of it and may be reworded.
 - **It does not add `--json` to `help`.** The on-ramp is prose meant to be read; an object wrapping
   it would be the same prose with quotes around it.
+- **It ships one topic.** The mechanism takes more (`exit-codes`, `json`), and adding one is an
+  entry in `helpTopics`. Splitting the on-ramp before anybody has asked would be three screens where
+  one is being read.
 - **It does not touch the group listing's shape** beyond the palette and a pointer at the on-ramp. A
   group listing answers "which action", which is a different question from the template's.

@@ -1,30 +1,34 @@
 // @ref llp/0024-cli-ui.rfc.md §The on-ramp
-// `exagent help`, `exagent help how-to`, and `exagent help <command>`.
+// `exagent help`, `exagent help <topic>`, and `exagent help <command>`.
 //
 // `help` is the word somebody types when they have been handed a CLI and nothing else, so it is a
-// command rather than only a flag, and it answers three different questions under one name:
+// command rather than a flag, and it answers three questions under one name:
 //
 // - `help` — the same screen as `-h`, because that is what the word promises.
-// - `help how-to` — the on-ramp: the loop, the exit codes, the `--json` contract, in one screen.
-// - `help <command>` — that command's own help, so a caller who knows the name needs no flag.
+// - `help workflow` — the on-ramp: what to run in order, the exit codes, the `--json` contract.
+// - `help <command>` — that command's own help, which is `git help <command>` muscle memory.
 //
-// The third is a delegation, not a copy: it resolves the name through the same `resolveCommand` the
-// launcher uses and runs that command with `--help`, so there is no second place for a help block
-// to come from and no way for this command to answer with a stale one.
+// A **topic** is a positional argument, not a flag (`src/help/topics.ts`). Topics are looked up
+// first, so a topic name can never be shadowed by a command that later takes the same word.
+//
+// The third case is a delegation, not a copy: it resolves the name through the same
+// `resolveCommand` the launcher uses and runs that command with `--help`, so there is no second
+// place for a help block to come from and no way for this command to answer with a stale one.
 
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 import { printCommandHelp } from './format';
+import { helpTopics } from './topics';
 import type { CommandHelp } from './types';
 
 export const helpHelp: CommandHelp = {
   command: 'help',
-  usage: 'npx exagent help <how-to | command>',
+  usage: 'npx exagent help <topic | command>',
   options: [`-h, --help   Usage info`],
   examples: [
     {
-      run: 'npx exagent help how-to',
-      gets: 'the loop, the exit codes and the --json contract, in one screen',
+      run: `npx exagent help ${helpTopics[0]!.name}`,
+      gets: 'what to run in order, the exit codes and the --json contract, in one screen',
     },
     {
       run: 'npx exagent help status',
@@ -33,6 +37,13 @@ export const helpHelp: CommandHelp = {
     { run: 'npx exagent help', gets: 'every command, grouped by the job it does' },
   ],
   next: ['status', 'dev'],
+  // Built from the topic list rather than written out, so a topic added there is documented here
+  // without anybody having to remember to.
+  notes: [
+    'Topics:',
+    ...helpTopics.map((topic) => `  ${topic.name.padEnd(12)}${topic.summary}`),
+    'Anything else is read as a command name, and answered by that command’s own --help.',
+  ],
 };
 
 export const exagentHelp: Command = async (argv) => {
@@ -40,10 +51,6 @@ export const exagentHelp: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
-      // The on-ramp answers to the flag as well as to the word, here as on the launcher: a caller
-      // that has been told this CLI has a how-to should not have to learn which of the two
-      // spellings it is (llp/0024 §The on-ramp).
-      '--how-to': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -61,23 +68,26 @@ export const exagentHelp: Command = async (argv) => {
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
 
   return (async () => {
-    const topic = args['--how-to'] ? 'how-to' : (args._.map(String)[0] ?? null);
+    const asked = args._.map(String)[0] ?? null;
 
     // `Log.exit` never returns, but it is reached through a `require`, which the type checker
     // cannot use for control-flow narrowing — so each branch says it is done.
-    if (topic == null) {
+    if (asked == null) {
       Log.exit(registry.formatTopLevelHelp(), EXIT_OK);
       return;
     }
 
-    if (topic === 'how-to') {
-      const { formatHowTo } = require('./howTo') as typeof import('./howTo');
-      Log.exit(formatHowTo(), EXIT_OK);
+    // Topics before commands: a topic is what this command is *for*, and a command that one day
+    // takes the same word must not take the topic's answer with it.
+    const { findHelpTopic } = require('./topics') as typeof import('./topics');
+    const topic = findHelpTopic(asked);
+    if (topic) {
+      Log.exit(topic.render(), EXIT_OK);
       return;
     }
 
     // Everything else is a command name, answered by that command rather than about it.
-    const resolution = registry.resolveCommand(topic, ['--help']);
+    const resolution = registry.resolveCommand(asked, ['--help']);
     switch (resolution.kind) {
       case 'command': {
         const exec = await resolution.load();
@@ -117,8 +127,8 @@ export const exagentHelp: Command = async (argv) => {
       }
       default: {
         const { CommandError } = require('../utils/errors') as typeof import('../utils/errors');
-        const error = new CommandError('UNKNOWN_COMMAND', registry.unknownCommandMessage(topic));
-        error.suggestedCommand = registry.unknownCommandSuggestion(topic);
+        const error = new CommandError('UNKNOWN_COMMAND', registry.unknownCommandMessage(asked));
+        error.suggestedCommand = registry.unknownCommandSuggestion(asked);
         throw error;
       }
     }

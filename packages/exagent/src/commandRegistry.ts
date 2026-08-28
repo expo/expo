@@ -18,6 +18,7 @@
 // it fails saying so. There is no open-ended fallback, so a typo is answered here instead of
 // becoming an `expo` invocation that could not have meant anything.
 
+import { ON_RAMP_FOOTER, ON_RAMP_POINTER, ON_RAMP_TOPIC } from './help/onRamp';
 import type { CommandHelp } from './help/types';
 import type { Command } from './types';
 import { color } from './utils/color';
@@ -534,40 +535,48 @@ export interface WorkflowRung {
   gets: string;
 }
 
-/** One stage of the workflow map, e.g. `iterate`, and the commands that do it. */
-export interface WorkflowStage {
-  /** The verb, in lower case, e.g. `orient`. */
-  stage: string;
+/** One step of the workflow, and the commands that do it. */
+export interface WorkflowStep {
+  /**
+   * What the step **is**, as a plain phrase: `Check the project`, `Edit and reload`.
+   *
+   * @ref llp/0024-cli-ui.rfc.md §The workflow map
+   * Not a label. The first version of this map read `orient · run · iterate · gate · ship · once`,
+   * which is a vocabulary a reader has to be taught before the map means anything [confirmed —
+   * Kudo, 2026-08-28: "i'm not clear specifically what they mean"]. The rule the wording is held
+   * to: **if a title needs a legend, it is the wrong title.**
+   */
+  title: string;
   rungs: WorkflowRung[];
 }
 
 /**
- * The loop this CLI exists to drive, as the top-level help states it.
+ * What to run, in order, as the top-level help and the `workflow` topic both state it.
  *
  * @ref llp/0024-cli-ui.rfc.md §The workflow map
  * The listing below says which commands exist. It cannot say which one to run first, and that is
  * the question an agent handed this CLI actually has [confirmed — Kudo, 2026-08-28: "should find
- * help a way let agent to know the typical workflow"]. So the map comes before the listing and is
- * six stages long, because six is how many decisions there are between an unopened project and a
- * shipped one.
+ * help a way let agent to know the typical workflow"]. So this comes before the listing, and it is
+ * five numbered steps because five is how many there are between an unopened project and a
+ * released one.
  *
  * Every rung resolves against the registry — a unit test checks it — so the map cannot come to name
  * a command that has been renamed out from under it.
  */
-export const workflow: WorkflowStage[] = [
+export const workflow: WorkflowStep[] = [
   {
-    stage: 'orient',
+    title: 'Check the project',
     rungs: [{ run: 'status', gets: 'what this project is, and what to run next' }],
   },
   {
-    stage: 'run',
+    title: 'Start the app',
     rungs: [
       { run: 'dev --detach', gets: 'start the dev server, keep this terminal' },
       { run: 'navigate /', gets: 'open a route in the app on a device' },
     ],
   },
   {
-    stage: 'iterate',
+    title: 'Edit and reload',
     rungs: [
       { run: 'runtime:reload', gets: 'after your edit, run the code on disk' },
       { run: 'runtime:errors', gets: 'what the app threw, over a time window' },
@@ -578,17 +587,35 @@ export const workflow: WorkflowStage[] = [
       { run: 'runtime:tap <testID>', gets: 'tap it; --verify says what changed' },
     ],
   },
-  { stage: 'gate', rungs: [{ run: 'smoke', gets: 'bundle, type-check and boot, in one go' }] },
-  { stage: 'ship', rungs: [{ run: 'deploy', gets: 'publish the web app to EAS Hosting' }] },
   {
-    stage: 'once',
+    title: "Verify before you're done",
     rungs: [
-      { run: 'new <directory>', gets: 'create a project' },
-      { run: 'install <package>', gets: 'add it at the version this SDK wants' },
-      { run: 'agents:setup', gets: 'write AGENTS.md, link the agent skills' },
+      { run: 'smoke', gets: 'bundle, boot and error window, one exit code' },
+      { run: 'typecheck', gets: 'the type errors neither of those can see' },
+      { run: 'doctor', gets: 'what expo-doctor finds wrong with the setup' },
     ],
   },
+  {
+    title: 'Release',
+    rungs: [{ run: 'deploy', gets: 'publish the web app to EAS Hosting' }],
+  },
 ];
+
+/**
+ * The commands run once per project rather than once per change.
+ *
+ * Kept out of {@link workflow} rather than added as a sixth step, because it is not one: a reader
+ * following the numbers is following a sequence, and "create a project" does not come after
+ * "release". It prints under the numbered steps, unnumbered.
+ */
+export const oneTimeSetup: WorkflowStep = {
+  title: 'One-time setup',
+  rungs: [
+    { run: 'new <directory>', gets: 'create a project' },
+    { run: 'install <package>', gets: 'add it at the version this SDK wants' },
+    { run: 'agents:setup', gets: 'write AGENTS.md, link the agent skills' },
+  ],
+};
 
 /** One section of the top-level listing: a job an agent has, and the commands that do it. */
 export interface HelpSection {
@@ -711,19 +738,40 @@ function wrapText(text: string, width: number): string[] {
   return lines.length ? lines : [''];
 }
 
-/** The workflow map: one line per rung, the stage named once on its first. */
+/**
+ * The rung column, sized to the longest rung anywhere in the workflow.
+ *
+ * One width across the numbered steps and the setup block, so the "what it gets you" column starts
+ * in one place and the whole map reads as one table.
+ */
+function rungWidth(): number {
+  const runs = [...workflow, oneTimeSetup].flatMap(({ rungs }) => rungs.map(({ run }) => run.length));
+  return Math.max(...runs) + 2;
+}
+
+/**
+ * One step: its title on a line of its own, its commands indented under it.
+ *
+ * The title goes above the commands rather than into a third column because the titles are
+ * sentences now rather than one-word labels, and three columns of prose is what does not fit on a
+ * terminal (llp/0024 §The workflow map).
+ */
+function workflowStepLines(step: WorkflowStep, number: number | null): string {
+  // The unnumbered block's title sits in the same column as the numbered ones, so the titles
+  // read as one list and the numbers as an aside on it.
+  const head = `    ${number == null ? '   ' : `${number}  `}${step.title}`;
+  return [
+    color.heading(head),
+    ...step.rungs.map(
+      ({ run, gets }) =>
+        `         ${color.command(run.padEnd(rungWidth()))}${color.muted(gets)}`
+    ),
+  ].join('\n');
+}
+
+/** The numbered steps, in order. */
 function workflowLines(): string {
-  // The rung column is sized to the longest rung, so the "what it gets you" column starts in one
-  // place whatever the map comes to hold.
-  const width = Math.max(...workflow.flatMap(({ rungs }) => rungs.map(({ run }) => run.length))) + 2;
-  return workflow
-    .flatMap(({ stage, rungs }) =>
-      rungs.map(
-        ({ run, gets }, index) =>
-          `    ${(index === 0 ? stage : '').padEnd(9)}${color.command(run.padEnd(width))}${color.muted(gets)}`
-      )
-    )
-    .join('\n');
+  return workflow.map((step, index) => workflowStepLines(step, index + 1)).join('\n');
 }
 
 /** One comma-separated list of commands, wrapped onto as many indented lines as it needs. */
@@ -779,12 +827,13 @@ export function formatTopLevelHelp(): string {
   ${color.heading('Usage')}
     ${color.muted('$')} npx exagent <command> [options]
 
-  ${color.heading('The loop')}
+  ${color.heading('What to run, in order')}
 ${workflowLines()}
 
-  ${color.heading('Learn the loop')}
-    ${color.muted('$')} npx exagent help how-to
-      ${color.muted('the loop, the exit codes and the --json contract, in one screen')}
+${workflowStepLines(oneTimeSetup, null)}
+
+  ${ON_RAMP_FOOTER}
+    ${color.muted('what each step above is for, the exit codes, and the --json contract')}
 
   ${color.heading('Commands')}
 ${sections}
@@ -834,7 +883,7 @@ ${actions}${experimental}${bare}
   For the options of one action, run it with the ${color.heading('--help')} flag
     ${color.muted('$')} npx exagent ${example} --help
 
-  Learn the loop: npx exagent help how-to
+  ${ON_RAMP_FOOTER}
 `;
 }
 
@@ -1001,18 +1050,31 @@ const absentCapabilities: {
 absentCapabilities.log = absentCapabilities.logs!;
 
 // @ref llp/0024-cli-ui.rfc.md §The on-ramp
-// The colon form of the on-ramp, which is the first thing an agent that has learned this CLI's
-// naming convention types [found by the wave-34 naive-agent walk]. `help` is a top-level command
-// with an argument rather than a group, so `help:how-to` is in none of the three maps and was
-// answered with the generic listing — which is the one answer that does not contain the line the
-// caller was one character away from.
-absentCapabilities['help:how-to'] = {
-  absent: `the on-ramp is a command with an argument, not a colon action`,
-  instead: `Run "npx exagent help how-to". "help" is a top-level command rather than a group, so it takes its topic as an argument — "npx exagent help <command>" reads one command's help the same way.`,
-  suggestedCommand: 'npx exagent help how-to',
+// The spellings of the on-ramp that are not the on-ramp, and there are three kinds.
+//
+// **The colon form** is the first thing an agent that has learned this CLI's naming convention
+// types [found by the wave-34 naive-agent walk]: `help` is a top-level command with a positional
+// topic rather than a group, so `help:workflow` is in none of the three maps. **The bare word** is
+// a caller who read the topic's name and tried it as a verb. **The old name** is `how-to`, which
+// this topic was called for one unpublished day; anybody who read it then is one hop from the line
+// that works, which is the whole job of this table.
+//
+// Edit distance cannot reach any of them — `workflow` is nine edits from every name in the
+// registry — so the table is the only thing that can answer.
+const onRampRecovery = {
+  absent: `the on-ramp is a topic you ask "help" for by name`,
+  instead: `Run "${ON_RAMP_POINTER}". "help" takes a positional topic — not a colon action, and not a flag — and anything that is not a topic is read as a command name, so "npx exagent help <command>" prints that command's own help.`,
+  suggestedCommand: ON_RAMP_POINTER,
 };
-// The bare word, for a caller that read "the how-to" somewhere and typed it as a verb.
-absentCapabilities['how-to'] = absentCapabilities['help:how-to'];
+for (const spelling of [
+  `help:${ON_RAMP_TOPIC}`,
+  ON_RAMP_TOPIC,
+  'help:how-to',
+  'how-to',
+  '--how-to',
+]) {
+  absentCapabilities[spelling] = onRampRecovery;
+}
 
 /** The error for a name in none of the three maps. */
 export function unknownCommandMessage(command: string): string {

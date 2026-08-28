@@ -6,23 +6,28 @@ Design documents: see `llp/0001-agentic-cli-on-expo-cli.rfc.md` and its child LL
 
 ## Start here
 
-The loop this CLI drives, and the command for each step:
+What to run, in order:
 
 | | | |
 | --- | --- | --- |
-| orient | `npx exagent status` | what this project is, and what to run next |
-| run | `npx exagent dev --detach` | the dev server starts, the terminal comes back |
+| 1. Check the project | `npx exagent status` | what this project is, and what to run next |
+| 2. Start the app | `npx exagent dev --detach` | the dev server starts, the terminal comes back |
 | | `npx exagent navigate /` | the app opens a route, on a device |
-| iterate | `npx exagent runtime:reload` | after your edit, the app runs the code on disk |
+| 3. Edit and reload | `npx exagent runtime:reload` | after your edit, the app runs the code on disk |
 | | `npx exagent runtime:errors` | what it threw, over a time window |
-| gate | `npx exagent smoke` | bundle, boot and error window, one exit code |
-| ship | `npx exagent deploy` | the web app to EAS Hosting |
+| | `npx exagent runtime:tree` | what is on screen, and its testIDs |
+| 4. Verify before you're done | `npx exagent smoke` | bundle, boot and error window, one exit code |
+| | `npx exagent typecheck` | the type errors neither of those can see |
+| 5. Release | `npx exagent deploy` | the web app to EAS Hosting |
+| One-time setup | `npx exagent new my-app` | create a project |
+| | `npx exagent install expo-sqlite` | add a package at the version this SDK wants |
+| | `npx exagent agents:setup` | write AGENTS.md, link the agent skills |
 
-**`npx exagent help how-to`** is that loop in one screen, written for an agent that has never run
-this CLI, with the exit-code bands, the `--json` contract and the `Try:` convention beside it.
+**`npx exagent help workflow`** is those steps in one screen, written for an agent that has never
+run this CLI, with the exit-code bands, the `--json` contract and the `Try:` convention beside them.
 `npx exagent -h` is the whole command listing, and every command's `--help` has the same shape: a
-one-line purpose, its options, two to four worked examples, what to run next, and the top-level
-keys of its `--json` object.
+one-line purpose, its options, two to four worked examples, what to run next, and the top-level keys
+of its `--json` object.
 
 ## Commands
 

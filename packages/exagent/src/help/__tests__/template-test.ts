@@ -10,6 +10,7 @@
 
 import { commandGroups, resolveCommand, topLevelCommands } from '../../commandRegistry';
 import { renderCommandHelp, MAX_HELP_LINES, MAX_NOTE_LINES } from '../format';
+import { ON_RAMP_POINTER } from '../onRamp';
 import type { CommandHelp } from '../types';
 
 /** Every name a caller can run, as the registry spells it. */
@@ -88,11 +89,11 @@ describe('the template', () => {
     expect(rendered).toContain('Options');
     expect(rendered).toContain('Examples');
     expect(rendered).toContain('Typically next');
-    expect(rendered).toContain('npx exagent help how-to');
+    expect(rendered).toContain(ON_RAMP_POINTER);
   });
 
-  // One screen. The long rationale that used to live in these blocks is in the how-to and in the
-  // LLPs, and a `--help` that scrolls is one an agent reads the tail of.
+  // One screen. The long rationale that used to live in these blocks is in the `workflow` topic
+  // and in the LLPs, and a `--help` that scrolls is one an agent reads the tail of.
   it.each(runnableNames().map((name) => [name]))('%s fits on one screen', async (name) => {
     const lines = renderCommandHelp(name, await helpOf(name)).split('\n');
 

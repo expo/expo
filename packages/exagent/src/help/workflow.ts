@@ -1,42 +1,60 @@
 // @ref llp/0024-cli-ui.rfc.md §The on-ramp
-// The one screen that teaches this CLI to an agent that has never seen it.
+// `npx exagent help workflow` — the one screen that teaches this CLI to an agent that has never
+// seen it.
 //
 // The listing in `exagent -h` says which commands exist. It cannot say the four things an agent has
 // to know before the first command is worth running: what order they go in, what the exit code
 // means, what `--json` guarantees, and what to do with a failure. Those are the protocol, they are
 // the same for every command, and repeating them in twenty help blocks would be twenty places to
-// get them wrong. So they are here, once, and every help block ends with the line that points at
-// this one.
+// get them wrong. So they are here, once, and every help block ends with the line that points here.
+//
+// The steps themselves are **not** written here: they are `workflow` and `oneTimeSetup` in the
+// registry, which is what `exagent -h` prints too. Two screens that both claim to say what to run
+// first are two screens that will one day disagree.
 //
 // The acceptance test for this file is a walk: an agent that has read `exagent -h` and this text,
 // and nothing else, gets a project from nothing to a checked, running app. Every place such an
 // agent had to guess is a defect in this text, not in the agent.
 
+import { oneTimeSetup, workflow, type WorkflowStep } from '../commandRegistry';
 import { color } from '../utils/color';
+import { ON_RAMP_POINTER } from './onRamp';
 
-/** The command that prints this. Named here so the text and the pointer cannot disagree. */
-export const HOW_TO_COMMAND = 'npx exagent help how-to';
+/** Width of the command column, sized to the longest command anywhere in the steps. */
+function commandWidth(): number {
+  const runs = [...workflow, oneTimeSetup].flatMap(({ rungs }) =>
+    rungs.map(({ run }) => `npx exagent ${run}`.length)
+  );
+  return Math.max(...runs) + 2;
+}
+
+/** One step: the title, then its commands in full, one per line. */
+function stepLines(step: WorkflowStep, number: number | null): string {
+  // The unnumbered block's title sits in the same column as the numbered ones, so the titles
+  // read as one list and the numbers as an aside on it.
+  const head = `    ${number == null ? '   ' : `${number}  `}${step.title}`;
+  return [
+    color.heading(head),
+    ...step.rungs.map(
+      ({ run, gets }) =>
+        `         ${color.command(`npx exagent ${run}`.padEnd(commandWidth()))}${color.muted(gets)}`
+    ),
+  ].join('\n');
+}
 
 /** The on-ramp, in one screen. */
-export function formatHowTo(): string {
+export function formatWorkflowTopic(): string {
   return `
-  ${color.command(HOW_TO_COMMAND)} — the loop, for an agent that has not run this CLI before
+  ${color.command(ON_RAMP_POINTER)} — what to run, and what the answers mean
 
   ${color.heading('What this is')}
     One CLI over the Expo toolchain. It works out what has to run, runs it, and reports what
     happened in a shape you can branch on: an exit code, plain text, and --json.
 
-  ${color.heading('The loop')}
-    1  orient   ${color.command('npx exagent status')}           what this project is, and what to run next
-    2  run      ${color.command('npx exagent dev --detach')}     the dev server starts, this terminal comes back
-                ${color.command('npx exagent navigate /')}       the app opens a route, on a device
-    3  iterate  edit a file, then
-                ${color.command('npx exagent runtime:reload')}   the app runs the code that is on disk now
-                ${color.command('npx exagent runtime:errors')}   what it threw, over a time window
-                ${color.command('npx exagent runtime:tree')}     what is on screen, and the testIDs to tap
-    4  gate     ${color.command('npx exagent smoke')}            bundle, boot and error window, one exit code
-                ${color.command('npx exagent typecheck')}        the type errors neither of those can see
-    5  ship     ${color.command('npx exagent deploy')}           the web app to EAS Hosting
+  ${color.heading('What to run, in order')}
+${workflow.map((step, index) => stepLines(step, index + 1)).join('\n')}
+
+${stepLines(oneTimeSetup, null)}
 
   ${color.heading('Which commands change something')}
     read only   status · typecheck · doctor · runtime:errors · runtime:tree · dev:logs

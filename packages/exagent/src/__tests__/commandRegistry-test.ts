@@ -14,9 +14,11 @@ import {
   topLevelCommands,
   unknownCommandMessage,
   unknownCommandSuggestion,
+  oneTimeSetup,
   withAction,
   workflow,
 } from '../commandRegistry';
+import { ON_RAMP_POINTER } from '../help/onRamp';
 import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
 
@@ -599,13 +601,15 @@ describe('the build verb, which this CLI no longer groups anything under', () =>
   });
 
   // @ref llp/0024-cli-ui.rfc.md §The on-ramp
-  // Not a typo: `help:how-to` is the colon convention applied to a command that takes an argument,
-  // which is a correct guess about the wrong shape. The edit distance to any real name is large, so
-  // only the absent-capability table can answer it.
-  it('sends the colon spelling of the on-ramp to the one that works', () => {
-    for (const typed of ['help:how-to', 'how-to']) {
-      expect(unknownCommandMessage(typed)).toContain('npx exagent help how-to');
-      expect(unknownCommandSuggestion(typed)).toBe('npx exagent help how-to');
+  // Three wrong spellings of one right line, and none of them is a typo. `help:workflow` is the
+  // colon convention applied to a command that takes a positional topic; `workflow` is the topic
+  // name tried as a verb; `how-to` and `--how-to` are what this topic was called for one
+  // unpublished day. Edit distance reaches none of them, so the absent-capability table is the only
+  // thing that can answer.
+  it('sends every near-miss spelling of the on-ramp to the one that works', () => {
+    for (const typed of ['help:workflow', 'workflow', 'help:how-to', 'how-to', '--how-to']) {
+      expect(unknownCommandMessage(typed)).toContain(ON_RAMP_POINTER);
+      expect(unknownCommandSuggestion(typed)).toBe(ON_RAMP_POINTER);
     }
   });
 
@@ -675,12 +679,41 @@ describe(formatTopLevelHelp, () => {
   it('puts the workflow map above the listing, with the on-ramp under it', () => {
     const help = formatTopLevelHelp();
 
-    expect(help).toContain('The loop');
-    for (const { stage } of workflow) {
-      expect(help).toContain(stage);
+    expect(help).toContain('What to run, in order');
+    for (const { title } of [...workflow, oneTimeSetup]) {
+      expect(help).toContain(title);
     }
-    expect(help).toContain('npx exagent help how-to');
-    expect(help.indexOf('The loop')).toBeLessThan(help.indexOf('Commands'));
+    expect(help).toContain(ON_RAMP_POINTER);
+    expect(help.indexOf('What to run, in order')).toBeLessThan(help.indexOf('Commands'));
+  });
+
+  // @ref llp/0024-cli-ui.rfc.md §The workflow map
+  // The rule the titles are held to: **if a title needs a legend, it is the wrong title.** That is
+  // a judgment rather than a property, so the titles are pinned here — changing one is then a
+  // deliberate act with this rule in front of the person doing it, which is the most a test can
+  // offer. The first version read `orient · run · iterate · gate · ship · once`, which is a
+  // vocabulary rather than an instruction [confirmed — Kudo, 2026-08-28: "i'm not clear
+  // specifically what they mean"].
+  it('titles the steps with plain phrases rather than labels', () => {
+    expect([...workflow, oneTimeSetup].map(({ title }) => title)).toEqual([
+      'Check the project',
+      'Start the app',
+      'Edit and reload',
+      "Verify before you're done",
+      'Release',
+      'One-time setup',
+    ]);
+  });
+
+  // The property half of the same rule, which does not need updating when a title is reworded: a
+  // title is a phrase in sentence case, and never one of the six words that failed.
+  it('never goes back to the one-word labels', () => {
+    const retired = ['orient', 'run', 'iterate', 'gate', 'ship', 'once'];
+    for (const { title } of [...workflow, oneTimeSetup]) {
+      expect(retired).not.toContain(title.toLowerCase());
+      expect(title).toMatch(/^[A-Z][a-z]/);
+      expect(title).not.toMatch(/[:_]/);
+    }
   });
 
   // One line per command, so the screen is scannable: a summary long enough to wrap turns the
@@ -709,7 +742,7 @@ describe(formatTopLevelHelp, () => {
 // running a rung and being told the command does not exist.
 describe('workflow', () => {
   it('names commands that all resolve', () => {
-    for (const { rungs } of workflow) {
+    for (const { rungs } of [...workflow, oneTimeSetup]) {
       for (const { run } of rungs) {
         const [command, ...rest] = run.split(' ');
         expect(resolveCommand(command!, rest).kind).toMatch(/^(command|passthrough)$/);

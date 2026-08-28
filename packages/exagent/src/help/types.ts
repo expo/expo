@@ -30,7 +30,7 @@ export interface HelpExample {
  * What a `--json` run puts where, and what is in it.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout and
- * nothing else. The rule is stated once in the how-to and repeated per command here, because the
+ * nothing else. The rule is stated once in the `workflow` topic and repeated per command here, because the
  * part that varies is the keys, and an agent that has to go and find the general rule to learn the
  * specific keys has been sent on a second hop for a fact this block could have given it.
  */
@@ -67,8 +67,8 @@ export interface CommandHelp {
    * its own, a limit worth knowing before running it.
    *
    * Short on purpose. The rationale these blocks used to carry — why the plan picks a build
-   * location, what the Hermes runtime does not have — is in the how-to and in the LLPs, where it
-   * can be read once instead of scrolled past on every `--help`.
+   * location, what the Hermes runtime does not have — is in the `workflow` topic and in the LLPs,
+   * where it can be read once instead of scrolled past on every `--help`.
    */
   notes?: string[];
 }

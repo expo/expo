@@ -15,7 +15,6 @@ import {
   unknownCommandSuggestion,
 } from './commandRegistry';
 import { EXIT_OK } from './exitCodes';
-import { formatHowTo } from './help/howTo';
 import * as Log from './log';
 import { configureColor } from './utils/color';
 import { argvRequestsJson, setJsonRequested } from './utils/jsonMode';
@@ -35,10 +34,6 @@ const args = arg(
     // Types
     '--version': Boolean,
     '--help': Boolean,
-    // @ref llp/0024-cli-ui.rfc.md §The on-ramp — the same screen as `exagent help how-to`, on the
-    // flag an agent reaches for when it has been told this CLI has an on-ramp and nothing more.
-    // A second spelling of one screen costs a line here; a caller that guesses wrong costs a hop.
-    '--how-to': Boolean,
 
     // Aliases
     '-v': '--version',
@@ -91,9 +86,7 @@ const resolution = subcommand == null ? null : resolveCommand(subcommand, comman
 installEventLogger({
   command: args['--version']
     ? 'exagent --version'
-    : args['--how-to']
-      ? 'exagent --how-to'
-      : resolution == null
+    : resolution == null
       ? 'exagent --help'
       : resolution.kind === 'command'
         ? `exagent ${resolution.name}`
@@ -104,12 +97,6 @@ installEventLogger({
 if (args['--version']) {
   console.log(version);
   process.exit(EXIT_OK);
-}
-
-// Before the resolution, and before the top-level help: `exagent --how-to` is the on-ramp whatever
-// else is on the line, and `exagent help --how-to` should not have to be a second thing to learn.
-if (args['--how-to']) {
-  Log.exit(formatHowTo(), EXIT_OK);
 }
 
 if (resolution == null) {
