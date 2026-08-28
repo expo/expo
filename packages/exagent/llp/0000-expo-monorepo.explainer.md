@@ -9,7 +9,7 @@
 
 ## What this is
 
-Root LLP for this corpus (scoped to `packages/exagent` since 2026-08-21). It orients readers and agents and indexes the documents below: one umbrella RFC plus eight feature documents, most with implemented-in-v1 sections.
+The root LLP for this corpus, scoped to `packages/exagent` since 2026-08-21. Read it to get oriented, then use the index below to find the document that governs what you are about to change.
 
 ## The repository
 
@@ -21,7 +21,7 @@ Root LLP for this corpus (scoped to `packages/exagent` since 2026-08-21). It ori
 - `templates/`, `tools/`, `scripts/` support the above.
 - Package manager: pnpm (`pnpm-workspace.yaml`); build orchestration via turbo (`turbo.json`).
 
-`packages/@expo/cli` is the Expo CLI (`npx expo <command>`). Its command registry lives in `packages/@expo/cli/bin/cli.ts`; each command lazy-imports its implementation from `src/<command>/`. The CLI has its own `CLAUDE.md` describing structure and conventions. [observed]
+`packages/@expo/cli` is the Expo CLI (`npx expo <command>`). Its command registry lives in `packages/@expo/cli/bin/cli.ts`, and each command lazy-imports its implementation from `src/<command>/`. The CLI has its own `CLAUDE.md` describing structure and conventions. [observed]
 
 ## LLP conventions here
 
@@ -31,16 +31,38 @@ Root LLP for this corpus (scoped to `packages/exagent` since 2026-08-21). It ori
 
 ## Index
 
-Agentic tool layer (umbrella + feature areas):
+Start here:
 
-- [[0001-agentic-cli-on-expo-cli]] — umbrella RFC: decisions, constraints, naming, index of the feature LLPs.
-- [[0002-testing-and-evals]] — plan: unit/e2e strategy and the 3-tier eval suite; built first.
-- [[0003-knowledge-tools-and-skills]] — RFC: skills from modules, docs lookup, API diff, upgrade; second.
-- [[0004-smart-start-and-project-state]] — RFC: smart `start`, Expo Go check, post-install decisions.
-- [[0005-runtime-loop-tools]] — RFC: runtime eval, red-screen feed, network/deep-link/perf tools.
-- [[0006-agent-native-cli-surface]] — RFC: process boundary, JSONL events, output contract, colon-group command registry.
-- [[0007-deploy-and-headless]] — RFC: cross-platform deploy, headless creation, workerd compat, chat-driven dev, EAS auth.
-- [[0008-guardrails]] — RFC: plan dry runs, untrusted-content marking, tool impact metadata (checkpoints deferred).
-- [[0017-deferred-commands]] — reference: the designs of the five areas the v1 scope narrowing left out.
-- [[0016-v1-scope]] — RFC: what the first release contains, and what waits.
-- [[0009-smart-followups]] — RFC: state-aware next actions attached to every command output.
+- [[0001-agentic-cli-on-expo-cli]] — the umbrella RFC: decisions, constraints, naming, and the index of feature LLPs.
+- [[0016-v1-scope]] — what the first release contains, and what waits.
+
+How the work is tested:
+
+- [[0002-testing-and-evals]] — unit and e2e strategy, plus the 3-tier eval suite. Built first.
+- [[0019-backend-parity-audit]] — the coverage matrix of command × backend × scenario.
+- [[0022-live-tier]] — the fourth tier, `e2e-live/`: the published surface against a real simulator and the real EAS service.
+
+What the CLI does:
+
+- [[0003-knowledge-tools-and-skills]] — skills shipped from modules, docs lookup, API diff, upgrade.
+- [[0004-smart-start-and-project-state]] — smart `dev`, the Expo Go check, post-install decisions.
+- [[0005-runtime-loop-tools]] — runtime eval, the red-screen feed, deep links, the smoke gate.
+- [[0007-deploy-and-headless]] — cross-platform deploy, headless creation, chat-driven development.
+- [[0011-impact-and-freshness]] — what a change costs, and whether it can ship over the air.
+- [[0012-build-explain]] — deterministic triage of a native build log.
+- [[0018-interaction-commands]] — driving the app by testID, from the spike in [[0014-interaction-spike]].
+- [[0023-fingerprint-caching]] — paying for one fingerprint instead of three.
+
+How every command behaves:
+
+- [[0006-agent-native-cli-surface]] — the process boundary, JSONL events, the output contract, the command registry.
+- [[0008-guardrails]] — plan dry runs, untrusted-content marking, tool impact metadata.
+- [[0009-smart-followups]] — state-aware next actions on every command output.
+- [[0010-agent-conventions]] — the exit-code table, command resolution, and the upstream asks.
+- [[0015-backend-selection-and-config]] — which build backend a plan uses, and the developer config that overrides it.
+- [[0020-not-an-expo-app]] — what happens in a directory that holds no Expo app.
+- [[0021-honest-reports]] — what a command may claim, and about what.
+
+What was left out:
+
+- [[0017-deferred-commands]] — the single home for the five deferred areas: what each was, why it left, and what would bring it back.

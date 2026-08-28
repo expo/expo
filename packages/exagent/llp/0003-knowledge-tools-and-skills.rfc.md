@@ -9,36 +9,36 @@
 
 ## Summary
 
-Deterministic tools that answer questions agents otherwise guess at, plus the distribution channel for Expo knowledge: skills shipped with the modules themselves.
+Deterministic tools that answer the questions agents otherwise guess at, plus the distribution channel for Expo knowledge: skills shipped with the modules themselves.
 
 ## Skills shipped from Expo modules
 
-[confirmed — Kudo seed, 2026-08-18] SDK packages carry their own skill (usage, pitfalls, config-plugin notes); installed packages teach the driving agent automatically.
+[confirmed — Kudo seed, 2026-08-18] SDK packages carry their own skill covering usage, pitfalls and config-plugin notes. Installing a package then teaches the driving agent automatically.
 
-**Reference implementation exists** [observed — open PRs against `@expo/cli`, read 2026-08-20]: Kudo has built this as four PRs; direction [confirmed — Kudo, 2026-08-20]: copy most of that code, but move it out of `@expo/cli` into our CLI (`exagent`).
+**Reference implementation exists** [observed — open PRs against `@expo/cli`, read 2026-08-20]. Kudo has built this as four PRs. Direction [confirmed — Kudo, 2026-08-20]: copy most of that code, but move it out of `@expo/cli` into our CLI (`exagent`).
 
-- [expo/expo#48592](https://github.com/expo/expo/pull/48592) — `npx expo skills` command (`sync`/`list`/`show`/`clean`): autolinking-based discovery of `skills/*/SKILL.md` in packages; symlinks into `.claude/skills`, `.agents/skills`, etc.; `.gitignore` maintenance; Windows junction handling. Unit + e2e tests included.
-- [expo/expo#48972](https://github.com/expo/expo/pull/48972) — auto-sync the installed package's skills on `expo install` (`--no-agent-skills` opt-out).
-- [expo/expo#48973](https://github.com/expo/expo/pull/48973) — auto-sync all skills shortly after `expo start` reaches idle (~3 s).
-- [expo/expo#49018](https://github.com/expo/expo/pull/49018) — when a known agent CLI is detected, dump the installed module's `SKILL.md` into the agent's context on `expo install`, avoiding a manual `/reload-skills`.
+- [expo/expo#48592](https://github.com/expo/expo/pull/48592) — the `npx expo skills` command (`sync`/`list`/`show`/`clean`): autolinking-based discovery of `skills/*/SKILL.md` in packages, symlinks into `.claude/skills`, `.agents/skills` and similar, `.gitignore` maintenance, and Windows junction handling. Unit and e2e tests included.
+- [expo/expo#48972](https://github.com/expo/expo/pull/48972) — auto-sync the installed package's skills on `expo install`, with a `--no-agent-skills` opt-out.
+- [expo/expo#48973](https://github.com/expo/expo/pull/48973) — auto-sync all skills shortly after `expo start` reaches idle, at about 3 s.
+- [expo/expo#49018](https://github.com/expo/expo/pull/49018) — when a known agent CLI is detected, dump the installed module's `SKILL.md` into the agent's context on `expo install`, which avoids a manual `/reload-skills`.
 
-This settles the discovery contract [confirmed — by the PR implementation]: a **directory convention, `skills/*/SKILL.md`**, discovered via autolinking — not a `package.json` field. Scope [confirmed — Kudo, 2026-08-20]: **co-located module skills** (e.g. `expo-sqlite/skills/`); distributing the general `expo/skills` repo content is out of scope for `exagent`.
+This settles the discovery contract [confirmed — by the PR implementation]: a **directory convention, `skills/*/SKILL.md`**, discovered via autolinking, not a `package.json` field. Scope [confirmed — Kudo, 2026-08-20]: **co-located module skills** (for example `expo-sqlite/skills/`). Distributing the general `expo/skills` repo content is out of scope for `exagent`.
 
-**Migration** [confirmed — Kudo, 2026-08-20]: everything lands in `exagent`; the four PRs stay unmerged as proof-of-concept and the code is copied over. `exagent` ships its own `install` and `start` commands that wrap `expo install` / `expo start` as subprocesses and run skill sync (and later the smart-start engine, [[0004-smart-start-and-project-state]]) around them. `@expo/cli` gets no hooks.
+**Migration** [confirmed — Kudo, 2026-08-20]: everything lands in `exagent`. The four PRs stay unmerged as proof of concept and the code is copied over. `exagent` ships its own `install` and `start` commands that wrap `expo install` and `expo start` as subprocesses and run skill sync around them, and later the smart-start engine of [[0004-smart-start-and-project-state]]. `@expo/cli` gets no hooks.
 
 ## Knowledge tool candidates
 
 All [inferred]:
 
-- **Version-pinned docs lookup.** Answers from documentation matching the project's installed SDK version. Wrong-version API usage is a top agent failure mode. Concrete mechanism [confirmed — Kudo accepted, 2026-08-20; design inferred]: docs.expo.dev serves `llms.txt` / `llms-full.txt`-style files **per SDK version**; the lookup tool fetches the file matching the project's SDK. This also serves agents that never speak MCP.
-- **API diff.** "What changed in expo-camera between SDK 52 and 54" — from changelogs and type diffs; feeds the upgrade workflow.
+- **Version-pinned docs lookup.** Answers from documentation matching the project's installed SDK version. Wrong-version API usage is a top agent failure mode. Concrete mechanism [confirmed — Kudo accepted, 2026-08-20; design inferred]: docs.expo.dev serves `llms.txt` and `llms-full.txt`-style files **per SDK version**, and the lookup tool fetches the file matching the project's SDK. This also serves agents that never speak MCP.
+- **API diff.** "What changed in expo-camera between SDK 52 and 54", answered from changelogs and type diffs. Feeds the upgrade workflow.
 - **Example transplant.** Fetch the canonical, version-matched integration from `expo/examples` and adapt it into the project.
-- **Dependency explainer.** Why a package is in the tree; which native module versions conflict; what `expo install --fix` intends to change and why.
+- **Dependency explainer.** Why a package is in the tree, which native module versions conflict, and what `expo install --fix` intends to change and why.
 
 ## Workflow candidates built on these
 
-- **Doctor auto-fix** [confirmed — feature list, 2026-08-18]: run `expo-doctor` (as a subprocess), then fix findings instead of printing them.
-- **SDK upgrade workflow** [confirmed — feature list, 2026-08-18]: bump, `expo install --fix`, codemods, prebuild, build, boot-check — reused as a tier-2 eval scenario ([[0002-testing-and-evals]]).
+- **Doctor auto-fix** [confirmed — feature list, 2026-08-18]: run `expo-doctor` as a subprocess, then fix the findings instead of printing them. Deferred out of v1; see [[0017-deferred-commands]].
+- **SDK upgrade workflow** [confirmed — feature list, 2026-08-18]: bump, `expo install --fix`, codemods, prebuild, build, boot-check. Reused as a tier-2 eval scenario ([[0002-testing-and-evals]]).
 - **Module authoring flow** [inferred]: `create-expo-module`, scaffold Swift/Kotlin/TS, build the example app, iterate against it.
 
 ## No published module ships a skill yet, so the consuming half has no reach
@@ -51,7 +51,7 @@ It is written down because the asymmetry is invisible from inside the CLI. Every
 
 ## Testing
 
-Skill discovery and doc/diff lookups are deterministic: unit tests + fixtures. The four reference PRs already carry unit + e2e tests [observed]; they migrate with the code. Doctor auto-fix and upgrade are eval scenarios with programmatic graders.
+Skill discovery and doc/diff lookups are deterministic, so they get unit tests and fixtures. The four reference PRs already carry unit and e2e tests [observed], and those migrate with the code. Doctor auto-fix and upgrade are eval scenarios with programmatic graders.
 
 **And one live suite, `live-project`** [added 2026-08-28, wave 31], which is where the discovery runs over a real dependency graph rather than a fixture. It found **F131**: a skill the sync could not link — because a directory the user created holds the name — was a warning on stderr and nothing in the `--json` report, so the object read `linked: []`, `removed: []`, which is what a sync with nothing to do reports. There is a `skipped` list now, carrying the reason (`occupied` or `duplicate-name`) and, for a name clash, the package that kept the name. The rule behind it is [[0021-honest-reports]]'s: **a report that lists what a command did and omits what it could not do is a report of a run with nothing left over.**
 
@@ -59,5 +59,5 @@ Skill discovery and doc/diff lookups are deterministic: unit tests + fixtures. T
 
 [confirmed — Kudo, 2026-08-20]
 
-1. Auto-sync triggers live in `exagent`'s own `install` and `start` commands (which wrap the `expo` equivalents as subprocesses). The `--no-agent-skills` opt-out survives.
-2. PRs #48592–#49018 will not merge; they are proof-of-concept. The code is copied into `packages/exagent`.
+1. Auto-sync triggers live in `exagent`'s own `install` and `start` commands, which wrap the `expo` equivalents as subprocesses. The `--no-agent-skills` opt-out survives.
+2. PRs #48592–#49018 will not merge. They are proof of concept, and the code is copied into `packages/exagent`.
