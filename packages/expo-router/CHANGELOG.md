@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Remove `beforeRemove`, `__unsafe_action__`, `PreventRemoveContext`, and `usePreventRemoveContext` from `expo-router/react-navigation`. ([#49408](https://github.com/expo/expo/pull/49408) by [@Ubax](https://github.com/Ubax))
 - Preserve the focused route when switching navigator types in a conditional layout. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
 - Generate deterministic navigation states and route keys. Complete states from custom routers or persisted state must include `routeKeySeq`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
@@ -45,6 +46,7 @@
 
 ### 🎉 New features
 
+- Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Add unstable `NavigationAwareActivity` component. ([#49164](https://github.com/expo/expo/pull/49164) by [@Ubax](https://github.com/Ubax))
 - Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
 - Export `NativeStackView` for custom navigator implementations on web. ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
