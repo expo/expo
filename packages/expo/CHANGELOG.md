@@ -26,6 +26,7 @@
 - Fix `import.meta.url` being `null` on web when `transform.inlineRequires` is enabled. ([#49045](https://github.com/expo/expo/pull/49045) by [@expo-bot](https://github.com/expo-bot))
 - Fix platform resolution of the `expo/dom` and `expo/dom/internal` subpath exports ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Remove a duplicated `ExpoModulesCore-Swift.h` import block in `ExpoReactNativeFactory.mm` whose `#else` branch imported the header unconditionally, breaking builds where neither form is on the header search path. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fixed `expo/fetch` registering a null `URLSessionDataTask`, which aborted the app on launch and left the promise pending; the request now rejects instead. ([#49499](https://github.com/expo/expo/pull/49499) by [@spsaucier](https://github.com/spsaucier))
 
 ### 💡 Others
 

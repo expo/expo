@@ -40,6 +40,7 @@
 - [iOS] Measure hosted React Native views where SwiftUI placed them, instead of at their Yoga box. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Measure hosted React Native views where Jetpack Compose placed them, instead of at their Yoga box. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fixed an abort during app launch when `URLSession` returns a task whose Objective-C pointer is null: `URLSessionSessionDelegateProxy` bridged it into an `AnyHashable` key and trapped. ([#49499](https://github.com/expo/expo/pull/49499) by [@spsaucier](https://github.com/spsaucier))
 
 ### 💡 Others
 
