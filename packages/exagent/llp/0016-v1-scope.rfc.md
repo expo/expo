@@ -67,15 +67,9 @@ That third one is what made this change tractable at all. The narrowing touched 
 
 ## Where a deferred command's callers were sent
 
-A suggestion is a command the reader runs ([[0009-smart-followups]]), so every one of them had to become a command that exists. `dev:wait` had the most, and its three jobs separate cleanly:
-
-| what it was reached for         | the v1 answer                            |
-| ------------------------------- | ---------------------------------------- |
-| the gate before reading the app | `exagent smoke`                          |
-| app health over a window        | `exagent runtime:errors --fail-on-error` |
-| readiness at start              | `exagent dev --detach --wait-ready`      |
-
-`status`'s `next` line is the one worth naming: it was `exagent dev:wait --require-app` and is now `exagent smoke`, which is a *larger* command than the one it replaces. That is the point of the deferral rather than a cost of it — the reason `dev:wait` went is that the smaller gate invited an agent to believe it had a verdict.
+The rule the narrowing had to satisfy: **a suggestion is a command the reader runs**
+([[0009-smart-followups]]), so every follow-up naming a deferred command had to become one that
+exists. The per-command redirects are with the designs, see [[0017-deferred-commands]].
 
 ## The `inspect` group, and why the names moved
 

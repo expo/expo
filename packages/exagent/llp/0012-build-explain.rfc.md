@@ -191,9 +191,7 @@ One edit was applied to every captured file, and only one: the home directory `/
 
 ## What `build:wait` says about this command, and what it does not
 
-`build:wait`'s errored ladder gains a rung naming `npx exagent build:explain --file <path>`, and its `why` says the step in between out loud: _"Once the log above is saved to a file, this locates the failing line in it and names the fix. Nothing here can download it for you yet."_
-
-That wording is the decision. The obvious rung would have been `npx exagent build:explain <build-id>` — the wait has the id, and handing it straight over is the loop an agent wants. It is also the one form that does not work, so the rung would have sent an agent to a command that errors, one hop after a command that worked. [[0009-smart-followups]]'s contract is that a follow-up is the next thing to _run_; a rung that cannot be run is worse than no rung. Submissions do not get it at all: a submission log is not a native build log and the rule table was written against those.
+`build:wait` is deferred; the rung it gains here, and why that rung names a file rather than a build id, are in the `build:wait` section of [[0017-deferred-commands]].
 
 ## Limits, stated in the output rather than only here
 
