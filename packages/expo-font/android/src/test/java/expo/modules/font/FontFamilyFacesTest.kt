@@ -114,5 +114,4 @@ class FontFamilyFacesTest {
 
     assertEquals(0, FontFamilyFaces.defaultFaceIndex(faces))
   }
-
 }
