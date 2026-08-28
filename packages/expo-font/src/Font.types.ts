@@ -21,7 +21,9 @@ export type FontResource = {
   display?: FontDisplay;
   default?: string;
   /**
-   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver).
+   * @deprecated Unused. Font loading completion is detected with the
+   * [CSS Font Loading API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Font_Loading_API),
+   * which needs no test string.
    * @platform web
    */
   testString?: string;
@@ -82,11 +84,6 @@ export type FontFaceDefinition = {
    * @platform web
    */
   display?: FontDisplay;
-  /**
-   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver) for this face.
-   * @platform web
-   */
-  testString?: string;
 };
 
 // @needsAudit

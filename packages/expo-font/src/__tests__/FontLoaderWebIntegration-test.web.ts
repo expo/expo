@@ -2,12 +2,8 @@ import ExpoFontLoader from '../ExpoFontLoader';
 import * as Font from '../Font';
 import * as FontLoader from '../FontLoader';
 
-// Exercises the real, unmocked `ExpoFontLoader.web` pipeline end to end; only `fontfaceobserver` is mocked.
-jest.mock('fontfaceobserver', () =>
-  jest.fn().mockImplementation(() => ({
-    load: jest.fn(() => Promise.resolve()),
-  }))
-);
+// Exercises the real, unmocked `ExpoFontLoader.web` pipeline end to end. jsdom has no
+// `document.fonts`, so `loadAsync` resolves without waiting for a fetch.
 
 const STYLE_ID = 'expo-generated-fonts';
 

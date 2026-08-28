@@ -4,7 +4,7 @@ import type { FontFaceDefinition, FontResource, FontSource } from './Font.types'
 import { resolveFaceStyle, resolveFaceWeight } from './fontFaceValidation';
 
 export function fontSourceFromFace(face: FontFaceDefinition): FontSource {
-  const { path, display, testString } = face;
+  const { path, display } = face;
   const weight = resolveFaceWeight(face);
   const style = resolveFaceStyle(face);
 
@@ -14,7 +14,6 @@ export function fontSourceFromFace(face: FontFaceDefinition): FontSource {
       ...(weight !== undefined ? { weight } : null),
       ...(style !== undefined ? { style } : null),
       ...(display !== undefined ? { display } : null),
-      ...(testString !== undefined ? { testString } : null),
     };
   }
 
@@ -26,6 +25,5 @@ export function fontSourceFromFace(face: FontFaceDefinition): FontSource {
     weight,
     style,
     display: display ?? base.display,
-    testString: testString ?? base.testString,
   };
 }
