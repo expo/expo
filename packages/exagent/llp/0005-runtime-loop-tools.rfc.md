@@ -9,56 +9,56 @@
 
 ## Summary
 
-Tools that let a driving agent observe and manipulate the running app, closing the verify loop that text-only agents cannot close. Ship as self-serve `exagent` CLI commands [confirmed — Kudo, 2026-08-22]; `expo-mcp` is not a dependency. All items [inferred] unless tagged; the named runtime hooks exist today [observed where noted].
+Tools that let a driving agent observe and manipulate the running app, closing the verify loop that text-only agents cannot close. They ship as self-serve `exagent` CLI commands [confirmed — Kudo, 2026-08-22], and `expo-mcp` is not a dependency. All items are [inferred] unless tagged. The named runtime hooks exist today [observed where noted].
 
 ## Candidates
 
-- **Runtime eval.** The CLI already speaks CDP to the app (`packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/`: `VscodeRuntimeEvaluate`, `VscodeRuntimeCallFunctionOn`, `VscodeRuntimeGetProperties` [observed]). Expose as a tool: run JS inside the live app, read state, trigger navigation, assert on values. Turns "I think the fix works" into "I evaluated it in the app". Note: reaching the CDP endpoint from outside the CLI process must respect the process boundary — connect over the dev server's protocol, not via imports.
-- **Structured red-screen feed.** LogBox symbolication exists in the CLI (`log-box/LogBoxSymbolication.ts` [observed]). Deliver every runtime error as a structured event: message, symbolicated stack, source file/line.
+- **Runtime eval.** The CLI already speaks CDP to the app (`packages/@expo/cli/src/start/server/metro/debugging/messageHandlers/`: `VscodeRuntimeEvaluate`, `VscodeRuntimeCallFunctionOn`, `VscodeRuntimeGetProperties` [observed]). Expose it as a tool: run JS inside the live app, read state, trigger navigation, assert on values. It turns "I think the fix works" into "I evaluated it in the app". Note: reaching the CDP endpoint from outside the CLI process must respect the process boundary, which means connecting over the dev server's protocol rather than via imports.
+- **Structured red-screen feed.** LogBox symbolication exists in the CLI (`log-box/LogBoxSymbolication.ts` [observed]). Deliver every runtime error as a structured event, with the message, the symbolicated stack, and the source file and line.
 - **Network inspection.** A CDP `NetworkResponse` handler exists [observed]. Expose the app's network log so failing API calls are debuggable without guessing.
-- **Deep-link navigation.** Combine `expo_router_sitemap` [observed — existing expo-mcp tool] with URI-scheme launching: "open route /profile/42 on the simulator". Enables per-route verification and screenshot sweeps.
-- **Performance probe.** `expo-app-metrics` / `expo-insights` exist as packages [observed]. Startup time, slow frames, re-render counts — "why is this list janky" starts from data.
-- **Cross-platform verification sweep.** Boot iOS + Android + web in parallel, screenshot the same routes, report divergence. Uniquely valuable for a universal framework.
+- **Deep-link navigation.** Combine `expo_router_sitemap` [observed — existing expo-mcp tool] with URI-scheme launching, so "open route /profile/42 on the simulator" works. That enables per-route verification and screenshot sweeps.
+- **Performance probe.** `expo-app-metrics` and `expo-insights` exist as packages [observed]. Startup time, slow frames and re-render counts mean "why is this list janky" starts from data.
+- **Cross-platform verification sweep.** Boot iOS, Android and web in parallel, screenshot the same routes, and report divergence. Uniquely valuable for a universal framework.
 
 ## Composite loops these enable
 
-- **Log triage** [confirmed — feature list, 2026-08-18]: red screen → `collect_app_logs` / red-screen feed → symbolicated source location → agent fixes → verify by screenshot.
-- **Verified UI changes** [confirmed — feature list, 2026-08-18]: edit → reload → `automation_take_screenshot` → compare against the request → iterate.
+- **Log triage** [confirmed — feature list, 2026-08-18]: a red screen, then `collect_app_logs` or the red-screen feed, then a symbolicated source location, then the agent's fix, then verification by screenshot.
+- **Verified UI changes** [confirmed — feature list, 2026-08-18]: edit, reload, `automation_take_screenshot`, compare against the request, iterate.
 
 ## Implemented in v1 as
 
-Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `packages/exagent`** as CLI commands — the expo-mcp implementation round was abandoned unpushed and the code ported over. Ported surface [observed — 2026-08-22]: `exagent runtime eval <expr>` (app exception ⇒ exit 1), `exagent runtime errors [--duration]`, `exagent navigate <route> [--scheme] [--ios|--android]` (renamed 2026-08-22 to the colon forms `runtime:eval`/`runtime:errors`/`runtime:network`; the space forms still resolve — `runtime:network` was deferred out of v1 on 2026-08-26, see below and [[0017-deferred-commands]] §`runtime:network`); 149 new jest tests (431 total). Live-verified twice — as MCP-shaped tools and again as exagent commands against a real SDK 57 app (eval value/exception, error collection with bundle-mapped stacks, deep-link navigation). Original build + live verification notes [observed — 2026-08-22]:
+Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `packages/exagent`** as CLI commands. The expo-mcp implementation round was abandoned unpushed and the code ported over. Ported surface [observed — 2026-08-22]: `exagent runtime eval <expr>` (an app exception exits 1), `exagent runtime errors [--duration]`, and `exagent navigate <route> [--scheme] [--ios|--android]`. They were renamed on 2026-08-22 to the colon forms `runtime:eval`, `runtime:errors` and `runtime:network`, and the space forms still resolve. `runtime:network` was deferred out of v1 on 2026-08-26; see below and [[0017-deferred-commands]]. The port added 149 new jest tests, for 431 total. It was live-verified twice, as MCP-shaped tools and again as exagent commands against a real SDK 57 app, covering the eval value and exception, error collection with bundle-mapped stacks, and deep-link navigation. The original build and live verification notes [observed — 2026-08-22]:
 
 - `runtime_evaluate` — `CdpClient.evaluateAsync` (Runtime.evaluate, returnByValue + awaitPromise + exceptionDetails); app output fenced with untrusted-content markers per [[0008-guardrails]], including marker-forgery neutralization.
 
-  **Correction — CDP cannot settle a React Native promise** [observed — SDK 57 / RN 0.86.2 in Expo Go on iOS, 2026-08-23; friction run 2, F21]. `awaitPromise` is inert here. CDP only awaits a result the runtime tagged `subtype: "promise"`, and React Native replaces the engine's `Promise` with the `@react-native/js-polyfills` implementation, which the inspector sees as an ordinary `Object`: `Runtime.evaluate("Promise.resolve(42)", {returnByValue: false})` answers `{type: "object", className: "Object", objectId: "1"}` with no subtype, and with `returnByValue` it answers `{_A: null, _x: 0, _y: 1, _z: 42}` — the polyfill's internal state. So every `fetch`, AsyncStorage read and store selector came back as an opaque object, and `--no-await-promise` printed the same thing.
+  **Correction — CDP cannot settle a React Native promise** [observed — SDK 57 / RN 0.86.2 in Expo Go on iOS, 2026-08-23; friction run 2, F21]. `awaitPromise` is inert here. CDP only awaits a result the runtime tagged `subtype: "promise"`, and React Native replaces the engine's `Promise` with the `@react-native/js-polyfills` implementation, which the inspector sees as an ordinary `Object`. `Runtime.evaluate("Promise.resolve(42)", {returnByValue: false})` answers `{type: "object", className: "Object", objectId: "1"}` with no subtype, and with `returnByValue` it answers `{_A: null, _x: 0, _y: 1, _z: 42}`, the polyfill's internal state. So every `fetch`, AsyncStorage read and store selector came back as an opaque object, and `--no-await-promise` printed the same thing.
 
-  Settled **in the app** instead (`src/runtime/promiseSettling.ts`): the expression is wrapped so the app tests the result for `typeof v.then === 'function'`, subscribes to it, parks `{state, type, value | reason}` on a global under a per-run nonce, and returns a marker keyed and valued by that nonce; the CLI polls that global over the same debugger connection until it settles or `--timeout` runs out. Properties this holds to: a non-thenable is returned by the wrapper unchanged, so one round trip and the runtime's own `type`; the settled value carries the type the app read off it, because CDP never sees the value on its own; a rejection is its own outcome (`promise.state`), not a `threw`, and exits 1; a promise still pending at the deadline is `RUNTIME_PROMISE_PENDING`, and the app is told to drop what it was holding; `--no-await-promise` parks nothing and reports the pending promise, exit 0.
+  It is settled **in the app** instead (`src/runtime/promiseSettling.ts`). The expression is wrapped so the app tests the result for `typeof v.then === 'function'`, subscribes to it, parks `{state, type, value | reason}` on a global under a per-run nonce, and returns a marker keyed and valued by that nonce. The CLI then polls that global over the same debugger connection until it settles or `--timeout` runs out. Five properties this holds to. A non-thenable is returned by the wrapper unchanged, so it costs one round trip and reports the runtime's own `type`. The settled value carries the type the app read off it, because CDP never sees the value on its own. A rejection is its own outcome (`promise.state`) rather than a `threw`, and it exits 1. A promise still pending at the deadline is `RUNTIME_PROMISE_PENDING`, and the app is told to drop what it was holding. And `--no-await-promise` parks nothing and reports the pending promise at exit 0.
 
-  Two things the live round taught that the design did not: the wrapper puts the expression in an assignment, so a *statement* (`var x = 1`) stops compiling — the answer is re-running it exactly as written, which is the pre-wrapper behaviour; and **Hermes does not raise a `SyntaxError`** for that, it answers `Compiling JS failed: 2:25:invalid expression, sourceURL:`, so matching only `SyntaxError` left the fallback unreachable on the one runtime this command talks to. The captured frames are `src/runtime/__tests__/fixtures/live-promise-frames.json`.
+  Two things the live round taught that the design did not. The wrapper puts the expression in an assignment, so a *statement* like `var x = 1` stops compiling, and the answer is re-running it exactly as written, which is the pre-wrapper behaviour. And **Hermes does not raise a `SyntaxError`** for that. It answers `Compiling JS failed: 2:25:invalid expression, sourceURL:`, so matching only `SyntaxError` left the fallback unreachable on the one runtime this command talks to. The captured frames are `src/runtime/__tests__/fixtures/live-promise-frames.json`.
 - `read_runtime_errors` — `CdpRuntimeErrorCollector` capturing `Runtime.exceptionThrown` + console.error over a window; distinguishes "no errors" from "app unreachable".
 
-  **Symbolication and gating** [observed — 2026-08-23; friction run 2, F25]. Metro applies its source maps to what it *prints*, not to what it sends over CDP, so every frame arrived as an offset into the bundle with roughly 400 characters of transform options attached — about 2 KB per error, no project file anywhere. The dev server can map them: `POST /symbolicate` with `{stack: [{file, lineNumber, column, methodName}]}` answers one frame per frame, in order, with `file` an absolute path on disk. Three details are load-bearing: `lineNumber` is 1-based and `column` is 0-based both ways (CDP is 0-based in both, and rendered output is 1-based in both); `file` must carry the whole bundle URL including the query string, because Metro's lookup is exact string equality and the query selects the bundle's options; and a frame it cannot map comes back unchanged rather than null, with Expo's `customizeFrame` hook nulling its line and column and setting `collapse: true`. Failure of any kind falls back to the frames that were sent, with the query string trimmed — symbolication improves a report, it is not a precondition for one.
+  **Symbolication and gating** [observed — 2026-08-23; friction run 2, F25]. Metro applies its source maps to what it *prints*, not to what it sends over CDP. So every frame arrived as an offset into the bundle with roughly 400 characters of transform options attached: about 2 KB per error, with no project file anywhere. The dev server can map them. `POST /symbolicate` with `{stack: [{file, lineNumber, column, methodName}]}` answers one frame per frame, in order, with `file` an absolute path on disk. Three details are load-bearing. `lineNumber` is 1-based and `column` is 0-based both ways, since CDP is 0-based in both and rendered output is 1-based in both. `file` must carry the whole bundle URL including the query string, because Metro's lookup is exact string equality and the query selects the bundle's options. And a frame it cannot map comes back unchanged rather than null, with Expo's `customizeFrame` hook nulling its line and column and setting `collapse: true`. Failure of any kind falls back to the frames that were sent, with the query string trimmed, because symbolication improves a report rather than being a precondition for one.
 
-  A fourth detail only live use showed: React Native reports a thrown error through the console path as **one string** holding the message *and the error's own frames*, while the `stackTrace` CDP sends alongside describes the console machinery that reported it (`console.js`, `backend.js`, `ExceptionsManager.js`). The frames that name the project are the ones inside the message, so they are lifted out of it and symbolicated. Live proof: `Error: BOOM_PROJECT_FRAME` / `at wave3bBoom (src/app/index.tsx:101:18)`, matching what LogBox showed on the device.
+  A fourth detail only live use showed. React Native reports a thrown error through the console path as **one string** holding the message *and the error's own frames*, while the `stackTrace` CDP sends alongside describes the console machinery that reported it (`console.js`, `backend.js`, `ExceptionsManager.js`). The frames that name the project are the ones inside the message, so they are lifted out of it and symbolicated. Live proof: `Error: BOOM_PROJECT_FRAME` and `at wave3bBoom (src/app/index.tsx:101:18)`, matching what LogBox showed on the device.
 
-  Exit-code gating: the command stays **0** whatever it collects, because an empty window means "nothing happened while I watched" rather than "the app is healthy" — the opposite of what `dev:wait` claims when it exits 0. `--fail-on-error` is the opt-in that exits 20 on a non-empty window, so an agent can gate on it the same way. Only `errors` has it; a failed request is something `network` reports about the app, not a verdict on it.
-- `navigate_to_route` — device-side deep link (`simctl openurl` / `adb am start`), static scheme resolution from app.json with Expo Go `exp://<host>/--/<route>` support and explicit `scheme` override.
+  Exit-code gating: the command stays **0** whatever it collects, because an empty window means "nothing happened while I watched" rather than "the app is healthy", which is the opposite of what `dev:wait` claims when it exits 0. `--fail-on-error` is the opt-in that exits 20 on a non-empty window, so an agent can gate on it the same way. Only `errors` has it, because a failed request is something `network` reports about the app rather than a verdict on it.
+- `navigate_to_route` — a device-side deep link (`simctl openurl` or `adb am start`), with static scheme resolution from app.json, Expo Go `exp://<host>/--/<route>` support, and an explicit `scheme` override.
 
-64 new unit tests (122 total in the package) against MockWebSocket / mocked spawns.
+64 new unit tests, for 122 total in the package, against MockWebSocket and mocked spawns.
 
-**Verified live** [observed — 2026-08-22, SDK 57 app in Expo Go on an iOS 26.5 simulator]: `evaluateAsync` returned real values/state/exceptions from Hermes; the error collector captured an injected uncaught error (delivered via RN's console path, not `Runtime.exceptionThrown` — having both capture sources is required); deep-link navigation landed the app on the `/explore` route (screenshot-confirmed). The live round also found and fixed a blocking bug the unit tests could not see: **Metro's inspector proxy rejects CDP WebSocket handshakes without a same-origin `Origin` header (401)** — all default connection paths now send it (`createInspectorWebSocket`).
+**Verified live** [observed — 2026-08-22, SDK 57 app in Expo Go on an iOS 26.5 simulator]. `evaluateAsync` returned real values, state and exceptions from Hermes. The error collector captured an injected uncaught error, delivered via RN's console path rather than `Runtime.exceptionThrown`, which is why having both capture sources is required. Deep-link navigation landed the app on the `/explore` route, screenshot-confirmed. The live round also found and fixed a blocking bug the unit tests could not see: **Metro's inspector proxy rejects CDP WebSocket handshakes without a same-origin `Origin` header (401)**, so all default connection paths now send it (`createInspectorWebSocket`).
 
 **Network inspection — deferred from v1 (2026-08-26).** `exagent runtime:network` is out of the v1
-surface: the CDP Network domain is unstable in React Native and effectively unavailable on Expo Go,
+surface. The CDP Network domain is unstable in React Native and effectively unavailable on Expo Go,
 so the command's most common outcome was an explanation of why it could not answer. Everything that
-was built and verified — the request/response/failure correlation, the three outcome counts, and the
-two-refusal classification that `Network.enable` needs — is now in [[0017-deferred-commands]]
-§`runtime:network`, with the code on the reference shelf at `src/deferred/runtime-network/`. The rest
+was built and verified is now in [[0017-deferred-commands]]: the request, response and failure
+correlation, the three outcome counts, and the two-refusal classification that `Network.enable`
+needs. The code is on the reference shelf at `src/deferred/runtime-network/`. The rest
 of this LLP ships. The rule that came out of it and outlived it is in [[0010-agent-conventions]] §The
 third: a command that reports on the app does not gate on what it reported.
 
-**Android pass** [observed — 2026-08-22, headless emulator + Expo Go 57 APK]: `navigate --android` works end-to-end (adb reverse + `exp://` deep link, screenshot-confirmed). Hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]) — `Runtime.enable`/`Network.enable` merely ack; no evaluate, no console/network capture. The target selector no longer drops such targets (skip only on transport failure; -32601 targets rank behind answering ones), `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`, and errors/network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
+**Android pass** [observed — 2026-08-22, headless emulator plus the Expo Go 57 APK]: `navigate --android` works end to end, via adb reverse plus an `exp://` deep link, screenshot-confirmed. The hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]). `Runtime.enable` and `Network.enable` merely ack, with no evaluate and no console or network capture. Three consequences: the target selector no longer drops such targets, skipping only on transport failure and ranking -32601 targets behind answering ones; `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`; and errors and network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
 
 > **Correction — the `adb reverse` in that sentence was done by hand** [observed — friction run 6
 > (Android), 2026-08-24]. The 2026-08-22 pass reversed the port at the shell before running
@@ -75,9 +75,9 @@ versus a silently-unsupported Network domain is settled below, in §Android.)
 Added in wave 21, on Kudo's directive: "same for `runtime:*` commands — if there's no connected app, we
 should disable or exit the command call early" [confirmed — Kudo, 2026-08-27].
 
-Every command in this group needs the same two facts before it does any work — a dev server, and
-something connected to it — and each one used to establish them its own way, in its own order, with
-its own words. `src/runtime/preflight.ts` is the one place that asks, and the one refusal they all
+Every command in this group needs the same two facts before it does any work: a dev server, and
+something connected to it. Each one used to establish them its own way, in its own order, with
+its own words. `src/runtime/preflight.ts` is now the one place that asks, and the one refusal they all
 print.
 
 ### What each command needs, which is not the same thing
@@ -88,48 +88,48 @@ print.
 | `runtime:reload` | a **dev server** | it can *start* an app, so "no app is connected" is a rung of its ladder; a missing dev server is a refusal, because a reload makes the app fetch the served bundle and stopping it there replaces a stale screen with no screen |
 | `runtime:stop` | a **device** | it acts on a device, and an app can be running with no dev server behind it at all |
 
-The third row is a decision and it is the one that looks wrong at first: the directive says "if
+The third row is a decision, and it is the one that looks wrong at first. The directive says "if
 there's no connected app… exit early", and `runtime:stop` deliberately does not. Its subject is a
-**state**, not an act — llp/0010 §The seventh and eighth: the stop commands makes an app that was
+**state**, not an act. llp/0010 §The seventh and eighth: the stop commands makes an app that was
 already stopped a success, so that an agent stopping an app twice does not have to special-case the
 second run. Refusing there would fail the very run that convention exists to make boring. So `stop`
-reads the connection like everything else (`need: 'optional'`, one shared discovery) and requires
-only what it acts on; a machine with no device is told so by `resolveDeviceAsync`, in that layer's
-own words, with `xcrun simctl list devices booted` / `adb devices` to look with.
+reads the connection like everything else, with `need: 'optional'` and one shared discovery, and
+requires only what it acts on. A machine with no device is told so by `resolveDeviceAsync`, in that
+layer's own words, with `xcrun simctl list devices booted` or `adb devices` to look with.
 
 ### The refusal, in one shape
 
-Two codes, unchanged from the ones five of the commands already shipped — llp/0010 §Needs-human
+Two codes, unchanged from the ones five of the commands already shipped. llp/0010 §Needs-human
 protocol's rule that reclassification never renames a code applies to a *unification* too:
 
-- **`NO_DEV_SERVER`** — nothing answered `GET /json/list` on the dev server this command was going to
+- **`NO_DEV_SERVER`**: nothing answered `GET /json/list` on the dev server this command was going to
   use. The dev server is probed **first**, so "no dev server on `<url>`" and "no app on a dev server
-  that is running" are never conflated; an agent that could not tell them apart would restart a
+  that is running" are never conflated. An agent that could not tell them apart would restart a
   healthy dev server.
-- **`NO_APP_CONNECTED`** — the dev server is running and its debugger target list is empty, or holds
-  no app on the platform the caller named (F51's two shapes are kept).
+- **`NO_APP_CONNECTED`**: the dev server is running and its debugger target list is empty, or holds
+  no app on the platform the caller named. F51's two shapes are kept.
 
-Each carries What (which list is empty, and on which dev server, by URL), Why (the request that
-failed, or the list that was empty and for how long it stayed empty), and How — one ladder, in one
-order: `npx exagent dev --detach`, then `npx exagent navigate /`, then `npx exagent smoke`, which
-waits for the bundle and the app together. `reachTheAppLadder` is that sentence, as a function,
-because six copies of it had drifted into six different first steps — one of which named a keypress
-in a terminal that a `--detach`ed dev server does not have (F48-5).
+Each carries three parts. What: which list is empty, and on which dev server, by URL. Why: the
+request that failed, or the list that was empty and for how long it stayed empty. And How: one
+ladder, in one order, of `npx exagent dev --detach`, then `npx exagent navigate /`, then
+`npx exagent smoke`, which waits for the bundle and the app together. `reachTheAppLadder` is that
+sentence as a function, because six copies of it had drifted into six different first steps. One of
+them named a keypress in a terminal that a `--detach`ed dev server does not have (F48-5).
 
 **`--cloud` is carried onto every command in the ladder that takes it**, and `dev --detach` becomes
-`dev --detach --tunnel` there. This is the F5x/S5 rule applied to the refusal: a caller who passed
+`dev --detach --tunnel` there. This is the F5x/S5 rule applied to the refusal. A caller who passed
 `--cloud` is on a machine whose device is in a datacenter, so a suggestion without the flag sends
 them to a local simulator they have not got, and a dev server without a tunnel is one the session
-cannot reach (§A cloud simulator requires a tunnel). Only `reload` and `stop` have the flag to pass;
-the reading commands talk to a dev server over HTTP and do not care where the device is.
+cannot reach (§A cloud simulator requires a tunnel). Only `reload` and `stop` have the flag to pass.
+The reading commands talk to a dev server over HTTP and do not care where the device is.
 
 ### The counts go on the wire, not only in the prose
 
 `error.data` is a new key of the `--json` error envelope (llp/0010 §The `--json` error envelope),
 always present and `null` for a failure with nothing to count. The runtime refusals fill it with
-what they observed: `devServerUrl`, `devServerReachable`, `debuggerTargets`,
-`commandSocketClients` (null for every command that never opens `/message`, which is all of them but
-`runtime:reload`) and `platform`. The alternative was a caller regexing `names 1 app` out of an
+what they observed: `devServerUrl`, `devServerReachable`, `debuggerTargets`, `commandSocketClients`
+and `platform`. `commandSocketClients` is null for every command that never opens `/message`, which
+is all of them but `runtime:reload`. The alternative was a caller regexing `names 1 app` out of an
 English sentence nobody promised.
 
 ### Two things the sweep changed, and one it did not
@@ -139,21 +139,21 @@ wave-19 tip by re-running the new e2e suite on it]. `runtime:tree`, `runtime:tap
 asked their entry-bundle gate first, so with nothing connected the exit code was decided by whether
 the *project compiled*: exit **20** for a broken bundle and exit **1** for a clean one, for one
 situation. Nothing can be read off a screen that is not there, whatever the code on disk says, so
-`1` — the code the other three commands already gave — is the answer, and llp/0010's bands decide
-it: nothing was attempted, so there is no outcome to report. It also cost time nobody had a use for,
+`1`, the code the other three commands already gave, is the answer. llp/0010's bands decide it:
+nothing was attempted, so there is no outcome to report. It also cost time nobody had a use for,
 because the gate's budget is twenty seconds and the answer took a millisecond.
 
-**One read of the target list instead of three.** `runtime:eval` resolved the dev server (a probe),
-built the platform index (a probe), then required a connected app (a probe) — and any two of those
-reads could disagree about which app was attached, which is the shape F51 and F53 both had. The
+**One read of the target list instead of three.** `runtime:eval` resolved the dev server with a
+probe, built the platform index with a probe, then required a connected app with a probe. Any two of
+those reads could disagree about which app was attached, which is the shape F51 and F53 both had. The
 preflight reads it once and hands back the populated connection: the URL, how it was found, the
 targets, the platform-scoped subset a command may read, and the device index.
 
 **What did not change: the bands.** Both refusals are exit `1` in every command, as they already
-were, including under a gate-shaped flag — `runtime:errors --fail-on-error` with no app is `1` and
+were, including under a gate-shaped flag. `runtime:errors --fail-on-error` with no app is `1` and
 never `0`, because `1` is "fix the call" and the fix is to start a dev server or open the app. The
-`22` rule of llp/0010 §The sixth (a gate that cannot measure must not pass) is about a gate whose
-window *opened* and observed nothing, which is a different state and still `22`.
+`22` rule of llp/0010 §The sixth, that a gate which cannot measure must not pass, is about a gate
+whose window *opened* and observed nothing. That is a different state, and it is still `22`.
 
 **Live evidence** [observed — 2026-08-27, friction/run7/tapapp, SDK 57 in Expo Go, iPhone 17 Pro
 `C159CF99-…`, port 8631]. The three states, in order:
@@ -174,31 +174,31 @@ code that is on disk, and reports a reload only when one was **observed**.
 
 **Why an action of `runtime`, not a top-level verb** [confirmed — Kudo, 2026-08-23]. It was built
 as `exagent reload` and renamed before it shipped. `runtime` is the group for "read and drive the
-running app", and reloading is driving it — the same subject as `runtime:eval` and
+running app", and reloading is driving it. It is the same subject as `runtime:eval` and
 `runtime:errors`, reached through the same dev-server connection. A top-level verb would have said
 this is a different kind of thing than the commands it belongs with, and llp/0006's naming rule
 reserves top-level verbs for capabilities that are their own subject. It keeps a module and a
-`--help` block of its own, as `dev:wait` does inside `dev`: the group's shared module exists
-because `eval`/`errors`/`network` share options, and these do not.
+`--help` block of its own, as `dev:wait` does inside `dev`, because the group's shared module exists
+for the options `eval`, `errors` and `network` share, and these do not share them.
 
 ### The failure it answers
 
 [observed — friction run 3, F31, 2026-08-23] A component threw while rendering. The file was fixed,
-the served bundle was clean (`curl … | grep -c` → 0), and `dev:wait` exited 0 with
-`bundle.ok: true` — while `runtime:errors --fail-on-error` kept exiting **20** for the error that
-had just been removed, and the simulator showed a blank screen. There was no command for it: the
+the served bundle was clean (`curl … | grep -c` answered 0), and `dev:wait` exited 0 with
+`bundle.ok: true`. Meanwhile `runtime:errors --fail-on-error` kept exiting **20** for the error that
+had just been removed, and the simulator showed a blank screen. There was no command for it. The
 only recovery was `xcrun simctl terminate <udid> host.exp.Exponent` by hand, which is outside the
 CLI and per-platform. `install`'s own follow-up said "reloading the app is enough" and then named
 `runtime:errors`, which reloads nothing.
 
-Reproduced live [observed — 2026-08-23, notesapp on SDK 57 in Expo Go, iOS 26.5 simulator], twice —
-a `ReferenceError` in a route component and a `throw` in the root `_layout` — and the *mechanism*
+Reproduced live [observed — 2026-08-23, notesapp on SDK 57 in Expo Go, iOS 26.5 simulator], twice:
+a `ReferenceError` in a route component, and a `throw` in the root `_layout`. The *mechanism*
 turned out to be worth naming, because it is not the one the run-3 report assumed. On this SDK Fast
-Refresh did recover the screen both times; what did not recover was the **error report**. Running
+Refresh did recover the screen both times. What did not recover was the **error report**. Running
 `runtime:errors --duration 3s` three times in a row against a healthy screen returned
 `Error: F31_LAYOUT_BOOM` three times, so the debugger is replaying what the app reported to every
 new connection rather than the app throwing again. A reload cleared it: `count: 0`, twice, exit 0.
-So the trap is not only "the app runs stale code" — it is that **an error window is a property of
+So the trap is not only "the app runs stale code". It is that **an error window is a property of
 the app's session, and the session outlives the fix**. Either way the answer is the same command,
 and either way `runtime:errors` cannot be believed about a fix until the app has been reloaded.
 That is why the reload now *leads* the follow-ups of a non-empty error window.
@@ -209,43 +209,43 @@ The mechanism is the one the interactive `r` keypress uses, spoken from outside 
 [observed — `packages/@expo/cli/src/start/server/metro/dev-server/createMessageSocket.ts`,
 `createMetroMiddleware.ts`, `BundlerDevServer.broadcastMessage`, 2026-08-23]. The dev server mounts
 a WebSocket on **`/message`**. A frame carrying a `method` and neither an `id` nor a `target` is a
-*broadcast*: it is relayed verbatim to every other connected client, which is how a reload reaches
-the app. Two conditions gate it, and both are satisfied by a local wrapper: the sender must be
-trusted (`isLocalSocket && isMatchingOrigin` — a loopback connection that sends **no** `Origin`
-header is trusted, which is the opposite of the inspector proxy, whose handshake *requires* one),
-and the method must be one of the two a client may broadcast, `reload` and `devMenu`.
+*broadcast*, relayed verbatim to every other connected client, which is how a reload reaches
+the app. Two conditions gate it, and both are satisfied by a local wrapper. The sender must be
+trusted (`isLocalSocket && isMatchingOrigin`, where a loopback connection that sends **no** `Origin`
+header is trusted, the opposite of the inspector proxy whose handshake *requires* one). And the
+method must be one of the two a client may broadcast, `reload` and `devMenu`.
 
-This is preferred over the device path for four reasons: it needs no platform tooling, no
-application id, and no knowledge of which device the app is on; it is the same code path on iOS and
-Android; it does not restart the process, so app state that is not JavaScript survives; and it took
+This is preferred over the device path for four reasons. It needs no platform tooling, no
+application id, and no knowledge of which device the app is on. It is the same code path on iOS and
+Android. It does not restart the process, so app state that is not JavaScript survives. And it took
 **0.28–0.58 s** live against **2.5–2.8 s** for terminate-and-relaunch.
 
 **The detail that decides whether any of it works: `version: 2` on every frame** [observed —
 `dev-server/utils/socketMessages.ts` `parseRawMessage`]. A frame without it, or with another
-number, is dropped with no answer and no error. This was found the expensive way: the first live
+number, is dropped with no answer and no error. This was found the expensive way. The first live
 attempt sent `{"method":"reload"}`, the socket opened, the send succeeded, nothing happened, and a
 global planted in the app was still there afterwards. `{"version":2,"method":"reload"}` cleared it.
 
 ### What proves a reload, without CDP
 
 A broadcast has no reply, so trusting the send would have shipped the same false green this command
-exists to remove. Two things are read instead, and neither needs the Chrome DevTools Protocol —
-which matters because Expo Go for Android has no CDP debugger at all (§Android pass).
+exists to remove. Two things are read instead, and neither needs the Chrome DevTools Protocol. That
+matters because Expo Go for Android has no CDP debugger at all (§Android pass).
 
 1. **`getpeers` is the protocol handshake.** `{"version":2,"target":"server","method":"getpeers",
-   "id":…}` is answered with the connected clients as `socket id -> upgrade query`, e.g.
-   `{"socket#7":"role=ios","socket#8":null}`. An answer proves the dev server speaks this version —
-   so a broadcast on the same socket will be relayed rather than discarded — *and* names whether
-   there is an app to reload at all. Silence is reported as "does not speak this protocol version",
-   never as "no peers": the two lead to different next actions.
+   "id":…}` is answered with the connected clients as `socket id -> upgrade query`, for example
+   `{"socket#7":"role=ios","socket#8":null}`. An answer proves two things: that the dev server speaks
+   this version, so a broadcast on the same socket will be relayed rather than discarded, and whether
+   there is an app to reload at all. Silence is reported as "does not speak this protocol version"
+   and never as "no peers", because the two lead to different next actions.
 2. **Socket ids never repeat.** The dev server's ids come from a counter it does not rewind
    (`createSocketMap.ts` `createSocketIdFactory`), so a peer under a new id is a *new connection*.
-   Live, across one reload: `{"socket#7":"role=ios","socket#8":null}` →
+   Live, across one reload, `{"socket#7":"role=ios","socket#8":null}` became
    `{"socket#10":"role=ios","socket#11":null}` within 500 ms. That is what `verifiedBy:
    "message-socket-peers"` names.
 
 A debugger target is then waited for as well, because the rest of the CLI reads the app through one.
-That wait was written as a floor and turned out to be the load-bearing half — see below.
+That wait was written as a floor and turned out to be the load-bearing half, as below.
 
 #### Peer churn proves the app *acted*; only a new target proves it *came back*
 
@@ -266,17 +266,17 @@ three with `CommandError: … No target found.` (F39). One mechanism, measured
 | 761 ms | `8a9d…-2` — the reloaded runtime |
 
 The old wait returned on the first non-empty list, so it returned in about a millisecond, on the
-**pre-reload** target. Everything downstream followed from that: the count it reported was of a
-runtime on its way out, so an app that quit instead of coming back still counted (F45); and
+**pre-reload** target. Everything downstream followed from that. The count it reported was of a
+runtime on its way out, so an app that quit instead of coming back still counted (F45). And
 `runtime:errors` immediately afterwards resolved that same dying target, failed to connect to it,
-skipped it, and had nothing left — which is what `No target found.` means (F39).
+skipped it, and had nothing left, which is what `No target found.` means (F39).
 
 Metro's page ids come from a counter it does not rewind, exactly like the message socket's peer
-ids, so "a target this run has not seen" is decidable rather than inferred. And the same test now
-applies to the **peer** list, which it did not until wave 22: the churn wait returned as soon as
-`peersChanged` was true, and a list changes in two directions — an app that had dropped its connection
+ids, so "a target this run has not seen" is decidable rather than inferred. The same test now
+applies to the **peer** list, which it did not until wave 22. The churn wait returned as soon as
+`peersChanged` was true, and a list changes in two directions: an app that had dropped its connection
 and not yet come back satisfied it, so this rung could report the reload as observed off a client
-*leaving*. It waits for an id the dev server had not listed before, and reports the count
+*leaving*. It now waits for an id the dev server had not listed before, and reports the count
 (`commandSocketChurn.reconnected`), which is what makes `verifiedBy: 'message-socket-peers'` checkable
 [F95]. Three properties:
 
@@ -284,54 +284,54 @@ and not yet come back satisfied it, so this rung could report the reload as obse
   gate and immediately before the broadcast — never reused from discovery. A save the watcher
   picked up in between would otherwise be credited to this command.
 - **`appsConnected` and `appsReconnected` are both reported**, because they answer different
-  questions and their difference is the diagnosis: one connected and zero reconnected is an app
-  that never re-registered, zero of both is an app that went. The exit-22 prose says which.
-  **Amended in wave 22** [F95, live tier, 2026-08-27]: `appsReconnected: 0` is *three* facts, not two,
-  since the wave-21 ladder watches the bundle signal on every rung — the third being "the bundle proof
-  answered first, so this watch stopped asking". `appsReconnectedReason` names which one, and a run
-  proved by another signal is no longer a zero that reads as an app that failed to come back. See
-  [[0021-honest-reports]] §An observed signal, or the band.
+  questions and their difference is the diagnosis. One connected and zero reconnected is an app
+  that never re-registered. Zero of both is an app that went. The exit-22 prose says which.
+  **Amended in wave 22** [F95, live tier, 2026-08-27]: `appsReconnected: 0` is *three* facts rather
+  than two, since the wave-21 ladder watches the bundle signal on every rung. The third is "the
+  bundle proof answered first, so this watch stopped asking". `appsReconnectedReason` names which
+  one, and a run proved by another signal is no longer a zero that reads as an app that failed to
+  come back. See [[0021-honest-reports]] §An observed signal, or the band.
 - **The last read of that wait is the re-read of the target list**, so a success is structurally
-  never a peer count — it is a runtime that was observed after the reload. That is what makes F45's
+  never a peer count. It is a runtime that was observed after the reload. That is what makes F45's
   false-success path impossible rather than unlikely.
 
-Live [observed — 2026-08-24, port 8190]: five `reload` → `runtime:errors --fail-on-error` rounds
-back to back, all `0`/`0` with `appsReconnected: 1` and 559–1098 ms per reload; and the same five
-rounds with the reload sent as a bare broadcast — the `r` keypress, which this CLI never waited for
-— also all `0`. Terminating the app 350 ms and 450 ms into a reload, which is inside the window the
+Live [observed — 2026-08-24, port 8190]: five `reload` then `runtime:errors --fail-on-error` rounds
+back to back, all `0`/`0` with `appsReconnected: 1` and 559–1098 ms per reload. Then the same five
+rounds with the reload sent as a bare broadcast, the `r` keypress that this CLI never waited for,
+also all `0`. Terminating the app 350 ms and 450 ms into a reload, which is inside the window the
 old code answered from, gives exit **22** with `appsConnected: 0`.
 
-`runtime:errors` carries the other half of that fix, because a user may reload by pressing `r` and
-there is then nothing for this command to have waited. Its target resolution retries for
-`APP_RECONNECT_GRACE_MS` (3 s) — once around the "is any app connected" probe
-(`requireConnectedAppAsync`, which re-reads only while the list is *empty*, never for an
-unreachable dev server) and once around target selection inside `CdpClient`, which is where the
-dying target is skipped and the list has to be read again rather than the selector re-run. Bounded
-at three seconds because an app that is genuinely closed must still be reported quickly.
+`runtime:errors` carries the other half of that fix, because a user may reload by pressing `r`, and
+there is then nothing for this command to have waited on. Its target resolution retries for
+`APP_RECONNECT_GRACE_MS`, which is 3 s, in two places. Once around the "is any app connected" probe
+(`requireConnectedAppAsync`, which re-reads only while the list is *empty* and never for an
+unreachable dev server), and once around target selection inside `CdpClient`, which is where the
+dying target is skipped and the list has to be read again rather than the selector re-run. It is
+bounded at three seconds because an app that is genuinely closed must still be reported quickly.
 
-Deliberately **not** given to `runtime:eval` and `runtime:network` [inferred]: the chain the CLI
-prints, and the one the friction run drove, is reload → errors, and a grace period costs every
+It is deliberately **not** given to `runtime:eval` and `runtime:network` [inferred]. The chain the
+CLI prints, and the one the friction run drove, is reload then errors, and a grace period costs every
 genuine "no app is connected" three seconds. It is one option away if a later run shows the same
 flake there.
 
 ### The device fallback, and the exit codes
 
-`--method auto` falls through to stopping the app on the device (`simctl terminate` /
+`--method auto` falls through to stopping the app on the device (`simctl terminate` or
 `am force-stop`) and opening it again, which is the run-3 recovery absorbed into the CLI. It is
-reached in two cases: nothing answered on the command socket, and **no app is connected at all** —
+reached in two cases: nothing answered on the command socket, and **no app is connected at all**,
 where "reload" and "start" are the same act. The application id comes from the dev server's own
 debugger target (`appId`) and falls back to Expo Go's per platform. A `terminate` that reports the
 app was not running is *success*, because that is the state the step was reaching for.
 
 Three decisions on the codes (llp/0010 §Exit codes):
 
-- **Nothing reloaded is `20`.** The tool worked; the operation failed. Live: with the app closed,
+- **Nothing reloaded is `20`.** The tool worked and the operation failed. Live, with the app closed,
   `reload --method dev-server` exits 20 with `no app is connected to the dev server, so there is
   nothing to reload`, and `--method auto` exits 0 having started it on the device.
 - **Reloaded but not reconnected is `22`.** The app went, and the wait ran out before its
   JavaScript registered a debugger target. Nothing is known to be wrong, so "look again" is the
   honest answer and the message says so.
-- **No dev server is `1`, not `20`.** A reload makes the app fetch its bundle again; with no dev
+- **No dev server is `1`, not `20`.** A reload makes the app fetch its bundle again, and with no dev
   server that fetch has nowhere to go, so stopping the app would replace a stale screen with no
   screen. Nothing is attempted.
 
@@ -347,33 +347,33 @@ Two connection lists describe one running app, and this command was reading the 
 | `GET /json/list` | the **JavaScript runtimes** that have a debugger attached | `status`, `runtime:eval`, `runtime:errors`, `smoke`, the three interaction commands |
 
 Against a cloud app the first was empty and the second had the app in it. So `runtime:reload`
-printed `Apps connected 1 · no reload happened` — the first number off the second list, the verdict
-off the first — then `no app is connected to the dev server, so there is nothing to reload`, then
-`No booted device was found`, because the ladder fell through to the local device path on a machine
-whose device was in a datacenter. `runtime:eval` was evaluating in that same app throughout.
+printed `Apps connected 1 · no reload happened`, taking the first number off the second list and the
+verdict off the first. Then `no app is connected to the dev server, so there is nothing to reload`,
+then `No booted device was found`, because the ladder fell through to the local device path on a
+machine whose device was in a datacenter. `runtime:eval` was evaluating in that same app throughout.
 
 Three changes, and the first is the one that matters:
 
 1. **`/json/list` is the answer to "is anyone there".** It is the list the rest of this CLI uses, so
    it is the one this command reasons about. The peer list is a property of a *mechanism*, and an
-   empty one now reports what it is — `no client is registered on the dev server's command socket,
-   while its debugger target list names N connected app(s)` — rather than claiming the app is gone.
-2. **A third mechanism, `--method runtime`, which `auto` never picks.** `expo.reloadAppAsync()` over
-   the debugger, at the target `runtime:eval` reads. An app this CLI can *read* is an app it can
-   *ask*, which is exactly the case the command socket could not serve, and it reloaded Kudo's cloud
-   app. It proves nothing on its own — the debugger has no peer list to churn — so
-   `verifiedBy: fresh-debugger-target` and the proof is the wait that was already there: a runtime
-   registering under a page id the dev server had never used.
+   empty one now reports what it is, as `no client is registered on the dev server's command socket,
+   while its debugger target list names N connected app(s)`, rather than claiming the app is gone.
+2. **A third mechanism, `--method runtime`, which `auto` never picks.** It calls
+   `expo.reloadAppAsync()` over the debugger, at the target `runtime:eval` reads. An app this CLI can
+   *read* is an app it can *ask*, which is exactly the case the command socket could not serve, and
+   it reloaded Kudo's cloud app. It proves nothing on its own, because the debugger has no peer list
+   to churn, so it reports `verifiedBy: fresh-debugger-target` and the proof is the wait that was
+   already there: a runtime registering under a page id the dev server had never used.
 
    **Why it is opt-in, and this is a live finding rather than caution.** On Expo Go the same call
-   **closes the app**: `runtime:eval "expo.reloadAppAsync()"` took the app off the screen and
+   **closes the app**. `runtime:eval "expo.reloadAppAsync()"` took the app off the screen, and
    `/json/list` was still empty thirteen seconds later [observed — Expo Go SDK 57, iOS 26.5
    simulator `C159CF99-…`, 2026-08-27; the same runtime answered `Object.keys(expo)` with
    `…,reloadAppAsync,…` a moment before]. One runtime reloads and another quits, the difference is
    not something this command can read off a target, and a mechanism that sometimes closes the app
-   is not one to run on a caller's behalf — that would have traded the device method's known cost
-   for a less predictable one. So `auto` is the broadcast and, when nothing is connected, the device
-   method; `--method runtime` is a choice, with what it costs on Expo Go in its own `--help`.
+   is not one to run on a caller's behalf. That would have traded the device method's known cost
+   for a less predictable one. So `auto` is the broadcast, and the device method when nothing is
+   connected. `--method runtime` is a choice, with what it costs on Expo Go in its own `--help`.
 3. **`auto` never force-stops an app the dev server can see.** The device method costs the app's
    state and, on a cloud session, can strand it (§Two things a cloud run leaves behind). It stays
    the answer for "no app is connected at all", where reload and start are the same act, and it is
@@ -382,33 +382,35 @@ Three changes, and the first is the one that matters:
    cannot see.
 
    **Superseded in wave 21 — §One ladder, chosen by the command socket.** This rule was written to
-   protect a cheaper alternative, and in the state it fires on there is none: with no client on the
-   command socket the broadcast reaches nobody, so the choice is not "relaunch or keep the state", it
-   is "relaunch or do nothing". Wave 19 had already made the relaunch primary on a cloud session for
+   protect a cheaper alternative, and in the state it fires on there is none. With no client on the
+   command socket the broadcast reaches nobody, so the choice is not "relaunch or keep the state" but
+   "relaunch or do nothing". Wave 19 had already made the relaunch primary on a cloud session for
    exactly that reason. What replaces the caller's consent is a report the cost is visible in.
 
 With a connected app and no mechanism able to reach it, the run is exit `20` and the `How:` says the
-app *is* connected — the old text said "open the app on a device or simulator first", which is
-advice for a caller whose app is not running and reads as "start a second copy".
+app *is* connected. The old text said "open the app on a device or simulator first", which is
+advice for a caller whose app is not running, and which reads as "start a second copy".
 
-**Why `expo.reloadAppAsync` and not `DevSettings.reload()` (K3).** The expression lands in Hermes:
-no `require`, no `import()`, no `process`. A module the app did not already load is unreachable, so
-every recipe of the form `require('react-native').DevSettings.reload()` is untypeable there. The
-`expo` global is the one door, and Kudo found it by dumping `Object.keys(expo)` — which is now in
-`runtime:eval --help`, alongside the note that `runtime:reload` makes the manual call unnecessary.
-An app whose `expo` global has no `reloadAppAsync` is reported as exactly that, with no guessing.
+**Why `expo.reloadAppAsync` and not `DevSettings.reload()` (K3).** The expression lands in Hermes,
+where there is no `require`, no `import()` and no `process`. A module the app did not already load is
+unreachable, so every recipe of the form `require('react-native').DevSettings.reload()` is untypeable
+there. The `expo` global is the one door, and Kudo found it by dumping `Object.keys(expo)`. That is
+now in `runtime:eval --help`, alongside the note that `runtime:reload` makes the manual call
+unnecessary. An app whose `expo` global has no `reloadAppAsync` is reported as exactly that, with no
+guessing.
 
 **What is still [inferred].** That `--method runtime` *reloads* rather than closes a runtime that is
 not Expo Go. Kudo's cloud app reloaded from the same call by hand, which is one observation on one
-runtime this session did not have; what this session observed is the Expo Go behaviour, which is the
-opposite. The e2e proves the mechanism against the stub — probe, call, and a fresh target as the only
-proof — and the first dev build somebody runs it against decides whether it can ever be automatic.
+runtime this session did not have. What this session observed is the Expo Go behaviour, which is the
+opposite. The e2e proves the mechanism against the stub, covering the probe, the call, and a fresh
+target as the only proof. The first dev build somebody runs it against decides whether it can ever be
+automatic.
 
-**The honest limit of the whole section.** For an app that is connected and whose command socket has
+**The honest limit of the whole section.** For an app that is connected, whose command socket has
 no client, and which is not one `expo.reloadAppAsync()` reloads, this command has **no**
 non-destructive reload. It says so, and points at the one thing that always works and costs nothing:
 editing a file the app has loaded, which the dev server pushes on its own. [Amended in wave 21: the
-limit is unchanged and the *answer* to it is no longer a refusal — `auto` spends the app's state
+limit is unchanged and the *answer* to it is no longer a refusal. `auto` spends the app's state
 rather than leaving the caller with a stale screen, and says on the attempt that it did.]
 
 ### Reloading a cloud session
@@ -421,21 +423,21 @@ simulator with a tunnelled dev server, with "1 app connected" on the screen
 *fallback*, because "the dev-server broadcast reaches a cloud session already — a cloud session has
 to reach that dev server through a tunnel to be running the bundle at all". The tunnel carries the
 **bundle**, over HTTP. It is not evidence of a client on the dev server's client command socket, and
-live there was none: the broadcast reached nobody, `auto` then fell through to the force-stop, and
-the relaunch was refused — leaving a billed session with nothing running on it (S12). A premise no
+live there was none. The broadcast reached nobody, `auto` then fell through to the force-stop, and
+the relaunch was refused, leaving a billed session with nothing running on it (S12). A premise no
 stub could test was carried for two waves by the sentence that justified it.
 
-**What `auto` does on `--cloud` now.** The relaunch is the **primary** mechanism, not a fallback,
-and the rule "never force-stop an app the dev server can see" does not apply there: that rule
-protects an alternative, and a cloud session has none. Two controller verbs:
+**What `auto` does on `--cloud` now.** The relaunch is the **primary** mechanism rather than a
+fallback, and the rule "never force-stop an app the dev server can see" does not apply there. That
+rule protects an alternative, and a cloud session has none. Two controller verbs:
 
 ```
 eas simulator:exec npx agent-device@latest open <app-id> --platform ios --relaunch
 eas simulator:exec npx agent-device@latest open <url>    --platform ios
 ```
 
-- **`--relaunch`** terminates the app process and launches it again, so nothing has to `close` —
-  and `close` is the verb that ends the *controller's* session, which is how the app was stranded
+- **`--relaunch`** terminates the app process and launches it again, so nothing has to `close`.
+  `close` is the verb that ends the *controller's* session, which is how the app was stranded
   [observed — `agent-device help open`, 0.20.10; the controller's own React Native guide says "Do
   not use agent-device reload. Use open --relaunch for native startup reset."].
 - **Two verbs and not the documented shell-plus-link form.** `open <app-id> <url> --relaunch` cold
@@ -446,28 +448,28 @@ eas simulator:exec npx agent-device@latest open <url>    --platform ios
   the shell with no URL, *then* send the link. llp/0010 §Upstream asks records the Expo Go bug.
 - **The URL is `navigate --cloud`'s**, resolved by `resolveRouteUrlAsync`: the manifest-derived
   tunnel host, never the `exp+<slug>://<host>` launcher form. The tunnel precondition is checked
-  **before** the first verb, which is the other half of the S12 fix — a run that stops the app and
+  **before** the first verb, which is the other half of the S12 fix. A run that stops the app and
   only then finds the URL unusable is exactly how the app was left closed.
 - **`DEVICE_IN_USE` is retried once**, bound to the session the controller names (S14). Never a
-  second session: that bills another machine.
+  second session, because that bills another machine.
 
 **What proves it, when there is no debugger target to wait for.** Two observations are watched on one
-budget and the first to answer ends both:
+budget, and the first to answer ends both:
 
-1. a debugger target the dev server had not listed before — the proof every other path uses;
+1. a debugger target the dev server had not listed before, which is the proof every other path uses;
 2. a **`Bundled` line** in the dev server's captured output that was not there before the relaunch,
    which means something fetched the served bundle again (`src/runtime/reload/bundleSignal.ts`).
 
 The second one is why a cloud reload can exit `0` at all, and two live facts make it the load-bearing
-one. A relaunched app re-registers under the **same** debugger page id — Metro's per-device counter
-restarts with the app, so `…ce-1` before the relaunch was `…ce-1` after it — and Fast Refresh
+one. A relaunched app re-registers under the **same** debugger page id, because Metro's per-device
+counter restarts with the app, so `…ce-1` before the relaunch was `…ce-1` after it. And Fast Refresh
 produces no `Bundled` line, so the signal is specific to a full bundle fetch rather than to any edit
-[both observed — 2026-08-27, live]. `verifiedBy: dev-server-bundle` is its own value: it says the dev
+[both observed — 2026-08-27, live]. `verifiedBy: dev-server-bundle` is its own value. It says the dev
 server served a bundle after this command acted, and **not** which client asked for it.
 
 `reloaded` is `verifiedBy != null`, which is stricter than it was for exactly one path. On a local
-device the relaunch *is* an observation — `simctl terminate` names a process and fails when there is
-none — and on a cloud session neither controller verb answers about the app it was given (§What
+device the relaunch *is* an observation, because `simctl terminate` names a process and fails when
+there is none. On a cloud session neither controller verb answers about the app it was given (§What
 `close` will not tell you). So a cloud relaunch that nothing observed is exit `22` with both
 observations spelled out, and never a success off a verb that accepted an argument.
 
@@ -484,7 +486,7 @@ observations spelled out, and never a success off a verb that accepted an argume
 | A session started without `--expo-go` | `apps` lists only the controller's test runner; every `exp://` open fails `LSApplicationWorkspaceErrorDomain error 115` |
 
 That last row is why every piece of advice in this package now names
-`eas simulator … --expo-go` (`CLOUD_SESSION_START_COMMAND`): the old suggestion started a session
+`eas simulator … --expo-go` (`CLOUD_SESSION_START_COMMAND`). The old suggestion started a session
 with no app on it, which no `navigate --cloud` or `runtime:reload --cloud` can use.
 
 ### One ladder, chosen by the command socket
@@ -502,39 +504,40 @@ holds a client**, which is what `getpeers` answers.
 picks (§Two lists, one question), and the bundle gate still runs before any of them.
 
 **Why the socket and not the location.** The wave-19 section's own finding is that the cloud broke the
-ladder through a *mechanism*, not through geography: the tunnel carries the bundle over HTTP and the
-app registers no client on `/message`, so the broadcast reaches nobody. That is a fact about the
-socket. Keying the ladder on `--cloud` encoded the correlation instead of the cause, and it was wrong
-in both directions — a local app whose socket is empty was refused with advice, and a cloud session
-that *did* hold a client would have been force-stopped for no reason. Two things follow, and both are
-better than what they replace: the reading of the peer list is now the same step that broadcasts (one
-socket open, not two), and `--cloud` narrows to what it is honestly about — **which device backend may
-relaunch**, and which flag every suggested command keeps.
+ladder through a *mechanism* rather than through geography. The tunnel carries the bundle over HTTP
+and the app registers no client on `/message`, so the broadcast reaches nobody. That is a fact about
+the socket. Keying the ladder on `--cloud` encoded the correlation instead of the cause, and it was
+wrong in both directions: a local app whose socket is empty was refused with advice, and a cloud
+session that *did* hold a client would have been force-stopped for no reason. Two things follow, and
+both are better than what they replace. The reading of the peer list is now the same step that
+broadcasts, so one socket open rather than two. And `--cloud` narrows to what it is honestly about,
+which is **which device backend may relaunch**, and which flag every suggested command keeps.
 
-**Which rung Android takes, measured.** Rung 1, always, on a local emulator — and it is worth
+**Which rung Android takes, measured.** Rung 1, always, on a local emulator. It is worth
 recording as a fact rather than an assumption, because Android is the platform where the *other*
 verification is impossible. Expo Go for Android holds a client on `/message` [observed — 2026-08-27,
-Expo Go 57.0.9 on `tuft-pixel`, port 8560]: `getpeers` answered
+Expo Go 57.0.9 on `tuft-pixel`, port 8560]. `getpeers` answered
 `{"socket#3":"device=sdk_gphone64_arm64%20-%2015%20-%20API%2035&app=host.exp.exponent&clientid=b","socket#4":null}`,
 and `runtime:reload --android` reported `commandSocketClients: 2`, `method: "dev-server"`, one attempt,
 `verifiedBy: "message-socket-peers"`, `commandSocketChurn: {observed: true, before: 2, after: 1,
 reconnected: 1}` and `bundlesAfterReload.line: "Android Bundled 30ms …"`, in 590 ms. So the ladder
-stops on its first rung and the app never loses its process — the opposite of the cloud, where the
-broadcast does not reload Expo Go and takes its socket client with it (§Reloading a cloud session).
+stops on its first rung and the app never loses its process. That is the opposite of the cloud, where
+the broadcast does not reload Expo Go and takes its socket client with it (§Reloading a cloud
+session).
 
-**And the verification is honest there without any debugger.** Neither of the two facts that carried it
-is a CDP read: a socket id the dev server's non-rewinding counter had not used before, and a bundle the
-dev server was seen to serve for `android`. `appsReconnected` is the count that *would* have needed one,
-and on the runs where the bundle line lands first it is `0` with `appsReconnectedReason` saying which
-fact that is (F95). This is the whole reason `runtime:reload` is the one runtime command that works on
-Expo Go for Android while five others refuse.
+**And the verification is honest there without any debugger.** Neither of the two facts that carried
+it is a CDP read: a socket id the dev server's non-rewinding counter had not used before, and a bundle
+the dev server was seen to serve for `android`. `appsReconnected` is the count that *would* have
+needed one, and on the runs where the bundle line lands first it is `0` with `appsReconnectedReason`
+saying which fact that is (F95). This is the whole reason `runtime:reload` is the one runtime command
+that works on Expo Go for Android while five others refuse.
 
 **What it costs, said out loud.** Rung 2 replaces the app's process, so the JavaScript state is gone.
-Before wave 21 `auto` refused to spend that on a connected app and named `--method device` for a
-caller who meant it; now the ladder spends it when nothing cheaper can reach the app, and the
+Before wave 21 `auto` refused to spend that on a connected app, and named `--method device` for a
+caller who meant it. Now the ladder spends it when nothing cheaper can reach the app, and the
 *attempt* carries the cost: `<why the rung was reached> — which costs the app's JavaScript state:
-<the commands that ran>`. Only when there was an app to lose state — a relaunch that *started* an app
-cost nothing, and says nothing.
+<the commands that ran>`. That is said only when there was an app to lose state, because a relaunch
+that *started* an app cost nothing and says nothing.
 
 ### A broadcast that was delivered is a mechanism that ran
 
