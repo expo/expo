@@ -348,6 +348,17 @@ export function BottomSheetDialog({
     return asHTMLElement(sheetRef.current)?.getBoundingClientRect().height ?? 0;
   }, [height]);
 
+  const commitCloseRef = useRef(commitClose);
+  const onDragEndRef = useRef(onDragEnd);
+  const resolveStartHeightRef = useRef(resolveStartHeight);
+  const minSnapHeightRef = useRef(minSnapHeight);
+  const dismissibleRef = useRef(dismissible);
+  commitCloseRef.current = commitClose;
+  onDragEndRef.current = onDragEnd;
+  resolveStartHeightRef.current = resolveStartHeight;
+  minSnapHeightRef.current = minSnapHeight;
+  dismissibleRef.current = dismissible;
+
   useEffect(() => {
     if (!open || !mounted) return;
     const sheet = asHTMLElement(sheetRef.current);
@@ -364,7 +375,7 @@ export function BottomSheetDialog({
       dragRef.current = {
         pointerId: event.pointerId,
         startY: event.clientY,
-        startHeight: resolveStartHeight(),
+        startHeight: resolveStartHeightRef.current(),
         active: false,
       };
       if (typeof sheet.setPointerCapture === 'function') {
@@ -398,12 +409,14 @@ export function BottomSheetDialog({
       const predicted = Math.max(0, drag.startHeight - (event.clientY - drag.startY));
       setDragHeight(null);
       const closeBelow =
-        minSnapHeight != null ? Math.max(0, minSnapHeight - CLOSE_HEIGHT_PX) : CLOSE_HEIGHT_PX;
-      if (dismissible && predicted < closeBelow) {
-        commitClose();
+        minSnapHeightRef.current != null
+          ? Math.max(0, minSnapHeightRef.current - CLOSE_HEIGHT_PX)
+          : CLOSE_HEIGHT_PX;
+      if (dismissibleRef.current && predicted < closeBelow) {
+        commitCloseRef.current();
         return;
       }
-      onDragEnd?.(predicted);
+      onDragEndRef.current?.(predicted);
     };
 
     const abortDrag = (event: PointerEvent) => {
@@ -427,7 +440,7 @@ export function BottomSheetDialog({
       dragRef.current = null;
       setDragHeight(null);
     };
-  }, [open, mounted, resolveStartHeight, minSnapHeight, dismissible, commitClose, onDragEnd]);
+  }, [open, mounted]);
 
   const onCancel = useCallback(
     (event: SyntheticEvent) => {

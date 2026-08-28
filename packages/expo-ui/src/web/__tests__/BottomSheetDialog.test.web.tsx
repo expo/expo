@@ -138,6 +138,7 @@ describe('BottomSheetDialog drag cancel', () => {
       dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
       dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
       dispatchPointer(window, 'pointercancel', { pointerId: 1, clientY: 500 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 500 });
     });
 
     expect(onOpenChange).not.toHaveBeenCalled();
@@ -163,9 +164,39 @@ describe('BottomSheetDialog drag cancel', () => {
       dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
       dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
       dispatchPointer(panel, 'lostpointercapture', { pointerId: 1, clientY: 180 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 500 });
     });
 
     expect(onOpenChange).not.toHaveBeenCalled();
     expect(onDragEnd).not.toHaveBeenCalled();
+  });
+
+  it('should keep the drag after onOpenChange identity changes', async () => {
+    const onOpenChange = jest.fn();
+    const { rerender } = render(
+      <BottomSheetDialog open onOpenChange={onOpenChange} height={400} minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
+    });
+
+    const nextOnOpenChange = jest.fn();
+    rerender(
+      <BottomSheetDialog open onOpenChange={nextOnOpenChange} height={400} minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    act(() => {
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 500 });
+    });
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(nextOnOpenChange).toHaveBeenCalledWith(false);
   });
 });
