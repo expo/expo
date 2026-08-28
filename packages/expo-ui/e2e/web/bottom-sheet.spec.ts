@@ -56,16 +56,32 @@ async function clickSheetButton(page: Page, name: string) {
   await openPanel(page).getByRole('button', { name }).click({ force: true });
 }
 
+async function waitForSettledHeight(page: Page, minHeight: number) {
+  const panel = openPanel(page);
+  let last = -1;
+  let stable = 0;
+  await expect
+    .poll(async () => {
+      const height = (await panel.boundingBox())?.height ?? 0;
+      stable = height > minHeight && Math.abs(height - last) < 2 ? stable + 1 : 0;
+      last = height;
+      return stable >= 3 ? height : 0;
+    })
+    .toBeGreaterThan(minHeight);
+}
+
 async function dragPanel(page: Page, dy: number, { release = true }: { release?: boolean } = {}) {
   const panel = openPanel(page);
   await waitForOpenSheet(page);
-  const box = await panel.boundingBox();
+  const handleHit = panel.locator('[data-expo-ui-bottom-sheet-handle]');
+  const fromHandle = (await handleHit.count()) > 0;
+  const box = fromHandle ? await handleHit.boundingBox() : await panel.boundingBox();
   if (!box) {
     throw new Error('Panel bounding box missing');
   }
   const viewport = page.viewportSize();
   const startX = box.x + box.width / 2;
-  const startY = box.y + 16;
+  const startY = fromHandle ? box.y + box.height / 2 : box.y + 16;
   const rawEndY = startY + dy;
   const endY = viewport ? Math.min(Math.max(rawEndY, 2), viewport.height - 2) : rawEndY;
   await page.mouse.move(startX, startY);
@@ -163,18 +179,16 @@ test.describe('Community BottomSheet screen', () => {
     await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
     await expect(openHandle(page)).toBeVisible();
 
+    const collapsed = (await openPanel(page).boundingBox())?.height ?? 0;
     await clickSheetButton(page, 'Snap 2');
-    await expect
-      .poll(async () => (await openPanel(page).boundingBox())?.height ?? 0)
-      .toBeGreaterThan(400);
+    await waitForSettledHeight(page, collapsed + 80);
 
     const before = await openPanel(page).boundingBox();
     if (!before) {
       throw new Error('Panel bounding box missing');
     }
 
-    const viewport = page.viewportSize();
-    await dragPanel(page, viewport ? viewport.height : 500);
+    await dragPanel(page, Math.round(before.height * 0.75));
 
     await expect
       .poll(async () => {
