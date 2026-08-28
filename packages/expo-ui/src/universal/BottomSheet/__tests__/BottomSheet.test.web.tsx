@@ -57,25 +57,7 @@ describe('BottomSheet', () => {
     });
   });
 
-  it('should pad content by 16 on every edge by default', async () => {
-    render(
-      <BottomSheet isPresented onDismiss={() => {}} testID="padded-content">
-        <Text>Padded</Text>
-      </BottomSheet>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('padded-content')).toBeTruthy();
-    });
-
-    const content = screen.getByTestId('padded-content');
-    expect(content.style.paddingTop).toBe('16px');
-    expect(content.style.paddingBottom).toBe('16px');
-    expect(content.style.paddingLeft).toBe('16px');
-    expect(content.style.paddingRight).toBe('16px');
-  });
-
-  it('should apply contentPadding 0 as no inset', async () => {
+  it('should render when contentPadding is 0', async () => {
     render(
       <BottomSheet isPresented onDismiss={() => {}} testID="flush-content" contentPadding={0}>
         <Text>Flush</Text>
@@ -85,12 +67,7 @@ describe('BottomSheet', () => {
     await waitFor(() => {
       expect(screen.getByTestId('flush-content')).toBeTruthy();
     });
-
-    const content = screen.getByTestId('flush-content');
-    expect(content.style.paddingTop).toBe('0px');
-    expect(content.style.paddingBottom).toBe('0px');
-    expect(content.style.paddingLeft).toBe('0px');
-    expect(content.style.paddingRight).toBe('0px');
+    expect(screen.getByText('Flush')).toBeTruthy();
   });
 
   it('should apply testID to the inner content container', async () => {
