@@ -1000,32 +1000,33 @@ agent was driving by hand is a device this CLI can open a link on.
 ### Three backends, one ladder
 
 `NavigateDevice` gains `backend: 'local-ios' | 'local-android' | 'cloud'`, and it is reported rather
-than inferred from `platform` — an EAS session runs iOS too, so `ios` no longer says where the
+than inferred from `platform`, because an EAS session runs iOS too, so `ios` no longer says where the
 device is. It rides in `--json` as `deviceBackend` on `navigate` and on `smoke`, on the `Device`
 line of the human summary, and on the `cli:navigate` event.
 
 The order, in `resolveDeviceAsync`:
 
-1. **`--cloud`** (`cloud: 'required'`) — the session is the device and no platform tool is asked at
+1. **`--cloud`** (`cloud: 'required'`): the session is the device and no platform tool is asked at
    all. A caller that named a device meant that device.
-2. **A local device** — free, instant, and what a developer at a keyboard is looking at. A session
+2. **A local device**: free, instant, and what a developer at a keyboard is looking at. A session
    that happens to be up must never quietly take a run away from the simulator on the desk.
-3. **The session** (`cloud: 'fallback'`) — only when the local probes found nothing.
+3. **The session** (`cloud: 'fallback'`): only when the local probes found nothing.
 
-Rung 3 asks the **service**, not the filesystem: `eas simulator:list --status in-progress` is what
-makes it a rung at all, because a session started by MCP, by another terminal, or by a
+Rung 3 asks the **service** rather than the filesystem. `eas simulator:list --status in-progress` is
+what makes it a rung at all, because a session started by MCP, by another terminal, or by a
 `simulator:start --json` that wrote no dotenv is still this project's session. The first cut gated it
-on `.env.eas-simulator` existing; §Finding the session is why that changed and what it costs.
+on `.env.eas-simulator` existing, and §Finding the session is why that changed and what it costs.
 
 **Opt-in per caller, defaulting to `off`.** `navigate` and `smoke` put the cloud on their ladder as
-a *fallback*; `runtime:stop` and `runtime:reload` take `--cloud` and reach for it only when named,
+a *fallback*. `runtime:stop` and `runtime:reload` take `--cloud` and reach for it only when named,
 so a session that happens to be up never quietly bills a run that a local device would have served.
 See §What the cloud backend can and cannot do.
 
-`--cloud` is a **backend** flag, not a third platform, so it does not join the `--ios`/`--android`
-pair: a session is iOS or Android too, and `--cloud --ios` is a meaningful line to type. It names
-the platform the session must be, and a session that is the other one is refused rather than
-driven. `--cloud --print-url` is refused as well: one asks for a device and the other asks for none.
+`--cloud` is a **backend** flag rather than a third platform, so it does not join the `--ios` and
+`--android` pair. A session is iOS or Android too, and `--cloud --ios` is a meaningful line to type:
+it names the platform the session must be, and a session that is the other one is refused rather than
+driven. `--cloud --print-url` is refused as well, because one asks for a device and the other asks
+for none.
 
 ### The mechanism: `eas simulator:*` subprocesses
 
@@ -1033,10 +1034,10 @@ Per llp/0001 constraint 5, `eas-cli` is reached across a process boundary like t
 family. So the backend is `eas simulator:<verb>` subprocesses, and **every one of them is built by
 one module**, `src/device/cloudSimulator.ts`.
 
-One deviation worth naming. The device verbs are not an `eas` subcommand: `eas simulator:exec` loads
+One deviation worth naming. The device verbs are not an `eas` subcommand. `eas simulator:exec` loads
 the session's connection environment and **spawns the command it is given**, and the verbs come from
 `agent-device`, a controller run on demand through `npx`. The process this CLI starts is still the
-family binary; what it asks that binary to run is a second process this CLI never resolves itself.
+family binary. What it asks that binary to run is a second process this CLI never resolves itself.
 `AGENT_DEVICE_SPEC` is the whole of that decision, in one constant.
 
 ### The argv, validated against a live session
@@ -1067,15 +1068,15 @@ than on somebody's paid session.
 | `eas simulator:get [--id <id>] --json` | Fields at the **top level** (no envelope), plus `remoteConfig` and `artifacts`. Not spawned by this CLI any more | [observed — package source; not exercised live] |
 | `.env.eas-simulator` | `EAS_SIMULATOR_SESSION_ID` plus the daemon URL and token, `KEY='value'` under a "Do not commit this file" header. **Not written** by `simulator:start --json` or `--out-config-type env` | [observed — `build/simulator/env.js`; the write itself seen live] |
 
-Enum values, which is where a string comparison goes wrong quietly: `status` and `platform` come
-back as the **raw GraphQL enums** (`IN_PROGRESS`, `STOPPED`, `IOS`) while `type` is the lower-case
-**flag spelling** (`agent-device`) — so a comparison that lower-cases all three, or none, is wrong
+Enum values are where a string comparison goes wrong quietly. `status` and `platform` come
+back as the **raw GraphQL enums** (`IN_PROGRESS`, `STOPPED`, `IOS`), while `type` is the lower-case
+**flag spelling** (`agent-device`). So a comparison that lower-cases all three, or none, is wrong
 either way [observed — live]. `startedAt` and `finishedAt` are **absent** rather than null when they
-do not apply, and `pageInfo` grows `startCursor`/`endCursor` only on a non-empty page.
+do not apply, and `pageInfo` grows `startCursor` and `endCursor` only on a non-empty page.
 
 What running it **corrected**, rather than confirmed:
 
-- `close <appId>` does not answer about the app id. That is §What `close` will not tell you, and it
+- `close <appId>` does not answer about the app id. That is §What `close` will not tell you. It
   was a false green shipped in this wave and caught by the live run.
 - A non-zero exit from a device verb is **not** evidence the argv was wrong. The controller prints
   its own refusals as `Error (CODE): <sentence>`, and the first live `open` produced
@@ -1088,8 +1089,8 @@ What running it **corrected**, rather than confirmed:
 Still standing, and still the design:
 
 - **The argv is pure and pinned by a test table** (`src/device/__tests__/cloudSimulator-test.ts`),
-  for the reason `buildOpenUrlCommand` and `buildScreenshotCommand` are — except more so. A wrong
-  `simctl` flag fails on a machine with a simulator; a wrong `simulator:exec` flag fails on a
+  for the reason `buildOpenUrlCommand` and `buildScreenshotCommand` are, and more so. A wrong
+  `simctl` flag fails on a machine with a simulator. A wrong `simulator:exec` flag fails on a
   machine with an account, a session, and a bill.
 - **That validation pass has now been run** [observed — 2026-08-26, staging, session
   `01a03ec5-9255-78c6-bd1d-0f09d4350677`]. What it reached is everything the blank-simulator session
@@ -1107,14 +1108,14 @@ Still standing, and still the design:
   `wasRunning: null`, which is the honest report §What `close` will not tell you argues for.
 
   **`runtime:stop --cloud` was seen to stop a running app**, which the previous pass could not say.
-  The evidence is not `close`'s own exit code — that proves nothing about the id — but the state
+  The evidence is not `close`'s own exit code, which proves nothing about the id. It is the state
   after it: the next `screenshot` failed with
   `Error (SESSION_NOT_FOUND): No active session. Run open first.`, where the screenshot before it
   had succeeded. The app was foregrounded, then it was not.
 
   Two things this pass did **not** reach. `runtime:reload --cloud` stopped at its dev-server
-  precondition — `NO_DEV_SERVER`, exit 1, correctly, since a cloud simulator needs a *tunnelled*
-  dev server and none was running — so the reload broadcast over a cloud session is still
+  precondition, with `NO_DEV_SERVER` and exit 1, correctly, since a cloud simulator needs a
+  *tunnelled* dev server and none was running. So the reload broadcast over a cloud session is still
   [inferred]. And the gated-account branch of `availability` still needs a gated account.
 
 ### What `close` will not tell you
@@ -1132,19 +1133,19 @@ omitted"; what the service does is answer about the **session**, and the argumen
 answer specific.
 
 That matters because `runtime:stop`'s whole contract is *which app*. §Stopping the app is built on
-the observation that the command is the easy half and the **id** is the hard half — `simctl
+the observation that the command is the easy half and the **id** is the hard half. `simctl
 terminate` and `am force-stop` name a process and fail when there is none, which is exactly what
 makes `wasRunning` knowable. A backend whose verb succeeds unconditionally has no such fact, and
 reporting `wasRunning: true` from it would be this command inventing the one thing it exists to
-report. This wave shipped that bug for four commits; the live run is what found it.
+report. This wave shipped that bug for four commits, and the live run is what found it.
 
 So the honest shape, rather than the convenient one:
 
 - `StopAppResult.verified` is **false** for the cloud backend and true for both local ones. It says
   whether the tool's answer is about this application id at all.
-- `runtime:stop --json` reports **`wasRunning: null`** on a cloud session — a fact the run does not
-  have, which is what llp/0006 §Output contract says null is for. The human line says *"the session
-  closed the app in front; whether it was this one is not something the controller reports"*.
+- `runtime:stop --json` reports **`wasRunning: null`** on a cloud session. That is a fact the run
+  does not have, which is what llp/0006 §Output contract says null is for. The human line says *"the
+  session closed the app in front; whether it was this one is not something the controller reports"*.
 - The `--app-id` mismatch check (§An `--app-id` nobody is running, exit 20) is gated on `verified`,
   so it never fires on a backend that cannot establish its premise. Exit 20 there would be a
   fabricated diagnosis.
@@ -1174,16 +1175,16 @@ a cloud session is the very open that had just failed.
 **Wave 19 did redesign it**, and the first cut of this paragraph — "the fallback is not redesigned
 here" — is the thing to correct. There is no `close` in the path any more, so the state this
 paragraph describes cannot be reached the same way: one verb restarts the app, and a refusal of it
-says something narrower and true — `--relaunch` terminates before it launches, so whether the app is
+says something narrower and true. `--relaunch` terminates before it launches, so whether the app is
 on the screen is **not known**, and the report says that instead of claiming either. `leftAppStopped`
 stays on the payload for the local device method, where the stop and the start are two commands and
-the fact *is* knowable. The by-hand recovery is still named, and still the application id rather than
-a deep link: it avoids the "Open in Expo Go?" dialog that nothing can answer on a cloud device
-(S10).
+the fact *is* knowable. The by-hand recovery is still named, and it still uses the application id
+rather than a deep link, because that avoids the "Open in Expo Go?" dialog nothing can answer on a
+cloud device (S10).
 
 **`runtime:stop --cloud`'s follow-up asserted the app was not running (S13).** `wasRunning` is
 **null** on a cloud session for the reason §What `close` will not tell you gives, and the follow-up
-read that null as `false`: *"The app was not running, so this is what starts it"* — while Expo Go was
+read that null as `false`: *"The app was not running, so this is what starts it"*, while Expo Go was
 running on the session. The three-way is now written out, and the null arm claims neither.
 
 ### Finding the session
@@ -1205,13 +1206,13 @@ Three ways to answer "is there a session", and what each one costs:
 
 **Option 1, with option 3 kept for what it is actually true about.**
 
-Option 2 is the one worth arguing with, because this CLI does already make direct HTTP calls — it
+Option 2 is the one worth arguing with, because this CLI does already make direct HTTP calls. It
 talks to the dev server's `/json/list` and its message socket without going through `expo`. The
 difference is what is on the other end. The dev server is **this machine's own process**, started
-by this CLI, reached over loopback, with no credential involved: a direct call there is a local IPC
+by this CLI, reached over loopback, with no credential involved, so a direct call there is a local IPC
 that happens to speak HTTP. `api.expo.dev` is somebody's **account**, on a **paid** product, reached
 with a **secret** this package neither issued nor owns. Lifting a token out of `~/.expo/state.json`
-makes an undocumented file into an API — it moves whenever eas-cli wants it to, and the failure mode
+makes an undocumented file into an API. It moves whenever eas-cli wants it to, and the failure mode
 is not a broken command but a credential this CLI mishandled. `eas` is the program that owns that
 token, so `eas` is the program that spends it. Rejected, and worth writing down so it is not
 re-argued.
@@ -1220,23 +1221,23 @@ re-argued.
 every `navigate` with no local device, and it is now a subprocess. That is paid on purpose, and only
 on one of the two ladders:
 
-- **The device ladder** (`navigate`/`smoke`, `cloud: 'fallback'` or `'required'`) asks the service.
-  It is about to open a link on a device; being *right* is worth ~1 s, and being wrong costs a
-  reader a false "no device" on a machine that has one.
-- **The suggestion ladders** (`status.next`, the `start`/`dev` banner) keep the `stat`, unchanged.
-  They promise to be instant, they are not acting on anything, and a suggestion that names a dead
-  session costs one command that says so — a much cheaper wrong answer than a held-up banner
-  (§Where it composes).
+- **The device ladder** (`navigate` and `smoke`, at `cloud: 'fallback'` or `'required'`) asks the
+  service. It is about to open a link on a device, so being *right* is worth about a second, and
+  being wrong costs a reader a false "no device" on a machine that has one.
+- **The suggestion ladders** (`status.next`, and the `start` and `dev` banner) keep the `stat`,
+  unchanged. They promise to be instant, they are not acting on anything, and a suggestion that names
+  a dead session costs one command that says so. That is a much cheaper wrong answer than a held-up
+  banner (§Where it composes).
 
 #### A device that is held is not a session that ended
 
 Added after live staging validation, S14 [observed — 2026-08-26].
 
 The session's controller answers a verb it cannot perform with `Error (CODE): <sentence>`, and one of
-those codes carries its own remedy: `DEVICE_IN_USE` — *Device is already in use by session
-"default".* The general advice for a refused verb is the opposite of it — "a session can end between
-the moment it was listed and the moment a verb reaches it; start a new one if it has" — and acting on
-that **bills a second machine and leaves the first one held**.
+those codes carries its own remedy: `DEVICE_IN_USE`, as *Device is already in use by session
+"default".* The general advice for a refused verb is the opposite of it, namely "a session can end
+between the moment it was listed and the moment a verb reaches it; start a new one if it has". Acting
+on that **bills a second machine and leaves the first one held**.
 
 So `DEVICE_IN_USE` gets its own `How:`. It says the session did not end, names the session the
 controller named (read out of the sentence, with a fallback for a message that stops carrying one),
@@ -1253,29 +1254,30 @@ answer must not depend on the order the service happened to return:
    and an `argent`, `appium` or `serve-sim` session has no agent-device daemon inside it to answer.
    A project whose only live session is one of those is told *that*, rather than "no session".
 2. **The session `.env.eas-simulator` names**, when it is among the candidates. The file is a poor
-   existence proof and a good **preference**: it is the session this project started, so it is the
-   one the person at the keyboard means.
-3. **The platform the caller asked for**, when `--ios`/`--android` named one.
+   existence proof and a good **preference**, because it is the session this project started, so it
+   is the one the person at the keyboard means.
+3. **The platform the caller asked for**, when `--ios` or `--android` named one.
 4. **The most recently created**, `createdAt` descending, with `id` ascending as the tiebreaker.
 
-The chosen id is reported — the `Device` line, `deviceId` in `--json`, and the `cli:navigate` event
-— so "which one did it pick" is never a thing a reader has to work out.
+The chosen id is reported on the `Device` line, as `deviceId` in `--json`, and on the `cli:navigate`
+event, so "which one did it pick" is never a thing a reader has to work out.
 
 ### A cloud simulator requires a tunnel
 
 `exp://127.0.0.1:<port>` names the loopback of **whatever resolves it**, and for a cloud session
 that is a machine in a datacenter. This is the same shape as the Android emulator finding in
-§The device's loopback is not this machine's — and unlike the emulator, there is no `adb reverse`
-that can fix it. A LAN address is no better: the session is not on this network.
+§The device's loopback is not this machine's, and unlike the emulator there is no `adb reverse`
+that can fix it. A LAN address is no better, because the session is not on this network.
 
 So a cloud run against a `localhost` or `lan` URL is **refused before anything opens**, naming
 `dev --detach --tunnel`. Opening it would land the app on an error screen with the device tool
 reporting success, which is exactly the false green F50 was.
 
-The check lives in `openRouteAsync`, next to the device, not in the URL resolver: it is a fact about
-the *device*, and the identical URL is perfectly good for the simulator on this desk. A development
-build's `<scheme>://<route>` carries no host at all (`hostType: null`) and is allowed — it reaches
-whatever dev server the app was launched against, which this command has no say in.
+The check lives in `openRouteAsync`, next to the device, rather than in the URL resolver. It is a
+fact about the *device*, and the identical URL is perfectly good for the simulator on this desk. A
+development build's `<scheme>://<route>` carries no host at all (`hostType: null`) and is allowed,
+because it reaches whatever dev server the app was launched against, which this command has no say
+in.
 
 The attach confirmation is unchanged: the same `/json/list` wait, scoped to the session's platform.
 The app connects back through the tunnel, so "a debugger target on this platform" proves the same
@@ -1283,11 +1285,12 @@ thing it proves locally.
 
 ### A non-zero exit means different things per backend
 
-`xcrun simctl openurl` exiting non-zero is **the device refusing the link** — a fact about the app
-on it, which `navigate` reports and exits `1` for. `eas simulator:exec` exiting non-zero is any of:
-a session that ended mid-run, a signed-out account, a controller flag this CLI got wrong, a binary
-that was never the EAS CLI, **or the device refusing after everything worked**. None of the first
-four is "the device refused", and reporting them as that would send a reader to reinstall Expo Go.
+`xcrun simctl openurl` exiting non-zero is **the device refusing the link**, a fact about the app
+on it, which `navigate` reports and exits `1` for. `eas simulator:exec` exiting non-zero is any of
+five things: a session that ended mid-run, a signed-out account, a controller flag this CLI got
+wrong, a binary that was never the EAS CLI, **or the device refusing after everything worked**. None
+of the first four is "the device refused", and reporting them as that would send a reader to
+reinstall Expo Go.
 
 The last one is a live correction. The first real `open` this CLI ever sent came back as:
 
@@ -1295,23 +1298,23 @@ The last one is a live correction. The first real `open` this CLI ever sent came
 Error (COMMAND_FAILED): Simulator device failed to open myapp://.
 ```
 
-— the controller's own words, for a scheme no app on the blank simulator had registered [observed —
-2026-08-26]. The argv was right and the bridge worked; the message printed above it said "a verb or
-a flag this CLI sends may not be the one the installed eas-cli has", which would have sent that
-reader to check a command that was already correct. `agent-device` prints every refusal as
+Those are the controller's own words, for a scheme no app on the blank simulator had registered
+[observed — 2026-08-26]. The argv was right and the bridge worked. The message printed above it said
+"a verb or a flag this CLI sends may not be the one the installed eas-cli has", which would have sent
+that reader to check a command that was already correct. `agent-device` prints every refusal as
 `Error (CODE): <sentence>` and `simulator:exec` propagates the exit status, so `readControllerError`
-recognises the shape and `CLOUD_SIMULATOR_DEVICE_REFUSED` says the true thing: the command reached
-the device and the device is what said no.
+recognises the shape, and `CLOUD_SIMULATOR_DEVICE_REFUSED` says the true thing: the command reached
+the device, and the device is what said no.
 
 So the cloud path raises a **tool failure** for the rest, and folds three things into it:
 
-- `looksLikeWrapperCrash` — the `eas` under that name is named rather than quoted. A Rust backtrace
+- `looksLikeWrapperCrash`, so the `eas` under that name is named rather than quoted. A Rust backtrace
   printed under "What the tool printed" claims the EAS CLI reported it.
-- The needs-human classifier — a signed-out account becomes the `eas-login` handoff and **exit 7**,
+- The needs-human classifier, so a signed-out account becomes the `eas-login` handoff and **exit 7**,
   which is the band an agent reads before it reads a word (llp/0010 §Exit codes).
 - Otherwise, what the tool printed, plus the `--help` that is authoritative for an experimental CLI.
 
-The same classification runs on the *question* about the session, not only on the answer: a probe
+The same classification runs on the *question* about the session, not only on the answer. A probe
 that stopped because nobody is signed in carries the failed run, and `cloudSessionUnknownError`
 raises the same handoff. Signing in is the next step whether the login was found while driving a
 session or while asking about one.
@@ -1337,12 +1340,12 @@ account cannot have one".
 ### What the cloud backend can and cannot do
 
 The first cut said `runtime:stop` had no cloud form. **That was wrong**, and reading the controller
-is what corrected it: `agent-device close <appId>` closes the **named app** and leaves the device up
+is what corrected it. `agent-device close <appId>` closes the **named app** and leaves the device up
 [observed — `agent-device help close`, 0.20.10]. That is the same act as `simctl terminate` and
 `am force-stop`, so `runtime:stop --cloud` is now a command that runs rather than one that explains
-itself. `--shutdown`, which would also stop the simulator, is never passed: the distinction the
-first cut was protecting — one app versus the whole remote machine — is a **flag**, not the absence
-of a verb.
+itself. `--shutdown`, which would also stop the simulator, is never passed. The distinction the
+first cut was protecting, one app versus the whole remote machine, is a **flag** rather than the
+absence of a verb.
 
 With one app-ending verb in hand, the rest of the loop follows:
 
