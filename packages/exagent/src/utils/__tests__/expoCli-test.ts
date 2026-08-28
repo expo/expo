@@ -64,6 +64,21 @@ describe(resolveExpoCli, () => {
     expect(resolveExpoCli(projectRoot, ['start']).command).toBe(projectBin('expo.cmd'));
   });
 
+  // F113: falling back to `npx expo` here is not wrong so much as wasteful — it downloads an SDK
+  // the workspace already installed one directory up, and runs a version the project did not pin.
+  it(`should use an expo bin an npm workspace hoisted above the project`, () => {
+    const workspace = path.resolve('/workspace');
+    const app = path.join(workspace, 'apps', 'mobile');
+    const hoisted = path.join(workspace, 'node_modules', '.bin', 'expo');
+    vol.fromJSON({
+      [path.join(workspace, 'package.json')]: '{"workspaces":["apps/*"]}',
+      [path.join(app, 'package.json')]: '{"name":"mobile"}',
+      [hoisted]: '#!/usr/bin/env node',
+    });
+
+    expect(resolveExpoCli(app, ['start'])).toEqual({ command: hoisted, args: ['start'] });
+  });
+
   it(`should fall back to npx expo when the project has no local bin`, () => {
     vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
 

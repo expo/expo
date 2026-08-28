@@ -270,6 +270,28 @@ describe(readAuthPreflightAsync, () => {
       });
       expect(spawned).toHaveBeenCalledTimes(1);
     });
+
+    // F113: in an npm workspace the app's `expo` lives at the workspace root, so this rung had a
+    // free answer available and reported "nothing could answer" instead [observed — 2026-08-27,
+    // `status` in a hoisted monorepo printed auth `unknown` while `exagent whoami` named the user].
+    it('asks an expo an npm workspace hoisted above the project', async () => {
+      const workspace = path.resolve('/workspace');
+      const app = path.join(workspace, 'apps', 'mobile');
+      const hoisted = path.join(workspace, 'node_modules', '.bin', 'expo');
+      vol.fromJSON({
+        [path.join(workspace, 'package.json')]: '{"workspaces":["apps/*"]}',
+        [path.join(app, 'package.json')]: '{"name":"mobile"}',
+        [hoisted]: '#!/bin/sh',
+      });
+      const spawned = mockWhoami({ exitCode: 0, stdout: 'kudochien\n' });
+
+      await expect(readAuthPreflightAsync(app)).resolves.toEqual({
+        loggedIn: true,
+        user: 'kudochien',
+        source: 'expo whoami',
+      });
+      expect(spawned).toHaveBeenCalledWith(hoisted, ['whoami'], expect.anything());
+    });
   });
 
   it('spawns once however often it is asked', async () => {

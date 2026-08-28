@@ -101,10 +101,13 @@ there is a case for the symlink now. With it, a pnpm workspace app pins 14 files
 it (`../../pnpm-lock.yaml`, `../../pnpm-workspace.yaml`, `../../package.json`) included, which is
 the first time §the walk up to a hoisted lockfile has been exercised anywhere but a fixture.
 
-**What this does not reach: an npm-workspaces monorepo**, where npm hoists so completely that the app
-has no `node_modules` of its own at all. There `resolveFingerprintCli` finds no bin, so no hash is
-computed and there is nothing to cache — a larger defect than this one, in the project-local bin
-resolution every command shares rather than in this record (F113, wave 27, reported).
+**What this did not reach: an npm-workspaces monorepo**, where npm hoists so completely that the app
+has no `node_modules` of its own at all. There `resolveFingerprintCli` found no bin, so no hash was
+computed and there was nothing to cache — a larger defect than this one, in the project-local bin
+resolution every command shares rather than in this record [F113, wave 27, **fixed wave 28**:
+`src/utils/projectBin.ts`, [[0015-backend-selection-and-config]] §Resolving a project-local bin]. The
+record works there now: a second `status` in that repository answers `source: "cache"` revalidated
+against 13 files [observed — 2026-08-28].
 
 The schema version is **2**. Version 1 keyed on sha256 content hashes and carried a digest of the
 native directories; an entry written under those rules was revalidated against a different question,

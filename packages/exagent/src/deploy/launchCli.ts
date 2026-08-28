@@ -11,12 +11,11 @@
 // `--json` prints one `{ id, url, framework }` object on stdout, keeps human progress on stderr,
 // answers its own confirmation, and fails before uploading anything when nobody is signed in.
 
-import path from 'path';
 import { resolvePackageRunner } from '../utils/packageRunner';
 
 import { needsHumanError } from '../needsHuman/error';
-import { fileExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
+import { resolveProjectBin } from '../utils/projectBin';
 import { findExecutableOnPath, spawnSubprocessAsync } from '../utils/subprocess';
 import type { LaunchResult } from './types';
 
@@ -35,15 +34,18 @@ export interface CreateLaunchCli {
  * globally installed one; then the registry, which is how the tool is normally used and needs no
  * install step of its own.
  *
+ * "The project's own copy" is the walk of `src/utils/projectBin.ts`: a workspace installs a
+ * package's dependencies at its root, and a repository that pins a version pins it for the packages
+ * inside it — so a hoisted copy has to beat the machine's own `PATH` entry (F113, wave 28).
+ *
  * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
  */
 export function resolveCreateLaunchCli(
   projectRoot: string,
   { pathEnv }: { pathEnv?: string } = {}
 ): CreateLaunchCli {
-  const binName = process.platform === 'win32' ? 'create-launch.cmd' : 'create-launch';
-  const projectBin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  if (fileExistsSync(projectBin)) {
+  const projectBin = resolveProjectBin(projectRoot, 'create-launch');
+  if (projectBin) {
     return { command: projectBin, args: [] };
   }
 

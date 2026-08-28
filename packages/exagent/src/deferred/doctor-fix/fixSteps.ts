@@ -147,6 +147,8 @@ export const FIX_STEPS: FixStepDefinition[] = [
     timeClass: 'seconds',
     reason: 'Whatever babel, jest and their neighbours cached under node_modules for this project.',
     recoverable: 'rebuilt by the tools that wrote it',
+    // Exactly this directory, for the reason the `node-modules` step below states: a cache is
+    // deleted, not resolved, and an ancestor's belongs to the whole workspace.
     targets: ({ projectRoot }) => [
       { kind: 'path', path: path.join(projectRoot, 'node_modules', '.cache') },
     ],
@@ -205,6 +207,12 @@ export const FIX_STEPS: FixStepDefinition[] = [
     reason:
       'A partial or mismatched install is the most common cause of a red screen after an upgrade.',
     recoverable: 'reinstalled by this step',
+    // **Exactly this directory**, deliberately, where the bin resolvers walk up
+    // (`src/utils/projectBin.ts`, F113). This names a directory to *delete*, and a workspace root's
+    // `node_modules` holds the dependencies of every package in the repository — deleting it would
+    // put this step's `scope: 'project'` in writing and break the other packages in fact. The
+    // reinstall still runs at the lockfile's directory (`installCwd`), which is what puts back
+    // whatever the manager hoisted.
     targets: ({ projectRoot }) => [{ kind: 'path', path: path.join(projectRoot, 'node_modules') }],
     argv: ({ packageManager }) => installArgv(packageManager.name),
     cwd: ({ packageManager }) => packageManager.installCwd,

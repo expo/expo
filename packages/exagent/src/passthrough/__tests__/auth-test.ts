@@ -50,6 +50,27 @@ describe(resolveAuthCliAsync, () => {
     });
   });
 
+  // F113: an npm workspace has one `node_modules`, at the root. The app's own `expo` is in it, so
+  // the project *does* have an Expo CLI and answering from it costs nothing — the literal path
+  // missed it and fell through to a runner that downloads the SDK to read `~/.expo/state.json`.
+  it(`should use an expo CLI an npm workspace hoisted above the project`, async () => {
+    const workspace = path.resolve('/workspace');
+    const app = path.join(workspace, 'apps', 'mobile');
+    const hoisted = path.join(workspace, 'node_modules', '.bin', 'expo');
+    vol.fromJSON({
+      [path.join(workspace, 'package.json')]: '{"workspaces":["apps/*"]}',
+      [path.join(app, 'package.json')]: '{"name":"mobile"}',
+      [hoisted]: '#!/bin/sh',
+    });
+
+    await expect(resolveAuthCliAsync(app, { pathEnv: '' })).resolves.toEqual({
+      tool: 'expo',
+      source: 'project-expo',
+      command: hoisted,
+      prefixArgs: [],
+    });
+  });
+
   // The whole point: a directory with no expo package used to reach for `npx expo`, which
   // downloads the entire SDK to read a file the EAS CLI can read now.
   it(`should ask the EAS CLI through the package runner when there is no expo`, async () => {

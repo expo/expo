@@ -10,6 +10,12 @@ import { stripVTControlCharacters } from 'util';
 
 import { fileExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
+import {
+  describeProjectBinSearch,
+  lookupProjectBin,
+  resolveProjectBin,
+  type ProjectBinLookup,
+} from '../utils/projectBin';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { findMissingGeneratedTypesSync } from './generatedTypes';
 import { parseTscOutput } from './parseTscOutput';
@@ -37,7 +43,9 @@ export interface TypeScriptCli {
 /**
  * The `tsc` this project would run, or null when it has none.
  *
- * The project's own copy, and only that. There is deliberately no `npx typescript` fallback the
+ * The project's own copy, and only that — which in a workspace means an ancestor's `node_modules`
+ * as well as this directory's, because that is where the package manager installed what this
+ * package declared (`src/utils/projectBin.ts`). There is deliberately no `npx typescript` fallback the
  * way `doctor:check` falls back to `npx expo-doctor`: `expo-doctor` is a tool you run *at* a
  * project and its checks are its own, while a type check is a function of the project's compiler
  * version, its `tsconfig.json` and its `@types` — so a compiler fetched from the registry would
@@ -45,9 +53,8 @@ export interface TypeScriptCli {
  * to check, which is an answer.
  */
 export function resolveTypeScriptCli(projectRoot: string): TypeScriptCli | null {
-  const binName = process.platform === 'win32' ? 'tsc.cmd' : 'tsc';
-  const localBin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  return fileExistsSync(localBin) ? { command: localBin } : null;
+  const command = resolveProjectBin(projectRoot, 'tsc');
+  return command ? { command } : null;
 }
 
 /** The `tsconfig.json` the check would use, or null when the project has none. */
@@ -153,7 +160,7 @@ export async function runTypeCheckAsync(projectRoot: string): Promise<TypeCheckR
   const tsConfigPath = resolveTsConfigPath(projectRoot);
   if (!cli) {
     if (tsConfigPath != null || hasTypeScriptSourcesSync(projectRoot)) {
-      throw compilerMissingError(tsConfigPath != null);
+      throw compilerMissingError(tsConfigPath != null, lookupProjectBin(projectRoot, 'tsc'));
     }
     return nothingToCheck(
       `this project has no TypeScript in it — no tsconfig.json and no .ts or .tsx files of its own — so there is nothing to type-check`
@@ -211,16 +218,22 @@ export async function runTypeCheckAsync(projectRoot: string): Promise<TypeCheckR
  * of the compiler as the absence of TypeScript, which passes every gate that reads the exit code
  * and states something untrue in the same breath.
  *
+ * The **How** used to open with "install the project's dependencies", which is a guess about why
+ * nothing was found rather than a fact — and the wrong guess in a workspace, where the dependencies
+ * are installed and hoisted to a `node_modules` this used to never look in (F113, wave 28). What
+ * the search covered is a fact, so it is what the message carries now.
+ *
  * @param hasTsConfig whether it was the `tsconfig.json` that identified this as a TypeScript
  * project, or its `.ts` files — the two are different evidence and the reader should see theirs.
+ * @param lookup the search that came back empty, which is what says where it looked.
  */
-function compilerMissingError(hasTsConfig: boolean): CommandError {
+function compilerMissingError(hasTsConfig: boolean, lookup: ProjectBinLookup): CommandError {
   const error = new CommandError(
     'TYPECHECK_CLI_MISSING',
     [
       `This project is a TypeScript project with no TypeScript compiler installed, so nothing was type-checked.`,
-      `Why: ${hasTsConfig ? 'it has a tsconfig.json' : 'it has .ts or .tsx source files'}, but no node_modules/.bin/tsc. Nothing here falls back to a compiler from the registry, because a type check is a function of the version this project pinned, its tsconfig.json and its @types — one fetched from elsewhere would answer a question about a project that does not exist.`,
-      `How: install the project's dependencies ("npm install"), which is the usual cause when node_modules is missing entirely. If TypeScript is genuinely not a dependency yet, add it with "npx exagent install typescript --dev".`,
+      `Why: ${hasTsConfig ? 'it has a tsconfig.json' : 'it has .ts or .tsx source files'}, but ${describeProjectBinSearch('tsc', lookup)} — so no copy of it is installed for this project, in its own node_modules or in a workspace's. Nothing here falls back to a compiler from the registry, because a type check is a function of the version this project pinned, its tsconfig.json and its @types — one fetched from elsewhere would answer a question about a project that does not exist.`,
+      `How: add TypeScript to this project with "npx exagent install typescript --dev". If it is already in package.json, then its dependencies have not been installed since — run your package manager's install, at the workspace root when this is a workspace package.`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx exagent install typescript --dev';

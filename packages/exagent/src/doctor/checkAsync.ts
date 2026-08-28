@@ -3,11 +3,10 @@
 //
 // The split is: expo-doctor diagnoses, `exagent` normalizes. Nothing here re-implements a check.
 
-import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
-import { fileExistsSync } from '../utils/dir';
 import { resolvePackageRunner } from '../utils/packageRunner';
+import { resolveProjectBin } from '../utils/projectBin';
 import { CommandError } from '../utils/errors';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { parseDoctorOutput } from './parseDoctorOutput';
@@ -37,11 +36,15 @@ export const DOCTOR_ARGS = ['--verbose'];
  * The project's own copy wins, so the checks match the SDK the project is on; the registry is the
  * fallback, because `expo-doctor` is normally used through `npx` and is not a dependency of most
  * projects. Mirrors `resolveExpoCli`.
+ *
+ * "The project's own copy" is the walk of `src/utils/projectBin.ts`, so a workspace package finds
+ * the copy its install hoisted. Here the old literal path degraded quietly rather than failing —
+ * the registry rung answered, with a download and a version of the checks the project did not
+ * choose (F113, wave 28).
  */
 export function resolveExpoDoctorCli(projectRoot: string): ExpoDoctorCli {
-  const binName = process.platform === 'win32' ? 'expo-doctor.cmd' : 'expo-doctor';
-  const localBin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  if (fileExistsSync(localBin)) {
+  const localBin = resolveProjectBin(projectRoot, 'expo-doctor');
+  if (localBin) {
     return { command: localBin, args: [] };
   }
   // The runner the caller reached this CLI through, so a Bun project stays on Bun (`packageRunner`).

@@ -1,10 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-
 import { debugEvent } from '../events';
 import { CommandError } from './errors';
 import { runInheritedAsync } from './inheritedRun';
 import { resolvePackageRunner } from './packageRunner';
+import { resolveProjectBin } from './projectBin';
 import { spawnSubprocessAsync, type CapturedOutput, type SubprocessResult } from './subprocess';
 
 /** The `expo` CLI invocation to spawn. */
@@ -21,12 +19,16 @@ export interface ExpoCliCommand {
  * `exagent` never imports `@expo/cli`; it drives the `expo` bin as a subprocess, so the
  * project keeps controlling which SDK version runs.
  *
+ * The bin is looked for the way the package manager installed it — this `node_modules/.bin` and
+ * every ancestor's (`./projectBin.ts`) — because an npm workspace has exactly one, at its root. The
+ * runner fallback below is what a hoisted project used to get instead: a download of an SDK the
+ * repository had already installed, at whatever version the registry serves (F113, wave 28).
+ *
  * @see llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints, item 5
  */
 export function resolveExpoCli(projectRoot: string, args: string[]): ExpoCliCommand {
-  const binName = process.platform === 'win32' ? 'expo.cmd' : 'expo';
-  const localBin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  if (fs.existsSync(localBin)) {
+  const localBin = resolveProjectBin(projectRoot, 'expo');
+  if (localBin) {
     return { command: localBin, args };
   }
   // Projects that have not installed their dependencies yet still get a working command, through

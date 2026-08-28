@@ -133,6 +133,126 @@ describe('a project inside a workspace', () => {
     expect(report.project.sdkVersion).toBe('54.0.0');
   });
 
+  // @ref llp/0015-backend-selection-and-config.rfc.md §Resolving a project-local bin
+  // The shape F113 was found in: `workspaces: ["apps/*"]` plus a plain `npm install`, which hoists
+  // so completely that `apps/mobile/node_modules` does not exist at all. Every resolver that built
+  // the literal path `<projectRoot>/node_modules/.bin/<name>` reported its tool missing in a
+  // repository where the install had just succeeded [observed — 2026-08-27, wave 27 live pass].
+  //
+  // The stub bins go where npm puts them here: the **workspace root's** `node_modules/.bin`.
+  describe('with its dependencies hoisted to the workspace root', () => {
+    /**
+     * A hoisted npm workspace holding one app, built by moving the fixture's own `node_modules` up.
+     *
+     * Moving rather than copying is the point: the app is left without one, which is what makes
+     * this shape different from the workspace above and is the whole of what F113 was about.
+     */
+    async function hoistedWorkspaceAsync(): Promise<{ workspace: string; projectRoot: string }> {
+      const workspace = await fs.promises.realpath(
+        await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-hoisted-'))
+      );
+      await fs.promises.writeFile(
+        path.join(workspace, 'package.json'),
+        JSON.stringify({ name: 'monorepo', private: true, workspaces: ['apps/*'] }, null, 2)
+      );
+
+      const projectRoot = path.join(workspace, 'apps', 'mobile');
+      await fs.promises.mkdir(projectRoot, { recursive: true });
+      await fs.promises.cp(
+        path.resolve(__dirname, '..', 'fixtures', 'dev-client-fresh-app'),
+        projectRoot,
+        { recursive: true, verbatimSymlinks: true }
+      );
+
+      const hoisted = path.join(workspace, 'node_modules');
+      await fs.promises.rename(path.join(projectRoot, 'node_modules'), hoisted);
+
+      const binDir = path.join(hoisted, '.bin');
+      await installStubBinAsync(binDir, 'expo', path.join(hoisted, 'expo', 'bin', 'cli'));
+      await installStubBinAsync(
+        binDir,
+        'fingerprint',
+        path.join(hoisted, '@expo', 'fingerprint', 'bin', 'cli')
+      );
+      // The PATH stub stays beside the app, because `spawnExagent` builds it from the `cwd`.
+      await installStubBinAsync(
+        path.join(projectRoot, '.stub-bin'),
+        'expo',
+        path.join(hoisted, 'expo', 'bin', 'cli')
+      );
+
+      return { workspace, projectRoot };
+    }
+
+    /** A `tsc` that answers the way a clean project's does: nothing on stdout, exit 0. */
+    async function installStubTypeScriptAsync(workspace: string): Promise<void> {
+      const packageDir = path.join(workspace, 'node_modules', 'typescript', 'bin');
+      await fs.promises.mkdir(packageDir, { recursive: true });
+      const script = path.join(packageDir, 'tsc');
+      await fs.promises.writeFile(script, '#!/usr/bin/env node\nprocess.exit(0);\n');
+      await installStubBinAsync(path.join(workspace, 'node_modules', '.bin'), 'tsc', script);
+    }
+
+    it('type-checks with the compiler the workspace installed', async () => {
+      const { workspace, projectRoot } = await hoistedWorkspaceAsync();
+      await installStubTypeScriptAsync(workspace);
+      await fs.promises.writeFile(path.join(projectRoot, 'tsconfig.json'), '{}');
+      await fs.promises.writeFile(path.join(projectRoot, 'app.ts'), 'export const a = 1;\n');
+
+      const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+        reject: false,
+      });
+
+      // The failure this replaces was exit 1 `TYPECHECK_CLI_MISSING` — a tool error, not a verdict.
+      expect(result.all).not.toContain('TYPECHECK_CLI_MISSING');
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout).checked).toBe(true);
+    });
+
+    // The compiler really is absent here, and the message must say what it searched instead of
+    // telling a reader with a full node_modules to install their dependencies.
+    it('says what it searched when no ancestor has a compiler', async () => {
+      const { projectRoot } = await hoistedWorkspaceAsync();
+      await fs.promises.writeFile(path.join(projectRoot, 'tsconfig.json'), '{}');
+
+      const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(1);
+      const { error } = JSON.parse(result.stdout);
+      expect(error.code).toBe('TYPECHECK_CLI_MISSING');
+      expect(error.message).toContain('every directory above it');
+      expect(error.message).not.toContain(`install the project's dependencies`);
+    });
+
+    it('hashes the native surface with the fingerprint CLI the workspace installed', async () => {
+      const { projectRoot } = await hoistedWorkspaceAsync();
+
+      const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(report.freshness.hash).toEqual(expect.any(String));
+      expect(report.freshness.error).toBeUndefined();
+      expect(result.all).not.toContain('no fingerprint tool');
+    });
+
+    // `status` reported `auth unknown (nothing could answer)` in a directory where `exagent whoami`
+    // answers, because the project's own `expo` was one directory up (F113).
+    it('answers the auth section from the expo the workspace installed', async () => {
+      const { projectRoot } = await hoistedWorkspaceAsync();
+
+      const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout).auth).toMatchObject({
+        loggedIn: true,
+        source: 'expo whoami',
+      });
+    });
+  });
+
   // A command run from a directory *below* the app still means the app: an agent's shell is very
   // often in `src/` or `app/`.
   it('resolves the app from a directory inside it', async () => {

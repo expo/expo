@@ -26,11 +26,11 @@ import os from 'os';
 import path from 'path';
 
 import type { Command } from '../types';
-import { fileExistsSync } from '../utils/dir';
 import { easCliInvocation } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { type Invoker } from '../utils/invoker';
 import { resolvePackageRunner } from '../utils/packageRunner';
+import { resolveProjectBin } from '../utils/projectBin';
 
 /**
  * The commands this module owns.
@@ -126,11 +126,16 @@ export async function resolveAuthCliAsync(
   };
 }
 
-/** A `node_modules/.bin` entry of this project, or null when it has none. */
+/**
+ * A `node_modules/.bin` entry installed for this project, or null when it has none.
+ *
+ * The walk of `src/utils/projectBin.ts` rather than this directory alone: in an npm workspace the
+ * app's own `expo` is at the workspace root, so the literal path found nothing and these commands
+ * fell through to a runner that downloads an SDK to read one JSON file — the exact cost this module
+ * exists to avoid (F113, wave 28).
+ */
 function projectBin(projectRoot: string, name: string): string | null {
-  const binName = process.platform === 'win32' ? `${name}.cmd` : name;
-  const bin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  return fileExistsSync(bin) ? bin : null;
+  return resolveProjectBin(projectRoot, name);
 }
 
 /**
@@ -227,12 +232,12 @@ export function authFallbackNotice(cli: AuthCli, command: string): string | null
   }
   if (cli.source === 'runner-expo') {
     return [
-      `Using the Expo CLI (${authCliLabel(cli)}) for "${command}": this directory has no expo package, and the EAS CLI has no "${command}".`,
+      `Using the Expo CLI (${authCliLabel(cli)}) for "${command}": no expo package is installed for this directory or any above it, and the EAS CLI has no "${command}".`,
       `${cli.runner ?? 'npx'} will download the expo package first, which takes a minute. This is the one auth command that needs it — "login", "logout" and "whoami" answer from the EAS CLI without downloading anything.`,
     ].join('\n');
   }
   return [
-    `Using the EAS CLI (${authCliLabel(cli)}) for "${command}": this directory has no expo package.`,
+    `Using the EAS CLI (${authCliLabel(cli)}) for "${command}": no expo package is installed for this directory or any above it.`,
     `Both CLIs sign in to the same account — the session lives in ${sessionFilePath()} and is shared between them [observed — @expo/cli "api/user/UserSettings.ts" and eas-cli "utils/paths.js" resolve the same file].`,
   ].join('\n');
 }

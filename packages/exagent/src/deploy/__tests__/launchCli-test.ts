@@ -69,6 +69,20 @@ describe(resolveCreateLaunchCli, () => {
     });
   });
 
+  // F113: the project's copy in an npm workspace is at the workspace root, and it must still beat
+  // the machine's own — a repository that pins a version pins it for its packages too.
+  it(`should prefer a create-launch an npm workspace hoisted above the project, over PATH`, () => {
+    const workspace = path.resolve('/workspace');
+    const app = path.join(workspace, 'apps', 'mobile');
+    const hoisted = path.join(workspace, 'node_modules', '.bin', 'create-launch');
+    vol.fromJSON({ [hoisted]: '#!/bin/sh', '/usr/local/bin/create-launch': '#!/bin/sh' });
+
+    expect(resolveCreateLaunchCli(app, { pathEnv: '/usr/local/bin' })).toEqual({
+      command: hoisted,
+      args: [],
+    });
+  });
+
   it(`should fall back to a create-launch on PATH`, () => {
     vol.fromJSON({ '/usr/local/bin/create-launch': '#!/bin/sh' });
 

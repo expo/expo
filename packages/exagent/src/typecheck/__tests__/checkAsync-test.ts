@@ -10,6 +10,9 @@ jest.mock('../../utils/subprocess', () => ({ spawnSubprocessAsync: jest.fn() }))
 
 const spawn = spawnSubprocessAsync as jest.MockedFunction<typeof spawnSubprocessAsync>;
 const projectRoot = '/project';
+/** A hoisted npm workspace: the app has no `node_modules` of its own (F113). */
+const workspaceRoot = '/workspace';
+const hoistedProjectRoot = `${workspaceRoot}/apps/mobile`;
 
 /** A project with a compiler and a config, i.e. one there is something to check in. */
 function typeScriptProject(): void {
@@ -34,6 +37,22 @@ describe(resolveTypeScriptCli, () => {
 
     expect(resolveTypeScriptCli(projectRoot)).toEqual({
       command: `${projectRoot}/node_modules/.bin/tsc`,
+    });
+  });
+
+  // F113: an npm workspace hoists so completely that the app has no `node_modules` of its own, and
+  // the compiler the app pinned is installed at the workspace root. It is still the project's own
+  // compiler — Node resolves it from here — so the "no registry fallback" rule is untouched.
+  it(`should find the compiler an npm workspace hoisted above the project`, () => {
+    vol.fromJSON({
+      [`${workspaceRoot}/package.json`]: '{"workspaces":["apps/*"]}',
+      [`${workspaceRoot}/node_modules/.bin/tsc`]: '',
+      [`${hoistedProjectRoot}/package.json`]: '{"name":"mobile"}',
+      [`${hoistedProjectRoot}/tsconfig.json`]: '{}',
+    });
+
+    expect(resolveTypeScriptCli(hoistedProjectRoot)).toEqual({
+      command: `${workspaceRoot}/node_modules/.bin/tsc`,
     });
   });
 
@@ -139,6 +158,27 @@ describe(runTypeCheckAsync, () => {
       suggestedCommand: 'npx exagent install typescript --dev',
     });
     expect(spawn).not.toHaveBeenCalled();
+  });
+
+  // The other half of F113: the advice. A reader whose dependencies *are* installed — hoisted to a
+  // workspace root that does not have TypeScript in it — was told to install them, which is the one
+  // thing that cannot help. What the search covered replaces the guess.
+  it(`should say what was searched rather than assume nothing is installed`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      [`${projectRoot}/tsconfig.json`]: '{}',
+    });
+
+    const error = await runTypeCheckAsync(projectRoot).catch((error) => error);
+
+    expect(error.code).toBe('TYPECHECK_CLI_MISSING');
+    expect(error.message).toContain('every directory above it');
+    expect(error.message).not.toContain(`install the project's dependencies`);
+    // The What/Why/How shape of the contract is unchanged; only the How's claim is.
+    expect(error.message).toContain('nothing was type-checked');
+    expect(error.message).toContain('Why:');
+    expect(error.message).toContain('How:');
+    expect(error.suggestedCommand).toBe('npx exagent install typescript --dev');
   });
 
   // Evidence from the sources alone: a project can lose its `tsconfig.json` and still be one.

@@ -73,6 +73,24 @@ describe(resolveFingerprintCli, () => {
     expect(resolveFingerprintCli(projectRoot)).toBe(projectBin('fingerprint.cmd'));
   });
 
+  // F113: npm hoists a workspace's dependencies to the workspace root, so the app's own
+  // `node_modules` does not exist and the literal path found nothing — while `npm install` in that
+  // repository had succeeded and put `fingerprint` one directory up. An ancestor's `node_modules`
+  // *is* this project's dependency tree, so the "no npx fallback" rule holds: what the walk finds
+  // is still the version this project resolves, and a hash from it is comparable.
+  it(`should resolve a CLI an npm workspace hoisted above the project`, () => {
+    const workspace = path.resolve('/workspace');
+    const app = path.join(workspace, 'apps', 'mobile');
+    const hoisted = path.join(workspace, 'node_modules', '.bin', 'fingerprint');
+    vol.fromJSON({
+      [path.join(workspace, 'package.json')]: '{"workspaces":["apps/*"]}',
+      [path.join(app, 'package.json')]: '{"name":"mobile"}',
+      [hoisted]: '#!/bin/sh',
+    });
+
+    expect(resolveFingerprintCli(app)).toBe(hoisted);
+  });
+
   it(`should return null when the project does not ship the CLI`, () => {
     vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
 

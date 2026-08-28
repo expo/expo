@@ -54,6 +54,10 @@ export async function readJsonFileAsync<T>(filePath: string): Promise<T | null> 
  * point (or whose `exports` hides `package.json`) must still be found, and no project code may
  * be executed.
  *
+ * The walk stops at the filesystem root, which is the stop rule the whole package shares —
+ * `resolveProjectBin` (`src/utils/projectBin.ts`) states why a workspace root is not a thing a
+ * filesystem marks, and `detectPackageManager` stops there for the same reason.
+ *
  * @returns the package directory, or `null` when the package is not installed.
  */
 export async function resolvePackageRootAsync(

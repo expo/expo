@@ -9,10 +9,8 @@
 // Nothing here ever throws. A preflight that cannot run is not an answer of "no": it is no answer,
 // and the caller falls back to recognising the failure when it happens (layer 3).
 
-import path from 'path';
-
-import { fileExistsSync } from '../utils/dir';
 import { easCliArgs, mayDownloadEasCli, resolveEasCli } from '../utils/easCli';
+import { resolveProjectBin } from '../utils/projectBin';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import { looksLikeWrapperCrash } from '../utils/wrapperCrash';
 
@@ -131,18 +129,22 @@ async function askEasAsync(
 /**
  * What the **project's own** `expo whoami` said, or null when it said nothing.
  *
- * The project's `node_modules/.bin/expo` and nothing else. `resolveExpoCli` would fall back to a
+ * The project's own `expo` bin and nothing else. `resolveExpoCli` would fall back to a
  * package runner, which downloads the whole SDK to read one JSON file [observed — 2026-08-26,
  * `passthrough/auth.ts`], and `status` promises to be instant: a report is not worth a minute and a
  * network install.
+ *
+ * "The project's own" is the walk of `src/utils/projectBin.ts`, which is what makes this rung reach
+ * a workspace: npm installs a package's dependencies at the workspace root, so this used to decline
+ * a free answer and report auth as unknown in a repository where `exagent whoami` names the user
+ * [observed — 2026-08-27, F113].
  */
 async function askProjectExpoAsync(
   projectRoot: string,
   timeoutMs: number
 ): Promise<AuthPreflight | null> {
-  const binName = process.platform === 'win32' ? 'expo.cmd' : 'expo';
-  const bin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  if (!fileExistsSync(bin)) {
+  const bin = resolveProjectBin(projectRoot, 'expo');
+  if (!bin) {
     return null;
   }
 

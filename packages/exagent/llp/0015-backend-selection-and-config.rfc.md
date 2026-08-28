@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** the plan engine (`src/plan/decide.ts`, `src/plan/resolveAsync.ts`, `src/plan/runTarget.ts`); the toolchain probe and its vocabulary (`src/toolchain/`); the developer config (`src/settings/`); EAS CLI resolution (`src/utils/easCli.ts`, `src/utils/packageRunner.ts`, `src/utils/processGroup.ts`); `exagent dev` (`src/dev/`); `exagent status` (`src/status/`); the change-class follow-ups (`src/followups/change.ts`; `exagent impact` carried these until it was folded into `status`, 2026-08-26)
+**Systems:** the plan engine (`src/plan/decide.ts`, `src/plan/resolveAsync.ts`, `src/plan/runTarget.ts`); the toolchain probe and its vocabulary (`src/toolchain/`); the developer config (`src/settings/`); EAS CLI resolution (`src/utils/easCli.ts`, `src/utils/packageRunner.ts`, `src/utils/processGroup.ts`); project-local bin resolution (`src/utils/projectBin.ts`, and its callers `src/utils/expoCli.ts`, `src/typecheck/checkAsync.ts`, `src/project/fingerprint.ts`, `src/passthrough/auth.ts`, `src/needsHuman/preflight.ts`, `src/doctor/checkAsync.ts`, `src/deploy/launchCli.ts`); `exagent dev` (`src/dev/`); `exagent status` (`src/status/`); the change-class follow-ups (`src/followups/change.ts`; `exagent impact` carried these until it was folded into `status`, 2026-08-26)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-26
 **Related:** [[0004-smart-start-and-project-state]], [[0008-guardrails]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0011-impact-and-freshness]]
@@ -260,6 +260,60 @@ rejected: it would turn the once-per-machine install cost weighed above into a p
 rests on two other tools' undocumented environment variables. The report guard that goes with the
 mutex — for a directory held by a sibling process this one cannot serialize — is
 [[0021-honest-reports]] §The runner is not the service.
+
+### Resolving a project-local bin
+
+The EAS CLI is the one member of the family this CLI never resolves as a file. Every other one it
+does — `expo`, `tsc`, `fingerprint`, `expo-doctor`, `create-launch` — and each resolver spelled the
+lookup itself, as the literal path `<projectRoot>/node_modules/.bin/<name>`. **That path is one
+layout out of several, and it is not the one an npm workspace produces at all** [F113, observed —
+2026-08-27, wave 27's live pass over project shapes: a repository with `workspaces: ["apps/*"]` and a
+plain `npm install`, where `apps/mobile/node_modules` does not exist]. What the reader got there:
+
+| command | reported | truth |
+| --- | --- | --- |
+| `typecheck --json` | exit 1 `TYPECHECK_CLI_MISSING`, "install the project's dependencies" | they were installed, and `tsc` was at the workspace root |
+| `status` freshness | `no fingerprint tool … install @expo/fingerprint` | installed, one directory up; no hash was computed at all |
+| `status` auth | `unknown (nothing could answer)` | `exagent whoami` names the account in the same directory |
+| `doctor`, `deploy --native` | nothing — they downloaded the tool | the repository had already installed it |
+
+The last row is why this is worth a section rather than a patch: two of the six *degraded quietly*,
+which is the failure mode that survives a test suite. The fix is one walk, `src/utils/projectBin.ts`,
+and the three decisions in it are:
+
+**The walk goes up, and the nearest copy wins.** That is what a package manager does and what Node
+does. Nothing about it loosens "the project's own copy": an ancestor's `node_modules` is where the
+manager put *this package's* declared dependencies — a workspace has one tree, not one per package —
+so the resolvers that refuse a copy from the registry keep refusing it. `resolveTypeScriptCli` and
+`resolveFingerprintCli` are the two with something to lose here, because a type check and a hash are
+only comparable at the version the project pinned ([[0001-agentic-cli-on-expo-cli]] §Constraints item
+5), and the walk answers with a version the project resolves rather than one fetched from elsewhere.
+A global install still is not that, and is still not consulted.
+
+**The stop is the filesystem root**, not the workspace root. Nothing on disk marks a workspace: a
+`workspaces` field, a `pnpm-workspace.yaml`, a lockfile and a `.git` directory disagree in real
+repositories, and every disagreement would be a project whose installed tool this CLI declines to
+find while `npm run` finds it. `resolvePackageRootSync` (`src/project/nodeModules.ts`) and
+`detectPackageManager` (`src/deferred/doctor-fix/packageManager.ts`) already stopped there, so this
+is the package's one stop rule rather than a third opinion. The cost of the longer walk is one
+`statSync` per ancestor, about ten on a real machine, on a path that then spawns a subprocess.
+
+**A failed search says what it covered.** The advice was a guess about *why* nothing was found —
+"install the project's dependencies" — and in the shape above it was addressed to a reader whose
+dependencies were installed. The lookup carries the directories it visited, so the message states the
+directory it started in, that it went up, and where it stopped, and the install line moves to the
+one thing that is actually missing (`describeProjectBinSearch`). The What/Why/How contract of each
+call site is otherwise unchanged.
+
+**What is deliberately still literal**: the `node_modules` that `doctor:fix` deletes
+(`src/deferred/doctor-fix/fixSteps.ts`). It names a directory to remove rather than a tool to run,
+and a workspace root's holds every other package's dependencies — the reinstall that follows already
+runs at the lockfile's directory, which is what puts a hoisted tree back.
+
+Proven in the shape it was found in [observed — 2026-08-28, the same npm-workspaces repository]:
+`typecheck` exits 0 having run the compiler, and `status` reports a computed hash, the signed-in
+account through `expo whoami`, and — on the second run — a cache record revalidated against 13 files,
+which is [[0023-fingerprint-caching]]'s subject reaching this shape for the first time.
 
 ## The run target
 
