@@ -49,6 +49,15 @@ beforeEach(() => {
   writeProject();
 });
 
+// One case per layout a package manager actually writes, because a null answer here turns the whole
+// cross-run cache off and the failure is invisible — the report says `computed`, which is true.
+// Each was verified live before it was written as a fixture [observed — 2026-08-28, wave 27]:
+//
+// | manager | where `@expo/fingerprint` is | case below |
+// | --- | --- | --- |
+// | npm, bun, yarn (flat) | `<project>/node_modules/@expo/fingerprint` | "the project's own" |
+// | npm/yarn workspaces (hoisted) | an ancestor's `node_modules` | "walks up to a workspace root" |
+// | pnpm (isolated) | beside `expo` in the virtual store, through a symlink | the last two |
 describe(resolveFingerprintCliVersion, () => {
   it("reads the version out of the project's own @expo/fingerprint", () => {
     expect(resolveFingerprintCliVersion(projectRoot)).toBe('0.20.10');

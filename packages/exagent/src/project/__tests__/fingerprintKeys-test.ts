@@ -259,6 +259,41 @@ describe(buildFingerprintKeyManifestAsync, () => {
     expect(manifestsMatch(before, after)).toBe(false);
   });
 
+  // The general form of F112, and the reason the icon case is not the whole fix: a path the config
+  // *points at* that exists and yields no stamp used to leave the manifest with nothing said. No
+  // entry is no mismatch, so whatever is behind it can change freely — and `uncovered` claimed the
+  // assets were covered. A directory too deep to walk is the case left after the expansion above;
+  // an unreadable one is the other. Either way the manifest now says which path it dropped.
+  it('names a path the config points at that it could not stamp', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/app.json`]: JSON.stringify({
+        expo: { icon: './assets/deep' },
+      }),
+      // Six levels, past the four the walk goes: the bottom is reached as a directory rather than
+      // as a file, so it cannot be stamped.
+      [`${projectRoot}/assets/deep/a/b/c/d/e/icon.png`]: 'icon',
+    });
+
+    const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
+
+    expect(manifest.uncovered.join('\n')).toMatch(/assets\/deep/);
+  });
+
+  // The other direction, asserted as a limit: a config pointing at a file that is simply *not there*
+  // is not a gap. Its absence is already pinned, because a file that later appears grows the set and
+  // `manifestsMatch` requires the same set — so naming it would be a caveat about nothing.
+  it('does not name a path that is merely absent', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/app.json`]: JSON.stringify({ expo: { icon: './assets/missing.png' } }),
+    });
+
+    const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
+
+    expect(manifest.uncovered.join('\n')).not.toMatch(/missing\.png/);
+  });
+
   it('records the patch files patch-package applies', async () => {
     vol.fromJSON({
       [`${projectRoot}/package.json`]: '{"name":"app"}',

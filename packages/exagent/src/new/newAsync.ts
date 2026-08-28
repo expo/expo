@@ -8,6 +8,7 @@ import { followUpsEnabled, reportFollowUps } from '../followups';
 import { buildNewFollowUps } from '../followups/new';
 import type { FollowUp } from '../followups/types';
 import * as Log from '../log';
+import { directoryExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { isInteractive } from '../utils/interactive';
 import { spawnSubprocessAsync, type SubprocessOptions } from '../utils/subprocess';
@@ -47,6 +48,11 @@ export interface NewProjectReport {
  */
 export async function createNewProjectAsync(cwd: string, options: NewOptions): Promise<number> {
   const projectRoot = path.resolve(cwd, options.directory);
+  // Read before anything is spawned, because afterwards it cannot be told: this is what makes
+  // `--no-git` safe to act on (`./git.ts` §removeCreateExpoRepositoryAsync). A `.git` inside a
+  // directory this command created is create-expo's own; one inside a directory that was already
+  // here may be somebody's history.
+  const createdProjectDirectory = !directoryExistsSync(projectRoot);
   const cli = resolveCreateExpoCli();
   const args = [...cli.args, ...buildCreateExpoArgs(options.directory, options)];
   debugEvent('create_expo', { command: cli.command, args });
@@ -86,7 +92,7 @@ export async function createNewProjectAsync(cwd: string, options: NewOptions): P
     );
   }
 
-  const git = await resolveGitStateAsync(projectRoot, options);
+  const git = await resolveGitStateAsync(projectRoot, { ...options, createdProjectDirectory });
   event('created', {
     projectRoot,
     name,

@@ -186,6 +186,7 @@ export async function buildFingerprintKeyManifestAsync(
   }
 
   const external = await readStaticConfigAssetsAsync(projectRoot);
+  const configAssets = new Set<string>();
   if (external.truncated) {
     cacheable = false;
     // A count is not claimed, because the walk stops at the cap rather than finishing: saying "the
@@ -196,18 +197,38 @@ export async function buildFingerprintKeyManifestAsync(
   } else {
     for (const file of external.paths) {
       candidates.add(file);
+      configAssets.add(file);
     }
   }
 
   const files: Record<string, string> = {};
+  // Paths the config *claims* and this could not stamp. See the block below for why only these.
+  const unstampable: string[] = [];
   await Promise.all(
     [...candidates].map(async (absolute) => {
       const stamp = await stampFileAsync(absolute);
       if (stamp) {
         files[manifestKey(projectRoot, absolute)] = stamp;
+      } else if (configAssets.has(absolute) && (await existsAsync(absolute))) {
+        unstampable.push(manifestKey(projectRoot, absolute));
       }
     })
   );
+
+  // @ref llp/0023-fingerprint-caching.rfc.md §What a cached hash is revalidated against
+  //
+  // The silent-vanish class, closed [F112, wave 27]. A candidate that yields no stamp leaves no
+  // entry, and no entry is no mismatch — so whatever is behind it may change while the record still
+  // revalidates. That is fine for a **sentinel**, which is a question ("is there an `eas.json`?")
+  // whose "no" is itself pinned: one appearing grows the set, and `manifestsMatch` requires the same
+  // set. It is not fine for a path the config **points at**, which is a claim that something is
+  // there. So the two are told apart, and only the second is reported — and only when the path
+  // exists, because a config naming a file that is simply absent is the pinned "no" again.
+  if (unstampable.length) {
+    uncovered.push(
+      `${unstampable.sort().join(', ')} — this project's config points at ${unstampable.length === 1 ? 'it' : 'them'} and nothing there could be stamped, so ${unstampable.length === 1 ? 'its contents are' : 'their contents are'} outside this key and bounded by the cache's expiry alone`
+    );
+  }
 
   // Named whether or not this project has them: a managed project can gain them at any time, by way
   // of `expo prebuild`, and this manifest would not notice either the directories or their contents.
@@ -440,4 +461,17 @@ function manifestKey(projectRoot: string, absolute: string): string {
 
 function existsAsFile(file: string): boolean {
   return !!fs.statSync(file, { throwIfNoEntry: false })?.isFile();
+}
+
+/**
+ * Whether anything is at this path — a file, a directory, or something that is neither.
+ *
+ * `lstat`, so a dangling symlink counts as *present*: the config points at it, and what it points
+ * to can be replaced without this key noticing. That is exactly the case worth naming.
+ */
+async function existsAsync(target: string): Promise<boolean> {
+  return await fs.promises.lstat(target).then(
+    () => true,
+    () => false
+  );
 }

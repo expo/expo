@@ -961,6 +961,20 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   (llp/0021 §A generated file is not a mistake in the code). Worked around by *reporting* the case:
   nothing in this CLI writes another package's template.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
+
+`create-expo`:
+
+- **A `--no-git` flag.** `create-expo` runs `git init` and commits, unconditionally, and its help lists
+  `--yes`, `--no-install`, `--no-agents-md`, `--template`, `--example`, `--version` and `--help` and
+  nothing for git [observed — `create-expo@latest --help`, 2026-08-28]. So a wrapper that offers "no
+  repository" cannot ask for one, and `exagent new --no-git` used to *report* a skip beside a `.git`
+  holding an "Initial commit" — a false statement in a documented `--json` field (F110). It is not
+  hypothetical demand: a project about to be nested in an existing repository, and a scratch project
+  for a test tier that asserts it is outside every git checkout (llp/0022 §live-local), both want it.
+  Worked around by **removing** the repository create-expo made, and only ever that one:
+  `src/new/git.ts` §`removeCreateExpoRepositoryAsync` acts only when this command created the project
+  directory, so a `new` into a directory that was already here keeps whatever history it had and the
+  report says so instead. A flag upstream would retire the removal and the guard with it.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.
 - **Do not print the app's deep-link scheme as the dev server's URL.** With the v2 tunnel active
   (`EXPO_UNSTABLE_TUNNEL_V2=1`, or a webcontainer), `BundlerDevServer.getDevServerUrl()` returns

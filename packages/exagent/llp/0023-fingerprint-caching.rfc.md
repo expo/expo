@@ -177,6 +177,17 @@ of it is the number of `stat` calls. The manifest of a default scaffold goes fro
 The count in the over-cap sentence went with it: the walk stops at the cap rather than finishing, so
 it no longer claims a number it never measured.
 
+**And the class it belonged to is closed, not just the icon.** What made that defect quiet was that a
+candidate yielding no stamp leaves *no entry*, and no entry is no mismatch. That is correct for a
+**sentinel**, which is a question whose "no" is itself pinned — an `eas.json` appearing grows the set,
+and `manifestsMatch` requires the same set. It is wrong for a path the config **points at**, which is
+a claim that something is there. The two are now told apart: a config-referenced path that **exists**
+and cannot be stamped is named in `uncovered`, by its own relative path, so the report says which
+one it dropped. A directory too deep for the walk and an unreadable one are what is left in that
+branch; a dangling symlink counts as present, because what it points at can be replaced without this
+key noticing. A path that is merely *absent* is deliberately **not** named — its absence is the pinned
+"no" again, and a caveat about nothing is noise.
+
 `manifestsMatch` requires the same set at the same stamps. A sentinel that *appeared* or
 *disappeared* is a miss, not a partial match.
 
@@ -376,9 +387,10 @@ Unit, `src/project/__tests__/`:
   a match, and a file touched without being changed is a mismatch; the walk up to a hoisted lockfile;
   the files a static config points at, **including the ones inside a directory it points at**, in a
   pair — the entries appear, and a file inside the bundle changing makes the two manifests disagree,
-  because only the second of those is what the record is believed on; `patches/`; the
-  dynamic-config caveat; and the native directories, whose absence from the key is pinned by four
-  cases so nobody meets it as a surprise.
+  because only the second of those is what the record is believed on; the silent-vanish class in
+  **both** directions, a referenced path that exists and cannot be stamped being named and one that
+  is merely absent deliberately not; `patches/`; the dynamic-config caveat; and the native
+  directories, whose absence from the key is pinned by four cases so nobody meets it as a surprise.
 - `fingerprintCache-test.ts` — hit, and a miss for each row of the invalidation matrix; the TTL; the
   `keyKind` and `ageMs` a hit reports; a corrupt record; a schema-version bump; three concurrent
   writes keeping all three entries; no temporary file left behind. The three native-directory cases
