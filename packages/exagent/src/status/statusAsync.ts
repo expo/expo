@@ -647,21 +647,35 @@ async function readProjectAsync(
 /**
  * Probe the dev server, giving up after {@link DEV_SERVER_PROBE_TIMEOUT_MS}.
  *
- * The probe itself never throws, so the timeout is the only way this reports "unknown". The
- * request that timed out is abandoned rather than cancelled: the probe takes no abort signal, and
- * status has already printed by the time a black-holed request gives up.
+ * The probe itself never throws, so the timeout is the only way this reports "unknown", and giving
+ * up **cancels** the request rather than walking away from it. Not cancelling changed nothing a
+ * reader could see and everything about when they got the shell prompt back: a Node process exits
+ * when its event loop empties, so against a dev server that accepted the connection and then never
+ * answered, the report was complete at 3.07 s and `status` was still running at 45 s — undici's
+ * header timeout is 300 s. It now exits at 3.12 s [observed — 2026-08-27]. Nothing reportable is
+ * lost by cancelling here, because this branch has already decided the answer will not be used.
+ *
+ * The signal is threaded rather than left to the ladder's own per-probe budget because an explicit
+ * `--dev-server-url` deliberately has no budget (see {@link discoverDevServerAsync}), so this
+ * deadline is the only one that reaches that probe.
  */
 async function probeDevServerStatusAsync(
   projectRoot: string,
   options: StatusOptions
 ): Promise<DevServerStatus> {
   const timeoutMs = options.devServerTimeoutMs ?? DEV_SERVER_PROBE_TIMEOUT_MS;
+  const giveUp = new AbortController();
   // No explicit URL: 8081 first, then the ports `expo start` walks to (see devServer.ts).
   const discovery = await raceWithTimeoutAsync(
-    discoverDevServerAsync(options.devServerUrl ?? undefined, { timeoutMs, projectRoot }),
+    discoverDevServerAsync(options.devServerUrl ?? undefined, {
+      timeoutMs,
+      projectRoot,
+      signal: giveUp.signal,
+    }),
     timeoutMs * 2
   );
   if (discovery == null) {
+    giveUp.abort();
     const timedOut: DevServerProbe = {
       reachable: false,
       targets: [],

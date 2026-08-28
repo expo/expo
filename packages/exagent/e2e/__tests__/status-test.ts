@@ -1964,6 +1964,39 @@ process.exit(1);
       }
     });
 
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §The discovery ladder
+    // The regression this pins was invisible to every other test: the report was correct, complete
+    // and printed at 263 ms, and the process then sat for another 1321 ms on timers no probe was
+    // waiting for any more [observed — `friction/run7/tapapp`, 2026-08-27]. An agent loop pays that
+    // on every `status`, and nothing in the output says so — only the exit does.
+    //
+    // Measured against the *named* path in the same run rather than against a fixed number, so the
+    // test states the property it means — discovery costs about what naming a dead port costs — and
+    // does not have to be retuned per machine. The margin is wide on purpose: it is well under the
+    // 1321 ms it exists to catch and well over the spread of two process spawns.
+    it('exits as promptly when it discovers the dev server as when it is named', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const deadUrl = await getUnusedDevServerUrlAsync();
+
+      const timeAsync = async (args: string[]): Promise<number> => {
+        // Best of two: what is under test is the floor, and a scheduler hiccup only ever raises a
+        // sample above it.
+        const runs: number[] = [];
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const startedAt = Date.now();
+          const result = await executeExagentAsync(projectRoot, args);
+          expect(result.exitCode).toBe(0);
+          runs.push(Date.now() - startedAt);
+        }
+        return Math.min(...runs);
+      };
+
+      const named = await timeAsync(['status', '--json', '--dev-server-url', deadUrl]);
+      const discovered = await timeAsync(['status', '--json']);
+
+      expect(discovered - named).toBeLessThan(750);
+    }, 60_000);
+
     it('rejects a `--dev-server-url` that is not a URL', async () => {
       const projectRoot = await setupAsync('go-app');
       const result = await executeExagentAsync(
