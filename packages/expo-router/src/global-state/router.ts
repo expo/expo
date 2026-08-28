@@ -13,12 +13,13 @@ import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
+import { navigationRef } from './navigationRef';
 import type { RoutingIntent } from './routingQueue';
-import { store } from './store';
 import type { LinkToOptions, NavigationOptions } from './types';
 
 function assertIsReady() {
-  if (!store.navigationRef.isReady()) {
+  // TODO(@ubax): check whether this is still needed
+  if (!navigationRef.isReady()) {
     throw new Error(
       'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
     );
@@ -108,10 +109,11 @@ export function canGoBack(): boolean {
   // before mounting a navigator. This behavior exists due to React Navigation being dynamically
   // constructed at runtime. We can get rid of this in the future if we use
   // the static configuration internally.
-  if (!store.navigationRef.isReady()) {
+  // TODO(@ubax): check whether this is still needed
+  if (!navigationRef.isReady()) {
     return false;
   }
-  return store.navigationRef?.current?.canGoBack() ?? false;
+  return navigationRef.current?.canGoBack() ?? false;
 }
 
 export function canDismiss(): boolean {
@@ -120,7 +122,12 @@ export function canDismiss(): boolean {
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  let state = store.state;
+  // TODO(@ubax): check whether this is still needed
+  if (!navigationRef.isReady()) {
+    return false;
+  }
+  // TODO(@ubax): check whether this is still needed
+  let state = navigationRef.getRootState();
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
@@ -144,7 +151,7 @@ export function setParams(
     return;
   }
   assertIsReady();
-  return (store.navigationRef?.current?.setParams as any)(params);
+  return (navigationRef.current?.setParams as any)(params);
 }
 
 function linkToImpl(

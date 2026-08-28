@@ -11,8 +11,8 @@ import {
   getRouteInfoFromState,
 } from '../../global-state/getRouteInfoFromState';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
+import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
-import { StoreContext } from '../../global-state/storeContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -47,7 +47,6 @@ type InternalNavigationContainerProps = Omit<NavigationContainerProps, 'initialS
   initialState: InitialState;
   ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
   UNSTABLE_routeNode?: RouteNode;
-  UNSTABLE_onStateChangeInsertion?: (state: NavigationState) => void;
 };
 
 const serializableWarnings: string[] = [];
@@ -86,13 +85,12 @@ function BaseNavigationContainerInner({
   onStateChange,
   onReady,
   UNSTABLE_routeNode,
-  UNSTABLE_onStateChangeInsertion,
   theme,
   children,
 }: InternalNavigationContainerProps) {
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
 
   if (!parent.isDefault) {
     throw new Error(
@@ -117,9 +115,8 @@ function BaseNavigationContainerInner({
     initialState,
     routeNode: UNSTABLE_routeNode,
     registry,
-    linking: store?.linking,
-    redirects: store?.redirects,
-    onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
+    linking: routerConfig?.linking,
+    redirects: routerConfig?.redirects,
   });
 
   const hasNotifiedInitialStateRef = React.useRef(false);

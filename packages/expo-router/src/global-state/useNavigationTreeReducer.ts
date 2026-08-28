@@ -47,10 +47,24 @@ type Options = {
   registry: RouterRegistry;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
-  onStateChangeInsertion?: (state: NavigationState) => void;
 };
 
 const warnedActions = new WeakSet<NavigationAction>();
+
+function warnIfStaleState(state: NavigationState) {
+  if (process.env.NODE_ENV !== 'development') {
+    return;
+  }
+
+  let focusedState: NavigationState | undefined = state;
+  while (focusedState) {
+    if (focusedState.stale || focusedState.index === undefined) {
+      console.error('Detected stale state. This is likely a bug in Expo Router.');
+      return;
+    }
+    focusedState = focusedState.routes[focusedState.index]?.state as NavigationState | undefined;
+  }
+}
 
 function warnUnhandledAction(action: NavigationAction) {
   if (process.env.NODE_ENV === 'production' || warnedActions.has(action)) {
@@ -201,7 +215,6 @@ export function useNavigationTreeReducer({
   registry,
   linking,
   redirects,
-  onStateChangeInsertion,
 }: Options) {
   const [state, reactDispatch] = React.useReducer(
     navigationTreeReducer,
@@ -250,9 +263,8 @@ export function useNavigationTreeReducer({
   });
 
   React.useInsertionEffect(() => {
-    // TODO(@ubax): Check if this is still needed
-    onStateChangeInsertion?.(state);
-  }, [onStateChangeInsertion, state]);
+    warnIfStaleState(state);
+  }, [state]);
 
   useClientLayoutEffect(() => {
     const previousRegistry = previousRegistryRef.current;

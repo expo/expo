@@ -1,7 +1,7 @@
 import { act, screen } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
@@ -22,7 +22,7 @@ it('stacks should always push a new route', () => {
   });
 
   // Initial complete state
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -54,7 +54,7 @@ it('stacks should always push a new route', () => {
   act(() => router.push('/user/1'));
   act(() => router.push('/user/2'));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -302,7 +302,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
 
   testRouter.push('/d');
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -443,7 +443,7 @@ it('targets the correct Stack when pushing to a nested layout', () => {
 
   act(() => router.push('/a')); // Should push to the root stack
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -557,7 +557,7 @@ it('push should also add anchor routes', () => {
   });
 
   // Initial complete state
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -587,7 +587,7 @@ it('push should also add anchor routes', () => {
 
   act(() => router.push('/orange', { withAnchor: true }));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],

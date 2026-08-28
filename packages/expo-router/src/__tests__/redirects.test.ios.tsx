@@ -4,9 +4,9 @@ import { Text } from 'react-native';
 
 import type { RedirectConfig } from '../exports';
 import { router } from '../exports';
-import type { StoreRedirects } from '../global-state/router-store';
-import { store } from '../global-state/router-store';
-import { StoreContext } from '../global-state/storeContext';
+import { navigationRef } from '../global-state/navigationRef';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
+import type { StoreRedirects } from '../global-state/types';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -59,7 +59,7 @@ it('exposes redirects and rewrites through the store context', () => {
   let contextRedirects: StoreRedirects[] | undefined;
 
   function Index() {
-    contextRedirects = use(StoreContext)!.redirects;
+    contextRedirects = use(RouterConfigContext)!.redirects;
     return null;
   }
 
@@ -96,7 +96,7 @@ it('deep link to a redirect', () => {
 
   expect(screen.getByTestId('bar')).toBeTruthy();
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -143,7 +143,7 @@ it('deep link to a dynamic redirect', () => {
     }
   );
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -196,7 +196,7 @@ it('keeps extra params as query params', () => {
     }
   );
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -243,7 +243,7 @@ it('can redirect from single to catch all', () => {
     }
   );
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -291,7 +291,7 @@ it('can push to a redirect', () => {
     bar: () => <Text testID="bar" />,
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -321,7 +321,7 @@ it('can push to a redirect', () => {
 
   act(() => router.push('/foo'));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -511,7 +511,7 @@ it('not existing nested route redirects correctly', () => {
 
   act(() => router.push('/test/1234'));
 
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
