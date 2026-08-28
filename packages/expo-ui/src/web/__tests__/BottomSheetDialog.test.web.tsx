@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { Text } from 'react-native';
 
 import { BottomSheetDialog } from '../BottomSheetDialog';
@@ -101,5 +101,46 @@ describe('BottomSheetDialog body scroll lock', () => {
     );
 
     expect(document.body.style.overflow).not.toBe('hidden');
+  });
+});
+
+function dispatchPointer(
+  target: EventTarget,
+  type: string,
+  init: { pointerId: number; clientY: number; button?: number }
+) {
+  const event = new Event(type, { bubbles: true });
+  Object.assign(event, {
+    pointerId: init.pointerId,
+    clientY: init.clientY,
+    button: init.button ?? 0,
+  });
+  target.dispatchEvent(event);
+}
+
+describe('BottomSheetDialog drag cancel', () => {
+  it('should abort the drag on pointercancel without dismissing or snapping', async () => {
+    const onOpenChange = jest.fn();
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog
+        open
+        onOpenChange={onOpenChange}
+        onDragEnd={onDragEnd}
+        height={400}
+        minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
+      dispatchPointer(window, 'pointercancel', { pointerId: 1, clientY: 500 });
+    });
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(onDragEnd).not.toHaveBeenCalled();
   });
 });
