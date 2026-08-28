@@ -35,16 +35,37 @@ async function clickFirstButtonAfter(page: Page, uniqueText: string) {
     .click();
 }
 
-async function dragPanel(page: Page, dy: number, { release = true }: { release?: boolean } = {}) {
+async function waitForOpenSheet(page: Page) {
   const panel = openPanel(page);
   await expect(panel).toBeVisible();
+  await panel.evaluate(async (el) => {
+    const node = el as HTMLElement;
+    const animations = typeof node.getAnimations === 'function' ? node.getAnimations() : [];
+    if (animations.length === 0) return;
+    await Promise.race([
+      Promise.all(animations.map((animation) => animation.finished.catch(() => undefined))),
+      new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 500);
+      }),
+    ]);
+  });
+}
+
+async function clickSheetButton(page: Page, name: string) {
+  await waitForOpenSheet(page);
+  await openPanel(page).getByRole('button', { name }).click({ force: true });
+}
+
+async function dragPanel(page: Page, dy: number, { release = true }: { release?: boolean } = {}) {
+  const panel = openPanel(page);
+  await waitForOpenSheet(page);
   const box = await panel.boundingBox();
   if (!box) {
     throw new Error('Panel bounding box missing');
   }
   const viewport = page.viewportSize();
   const startX = box.x + box.width / 2;
-  const startY = box.y + 8;
+  const startY = box.y + 16;
   const rawEndY = startY + dy;
   const endY = viewport ? Math.min(Math.max(rawEndY, 2), viewport.height - 2) : rawEndY;
   await page.mouse.move(startX, startY);
@@ -84,7 +105,7 @@ test.describe('Community BottomSheet screen', () => {
     await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
     await expect(openPanel(page).getByText('BottomSheet', { exact: true })).toBeVisible();
 
-    await openPanel(page).getByRole('button', { name: 'Close' }).click();
+    await clickSheetButton(page, 'Close');
 
     await expect(openByTestId(page, OVERLAY)).toHaveCount(0);
     await expect(page.getByText(/sheet onClose/)).toBeVisible();
@@ -96,13 +117,13 @@ test.describe('Community BottomSheet screen', () => {
     await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
     await expect(openPanel(page)).toBeVisible();
 
-    await openPanel(page).getByRole('button', { name: 'Snap 1' }).click();
+    await clickSheetButton(page, 'Snap 1');
     const midBox = await openPanel(page).boundingBox();
     if (!midBox) {
       throw new Error('Mid snap bounding box missing');
     }
 
-    await openPanel(page).getByRole('button', { name: 'Snap 2' }).click();
+    await clickSheetButton(page, 'Snap 2');
     await expect
       .poll(async () => {
         const next = await openPanel(page).boundingBox();
@@ -142,7 +163,7 @@ test.describe('Community BottomSheet screen', () => {
     await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
     await expect(openHandle(page)).toBeVisible();
 
-    await openPanel(page).getByRole('button', { name: 'Snap 2' }).click();
+    await clickSheetButton(page, 'Snap 2');
     await expect
       .poll(async () => (await openPanel(page).boundingBox())?.height ?? 0)
       .toBeGreaterThan(400);
@@ -179,7 +200,7 @@ test.describe('Community BottomSheet screen', () => {
     await gotoCommunity(page);
 
     await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
-    await openPanel(page).getByRole('button', { name: 'Snap 2' }).click();
+    await clickSheetButton(page, 'Snap 2');
     await expect
       .poll(async () => (await openPanel(page).boundingBox())?.height ?? 0)
       .toBeGreaterThan(400);
@@ -187,7 +208,7 @@ test.describe('Community BottomSheet screen', () => {
     if (!snapBox) {
       throw new Error('Snap sheet bounding box missing');
     }
-    await openPanel(page).getByRole('button', { name: 'Close' }).click();
+    await clickSheetButton(page, 'Close');
     await expect(openByTestId(page, OVERLAY)).toHaveCount(0);
 
     await clickFirstButtonAfter(page, 'No snapPoints — sheet sizes to content');
@@ -207,7 +228,7 @@ test.describe('Universal BottomSheet screen', () => {
     await page.getByRole('button', { name: 'Open basic sheet' }).click();
 
     await expect(page.getByText('Hello from BottomSheet')).toBeVisible();
-    await openPanel(page).getByRole('button', { name: 'Close' }).click();
+    await clickSheetButton(page, 'Close');
     await expect(openPanel(page)).toHaveCount(0);
   });
 
@@ -219,9 +240,10 @@ test.describe('Universal BottomSheet screen', () => {
     await expect(openHandle(page)).toHaveCount(0);
   });
 
-  test('should grow when dragging the half/full snap sheet toward full', async ({ page }) => {
+  test('should snap to full after dragging the half/full sheet up', async ({ page }) => {
     await gotoUniversal(page);
     await page.getByRole('button', { name: 'Open sheet with snap points (half / full)' }).click();
+    await expect(openPanel(page)).toBeVisible();
     await expect(page.getByText('Snap points: half / full')).toBeVisible();
 
     const before = await openPanel(page).boundingBox();
@@ -229,17 +251,11 @@ test.describe('Universal BottomSheet screen', () => {
       throw new Error('Universal snap sheet bounding box missing');
     }
 
-    await dragPanel(page, -280, { release: false });
+    await dragPanel(page, -Math.max(220, Math.round(before.y - 8)));
 
     await expect
-      .poll(async () => {
-        const next = await openPanel(page).boundingBox();
-        if (!next) return 0;
-        return Math.max(before.y - next.y, next.height - before.height);
-      })
-      .toBeGreaterThan(20);
-
-    await page.mouse.up();
+      .poll(async () => (await openPanel(page).boundingBox())?.height ?? 0)
+      .toBeGreaterThan(before.height + 50);
   });
 
   test('should call onDismiss when the overlay is tapped', async ({ page }) => {

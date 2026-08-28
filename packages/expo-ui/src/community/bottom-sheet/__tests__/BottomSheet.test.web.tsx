@@ -18,6 +18,16 @@ function getSheetState() {
   return screen.queryByTestId('expo-ui-bottom-sheet')?.getAttribute('data-state');
 }
 
+function dispatchPointer(
+  target: EventTarget,
+  type: string,
+  init: { pointerId: number; clientY: number }
+) {
+  const event = new Event(type, { bubbles: true });
+  Object.assign(event, { pointerId: init.pointerId, clientY: init.clientY, button: 0, buttons: 0 });
+  target.dispatchEvent(event);
+}
+
 describe('BottomSheet', () => {
   it('should stay closed when index is -1', () => {
     render(
@@ -145,6 +155,24 @@ describe('BottomSheet', () => {
     await waitFor(() => {
       expect(screen.getByTestId('expo-ui-bottom-sheet-handle')).toBeTruthy();
     });
+  });
+
+  it('should snap to the nearest point after a drag ends', async () => {
+    const onChange = jest.fn();
+    render(
+      <BottomSheet snapPoints={[200, 500]} index={0} onChange={onChange}>
+        <Text>Sheet body</Text>
+      </BottomSheet>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 400 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 150 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 150 });
+    });
+
+    expect(onChange).toHaveBeenCalledWith(1);
   });
 });
 

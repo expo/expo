@@ -107,13 +107,14 @@ describe('BottomSheetDialog body scroll lock', () => {
 function dispatchPointer(
   target: EventTarget,
   type: string,
-  init: { pointerId: number; clientY: number; button?: number }
+  init: { pointerId: number; clientY: number; button?: number; buttons?: number }
 ) {
   const event = new Event(type, { bubbles: true });
   Object.assign(event, {
     pointerId: init.pointerId,
     clientY: init.clientY,
     button: init.button ?? 0,
+    buttons: init.buttons ?? 0,
   });
   target.dispatchEvent(event);
 }
@@ -145,7 +146,7 @@ describe('BottomSheetDialog drag cancel', () => {
     expect(onDragEnd).not.toHaveBeenCalled();
   });
 
-  it('should abort the drag on lostpointercapture without dismissing or snapping', async () => {
+  it('should snap from lostpointercapture when pointerup never arrives', async () => {
     const onOpenChange = jest.fn();
     const onDragEnd = jest.fn();
     render(
@@ -164,11 +165,117 @@ describe('BottomSheetDialog drag cancel', () => {
       dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
       dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
       dispatchPointer(panel, 'lostpointercapture', { pointerId: 1, clientY: 180 });
-      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 500 });
     });
 
     expect(onOpenChange).not.toHaveBeenCalled();
+    expect(onDragEnd).toHaveBeenCalledWith(320);
+  });
+
+  it('should snap once when lostpointercapture fires before pointerup', async () => {
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog
+        open
+        onOpenChange={() => {}}
+        onDragEnd={onDragEnd}
+        height={400}
+        minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
+      dispatchPointer(panel, 'lostpointercapture', { pointerId: 1, clientY: 180 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 180 });
+    });
+
+    expect(onDragEnd).toHaveBeenCalledTimes(1);
+    expect(onDragEnd).toHaveBeenCalledWith(320);
+  });
+
+  it('should not snap twice when pointerup is followed by lostpointercapture', async () => {
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog
+        open
+        onOpenChange={() => {}}
+        onDragEnd={onDragEnd}
+        height={400}
+        minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 180 });
+      dispatchPointer(panel, 'lostpointercapture', { pointerId: 1, clientY: 180 });
+    });
+
+    expect(onDragEnd).toHaveBeenCalledTimes(1);
+    expect(onDragEnd).toHaveBeenCalledWith(320);
+  });
+
+  it('should keep the drag when capture is lost while the pointer is still down', async () => {
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog
+        open
+        onOpenChange={() => {}}
+        onDragEnd={onDragEnd}
+        height={400}
+        minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0, buttons: 1 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180, buttons: 1 });
+      dispatchPointer(panel, 'lostpointercapture', { pointerId: 1, clientY: 180, buttons: 1 });
+    });
+
     expect(onDragEnd).not.toHaveBeenCalled();
+
+    act(() => {
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 180 });
+    });
+
+    expect(onDragEnd).toHaveBeenCalledTimes(1);
+    expect(onDragEnd).toHaveBeenCalledWith(320);
+  });
+
+  it('should not start a drag from a button press', async () => {
+    const onClick = jest.fn();
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog
+        open
+        onOpenChange={() => {}}
+        onDragEnd={onDragEnd}
+        height={400}
+        minSnapHeight={200}>
+        <button type="button" onClick={onClick}>
+          Snap 2
+        </button>
+      </BottomSheetDialog>
+    );
+
+    const button = await waitFor(() => screen.getByRole('button', { name: 'Snap 2' }));
+    act(() => {
+      dispatchPointer(button, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(button, 'pointerup', { pointerId: 1, clientY: 100 });
+      button.click();
+    });
+
+    expect(onDragEnd).not.toHaveBeenCalled();
+    expect(onClick).toHaveBeenCalled();
   });
 
   it('should keep the drag after onOpenChange identity changes', async () => {
