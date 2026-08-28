@@ -15,16 +15,18 @@ const TOLERANCE = 1;
 const PARENT_WIDTH = 300;
 const BOX_WIDTH = 40;
 const BOX_HEIGHT = 20;
-// The fill box goes on the Host, whose `style` is a real React Native style and so a real Yoga box.
-// A Column's width and height become native modifiers, which Yoga cannot see.
 const HOST_WIDTH = 200;
 const HOST_HEIGHT = 120;
 const COLUMN_PADDING = 8;
 const TEXT = 'Hello, world!';
+const LONG_TEXT = 'a much longer string that has to wrap when the width is limited';
 const FONT_SIZE = 24;
+const CONTENT_MAX_WIDTH = 140;
+const CONTENT_MIN_HEIGHT = 60;
 
 type Axes = { width: number; height: number };
 type Paired = { hosted: Axes; control: Axes };
+type AcrossChange = { before: Axes; grown: Axes; shrunk: Axes };
 
 function useSettledLayout(onSettled: (size: Axes) => void) {
   const size = React.useRef<Axes | undefined>(undefined);
@@ -96,8 +98,7 @@ function CrossAxisProbe({ onMeasured }: { onMeasured: (size: Axes) => void }) {
   );
 }
 
-// This case is simpler example of what causes loops
-// https://github.com/expo/expo/pull/48059#issuecomment-5351404485
+// Regression test for Host + RNHostView layout loops https://github.com/expo/expo/pull/48059#issuecomment-5351404485
 function PaddedHostProbe({ onMeasured }: { onMeasured: (sizes: Paired) => void }) {
   const sizes = React.useRef<Partial<Paired>>({});
 
@@ -126,6 +127,82 @@ function PaddedHostProbe({ onMeasured }: { onMeasured: (sizes: Paired) => void }
         onLayout={({ nativeEvent }) => report('control', nativeEvent.layout)}>
         <Text style={{ fontSize: FONT_SIZE }}>{TEXT}</Text>
       </View>
+    </View>
+  );
+}
+
+function ContentLimitsProbe({ onMeasured }: { onMeasured: (size: Axes) => void }) {
+  const onLayout = useSettledLayout(onMeasured);
+
+  return (
+    <View style={{ width: PARENT_WIDTH }}>
+      <Host matchContents>
+        <RNHostView matchContents onLayout={onLayout}>
+          <View style={{ maxWidth: CONTENT_MAX_WIDTH, minHeight: CONTENT_MIN_HEIGHT }}>
+            <Text style={{ fontSize: FONT_SIZE }}>{LONG_TEXT}</Text>
+          </View>
+        </RNHostView>
+      </Host>
+    </View>
+  );
+}
+
+function HostedOnLayoutProbe({ onMeasured }: { onMeasured: (sizes: Paired) => void }) {
+  const sizes = React.useRef<Partial<Paired>>({});
+
+  const report = (key: keyof Paired, layout: Axes) => {
+    sizes.current[key] = { width: layout.width, height: layout.height };
+
+    const { hosted, control } = sizes.current;
+    if (hosted && control) {
+      onMeasured({ hosted, control });
+    }
+  };
+
+  return (
+    <View style={{ width: PARENT_WIDTH }}>
+      <Host matchContents>
+        <RNHostView
+          matchContents
+          onLayout={({ nativeEvent }) => report('control', nativeEvent.layout)}>
+          <View
+            style={{ width: BOX_WIDTH, height: BOX_HEIGHT }}
+            onLayout={({ nativeEvent }) => report('hosted', nativeEvent.layout)}
+          />
+        </RNHostView>
+      </Host>
+    </View>
+  );
+}
+
+function ResizeProbe({ onMeasured }: { onMeasured: (sizes: AcrossChange) => void }) {
+  const [step, setStep] = React.useState(0);
+  const seen = React.useRef<Partial<AcrossChange>>({});
+
+  const onLayout = useSettledLayout((size) => {
+    if (step === 0) {
+      seen.current.before = size;
+      setStep(1);
+    } else if (step === 1) {
+      seen.current.grown = size;
+      setStep(2);
+    } else if (step === 2) {
+      const { before, grown } = seen.current;
+      if (before && grown) {
+        onMeasured({ before, grown, shrunk: size });
+      }
+    }
+  });
+
+  return (
+    <View style={{ width: PARENT_WIDTH }}>
+      <Host matchContents>
+        <RNHostView matchContents onLayout={onLayout}>
+          <View style={{ height: BOX_HEIGHT }}>
+            <Text style={{ fontSize: FONT_SIZE }}>{step === 1 ? LONG_TEXT : TEXT}</Text>
+          </View>
+        </RNHostView>
+      </Host>
     </View>
   );
 }
@@ -187,6 +264,46 @@ export async function test(
       expect(Math.abs(hosted.width - control.width)).toBeLessThan(TOLERANCE);
       expect(Math.abs(hosted.height - control.height)).toBeLessThan(TOLERANCE);
       expect(hosted.width).toBeLessThan(PARENT_WIDTH);
+    });
+
+    it("honours the hosted view's own maxWidth and minHeight", async () => {
+      const size = await mountAndWaitForWithTimeout<Axes>(
+        <ContentLimitsProbe onMeasured={() => {}} />,
+        'onMeasured',
+        setPortalChild,
+        TIMEOUT_MS
+      );
+
+      expect(Math.abs(size.width - CONTENT_MAX_WIDTH)).toBeLessThan(TOLERANCE);
+      expect(size.height).toBeGreaterThan(FONT_SIZE * 1.5);
+      expect(size.height).toBeGreaterThanOrEqual(CONTENT_MIN_HEIGHT - TOLERANCE);
+    });
+
+    it('fires onLayout on the hosted element, at the size the host reports', async () => {
+      const { hosted, control } = await mountAndWaitForWithTimeout<Paired>(
+        <HostedOnLayoutProbe onMeasured={() => {}} />,
+        'onMeasured',
+        setPortalChild,
+        TIMEOUT_MS
+      );
+
+      expect(Math.abs(hosted.width - BOX_WIDTH)).toBeLessThan(TOLERANCE);
+      expect(Math.abs(hosted.height - BOX_HEIGHT)).toBeLessThan(TOLERANCE);
+      expect(Math.abs(hosted.width - control.width)).toBeLessThan(TOLERANCE);
+      expect(Math.abs(hosted.height - control.height)).toBeLessThan(TOLERANCE);
+    });
+
+    // Regression test for https://github.com/expo/expo/issues/47883
+    it('tracks hosted content that changes size after mount, both ways', async () => {
+      const { before, grown, shrunk } = await mountAndWaitForWithTimeout<AcrossChange>(
+        <ResizeProbe onMeasured={() => {}} />,
+        'onMeasured',
+        setPortalChild,
+        TIMEOUT_MS
+      );
+
+      expect(grown.width).toBeGreaterThan(before.width);
+      expect(Math.abs(shrunk.width - before.width)).toBeLessThan(TOLERANCE);
     });
   });
 }
