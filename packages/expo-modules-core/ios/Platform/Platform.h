@@ -18,7 +18,12 @@
 @compatibility_alias UIImage NSImage;
 @compatibility_alias UIImageView NSImageView;
 
-#ifndef UIApplication
+// `@compatibility_alias` doesn't define a preprocessor macro, so `#ifndef
+// UIApplication` never detected that `React/RCTUIKit.h` (imported above)
+// already declares this same alias. Under Swift Explicit Modules, that
+// duplicate declaration becomes a real Clang conflict. Guard on the
+// header's presence instead.
+#if !__has_include(<React/RCTUIKit.h>)
 @compatibility_alias UIApplication NSApplication;
 #endif
 
