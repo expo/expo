@@ -246,13 +246,13 @@ export default function BottomSheetScrollableExample() {
 
 This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and animation layer through `react-native-gesture-handler` and `react-native-reanimated`, while `@expo/ui/community/bottom-sheet` delegates those behaviors to Jetpack Compose, SwiftUI, and an HTML `<dialog>` on web. As a result, this component is best suited for modal bottom sheet flows, including callsites that use the `BottomSheet` API rather than `BottomSheetModal`.
 
-| Feature                | Android                                        | iOS                               | Web                           |
-| ---------------------- | ---------------------------------------------- | --------------------------------- | ----------------------------- |
-| Presentation           | Jetpack Compose modal bottom sheet             | SwiftUI sheet                     | HTML `<dialog>` bottom sheet  |
-| Snap points            | Maps to partial and expanded states            | Supports provided snap points     | Supports provided snap points |
-| No `snapPoints`        | Fits content                                   | Fits content                      | Fits content                  |
+| Feature                | Android                                        | iOS                               | Web                                               |
+| ---------------------- | ---------------------------------------------- | --------------------------------- | ------------------------------------------------- |
+| Presentation           | Jetpack Compose modal bottom sheet             | SwiftUI sheet                     | HTML `<dialog>` bottom sheet                      |
+| Snap points            | Maps to partial and expanded states            | Supports provided snap points     | Supports provided snap points                     |
+| No `snapPoints`        | Fits content                                   | Fits content                      | Fits content                                      |
 | Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables overlay tap, Escape, and pan-down dismiss |
-| Persistent inline peek | Not supported                                  | Not supported                     | Not supported                 |
+| Persistent inline peek | Not supported                                  | Not supported                     | Not supported                                     |
 
 > **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
 
