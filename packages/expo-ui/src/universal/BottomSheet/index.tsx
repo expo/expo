@@ -73,7 +73,7 @@ export function BottomSheet({
       }}
       showHandle={showDragIndicator}
       height={snapHeights?.[snapIndex]}
-      minSnapHeight={snapHeights?.[0]}
+      minSnapHeight={snapHeights?.length ? Math.min(...snapHeights) : undefined}
       onDragEnd={
         snapHeights
           ? (nextHeight) => {

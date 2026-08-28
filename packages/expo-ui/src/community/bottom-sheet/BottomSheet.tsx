@@ -158,7 +158,7 @@ export function BottomSheet(props: BottomSheetProps) {
           dismissible={enablePanDownToClose}
           showHandle={handleComponent !== null}
           height={currentHeight}
-          minSnapHeight={hasSnapPoints ? snapHeights[0] : undefined}
+          minSnapHeight={hasSnapPoints ? Math.min(...snapHeights) : undefined}
           onDragEnd={
             hasSnapPoints
               ? (nextHeight) => {
