@@ -1371,25 +1371,25 @@ with the same empty client list at the far end.)
 ### Where it composes
 
 - **`smoke`** takes `--cloud` and resolves its device through `resolveDeviceAsync`, which is the
-  function `navigate` uses. One answer, threaded from the `route` phase into the `screenshot` phase
-  — a gate whose two device phases resolved separately could photograph one device to answer for
-  another. `deviceBackend` rides in its `--json`.
+  function `navigate` uses. One answer, threaded from the `route` phase into the `screenshot` phase,
+  because a gate whose two device phases resolved separately could photograph one device to answer
+  for another. `deviceBackend` rides in its `--json`.
 - **The screenshot primitive** grows the third backend. `simctl` is given a path and writes it,
-  `adb exec-out` writes to stdout and is redirected, and the controller **downloads** to the path —
-  so it reuses the `simctl` shape with a much longer budget (`npx`, then a network, then an image
-  coming back). Everything after that is identical, including the PNG-signature check: "the command
-  ran" and "there is a screenshot" are two facts over a network too.
+  `adb exec-out` writes to stdout and is redirected, and the controller **downloads** to the path.
+  So it reuses the `simctl` shape with a much longer budget, covering `npx`, then a network, then an
+  image coming back. Everything after that is identical, including the PNG-signature check: "the
+  command ran" and "there is a screenshot" are two facts over a network too.
 - **The no-local-device suggestions** of wave 9 name the session when the project has one. The
-  `open-app` rung of `start`/`dev` is no longer *dropped* on a machine with no device, it is aimed
-  at `navigate / --cloud`; `status.next` names that command instead of a URL for somebody else to
-  open; and `dev:wait`'s "the bundle is built and nothing is running it" rung says the same, because
-  "open it on the booted simulator or the attached device" is an instruction that cannot work on the
-  machine this backend exists for. All three read the **dotenv** and not the service: `status`
-  promises to be instant, and a start banner must never be held up by a ladder. A file naming a dead
-  session costs one `navigate --cloud` that says so, which is a much cheaper wrong answer than a
-  slow report — this is the split §Finding the session draws between the two ladders.
+  `open-app` rung of `start` and `dev` is no longer *dropped* on a machine with no device. It is
+  aimed at `navigate / --cloud`. `status.next` names that command instead of a URL for somebody else
+  to open, and `dev:wait`'s "the bundle is built and nothing is running it" rung says the same,
+  because "open it on the booted simulator or the attached device" is an instruction that cannot work
+  on the machine this backend exists for. All three read the **dotenv** rather than the service,
+  because `status` promises to be instant and a start banner must never be held up by a ladder. A
+  file naming a dead session costs one `navigate --cloud` that says so, which is a much cheaper wrong
+  answer than a slow report. This is the split §Finding the session draws between the two ladders.
 - **Nothing suggests a platform tool for a cloud device.** `simctl` and `adb` are commands about
-  *this machine*, and a run whose backend is `cloud` never names them: the follow-ups branch on
+  *this machine*, and a run whose backend is `cloud` never names them. The follow-ups branch on
   `deviceBackend`, and the errors a cloud verb raises point at `simulator:exec --help` and
   `simulator:list` instead.
 
@@ -1416,21 +1416,21 @@ So the evidence is ranked, and the report names the rung that answered (`bundleI
 4. Expo Go, per platform.
 
 **The dev server outranks the app config, and that ordering is the decision.** The config says what
-a *build* of this project would be called; the dev server says what is running. A project whose
-config names a bundle identifier can still be running in Expo Go — every Expo Go project with a
-prebuild config is in that state — and stopping the id from the config would then terminate nothing
+a *build* of this project would be called. The dev server says what is running. A project whose
+config names a bundle identifier can still be running in Expo Go, which is the state every Expo Go
+project with a prebuild config is in. Stopping the id from the config would then terminate nothing
 and report success, which is the class of false green this whole round exists to remove.
 
 **An app that was not running is a success with a note.** `simctl terminate` exits non-zero for it
 with `found nothing to terminate`, and reading that as a failure would make a second `runtime:stop`
-fail for having nothing left to do. `stopped` is the state the caller asked for and `wasRunning`
-says whether this command is what produced it — two keys because they answer two questions. On
+fail for having nothing left to do. `stopped` is the state the caller asked for, and `wasRunning`
+says whether this command is what produced it. Two keys, because they answer two questions. On
 Android the distinction cannot be drawn: `am force-stop` exits 0 and prints nothing whether or not
 the app was running, so `wasRunning` there means "not known to have been already stopped".
 
 Live [observed — 2026-08-23, notesapp on port 8171]: with Expo Go attached, exit 0,
 `bundleIdSource: dev-server`, `wasRunning: true`, and the dev server's target list went from 1 to
-0. Run again immediately: exit 0, `wasRunning: false`, `bundleIdSource: expo-go-default` — the
+0. Run again immediately: exit 0, `wasRunning: false`, `bundleIdSource: expo-go-default`. The
 source moved down a rung because there was no longer an app connected to ask, which is the report
 being honest rather than sticky.
 
@@ -1440,18 +1440,18 @@ Decision [confirmed — Kudo, 2026-08-24]. When `--app-id` names an app that was
 the dev server is reporting a **different** app that is, `runtime:stop` exits `20`. Every other
 "the app was not running" stays exit `0`.
 
-The finding [observed — friction run 4, F42]: `runtime:stop --app-id host.exp.Exponent2` — one
-character wrong — exited **0** with `Stopped yes · it was not running` and a follow-up reading "The
+The finding [observed — friction run 4, F42]: `runtime:stop --app-id host.exp.Exponent2`, one
+character wrong, exited **0** with `Stopped yes · it was not running` and a follow-up reading "The
 app was not running, so this is what starts it". Debugger targets before: 1. After: 1. The app the
-caller was looking at kept running, and every channel said the command had worked. This section
+caller was looking at kept running, and every channel said the command had worked. The section
 above says the whole point of ranking the evidence is that "getting it wrong stops nothing while
-reporting that it stopped something"; the command had the connected bundle id in hand the entire
+reporting that it stopped something". The command had the connected bundle id in hand the entire
 time and never compared it.
 
 **Why `20` and not a note on a `0`.** This was the argued call, and the argument that decides it is
 llp/0010's own first sentence: an agent reads the exit code before it reads a word of the output,
-so a warning inside a zero is a warning an agent does not see. The other reading is real — the
-state the caller named ("`host.exp.Exponent2` is not running") does hold, and §The seventh and
+so a warning inside a zero is a warning an agent does not see. The other reading is real. The
+state the caller named, "`host.exp.Exponent2` is not running", does hold, and §The seventh and
 eighth says a state already reached is a success. It loses because the *subject* of this command
 is the app on the device, and the app on the device is untouched. A `0` here means the command that
 exists to remove this exact class of false green produces one.
@@ -1461,20 +1461,20 @@ attached to this dev server while another one is, and stopping the first is now 
 conditions have to hold together for that, which is what keeps the surface narrow:
 
 1. `--app-id` was passed, so this is the caller's id and not a guess of ours to defend;
-2. the device tool found nothing under it (`wasAlreadyStopped`) — an id that stopped something is
-   never suspicious, whatever else is connected; and
+2. the device tool found nothing under it (`wasAlreadyStopped`), because an id that stopped something
+   is never suspicious, whatever else is connected; and
 3. the dev server reports at least one debugger target, and none of them is that id.
 
-Idempotency is unaffected, and that is a consequence of (3) rather than a special case: after a
+Idempotency is unaffected, and that is a consequence of (3) rather than a special case. After a
 successful stop nothing is connected, so the second run has no other app to disagree with and exits
-`0`. Live [observed — 2026-08-24, port 8190]: `--app-id host.exp.Exponent2` with Expo Go attached →
-exit `20`, targets still 1; `--app-id host.exp.Exponent` → exit `0`, targets 0; then
-`--app-id host.exp.Exponent2` again → exit `0`, `appIdMismatch: false`.
+`0`. Live [observed — 2026-08-24, port 8190]: `--app-id host.exp.Exponent2` with Expo Go attached
+gave exit `20` with targets still 1; `--app-id host.exp.Exponent` gave exit `0` with targets 0; then
+`--app-id host.exp.Exponent2` again gave exit `0` with `appIdMismatch: false`.
 
-Both channels carry it. `--json` gains `connectedAppIds` and `appIdMismatch`; the human report's
+Both channels carry it. `--json` gains `connectedAppIds` and `appIdMismatch`. The human report's
 first line says `Stopped no · host.exp.Exponent2 was not running, and host.exp.Exponent is` rather
 than the old `Stopped yes · it was not running`, which is true of the id and reads as "the app is
-stopped". The follow-up is the same command with the connected id on it — the old list led with
+stopped". The follow-up is the same command with the connected id on it. The old list led with
 `navigate /`, which starts an app while the one the caller meant to stop is still running.
 
 ## Stopping the dev server
@@ -1482,30 +1482,30 @@ stopped". The follow-up is the same command with the connected id on it — the 
 Decision [confirmed — Kudo, 2026-08-23]. `exagent dev:stop` reads the **dev-server lock**, signals
 the PID it names, and waits for both the lock and the port to go quiet.
 
-The friction it replaces is a shell incantation an agent has to compose and get right —
+The friction it replaces is a shell incantation an agent has to compose and get right,
 `lsof -ti tcp:8081 | xargs kill`. Every part of it is a guess: which port, whether the PID on it is
-this project's dev server, whether the signal reached the bundler as well as the wrapper. A wrong
+this project's dev server, and whether the signal reached the bundler as well as the wrapper. A wrong
 guess kills something nobody asked about.
 
-The lock answers all three, and it already existed for other reasons: `src/devLock/` holds a socket
+The lock answers all three, and it already existed for other reasons. `src/devLock/` holds a socket
 for as long as an `exagent`-started dev server runs, and the line it answers with carries `pid`
 next to `url` and `port`. One `SIGTERM` to that PID is enough for the whole tree, because both
-spawn paths install forwarders for `SIGINT`/`SIGTERM` and pass them to the `expo start` child
+spawn paths install forwarders for `SIGINT` and `SIGTERM` and pass them to the `expo start` child
 [observed — `src/utils/subprocess.ts`, `src/utils/expoCli.ts` `runExpoAsync`]. Live it takes about
 **170 ms**, and the wrapper, Metro and the lock all go [observed — 2026-08-23, port 8171].
 
-**The wait is on the PID and the lock; the port is read and reported, never waited on.** Revised
-[confirmed — friction run 5, F48-10, 2026-08-25]; it was all three, and see §A port number is not one
-listener for why that was wrong. The two that stayed fail independently — the lock is released
-before Metro finishes closing its listener, and a holder that dies without releasing leaves a socket
-file nothing answers on — and both are about *this project*: the PID is what the signal was sent to,
-and the lock is what another command would still be pointed at.
+**The wait is on the PID and the lock. The port is read and reported, never waited on.** Revised
+[confirmed — friction run 5, F48-10, 2026-08-25]: it was all three, and §A port number is not one
+listener says why that was wrong. The two that stayed fail independently, because the lock is
+released before Metro finishes closing its listener, and a holder that dies without releasing leaves
+a socket file nothing answers on. Both are about *this project*: the PID is what the signal was sent
+to, and the lock is what another command would still be pointed at.
 
 ### A port number is not one listener
 
 Amendment [confirmed — friction run 5, F48-10, 2026-08-25]. `127.0.0.1:8081` and `[::1]:8081` are
 **different sockets**. A machine with a split IPv4/IPv6 stack can have one process on each without
-either one seeing a collision, and everything this CLI checks is over IPv4: the lock publishes
+either one seeing a collision, and everything this CLI checks is over IPv4. The lock publishes
 `http://127.0.0.1:<port>` [observed — `src/devLock/holdLock.ts`], and every `/status` request follows
 it. So "the port answers" and "this project's dev server is running" are two claims, and the second
 does not follow from the first.
@@ -1514,27 +1514,27 @@ Two commands were reading the first as the second.
 
 - **`dev:stop` waited on the port before it would say a dev server had stopped.** With a stranger on
   `127.0.0.1:8081` and this project's dev server on `[::1]:8081`, the signalled process died on
-  schedule and the port went on answering, so the command reported `reason: "still-running"` and
-  exit `20` about a process that was already gone — and its `How:` line offered `--signal SIGKILL`,
+  schedule and the port went on answering. So the command reported `reason: "still-running"` and
+  exit `20` about a process that was already gone, and its `How:` line offered `--signal SIGKILL`,
   a next action with nothing left to signal. The conclusion is now drawn from **PID liveness**
-  (`process.kill(pid, 0)`, with `EPERM` read as alive because a process this user may not signal is
-  a process that is there), and the port is reported rather than acted on: `--json` carries
-  `processStillRunning` (primary) beside `portStillAnswering` (secondary), and a stop whose port is
+  (`process.kill(pid, 0)`, with `EPERM` read as alive, because a process this user may not signal is
+  a process that is there). The port is reported rather than acted on: `--json` carries the primary
+  `processStillRunning` beside the secondary `portStillAnswering`, and a stop whose port is
   still busy prints that fact and a `dev:stop --port <n>` rung to find out whose it is. `--force`
-  changed the same way: it proved *that process* was the dev server on the port, so that process
+  changed the same way. It proved *that process* was the dev server on the port, so that process
   going away is what "forced" means.
 
   This also split the `still-running` failure in two, which is the useful part. The PID alive is the
-  old failure and keeps the old recovery; the PID gone with the lock still answering is a *second*
-  holder of the lock — two dev servers for this project, only one of them stopped — and its recovery
-  is `status --json` and stopping the other one where it was started, never a bigger signal.
+  old failure and keeps the old recovery. The PID gone with the lock still answering is a *second*
+  holder of the lock, meaning two dev servers for this project with only one of them stopped, and its
+  recovery is `status --json` and stopping the other one where it was started, never a bigger signal.
 - **`dev --detach --wait-ready` could not say why it gave up.** The readiness wait is one long-lived
   `GET /status` against the lock's URL, so on a split stack it can be answered by whatever is on
   IPv4 while this project's bundler finishes untroubled on IPv6. The failure now says so on every
-  path — the two sockets, and `lsof -nP -iTCP:<port> -sTCP:LISTEN` to list both — because it is the
-  cause a reader will not think of and the log the error already quotes will not show it. When
+  path, naming the two sockets and `lsof -nP -iTCP:<port> -sTCP:LISTEN` to list both, because it is
+  the cause a reader will not think of and the log the error already quotes will not show it. When
   `X-React-Native-Project-Root` decides it (`projectRootMatched === false`), the message stops
-  hedging and names the project root that answered: a wait that was watching somebody else's
+  hedging and names the project root that answered. A wait that was watching somebody else's
   bundler is not a wait that needed longer.
 
 The general rule this leaves: **a port check is corroboration, never a conclusion.** Where this CLI
@@ -1544,39 +1544,39 @@ evidence, and the port is what gets reported next to it.
 ### A port with no lock behind it is not this command's to kill
 
 Decision [confirmed — Kudo, 2026-08-23]. It is reported, with its PID when the machine will name
-one, and left running — exit `20`.
+one, and left running, at exit `20`.
 
 This is the one place the command could do real damage, and the reasoning is the same as llp/0010's
-rule that a false red beats a false green only when the red is actionable: here the *destructive*
-answer is the one that cannot be taken back. A second project's dev server on the port is the
-ordinary case, not the exotic one.
+rule that a false red beats a false green only when the red is actionable. Here the *destructive*
+answer is the one that cannot be taken back, and a second project's dev server on the port is the
+ordinary case rather than the exotic one.
 
 `--force` stops it, and requires **two independent proofs**:
 
 - the port answers `packager-status:running`, which establishes that a Metro dev server is there;
 - the process on the port has a command line naming a program that runs one.
 
-Neither alone is enough, and the reason is not caution for its own sake: a `/status` answer proves a
+Neither alone is enough, and the reason is not caution for its own sake. A `/status` answer proves a
 dev server exists but says nothing about *which PID owns the port*, and a PID lookup can race a port
 that was closed and reopened between the two reads. Together they are the same fact from two
 directions.
 
-Live, all three cases [observed — 2026-08-23]: a dev server started by `expo start` directly on
-8172 → exit **20**, `reason: foreign-dev-server`, `pid: 99705`, still answering afterwards; the same
-with `--force` → exit 0, `forced: true`, port clear in 43 ms; and a plain Node HTTP server on 8173,
-which is a `node` process but does not answer `packager-status:running` → exit **20** even with
-`--force`, still serving afterwards. The detail line says "in use" there rather than "answering as
-an Expo dev server", which is the difference the two proofs are about.
+Live, all three cases [observed — 2026-08-23]. A dev server started by `expo start` directly on
+8172 gave exit **20**, `reason: foreign-dev-server`, `pid: 99705`, still answering afterwards. The
+same with `--force` gave exit 0, `forced: true`, port clear in 43 ms. And a plain Node HTTP server on
+8173, which is a `node` process but does not answer `packager-status:running`, gave exit **20** even
+with `--force`, still serving afterwards. The detail line says "in use" there rather than "answering
+as an Expo dev server", which is the difference the two proofs are about.
 
 **Nothing running is exit `0`.** The end state the caller asked for is the state it is already in,
 and a second `dev:stop` must not read as a failure. Without `--port` the report says so and names
-the flag, because with no lock this command has not been *told* which dev server the caller means —
-defaulting to 8081 there is how a command ends up reporting on, or killing, another project's.
+the flag, because with no lock this command has not been *told* which dev server the caller means.
+Defaulting to 8081 there is how a command ends up reporting on, or killing, another project's.
 
 **Windows is `taskkill /PID <pid> /T /F`,** because `process.kill` there maps every signal onto an
 immediate terminate and reaches only the named process, leaving a bundler started through a batch
-shim alive. Best effort, and untested on that platform, which is why the result reports whether the
-call was made rather than whether it worked.
+shim alive. It is best effort and untested on that platform, which is why the result reports whether
+the call was made rather than whether it worked.
 
 ## Reading the detached dev server's output
 
@@ -1611,14 +1611,14 @@ as sugar for `--dev-server-url http://127.0.0.1:<n>`, and `runtime:reload`/`runt
 `--platform ios|android` alongside `--ios`/`--android`.
 
 Flag drift is a tax an agent pays in failed commands. `exagent dev --port 8195` is the command that
-starts the server, and every command that then talks to it wanted the *other* spelling — so a
+starts the server, and every command that then talks to it wanted the *other* spelling, so a
 caller with a port in hand got `unknown or unexpected option: --port` [observed — F47, friction run
 4]. The same for platform: `runtime:stop --json` reports `"platform": "ios"` and then refused
 `--platform ios` on the next call, which is a report a caller cannot write a command from.
 
-Passing both `--dev-server-url` and `--port` is `BAD_ARGS`: they name two dev servers and there is
-no rule for which wins. `--ios` and `--platform ios` together are fine — two spellings of one
-answer — while `--ios --platform android` is two devices and is refused.
+Passing both `--dev-server-url` and `--port` is `BAD_ARGS`, because they name two dev servers and
+there is no rule for which wins. `--ios` and `--platform ios` together are fine, being two spellings
+of one answer, while `--ios --platform android` is two devices and is refused.
 
 Related, and the reason this belongs in one place: a "no dev server answered" error must not suggest
 the flag the caller just passed. `howToNameTheDevServer(explicit)` in `src/runtime/devServer.ts` is
@@ -1635,7 +1635,8 @@ seventh nothing could ask before: a picture of the screen.
 The plan this ships from is `plans/cluster-a-runtime-verify.md` §Feature 1, written when none of
 those commands existed. Most of it has since been built as commands of its own, so `smoke` is now a
 thin composite rather than the eight new things the plan described. What it composes, and which
-function each phase calls — never a subprocess of this CLI, which is the design constraint:
+function each phase calls, which is never a subprocess of this CLI, and that is the design
+constraint:
 
 | phase | the command whose question it is | the function |
 | --- | --- | --- |
@@ -1649,13 +1650,13 @@ function each phase calls — never a subprocess of this CLI, which is the desig
 | `screenshot` | — | `captureScreenshotAsync` (new) |
 
 The two `dev:wait` rows name the command those questions were first asked by. It was deferred from
-v1 on 2026-08-26 ([[0017-deferred-commands]] §`dev:wait`), and `smoke` is now the only command that
-asks them; the functions are unchanged and live.
+v1 on 2026-08-26 (see [[0017-deferred-commands]]), and `smoke` is now the only command that
+asks them. The functions are unchanged and live.
 
 **Why one process and not eight.** A `smoke` built out of `exagent` subprocesses would do dev-server
 discovery eight times, and eight discoveries on a machine running two projects can answer eight
 different things. It would also hand back a chain of exit codes where the point of the command is
-that there is one. `src/smoke/phases.ts` is the composition, with every dependency injected — so the
+that there is one. `src/smoke/phases.ts` is the composition, with every dependency injected, so the
 outcome table, which is the part that can be wrong in a way no type checker sees, is tested against
 fakes with no dev server, no device and no clock.
 
@@ -1675,8 +1676,8 @@ forgotten.
 
 The third row is what llp/0005 §Android pass forces, and it is the reason a two-value gate would be
 a lie. Expo Go for Android acknowledges `Runtime.enable` and reports nothing, so an error window
-from it is empty whatever the app is doing — a gate that passed on an empty window would report
-health it never observed. `runtime` is a phase of its own for exactly this: it asks the runtime to
+from it is empty whatever the app is doing, and a gate that passed on an empty window would report
+health it never observed. `runtime` is a phase of its own for exactly this. It asks the runtime to
 evaluate `1`, and a `-32601` there means the window that follows proves nothing. `passed` requires
 that evaluation to have answered.
 
