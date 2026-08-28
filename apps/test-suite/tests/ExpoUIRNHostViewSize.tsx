@@ -23,6 +23,8 @@ const LONG_TEXT = 'a much longer string that has to wrap when the width is limit
 const FONT_SIZE = 24;
 const CONTENT_MAX_WIDTH = 140;
 const CONTENT_MIN_HEIGHT = 60;
+const LOOP_WINDOW_MS = 1500;
+const MAX_LAYOUT_PASSES = 8;
 
 type Axes = { width: number; height: number };
 type Paired = { hosted: Axes; control: Axes };
@@ -207,6 +209,45 @@ function ResizeProbe({ onMeasured }: { onMeasured: (sizes: AcrossChange) => void
   );
 }
 
+// Regression test for the layout loop in https://github.com/expo/expo/issues/48058.
+// It needs a constant amount of native chrome around content that stretches to the width it is
+// offered. Measuring that content at the width the previous pass produced added the chrome again
+// every round, so the width grew by a constant forever.
+function DivergenceProbe({ onMeasured }: { onMeasured: (widths: number[]) => void }) {
+  const widths = React.useRef<number[]>([]);
+  const closed = React.useRef(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      closed.current = true;
+      onMeasured(widths.current);
+    }, LOOP_WINDOW_MS);
+
+    return () => clearTimeout(timer);
+  }, [onMeasured]);
+
+  return (
+    <View style={{ width: PARENT_WIDTH }}>
+      <Host matchContents>
+        <Column style={{ padding: COLUMN_PADDING }}>
+          <RNHostView
+            matchContents
+            onLayout={({ nativeEvent }) => {
+              if (!closed.current) {
+                widths.current.push(nativeEvent.layout.width);
+              }
+            }}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flex: 1, height: BOX_HEIGHT }} />
+              <View style={{ width: BOX_WIDTH, height: BOX_HEIGHT }} />
+            </View>
+          </RNHostView>
+        </Column>
+      </Host>
+    </View>
+  );
+}
+
 export async function test(
   { it, describe, expect, afterEach }: JasmineInterface,
   { setPortalChild, cleanupPortal }: TestPortal
@@ -304,6 +345,23 @@ export async function test(
 
       expect(grown.width).toBeGreaterThan(before.width);
       expect(Math.abs(shrunk.width - before.width)).toBeLessThan(TOLERANCE);
+    });
+
+    // Regression test for https://github.com/expo/expo/issues/48058
+    it('settles at the content width when native chrome wraps stretching content', async () => {
+      const widths = await mountAndWaitForWithTimeout<number[]>(
+        <DivergenceProbe onMeasured={() => {}} />,
+        'onMeasured',
+        setPortalChild,
+        TIMEOUT_MS
+      );
+
+      expect(widths.length).toBeGreaterThan(0);
+      // A diverging layout reported tens of ever-growing widths in this window.
+      expect(widths.length).toBeLessThan(MAX_LAYOUT_PASSES);
+      expect(Math.abs(widths[widths.length - 1] - widths[0])).toBeLessThan(TOLERANCE);
+      // The width the parent offers never reaches the content.
+      expect(Math.abs(Math.max(...widths) - BOX_WIDTH)).toBeLessThan(TOLERANCE);
     });
   });
 }
