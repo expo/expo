@@ -72,13 +72,62 @@ describe(buildInstallFollowUps, () => {
     expect(followups[0]!.why).toContain('reload');
   });
 
+  // F134 [live, wave 31]: `install expo-haptics` on an Expo Go project printed one object saying
+  // both `impact: "native-module"` with `ships an ios/ directory` among its reasons **and** "Only
+  // JavaScript changed" in the follow-up beside it [`wave31-open-cells/evidence/
+  // 03-install-haptics.out`]. The rung is right and the sentence under it was not: the reason a
+  // reload is enough here is that the runtime already carries the module, which is a different
+  // fact from nothing native having been added — and it is the fact that stops holding the moment
+  // the project builds its own runtime.
   it(`should say a reload is enough for a native module Expo Go already bundles`, () => {
     const followups = buildInstallFollowUps({
-      reports: [report({ impact: 'native-module', expoGoBundled: true, action: 'reload' })],
+      reports: [
+        report({
+          packageName: 'expo-haptics',
+          impact: 'native-module',
+          expoGoBundled: true,
+          action: 'reload',
+        }),
+      ],
       packagesWithSkills: [],
     });
 
     expect(ids(followups)).toEqual(['reload-app', 'typecheck']);
+    expect(followups[0]!.command).toBe('npx exagent runtime:reload');
+    expect(followups[0]!.why).toContain('expo-haptics');
+    expect(followups[0]!.why).toContain('Expo Go');
+    // The claim that has to go: this package ships native code, and the report says so.
+    expect(followups[0]!.why).not.toContain('Only JavaScript changed');
+  });
+
+  it(`should keep the JavaScript-only sentence for a package that ships no native code`, () => {
+    const followups = buildInstallFollowUps({
+      reports: [report()],
+      packagesWithSkills: [],
+    });
+
+    expect(followups[0]!.why).toContain('Only JavaScript changed');
+  });
+
+  // A mixed install: one package Expo Go carries and one that ships nothing native. Neither
+  // sentence is true of both, so the rung falls back to what is true of the set.
+  it(`should not claim either reason when the reload covers both kinds`, () => {
+    const followups = buildInstallFollowUps({
+      reports: [
+        report({ packageName: 'plain-js' }),
+        report({
+          packageName: 'expo-haptics',
+          impact: 'native-module',
+          expoGoBundled: true,
+          action: 'reload',
+        }),
+      ],
+      packagesWithSkills: [],
+    });
+
+    expect(ids(followups)).toEqual(['reload-app', 'typecheck']);
+    expect(followups[0]!.why).not.toContain('Only JavaScript changed');
+    expect(followups[0]!.why).toContain('reload');
   });
 
   it(`should point at the skill the installed package ships`, () => {

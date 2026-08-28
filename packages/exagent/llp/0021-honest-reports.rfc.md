@@ -50,6 +50,12 @@ of fixing them, because the same mistake is available to every command in the su
     third party in the sentence. Its progress output is never quoted as the answer.
 12. **A crash is a tool error.** An unexpected failure of this CLI is exit 1 with what happened, and
     never a code that promises something else.
+13. **What a command could not do is part of its answer.** A report that lists what happened and
+    omits what was refused, skipped or unaccounted for reads as a report of a run with nothing left
+    over — which is worse than silence, because it is reassuring.
+14. **A message is not a tail.** The reason a tool gave is the sentence it wrote, wherever on the
+    stream it wrote it. A thrown error puts its message first and its frames last, so "the last ten
+    lines" is a heuristic that quotes the stack and drops the cause.
 
 Every section below is one of these applied, with the finding that forced it.
 
@@ -327,6 +333,79 @@ stripped from what is forwarded — as one object with `loggedIn`, `user`, `sour
 of every other option is documented in the help rather than changed: the four auth commands are
 `expo`/`eas` commands, and a wrapper that started rejecting their flags would be a wrapper that has
 to track them.
+
+## What a command could not do is part of its answer
+
+[added 2026-08-28, wave 31 — rule 13. Three findings, one shape, all found by running the commands
+[[0019-backend-parity-audit]] had called argv assembly.]
+
+Three reports listed what happened and were silent about what did not, and in all three the silence
+was the more actionable half:
+
+- **F131.** `skills:sync --json` printed `linked: []`, `removed: []` for a run that could not link a
+  skill because a directory the user created holds the name. The guard is correct — this CLI does not
+  replace a directory it did not make — and the warning went to stderr as prose. So the object a
+  caller parses was byte-identical to a sync with nothing to do, on a run where one of the project's
+  skills is not linked and **only the user can unblock it.**
+- **F132.** `inspect:config-plugins` reported `Plugins 10 (1 declared, 9 auto)` for a config declaring
+  three. The list is `_internal.pluginHistory` — what recorded itself — so the two the count leaves
+  out appeared in no entry at all, and they are exactly the two the caller wrote down and is looking
+  for. This command already prints a `Not covered` line for the mods introspection cannot evaluate;
+  the same rule was simply not applied to the plugins.
+- **F130.** `install --check --json` set `check.report: null` on every failing check, because the Expo
+  CLI pretty-prints that one and the parse read a line at a time. Different cause, same result: the
+  report that parses says nothing, and the one with an answer in it is gone.
+
+**The decision.** Each report grew a field for the omission, named after what it is:
+`SkillsSyncJson.skipped` (with `reason: 'occupied' | 'duplicate-name'`), and
+`EffectiveConfigReport.declaredNotApplied`. Both appear in the human output too, beside the count they
+qualify — and *qualifying the count* is the point rather than an extra line, because rule 5 already
+says a note that reached only `--json` is a note the caller did not see. `skills:sync`'s tally counts
+what the project **ships** and ends in the word "linked", so a run that skipped something corrects it
+in its own words on the next line: `1 skill(s) from 1 package(s) linked for: Claude Code, Codex` /
+`1 of those skill(s) is not linked: expo-camera/expo-camera (occupied)`. And
+`inspect:config-plugins` puts `— 2 declared not in the history: …` on the `Plugins` line itself,
+because that is the line whose `1 declared` was the misleading half.
+
+**And both are worded as the narrower claim.** `declaredNotApplied` is not "these plugins did
+nothing": `expo-router` modified the Info.plist of the project this was found on and is still absent
+from the history. What is true is that the history does not name them, and that is what the field
+name and the doc comment say.
+
+## A message is not a tail
+
+[added 2026-08-28, wave 31 — rule 14, F133.]
+
+`inspect:config-plugins` on a config with `./plugins/withNothingHere` in its `plugins` array answered:
+
+```
+The Expo CLI could not evaluate this project's config (expo config exited with code 1).
+Why:     at resolvePluginForModule (…/plugin-resolver.js:84:9)
+    at resolveConfigPluginFunctionWithInfo (…)
+    …ten frames…
+How: fix what it reported and run this command again.
+```
+
+No plugin, no file, no cause — and `How: fix what it reported` pointing at nothing that was reported.
+Running `npx expo config --type introspect --json` in the same directory prints
+`PluginError: Failed to resolve plugin for module "./plugins/withNothingHere" relative to "…". Do you
+have node modules installed?` **twice, on the first two lines**, and then the stack.
+
+`outputTail` took the last ten non-empty lines. That is right for a CLI that logs progress and then
+fails, and exactly wrong for one that *throws*, because a Node error writes its message first.
+
+**The decision.** Stack frames (`/^\s*at\s/`) are dropped before the tail is taken. They are kept only
+when they are all the tool wrote — frames are a weak answer, and replacing them with "the CLI stopped
+without a message" would be a wrong one. Consecutive duplicates go too, because a thrown Node error
+writes its message twice — once as the message and once as the header of its own stack — so with the
+frames gone the reason arrived on two identical lines. Three error paths in
+`src/config/introspectAsync.ts` share the helper, so all three got it. The `Why:` line is now one
+sentence: `PluginError: Failed to resolve plugin for module "./plugins/withNothingHere" relative to
+"…". Do you have node modules installed?`
+
+This is §The runner is not the service (rule 11) and §Read the tool's own sentence (rule 4) at a third
+address, and worth naming as its own rule because the fault is neither "we guessed" nor "we quoted the
+wrong tool" — the right tool's own sentence was on the stream and the *selection* threw it away.
 
 ## Read the tool's own sentence before guessing
 

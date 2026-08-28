@@ -221,6 +221,15 @@ Two things make that acceptable rather than merely accepted:
    covers the one native-surface change this CLI makes itself, which is `expo prebuild`, immediately
    rather than in ten minutes. A prebuild run some other way rides on the expiry.
 
+**`exagent install` drops nothing, and does not have to** [measured 2026-08-28, wave 31]. It was worth
+checking, because `install` changes the project as surely as a plan step does and the dev-step rule
+above could have been read as applying to it. It does not need to: `package.json` and the lockfile are
+both pinned sentinels, so an install moves two stamps and the next read misses on its own. Live on an
+SDK 57 scaffold — `status` twice for `computed` then `cache` at 12 pinned files, `install expo-clipboard`,
+then `status` again: `source: "computed"` and a new hash, with `.expo/exagent-fingerprint.json` still
+on disk. Asserted by `live-project`, so the distinction between "nothing drops it" and "nothing needs
+to" cannot quietly stop being true.
+
 ## What invalidates an answer
 
 | Change | Outcome |
@@ -233,6 +242,7 @@ Two things make that acceptable rather than merely accepted:
 | The record is older than {@link FINGERPRINT_CACHE_TTL_MS} | recompute |
 | The record is missing, corrupt, or from another schema version | recompute |
 | A completed `exagent dev` plan step | recompute — the record is dropped outright |
+| A completed `exagent install` | recompute — **the record is left in place and the key misses by itself** |
 | A file no sentinel names (`src/**`, `index.js`) changes | **hit** |
 | Anything under `ios/` or `android/` changes | **hit** — bounded by the TTL only |
 | A prebuild run outside `exagent dev` | **hit** — bounded by the TTL only |

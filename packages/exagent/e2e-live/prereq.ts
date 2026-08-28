@@ -601,6 +601,36 @@ export function networkGate(): Gate {
 }
 
 /**
+ * Network egress to the npm registry, which is what a scaffold and an install actually need.
+ *
+ * Separate from {@link networkGate} on purpose, and the difference is the whole reason `live-project`
+ * has a gate of its own: reaching `staging.expo.dev` is a fact about an EAS account's environment,
+ * and reaching the registry is a fact about being online. A suite that only scaffolds and installs
+ * must not be gated on a service it never calls.
+ */
+export function registryGate(): Gate {
+  try {
+    execFileSync(
+      'curl',
+      [
+        '-sS',
+        '-o',
+        '/dev/null',
+        '-m',
+        '20',
+        '-w',
+        '%{http_code}',
+        'https://registry.npmjs.org/expo',
+      ],
+      { encoding: 'utf8', timeout: 40_000 }
+    );
+    return ok;
+  } catch (error: any) {
+    return missing(`https://registry.npmjs.org could not be reached: ${error.message}`);
+  }
+}
+
+/**
  * The second opt-in `live-cloud` needs, and why it is not a prerequisite.
  *
  * Every other gate in this file is a fact about the machine. This one is an *intention*, because

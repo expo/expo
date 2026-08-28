@@ -84,6 +84,27 @@ describe(buildEffectiveConfig, () => {
     );
   });
 
+  // F132 [live, wave 31]: a real SDK 57 scaffold declares `expo-router`, `expo-splash-screen` and
+  // `expo-build-properties`, and the report said `Plugins 10 (1 declared, 9 auto)` — one of the
+  // three — while naming neither of the other two nor the reason
+  // [`wave31-open-cells/evidence/60-inspect-plugins.out`, `61-inspect-plugins-human.out`; the raw
+  // `pluginHistory` was checked against the same run and genuinely omits both]. This list is what
+  // `pluginHistory` recorded, so a plugin that ran without recording itself is in no entry at all;
+  // that limit was written in this file's comments and nowhere the reader could see it. It is the
+  // same class as `notAttributable`, which *is* printed — and this half is worse, because a
+  // declared plugin is one the caller wrote down and is looking for.
+  it('names the plugins the config declared that the history cannot account for', () => {
+    const report = build();
+
+    expect(report.declaredNotApplied).toEqual(['expo-brownfield', 'expo-build-properties']);
+    // The claim the count makes is unchanged; what is new is that the gap beside it is nameable.
+    expect(report.plugins.filter((plugin) => plugin.declared)).toHaveLength(1);
+  });
+
+  it('names nothing when every declared plugin recorded itself', () => {
+    expect(build({ declaredPluginIds: ['expo-splash-screen'] }).declaredNotApplied).toEqual([]);
+  });
+
   it('matches a plugin declared by path against the name it recorded', () => {
     const config = {
       ...fixture,
@@ -217,7 +238,7 @@ describe(formatEffectiveConfig, () => {
     expect(formatEffectiveConfig(build())).toMatchInlineSnapshot(`
       "Project      /project
       SDK          57.0.0 per config
-      Plugins      13 (1 declared, 12 auto)
+      Plugins      13 (1 declared, 12 auto) — 2 declared not in the history: expo-brownfield, expo-build-properties
       Autolinked   12 Expo modules (React Native community modules link separately)
       ios          podfileProperties 10 keys, infoPlist 8 keys, splashScreenStoryboard 1 key, entitlements 1 key, expoPlist 4 keys
       android      manifest 7 permissions, gradleProperties 9 properties, styles 2 styles, colors 4 colors, colorsNight 0 colors, strings 2 strings

@@ -54,12 +54,37 @@ export interface SkillsAgentJson {
   skillsDir: string;
 }
 
+/** Why a skill this project ships was not linked. Both are the user's to resolve. */
+export type SkippedSkillReason =
+  /** The link name is taken by something Expo did not create, so it is not this CLI's to replace. */
+  | 'occupied'
+  /** Two packages ship a skill of the same name, and the other one has it. */
+  | 'duplicate-name';
+
+/**
+ * One skill that was wanted and not linked.
+ *
+ * @ref llp/0021-honest-reports.rfc.md — a report that lists what it did and omits what it could
+ * not do reads as a report of a run with nothing left over (F131).
+ */
+export interface SkippedSkillLink {
+  /** Project-relative path of the link that was not made, or null for a name clash. */
+  link: string | null;
+  /** Package whose skill was skipped. */
+  package: string;
+  /** Skill name, as the package spells its directory. */
+  skill: string;
+  reason: SkippedSkillReason;
+  /** For a name clash, the package that has the name instead. */
+  wonBy?: string;
+}
+
 /**
  * Machine shape of `exagent skills:sync --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout, with
- * every key always present. The three lists answer the three questions a caller has after a sync:
- * what the project ships, what is on disk now, and what was taken away.
+ * every key always present. The four lists answer the four questions a caller has after a sync:
+ * what the project ships, what is on disk now, what was taken away, and what could not be done.
  */
 export interface SkillsSyncJson {
   /** Nothing was written, because `--dry-run` was passed. */
@@ -72,6 +97,8 @@ export interface SkillsSyncJson {
   linked: string[];
   /** Project-relative paths of the links this run removed, because their skill is gone. */
   removed: string[];
+  /** Skills this project ships that are not linked, and why. Empty when everything linked. */
+  skipped: SkippedSkillLink[];
 }
 
 /** Machine shape of `exagent skills:clean --json`. */

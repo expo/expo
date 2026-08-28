@@ -55,6 +55,18 @@ export interface EffectiveConfigReport {
   platforms: { [platform: string]: PlatformMods };
   plugins: EffectivePlugin[];
   /**
+   * Plugin ids the app config declares that {@link plugins} does not account for.
+   *
+   * {@link plugins} is `_internal.pluginHistory`, which is what *recorded itself*, and a declared
+   * plugin missing from it appears in no entry at all — so `1 declared` for a config that declares
+   * three used to be the only sign that two were unaccounted for (F132). Same class as
+   * {@link notAttributable}: what the command cannot see is part of the answer.
+   *
+   * Not a claim that these plugins did nothing. One of them modified the Info.plist of the project
+   * this was measured on; what is true is that the history does not name them.
+   */
+  declaredNotApplied: string[];
+  /**
    * Packages **Expo-module autolinking** links, e.g. `expo-camera`.
    *
    * Named for its scope, because the scope is the whole trap. The list comes from

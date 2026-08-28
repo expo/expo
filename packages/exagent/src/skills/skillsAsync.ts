@@ -53,7 +53,14 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
     // Nothing to link and nobody to link it for: still a report, because a run asked for JSON gets
     // one whether or not it had work to do (llp/0006 §Output contract).
     if (options.json) {
-      logSyncJson({ dryRun: !!options.dryRun, agents: [], discovered: [], linked: [], removed: [] });
+      logSyncJson({
+        dryRun: !!options.dryRun,
+        agents: [],
+        discovered: [],
+        linked: [],
+        removed: [],
+        skipped: [],
+      });
       return;
     }
     Log.log('No agent skills found in the project dependencies.');
@@ -66,7 +73,7 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
     await persistAgentSelectionAsync(projectRoot, agents);
   }
 
-  const { created, pruned } = await syncSkillLinksAsync(
+  const { created, pruned, skipped } = await syncSkillLinksAsync(
     projectRoot,
     skills,
     uniqueSkillsDirs(agents),
@@ -98,6 +105,7 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
         discovered: skills.map(skillToJson),
         linked: created,
         removed: pruned,
+        skipped,
       },
       followups
     );
@@ -118,6 +126,16 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
       .map((agent) => agent.displayName)
       .join(', ')}`
   );
+  // The line above counts what the project *ships* and says "linked", which is only true when
+  // nothing was skipped — so a run that skipped something corrects it here, in the words of the
+  // line it corrects (F131). The reason itself was already warned about; this is the tally.
+  if (skipped.length) {
+    Log.log(
+      `${prefix}${skipped.length} of those skill(s) is not linked: ${skipped
+        .map((entry) => `${entry.package}/${entry.skill} (${entry.reason})`)
+        .join(', ')}`
+    );
+  }
 
   reportFollowUps('skills:sync', followups);
 }

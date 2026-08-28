@@ -101,20 +101,39 @@ async function runInstallAsync(
   };
 }
 
-/** The last JSON value on a stream, or null when it holds none. */
+/**
+ * The last JSON value on a stream, or null when it holds none.
+ *
+ * A value may span several lines, and for this caller that is the case that matters: the Expo CLI
+ * prints the *passing* `--check` report on one line and the *failing* one pretty-printed
+ * [observed — `@expo/cli` `src/install/checkPackages.ts`, SDK 57]. A one-line parse therefore
+ * carried the report that says nothing and dropped the only one with content in it (F130). So a
+ * candidate is a line beginning at **column zero** — an indented `{` is inside a value, never the
+ * start of one — and the parse runs from there to the end of the stream, falling back to the line
+ * alone for a stream that has something after its payload.
+ */
 function parseJsonOrNull(stdout: string): unknown {
-  const line = stdout
-    .split('\n')
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .findLast((entry) => entry.startsWith('{') || entry.startsWith('['));
-  if (!line) {
-    return null;
+  const lines = stdout.split('\n');
+  for (let index = lines.length - 1; index >= 0; index--) {
+    const line = lines[index]!;
+    if (!line.startsWith('{') && !line.startsWith('[')) {
+      continue;
+    }
+    const rest = lines.slice(index).join('\n').trim();
+    const value = tryParse(rest) ?? tryParse(line.trim());
+    if (value !== undefined) {
+      return value;
+    }
   }
+  return null;
+}
+
+/** `JSON.parse`, with `undefined` for input that is not JSON — so a parsed `null` stays a value. */
+function tryParse(text: string): unknown {
   try {
-    return JSON.parse(line);
+    return JSON.parse(text);
   } catch {
-    return null;
+    return undefined;
   }
 }
 

@@ -83,4 +83,38 @@ describe('exagent install --check', () => {
     // mismatch is what `--check` is for, and the CLI's own report already says it.
     expect(payload.check.notes).toEqual([]);
   });
+
+  // F130 [live, wave 31]. The test above hands the stub a report on **one line**, and the real
+  // Expo CLI does that only for the *passing* case: `JSON.stringify({dependencies: [], upToDate:
+  // true})` against `JSON.stringify({dependencies, upToDate: false}, null, 2)` [observed —
+  // `@expo/cli` `src/install/checkPackages.ts`, SDK 57, and live on a project pinned to
+  // `expo-haptics@14.0.1`: `wave31-open-cells/evidence/10-install-check-mismatch.out`]. So the
+  // stub was doubling what this code accepted rather than what the CLI writes, and the only run
+  // whose report carries an answer was the one that dropped it.
+  it(`should carry a report the Expo CLI pretty-printed, which is every failing one`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const dependencies = [
+      {
+        packageName: 'expo-haptics',
+        packageType: 'dependencies',
+        expectedVersionOrRange: '~57.0.2',
+        actualVersion: '14.0.1',
+      },
+    ];
+
+    const result = await executeExagentAsync(projectRoot, ['install', '--check', '--json'], {
+      reject: false,
+      env: {
+        STUB_EXPO_EXIT_CODE: '1',
+        STUB_EXPO_CHECK_JSON: JSON.stringify({ dependencies, upToDate: false }, null, 2),
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    const payload = JSON.parse(result.stdout);
+    expect(payload.check.ok).toBe(false);
+    expect(payload.check.report).toEqual({ dependencies, upToDate: false });
+    // Carried, so it is not also echoed as prose on the other stream.
+    expect(payload.check.output).toBeNull();
+  });
 });

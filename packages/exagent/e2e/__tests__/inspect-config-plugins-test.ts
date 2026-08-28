@@ -25,6 +25,7 @@ type EffectiveConfigPayload = {
   source: { command: string[]; durationMs: number };
   platforms: { [platform: string]: { [mod: string]: unknown } };
   plugins: { name: string; version: string | null; declared: boolean }[];
+  declaredNotApplied: string[];
   expoAutolinkedModules: string[];
   expoAutolinkedModulesNote: string;
   notAttributable: string[];
@@ -164,6 +165,39 @@ describe('exagent inspect:config-plugins', () => {
       { name: 'expo-camera', version: '17.0.0', declared: true },
       { name: 'expo-notifications', version: 'UNVERSIONED', declared: false },
     ]);
+    expect(payload.declaredNotApplied).toEqual([]);
+  });
+
+  // F132 [live, wave 31]: an SDK 57 scaffold declares three plugins and the history recorded one,
+  // so the report read `Plugins 10 (1 declared, 9 auto)` and named neither of the other two
+  // [`wave31-open-cells/evidence/60-inspect-plugins.out`, `61-inspect-plugins-human.out`]. The
+  // list is `_internal.pluginHistory` — what recorded itself — and a declared plugin missing from
+  // it lands in no entry at all, which is the one gap the reader has to be told about.
+  it('names a declared plugin the history has no entry for', async () => {
+    const { projectRoot, env } = await setupAsync('go-app');
+    const appConfigPath = path.join(projectRoot, 'app.json');
+    const appConfig = JSON.parse(await fs.promises.readFile(appConfigPath, 'utf8'));
+    appConfig.expo.plugins = ['expo-camera', 'expo-build-properties', './plugins/withThing'];
+    await fs.promises.writeFile(appConfigPath, JSON.stringify(appConfig, null, 2));
+
+    const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--json'], {
+      env,
+    });
+    const payload: EffectiveConfigPayload = JSON.parse(result.stdout);
+
+    expect(result.exitCode).toBe(0);
+    expect(payload.declaredNotApplied).toEqual(['./plugins/withThing', 'expo-build-properties']);
+    // The plugins that did record themselves are reported exactly as before.
+    expect(payload.plugins.map((plugin) => plugin.name)).toEqual([
+      'expo-camera',
+      'expo-notifications',
+    ]);
+
+    const human = await executeExagentAsync(projectRoot, ['inspect:config-plugins'], { env });
+    expect(human.stdout).toContain('2 (1 declared, 1 auto)');
+    expect(human.stdout).toContain(
+      '2 declared not in the history: ./plugins/withThing, expo-build-properties'
+    );
   });
 
   it('prints a terse labelled report for a terminal', async () => {
@@ -282,6 +316,46 @@ describe('exagent inspect:config-plugins', () => {
 
       expect(result.exitCode).toBe(1);
       expect(result.all).toContain('expo config exited with code 3');
+    });
+
+    // F133 [live, wave 31]. A config with an unresolvable plugin in it is reported by
+    // `@expo/config-plugins` as one sentence and then ten stack frames, and the *tail* of that
+    // stream is ten stack frames — so the `Why:` line was pure `at resolvePluginForModule (…)`,
+    // naming no plugin, no file and no cause, while the CLI had said all three on its first line
+    // [`wave31-open-cells/evidence/62-inspect-plugins-broken.out` against the same run of
+    // `npx expo config --type introspect --json` directly].
+    it('quotes the sentence the CLI wrote rather than the frames under it', async () => {
+      const { projectRoot, env } = await setupAsync('go-app');
+      const message =
+        'PluginError: Failed to resolve plugin for module "./plugins/withNothingHere" relative to "/app". Do you have node modules installed?';
+      const thrown = [
+        message,
+        message,
+        '    at resolvePluginForModule (/app/node_modules/@expo/config-plugins/build/utils/plugin-resolver.js:84:9)',
+        '    at resolveConfigPluginFunction (/app/node_modules/@expo/config-plugins/build/utils/plugin-resolver.js:124:7)',
+        '    at withStaticPlugin (/app/node_modules/@expo/config-plugins/build/plugins/withStaticPlugin.js:83:70)',
+        '    at Array.reduce (<anonymous>)',
+        '    at withPlugins (/app/node_modules/@expo/config-plugins/build/plugins/withPlugins.js:28:18)',
+        '    at withConfigPlugins (/app/node_modules/@expo/config/build/plugins/withConfigPlugins.js:33:47)',
+        '    at fillAndReturnConfig (/app/node_modules/@expo/config/build/Config.js:247:78)',
+        '    at getConfig (/app/node_modules/@expo/config/build/Config.js:304:10)',
+        '    at getPrebuildConfigAsync (/app/node_modules/@expo/prebuild-config/build/getPrebuildConfig.js:31:39)',
+        '    at configAsync (/app/node_modules/@expo/cli/build/src/config/configAsync.js:52:24)',
+      ].join('\n');
+
+      const result = await executeExagentAsync(projectRoot, ['inspect:config-plugins', '--json'], {
+        env: { ...env, STUB_EXPO_EXIT_CODE: '1', STUB_EXPO_STDERR: thrown },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(1);
+      const payload = JSON.parse(result.stdout);
+      expect(payload.error.code).toBe('CONFIG_INTROSPECT_FAILED');
+      expect(payload.error.message).toContain('Failed to resolve plugin for module');
+      expect(payload.error.message).toContain('./plugins/withNothingHere');
+      expect(payload.error.message).not.toContain('at resolvePluginForModule');
+      // Once. The CLI wrote the sentence twice — as the message and as its stack's header.
+      expect(payload.error.message.split('Failed to resolve plugin for module')).toHaveLength(2);
     });
 
     it('rejects a --file that names no native file, without running expo', async () => {

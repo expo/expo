@@ -6,10 +6,11 @@ worth reading before you quote a green run at anybody — what green here does a
 
 ## What this tier is
 
-Five jest suites that run the **published surface** of `exagent` — `bin/exagent.js`, which loads the
-ncc bundle in `build/cli/` — against **real backends**: a real Metro, a real iOS simulator running
-Expo Go, a real Android emulator running the Expo Go APK, a real **development build** on that same
-emulator, a real Hermes debugger connection, and the real EAS service on staging.
+Six jest suites that run the **published surface** of `exagent` — `bin/exagent.js`, which loads the
+ncc bundle in `build/cli/` — against **real backends**: the real npm registry and the project's own
+`expo` CLI, a real Metro, a real iOS simulator running Expo Go, a real Android emulator running the
+Expo Go APK, a real **development build** on that same emulator, a real Hermes debugger connection,
+and the real EAS service on staging.
 
 Nothing here is stubbed. The other two tiers are: `pnpm test` (unit) and `pnpm test:e2e`, which runs
 whole `exagent` processes against a **stub** `expo`, `eas` and dev server. This tier exists because a
@@ -31,11 +32,38 @@ Everything needs the bundle built first: **`pnpm build`**.
 
 | suite | needs |
 | --- | --- |
+| `live-project` | network to the npm registry. **Nothing else** — see below |
 | `live-local` | macOS; a **booted** iOS simulator with **Expo Go** installed; network (npm, for the scaffold's install) |
 | `live-devclient` | everything `live-android`'s `adb`/device half needs, **plus** `EXAGENT_LIVE_DEVCLIENT_PROJECT` naming a project that (a) depends on `expo-dev-client`, (b) declares an `expo.scheme`, (c) has its `android.package` **installed** on the attached device, and (d) has an android entry in its `.expo/exagent-last-build.json`. It **does not boot** and **does not build** — see below |
 | `live-android` | a runnable `adb` (`ANDROID_HOME`, `ANDROID_SDK_ROOT`, `PATH`, or the SDK's default location); an **attached device or a bootable AVD**; **Expo Go** on it; network. A booted iOS simulator with Expo Go is an *optional* extra that adds three tests — see below |
 | `live-eas` | `EXPO_STAGING=1`; a staging session in `~/.expo-staging/state.json`; `bunx` or `npx`; network to `staging.expo.dev`; an EAS-linked project on disk with finished builds and at least one ERRORED build (default `~/Developer/DailyWords-Grok`, override with `EXAGENT_LIVE_EAS_PROJECT`) |
 | `live-cloud` | everything `live-eas` needs, **plus** `EXAGENT_LIVE_CLOUD=1` and a way to publish a local port — `tuft host`, or an origin of your own in `EXAGENT_LIVE_PUBLIC_ORIGIN` |
+
+### Three things about `live-project`
+
+**Its gate is the network, and that is the reason it is a suite rather than rows in `live-local`**
+[added 2026-08-28, wave 31]. Every command in it — `install` adding a package, `agents:setup`,
+`skills:sync/list/show/clean`, `inspect:config-plugins`, `start`, and the forwarded `expo` set —
+talks to the registry, writes files, or spawns the project's own `expo`. Not one of them touches a
+device. `live-local`'s gate demands a **booted iOS simulator with Expo Go on it**, so folding these
+rows in there would have made them unrunnable on every machine without a simulator — which is most
+machines, and includes exactly the ones where "does the real registry still serve this" is the
+question being asked. `registryGate()` in `prereq.ts` is the gate, and it is deliberately *not*
+`networkGate()`: reaching `staging.expo.dev` is a fact about an EAS account's environment, and
+reaching `registry.npmjs.org` is a fact about being online.
+
+**The package manager it scaffolds with comes from the environment, not from this suite.**
+`create-expo` reads `npm_config_user_agent`, so a run launched with `npx pnpm@10.33.0
+test:live:project` scaffolds a **pnpm** project and a run launched with `npm run` scaffolds an npm
+one. Both were seen in wave 31, and the difference is visible where it matters: a missing package
+answers `ERR_PNPM_FETCH_404` under one and `npm error code E404` under the other. That is free extra
+coverage rather than a defect, so nothing pins it — but **do not assert on a package manager's error
+codes here**, assert on the status code and the package name. The suite's own comment says so at the
+one assertion that had to learn it.
+
+**`install --check` compares `node_modules`, not `package.json`.** A mismatch made by editing the
+manifest alone leaves the check honestly green; the version has to be *installed*. The suite pins an
+old `expo-haptics` with `install expo-haptics@14.0.1` for this, and `install --fix` puts it back.
 
 ### Three things about `live-android`
 
@@ -176,6 +204,7 @@ was dropped somewhere between the gate and the spawn has.
 ```bash
 pnpm build                                  # the tier tests this artifact, so it must exist
 
+pnpm test:live:project                      # ~45 s, free — needs only the network
 pnpm test:live:local                        # ~1 min, free
 pnpm test:live:android                      # ~2 min, free (includes an emulator boot)
 EXAGENT_LIVE_DEVCLIENT_PROJECT=~/dev/myapp \
@@ -183,7 +212,7 @@ EXAGENT_LIVE_DEVCLIENT_PROJECT=~/dev/myapp \
 EXPO_STAGING=1 pnpm test:live:eas           # ~1 min, one web deployment
 EXPO_STAGING=1 EXAGENT_LIVE_CLOUD=1 pnpm test:live:cloud   # bills a cloud session
 
-pnpm test:live                              # all four; the ones that cannot run skip with a reason
+pnpm test:live                              # all six; the ones that cannot run skip with a reason
 ```
 
 Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
@@ -196,6 +225,7 @@ Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
 
 | suite | wall time | money | what it leaves behind |
 | --- | --- | --- | --- |
+| `live-project` | **~44 s measured** (32 tests, 49 `exagent` runs, 1 scaffold) | none | nothing: the dev server is stopped and the scratch project deleted. It writes into its own scratch `node_modules` (a `SKILL.md`, because no published module ships one) and nowhere else |
 | `live-local` | ~60 s (measured 58 s, 30 tests, 38 `exagent` runs) | none | nothing: the dev server is stopped, the app terminated, the scratch project deleted |
 | `live-android` | **~103 s measured** (24 tests, 36 `exagent` runs) — of which ~40 s is the emulator boot; ~80 s against an emulator that was already up | none | nothing, **unless the emulator was already booted**: an emulator this run started is killed, one it found is left as it was. The dev server is stopped, Expo Go force-stopped on the emulator and terminated on the simulator, the scratch project deleted |
 | `live-devclient` | **~25 s measured** (15 tests, 26 `exagent` runs) against an emulator that is already up and an app that is already built | none | the named project's dev server is stopped and its development build is force-stopped; the project itself, its `.expo/` and the installed app are left as they were |
@@ -248,9 +278,41 @@ export produced, a log line that appeared inside a generous bound.
   a project outside this repository, before shipping — is still a manual step, and this tier narrows
   what that step has to discover rather than replacing it.
 - **Anything about a suite that skipped.** A skip is not a pass. `test:live` printing
-  `2 skipped, 1 passed` means one third of this tier ran.
+  `5 skipped, 1 passed` means one sixth of this tier ran.
+- **That an installed package works.** `live-project` asserts what an install *changed* and what the
+  CLI *said about it* — the manifest, the classification, the follow-up, the config the Expo CLI
+  rewrote. Nothing there loads the package into a runtime. `live-local` and `live-devclient` are the
+  suites that run code.
 
 ## Known findings this tier is carrying
+
+`live-project` arrived with five, all fixed in the same wave (31) and all asserted here and at the
+stub tier. Every one of them was in the half of the work the stub could not double:
+
+- **F130** — `install --check --json` dropped the Expo CLI's report on the only run that has an
+  answer in it. The CLI prints the *passing* report on one line and the *failing* one
+  pretty-printed, and the parse read one line at a time. The stub had been handed a single-line
+  report for both cases, so it doubled what the code accepted rather than what the CLI writes.
+- **F131** — `skills:sync --json` reported `linked: []`, `removed: []` and nothing else for a run
+  that could not link a skill because the user owns the name. There is a `skipped` list now.
+- **F132** — `inspect:config-plugins` said `10 (1 declared, 9 auto)` for a config declaring three,
+  and named neither of the two `pluginHistory` has no entry for. `declaredNotApplied` now does.
+- **F133** — a config with an unresolvable plugin was reported with a `Why:` line of pure stack
+  frames. A thrown Node error puts its message *first*, and `outputTail` took the last ten lines.
+- **F134** — `install expo-haptics` answered `impact: "native-module"` and "Only JavaScript
+  changed" in one object. The reload rung now says which of the two reasons applies.
+
+Two things this suite found that are **not** defects and are worth knowing:
+
+- **No published Expo module ships `skills/*/SKILL.md`.** Ten were probed in wave 31 — six installed
+  in a real scaffold, four straight off the registry — and none does, so the co-located skills of
+  `llp/0003` have no reach against the real registry today. The suite asserts the empty result and
+  then writes a `SKILL.md` into its own scratch `node_modules` the way a module author would, which
+  is the only way to exercise the discovery for real. If a module starts shipping one, the first
+  test in the `skills` block is what goes red.
+- **`install` does not drop the fingerprint record, and does not need to.** `exagent dev` clears it
+  after every plan step; `install` does not, and the next `status` misses the key anyway because
+  `package.json` and the lockfile are pinned sentinels. Asserted rather than assumed.
 
 `live-android` arrived with seven of its own, six fixed in the same wave and one left open:
 

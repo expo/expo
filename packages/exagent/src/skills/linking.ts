@@ -5,7 +5,7 @@ import { Log } from '../log';
 import { directoryExistsAsync, ensureDirectoryAsync } from '../utils/dir';
 import { toPosixPath } from '../utils/filePath';
 import { debugEvent } from './events';
-import type { DiscoveredSkill } from './types';
+import type { DiscoveredSkill, SkippedSkillLink } from './types';
 
 const GIT_IGNORE_START = '# @generated expo skills start';
 const GIT_IGNORE_END = '# @generated expo skills end';
@@ -20,16 +20,26 @@ interface SyncOptions extends WriteOptions {
   prune?: boolean;
 }
 
-/** Link every discovered skill into every agent directory and remove links that are no longer wanted. */
+/**
+ * Link every discovered skill into every agent directory and remove links that are no longer wanted.
+ *
+ * The third list is as load-bearing as the other two. A skill can be *wanted and not linked* — a
+ * name the user already owns, or a name two packages both ship — and until F131 [live, wave 31]
+ * that was a warning on the terminal and nothing else, so a `--json` run reported `linked: []`,
+ * `removed: []` and gave a caller no way to tell "nothing to do" from "one of your skills is not
+ * linked". Both cases are the user's to resolve, which is exactly why they have to survive into
+ * the report.
+ */
 export async function syncSkillLinksAsync(
   projectRoot: string,
   skills: DiscoveredSkill[],
   agentDirs: string[],
   options: SyncOptions = {}
-): Promise<{ created: string[]; pruned: string[] }> {
+): Promise<{ created: string[]; pruned: string[]; skipped: SkippedSkillLink[] }> {
   const created: string[] = [];
   const pruned: string[] = [];
-  const wanted = dedupeByLinkName(skills);
+  const skipped: SkippedSkillLink[] = [];
+  const wanted = dedupeByLinkName(skills, skipped);
 
   for (const agentDir of agentDirs) {
     const agentDirPath = path.join(projectRoot, agentDir);
@@ -45,9 +55,16 @@ export async function syncSkillLinksAsync(
       const stats = await lstatAsync(linkPath);
 
       if (stats && !(await isManagedLinkAsync(linkPath))) {
+        const link = path.relative(projectRoot, linkPath);
         Log.warn(
-          `Skipped the "${skill.name}" skill from ${skill.packageName} because ${path.relative(projectRoot, linkPath)} already exists and was not created by Expo. Remove or rename it, then run the command again.`
+          `Skipped the "${skill.name}" skill from ${skill.packageName} because ${link} already exists and was not created by Expo. Remove or rename it, then run the command again.`
         );
+        skipped.push({
+          link,
+          package: skill.packageName,
+          skill: skill.name,
+          reason: 'occupied',
+        });
         continue;
       }
 
@@ -83,7 +100,7 @@ export async function syncSkillLinksAsync(
     }
   }
 
-  return { created, pruned };
+  return { created, pruned, skipped };
 }
 
 /** Remove every link created by `expo skills` and leave all other entries alone. */
@@ -166,7 +183,10 @@ export async function updateGitIgnoreAsync(
 }
 
 /** Deduplicate same-named skills from different packages, the first package in sorted order wins. */
-function dedupeByLinkName(skills: DiscoveredSkill[]): DiscoveredSkill[] {
+function dedupeByLinkName(
+  skills: DiscoveredSkill[],
+  skipped: SkippedSkillLink[]
+): DiscoveredSkill[] {
   const byLinkName = new Map<string, DiscoveredSkill>();
   for (const skill of skills) {
     const existing = byLinkName.get(skill.linkName);
@@ -179,6 +199,13 @@ function dedupeByLinkName(skills: DiscoveredSkill[]): DiscoveredSkill[] {
       Log.warn(
         `Skipped the "${skill.name}" skill from ${skill.packageName} because ${existing.packageName} already provides a skill with the same name.`
       );
+      skipped.push({
+        link: null,
+        package: skill.packageName,
+        skill: skill.name,
+        reason: 'duplicate-name',
+        wonBy: existing.packageName,
+      });
       continue;
     }
     byLinkName.set(skill.linkName, skill);

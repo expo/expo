@@ -41,9 +41,19 @@ All [inferred]:
 - **SDK upgrade workflow** [confirmed — feature list, 2026-08-18]: bump, `expo install --fix`, codemods, prebuild, build, boot-check — reused as a tier-2 eval scenario ([[0002-testing-and-evals]]).
 - **Module authoring flow** [inferred]: `create-expo-module`, scaffold Swift/Kotlin/TS, build the example app, iterate against it.
 
+## No published module ships a skill yet, so the consuming half has no reach
+
+[observed — 2026-08-28, wave 31] Ten packages were checked for `skills/*/SKILL.md`: `expo-camera`, `@expo/ui`, `expo-router`, `expo-image`, `expo-build-properties` and `react-native-mmkv` as installed in a real SDK 57 scaffold, and `expo-sqlite`, `expo-notifications`, `expo-updates` and `expo-audio` straight off the registry. **None ships one.** So `exagent skills:list` in a real project answers `{"skills": []}`, `skills:sync` links nothing, and `skills:show <pkg>` can only refuse.
+
+That is a consequence of §Resolved item 2 rather than a defect: the four reference PRs stay unmerged, so the *producing* half of this design — a module carrying its own skill — has not shipped anywhere. The consuming half is complete and works: `live-project` writes a `SKILL.md` into a scratch `node_modules` the way a module author would, and the four commands discover it through real autolinking, link it as a relative symlink, list it, print it, prune it and clean it.
+
+It is written down because the asymmetry is invisible from inside the CLI. Every test of `skills:*` supplies its own skill, so a green suite says nothing about whether anything in the ecosystem provides one — and a v1 that advertises `skills:list` in `--help` and in the generated `AGENTS.md` block is advertising a command whose honest answer today is "no skills found". **Shipping the consumer before the producer is a decision, not an oversight**, and what it leaves open is whether one SDK package ships a skill in the same release.
+
 ## Testing
 
 Skill discovery and doc/diff lookups are deterministic: unit tests + fixtures. The four reference PRs already carry unit + e2e tests [observed]; they migrate with the code. Doctor auto-fix and upgrade are eval scenarios with programmatic graders.
+
+**And one live suite, `live-project`** [added 2026-08-28, wave 31], which is where the discovery runs over a real dependency graph rather than a fixture. It found **F131**: a skill the sync could not link — because a directory the user created holds the name — was a warning on stderr and nothing in the `--json` report, so the object read `linked: []`, `removed: []`, which is what a sync with nothing to do reports. There is a `skipped` list now, carrying the reason (`occupied` or `duplicate-name`) and, for a name clash, the package that kept the name. The rule behind it is [[0021-honest-reports]]'s: **a report that lists what a command did and omits what it could not do is a report of a run with nothing left over.**
 
 ## Resolved
 
