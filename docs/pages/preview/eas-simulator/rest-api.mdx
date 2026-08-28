@@ -40,6 +40,8 @@ Creates a session and queues the remote device. The request returns before the d
 
 ### Request body
 
+**Choose at most one application source:** `buildId`, `applicationArchiveUrl`, or `expoGo: true`. These options are mutually exclusive. Providing more than one returns `400`. You can omit all three to start with a blank device.
+
 | Field                   | Type          | Required | Description                                                                                                                                                                                                                        |
 | ----------------------- | ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                          |
@@ -50,14 +52,14 @@ Creates a session and queues the remote device. The request returns before the d
 | `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                       |
 | `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. Omit to use the account default.                                                                             |
 | `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. If you also set `maxDurationMinutes`, must be smaller than that value. Omit to disable the idle timeout. Not supported for `serve-sim`. |
-| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                  |
-| `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters.                                                                                                                                               |
-| `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go.                                                                                                                                                                                       |
+| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build. Cannot be combined with `applicationArchiveUrl` or `expoGo: true`.                                                               |
+| `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters. Cannot be combined with `buildId` or `expoGo: true`.                                                                                          |
+| `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go. When `true`, cannot be combined with `buildId` or `applicationArchiveUrl`.                                                                                                            |
 | `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"57"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                 |
 | `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                            |
 | `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source. Maximum 2,048 characters.                                                                                        |
 
-`buildId`, `applicationArchiveUrl`, and `expoGo: true` are mutually exclusive application sources. If you omit all three, the session starts with a blank device. Automatic application setup applies to `agent-device`, `argent`, and `serve-sim`. For `appium`, install and launch the app through your Appium client.
+Automatic application setup applies to `agent-device`, `argent`, and `serve-sim`. For `appium`, install and launch the app through your Appium client.
 
 The REST API uses `serve-sim` for the session type that EAS CLI calls `web-preview-only`. It is only available on iOS and does not support an idle timeout. Other session types provide a controller and include a web preview on supported iOS sessions.
 
