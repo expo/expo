@@ -503,7 +503,12 @@ the label's own count, which is the claim the rung actually establishes.
 - **Whether an Android app was really stopped, at the instant the command returned.** `am force-stop`
   is asynchronous: it exits as soon as ActivityManager takes the request. `runtime:stop --android`
   claims the stop ran and — since F102 — that the app *was* running; the suite checks the effect within
-  a bound because that is the only honest form of the assertion.
+  a bound because that is the only honest form of the assertion. That bound has been observed exceeded
+  [2026-08-28: the same tree went 21/24, then failed this check again, then 24/24, across three
+  consecutive runs, the first minutes after an emulator boot, with the command's own payload correct
+  in every failing artifact] —
+  so a red in this suite's mixed-platform block on the first run after a boot is re-run once before it
+  is read as a regression.
 - **Build creation.** Impossible in v1, so it is unreachable here rather than untested here.
 - **Speed, of anything.** §What a live assertion is allowed to be.
 - **A skip is not a pass.** `test:live` printing `2 skipped, 1 passed` means a third of this tier ran,
