@@ -31,8 +31,8 @@ One renderer, `rendererPackageName: "react-native-renderer"`, `version: "19.2.3"
 `bundleType: 1`, one root (`out-01-devtools-hook.json`). Round trip: 5 ms.
 
 The renderer object also carries `overrideProps`, `overrideHookState`, `scheduleUpdate` and
-`scheduleRefresh`. None of them is needed for this feature, and none should be used: they mutate
-the app rather than drive it.
+`scheduleRefresh`. None of them is needed for this feature, and none should be used, because they
+mutate the app rather than drive it.
 
 `bundleType: 1` is the development bundle. A release bundle installing no hook was **not tested**,
 and is the one branch the fixtures do not cover.
@@ -57,26 +57,27 @@ One expression walks every fiber under every root and collects
 **Correction 1 — `--depth <n>` as the plan describes it is useless.** Fiber depth on this app is
 **152**, and every element the user can see sits between depth 128 and 152. Depth in fibers counts
 context providers, `forwardRef` wrappers and memo boundaries, so a `--depth 5` returns nothing at
-all and a `--depth 200` returns everything. A depth cap has to count *kept* nodes, not fibers, or
-not exist.
+all and a `--depth 200` returns everything. A depth cap has to count *kept* nodes rather than fibers,
+or it has to not exist.
 
 **Correction 2 — the cap is not a transport limit.** `Runtime.evaluate` carried a 64 MB string
 back in 1.08 s, and refused nothing at 1, 4, 16 or 64 MB (`out-12-payload-cap.json`). So the size
-question is entirely about what an agent should read, not what the socket will bear. The relevant
-number in the table above is the last row: the interactive projection stays around 6 KB while the
-full tree grows without bound with the list. **The default must be a bounded projection, and the
-unbounded tree must be opt-in** — the opposite of the `[--interactive-only]` flag the plan sketched.
+question is entirely about what an agent should read rather than what the socket will bear. The
+relevant number in the table above is the last row: the interactive projection stays around 6 KB
+while the full tree grows without bound with the list. **The default must be a bounded projection,
+and the unbounded tree must be opt-in.** That is the opposite of the `[--interactive-only]` flag the
+plan sketched.
 
 **Fabric fiber shape, versus the classic assumptions.** A host fiber's `stateNode` is
 `{node, canonical: {currentProps, internalInstanceHandle, nativeTag, publicInstance,
 publicRootInstance, viewConfig}}`, and `publicInstance` is a `ReactNativeElement`. There is no
 `_nativeTag` and no `measure` on the `stateNode` itself, which is where the pre-Fabric renderer
-put them. Nothing in the walk needs `stateNode`, so this costs nothing — but any later work that
+put them. Nothing in the walk needs `stateNode`, so this costs nothing. But any later work that
 wants coordinates has to go through `canonical.publicInstance`.
 
-Everything else the walk needs — `tag`, `elementType`, `type`, `child`, `sibling`, `return`,
-`memoizedProps` — is present and behaves as expected. `memoizedProps` holds the props as written
-in JSX, including `testID`.
+Everything else the walk needs is present and behaves as expected: `tag`, `elementType`, `type`,
+`child`, `sibling`, `return` and `memoizedProps`. `memoizedProps` holds the props as written in JSX,
+including `testID`.
 
 ### 3. tap works, on every button family tested — confirmed, with the plan's matching rule refuted
 
@@ -92,14 +93,14 @@ the app. Proven on four component families in one screen (`out-08-tap-variants.j
 | `react-native-gesture-handler` `RectButton` | the outer `forwardRef` | `marks` text updated |
 | `expo-router` `Link` | `Text` | **Navigated to `/`** — screenshot-confirmed |
 
-react-native-gesture-handler was the plan's biggest open question, and it needs no separate path:
-the app's own `onPress` prop is on the fiber, and calling it runs the app's handler. What the
+react-native-gesture-handler was the plan's biggest open question, and it needs no separate path.
+The app's own `onPress` prop is on the fiber, and calling it runs the app's handler. What the
 library does differently is *recognise* the gesture, and this never asks it to.
 
 **Refuted — "`--index` is required when `matched > 1`".** A `testID` written once in JSX lands on
 **every fiber in the chain that forwards props down to a host view**. In this app 17 fibers carry
 a testID and there are 4 elements (`out-04-match-groups.json`): the `Pressable` costs 3 fibers,
-the `expo-router` `Link` costs 6, the `FlatList` costs 5. Counting fibers would make
+the `expo-router` `Link` costs 6, and the `FlatList` costs 5. Counting fibers would make
 `runtime:tap add-note` report "3 matches, pass `--index`" for a button that appears once on the
 screen, on every single call. The plan's rule would have made the command unusable.
 
@@ -109,19 +110,20 @@ screen, on every single call. The plan's rule would have made the command unusab
    That collapses 17 fibers to 4 elements, one per `testID` written in the source. `--index` then
    means what the plan wanted it to mean, and in this app it is never needed.
 2. The *group* of a match is that fiber plus every descendant carrying the same testID. The group
-   is **not a contiguous fiber chain** — `expo-router`'s `Link` forwards `testID` through
+   is **not a contiguous fiber chain.** `expo-router`'s `Link` forwards `testID` through
    `ExpoLinkImpl` and `BaseExpoRouterLink`, which do not carry it themselves. A walk that follows
    only the immediate child stops before the fiber that owns `onPress` and reports "no handler"
    for a working link. That was a real bug in the first version of `expr-04`, visible in its
-   history: `handlerFound: null` for `home-notes-link`.
+   history as `handlerFound: null` for `home-notes-link`.
 3. The handler is the one on the **shallowest** fiber of the group that has it. This is
-   load-bearing for gesture-handler: `RectButton` puts `onPress` on **six** fibers of the same
+   load-bearing for gesture-handler. `RectButton` puts `onPress` on **six** fibers of the same
    group, and only the shallowest is the app's own function. The deepest is
-   `RNGestureHandlerButton`'s internal press handler, which expects the library's event, not ours.
-4. Only when the group has no handler at all does the search walk **up** past the match — and the
+   `RNGestureHandlerButton`'s internal press handler, which expects the library's event rather than
+   ours.
+4. Only when the group has no handler at all does the search walk **up** past the match, and the
    answer must say so. Tapping a `Text` inside a card would otherwise silently fire the card's
    handler, which is what a real touch does but not what the agent asked for. In this app the
-   handler was inside the group every time; the up-walk never ran.
+   handler was inside the group every time, and the up-walk never ran.
 
 **The handler is called with a synthetic event.** React Native press handlers are given a
 `GestureResponderEvent`, and a handler reading `event.nativeEvent.pageX` would throw on
@@ -153,15 +155,15 @@ re-read the tree afterwards?") has a cheap answer: a second walk costs 8 ms on t
 
 ## What the walk sees that the user cannot
 
-The largest finding the plan did not anticipate. While the app is on `/notes`, the fibers of `/`
-and `/explore` are **still mounted**, and the walk reports their elements as though they were on
-screen: the baseline `out-03-tree-walk.json` contains "Welcome to Expo", "Open notes", the whole
+This is the largest finding the plan did not anticipate. While the app is on `/notes`, the fibers of
+`/` and `/explore` are **still mounted**, and the walk reports their elements as though they were on
+screen. The baseline `out-03-tree-walk.json` contains "Welcome to Expo", "Open notes", the whole
 Explore screen's five collapsibles, *and* the notes screen. An agent reading that tree would
 conclude the app shows all three at once. Worse, `runtime:tap` would happily fire a handler on a
 screen that is not visible.
 
 React itself does not know. All four `Offscreen` fibers report `mode: "visible"` with a null
-`memoizedState` (`out-13-offscreen.json`) — this app uses native tabs
+`memoizedState` (`out-13-offscreen.json`). This app uses native tabs
 (`RNSTabsHostIOS` / `RNSTabsScreenIOS`), so the switching happens natively and React never marks
 a subtree hidden.
 
@@ -175,7 +177,7 @@ Screen  { isFocused: true,  name: "notes",   routeKey: "notes-uwRaOpCYt9X7npvD89
 ```
 
 The unfocused `RNSTabsScreenIOS` hosts also carry `pointerEvents: "none"` while the focused one
-carries `"box-none"` — a second, renderer-level signal that agrees with the first.
+carries `"box-none"`. That is a second, renderer-level signal that agrees with the first.
 
 **Recommendation:** default to the focused screen, using the `Screen` fiber's `isFocused`, and
 report which screen that was in the JSON. `--all-screens` opts into the whole tree. This reads
@@ -186,9 +188,9 @@ an error.
 ## `disabled` does not remove the handler
 
 A `<Pressable testID="disabled-btn" disabled onPress={addNote}>` keeps `onPress` on
-`memoizedProps` — `hasOnPress: true` alongside `disabled: true` (`out-15-disabled.json`). React
-Native disables the press at the responder level, which this never goes through, so the naive tap
-runs the handler of a button the user cannot press. That is a false pass an agent cannot see, and
+`memoizedProps`, reporting `hasOnPress: true` alongside `disabled: true` (`out-15-disabled.json`).
+React Native disables the press at the responder level, which this never goes through, so the naive
+tap runs the handler of a button the user cannot press. That is a false pass an agent cannot see, and
 it is the one correctness bug in the mechanism that this spike found.
 
 The signal is there twice, on the same group:
@@ -217,11 +219,11 @@ sets for the platform rather than what one library happens to call its prop.
 | `GenericTouchable` / `RNGestureHandlerButton` names | gesture-handler internal | Only affects what is *reported*, not what is called |
 
 The fourth row is the one to design against. This spike used numeric tags to explore, and they are
-wrong to ship: `typeof elementType === 'string'` answers "is this a host component" without any
+wrong to ship. `typeof elementType === 'string'` answers "is this a host component" without any
 tag, and the walk needs nothing else. **Do not put React's tag numbers in the shipped expression.**
 
-The refusal path should be one guard at the top of every expression —
-"no `__REACT_DEVTOOLS_GLOBAL_HOOK__`, or it has no `getFiberRoots`" — answering
+The refusal path should be one guard at the top of every expression, asking whether there is no
+`__REACT_DEVTOOLS_GLOBAL_HOOK__` or whether it has no `getFiberRoots`. It answers
 `RUNTIME_TREE_UNSUPPORTED` rather than emitting a wrong tree, exactly as the plan proposed.
 
 ## Honest limits, for `--help` rather than for a footnote
@@ -231,7 +233,7 @@ The refusal path should be one guard at the top of every expression —
   because of the responder system will not be exercised by it.
 - **An invisible button is still tapped.** A button hidden behind a modal, scrolled off screen or
   at zero opacity is indistinguishable from a visible one to this walk.
-- **A disabled button is still tapped, unless the command refuses it.** See below — this one is
+- **A disabled button is still tapped, unless the command refuses it.** See below. This one is
   cheap to fix, so it should not stay a limit.
 - **The event is synthetic.** A handler that reads a real touch's `pageX` gets zero.
 - **Nothing works on Expo Go for Android**, which has no CDP debugger at all
@@ -240,10 +242,10 @@ The refusal path should be one guard at the top of every expression —
 
 ## The device-automation fallback, checked
 
-`idb` is **not installed** on this machine; only `idb_companion` 1.1.8 (a 2022 build) is, and it
+`idb` is **not installed** on this machine. Only `idb_companion` 1.1.8, a 2022 build, is, and it
 is not the CLI. So the iOS fallback the plan named as Backend B costs an install before it can be
-evaluated at all, and is not a same-day alternative. Android's `uiautomator` path was out of scope
-for this spike. The fiber walk works, so nothing is blocked on this.
+evaluated at all, which makes it no same-day alternative. Android's `uiautomator` path was out of
+scope for this spike. The fiber walk works, so nothing is blocked on this.
 
 ## Recommendation: GO, with these command shapes
 
@@ -254,8 +256,8 @@ what stays a fixed size as the app grows:
 exagent runtime:tree [--all] [--all-screens] [--testID <id>] [--max-nodes <n>] [--json]
 ```
 
-`--all` is the full projection (every node with a testID, a label, a role, a handler or text);
-without it, only nodes with a handler or a testID. `--max-nodes` truncates and says so in
+`--all` is the full projection: every node with a testID, a label, a role, a handler or text.
+Without it, only nodes with a handler or a testID. `--max-nodes` truncates and says so in
 `truncated`. There is no `--depth`. JSON adds `focusedScreen` and `screensSeen`.
 
 `runtime:tap` — matching by element, not by fiber:
@@ -267,9 +269,9 @@ exagent runtime:tap <testID> [--index <n>] [--all-screens] [--verify] [--force] 
 JSON: `{ testID, matched, index, component, handler, handlerOn, handlerOutsideMatch, disabled,
 screen, ok }`.
 `matched` counts elements. `--index` is required only when `matched > 1`, which this app never
-reached. `handlerOutsideMatch: true` says the handler came from an ancestor of the match and is
+reached. `handlerOutsideMatch: true` says the handler came from an ancestor of the match, and is
 worth an explicit line in the text output. `--verify` re-walks after the call and reports what
-changed — 8 ms, per hypothesis 5.
+changed, at 8 ms per hypothesis 5.
 
 `runtime:type` — same matching, `onChangeText`:
 
@@ -277,11 +279,11 @@ changed — 8 ms, per hypothesis 5.
 exagent runtime:type <text> --testID <id> [--submit] [--all-screens] [--json]
 ```
 
-`--submit` calls `onSubmitEditing` after the text. Exit `0` handled, the `20`-band code for no
-match / no handler / ambiguous, per [[0010-agent-conventions]].
+`--submit` calls `onSubmitEditing` after the text. Exit `0` when it was handled, and a `20`-band code
+for no match, no handler, or an ambiguous one, per [[0010-agent-conventions]].
 
-All three go through `evaluateOverSessionAsync` in `src/runtime/cdpClient.ts` unchanged — verified
-by running the fiber walk through the shipped `exagent runtime:eval`, which returned
+All three go through `evaluateOverSessionAsync` in `src/runtime/cdpClient.ts` unchanged. That was
+verified by running the fiber walk through the shipped `exagent runtime:eval`, which returned
 `{"fibers": 3279}` with the `promiseSettling` wrapper in place and nothing to adjust. Every string
 in the output comes from the app, so all of it is fenced under [[0008-guardrails]].
 
