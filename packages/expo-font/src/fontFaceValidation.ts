@@ -30,7 +30,9 @@ export function normalizeStyle(
   if (style == null) {
     return undefined;
   }
-  return style === 'italic' || style === 'oblique' ? 'italic' : 'normal';
+  // Case-insensitive like the CSS keyword web receives, so 'Italic' slants on every platform.
+  const lower = style.trim().toLowerCase();
+  return lower === 'italic' || lower === 'oblique' ? 'italic' : 'normal';
 }
 
 function resourceFromPath(path: FontFaceDefinition['path']): FontResource | undefined {
