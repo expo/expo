@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Ignore fingerprint-check trigger URLs in `getLinkingURL()`, `useLinkingURL()`, and the `url` event. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 - Create development deep links from the bundle URL's authority instead of the manifest's `hostUri` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

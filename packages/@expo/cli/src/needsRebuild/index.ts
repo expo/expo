@@ -42,7 +42,7 @@ export const expoNeedsRebuild: Command = async (argv) => {
     1  invalid usage — a mistyped flag or unsupported --platform/--app-id combination
     2  rebuild required — run {bold npx expo run:<platform>}
     3  prebuild required — run {bold npx expo prebuild}, then rebuild
-    4  cannot determine — no device, app not installed, no embedded fingerprint, or an error
+    4  cannot determine — no device, app not installed, no embedded fingerprint, the app did not respond, or an error
 `
     );
   }

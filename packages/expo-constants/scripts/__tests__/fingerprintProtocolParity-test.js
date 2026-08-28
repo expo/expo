@@ -54,3 +54,132 @@ describe('app.fingerprint protocol parity', () => {
     expect(contents).toContain('silent: true');
   });
 });
+
+// The CLI triggers a fingerprint check on a physical iOS device with a deep link, and the native
+// responder (expo-dev-launcher) posts the result back. `fingerprintCheckProtocol.ts` is the
+// source of truth; this pins its literals against the native responder and the expo-linking
+// filter that keeps the trigger URL from reaching app navigation. Each side declares its copy
+// locally because Swift cannot import from the CLI.
+describe('fingerprint-check protocol parity', () => {
+  const packagesDir = path.join(__dirname, '..', '..', '..');
+
+  it.each([
+    [
+      'the CLI (fingerprintCheckProtocol.ts)',
+      '@expo/cli/src/needsRebuild/fingerprintCheckProtocol.ts',
+      "FINGERPRINT_CHECK_URL_HOST = 'expo-fingerprint-check'",
+    ],
+    [
+      'the dev-launcher responder (EXDevLauncherFingerprintCheck.swift)',
+      'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift',
+      'url.host == "expo-fingerprint-check"',
+    ],
+    [
+      'the expo-linking filter (LinkingAppDelegateSubscriber.swift)',
+      'expo-linking/ios/LinkingAppDelegateSubscriber.swift',
+      'url.host == "expo-fingerprint-check"',
+    ],
+  ])(`%s declares the fingerprint-check URL host`, (_description, file, literal) => {
+    const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
+    expect(contents).toContain(literal);
+  });
+
+  it.each([
+    [
+      'the CLI (fingerprintCheckProtocol.ts)',
+      '@expo/cli/src/needsRebuild/fingerprintCheckProtocol.ts',
+      "NONCE_PARAM = 'nonce'",
+    ],
+    [
+      'the dev-launcher responder (EXDevLauncherFingerprintCheck.swift)',
+      'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift',
+      '$0.name == "nonce"',
+    ],
+  ])(`%s declares the nonce query param`, (_description, file, literal) => {
+    const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
+    expect(contents).toContain(literal);
+  });
+
+  it.each([
+    [
+      'the CLI (fingerprintCheckProtocol.ts)',
+      '@expo/cli/src/needsRebuild/fingerprintCheckProtocol.ts',
+      "CALLBACK_PARAM = 'callback'",
+    ],
+    [
+      'the dev-launcher responder (EXDevLauncherFingerprintCheck.swift)',
+      'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift',
+      '$0.name == "callback"',
+    ],
+  ])(`%s declares the callback query param`, (_description, file, literal) => {
+    const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
+    expect(contents).toContain(literal);
+  });
+
+  it.each([
+    [
+      'the CLI (fingerprintCheckProtocol.ts)',
+      '@expo/cli/src/needsRebuild/fingerprintCheckProtocol.ts',
+      "NONCE_BODY_KEY = 'nonce'",
+    ],
+    [
+      'the dev-launcher responder (EXDevLauncherFingerprintCheck.swift)',
+      'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift',
+      '"nonce": nonce',
+    ],
+  ])(`%s declares the nonce JSON body key`, (_description, file, literal) => {
+    const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
+    expect(contents).toContain(literal);
+  });
+
+  it.each([
+    [
+      'the CLI (fingerprintCheckProtocol.ts)',
+      '@expo/cli/src/needsRebuild/fingerprintCheckProtocol.ts',
+      "FINGERPRINT_BODY_KEY = 'fingerprint'",
+    ],
+    [
+      'the dev-launcher responder (EXDevLauncherFingerprintCheck.swift)',
+      'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift',
+      '"fingerprint": fingerprint',
+    ],
+  ])(`%s declares the fingerprint JSON body key`, (_description, file, literal) => {
+    const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
+    expect(contents).toContain(literal);
+  });
+
+  it.each([
+    [
+      'the CLI (fingerprintCheckProtocol.ts)',
+      '@expo/cli/src/needsRebuild/fingerprintCheckProtocol.ts',
+      "CALLBACK_PATH = '/fingerprint-callback'",
+    ],
+    [
+      'the dev-launcher responder (EXDevLauncherFingerprintCheck.swift)',
+      'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift',
+      'callback.path == "/fingerprint-callback"',
+    ],
+  ])(`%s declares the callback path`, (_description, file, literal) => {
+    const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
+    expect(contents).toContain(literal);
+  });
+
+  it('the dev-launcher responder is gated behind #if DEBUG, the release-build SSRF mitigation', () => {
+    const contents = fs.readFileSync(
+      path.join(packagesDir, 'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift'),
+      'utf8'
+    );
+    expect(contents).toContain('#if DEBUG');
+  });
+
+  it('the dev-launcher responder only allows the http callback scheme', () => {
+    const contents = fs.readFileSync(
+      path.join(packagesDir, 'expo-dev-launcher/ios/EXDevLauncherFingerprintCheck.swift'),
+      'utf8'
+    );
+    // The check must require http exactly, and must not also allow https.
+    expect(contents).toContain('callback.scheme == "http"');
+    expect(contents).not.toContain('callback.scheme == "https"');
+    expect(contents).not.toMatch(/callback\.scheme == "http"[^\n]*\|\|[^\n]*"https"/);
+  });
+});

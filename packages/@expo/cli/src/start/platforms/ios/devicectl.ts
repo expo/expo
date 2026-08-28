@@ -31,7 +31,7 @@ const DEVICE_CTL_EXISTS_PATH = path.join(getExpoHomeDirectory(), 'devicectl-exis
 
 type AnyEnum<T extends string = string> = T | (string & object);
 
-type DeviceCtlDevice = {
+export type DeviceCtlDevice = {
   capabilities: DeviceCtlDeviceCapability[];
   connectionProperties: DeviceCtlConnectionProperties;
   deviceProperties: DeviceCtlDeviceProperties;
@@ -339,6 +339,56 @@ export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string)
     deviceId,
     bundleId,
   ]);
+}
+
+/** Launch an app on a device, handing it a URL to open during launch (`--payload-url`). */
+export async function launchAppWithPayloadUrlAsync(
+  deviceId: string,
+  bundleId: string,
+  payloadUrl: string
+): Promise<void> {
+  await devicectlAsync([
+    'device',
+    'process',
+    'launch',
+    '--payload-url',
+    payloadUrl,
+    '--device',
+    deviceId,
+    bundleId,
+  ]);
+}
+
+/** Open a URL on a device, routed through the app registered for its scheme. */
+export async function openUrlWithDeviceCtlAsync(deviceId: string, url: string): Promise<void> {
+  await devicectlAsync(['device', 'process', 'openURL', '--device', deviceId, url]);
+}
+
+/**
+ * Classify a `devicectl` launch failure by its message, so the fingerprint reader can react
+ * (fall back to `openURL`, or report the app as not installed) without guessing at exit codes.
+ * Verified on a device with Xcode 27: a missing app fails with "The requested application
+ * <bundle id> is not installed."; launching an already-running app succeeds (no error exists
+ * for it), so `already-running` covers older toolchains. An unmatched message is treated as
+ * `unknown` rather than silently mis-classified.
+ */
+export function classifyDevicectlLaunchError(
+  error: unknown
+): 'app-not-installed' | 'already-running' | 'unknown' {
+  const message = [
+    error instanceof Error ? error.message : String(error),
+    error && typeof error === 'object' && 'stderr' in error ? String((error as any).stderr) : '',
+  ]
+    .join('\n')
+    .toLowerCase();
+
+  if (message.includes('is not installed') || message.includes('could not be found')) {
+    return 'app-not-installed';
+  }
+  if (message.includes('already running')) {
+    return 'already-running';
+  }
+  return 'unknown';
 }
 
 /** Find all error codes from the output log */

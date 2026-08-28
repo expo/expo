@@ -145,3 +145,10 @@ private func getFingerprint() -> String? {
   let trimmed = fingerprint.trimmingCharacters(in: .whitespacesAndNewlines)
   return trimmed.isEmpty ? nil : trimmed
 }
+
+/** Reads the embedded fingerprint stamp (`app.fingerprint`). Serves the dev-launcher fingerprint responder. */
+public enum EmbeddedFingerprint {
+  public static func read() -> String? {
+    return getFingerprint()
+  }
+}

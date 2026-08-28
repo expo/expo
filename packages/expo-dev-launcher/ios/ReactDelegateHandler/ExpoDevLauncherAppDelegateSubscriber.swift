@@ -9,6 +9,15 @@ public class ExpoDevLauncherAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     EXDevLauncherController.disablePackagerServerAccess()
+    // On a scene-lifecycle app (the default), a cold launch delivers its URL through
+    // `onDeepLink:options:` via `ExpoAppSceneDelegate`'s `connectionOptions.urlContexts`, so
+    // `launchOptions?[.url]` is always nil there and this block does nothing. It only runs on
+    // the legacy non-scene `AppDelegate` path, where iOS also calls `application(_:open:options:)`
+    // after launch. The responder may then fire twice for one cold launch; that's harmless
+    // (same nonce, fire-and-forget, the second POST hits an already-closed callback port).
+    if let url = launchOptions?[.url] as? URL {
+      _ = EXDevLauncherFingerprintCheck.handle(url)
+    }
     return true
   }
 

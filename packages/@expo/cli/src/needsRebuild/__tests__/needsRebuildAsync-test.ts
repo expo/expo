@@ -109,6 +109,17 @@ describe(checkNeedsRebuildAsync, () => {
         exitCode: 4,
       },
     },
+    {
+      name: 'the device never reports its fingerprint',
+      installed: { status: 'no-response', appId: 'dev.expo.app', device },
+      expected: {
+        status: 'unknown',
+        reason: 'no-response',
+        commands: [],
+        installedHash: null,
+        exitCode: 4,
+      },
+    },
   ])(`reports the verdict when $name`, async ({ installed, expected }) => {
     jest.mocked(getInstalledFingerprintIosAsync).mockResolvedValue(installed as any);
     const result = await checkNeedsRebuildAsync(projectRoot, ['ios'], {
@@ -116,6 +127,38 @@ describe(checkNeedsRebuildAsync, () => {
     });
     expect(result.platforms.ios).toMatchObject(expected);
     expect(result.exitCode).toBe(expected.exitCode);
+  });
+
+  it(`explains the likely causes and the fix when the device never reports its fingerprint`, async () => {
+    jest
+      .mocked(getInstalledFingerprintIosAsync)
+      .mockResolvedValue({ status: 'no-response', appId: 'dev.expo.app', device });
+    const result = await checkNeedsRebuildAsync(projectRoot, ['ios'], { explicit: true });
+    const recommendation = result.platforms.ios!.recommendation;
+    expect(recommendation).toContain('same network');
+    expect(recommendation).toContain('Local Network');
+    expect(recommendation).toContain('npx expo run:ios --device');
+  });
+
+  it(`appends the reader's hint to the recommendation when present`, async () => {
+    jest.mocked(getInstalledFingerprintIosAsync).mockResolvedValue({
+      status: 'no-embedded-fingerprint',
+      appId: 'dev.expo.app',
+      device,
+      hint: 'A physical iOS device is also connected. Check it with --device "iPhone".',
+    });
+    const result = await checkNeedsRebuildAsync(projectRoot, ['ios'], { explicit: true });
+    expect(result.platforms.ios!.recommendation).toContain(
+      'A physical iOS device is also connected. Check it with --device "iPhone".'
+    );
+  });
+
+  it(`describes both simulators and physical devices in the no-device message on iOS`, async () => {
+    jest.mocked(getInstalledFingerprintIosAsync).mockResolvedValue({ status: 'no-device' });
+    const result = await checkNeedsRebuildAsync(projectRoot, ['ios'], { explicit: true });
+    const recommendation = result.platforms.ios!.recommendation;
+    expect(recommendation).not.toContain('Physical iOS devices are not supported');
+    expect(recommendation).toContain('--device');
   });
 
   it(`passes the expected hash to the reader as a promise, so the device read overlaps it`, async () => {
@@ -255,6 +298,20 @@ describe(checkNeedsRebuildAsync, () => {
     mockInstalled(android, 'android');
     const result = await checkNeedsRebuildAsync(projectRoot, ['android', 'ios'], { explicit });
     expect(result.exitCode).toBe(exitCode);
+  });
+
+  it(`ignores a silent phone (no-response) when another platform is definitive`, async () => {
+    // A phone that happens to be plugged into the machine must not flip an implicit check
+    // from 0 to 4 when Android answered cleanly.
+    jest
+      .mocked(getInstalledFingerprintIosAsync)
+      .mockResolvedValue({ status: 'no-response', appId: 'dev.expo.app', device } as any);
+    mockInstalled('current-hash', 'android');
+    const result = await checkNeedsRebuildAsync(projectRoot, ['android', 'ios'], {
+      explicit: false,
+    });
+    expect(result.platforms.ios?.exitCode).toBe(4);
+    expect(result.exitCode).toBe(0);
   });
 
   it(`reports each platform as it completes`, async () => {
