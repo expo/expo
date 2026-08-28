@@ -82,7 +82,7 @@ public:
     return {.x = contentOrigin->x - ownOrigin.x, .y = contentOrigin->y - ownOrigin.y};
   }
 
-  // Only `RNHostView` declares `expoInternalSizeFromChildren` so it is used to gate the layout overrides.
+  // Currently, only `RNHostView` declares `expoInternalSizeFromChildren`
   static bool sizesToContent(const react::Props::Shared &props) {
     auto const *viewProps = dynamic_cast<const ExpoViewProps *>(props.get());
 
@@ -94,10 +94,12 @@ public:
     return it != viewProps->propsMap.end() && it->second.isBool() && it->second.getBool();
   }
 
+  // Yoga calls this method for RNHostView when it has matchContents set
   react::Size measureContent(
     const react::LayoutContext &layoutContext,
     const react::LayoutConstraints &layoutConstraints
   ) const override {
+    // Return default behavior when RNHostView does not have `sizesToContent` set to true
     if (!sizesToContent(this->getProps())) {
       return ConcreteViewShadowNode::measureContent(layoutContext, layoutConstraints);
     }
@@ -111,6 +113,8 @@ public:
     return content->measure(layoutContext, hostedContentConstraints(*content));
   }
 
+  // We override this so RNHostView can lay out it's children
+  // We marked it as a Leaf node so we need to manually lay out the hosted content
   void layout(react::LayoutContext layoutContext) override {
     ConcreteViewShadowNode::layout(layoutContext);
 
@@ -124,11 +128,8 @@ public:
       return;
     }
 
-    // The same constraints the content was measured with, deliberately not the frame Yoga settled
-    // on. Laying it out at that frame would put the parent back in charge of the content's layout,
-    // which is the dependency this whole path exists to remove.
+    // Use the same constraint that was used to measure the content, so that the layout is consistent with the measurement
     auto const clonedContent = content->clone({});
-
     static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(
       layoutContext,
       hostedContentConstraints(*content)
@@ -143,16 +144,6 @@ public:
   }
 
 private:
-  /**
-   The single element this view hosts, or nothing when nothing is mounted yet - a hosted RN `Modal`
-   renders null until it is visible.
-
-   Only the first child is measured and laid out, and `RNHostView` takes one element for that reason.
-   A leaf's children are outside the Yoga tree, so arranging several would mean reimplementing flex
-   here: the default is a column with `alignItems: stretch`, and a caller's own `flexDirection`, gaps
-   and child margins are all invisible from this side. A caller that needs several gives them one
-   React Native parent, which Yoga arranges properly.
-   */
   const react::LayoutableShadowNode *hostedContent() const {
     auto const &children = this->getChildren();
 

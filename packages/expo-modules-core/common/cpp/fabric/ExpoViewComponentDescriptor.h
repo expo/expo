@@ -34,12 +34,16 @@ public:
     const facebook::react::ShadowNodeFragment &fragment,
     const facebook::react::ShadowNodeFamily::Shared &family
   ) const override {
-    auto traits = this->getTraits();
-
-    if (ShadowNodeType::sizesToContent(fragment.props)) {
-      traits.set(facebook::react::ShadowNodeTraits::Trait::LeafYogaNode);
-      traits.set(facebook::react::ShadowNodeTraits::Trait::MeasurableYogaNode);
+    // Currently, only RNHostView can have `sizesToContent` set to true.
+    if (!ShadowNodeType::sizesToContent(fragment.props)) {
+      return facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::createShadowNode(
+        fragment, family);
     }
+
+    // Treat RNHostView as a leaf node and measurable node in Yoga, so that it can be measured by its children.
+    auto traits = this->getTraits();
+    traits.set(facebook::react::ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(facebook::react::ShadowNodeTraits::Trait::MeasurableYogaNode);
 
     auto shadowNode = std::make_shared<ShadowNodeType>(fragment, family, traits);
 
@@ -100,13 +104,13 @@ public:
       snode->updateYogaProps();
     }
 
+    // Currently, RNHostView is the only node that can have `sizesToContent` set to true
     if (ShadowNodeType::sizesToContent(snode->getProps())) {
       auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
         snode->getProps());
       auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
 
-      // Only the alignment nobody chose. `style` is a valid attribute on every Expo view through
-      // React Native's base view config, so a caller can set `alignSelf` and mean it.
+      // If RNHostView has align self set to auto or stretch, we should override it to flex-start so that the node can size itself to its content
       auto const alignSelf = style.alignSelf();
 
       if (alignSelf == facebook::yoga::Align::Auto || alignSelf == facebook::yoga::Align::Stretch) {
