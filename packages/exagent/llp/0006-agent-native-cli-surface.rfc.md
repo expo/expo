@@ -1,10 +1,10 @@
 # 0006: Agent-Native CLI Surface
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** `packages/@expo/cli`; JSONL events; `exagent` launcher (new)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-20
+**Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0004-smart-start-and-project-state]], [[0024-cli-ui]]
 
 ## Summary
@@ -39,8 +39,8 @@ Decision [confirmed — Kudo, 2026-08-22]: the default output stays **terse huma
 2. **`--json`**, for programmatic consumers: exactly one JSON object on stdout and nothing else, guaranteed on **every** command. Field names mirror the text labels, and top-level keys are stable per command and covered by shape tests, which is versioning in fact if not in name.
 3. **`LOG_EVENTS` JSONL**, the streaming and telemetry channel for long-running commands, on the same contract as the expo CLI family.
 
-**The keys a help block names are every key the object has** [added — wave 37, 2026-08-28, for
-**F144**]. Point 2 says top-level keys are stable and shape-tested, and `--help`'s `keys` line is
+**The keys a help block names are every key the object has** [added 2026-08-28, for **F144**].
+Point 2 says top-level keys are stable and shape-tested, and `--help`'s `keys` line is
 where a caller reads them — the promise being that the branch can be written without running the
 command once to find out. `status --json` and `runtime:errors --json` both emitted a `followups`
 array that neither help block listed, and `status`' own e2e already pinned the key in the payload, so
@@ -78,7 +78,7 @@ The reserved bins (`exagent` / `ai-expo` [observed — npm, reserved by kudochie
 
 Naming rule [confirmed — Kudo, 2026-08-22], in three parts: **a command sharing a name with an `expo` command behaves like that command; a capability only `exagent` has gets a verb of its own; and the `expo` commands `exagent` does not wrap are forwarded to the project's `expo` CLI verbatim.** Rationale [inferred]: the launcher is a superset of `expo`, so an agent that knows `expo` is never wrong about `exagent`, and nothing has to be re-learned per command. The forwarding half is what keeps `exagent` usable as a project's only CLI entry point without growing a wrapper per command.
 
-Fixed forwarded set [confirmed — Kudo, 2026-08-22; revised from the open-ended fallback of the same day]: **what is forwarded is a list, not a fallback.** It is the `commands` map of `packages/@expo/cli/src/index.ts` [observed — 2026-08-22] minus the commands `exagent` wraps, which are `start`, `install`, and `add` (`install` under another name). What is left: `run`, `run:ios`, `run:android`, `prebuild`, `config`, `export`, `export:web`, `export:embed`, `serve`, `customize`, `lint`, `login`, `logout`, `register`, `whoami`. A name in neither surface is a command neither CLI has, and it fails with `UNKNOWN_COMMAND`. Rationale [inferred]: an unrecognized name is a typo far more often than it is a new `expo` command. The fallback answered a typo by making it the `expo` CLI's problem to report, which is an error from the wrong CLI about the wrong thing, and for a driving agent that is a wasted recovery hop. Cost [observed]: the list is hand-maintained, so an `expo` command added upstream is unreachable through `exagent` until the list grows.
+Fixed forwarded set [confirmed — Kudo, 2026-08-22]: **what is forwarded is a list, not a fallback.** It is the `commands` map of `packages/@expo/cli/src/index.ts` [observed — 2026-08-22] minus the commands `exagent` wraps, which are `start`, `install`, and `add` (`install` under another name). What is left: `run`, `run:ios`, `run:android`, `prebuild`, `config`, `export`, `export:web`, `export:embed`, `serve`, `customize`, `lint`, `login`, `logout`, `register`, `whoami`. A name in neither surface is a command neither CLI has, and it fails with `UNKNOWN_COMMAND`. Rationale [inferred]: an unrecognized name is a typo far more often than it is a new `expo` command. The fallback answered a typo by making it the `expo` CLI's problem to report, which is an error from the wrong CLI about the wrong thing, and for a driving agent that is a wasted recovery hop. Cost [observed]: the list is hand-maintained, so an `expo` command added upstream is unreachable through `exagent` until the list grows.
 
 Auth rule [confirmed — Kudo, 2026-08-26]: **a forwarded command that acts on the machine rather than on the project falls back to the EAS CLI, rather than failing for want of a project one.** The four are `login`, `logout`, `register` and `whoami`, and they are still forwarded. The project's own `expo` wins whenever there is one, so nothing changes inside an Expo app. What changes is everywhere else.
 
@@ -106,7 +106,7 @@ The rules are implemented as data rather than as string matching [observed — 2
 - **The help cannot drift.** `helpSections` groups the surface by the job at hand: Develop, Understand the project, Check a running app, Create and ship, Agent setup, Learn, Account, and Expo CLI for the forwarded set. A unit test pins that every name in all three lists appears in exactly one section, so neither a new command nor a newly forwarded one can ship undiscoverable. What each of those screens actually says — the numbered workflow map above the listing, the one template every command's `--help` comes out in, the `help workflow` on-ramp, and the palette — is [[0024-cli-ui]]. The registry carries the data all of it reads: a one-line `summary` and a lazy `help` loader on every entry, and the `workflow` map.
 - **Adding a command is one entry.** A new action is a line in a group's `actions`. A new group is a key in `commandGroups`. A newly forwarded `expo` command is a string in `forwardedCommands`. Another name for an existing command is a pair in `commandAliases`. No `switch`, no `if (command === 'runtime:eval')`, and no CLI framework: the resolution is about 45 lines over the three lists.
 
-Implemented [observed — 2026-08-22]: `start` and `install` add skill sync and follow-ups to `expo start` and `expo install`, and forward every other argument untouched. The plan-first engine that `start` briefly owned is the `dev` verb. The forwarded set runs through `src/passthrough/`, which spawns the project's `expo` CLI with stdio inherited, forwards the exit code, emits one `cli:expo_passthrough` event, and adds nothing else.
+Implemented [observed — 2026-08-22]: `start` and `install` add skill sync and follow-ups to `expo start` and `expo install`, and forward every other argument untouched. The plan-first engine is the `dev` verb. The forwarded set runs through `src/passthrough/`, which spawns the project's `expo` CLI with stdio inherited, forwards the exit code, emits one `cli:expo_passthrough` event, and adds nothing else.
 
 ## Testing
 

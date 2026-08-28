@@ -1,10 +1,10 @@
 # 0011: Impact and Freshness — what a change costs, and whether it can ship
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** the change classifier (`src/impact/`, the engine under `exagent status` since 2026-08-26; `exagent impact` was its own command until then); the last-build record (`src/plan/lastBuild.ts`); the fingerprint CLI wrapper (`src/project/fingerprint.ts`); the project-state probe (`src/project/probe.ts`, `src/status/statusAsync.ts`); `@expo/fingerprint`; `eas-cli` `fingerprint:compare` and `build:list`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-24
+**Date:** 2026-08-24 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0006-agent-native-cli-surface]], [[0009-smart-followups]], [[0010-agent-conventions]]
 
 ## Summary
@@ -24,9 +24,9 @@ The word is now used twice in this package, deliberately. `src/project/impact.ts
 name from `install`, from the plan engine and from llp/0004, and a rename would cost every one of
 those a hop to buy a distinction the directory already makes.
 
-## `reload` has two reasons, and the follow-up used to give the wrong one
+## `reload` has two reasons, and the follow-up has to name which
 
-[added 2026-08-28, wave 31 — **F134**, found by running `install` against the real registry for the
+[added 2026-08-28 — **F134**, found by running `install` against the real registry for the
 first time ([[0019-backend-parity-audit]] §live-project).]
 
 `classifyInstallImpactAsync` reaches `action: 'reload'` down two different paths, and `resolveAction`

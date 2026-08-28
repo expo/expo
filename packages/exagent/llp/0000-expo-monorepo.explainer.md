@@ -1,11 +1,11 @@
 # 0000: The Expo Monorepo
 
 **Type:** Explainer
-**Status:** Draft
+**Status:** Final
 **Role:** Root
 **Systems:** repo-wide
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-18
+**Date:** 2026-08-18 · finalized 2026-08-28
 
 ## What this is
 
@@ -26,7 +26,9 @@ The root LLP for this corpus, scoped to `packages/exagent` since 2026-08-21. Rea
 ## LLP conventions here
 
 - Documents live in `llp/`, named `NNNN-slug.type.md`.
-- New documents start as `Draft`. Claims are tagged `[observed]`, `[confirmed]`, or `[inferred]`.
+- New documents start as `Draft` and reach `Final` when their content ships and settles. The four
+  status values, and what each promises, are in [[0001-agentic-cli-on-expo-cli]] §Status convention.
+- Claims are tagged `[observed]`, `[confirmed]`, or `[inferred]`.
 - Code annotated with `@ref llp/NNNN-...` comments points back to its governing document.
 
 ## Index

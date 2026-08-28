@@ -1,10 +1,10 @@
 # 0020: A Directory That Is Not an Expo App
 
 **Type:** RFC
-**Status:** Draft — implemented
+**Status:** Final — implemented
 **Systems:** `src/project/expoApp.ts`; the `isExpoApp` field of `src/project/types.ts` and `src/project/probe.ts`; the `not-expo-app` row of `src/plan/decide.ts`; the guarded command entries (`src/dev/index.ts`, `src/start/index.ts`, `src/smoke/index.ts`, `src/navigate/index.ts`, `src/deploy/index.ts`, `src/doctor/index.ts`, `src/agents/index.ts`, `src/skills/index.ts`); `buildProjectStatus` / `buildNextActionStatus` in `src/status/sections.ts`, `projectLine` in `src/status/format.ts`, `buildStatusFollowUps` in `src/followups/status.ts`; `e2e/__tests__/project-shapes-test.ts`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-26
+**Date:** 2026-08-26 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0006-agent-native-cli-surface]], [[0010-agent-conventions]], [[0016-v1-scope]], [[0019-backend-parity-audit]]
 
 ## Summary
@@ -95,7 +95,7 @@ Two reasons for both halves rather than the guard alone. The engine is consumed 
 (`status` reads it for the `next` line, and `resolveAsync` for the backend), so a table that still
 answered `needs-dev-client` here would keep the trap alive in every caller that does not stop. And a
 row is testable at tier 0, where the guard is not. `src/plan/__tests__/decide-test.ts` pins that no
-plan of a non-app contains a step, including the two cases that used to short-circuit above the
+plan of a non-app contains a step, including the two cases that can short-circuit above the
 dev-client row: a web target, and checked-in native directories.
 
 `ProjectTarget` gains `none` for it. That is the one value that is not a way of running the app,

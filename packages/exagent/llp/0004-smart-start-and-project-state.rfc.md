@@ -1,10 +1,10 @@
 # 0004: Smart Start and the Project-State Engine
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** project-state probe (new); smart `dev` command (new, `start` until 2026-08-22); dev-server lock (new); `@expo/fingerprint`; `expo-mcp` tools
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-20
+**Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0002-testing-and-evals]], [[0015-backend-selection-and-config]]
 
 ## Summary
@@ -478,8 +478,7 @@ that returned 0 because nothing was measured would not be a gate. So the reflex/
 stopped being a distinction between two *commands* and became one between a report and a verdict
 over the same report.
 
-**Two kinds of "no class", and the gate has to tell them apart** [observed — the first version
-failed every real project]. The report says `class: null` both for a platform that was never built
+**Two kinds of "no class", and the gate has to tell them apart.** The report says `class: null` both for a platform that was never built
 here and for one that was built and cannot be measured. Treating them alike made `--assert`
 permanently inconclusive: an ordinary project builds for one platform, so the other has no record
 and the strictest reading dragged the whole answer to `22`. The rule is now:
@@ -569,14 +568,14 @@ one `/status` request open (`waitForBundlerReadyAsync`, shared with `dev:wait`),
 difference between not ready and not asked.
 
 **And a `--wait-ready` run whose step also opens the app holds its claim open for a moment
-afterwards** [added — wave 37, 2026-08-28, for F140]. `expo start --ios` is one subprocess that
+afterwards** [added 2026-08-28, for F140]. `expo start --ios` is one subprocess that
 serves *and* drives Simulator.app, and the macOS Automation refusal that ends it arrives about a
 quarter of a second after `/status` answers — after the readiness wait and after the liveness recheck
 that F61 added. The design, the measurement and the reason a positive "the app opened" signal does not
 exist are in [[0021-honest-reports]] §The window after the claim; `dev --detach --wait-ready` without
 a platform flag is unaffected and pays nothing.
 
-**One detached dev server per project**, which is the rule the original design called for. The
+**One detached dev server per project.** The
 lock is read *before* anything is spawned, and a project that already has one gets the running
 server reported back with `alreadyRunning: true` and exit 0. That is idempotent rather than an error,
 because the caller asked for a dev server and there is one. `acquireDevServerLockAsync` already
@@ -604,10 +603,10 @@ message says that instead (see §What a development build costs the plan, the ph
 
 ## What a development build costs the plan, and two ways it reported wrong
 
-[added 2026-08-28, wave 29, from the first live pass over `expo-dev-client`. Both are about a plan
+[added 2026-08-28, from the first live pass over `expo-dev-client`. Both are about a plan
 whose last step is a **build** rather than a dev server, which is the shape every dev-client plan
-has and no Expo Go plan does. **Both decided and fixed in wave 30.** The two decisions are at the
-end of each part, and what precedes them is the observation as it was recorded.]
+has and no Expo Go plan does. Both are fixed; the decision is at the end of each part, and what
+precedes it is the observation as it was measured.]
 
 **F121 (MAJOR) — a build that succeeded and installed the app is not recorded, so the next plan
 builds again.** `recordBuildOf` runs only after a step exits 0, and `expo run:*` is one subprocess
@@ -625,15 +624,15 @@ step, *"No development build recorded for ios, so a build is needed"*]. Two thin
 
 The rule the fix needs is what "a build happened" may be read off, and none of the three candidates
 is free: the artifact on disk; the app on the device, which is a probe the plan engine deliberately
-does not have (§Implemented in v1 as, item 1); or `Build Succeeded` in a subprocess's output.
-Deciding that is not a bug fix. What is *observed* and worth carrying either way: the record is
+does not have (§Implemented in v1 as, item 1); or `Build Succeeded` in a subprocess's output. What is
+*observed* and worth carrying either way: the record is
 written when the **dev server stops**, not when the compiler finishes, because the `run:*` step is
 the dev-server step. So `exagent dev --android` followed by `exagent dev:stop` does record the build,
 and that is the sequence that makes a second run cheap.
 
 ### Decision: a build is recorded when the app reaches the device, whatever the launch then does
 
-[decided — wave 30, 2026-08-28. Implemented in `src/dev/buildEvidence.ts` and
+[decided 2026-08-28. Implemented in `src/dev/buildEvidence.ts` and
 `devAsync.ts §recordBuildReachedDevice`.]
 
 The record is written at **build-step success**, and a launch failure afterwards is its own reported
@@ -657,7 +656,7 @@ them:
 - the step failure gains `Note: the app it built is installed on the device, so that build is
   recorded — the next "npx exagent dev" starts a dev server for it instead of building again`;
 - `macos-automation`'s handoff gains the same sentence, on the line whose `How:` sends the reader to
-  `npx exagent dev --yes`. That recovery used to walk back into the fifteen minutes.
+  `npx exagent dev --yes`. Without it, that recovery walks back into the fifteen minutes.
 
 **What is deliberately not recorded.** Two cases. A build that compiled and died before the install,
 because the record would then say a device has an app it has not got. And anything in `inherit`
@@ -677,13 +676,13 @@ two facts into one: "the lock is held" and "a dev server is listening".
 
 ### Decision: the wording tracks the plan's phase
 
-[decided — wave 30, 2026-08-28. Implemented in `src/dev/childVerdict.ts
+[decided 2026-08-28. Implemented in `src/dev/childVerdict.ts
 §parseDetachedChildPhase` and `detachAsync.ts §stillBuildingError`; see also
 [[0021-honest-reports]] §Readiness is a claim about now.]
 
 A detached run may not say "the dev server started on `<url>`" while the plan is still compiling.
 `building` means say building, and name the step. `serving` means started. The phase is read off the
-**child's own log**, the channel wave 17 already opened for its verdict rather than a second
+**child's own log**, the channel already open for its verdict rather than a second
 one, and it needs no new output. The log holds the plan table this CLI printed, and:
 
 - the lock is only ever taken by the plan's **dev-server step** (`isDevServerStep`), so a log whose
@@ -754,9 +753,8 @@ Everything that says any of this reads its wording from there: plan steps, the p
 `dev --help`, `build:wait --help`, the `impact` report, and five follow-ups. So `local` means one
 thing in all of them, and the EAS command is spelled one way. The toolchain name gets two functions
 rather than one (`localTool` gives `Xcode`, `localRequirement` gives `Xcode on this machine`) because
-a sentence that has already said "this machine" must not say it again. The first version of this
-shipped "this machine has no the Android SDK on this machine" in two places at once, which is what
-one string does when it is written for one sentence and pasted into three.
+a sentence that has already said "this machine" must not say it again. One string written for one
+sentence and pasted into three gives "this machine has no the Android SDK on this machine".
 
 **Per step, and `null` where the question does not apply.** `PlanStep.runsOn` is
 `'local' | 'eas' | null`. `expo prebuild` and `expo run:*` are `local`. `expo start` and
@@ -785,9 +783,9 @@ toolchain the probe merely could not reach would be worse than the silence it re
 cached per process, and a probe that throws is caught, because a plan that could not be made because
 a probe failed is worse than a plan that says it does not know.
 
-**Android needs a second answer, and it is a command** [F122, added 2026-08-27, wave 29]. The
-paragraph above is right that the *SDK* is a directory, and it was read as though the SDK were the
-whole question. `gradlew` is a Java program, so a machine with the entire SDK and no JVM cannot
+**Android needs a second answer, and it is a command** [F122, added 2026-08-27]. The paragraph above
+is right that the *SDK* is a directory, and the SDK is not the whole question.
+`gradlew` is a Java program, so a machine with the entire SDK and no JVM cannot
 build. The same machine is again the example: the SDK is where the installer put it, and
 `expo run:android` died in three seconds on `Unable to locate a Java Runtime` under a plan that had
 just printed *"Building on this machine: this machine has the Android SDK"*

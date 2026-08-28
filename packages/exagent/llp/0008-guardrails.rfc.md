@@ -1,10 +1,10 @@
 # 0008: Guardrails for Agent-Driven Expo Workflows
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** `expo-mcp` tools; smart start plan contract
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-20
+**Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0004-smart-start-and-project-state]], [[0016-v1-scope]], [[0017-deferred-commands]]
 
 ## Summary

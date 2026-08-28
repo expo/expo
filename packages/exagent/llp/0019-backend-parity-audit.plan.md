@@ -1,10 +1,10 @@
 # 0019: Backend Parity — the Coverage Matrix, and What It Found
 
 **Type:** Plan
-**Status:** Draft
+**Status:** Open — the live matrix still has `open`, `runnable` and `unreachable` cells; §What is still not tested, and why names every one
 **Systems:** the e2e tier (`e2e/`); the live tier (`e2e-live/`); the EAS-backed call sites (`src/dev/devAsync.ts`, `src/impact/buildCache.ts`, `src/impact/compare.ts`, `src/status/easBuilds.ts`, `src/device/cloudSimulator.ts`, `src/passthrough/auth.ts`, `src/deploy/`); the follow-up ladders (`src/followups/`)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-26 (live columns added 2026-08-27)
+**Date:** 2026-08-26 (live columns added 2026-08-27) · finalized 2026-08-28
 **Related:** [[0002-testing-and-evals]], [[0022-live-tier]], [[0015-backend-selection-and-config]], [[0016-v1-scope]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]]
 
 ## Summary
@@ -59,7 +59,7 @@ would produce exercises none of that.
 
 ## The live matrix
 
-[added 2026-08-27, wave 20 — [[0022-live-tier]]] The matrix above asks whether a command ran against a
+[added 2026-08-27 — [[0022-live-tier]]] The matrix above asks whether a command ran against a
 **stub** of its backend's binary. This one asks the next question, the one §What is still not tested
 left open in as many words: **has it ever run for real, and where is the evidence.**
 
@@ -67,7 +67,7 @@ One row per v1 command, seven columns. Here is what each cell means, and the dis
 load-bearing.
 
 - **`stub-e2e`** — a whole `exagent` process ran against a stub `expo`/`eas`/dev server (`e2e/`).
-- **`live-project`** [added 2026-08-28, wave 31] — ran against the **real npm registry** and the
+- **`live-project`** [added 2026-08-28] — ran against the **real npm registry** and the
   project's **own `expo` CLI**, and against no device at all. That is the whole gate: `registryGate()`
   and nothing else. The column exists because the row it fills, the commands whose backend is the
   project on disk, was `open — stub-only, by choice` in every other column. The claim behind that
@@ -75,12 +75,12 @@ load-bearing.
   places. A cell reading `n/a — no device` means the command's answer is about a runtime, which this
   suite has none of.
 - **`live-local`** — ran against a real Metro, a real booted iOS simulator, real Expo Go, real Hermes.
-- **`live-devclient`** [added 2026-08-28, wave 29] — ran against a real Metro and a real
+- **`live-devclient`** [added 2026-08-28] — ran against a real Metro and a real
   **development build** on a real Android emulator. `by hand` in this column means the row was
-  measured live in wave 29 and no suite asserts it. That is what every iOS development-build row is,
+  measured live once and no suite asserts it. That is what every iOS development-build row is,
   because `simctl openurl` of a dev build's scheme raises a confirmation dialog nothing here can
   answer.
-- **`live-android`** [added 2026-08-27, wave 25] — ran against a real Metro and the real Expo Go APK on
+- **`live-android`** [added 2026-08-27] — ran against a real Metro and the real Expo Go APK on
   a real Android emulator. It is not a duplicate of the column to its left. Expo Go for Android has no
   CDP debugger, so every cell here is either a **refusal** the iOS column cannot reach or a claim about
   a platform-scoped read that only a machine with two platforms attached can put at risk. A cell
@@ -89,9 +89,8 @@ load-bearing.
 - **`live-eas`** — ran against the real EAS service on staging.
 - **`live-cloud`** — ran against a real EAS Simulator session.
 - **`filled`** — asserted by a run somebody has seen green. Green means green on macOS/iOS/Expo Go.
-- **`runnable`** — the test exists and nobody has run it. **Not evidence.** Every `live-cloud` cell is
-  this today: the suite was written in wave 20 and the staging cloud-session budget belonged to another
-  wave. It becomes `filled` when the lead runs it.
+- **`runnable`** — the test exists and nobody has run it. **Not evidence.** It becomes `filled` when
+  somebody runs it.
 - **`open`** — this tier could test it and does not yet. The reason is in the cell.
 - **`n/a`** — the command has no such backend, so the column is not a gap.
 - **`unreachable`** — the tier cannot cross the boundary, with the reason in the cell. These are the
@@ -99,7 +98,7 @@ load-bearing.
   about. `smoke (pass)` under `live-android` is the clearest of them: the gate is *asserted* to exit
   22 on a working app, because a runtime it cannot read is a phase it may not pass.
 
-[**A sixth column, 2026-08-28, wave 29.** `live-devclient` runs a real **development build** on the
+[**A sixth column, 2026-08-28.** `live-devclient` runs a real **development build** on the
 emulator `live-android` uses. It is not a duplicate of the column to its left, and it is the reason
 that column reads the way it does. `live-android` is Expo Go, whose Android engine carries no CDP
 debugger, and `live-devclient` is the app that does. Every `unreachable — no debugger` cell in the
@@ -108,14 +107,6 @@ platform into a claim about the app. The column is **Android only**, and the rea
 than a gap. On iOS 26.5 every `simctl openurl` of a development build's scheme raises
 `Open in "<app>"?`, on every call, and nothing in this tier can answer it. So the iOS development
 build rows say `by hand` with their evidence, which is a weaker claim than `filled` and is said so.]
-
-[**The column order below is the order the cells are in**, and it is not the order this header was
-written in until wave 36. `live-devclient` was appended as the last column when wave 29 added it,
-and `live-project` was inserted as the second when wave 31 added its, so the header read
-`… live-android | live-devclient | live-eas | live-cloud` over a body whose fifth cell is the EAS
-one. Nothing in the body moved; the header row is corrected. The rows that make it unambiguous are
-`whoami` (fifth cell names the **staging** session file) and `runtime:eval` (last cell is the
-development build returning `2`, which is wave 29's whole result).]
 
 | Command | stub-e2e | live-project | live-local | live-android | live-eas | live-cloud | live-devclient |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -131,14 +122,14 @@ development build returning `2`, which is wave 29's whole result).]
 | `status --explain --build <id>` | filled | n/a | n/a | n/a | **filled** — the id is echoed (F66) | n/a | n/a |
 | `dev --detach --wait-ready` | filled | n/a — no device | **filled** — and the port still answers 8 s later (F61) | **filled** — same server, and the port still answers | n/a | n/a | **filled** — `ready: true` on `expo start --dev-client --android`, which also opens the installed build on the emulator. **F125** is the same command on a plan that still has a build in it |
 | `dev` (attached, blocking) | filled | open — `start` is the attached shape this suite runs, one row down | open — the suite has no use for a foreground server; `--detach` is the agent-facing shape | open — same reason as the column left | n/a | n/a | open — same reason as the columns left |
-| `dev` (EAS plan run) | filled (wave 19) | n/a | n/a | unreachable — same reason | unreachable — the plan's EAS step is a native build, which no v1 command creates | n/a | n/a |
-| `dev --tunnel` | filled | n/a | **unreachable on this machine** — `@expo/ngrok` exits 1 (`Tunnel URL not found` ×12, then `Cannot read properties of undefined`) [wave19-live] | n/a — an emulator reaches this machine through `adb reverse`, not a tunnel | n/a | n/a — `live-cloud` uses a **proxy origin** (`EXPO_PACKAGER_PROXY_URL` + `tuft host`) instead, which is the path wave 19 proved | n/a |
+| `dev` (EAS plan run) | filled | n/a | n/a | unreachable — same reason | unreachable — the plan's EAS step is a native build, which no v1 command creates | n/a | n/a |
+| `dev --tunnel` | filled | n/a | **unreachable on this machine** — `@expo/ngrok` exits 1 (`Tunnel URL not found` ×12, then `Cannot read properties of undefined`) [wave19-live] | n/a — an emulator reaches this machine through `adb reverse`, not a tunnel | n/a | n/a — `live-cloud` uses a **proxy origin** (`EXPO_PACKAGER_PROXY_URL` + `tuft host`) instead, which is the proven path | n/a |
 | `dev` with a **proxy origin** | none — a stub dev server advertises nothing | n/a | open — `live-local` has no use for a public origin | open — `adb reverse` is the local answer and it is asserted by the `navigate` row | n/a | **runnable** — `EXPO_PACKAGER_PROXY_URL` + `tuft host add`, and the origin is checked before a session is billed | open — `adb reverse` is the local answer here too |
 | cloud session start (`--expo-go`) | n/a | n/a | n/a | n/a | n/a | **runnable** — `eas simulator … --expo-go`; without the flag the session has no app and every `open` is `LSApplicationWorkspaceErrorDomain error 115` [wave19-live] | n/a |
 | `dev:logs` | filled | n/a — no device | **filled** — reads the real bundler error the gates refused on | **filled** — carries the `Android Bundled` line, and the `.android.ts` break | n/a | n/a | open — read by the reload proof rather than asserted directly |
-| `dev:stop` | filled | **filled** — the cleanup, and the stop that ends the `start` test | **filled** — process gone, port free after | **filled** — port free after; F94's trigger tolerated the same way | n/a | n/a | **filled** — run twice per suite. It used to be what wrote the build record after a `run:*` step; since wave 30 the record is written when the app reaches the device, so a stop is no longer part of it (F121) |
+| `dev:stop` | filled | **filled** — the cleanup, and the stop that ends the `start` test | **filled** — process gone, port free after | **filled** — port free after; F94's trigger tolerated the same way | n/a | n/a | **filled** — run twice per suite. The build record is written when the app reaches the device rather than after a `run:*` step, so a stop is no part of it (F121) |
 | `start` | filled | **filled** — a real Metro answering 200 on its port, the ladder printed **before** the bundler took the terminal, and the skill sync 3 s later (llp/0003 §Migration item 1, measured for the first time) | open — `expo start` verbatim; `dev` covers the same subprocess with a plan around it | open — same reason as the column left | n/a | n/a | open — same reason as the columns left |
-| `navigate` (local) | filled | n/a — no device | **filled** — `simctl openurl`, route check, `attached: true` | **filled** — `reversedPort` (F50), `attached: true`, the resolved `adb` in the command (F49), and the wait it names is one Android can run (**found F104**) | n/a | n/a | **filled** — `dcapp://explore`, `target` naming the development build, and `runtime:tree` reporting `focusedScreen: "explore"` **after** it, which is the check `navigate` does not make for itself. **F123** is the same command with nothing connected — since wave 30 it opens the launcher URL first and is `filled` too: `launch.attached: true` in 2.6 s, then `attached: true` on the route link |
+| `navigate` (local) | filled | n/a — no device | **filled** — `simctl openurl`, route check, `attached: true` | **filled** — `reversedPort` (F50), `attached: true`, the resolved `adb` in the command (F49), and the wait it names is one Android can run (**found F104**) | n/a | n/a | **filled** — `dcapp://explore`, `target` naming the development build, and `runtime:tree` reporting `focusedScreen: "explore"` **after** it, which is the check `navigate` does not make for itself. **F123** is the same command with nothing connected — it opens the launcher URL first and is `filled` too: `launch.attached: true` in 2.6 s, then `attached: true` on the route link |
 | `navigate` (bad route) | filled | n/a — no device | **filled** — exit 1, `ROUTE_NOT_FOUND`, real sitemap in the message | open — the sitemap has no platform; asserted once, in the column left | n/a | n/a | open — the sitemap has no app dimension |
 | `navigate --print-url` | filled | n/a — no device | open — the URL is asserted by the `navigate` row; `--print-url` adds no backend | open — same reason as the column left | n/a | **runnable** — `beforeAll` uses it to prove the public origin took (`hostType: "tunnel"`) before billing a session | open — asserted by the `status` row |
 | `navigate --cloud` | filled | n/a | n/a | n/a | n/a | **filled** — `deviceBackend: "cloud"`, the URL on the public origin, the `open` at exit 0, and `attached: true` in 206 ms on a session started with `--open-url` [2026-08-27]. `attached` is asserted permissively — a cold first bundle over a proxy may outlive the wait — but a run that does not attach must have looked for the S10 dialog | n/a |
@@ -149,7 +140,7 @@ development build returning `2`, which is wave 29's whole result).]
 | `runtime:tap --verify` | unreachable — no CDP at tier 0 | n/a — no device | **filled** — interpolated **and** single-string Text in the diff (F63) | unreachable — no debugger, so nothing can be tapped or diffed | n/a | unreachable — same | **filled** — F63’s interpolated **and** single-string pair, both in the diff, on Android |
 | `runtime:type` | filled | n/a — no device | **filled** — types into a real input; `editable={false}` → 20 | **filled** — the refusal only, same reason | n/a | unreachable — same | **filled** — types into a real input; `editable={false}` → 20 `disabledOn: "editable"` |
 | `runtime:reload` (local) | filled | n/a — no device | **filled** — `verifiedBy: "message-socket-peers"`, real reconnect | **filled** — rung 1, `commandSocketClients: 2`, `verifiedBy: "message-socket-peers"`, `Android Bundled` — verified with no CDP at all | n/a | n/a | **filled** — rung 1 in 1.3–2.4 s, and the bundle proof asserted to be `Android Bundled …` rather than any bundle (**found F126**) |
-| `runtime:reload --cloud` | filled (wave 19) | n/a | n/a | n/a | n/a | **filled** — exit 0, `verifiedBy: "dev-server-bundle"`, `iOS Bundled 40ms`, in 18.5 s and 48 s on two runs [2026-08-27]. **Not** wave 19's field-by-field contract: `method: "device"` was that session's state, and the assertion is now the *ladder* — rung 1 always taken and always reporting what the socket held, the relaunch reloading from either state | n/a |
+| `runtime:reload --cloud` | filled | n/a | n/a | n/a | n/a | **filled** — exit 0, `verifiedBy: "dev-server-bundle"`, `iOS Bundled 40ms`, in 18.5 s and 48 s on two runs [2026-08-27]. **Not** a field-by-field contract: `method: "device"` was one session's state, and the assertion is the *ladder* — rung 1 always taken and always reporting what the socket held, the relaunch reloading from either state | n/a |
 | `runtime:reload --cloud --route` | filled | n/a | n/a | n/a | n/a | **filled** — `exp://<public-host>/--/lab` opened and echoed, exit 0 in 18.5 s and 26.5 s [2026-08-27]. The landing open of a socket-rung reload goes through the third URL path F96's audit found, so this row is what would have caught it | n/a |
 | `runtime:stop` (local) | filled | n/a — no device | **filled** — `wasRunning: true`, Expo Go terminated on the named udid | **filled** — Android's own application id, `wasRunning` from a `pidof`, and the device asked afterwards (**found F101 and F102**) | n/a | n/a | **filled** — the project’s **own** package from `bundleIdSource: "dev-server"`, and the effect read off `pidof` inside a bound. Sharper than the cell left: this app has the *same* id on both platforms, so no id comparison could catch an unscoped read |
 | `runtime:stop --cloud` | filled | n/a | n/a | n/a | n/a | **runnable** — `wasRunning` may be null and that is honest (S13), and the session is still listed afterwards (S12) | n/a |
@@ -165,7 +156,7 @@ development build returning `2`, which is wave 29's whole result).]
 | `inspect:build-log` (decoded) | filled | n/a | n/a | n/a | **filled** — same log decoded → phase located, line checked back against the file | n/a | n/a |
 | `inspect:build-log <build-id>` | n/a | n/a | n/a | n/a | unreachable — reserved; eas-cli has no `build:logs` | n/a | n/a |
 | `inspect:config-plugins` | filled | **filled** — the real introspected config on a plain scaffold, on one with a plugin added, and on a **broken plugin entry** (**found F132 and F133**) | open — no backend dimension, and the stub tier runs the real config loader already | open — same reason as the column left | n/a | n/a | open — same reason as the columns left |
-| `skills:*`, `agents:setup` | filled | **filled** — all four skill actions against real autolinking, `agents:setup` idempotent and respecting a user-edited `AGENTS.md`, and the wave-16 `clean` guard (**found F131**, and the finding that **no published module ships a skill**) | open — filesystem only; nothing about them is a second process boundary | open — same reason as the column left | n/a | n/a | open — same reason as the columns left |
+| `skills:*`, `agents:setup` | filled | **filled** — all four skill actions against real autolinking, `agents:setup` idempotent and respecting a user-edited `AGENTS.md`, and the `clean` guard (**found F131**, and the finding that **no published module ships a skill**) | open — filesystem only; nothing about them is a second process boundary | open — same reason as the column left | n/a | n/a | open — same reason as the columns left |
 | forwarded `expo` set | filled | **filled** — `config --json` **byte-identical** to `expo config --json`, a rejected flag keeping the Expo CLI's own words and code, the space form forwarded (rule 2), and one forward that really runs (`export --platform web` → a `dist/index.html`) | open — a forward is argv assembly, which is what the stub tier is for | open — same reason as the column left | n/a | n/a | **this is where F120 was found** — a plan ending in `expo run:*` forwards nothing, and the follow-ups were quoting the caller’s arguments anyway |
 | native EAS build **creation** | n/a | n/a | n/a | n/a | **unreachable in v1** — verified: no v1 command creates one. `deploy --native` runs create-launch; `inspect:build-log` takes no id | n/a | n/a |
 | Android, anywhere | filled (posix) | n/a — no device dimension at all, which is this column's whole gate | **unreachable today** — the suite is iOS/Expo Go; the harness has no Android gate yet | **this column** — `live-android`, 24 tests, 103 s including the emulator boot [2026-08-27]. What is still not run on Android: a **development build** (which is what would give it a debugger), a **physical device**, and `--tunnel` | n/a | n/a | **this column** — 15 tests, 25 s, on a development build. What is still not run: a development build on **iOS** inside a suite, and a physical device |
@@ -174,7 +165,7 @@ development build returning `2`, which is wave 29's whole result).]
 
 ### The iOS development build, measured by hand
 
-[2026-08-28, wave 29. iPhone 17 Pro `C159CF99-…`, iOS 26.5, an SDK 57 project built with
+[2026-08-28. iPhone 17 Pro `C159CF99-…`, iOS 26.5, an SDK 57 project built with
 `npx expo run:ios`, dev server on 8901. Evidence under `wave29-devclient/evidence/`.]
 
 These rows are **`by hand`**, which is a weaker claim than `filled` and is written as one. They were
@@ -186,9 +177,9 @@ Expo Go's, not Android's. `xcrun simctl openurl` of a development build's scheme
 | Command | Result |
 | --- | --- |
 | `install expo-dev-client` | exit 0, `impact: native-module`, `action: prebuild-and-build`, and the next `dev --plan` moves from `expo-go` to `dev-client-stale` |
-| `dev --ios` (the real build) | `Build Succeeded`, installed on the simulator, then exit **7** `macos-automation` at `expo run:ios`'s own `osascript` — and no build recorded, which is **F121**. Fixed in wave 30: the same run records the build and the handoff says so |
+| `dev --ios` (the real build) | `Build Succeeded`, installed on the simulator, then exit **7** `macos-automation` at `expo run:ios`'s own `osascript` — and no build recorded, which is **F121**. Fixed: the same run records the build and the handoff says so |
 | `status` | `openUrls` is the dev launcher URL only, `target: "dev-build"` |
-| `navigate /` (nothing connected) | exit **22** after 45.4 s, `url: "dcapp://"` — **F123**. Fixed in wave 30; the iOS dialog still stands in front of the launcher open here, and the Android measurement is in `live-devclient` |
+| `navigate /` (nothing connected) | exit **22** after 45.4 s, `url: "dcapp://"` — **F123**. Fixed; the iOS dialog still stands in front of the launcher open here, and the Android measurement is in `live-devclient` |
 | `navigate /lab` (app connected) | exit **0**, `attached: true` in 79 ms, and the app **did not move** — the dialog was on screen and `attached` was satisfied by the target that was already there |
 | `runtime:eval "1+1"` | exit 0, `value: 2` |
 | `runtime:tree` | exit 0, 10 nodes, `disabled` / `disabledOn: "editable"` |
@@ -209,7 +200,7 @@ rung on ([[0005-runtime-loop-tools]] §One ladder, chosen by the command socket)
 to go wrong because of it. It is written down because the ladder reads that count as "somebody is
 listening".
 
-### What this matrix was used for, in wave 36
+### What this matrix was used for
 
 [added 2026-08-28] [[0016-v1-scope]] §The graduation review is the first decision made **out of**
 this table rather than recorded into it. Its criterion (b) — live evidence on every platform and
@@ -224,7 +215,7 @@ prevent.
 
 ### What the live columns changed
 
-**The feature with no reach, found by trying to test it** [added 2026-08-28, wave 31]. `skills:*`
+**The feature with no reach, found by trying to test it** [added 2026-08-28]. `skills:*`
 distributes the skills that **SDK packages ship** ([[0003-knowledge-tools-and-skills]] §Skills shipped
 from Expo modules). Ten packages were probed against the registry and a real scaffold: `expo-camera`,
 `@expo/ui`, `expo-router`, `expo-image`, `expo-build-properties`, `react-native-mmkv`, `expo-sqlite`,
@@ -246,13 +237,12 @@ reached at any lower tier at all: a successful `runtime:eval`; `--verify` seeing
 a screenshot on disk. [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app named all
 four as the cost of that boundary, and this is the tier that pays it.
 
-**~~Still stub-only, by choice~~ — the claim, and what happened when somebody ran it** [rewritten
-2026-08-28, wave 31]. This paragraph used to read: *`install` adding a package, `start`, `dev`
-attached, `inspect:config-plugins`, `skills:*`, `agents:setup`, the forwarded set. Each is argv
-assembly or filesystem work with no second process boundary, which is exactly what the stub tier is
-good at. These are `open`, not gaps.* Every one of them is `filled` now, in the `live-project`
-column. The paragraph was wrong in a way worth keeping on the page, because it is the same mistake
-this whole document is about, one boundary further in.
+**Still stub-only, by choice — the claim, and what happened when somebody ran it.** The reasoning was
+that `install` adding a package, `start`, `dev` attached, `inspect:config-plugins`, `skills:*`,
+`agents:setup` and the forwarded set are each argv assembly or filesystem work with no second process
+boundary, which is exactly what the stub tier is good at — so they were `open` rather than gaps.
+Every one of them is `filled` now, in the `live-project` column. The reasoning was wrong in the same
+way this whole document is about, one boundary further in.
 
 **Five findings, F130–F134, and none of them is in the argv.** The premise was that these commands
 *assemble* rather than *converse*, so a stub is a faithful double. What the runs showed is that four
@@ -291,23 +281,22 @@ reload broadcast on a cloud simulator, which is upstream and is the narrowed rem
 tier. A claim that the v1 surface is "fully tested live" would be wrong about every one of these,
 which is why they have rows.
 
-**The Android column split in two, and the half that was missing was the app** [added 2026-08-28,
-wave 29]. `live-android` said `unreachable — no debugger` in nine cells, and that was read for three
-waves as a fact about Android. It is a fact about **Expo Go**. The same nine commands on a
+**The Android column split in two, and the half that was missing was the app** [added 2026-08-28].
+`live-android` said `unreachable — no debugger` in nine cells, and that was read as a fact about
+Android. It is a fact about **Expo Go**. The same nine commands on a
 development build on the same emulator are `filled` in the `live-devclient` column: `runtime:eval`
 returning 2, `runtime:tap`'s three bands, a `--verify` diff, `runtime:type`, and `smoke --android`
 at exit 0 with all eight phases `ok`.
 
 Nothing in the CLI changed to make that true, and that is the result. The refusal is reached by asking
 the runtime what it carries rather than by knowing the platform, so the design was already right and
-only the measurement was missing. Filling the column cost six findings. **F120**, **F122** and
-**F126** were fixed in the wave; **F121**, **F123** and **F125** were left open for a contract
-decision and all three fixed in **wave 30** [2026-08-28]. Three of the six are reachable only through
+only the measurement was missing. Filling the column cost six findings, all fixed [2026-08-28]; **F121**, **F123** and **F125** needed
+a contract decision first. Three of the six are reachable only through
 a dev-client plan, because a development build makes the plan's **last step a build rather than a dev
 server**, and every assumption `dev` makes about that step was written for `expo start`.
 
 **The Android column was the emptiest row in this table, and filling it cost seven findings**
-[added 2026-08-27, wave 25]. `Android, anywhere` read `unreachable today — the harness has no Android
+[added 2026-08-27]. `Android, anywhere` read `unreachable today — the harness has no Android
 gate yet`, and that row was carrying more than it looked like. **F100**, **F101** and **F105** were
 three commands reading the iOS app while reporting about Android. **F102** was `wasRunning: true` on
 no evidence. **F103** was three follow-up builders dropping the platform flag. **F104** was advice an
@@ -319,20 +308,20 @@ what it has not got is a *second* socket that answers. The two `--android` rows 
 green stayed green, which is the other half of what a column is for.
 
 **The cloud column is `runnable`, and its expectations came from a live run rather than from a type**
-[rewritten 2026-08-27, after wave 19 landed]. Wave 19 changed what a cloud reload *is*: a two-verb
+[rewritten 2026-08-27]. A cloud reload is a two-verb
 relaunch verified by `verifiedBy: "dev-server-bundle"`, with `commandSocketClients` beside
 `appsConnected` because the two disagree exactly there. It also changed how the dev server becomes
 reachable at all, because the tunnel this column originally assumed does not start on this machine.
-Both rewrites were made against wave 19's captured payloads (`wave19-live/`) rather than against the
-new source. The distinction matters for the same reason this whole audit does: a test written from a
+Both rewrites were made against captured payloads (`wave19-live/`) rather than against the
+source. The distinction matters for the same reason this whole audit does: a test written from a
 type pins what somebody meant, and a test written from a captured payload pins what happened. The
 column stayed `runnable` until somebody had run it, because a row filled by its own author's
 confidence is the thing the `runnable`/`filled` split exists to make impossible.
 
-**Wave 23 ran it, and the split earned its keep** [2026-08-27, its three sessions, taking the suite
+**Running it earned the split its keep** [2026-08-27, three sessions, taking the suite
 from 4/7 to 6/7;
 [[0022-live-tier]] §What the first four runs of it found]. Every red was a defect: four of them (F96,
-F97, F98, F99), all fixed in that wave. The column's *premises* moved too, which is the part worth
+F97, F98, F99), all fixed. The column's *premises* moved too, which is the part worth
 carrying here. **Three of the four facts the suite was built on were about the state of one session
 rather than about cloud sessions.** A session started `--expo-go` but never opened on the project holds
 no command-socket client and shows no attach; one started with `--open-url` holds both. So `method:

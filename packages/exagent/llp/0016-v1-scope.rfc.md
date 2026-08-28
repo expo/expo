@@ -1,10 +1,10 @@
 # 0016: The v1 Surface — What Ships, What Waits, and What Is Marked Experimental
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** the command registry (`src/commandRegistry.ts`); the reference shelf (`src/deferred/`); the suggested-command lint (`src/lint/`); `--help`; `README.md`; the `AGENTS.md` managed block (`src/agents/content.ts`)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-26 (§The graduation review added 2026-08-28, wave 36)
+**Date:** 2026-08-26 (§The graduation review added 2026-08-28) · finalized 2026-08-28
 **Related:** [[0017-deferred-commands]], [[0006-agent-native-cli-surface]], [[0010-agent-conventions]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0012-build-explain]], [[0014-interaction-spike]], [[0018-interaction-commands]], [[0019-backend-parity-audit]], [[0022-live-tier]], [[0024-cli-ui]]
 
 ## Summary
@@ -98,7 +98,7 @@ names are settled and the projection and the `--verify` diff are the guesses.
 
 ## The graduation review
 
-[wave 36, 2026-08-28. The last scope decision inside v1.] Six commands shipped
+[2026-08-28. The last scope decision inside v1.] Six commands shipped
 `[experimental]` and the mark has no expiry, so a tag that nobody ever takes off stops being a
 warning and becomes a hedge. This is the review that takes it off, one command at a time, against
 what each of them has on the record rather than against how settled it feels.
@@ -108,8 +108,8 @@ what each of them has on the record rather than against how settled it feels.
 A command graduates when all three hold:
 
 - **(a) Its behaviour contract has not changed for five waves.** The contract is the flags it
-  accepts, the keys of its `--json` payload and its exit codes. Not its help text: the wave-34
-  redesign ([[0024-cli-ui]]) rewrote every command's `--help` in the surface, stable ones included,
+  accepts, the keys of its `--json` payload and its exit codes. Not its help text: the `--help`
+  redesign of [[0024-cli-ui]] rewrote every command's help in the surface, stable ones included,
   so counting it here would reset every clock at once and measure the redesign rather than the
   command.
 - **(b) It has live evidence on every platform and runtime combination it claims to support.**
@@ -134,23 +134,22 @@ below. That list is what makes "experimental" a state with a way out, in the sam
 | `runtime:tap` | **graduate** | same as `tree` — one module, one report shape | same, and `--verify`'s text diff is `filled` on both `live-local` and `live-devclient` | as above; `handlerOutsideMatch` is reported rather than hidden | — |
 | `runtime:type` | **graduate** | same as `tree` | same; `editable={false}` → 20 with `disabledOn` on both runtimes | as above; F77's three wording slips closed in the same wave | — |
 | `inspect:build-log` | **graduate** | last moved wave 17 (exit 22 for a body that is not text); the rule table is capped and its `signature` ids are the assertable half | `live-eas` `filled` twice on one real staging log — undecoded → 22, decoded → the phase located and the line checked back against the file | S8, the one false-green it ever had (exit 0 `failure: null` about a build that errored), is closed against a measured threshold: 55% control characters undecoded, 0% decoded | — |
-| `inspect:config-plugins` | **keep** | moved **wave 31**, five waves ago and at the edge of the bar, on the command's first live run | `live-project` only, on one project shape; every other column is `open — no backend dimension` | F133 was a `Why:` line of pure stack frames and F132 was a report that counted `1 declared` for a config declaring three — both dishonest, both closed five waves ago | the four items below |
+| `inspect:config-plugins` | **keep** | moved 2026-08-28, five waves ago and at the edge of the bar, on the command's first live run | `live-project` only, on one project shape; every other column is `open — no backend dimension` | F133 was a `Why:` line of pure stack frames and F132 was a report that counted `1 declared` for a config declaring three — both dishonest, both closed five waves ago | the four items below |
 
 ### Why the five graduated
 
 **The interaction commands graduated on a criterion they wrote for themselves.**
 [[0018-interaction-commands]] §What is still unverified ends: *the first friction run against a
 project this did not come from is what closes those, and is the re-entry point for the
-`[experimental]` mark.* That run is friction run 7, in wave 17, on a project `exagent new` scaffolded
-for it. It cost nine findings and every one was fixed in the same wave. Two live passes have
-happened since against two further apps and two further runtimes, and `src/runtime/interact/` has
-had no non-help commit in the nineteen waves between. The record set the criterion, the criterion
-was met, and the mark stayed on for nineteen waves after it.
+`[experimental]` mark.* That run is friction run 7, on a project `exagent new` scaffolded for it. It
+cost nine findings and every one was fixed. Two live passes have happened since against two further
+apps and two further runtimes, and `src/runtime/interact/` has had no non-help commit between. The
+record set the criterion and the criterion was met.
 
 **`smoke` graduated because the thing the mark was about was tested and held.** The mark's stated
 reason was that *the phase list and the outcome table might* move. The hardest claim anyone made
-about that table was §What `smoke --android` is: *not a green light, and it never will be*. Wave 29
-ran the same command against a development build and got exit 0 with all eight phases `ok`
+about that table was §What `smoke --android` is: *not a green light, and it never will be*. A live
+run of the same command against a development build got exit 0 with all eight phases `ok`
 ([[0005-runtime-loop-tools]] §The wall was Expo Go's, not Android's). **The prose was wrong and the
 code needed no change** — the gate reaches its refusal by asking the runtime what it carries rather
 than by knowing the platform. An outcome table that survives having its own documentation falsified
@@ -173,14 +172,13 @@ claiming a completeness it has not got**:
 - **F35** (friction run 3): `autolinkedModules` answered "is my native dependency linked?" with a
   list that had never been asked that question. Fixed by renaming it `expoAutolinkedModules` and
   shipping a sentence about its scope in the payload.
-- **F132** (wave 31): `10 (1 declared, 9 auto)` for a config declaring three, naming neither of the
+- **F132** (2026-08-28): `10 (1 declared, 9 auto)` for a config declaring three, naming neither of the
   two `_internal.pluginHistory` has no entry for. Fixed by `declaredNotApplied`.
-- **F133** (wave 31): a broken plugin entry answered with a `Why:` line of pure stack frames.
+- **F133** (2026-08-28): a broken plugin entry answered with a `Why:` line of pure stack frames.
 
 The last two landed on this command's **first ever live run**, five waves ago, and they landed
 because the run existed rather than because anybody had reasoned harder. [[0019-backend-parity-audit]]
-§Still stub-only, by choice is the paragraph that was wrong about exactly this command, and the
-correction is younger than the mark it now justifies. One live run is one sample.
+§Still stub-only, by choice is where that gap is accepted. One live run is one sample.
 
 **What would graduate it:**
 
@@ -189,12 +187,11 @@ correction is younger than the mark it now justifies. One live run is one sample
    path rather than from `node_modules`, and a plugin that another config plugin adds. The
    assertion is `declaredNotApplied` — empty where the history accounts for everything, and naming
    the right ids where it does not.
-2. **Both platforms' mods asserted live.** Wave 31 asserted the introspected config and the plugin
-   list. `platforms.android` has never been read live, and §the mods introspection cannot evaluate
+2. **Both platforms' mods asserted live.** The first live pass asserted the introspected config and
+   the plugin list. `platforms.android` has never been read live, and §the mods introspection cannot evaluate
    is the field a reader most needs to be right about.
-3. **Five waves with no change to `EffectiveConfigReport`'s key set.** The clock starts at wave 31,
-   so the earliest this can be met is wave 36 — met on the calendar, and it is criteria 1 and 2 that
-   are outstanding.
+3. **Five waves with no change to `EffectiveConfigReport`'s key set.** Met on the calendar; it is
+   criteria 1 and 2 that are outstanding.
 4. **A `--file <name>` run against a native file the first pass did not produce.** The flag selects
    one file out of the introspected set and has stub coverage only.
 
@@ -217,15 +214,12 @@ session.
 ## `doctor`'s exit code belongs to the protocol
 
 `doctor:check` wraps a tool with an exit-code contract of its own: `expo-doctor` exits **1** when any
-check fails [observed — `packages/expo-doctor/src/doctor.ts`]. This command mirrored that code, on
-the argument that inventing one would hide the tool's own answer — and its help documented the
-mirroring as deliberate.
-
-**Reversed** [decided — wave 17, friction run 7's F68]. [[0010-agent-conventions]] §Exit codes gives
-`1` one meaning across the whole surface: *the tool did not work*. `doctor` was the only gate using
-it for *the tool worked and the project has a problem*, which `typecheck` and `smoke` both report as
-`20` — so `exagent doctor --bogus` and a project with one failing check were indistinguishable, and
-an agent could not use `doctor` as a gate without parsing prose.
+check fails [observed — `packages/expo-doctor/src/doctor.ts`]. This command does **not** mirror that
+code [decided — friction run 7's F68]. [[0010-agent-conventions]] §Exit codes gives
+`1` one meaning across the whole surface: *the tool did not work*. Using it for *the tool worked and
+the project has a problem*, which `typecheck` and `smoke` both report as
+`20`, makes `exagent doctor --bogus` and a project with one failing check indistinguishable, and
+an agent cannot use `doctor` as a gate without parsing prose.
 
 So: **0** when every check passed, **20** when any failed, and **1** only for a run that produced no
 code of its own (a signalled or killed check established nothing about the project, which really is a
@@ -240,14 +234,14 @@ say about them — it has a verdict, so it owes the protocol's code.
 
 - **A wait that only needs the bundler is now a whole smoke run.** A CI job with no device has no cheaper gate than `typecheck`. If that turns out to bite, `dev:wait` comes back, or `smoke` grows the flags that cut it down — which is its re-entry criterion.
 - **`install --json` loses a key** (`checkpoint`), and `EXAGENT_NO_CHECKPOINT` and the `--no-checkpoint` flags are gone from `install`, `dev` and `agents:setup`. An unknown flag is an error, so a script that passed one finds out.
-- **`web` has no bundle gate.** `smoke --platform web` is refused ([[0005-runtime-loop-tools]] §`--platform web` is refused), and the command it used to name for the part web *can* answer was `dev:wait --platform web`. It now names `typecheck`, which is a weaker answer honestly labelled.
+- **`web` has no bundle gate.** `smoke --platform web` is refused ([[0005-runtime-loop-tools]] §`--platform web` is refused), and for the part web *can* answer it names `typecheck`, which is a weaker answer honestly labelled.
 - **The reference shelf is unverified code.** Nothing type-checks it and nothing runs its tests, so it rots at the rate the tree around it moves. That is the accepted price of keeping it: the alternative is deleting the work and rebuilding from prose.
 
 ## Testing
 
 Unchanged in kind, smaller in count: 2757 unit tests over 152 suites and 396 e2e tests over 22, from 3179 / 473 before — the difference is the suites that moved to the shelf with their code. Adding the three interaction commands took it to **2876 unit tests over 156 suites and 411 e2e over 23** [observed — 2026-08-26]. The tier-0 eval scenario `dev-wait-no-dev-server` was replaced by `smoke-no-dev-server`, which asks the same thing of the command that answers it now. The suggested-command lint is the regression test for the narrowing itself: it fails on any string that names a command the registry no longer has.
 
-**§The graduation review's own test is the set** [wave 36]. `isUnstableCommand` is swept over every
+**§The graduation review's own test is the set.** `isUnstableCommand` is swept over every
 runnable name in the registry and the result asserted to be exactly `['inspect:config-plugins']`, so
 a sixth graduation or a seventh mark has to come to this document to change it. Two more pin the
 rendering the per-command rule exists for: the `inspect` listing tags one action and not the other

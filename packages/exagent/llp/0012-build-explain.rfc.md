@@ -1,28 +1,22 @@
 # 0012: `inspect:build-log` — Deterministic Triage of a Native Build Log
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** `exagent inspect:build-log` (`src/builds/index.ts`, `src/builds/explain/`); the follow-up ladder (`src/followups/explain.ts`); the fixture corpus (`src/builds/explain/__tests__/fixtures/`); `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-24
+**Date:** 2026-08-24 · finalized 2026-08-28
 **Related:** [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]], [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]]
 
-> **Renamed 2026-08-26:** this command was `build:explain` until the v1 scope narrowing
-> ([[0016-v1-scope]]). The `build` group it was in held one command that started nothing and one
-> that waited on a build somebody else started. `build:wait` was deferred (see
-> [[0017-deferred-commands]]) and this one moved to `inspect`, the group named after what the caller
-> is doing. It shipped marked `[experimental]`. Nothing about its behaviour, its flags or its rule
-> table changed. Occurrences of the old name below are the historical record, and they are left as
-> written where they quote a decision. The source paths are unchanged (`src/builds/`, which llp/0016
-> records as deliberate).
+> **The command is `inspect:build-log`.** Its source paths are `src/builds/`, which
+> [[0016-v1-scope]] records as deliberate. Sentences below spell it `build:explain`, which is the
+> name the decisions they quote were made under; nothing about its behaviour, its flags or its rule
+> table differs.
 >
-> **Graduated 2026-08-28**, wave 36 ([[0016-v1-scope]] §The graduation review). The behaviour, the
-> flags and the rule table have not moved since §Is this a log at all added exit 22 in wave 17, and
-> the one change everyone expects this command to make — the reserved `<build-id>` form — was
-> designed to be additive in §What ships, and what is reserved before the mark went on. Two limits
-> stay, and both are stated in the output rather than carried by a tag: patterns rot, which
-> `confidence` and `logTail` answer, and the Android rules are `provenance: 'format'` rather than
-> `'captured'`, which `fixtures/README.md` names per file.
+> **Graduated 2026-08-28** ([[0016-v1-scope]] §The graduation review). The one change everyone
+> expects this command to make — the reserved `<build-id>` form — is designed to be additive in
+> §What ships, and what is reserved. Two limits stay, and both are stated in the output rather than
+> carried by a tag: patterns rot, which `confidence` and `logTail` answer, and the Android rules are
+> `provenance: 'format'` rather than `'captured'`, which `fixtures/README.md` names per file.
 
 ## Summary
 

@@ -1,10 +1,10 @@
 # 0007: Deploy and Headless-First Development
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Open — `deploy` and `new` ship; Cloudflare Workers compatibility, chat-driven development and the device-code auth end state are unbuilt
 **Systems:** EAS Hosting; launch.expo.dev; EAS auth; `@expo/mcp-tunnel`; `create-expo`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-20
+**Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]]
 
 ## Summary
@@ -17,7 +17,7 @@ Ship and develop without a terminal or a laptop. Seeds [confirmed — Kudo, 2026
 
 Native rail design [confirmed — Kudo chose user-auth ("A"), 2026-08-22; grounded in a study of the expo/launch repo]. launch.expo.dev consumes **project source**, as one gzip tarball, rather than prebuilt artifacts. It generates and runs the EAS workflow itself. So `deploy --native` is three steps: pack the source under create-launch's ignore rules and its ~500 MB limit; upload with the user's own Expo session or `EXPO_TOKEN`, to the same endpoint the public `create-launch` CLI uses; then print the returned launch URL. The **browser handoff is a required UX step, not an error**, because App Store setup needs a browser Apple login and no headless path exists today [observed — expo/launch]. Launch sessions expire after 8 hours. Vendor-token capabilities such as status polling and log streaming exist server-side, but they require a shared secret that cannot ship in a public package. That is a launch-side enhancement if exagent should babysit workflows [inferred].
 
-Shipped [observed — 2026-08-22, revised same day]: `exagent deploy --native` **delegates to `create-launch` as a subprocess** [confirmed — Kudo, 2026-08-22]. That is truer to constraint 5 than the first cut, which ported the tarball, auth and upload internals, since deleted. Details:
+Shipped [observed — 2026-08-22]: `exagent deploy --native` **delegates to `create-launch` as a subprocess** [confirmed — Kudo, 2026-08-22], which is what constraint 5 of [[0001-agentic-cli-on-expo-cli]] asks for: the tarball, the auth and the upload stay on the other side of the process boundary. Details:
 
 - Resolution order: the project bin, then PATH, then `npx create-launch@latest`. Always `--json`.
 - `--upload-root <dir>` keeps exagent's meaning by running the subprocess from that directory with `--project <app>`.
@@ -41,12 +41,12 @@ Both are upstream asks rather than anything `deploy` can fix. What `deploy` owes
 
 ### An unlinked project: exit 7 was right and the handoff line was not
 
-[added — wave 37, 2026-08-28, for **F143**. Code in `easFailure.ts` and `handoffOr`
+[added 2026-08-28, for **F143**. Code in `easFailure.ts` and `handoffOr`
 (`src/deploy/deployAsync.ts`).]
 
-Wave 17 fixed the *diagnosis* of an unlinked project (S2): the EAS CLI's own `EAS project not
-configured` sentence decides the `Why:` and the `How:`, instead of the old guess about accounts. The
-acceptance walk confirmed all of that and then read one line further down:
+The *diagnosis* of an unlinked project (S2) is the EAS CLI's own `EAS project not configured`
+sentence, which decides the `Why:` and the `How:`. The acceptance walk confirmed that and then read
+one line further down:
 
 ```
 How: link it once with "npx eas init" …

@@ -1,10 +1,10 @@
 # 0014: Driving the app from the debugger — spike notes
 
 **Type:** Notes (Spike)
-**Status:** Draft — spike record, not a design of record. **Implemented** in `src/runtime/interact/` as of 2026-08-26; what was built, and the eight things this record left open, are in [[0018-interaction-commands]].
+**Status:** Final — spike record, not a design of record. **Implemented** in `src/runtime/interact/` as of 2026-08-26; what was built, and the eight things this record left open, are in [[0018-interaction-commands]].
 **Systems:** proposed `exagent runtime:tree` / `runtime:tap` / `runtime:type`; `src/runtime/cdpClient.ts`; `src/runtime/promiseSettling.ts`; fixtures in `src/runtime/__tests__/fixtures/spike-view-tree/`
 **Author:** Tuft agent (spike run for Kudo)
-**Date:** 2026-08-24
+**Date:** 2026-08-24 · finalized 2026-08-28
 **Related:** [[0018-interaction-commands]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0016-v1-scope]]
 
 ## What this is
@@ -113,8 +113,8 @@ screen, on every single call. The plan's rule would have made the command unusab
    is **not a contiguous fiber chain.** `expo-router`'s `Link` forwards `testID` through
    `ExpoLinkImpl` and `BaseExpoRouterLink`, which do not carry it themselves. A walk that follows
    only the immediate child stops before the fiber that owns `onPress` and reports "no handler"
-   for a working link. That was a real bug in the first version of `expr-04`, visible in its
-   history as `handlerFound: null` for `home-notes-link`.
+   for a working link. `expr-04`'s history records that failure as `handlerFound: null` for
+   `home-notes-link`.
 3. The handler is the one on the **shallowest** fiber of the group that has it. This is
    load-bearing for gesture-handler. `RectButton` puts `onPress` on **six** fibers of the same
    group, and only the shallowest is the app's own function. The deepest is

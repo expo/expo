@@ -1,10 +1,10 @@
 # 0015: Backend Selection and the Developer Config
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** the plan engine (`src/plan/decide.ts`, `src/plan/resolveAsync.ts`, `src/plan/runTarget.ts`); the toolchain probe and its vocabulary (`src/toolchain/`); the developer config (`src/settings/`); EAS CLI resolution (`src/utils/easCli.ts`, `src/utils/packageRunner.ts`, `src/utils/processGroup.ts`); project-local bin resolution (`src/utils/projectBin.ts`, and its callers `src/utils/expoCli.ts`, `src/typecheck/checkAsync.ts`, `src/project/fingerprint.ts`, `src/passthrough/auth.ts`, `src/needsHuman/preflight.ts`, `src/doctor/checkAsync.ts`, `src/deploy/launchCli.ts`); `exagent dev` (`src/dev/`); `exagent status` (`src/status/`); the change-class follow-ups (`src/followups/change.ts`; `exagent impact` carried these until it was folded into `status`, 2026-08-26)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-26
+**Date:** 2026-08-26 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0008-guardrails]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0011-impact-and-freshness]]
 
 ## Summary
@@ -122,8 +122,8 @@ nothing installed would mark the next plan fresh against an app no device is run
 `exagent dev` executed `expo` and refused everything else (`assertExpoStep`). It now accepts `expo`
 and `eas`, resolved through `resolveEasCliOrThrow`, the *throwing* resolver. A plan that
 chose the cloud cannot do its job without the CLI, so an unreachable `eas` is an error rather than a
-step that quietly does nothing. Since wave 18 that error needs a machine with no package runner at
-all, because the published CLI is what runs (§Resolving the EAS CLI). Failure messages name the CLI
+step that quietly does nothing. That error needs a machine with no package runner at all, because
+the published CLI is what runs (§Resolving the EAS CLI). Failure messages name the CLI
 the step actually ran, as in `npx eas build …` and "the EAS CLI's own" exit code. The needs-human
 classifier is given `tool: 'eas'`, because an `eas build` that stopped for a login is a different
 scenario from an `expo start` that stopped for a prompt.
@@ -245,7 +245,7 @@ nothing claims an `eas` binary exists on a machine that has none.
 
 #### One spawn of a spec at a time
 
-This is the third thing this rung brought with it, found live and fixed in wave 22 [F93, 2026-08-27].
+This is the third thing this rung brought with it, found live [F93, 2026-08-27].
 **A runner keeps one scratch directory per package spec**, such as
 `$TMPDIR/bunx-<uid>-eas-cli@latest`, and it does not queue for it. Two spawns of one spec started
 milliseconds apart are two writers of one directory, and the loser exits 1 with empty stdout and its
@@ -271,7 +271,7 @@ The EAS CLI is the one member of the family this CLI never resolves as a file. I
 one that way: `expo`, `tsc`, `fingerprint`, `expo-doctor` and `create-launch`. Each resolver spelled
 the lookup itself, as the literal path `<projectRoot>/node_modules/.bin/<name>`. **That path is one
 layout out of several, and it is not the one an npm workspace produces at all** [F113, observed —
-2026-08-27, wave 27's live pass over project shapes: a repository with `workspaces: ["apps/*"]` and a
+2026-08-27, a live pass over project shapes: a repository with `workspaces: ["apps/*"]` and a
 plain `npm install`, where `apps/mobile/node_modules` does not exist]. What the reader got there:
 
 | command | reported | truth |

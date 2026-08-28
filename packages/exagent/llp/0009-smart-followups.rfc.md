@@ -1,10 +1,10 @@
 # 0009: Smart Follow-Ups — Every Output Tells the Agent What It Can Do Next
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** `packages/exagent` (all commands, `src/followups/`); JSONL event registry
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-22
+**Date:** 2026-08-22 · finalized 2026-08-28
 **Related:** [[0006-agent-native-cli-surface]], [[0004-smart-start-and-project-state]], [[0003-knowledge-tools-and-skills]]
 
 ## Summary
@@ -128,7 +128,7 @@ budgets fail open.
 
 ## Implemented in v1 as
 
-[observed — 2026-08-22] The `src/followups/` engine, with 18 stable ids across start, plan, install, status, context, navigate, runtime-errors and skills-sync. It ships a `Next:` text block, a `followups` key in every `--json` shape, and a `cli:followups` JSONL event, with `--no-followups` and `EXAGENT_NO_FOLLOWUPS` to suppress it, capped at 3. The eval suite asserts `cli:followups` via the jsonl-event grader, which had never matched a real event before: `2g` writes names to `_e`, now fixed.
+[observed — 2026-08-22] The `src/followups/` engine, with 18 stable ids across start, plan, install, status, context, navigate, runtime-errors and skills-sync. It ships a `Next:` text block, a `followups` key in every `--json` shape, and a `cli:followups` JSONL event, with `--no-followups` and `EXAGENT_NO_FOLLOWUPS` to suppress it, capped at 3. The eval suite asserts `cli:followups` via the jsonl-event grader, which reads event names out of the `_e` field the `2g` logger writes them to.
 
 ## Testing
 

@@ -1,10 +1,10 @@
 # 0005: Runtime Loop Tools — Seeing and Driving the Running App
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** `exagent` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-20
+**Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]], [[0017-deferred-commands]]
 
 ## Summary
@@ -58,27 +58,20 @@ needs. The code is on the reference shelf at `src/deferred/runtime-network/`. Th
 of this LLP ships. The rule that came out of it and outlived it is in [[0010-agent-conventions]] §The
 third: a command that reports on the app does not gate on what it reported.
 
-**Android pass** [observed — 2026-08-22, headless emulator plus the Expo Go 57 APK]: `navigate --android` works end to end, via adb reverse plus an `exp://` deep link, screenshot-confirmed. The hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]). `Runtime.enable` and `Network.enable` merely ack, with no evaluate and no console or network capture. Three consequences: the target selector no longer drops such targets, skipping only on transport failure and ranking -32601 targets behind answering ones; `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`; and errors and network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
-
-> **Correction — the `adb reverse` in that sentence was done by hand** [observed — friction run 6
-> (Android), 2026-08-24]. The 2026-08-22 pass reversed the port at the shell before running
-> `navigate --android`, and the parenthesis above reads as though the command did it. It did not:
-> `exagent` never ran `adb reverse` anywhere, and a run without the manual step landed Expo Go on
-> `ErrorActivity` with `am start` exiting 0 and the command exiting 0. See §Android below, which is
-> where everything this section got wrong or half-right is settled.
+**Android pass** [observed — 2026-08-22, headless emulator plus the Expo Go 57 APK]: `navigate --android` works end to end, via a **hand-run** `adb reverse` plus an `exp://` deep link, screenshot-confirmed. `exagent` itself ran no `adb reverse` at this point; §The device's loopback is not this machine's is where that becomes the command's job. The hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]). `Runtime.enable` and `Network.enable` merely ack, with no evaluate and no console or network capture. Three consequences: the target selector no longer drops such targets, skipping only on transport failure and ranking -32601 targets behind answering ones; `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`; and errors and network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
 
 Still open: Android capture via a dev build, performance probe, cross-platform sweep. ("No traffic"
 versus a silently-unsupported Network domain is settled below, in §Android.)
 
 ## One preflight for the runtime family
 
-Added in wave 21, on Kudo's directive: "same for `runtime:*` commands — if there's no connected app, we
-should disable or exit the command call early" [confirmed — Kudo, 2026-08-27].
+Kudo's directive: "same for `runtime:*` commands — if there's no connected app, we should disable or
+exit the command call early" [confirmed — Kudo, 2026-08-27].
 
 Every command in this group needs the same two facts before it does any work: a dev server, and
-something connected to it. Each one used to establish them its own way, in its own order, with
-its own words. `src/runtime/preflight.ts` is now the one place that asks, and the one refusal they all
-print.
+something connected to it. `src/runtime/preflight.ts` is the one place that asks, and the one refusal
+they all print, so the family cannot drift into establishing the same two facts six ways in six
+different orders with six different words.
 
 ### What each command needs, which is not the same thing
 
@@ -134,8 +127,8 @@ English sentence nobody promised.
 
 ### Two things the sweep changed, and one it did not
 
-**The connection is asked before the bundle gate** [observed — 2026-08-27, and confirmed against the
-wave-19 tip by re-running the new e2e suite on it]. `runtime:tree`, `runtime:tap` and `runtime:type`
+**The connection is asked before the bundle gate** [observed — 2026-08-27]. `runtime:tree`,
+`runtime:tap` and `runtime:type`
 asked their entry-bundle gate first, so with nothing connected the exit code was decided by whether
 the *project compiled*: exit **20** for a broken bundle and exit **1** for a clean one, for one
 situation. Nothing can be read off a screen that is not there, whatever the code on disk says, so
@@ -272,11 +265,11 @@ runtime on its way out, so an app that quit instead of coming back still counted
 skipped it, and had nothing left, which is what `No target found.` means (F39).
 
 Metro's page ids come from a counter it does not rewind, exactly like the message socket's peer
-ids, so "a target this run has not seen" is decidable rather than inferred. The same test now
-applies to the **peer** list, which it did not until wave 22. The churn wait returned as soon as
-`peersChanged` was true, and a list changes in two directions: an app that had dropped its connection
-and not yet come back satisfied it, so this rung could report the reload as observed off a client
-*leaving*. It now waits for an id the dev server had not listed before, and reports the count
+ids, so "a target this run has not seen" is decidable rather than inferred. The same test applies to
+the **peer** list. A churn wait that returns as soon as `peersChanged` is true reads a list that
+changes in two directions, so an app that had dropped its connection and not yet come back would
+satisfy it, and the rung would report the reload as observed off a client *leaving*. It waits for an
+id the dev server had not listed before, and reports the count
 (`commandSocketChurn.reconnected`), which is what makes `verifiedBy: 'message-socket-peers'` checkable
 [F95]. Three properties:
 
@@ -286,8 +279,8 @@ and not yet come back satisfied it, so this rung could report the reload as obse
 - **`appsConnected` and `appsReconnected` are both reported**, because they answer different
   questions and their difference is the diagnosis. One connected and zero reconnected is an app
   that never re-registered. Zero of both is an app that went. The exit-22 prose says which.
-  **Amended in wave 22** [F95, live tier, 2026-08-27]: `appsReconnected: 0` is *three* facts rather
-  than two, since the wave-21 ladder watches the bundle signal on every rung. The third is "the
+  `appsReconnected: 0` is *three* facts rather
+  than two [F95, live tier, 2026-08-27], since the ladder watches the bundle signal on every rung. The third is "the
   bundle proof answered first, so this watch stopped asking". `appsReconnectedReason` names which
   one, and a run proved by another signal is no longer a zero that reads as an app that failed to
   come back. See [[0021-honest-reports]] §An observed signal, or the band.
@@ -309,20 +302,14 @@ unreachable dev server), and once around target selection inside `CdpClient`, wh
 dying target is skipped and the list has to be read again rather than the selector re-run. It is
 bounded at three seconds because an app that is genuinely closed must still be reported quickly.
 
-It was deliberately **not** given to `runtime:eval` or `runtime:tree` [inferred]: the chain the CLI
-prints, and the one friction run 4 drove, is reload then errors, and a grace period costs every
-genuine "no app is connected" three seconds. "It is one option away if a later run shows the same
-flake there" is what that paragraph said, and a later run did.
-
-#### Amended in wave 37: the window belongs to the question, not to the command
+#### The window belongs to the question, not to the command
 
 [**F141**, friction run 9, 2026-08-28. Code in the `retryMs` default of `preflightRuntimeAsync`.]
 
 The walk drove reload then **tree**, five times. Four of the five exited `1` with "no app is
 connected", and every one recovered on a plain retry — then six retries in a row all succeeded. The
-reasoning above had the right mechanism and drew the boundary in the wrong place: the flake is not a
-property of `runtime:errors`' position in one printed chain, it is a property of *reading
-`/json/list` after a reload*, which every command in the family does through one function.
+flake is not a property of `runtime:errors`' position in one printed chain, it is a property of
+*reading `/json/list` after a reload*, which every command in the family does through one function.
 
 **The decision.** The grace is the default for every command whose `need` is `debugger-target` —
 `eval`, `errors`, `tree`, `tap`, `type` — and for none whose need is weaker: `reload` can *start* the
@@ -407,22 +394,15 @@ Three changes, and the first is the one that matters:
    is not one to run on a caller's behalf. That would have traded the device method's known cost
    for a less predictable one. So `auto` is the broadcast, and the device method when nothing is
    connected. `--method runtime` is a choice, with what it costs on Expo Go in its own `--help`.
-3. **`auto` never force-stops an app the dev server can see.** The device method costs the app's
-   state and, on a cloud session, can strand it (§Two things a cloud run leaves behind). It stays
-   the answer for "no app is connected at all", where reload and start are the same act, and it is
-   otherwise reached only by `--method device`. When `auto` skips it, the skip is an **attempt in
-   the report** with the reason on it, because a step that is simply absent is a decision a reader
+3. **`auto` spends the app's process only when nothing cheaper can reach it.** The device method
+   costs the app's JavaScript state and, on a cloud session, can strand it (§Two things a cloud run
+   leaves behind), so it is a rung rather than a first choice — §One ladder, chosen by the command
+   socket is which rung, and when. Whichever rung is skipped, the skip is an **attempt in the
+   report** with the reason on it, because a step that is simply absent is a decision a reader
    cannot see.
 
-   **Superseded in wave 21 — §One ladder, chosen by the command socket.** This rule was written to
-   protect a cheaper alternative, and in the state it fires on there is none. With no client on the
-   command socket the broadcast reaches nobody, so the choice is not "relaunch or keep the state" but
-   "relaunch or do nothing". Wave 19 had already made the relaunch primary on a cloud session for
-   exactly that reason. What replaces the caller's consent is a report the cost is visible in.
-
 With a connected app and no mechanism able to reach it, the run is exit `20` and the `How:` says the
-app *is* connected. The old text said "open the app on a device or simulator first", which is
-advice for a caller whose app is not running, and which reads as "start a second copy".
+app *is* connected, rather than telling a caller to open an app that is already open.
 
 **Why `expo.reloadAppAsync` and not `DevSettings.reload()` (K3).** The expression lands in Hermes,
 where there is no `require`, no `import()` and no `process`. A module the app did not already load is
@@ -442,23 +422,21 @@ automatic.
 **The honest limit of the whole section.** For an app that is connected, whose command socket has
 no client, and which is not one `expo.reloadAppAsync()` reloads, this command has **no**
 non-destructive reload. It says so, and points at the one thing that always works and costs nothing:
-editing a file the app has loaded, which the dev server pushes on its own. [Amended in wave 21: the
-limit is unchanged and the *answer* to it is no longer a refusal. `auto` spends the app's state
-rather than leaving the caller with a stale screen, and says on the attempt that it did.]
+editing a file the app has loaded, which the dev server pushes on its own. The limit is not a
+refusal: `auto` spends the app's state rather than leaving the caller with a stale screen, and says
+on the attempt that it did.
 
 ### Reloading a cloud session
 
-Added in wave 19, after Kudo hit it live: `runtime:reload` did not reload the app on an EAS cloud
-simulator with a tunnelled dev server, with "1 app connected" on the screen
-[observed — 2026-08-27]. The staging round had already recorded the same shape as S12.
+Kudo hit this live [observed — 2026-08-27]: `runtime:reload` did not reload the app on an EAS cloud
+simulator with a tunnelled dev server, with "1 app connected" on the screen. The staging round had
+already recorded the same shape as S12.
 
-**The premise that was wrong.** This document and the code both said the cloud changed only the
-*fallback*, because "the dev-server broadcast reaches a cloud session already — a cloud session has
-to reach that dev server through a tunnel to be running the bundle at all". The tunnel carries the
+**Why, and it is a fact about the socket rather than about the cloud.** A tunnel carries the
 **bundle**, over HTTP. It is not evidence of a client on the dev server's client command socket, and
 live there was none. The broadcast reached nobody, `auto` then fell through to the force-stop, and
-the relaunch was refused, leaving a billed session with nothing running on it (S12). A premise no
-stub could test was carried for two waves by the sentence that justified it.
+the relaunch was refused, leaving a billed session with nothing running on it (S12). No stub can
+test that premise, which is why it survived until a live run.
 
 **What `auto` does on `--cloud` now.** The relaunch is the **primary** mechanism rather than a
 fallback, and the rule "never force-stop an app the dev server can see" does not apply there. That
@@ -524,27 +502,27 @@ with no app on it, which no `navigate --cloud` or `runtime:reload --cloud` can u
 
 ### One ladder, chosen by the command socket
 
-Wave 21 [confirmed — Kudo's delegate, 2026-08-27]. `--cloud` stops being a behaviour switch. There is
+[confirmed — Kudo's delegate, 2026-08-27]. `--cloud` is not a behaviour switch. There is
 one ladder, and one observable fact picks the rung: **whether the dev server's client command socket
 holds a client**, which is what `getpeers` answers.
 
 | rung | mechanism | reached when |
 |---|---|---|
 | 1 | broadcast on `/message` | the socket holds a client. Costs the app nothing, same code path on both platforms, under a second |
-| 2 | relaunch the app | the socket holds none. On `--cloud`, wave 19's two controller verbs; otherwise the local device method (`simctl terminate`/`am force-stop`, then the deep link) |
+| 2 | relaunch the app | the socket holds none. On `--cloud`, the two controller verbs of §Reloading a cloud session; otherwise the local device method (`simctl terminate`/`am force-stop`, then the deep link) |
 
 `--method` still pins a rung and skips the rest, `--method runtime` is still a rung `auto` never
 picks (§Two lists, one question), and the bundle gate still runs before any of them.
 
-**Why the socket and not the location.** The wave-19 section's own finding is that the cloud broke the
-ladder through a *mechanism* rather than through geography. The tunnel carries the bundle over HTTP
-and the app registers no client on `/message`, so the broadcast reaches nobody. That is a fact about
-the socket. Keying the ladder on `--cloud` encoded the correlation instead of the cause, and it was
-wrong in both directions: a local app whose socket is empty was refused with advice, and a cloud
-session that *did* hold a client would have been force-stopped for no reason. Two things follow, and
-both are better than what they replace. The reading of the peer list is now the same step that
-broadcasts, so one socket open rather than two. And `--cloud` narrows to what it is honestly about,
-which is **which device backend may relaunch**, and which flag every suggested command keeps.
+**Why the socket and not the location.** §Reloading a cloud session's finding is that the cloud
+breaks the ladder through a *mechanism* rather than through geography. The tunnel carries the bundle
+over HTTP and the app registers no client on `/message`, so the broadcast reaches nobody. That is a
+fact about the socket. Keying the ladder on `--cloud` would encode the correlation instead of the
+cause, and it is wrong in both directions: a local app whose socket is empty gets refused with
+advice, and a cloud session that *does* hold a client gets force-stopped for no reason. Two things
+follow. The reading of the peer list is the same step that broadcasts, so one socket open rather than
+two. And `--cloud` means what it is honestly about, which is **which device backend may relaunch**,
+and which flag every suggested command keeps.
 
 **Which rung Android takes, measured.** Rung 1, always, on a local emulator. It is worth
 recording as a fact rather than an assumption, because Android is the platform where the *other*
@@ -566,16 +544,14 @@ saying which fact that is (F95). This is the whole reason `runtime:reload` is th
 that works on Expo Go for Android while five others refuse.
 
 **What it costs, said out loud.** Rung 2 replaces the app's process, so the JavaScript state is gone.
-Before wave 21 `auto` refused to spend that on a connected app, and named `--method device` for a
-caller who meant it. Now the ladder spends it when nothing cheaper can reach the app, and the
+The ladder spends it when nothing cheaper can reach the app, and the
 *attempt* carries the cost: `<why the rung was reached> — which costs the app's JavaScript state:
 <the commands that ran>`. That is said only when there was an app to lose state, because a relaunch
 that *started* an app cost nothing and says nothing.
 
 ### A broadcast that was delivered is a mechanism that ran
 
-Wave 23, F97 [observed — live cloud, 2026-08-27]. A broadcast has **three** outcomes and the code had
-two. The socket can refuse it, whether from no connection, a protocol version the dev server does not
+F97 [observed — live cloud, 2026-08-27]. A broadcast has **three** outcomes, not two. The socket can refuse it, whether from no connection, a protocol version the dev server does not
 speak, or an empty peer list. Or the frame can go out and the app be seen to come back. Or the frame
 can go out and nothing be seen. The third was reported as the first: `ok: false`, no mechanism, exit
 `20` meaning "nothing ran", and the run then **skipped the two observations that exist for exactly
@@ -592,7 +568,7 @@ that is not there fails, and there is no "delivered but unproved" for it.
 
 ### The ladder climbs
 
-Wave 23, F99, and the one pair of live runs that settled it [observed — 2026-08-27, live cloud,
+F99, and the one pair of live runs that settled it [observed — 2026-08-27, live cloud,
 artifacts 005 and 006 of `live-cloud-…T19-17-35-037Z`]:
 
 | Run | Socket | Rung | Result |
@@ -613,9 +589,9 @@ nobody acted on inside its window is exactly that. Three things bound it:
 - **A pinned `--method` never climbs.** A caller who named one rung excluded the others, cost and all.
 - **Only an unproved rung climbs.** A broadcast whose churn *was* observed is a reload, and nothing
   follows it.
-- **The attempt says which of the two states it was reached for.** The first cut printed `no client was
-  registered on the dev server's command socket` over a payload whose own `commandSocketClients` was
-  `1`, which is a report arguing with itself, and that is what llp/0021 exists to remove.
+- **The attempt says which of the two states it was reached for.** `no client was registered on the
+  dev server's command socket`, printed over a payload whose own `commandSocketClients` is `1`, is a
+  report arguing with itself, and that is what llp/0021 exists to remove.
 
 **What stays upstream.** That the `/message` broadcast does not reload Expo Go on an EAS cloud
 simulator over a proxied origin is not this CLI's to fix, and it is not S11. The app registers a
@@ -624,7 +600,7 @@ CLI owes that state is the rung that works, which is now what it takes.
 
 ### The dialog nobody is there to answer
 
-Wave 23, from S10 and the first two live runs of the cloud tier. An `exp://` URL handed to the
+From S10 and the first two live runs of the cloud tier. An `exp://` URL handed to the
 **system** on an iOS simulator raises "Open in 'Expo Go'?", and on an EAS Simulator session nobody is
 in front of the screen. The link is delivered, because the `open` verb exits 0, and nothing loads.
 `navigate --cloud` exited 22 after 60.9 s, then two 180 s reloads served no bundle
@@ -635,7 +611,7 @@ causality].
 and launches Expo Go. Nothing has opened the *project* in it, so the first `exp://` URL still goes to
 the system. `--open-url exp://<host>` is the runner opening the URL in the app it just launched
 [observed — `eas simulator --help`, eas-cli@latest, 2026-08-27: "URL to open in the installed
-application after it launches"], and that is the state wave 19's working session was in before any
+application after it launches"], and that is the state the first working session was in before any
 exagent command touched it (`wave19-live/12-open-session.json`, `open host.exp.Exponent`). The live
 suite starts its session that way, and `navigate --cloud` went from exit 22 in 60.9 s to exit 0 in
 17.1 s with `attached: true` in 206 ms.
@@ -943,14 +919,13 @@ nothing installed.
 
 ### On a development build, `navigate` goes launcher-first
 
-Decision [decided — wave 30, 2026-08-28; the finding is F123, from the wave-29 live pass]. The
-section above got the *printing* right and left the *acting* wrong. `navigate` computed the launcher
-URL into its own `connect` array and then opened `<scheme>://<route>` at an app it had just reported
-was not there, with `target: "no app is connected to the dev server, and the project depends on
-expo-dev-client"`. It spent its whole attach budget and exited `22` after **90.6 s** on Android with
-no dialog anywhere in it [observed — wave 29, `evidence/61-navigate-after-stop-android.json`]. This
-is the command every follow-up in this CLI names as the way to open the app, including
-`runtime:stop`'s own.
+Decision [decided 2026-08-28; the finding is **F123**]. The section above covers what `navigate`
+*prints*; this covers what it *opens*. Computing the launcher URL into the `connect` array and then
+opening `<scheme>://<route>` at an app the same run has reported is not there — with
+`target: "no app is connected to the dev server, and the project depends on expo-dev-client"` — spends
+the whole attach budget and exits `22` after **90.6 s** on Android, with no dialog anywhere in it
+[observed — `evidence/61-navigate-after-stop-android.json`]. This is the command every follow-up in
+this CLI names as the way to open the app, including `runtime:stop`'s own.
 
 The contract now: **when the target is a development build and no app is attached, the launcher URL
 is opened first, the existing attach budget is spent waiting for the app, and then the route link is
@@ -988,7 +963,7 @@ suite]:
 
 Result on the emulator that produced the finding: exit `0` in **3.0 s**, `launch.attached: true`
 after 2.6 s, `reversedPort: 8560`, and `attached: true` 82 ms after the route link
-[observed — wave 30, `live-devclient` `026-f123-navigate-cold.txt`].
+[observed — `live-devclient` `026-f123-navigate-cold.txt`].
 
 ## Resolving a URL without a device
 
@@ -1027,8 +1002,8 @@ with no local device reaches for it on its own.
 This is the other half of §Resolving a URL without a device. That section's dogfood session drove
 Expo Go on a **cloud** simulator through a tunnel, from a laptop with neither a booted simulator nor
 an attached device, and every `navigate` it ran stopped at "no booted device was found" [observed —
-2026-08-24]. Wave 9 gave that machine the **URL**. This gives it the **act**: the same session the
-agent was driving by hand is a device this CLI can open a link on.
+2026-08-24]. That section gives such a machine the **URL**. This gives it the **act**: the same
+session the agent was driving by hand is a device this CLI can open a link on.
 
 ### Three backends, one ladder
 
@@ -1047,8 +1022,8 @@ The order, in `resolveDeviceAsync`:
 
 Rung 3 asks the **service** rather than the filesystem. `eas simulator:list --status in-progress` is
 what makes it a rung at all, because a session started by MCP, by another terminal, or by a
-`simulator:start --json` that wrote no dotenv is still this project's session. The first cut gated it
-on `.env.eas-simulator` existing, and §Finding the session is why that changed and what it costs.
+`simulator:start --json` that wrote no dotenv is still this project's session. §Finding the session
+is why the file is not the gate, and what asking the service costs.
 
 **Opt-in per caller, defaulting to `off`.** `navigate` and `smoke` put the cloud on their ladder as
 a *fallback*. `runtime:stop` and `runtime:reload` take `--cloud` and reach for it only when named,
@@ -1077,8 +1052,8 @@ family binary. What it asks that binary to run is a second process this CLI neve
 
 Two rounds, and the second one is the one that counts.
 
-**Round one read the packages.** The account was signed out, so wave 11 read the published source of
-the CLIs it spawns instead of the skill that describes them: `eas-cli` (`oclif.manifest.json` for
+**Round one read the packages.** The account was signed out, so the published source of the CLIs
+this one spawns was read instead of the skill that describes them: `eas-cli` (`oclif.manifest.json` for
 every flag, `build/commands/simulator/*.js` for the exact JSON each one prints) and
 `agent-device@0.20.10` (`agent-device help <verb>`, which runs offline).
 
@@ -1205,10 +1180,9 @@ session — and the relaunch was refused, so the session was left up, billing, w
 it. The report said only *"The app was not reloaded"* and offered `npx exagent navigate /`, which on
 a cloud session is the very open that had just failed.
 
-**Wave 19 did redesign it**, and the first cut of this paragraph — "the fallback is not redesigned
-here" — is the thing to correct. There is no `close` in the path any more, so the state this
-paragraph describes cannot be reached the same way: one verb restarts the app, and a refusal of it
-says something narrower and true. `--relaunch` terminates before it launches, so whether the app is
+**The path was redesigned for it** (§Reloading a cloud session). There is no `close` in it, so the
+state above cannot be reached the same way: one verb restarts the app, and a refusal of it says
+something narrower and true. `--relaunch` terminates before it launches, so whether the app is
 on the screen is **not known**, and the report says that instead of claiming either. `leftAppStopped`
 stays on the payload for the local device method, where the stop and the start are two commands and
 the fact *is* knowable. The by-hand recovery is still named, and it still uses the application id
@@ -1223,9 +1197,8 @@ running on the session. The three-way is now written out, and the null arm claim
 ### Finding the session
 
 Decision [confirmed — Kudo, 2026-08-26]. **A cloud device is a session the service says is
-running, not a file on disk.** The first cut gated the whole backend on `.env.eas-simulator`
-existing, and the file is the wrong contract for three reasons that are all about *other people's*
-sessions: MCP is growing its own simulator support and need not write it, `simulator:start --json`
+running, not a file on disk.** Gating the backend on `.env.eas-simulator` existing is the wrong
+contract, for three reasons that are all about *other people's* sessions: MCP is growing its own simulator support and need not write it, `simulator:start --json`
 and `--out-config-type env` do not write it either [observed — `build/simulator/env.js`], and the
 file outlives the session it names, so its presence was never proof and its absence never was.
 
@@ -1372,13 +1345,12 @@ account cannot have one".
 
 ### What the cloud backend can and cannot do
 
-The first cut said `runtime:stop` had no cloud form. **That was wrong**, and reading the controller
-is what corrected it. `agent-device close <appId>` closes the **named app** and leaves the device up
+`runtime:stop` has a cloud form, and reading the controller is what established it.
+`agent-device close <appId>` closes the **named app** and leaves the device up
 [observed — `agent-device help close`, 0.20.10]. That is the same act as `simctl terminate` and
-`am force-stop`, so `runtime:stop --cloud` is now a command that runs rather than one that explains
-itself. `--shutdown`, which would also stop the simulator, is never passed. The distinction the
-first cut was protecting, one app versus the whole remote machine, is a **flag** rather than the
-absence of a verb.
+`am force-stop`, so `runtime:stop --cloud` is a command that runs rather than one that explains
+itself. `--shutdown`, which would also stop the simulator, is never passed: the distinction between
+one app and the whole remote machine is a **flag** rather than the absence of a verb.
 
 With one app-ending verb in hand, the rest of the loop follows:
 
@@ -1391,11 +1363,11 @@ With one app-ending verb in hand, the rest of the loop follows:
 | the Android attach recovery | yes | the same pair, so it is gated on "the platform is Android" rather than on "the device is local" |
 | ending the **session** | no, and deliberately | `eas simulator:stop` is the person's command. This CLI never spawns it; it only names it |
 
-**Corrected in wave 19.** This section used to say `runtime:reload`'s primary path "never needed a
-cloud form", because the broadcast goes over the dev server's own command socket and a cloud session
-must reach that dev server through a tunnel. The tunnel carries the *bundle*; the app holds no client
-on that socket through it, and the broadcast reloaded nothing. The cloud therefore changes the
-**ladder** rather than a fallback, and §Reloading a cloud session is the sequence that works.
+**Why `runtime:reload` needs a cloud form at all**, when its broadcast goes over the dev server's own
+command socket and a cloud session must reach that dev server through a tunnel anyway: the tunnel
+carries the *bundle*, the app holds no client on that socket through it, and the broadcast reloads
+nothing. The cloud therefore changes the **ladder** rather than a fallback, and §Reloading a cloud
+session is the sequence that works.
 (`agent-device metro reload` is still *not* used, and now for a reason that was read rather than
 assumed: its own help says that "when the server has no HTTP /reload route (Expo) the reload is
 broadcast over its /message websocket instead" — the same broadcast, sent from the controller's side,
@@ -1412,7 +1384,7 @@ with the same empty client list at the far end.)
   So it reuses the `simctl` shape with a much longer budget, covering `npx`, then a network, then an
   image coming back. Everything after that is identical, including the PNG-signature check: "the
   command ran" and "there is a screenshot" are two facts over a network too.
-- **The no-local-device suggestions** of wave 9 name the session when the project has one. The
+- **The no-local-device suggestions** name the session when the project has one. The
   `open-app` rung of `start` and `dev` is no longer *dropped* on a machine with no device. It is
   aimed at `navigate / --cloud`. `status.next` names that command instead of a URL for somebody else
   to open, and `dev:wait`'s "the bundle is built and nothing is running it" rung says the same,
@@ -1665,15 +1637,13 @@ Decision [confirmed — Kudo, 2026-08-24]. `exagent smoke` is one command that a
 still boot", by asking the questions of six existing commands **in this process** and adding a
 seventh nothing could ask before: a picture of the screen.
 
-It shipped marked `[experimental]` and **graduated 2026-08-28**, wave 36 ([[0016-v1-scope]] §The
-graduation review). The mark's stated reason was that the phase list and the outcome table might
-move. The phase list last moved in wave 16, when `dev:wait`'s deferral sent it three questions it
-was already asking, and the outcome table has not moved at all — §The wall was Expo Go's, not
-Android's is the wave-29 run that falsified the strongest claim ever written about it and needed no
-code change to do it.
+It shipped marked `[experimental]` and **graduated 2026-08-28** ([[0016-v1-scope]] §The graduation
+review). The mark's stated reason was that the phase list and the outcome table might move; neither
+has — §The wall was Expo Go's, not Android's falsified the strongest claim ever written about the
+outcome table and needed no code change to do it.
 
 The plan this ships from is `plans/cluster-a-runtime-verify.md` §Feature 1, written when none of
-those commands existed. Most of it has since been built as commands of its own, so `smoke` is now a
+those commands existed. Most of it has since been built as commands of its own, so `smoke` is a
 thin composite rather than the eight new things the plan described. What it composes, and which
 function each phase calls, which is never a subprocess of this CLI, and that is the design
 constraint:
@@ -1871,7 +1841,7 @@ on the LAN or behind a tunnel is already reachable and reversing its port would 
 itself. A refusal is reported rather than fatal, because the link that follows is what turns
 "the reverse failed" into a failure a reader can see.
 
-**Which URL's port** [amended — wave 30, 2026-08-28, F123]. The rule above reads the loopback host
+**Which URL's port** [amended 2026-08-28, F123]. The rule above reads the loopback host
 *of the URL being opened*, and that is right for a route link. The dev launcher's URL carries the
 dev server inside its `url` parameter and is addressed to `expo-development-client`, which is not a
 loopback host. So on the run that opens it (§On a development build, `navigate` goes
@@ -1954,9 +1924,9 @@ Android's is the same table for a development build, where every one of these me
 | `Runtime.evaluate` | `-32601` (message: the method name) | `{"result":{"type":"number","value":1}}` |
 | `Log.entryAdded` | `Debugger integration: Android Bridgeless (ReactHostImpl)`, then `warning`: `The current JavaScript engine, HermesRuntime[RNBridgeless], does not support debugging over the Chrome DevTools Protocol.` | `Debugger integration: iOS Bridgeless` only |
 
-Two corrections to what this document said [F61]. It is **not** true that Android "answers every
-method" with `-32601`. Four of the six above are acknowledged, and the ack is what made an empty
-window look like a healthy app. And `Network.enable` succeeding is the *normal* Android case, so
+Two things the table settles [F61]. Android does **not** answer every method with `-32601`: four of
+the six above are acknowledged, and the ack is what makes an empty window look like a healthy app.
+And `Network.enable` succeeding is the *normal* Android case, so
 `classifyNetworkDomainRefusal` never ran there at all, because it only ever saw refusals. It now
 takes `null` for "nothing refused anything" plus what the runtime said about carrying a debugger, and
 it has a name for the third case: `acknowledged-but-blind`.
@@ -2039,9 +2009,9 @@ and the "no device" message is only reachable once `adb` has run and answered.
 
 ### The second Android round, and where F51's fix had not reached
 
-Wave 25 put Android into the live tier — `e2e-live/__tests__/live-android-test.ts`, 24 tests on a real
+Android is in the live tier — `e2e-live/__tests__/live-android-test.ts`, 24 tests on a real
 emulator, described in [[0022-live-tier]] — and the suite's mixed-platform block found that **the
-scoping this section describes was in three fewer places than this document said**. Every finding
+scoping this section describes was in three fewer places than the design called for**. Every finding
 below is one dev server with an iPhone 17 Pro simulator and a `tuft-pixel` emulator on it, port 8560,
 2026-08-27. The shape is F51's, and the reason it recurred is worth naming: the narrowing is a
 parameter, and a parameter can be accepted and then not passed on.
@@ -2132,10 +2102,8 @@ healthy Android app from a crashing one, and `runtime:errors --android --fail-on
 
 ### F123 — `navigate` opens the route link at an app that is not loaded
 
-[**fixed — wave 30, 2026-08-28**; found 2026-08-28, wave 29, MAJOR. Reported rather than fixed in
-wave 29 because the recovery is a ladder and which rung an exit code belongs to is a contract
-decision; that decision is §On a development build, `navigate` goes launcher-first, and what follows
-is the finding as it was measured.]
+[MAJOR, found and **fixed** 2026-08-28. The decision it needed is §On a development build,
+`navigate` goes launcher-first; what follows is the finding as it was measured.]
 
 §Pointing an app at this dev server states the rule this breaks, in `connectUrl.ts`'s own header:
 **a connect URL is not a route link.** `<scheme>://<route>` navigates an app that is *already*
@@ -2166,17 +2134,13 @@ Three things make it worth a number rather than a caveat:
 - **It costs the caller the whole attach budget**, 90.6 s on Android and 45.4 s on iOS, on an action
   that could not have worked.
 
-What the fix has to decide, which is why it is not made here. The connect URL carries a dev server
-and no route, so a named route needs **two** opens with a wait between them — open the launcher URL,
-wait for the app to attach, then open `<scheme>://<route>`. That is the reload ladder's shape and it
-wants the same answers: what `attached` means when only the first rung ran, whether a route that was
-never reached is 20 or 22, and whether the second open is skipped for the root route (where the
-first is already complete). Expo Go needs none of it — `exp://<host>/--/<route>` loads *and*
-navigates in one URL, which is why nothing noticed.
+Expo Go needs none of the fix — `exp://<host>/--/<route>` loads *and* navigates in one URL, which is
+why nothing noticed.
 
-**How wave 30 answered those** (§On a development build, `navigate` goes launcher-first). Two opens
-with a wait between them, exactly as sketched. `attached` keeps meaning what it has always meant,
-which is that an app of this platform holds a debugger target when the run ends, and the launcher's
+**What the fix decided** (§On a development build, `navigate` goes launcher-first). The connect URL
+carries a dev server and no route, so a named route needs **two** opens with a wait between them:
+open the launcher URL, wait for the app to attach, then open `<scheme>://<route>`. `attached` keeps
+meaning that an app of this platform holds a debugger target when the run ends, and the launcher's
 own wait is reported separately as `launch.attached`, so "the app came up" and "the route was
 delivered to it" stay two facts. The exit codes are unchanged, because nothing new can fail, and a
 run where nothing attaches is the 22 it already was. The second open is **not** skipped for the root
@@ -2186,12 +2150,12 @@ extra intent costs milliseconds. Live: exit 0 in 3.0 s where the finding above i
 
 ### The wall was Expo Go's, not Android's
 
-[added 2026-08-28, wave 29. Measured on `tuft-pixel`, one dev server, an Expo SDK 57 project with a
+[added 2026-08-28. Measured on `tuft-pixel`, one dev server, an Expo SDK 57 project with a
 development build made by `npx expo run:android`; evidence under `wave29-devclient/evidence/`.]
 
-§The CDP-less runtime, corrected measured **Expo Go for Android** and this section then wrote
-"Android" wherever it meant "that app". A development build of the same project, on the same
-emulator, answers everything Expo Go refuses:
+§The CDP-less runtime, corrected measured **Expo Go for Android**, and where it says "Android" it
+means that app. A development build of the same project, on the same emulator, answers everything
+Expo Go refuses:
 
 | command | Expo Go for Android | Android **development build** |
 | --- | --- | --- |
@@ -2204,13 +2168,13 @@ emulator, answers everything Expo Go refuses:
 | `runtime:reload` | rung 1, verified with no CDP anywhere in it | exit 0 in 1.3–2.4 s, rung 1, `Android Bundled 29ms …` as the bundle proof |
 | `runtime:stop` | Expo Go's package | **the project's own package**, `bundleIdSource: "dev-server"`, `pidof` empty after |
 | `navigate /explore` | `exp://…/--/explore` | `dcapp://explore`, and `runtime:tree` reports `focusedScreen: "explore"` afterwards |
-| `navigate /` with nothing loaded | one URL loads *and* navigates | **two opens** — the launcher URL by component, then the route link (F123, fixed in wave 30) |
+| `navigate /` with nothing loaded | one URL loads *and* navigates | **two opens** — the launcher URL by component, then the route link (F123) |
 | `smoke` | **22 on a working app** — the `runtime` phase cannot measure | **exit 0, `outcome: "passed"`, all eight phases `ok`** [`56-smoke-android-devclient.json`] |
 
 Two things this changes, and one it does not:
 
 - **`smoke --android` is a gate again.** §What `smoke --android` is says "not a green light, and it
-  never will be". That is true of Expo Go, and the sentence should have named it. On a development
+  never will be", which is true of **Expo Go** rather than of the platform. On a development
   build the `runtime` phase measures, so llp/0010 §The sixth is satisfied and the gate returns a
   verdict.
 - **The `--android` refusal band is about an *app*.** `RUNTIME_EVALUATE_UNSUPPORTED` is the right
@@ -2229,8 +2193,8 @@ somebody taps Open. Measured against Expo Go on the same simulator minutes apart
 `exp://127.0.0.1:8901` launched Expo Go and registered a debugger target inside 4 s, while
 `dcapp://expo-development-client/?url=…` and `exp+dcapp://…` both left the simulator on the
 springboard with **0 targets after 24 s** [observed — `27-clean-connect-url.png`,
-`19-after-expgo-url.png`, 2026-08-28]. This is §The dialog nobody is there to answer, which wave 23
-recorded as a *cloud* fact, on a laptop. The four gates that let `navigate --cloud` answer the dialog
+`19-after-expgo-url.png`, 2026-08-28]. This is §The dialog nobody is there to answer, which recorded
+it as a *cloud* fact. The four gates that let `navigate --cloud` answer the dialog
 start with "only on `--cloud`; a dialog on the machine at somebody's desk has somebody at it", and
 a Tuft machine driving its own simulator is a desk with nobody at it. Whether that gate should be
 about the *device* rather than about the flag is the open question this leaves.

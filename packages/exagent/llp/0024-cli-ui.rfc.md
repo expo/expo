@@ -1,10 +1,10 @@
 # 0024: The CLI UI — One Help Template, One On-Ramp, One Palette
 
 **Type:** RFC
-**Status:** Draft — implemented
+**Status:** Final — implemented
 **Systems:** the help template (`src/help/types.ts`, `src/help/format.ts`); the on-ramp (`src/help/onRamp.ts`, `src/help/topics.ts`, `src/help/workflow.ts`, `src/help/index.ts`); the registry's summaries, workflow map and listing (`src/commandRegistry.ts`); the palette (`src/utils/color.ts`); the launcher (`src/cli.ts`); the follow-up block (`src/followups/format.ts`); the status report (`src/status/format.ts`); the template lint (`src/help/__tests__/template-test.ts`)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-28
+**Date:** 2026-08-28 · finalized 2026-08-28
 **Related:** [[0006-agent-native-cli-surface]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0001-agentic-cli-on-expo-cli]]
 
 ## Summary
@@ -103,13 +103,13 @@ listing stays one line per command.
          agents:setup          write AGENTS.md, link the agent skills
 ```
 
-**The titles are plain phrases, never labels.** The first version of this map read `orient · run ·
-iterate · gate · ship · once` — six one-word labels, which is a vocabulary a reader has to be taught
-before the map means anything [confirmed — Kudo, 2026-08-28: "i'm not clear specifically what they
-mean"]. The rule the wording is held to, and the one to apply to anything that joins it: **if a title
-needs a legend, it is the wrong title.** The titles are consequently pinned by a unit test — the rule
-is a judgment rather than a property, so what a test can offer is putting the rule in front of the
-next person who reworders one — alongside a property half that rules out the six words that failed.
+**The titles are plain phrases, never labels.** One-word labels — `orient · run · iterate · gate ·
+ship · once` — are a vocabulary a reader has to be taught before the map means anything
+[confirmed — Kudo, 2026-08-28: "i'm not clear specifically what they mean"]. The rule the wording is
+held to, and the one to apply to anything that joins it: **if a title needs a legend, it is the wrong
+title.** The titles are consequently pinned by a unit test — the rule is a judgment rather than a
+property, so what a test can offer is putting the rule in front of the next person who rewords one —
+alongside a property half that rules out those six words.
 
 The title sits above its commands rather than in a third column, because the titles are sentences
 now and three columns of prose does not fit on a terminal. `One-time setup` is a block of its own
@@ -123,9 +123,9 @@ prints the same data with `npx exagent ` in front of it: two screens that each c
 run first are two screens that will one day disagree.
 
 The listing under it keeps its sections but loses its prose: one line per command, the summary in a
-column, and at most one short note per section. The Account block used to carry a five-sentence
-paragraph about which of two CLIs answers `whoami` where; that sentence is now in
-`src/passthrough/auth.ts`, next to the code that decides it. A listing is for finding the command.
+column, and at most one short note per section. Which of two CLIs answers `whoami` where is a
+five-sentence explanation, and it lives in `src/passthrough/auth.ts`, next to the code that decides
+it, rather than in the Account block. A listing is for finding the command.
 
 ## The on-ramp
 

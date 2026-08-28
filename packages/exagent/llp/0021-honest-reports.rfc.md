@@ -1,10 +1,10 @@
 # 0021: Honest Reports — What a Command May Claim, and About What
 
 **Type:** RFC
-**Status:** Draft — implemented
+**Status:** Final — implemented
 **Systems:** `src/utils/errors.ts`, `src/utils/runnerLock.ts`, `src/utils/wrapperCrash.ts`, `src/runtime/reload/reloadAsync.ts`; `src/dev/stopAsync.ts`, `src/dev/portListener.ts`; `src/dev/detachAsync.ts`, `src/dev/childVerdict.ts`, `src/dev/advertisedUrl.ts`; `src/dev/forwardedArgs.ts`; `src/status/statusAsync.ts`, `src/status/sections.ts`, `src/status/format.ts`, `src/status/assert.ts`, `src/status/types.ts`, `src/impact/buildCache.ts`; `src/needsHuman/preflight.ts`; `src/deploy/deployAsync.ts`, `src/deploy/easFailure.ts`; `src/typecheck/generatedTypes.ts`; `src/passthrough/auth.ts`; `src/followups/doctor.ts`, `src/followups/typecheck.ts`, `src/followups/status.ts`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-27
+**Date:** 2026-08-27 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0011-impact-and-freshness]], [[0015-backend-selection-and-config]], [[0016-v1-scope]]
 
 ## Summary
@@ -107,21 +107,20 @@ success report.
 
 **What this does not fix.** A child that dies *after* the parent has returned cannot be caught by
 the parent. The `--ios` reproduction of F61 is that case. `expo start --ios` published the lock,
-answered `/status`, and only then was refused permission to control Simulator.app, eight seconds
-after the parent had exited. `dev:logs` reads that verdict correctly, and `navigate` fails honestly
-afterwards. Catching it at the source would need a signal for "the app opened" that the CLI family
-does not emit. The next section is how much of that gap turned out to be closeable.
+answered `/status`, and only then was refused permission to control Simulator.app. `dev:logs` reads
+that verdict correctly, and `navigate` fails honestly afterwards. Catching it at the source would
+need a signal for "the app opened" that the CLI family does not emit. The next section is how much of
+that gap turned out to be closeable.
 
 ### The window after the claim
 
-[added — wave 37, 2026-08-28, for F141's sibling **F140**. Code in `needsOpenPlatformGrace` and
+[added 2026-08-28, for F141's sibling **F140**. Code in `needsOpenPlatformGrace` and
 `watchOpenPlatformGraceAsync` (`src/dev/detachAsync.ts`), and `stepOpensPlatform`
 (`src/dev/childVerdict.ts`).]
 
-The paragraph above called the `--ios` case unfixable and put the death "eight seconds after the
-parent had exited". The acceptance walk hit it three times in a row and then, on a fourth identical
-run, got the honest exit path — which is what says it is not a fact about the shape of the run but a
-**race**, and a race has a width. Measured: `expo start --go --ios` against a machine with no
+The `--ios` case is a **race** rather than a fact about the shape of the run: the acceptance walk hit
+it three times in a row and then, on a fourth identical run, got the honest exit path. A race has a
+width. Measured: `expo start --go --ios` against a machine with no
 Automation grant answered `/status` at 486ms, 448ms and 445ms and the process was gone at 701ms,
 700ms and 708ms [observed — 2026-08-28, three runs against `friction/run9/livecheck`]. The gap is
 215–263ms, not eight seconds.
@@ -176,7 +175,7 @@ of a handoff deserves to know which. Everything else is exit 20 with the log tai
 
 ### And its phase, on the same channel
 
-[added — wave 30, 2026-08-28, for F125. Design in [[0004-smart-start-and-project-state]] §What a
+[added 2026-08-28, for F125. Design in [[0004-smart-start-and-project-state]] §What a
 development build costs the plan → the phase decision; code in `parseDetachedChildPhase`.]
 
 The rule this section states, a claim about **now** checked at the moment of return, had one hole
@@ -185,8 +184,8 @@ the plan's dev-server step, and `expo run:ios` or `expo run:android` is one subp
 installs and only then serves. So the lock answered a second into a ten-minute Gradle build, and
 `--wait-ready` gave up against a port nothing listens on and reported `The dev server started on
 http://127.0.0.1:8081 (pid 29996) … The dev server is still running — this is about the wait, not
-about the server.` Nothing was started and nothing was listening [observed — wave 29,
-`evidence/10-dev-detach-android.json`].
+about the server.` Nothing was started and nothing was listening
+[observed — `evidence/10-dev-detach-android.json`].
 
 **The decision.** The wording tracks the plan's phase. `building` means say building and name the
 step. `serving` means started. The exit code and the effect do not change, because the wait really
@@ -208,7 +207,7 @@ detached run's log did not contain it. The dev server still knew: it builds its 
 `fetchAdvertisedUrlAsync` asks it in one request, and `resolveDevServerReachAsync` falls back to it
 whenever the log named nothing, which fixes `navigate --print-url` and `status` at the same time.
 
-**Wave 19 widened that fallback by one condition**, and a live run is why. A dev server serving a
+**The fallback takes one more condition**, and a live run is why. A dev server serving a
 **public origin** through a proxy prints `Waiting on http://localhost:<port>` and advertises the
 public origin in its manifest [observed — 2026-08-27, `EXPO_PACKAGER_PROXY_URL` against a public
 host, while validating the cloud reload]. The log named *something*, so the manifest was never asked,
@@ -240,7 +239,7 @@ explains why something must work, in a place no test can reach:
 
 ### One URL source, two callers
 
-Wave 23, F96, and the deciding pair of lines is in one artifact directory
+F96, and the deciding pair of lines is in one artifact directory
 [observed — live cloud, 2026-08-27, `live-cloud-…T18-27-42-028Z`]:
 
 ```
@@ -274,7 +273,7 @@ Three constructions of one URL is two too many, and there is now one source with
 
 ### The device a run used, in the field that names it
 
-Wave 23, F98 [observed — live cloud, 2026-08-27]. `smoke --cloud --json` on a healthy app:
+F98 [observed — live cloud, 2026-08-27]. `smoke --cloud --json` on a healthy app:
 
 ```
 "deviceId": null, "deviceBackend": null
@@ -308,7 +307,7 @@ options block as well as in its forwarded-flags paragraph, because the block is 
 
 ### And into every suggestion, which is the same rule pointed outwards
 
-[F58, F103, S5, and **F142** — wave 37, 2026-08-28.]
+[F58, F103, S5, and **F142** — 2026-08-28.]
 
 The rule above is about the argv a run executes. The same rule applies to the argv a run *hands
 back*, and it has been re-found four times because each site builds its own suggestion string. F142
@@ -405,7 +404,7 @@ has to track them.
 
 ## What a command could not do is part of its answer
 
-[added 2026-08-28, wave 31 — rule 13. Three findings, one shape, all found by running the commands
+[added 2026-08-28 — rule 13. Three findings, one shape, all found by running the commands
 [[0019-backend-parity-audit]] had called argv assembly.]
 
 Three reports listed what happened and were silent about what did not, and in all three the silence
@@ -443,7 +442,7 @@ name and the doc comment say.
 
 ## A message is not a tail
 
-[added 2026-08-28, wave 31 — rule 14, F133.]
+[added 2026-08-28 — rule 14, F133.]
 
 `inspect:config-plugins` on a config with `./plugins/withNothingHere` in its `plugins` array answered:
 
@@ -795,7 +794,7 @@ Every finding above has a test that fails against the code as it shipped:
   `forwardedStepArgs`/`withForwardedExpoArgs`, `parseBuildPlatform`, `classifyEasDeployFailure`,
   `findMissingGeneratedTypesSync`, the two new `dev:stop` describes, the preflight's Expo rung, the
   `status` section note and the unclipped reason.
-- Unit, wave 17's second half: the four freshness combos and the fold that fills the `eas` axis,
+- Unit, freshness and the cloud rungs: the four freshness combos and the fold that fills the `eas` axis,
   `effectivePlatformFreshness`, the cloud rungs of `next` (including the unanswered device probe both
   ways), `applyOpenUrls`, and four `Waiting on` shapes, which are the app-scheme line, the `exp://`
   line, the route link, and the assertion that the word `null` never reaches a URL field.
@@ -805,13 +804,13 @@ Every finding above has a test that fails against the code as it shipped:
   and the staging session file; `status --explain` reporting a stub EAS build as fresh on the `eas`
   axis while the `local` axis answers its own question; and `deploy` falling back through a stub
   `npx`, a stub because a test that reached the registry would be testing the network.
-- Unit, wave 22: `handleUncaughtException` pinned at exit 1 for an injected crash and for a
+- Unit, the crash path and the runner lock: `handleUncaughtException` pinned at exit 1 for an injected crash and for a
   non-`Error` throw, with the `EMFILE` path asserted separately; `runnerSpawnKey` and the lock's
   exclusion, ordering, fairness and give-up-on-deadline; `looksLikeRunnerNoise` on both runners'
   vocabulary and on a real refusal that also carries it; `describeLookupFailure` never returning the
   runner's line; and the reload payload invariant applied to every rung of the ladder, including the
   rung that must now refuse its label because the only churn was a client leaving.
-- e2e, wave 22: a stub package runner that holds its scratch directory the way a real one does, via
+- e2e, the runner collision: a stub package runner that holds its scratch directory the way a real one does, via
   `mkdir` without `recursive` held for 250 ms, so `status --explain`'s two lookups collide
   deterministically; the same stub with the directory taken behind its back, which is the collision no
   mutex can serialize away; and the reload payload invariant across all three of the stub dev server's

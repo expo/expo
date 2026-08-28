@@ -1,10 +1,10 @@
 # 0001: An Agentic CLI on Top of Expo CLI
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** `packages/exagent` (new); `packages/@expo/cli`; `expo-mcp` (external repo)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-18 (updated 2026-08-20)
+**Date:** 2026-08-18 (updated 2026-08-20) · finalized 2026-08-28
 **Related:** [[0000-expo-monorepo]]
 
 ## Summary
@@ -35,6 +35,24 @@ An Expo-built tool layer lets any driving agent:
 4. The design should brainstorm agent-friendly features (see §Design documents).
 5. **Process boundary** [confirmed — Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible; it does not import `@expo/cli` code. The same boundary generalizes across the whole Expo CLI family [confirmed — Kudo, 2026-08-20]. The new CLI builds on top of and across `expo`, `eas-cli`, `expo-doctor` (bin `expo-doctor` [observed — `packages/expo-doctor/package.json`]), `@expo/fingerprint` (bin `fingerprint` [observed — `packages/@expo/fingerprint/package.json`]), `create-expo`, and more, orchestrating them as subprocesses. Details and rationale: [[0006-agent-native-cli-surface]].
 6. Feature areas are documented in separate LLPs [confirmed — Kudo, 2026-08-20]. This document stays the umbrella: decisions, constraints, index.
+
+## Status convention
+
+[decided 2026-08-28] A document's `Status:` header takes one of four values. The corpus was
+finalized on that date and every document carries the value it earned.
+
+- **`Draft`** — the design is still being written. Nothing in it is safe to build against.
+- **`Final`** — the design of record. Its content is shipped and stable. An open question listed
+  inside a `Final` document is follow-on work, not unsettled design, and a decision inside one is
+  changed by amending the document rather than by discovering the code disagrees.
+- **`Open`** — the design is settled in part and a **named** part of it is undecided or unbuilt. The
+  header says which part.
+- **`Deferred — reference`** — the document describes something the release left out, kept so the
+  code on the `src/deferred/` shelf has a home ([[0016-v1-scope]] §Deferred is a place, not a
+  deletion). [[0017-deferred-commands]] is the only one.
+
+`Final` is not a promise never to change. It is a promise that a change to it is a change to a
+shipped contract, with the note that implies.
 
 ## Naming
 

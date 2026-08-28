@@ -1,10 +1,10 @@
 # 0010: Agent Conventions — Exit Codes, Registry Rules, Upstream Asks
 
 **Type:** RFC
-**Status:** Draft
+**Status:** Final
 **Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); `exagent typecheck` (`src/typecheck/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-23
+**Date:** 2026-08-23 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
 
 ## Summary
@@ -47,7 +47,7 @@ sentence above cannot quietly stop being true.
 
 ### An empty target list is inconclusive, not a call to fix
 
-[added — wave 37, 2026-08-28, for **F141**. Code in `noAppConnectedError` and the `retryMs` default
+[added 2026-08-28, for **F141**. Code in `noAppConnectedError` and the `retryMs` default
 of `preflightRuntimeAsync` (`src/runtime/preflight.ts`).]
 
 `1`'s whole promise is the sentence in the table above: **running the same line again changes
@@ -407,8 +407,8 @@ whole design (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
 | `1`  | was not attempted: no dev server to reload onto, or a bad argument                                         |
 
 
-Rows `0` and `22` were widened in wave 21 [amended — 2026-08-27]: the second observation was the
-cloud path's alone and is now watched on every rung, because "was the app seen to come back" is one
+Rows `0` and `22` cover both observations [amended — 2026-08-27]: the second is watched on every
+rung rather than on the cloud path alone, because "was the app seen to come back" is one
 question and a command that answered it two ways was two commands wearing one name
 ([[0005-runtime-loop-tools]] §One ladder, chosen by the command socket). What did not move is the
 hold underneath: peer churn on the command socket proves the app *acted* and never that it came back,
@@ -440,8 +440,8 @@ The finding [observed — friction run 4, F38]: garbage was appended to a route,
 `20` with the `TransformError`, and `runtime:reload` then exited **0** with
 `Reloaded yes · Apps connected 1` and a follow-up reading "The app is running the current code
 now". The app was on the red bundling-error screen. `runtime:errors --fail-on-error` after it
-exited `0` too. Two of the three gates wave 4 added as the recovery chain went green on an app
-frozen at a syntax error, and the third had just said why.
+exited `0` too. Two of the three gates of the recovery chain went green on an app frozen at a
+syntax error, and the third had just said why.
 
 The reasoning is the same one that put the check in `dev:wait`, applied one command further along.
 A reload does not run the code on disk. It makes the app **fetch the served bundle again**. When
@@ -795,7 +795,7 @@ The same change gives a bad option the what / why / how shape the rest of the CL
 the style of `absentCapabilities` here. Only options a caller actually reaches for on the wrong
 command belong in it, and a unit test pins that every command it names still resolves.
 
-**`data` carries what a failure observed** [added — wave 21, 2026-08-27]. It is a fourth key, always
+**`data` carries what a failure observed** [added 2026-08-27]. It is a fourth key, always
 present and `null` for the failures that have nothing to count, holding a flat object of the facts
 the refusal was made on. It exists because the alternative is a caller regexing English. The runtime
 family's refusals (`src/runtime/preflight.ts`, [[0005-runtime-loop-tools]] §One preflight for the
@@ -879,7 +879,7 @@ This does not reopen [[0001-agentic-cli-on-expo-cli]] §Scoped out, which rules 
 
 ## Three names for the recovery, and the on-ramp has to say all three
 
-[added — wave 37, 2026-08-28, for **F145**. `help workflow`'s "Errors are prompts" block.]
+[added 2026-08-28, for **F145**. `help workflow`'s "Errors are prompts" block.]
 
 The acceptance walk probed for the `Try:` line across the bands and found it on exit `1` only. That
 is the **intended** behaviour and none of it changed; what was wrong was the one screen that promises
@@ -1078,7 +1078,7 @@ Expo Go (iOS), found while validating the cloud reload [observed — 2026-08-27]
   is the case. Worked around by never putting the URL on the launch.
 
 `agent-device` — the ask from the staging round still stands (a `close` that reports the app it acted
-on, §What `close` will not tell you in llp/0005), and wave 19 adds one:
+on, §What `close` will not tell you in llp/0005), and one more:
 
 - **`open <app> <url>` should not be the recommended shape for an Expo Go dev URL** while the launch
   path above is broken — or, better, the controller could send the URL as a deep link after the

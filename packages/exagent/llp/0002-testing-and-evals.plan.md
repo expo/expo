@@ -1,10 +1,10 @@
 # 0002: Testing and Evals for the Agentic Tool Layer
 
 **Type:** Plan
-**Status:** Draft
+**Status:** Final
 **Systems:** eval harness (new); fixtures; CI (GitHub Actions)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-20 (live tier added 2026-08-27)
+**Date:** 2026-08-20 (live tier added 2026-08-27) · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0022-live-tier]], [[0019-backend-parity-audit]]
 
 ## Summary
@@ -73,7 +73,7 @@ Programmatic and model-free: the dev server responds; the app boots (via `automa
   The concrete case [observed — 2026-08-24]: the reconnect grace period `runtime:errors` uses (llp/0005 §Peer churn proves the app *acted*) is exercised at tier 0 only as its two halves, `requireConnectedAppAsync` re-reading an empty target list and `CdpClient` re-reading the list when the selector can make nothing of it. The failure it answers is a listed target that refuses a CDP connection, which neither half reproduces. It was verified live instead: ten `reload` then `runtime:errors` rounds, five of them after a reload this CLI never performed. For the next such case, the rule is that the gap is recorded with the live evidence that stands in for it, rather than a tier-0 test that asserts the mock.
 - **A flag is not shipped until it has run against the published binary** [confirmed — Kudo, 2026-08-25]. Anything this CLI verifies against monorepo source must also be run **once** against the binary a user's project would actually get: `npx <package>@latest`, in a project outside this repository, before it ships. Everything above this line tests `exagent` against doubles or against the source in this tree, and neither knows what the registry serves.
 
-  The incident that names the rule [observed — live, 2026-08-24, wave 6]: `--preset` is an option of `@expo/fingerprint`'s CLI **in this monorepo** and not in 0.20.9, which is what a real SDK 57 project resolves. A real project answered `unknown or unexpected option: --preset` and exited non-zero. So `exagent impact`, which had every unit and e2e test passing against the stub, would have failed against essentially every project that exists. The fix was to forward `--preset` only when the caller names it ([[0011-impact-and-freshness]] §Precision limits). The general form is that **a surface read from `cli/src/commands/*.ts` is a claim about an unreleased version.** That is the process boundary of [[0001-agentic-cli-on-expo-cli]] read backwards: the boundary that keeps this CLI working across versions also hides which version it is talking to.
+  The incident that names the rule [observed — live, 2026-08-24]: `--preset` is an option of `@expo/fingerprint`'s CLI **in this monorepo** and not in 0.20.9, which is what a real SDK 57 project resolves. A real project answered `unknown or unexpected option: --preset` and exited non-zero. So `exagent impact`, which had every unit and e2e test passing against the stub, would have failed against essentially every project that exists. The fix was to forward `--preset` only when the caller names it ([[0011-impact-and-freshness]] §Precision limits). The general form is that **a surface read from `cli/src/commands/*.ts` is a claim about an unreleased version.** That is the process boundary of [[0001-agentic-cli-on-expo-cli]] read backwards: the boundary that keeps this CLI working across versions also hides which version it is talking to.
 
   A double cannot close this, and that is not a gap in the doubles. A stub `fingerprint` accepts whatever it is written to accept, so the e2e tier proves the *shape* of an invocation and never its *availability*. The two questions look identical in a passing test and are not the same question. The same holds for the tier-0 dev-server stub, which §Tier 0 doubles the dev server, not the app already records for a different reason.
 

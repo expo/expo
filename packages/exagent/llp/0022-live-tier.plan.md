@@ -1,16 +1,16 @@
 # 0022: The Live Tier — Making "Tested" Mean "Ran For Real"
 
 **Type:** Plan
-**Status:** Draft
+**Status:** Open — five of the six suites have run green; `live-cloud` has not been seen 7/7 (§What this does not close)
 **Systems:** the live tier (`e2e-live/`); the jest projects (`jest.config.js`, `e2e/jest.config.js`); `package.json` scripts; the coverage matrix of [[0019-backend-parity-audit]]
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-27
+**Date:** 2026-08-27 · finalized 2026-08-28
 **Related:** [[0002-testing-and-evals]], [[0019-backend-parity-audit]], [[0016-v1-scope]], [[0005-runtime-loop-tools]], [[0015-backend-selection-and-config]], [[0021-honest-reports]]
 
 ## Summary
 
-**Six suites as of wave 31** — `live-project`, `live-local`, `live-android`, `live-devclient`,
-`live-eas`, `live-cloud`. The count in the prose below predates the fifth and the sixth.
+**Six suites** — `live-project`, `live-local`, `live-android`, `live-devclient`, `live-eas`,
+`live-cloud`. Counts in the prose below that name fewer are about the suites they name.
 
 [[0002-testing-and-evals]] already states the rule this document makes executable: **a flag is not
 shipped until it has run against the published binary.** It states it as a *manual* step, and a manual
@@ -26,12 +26,12 @@ tier arrived with has both: **F93**, `status --explain` reporting bun's install 
 answer about the caller's builds, on 3 of 6 runs; and **F94**, every uncaught exception exiting with a
 raw Node stack and the code 7, which the protocol reserves for needs-human.
 
-It has kept doing that as it has grown. Wave 25 added the fourth suite, `live-android`, and adding one
-platform to a tier that already had one found **six defects and one open gap**. Three of the six were
+It has kept doing that as it has grown. The fourth suite, `live-android`, added one
+platform to a tier that already had one and found **six defects and one open gap**. Three of the six were
 commands reading the iOS app while reporting about Android. §live-android, and
 [[0005-runtime-loop-tools]] §The second Android round for what each was.
 
-Wave 31 added the sixth, `live-project`, and it found **five**, F130 to F134, in the commands
+The sixth, `live-project`, found **five**, F130 to F134, in the commands
 [[0019-backend-parity-audit]] had written off as *"argv assembly or filesystem work with no second
 process boundary"*. §live-project has the measurements. The lesson generalises the one above. A
 "no second boundary" claim is about the *shape* of the call, and every one of those five defects is in
@@ -128,7 +128,7 @@ names its artifact rather than quoting kilobytes of a bundler's opinion into a j
 
 ## live-project: the commands whose backend is the project
 
-[added 2026-08-28, wave 31] **32 tests, 44 s, 49 `exagent` runs, one scaffold, free.** One project
+[added 2026-08-28] **32 tests, 44 s, 49 `exagent` runs, one scaffold, free.** One project
 scaffolded by `exagent new`, and the commands that act on *it* rather than on a device: `install`
 adding a package, `agents:setup`, `skills:sync/list/show/clean`, `inspect:config-plugins`, `start`,
 and the forwarded `expo` set.
@@ -144,8 +144,8 @@ whose gate a Linux box can pass.
 
 ### What it found
 
-Five, all fixed in the wave, and the pattern is the point: **four are in reading what came back, and
-none is in the argv.** [[0019-backend-parity-audit]] §~~Still stub-only, by choice~~ has them one by
+Five, all fixed, and the pattern is the point: **four are in reading what came back, and
+none is in the argv.** [[0019-backend-parity-audit]] §Still stub-only, by choice has them one by
 one. The two that say something about this tier rather than about the CLI are these.
 
 - **F130 is the cleanest case of a stub doubling the code instead of the tool.** The Expo CLI prints
@@ -220,7 +220,7 @@ so it is once.
 
 ## live-android: the platform the other suites do not run
 
-The fourth suite [added 2026-08-27, wave 25]. Same scaffold, same loop, on a real Android emulator
+The fourth suite [added 2026-08-27]. Same scaffold, same loop, on a real Android emulator
 running the real Expo Go APK. **24 tests, 103 s including a 40-second emulator boot, free.**
 
 It is not `live-local` with a different device, and the reason is one measured fact: **Expo Go for
@@ -284,8 +284,8 @@ the `adb shell` exits.
 
 ## live-devclient: the app the other four suites do not run
 
-The fifth suite [added 2026-08-28, wave 29]. **15 tests, 25 s, free**, which is 14 plus the one that
-carried F123 as a skipped finding, unskipped in wave 30 once the contract was decided and green since.
+The fifth suite [added 2026-08-28]. **15 tests, 25 s, free**, which is 14 plus the one that
+carried F123 as a skipped finding, unskipped once the contract was decided and green since.
 It runs the v1 runtime loop against a real **development build** on the emulator `live-android` uses.
 It is also the suite that answers a question this document had been asking of itself since §What this
 does not close was written: *"a development build on either platform — which on Android is the one
@@ -313,7 +313,7 @@ has already built, and the gate is two facts rather than one:
 The second half is not belt and braces. `exagent dev` plans a **build** for a platform with no
 recorded fingerprint, so a project whose app is installed and whose record is missing would send
 `beforeAll` into the fifteen minutes the gate exists to avoid. The two really are separable, which is
-what F121 was about. Since wave 30 the record is written when the **app reaches the device**, so
+what F121 was about. The record is written when the **app reaches the device**, so
 `npx exagent dev --android --yes` alone is enough to satisfy the gate. Before it, the
 `expo run:android` step had to *exit*, which meant stopping its dev server too.
 
@@ -337,7 +337,7 @@ written down rather than left blank.
 ### What it found
 
 Six findings, three fixed in the wave and three reported. **All three of the reported ones were
-decided and fixed in wave 30** [2026-08-28], and each is marked below. The three fixed in wave 29
+decided and fixed** [2026-08-28], and each is marked below. The three fixed on the spot
 are the ones whose rule was already written down somewhere and simply not applied:
 
 - **F120 MODERATE, fixed** — `dev` warned `these options were not passed on: --port 8901` and then
@@ -356,20 +356,20 @@ are the ones whose rule was already written down somewhere and simply not applie
   same dev server proved this one's reload. It is F53 and F100's shape, one signal further out. With
   the filter the same command is 22 with the reason naming what did bundle, which is the honest
   answer.
-- **F123 MAJOR, fixed in wave 30** — `navigate` opens the *route* link at an app that is not loaded,
+- **F123 MAJOR, fixed** — `navigate` opens the *route* link at an app that is not loaded,
   having said in the same payload that nothing is connected and having computed the launcher URL that
   would load it. Exit 22 after 90.6 s on Android, where no dialog can be blamed. It was reported
-  rather than fixed in wave 29 because the recovery is a two-open ladder with contract questions in
+  rather than fixed on the spot because the recovery is a two-open ladder with contract questions in
   it. The answers are [[0005-runtime-loop-tools]] §On a development build, `navigate` goes
   launcher-first. The skipped test this suite carried is now the assertion it was written to be:
   **exit 0 in 3.0 s**.
-- **F121 MAJOR, fixed in wave 30** and **F125 MODERATE, fixed in wave 30** — a build that succeeded
+- **F121 MAJOR, fixed** and **F125 MODERATE, fixed** — a build that succeeded
   and installed is not recorded when the launch step fails, so the next plan rebuilds; and
   `dev --detach --wait-ready` reports "the dev server started on <url>" while the plan is still
   compiling. Both decisions are in [[0004-smart-start-and-project-state]] §What a development build
   costs the plan.
 
-**What the three wave-30 fixes share, and it is not incidental.** All three read a fact off a
+**What those three fixes share, and it is not incidental.** All three read a fact off a
 **subprocess's output** that no exit code carries: the install line that says the app reached the
 device (F121), the same line reused to say a compiler has finished (F125), and, for F123, the
 device's own answer that a link was delivered to the wrong activity. The dev-client shape is what
@@ -408,14 +408,14 @@ point.
 
 ## live-cloud: written, gated, and now run
 
-Written in wave 20 and **not run by its author** then. The staging cloud-session budget belonged to
-another wave, so its rows were marked `runnable` rather than filled, and nothing in the file could be
-read as evidence. That is the rule this whole document is about, applied to itself. Wave 23 ran it,
-three times, and §What the first four runs of it found is what that cost and bought.
+It was written and **not run by its author**. Until it had run, its rows were marked `runnable`
+rather than filled, and nothing in the file could be read as evidence. That is the rule this whole
+document is about, applied to itself. §What the first four runs of it found is what running it three
+times cost and bought.
 
-**Every expectation in it comes from wave 19's live run rather than from a type definition.**
-[[0019-backend-parity-audit]]'s cloud rows moved under this suite the day wave 19 landed, and the suite
-was rewritten against `wave19-live/`'s JSON rather than against the shape the source suggested. That is
+**Every expectation in it comes from a live run rather than from a type definition.**
+[[0019-backend-parity-audit]]'s cloud rows moved under this suite, and the suite
+was written against `wave19-live/`'s captured JSON rather than against the shape the source suggested. That is
 the same distinction §Why the two tiers below it cannot do this is about, one level in: a test written
 from a type is a test of what somebody meant, and a test written from a captured payload is a test of
 what happened.
@@ -435,7 +435,7 @@ the prerequisite gate is not "is ngrok installed". It is "is there a way to publ
 This also moved where the address is read from. A proxied dev server prints
 `Waiting on http://localhost:<port>` and names the real origin only in its manifest's `launchAsset.url`.
 So reading the log gave `hostType: localhost` and a refusal to open the app on a simulator that could
-have loaded it, which is S3's second face. Wave 19 taught `src/dev/advertisedUrl.ts` to prefer the
+have loaded it, which is S3's second face. `src/dev/advertisedUrl.ts` prefers the
 manifest when it names a tunnel, and the suite checks the origin took (`navigate / --print-url` must
 report `hostType: "tunnel"`) **before** it starts anything that bills.
 
@@ -446,7 +446,7 @@ nothing registered for the scheme [observed — `wave19-live/08-open-plain.json`
 `eas simulator` rather than `eas simulator:start`. That is the name in the CLI's own manifest and the one
 carrying the flag. A project with a development build of its own passes `--build-id <id>` instead.
 
-**3. A cloud reload is a relaunch, proved on the dev server.** This suite asserts wave 19's contract
+**3. A cloud reload is a relaunch, proved on the dev server.** This suite asserts the contract
 field by field: `method: "device"`, `verifiedBy: "dev-server-bundle"`,
 `bundlesAfterReload.observed: true` with the bundler's own line as the evidence, and the `dev-server`
 attempt recorded as **not tried** with a reason. The field that makes it legible is
@@ -474,8 +474,8 @@ the dev server stopped, the directory deleted.
 
 ### What the first four runs of it found
 
-[2026-08-27, staging, project `@kudo1/livecheck`.] Run 1 is the gated run that opened wave 23. Runs 2–4
-are wave 23's own three sessions, which was its whole budget. The suite went **4/7 → 4/7 → 6/7 → 6/7**,
+[2026-08-27, staging, project `@kudo1/livecheck`.] Run 1 is the first gated run; runs 2–4 are the
+three sessions that were the whole budget. The suite went **4/7 → 4/7 → 6/7 → 6/7**,
 and every red was a defect rather than a flake. Three of the four facts above turned out to be about
 *one session's state* rather than about cloud sessions, and that is the result worth keeping. A suite
 written from one captured run is far better than one written from a type, and it is still a suite
@@ -493,7 +493,7 @@ nothing has opened the *project* in it. So the first `exp://` URL goes to the **
 "Open in 'Expo Go'?", and nobody answers. That is `navigate --cloud` at exit 22 after 60.9 s with the
 `open` verb having exited 0, then two 180 s reloads that served no bundle.
 `eas simulator … --open-url exp://<host>` is the runner opening the URL in the app it just launched,
-which is the state wave 19's *working* session was in before any exagent command touched it. With it,
+which is the state the first *working* session was in before any exagent command touched it. With it,
 the same command is exit 0 in 17.1 s with `attached: true` in 206 ms. [[0005-runtime-loop-tools]] §The
 dialog nobody is there to answer records the layered fix.
 
@@ -528,13 +528,12 @@ mechanism that ran, §The ladder climbs):
 **What run 3's one red was.** `method` pinned to `dev-server` whenever the socket held a client. That
 assertion was written between run 2 and run 3, before the ladder learned to climb, and made obsolete by
 the climb it was written to describe. It is corrected against run 3's own artifact. **The corrected
-suite has not been re-run live.** Wave 23's session budget was three and it spent three, so the row
+suite has not been re-run live.** The session budget was three and it spent three, so the row
 that says 7/7 is the next run's to write, and nothing here claims it.
 
 ## The findings this tier arrived with
 
-All three were found on 2026-08-27, on this suite's first working runs, and all three are **fixed in
-wave 22**. The design each one forced is recorded in [[0021-honest-reports]] (§The runner is not the
+All three were found on 2026-08-27, on this suite's first working runs, and all three are **fixed**. The design each one forced is recorded in [[0021-honest-reports]] (§The runner is not the
 service, §A crash is a tool error, §An observed signal, or the band). The findings are kept here in
 full because what this tier is *for* is the class of defect it can reach, and these three are the
 evidence. None of them was reachable by a unit or a stub test, and each had a passing test one call
@@ -546,7 +545,7 @@ frame away.
 builds.
 
 `readEasBuildsStatusAsync` runs its two per-platform lookups concurrently (`Promise.all`). In a project
-that does not pin `eas-cli`, which is the common case and since wave 18 the only rung, each lookup
+that does not pin `eas-cli`, which is the common case and the only rung, each lookup
 spawns `bunx eas-cli@latest`, and both share one per-spec scratch directory
 (`$TMPDIR/bunx-501-eas-cli@latest`). Started milliseconds apart they collide. The loser exits 1 with
 empty stdout, and `describeLookupFailure` then reports the first line of its stderr, **bun's own
@@ -563,12 +562,12 @@ that the runner is *this CLI's own choice* rather than something it found on the
 untrusted output from somebody else's binary. It is noise from a tool this CLI decided to use, quoted
 back to the caller as a service's answer.
 
-**Reported and not worked around in wave 21**, by the tier's own rule: a live tier that edits its
+**Reported and not worked around**, by the tier's own rule: a live tier that edits its
 assertions down to whatever the CLI currently does is a stub tier with a longer runtime. The test was
 skipped with the evidence and a `TODO`, and the neighbouring test retried up to four times with a
 comment saying the retry was scaffolding for a defect.
 
-**Fixed in wave 22** ([[0021-honest-reports]] §The runner is not the service). The fix is a per-spec
+**Fixed** ([[0021-honest-reports]] §The runner is not the service). The fix is a per-spec
 mutex in the spawn layer (`src/utils/runnerLock.ts`), applied in all three helpers that can start a
 runner, plus a guard that will not let a runner's line be quoted as the service's answer for the
 collisions no mutex in this process can prevent. The live test runs, and the retry is gone with the
@@ -623,7 +622,7 @@ cleanup `dev:stop` a moment later reports `not-running`. So `dev:stop` does its 
 say so, and the suite was split along exactly that line: a running test asserting the effect (the port
 is free), and a skipped F94 test carrying the report.
 
-**Fixed in wave 22** ([[0021-honest-reports]] §A crash is a tool error). The handler prints the crash
+**Fixed** ([[0021-honest-reports]] §A crash is a tool error). The handler prints the crash
 with its stack and exits 1, and emits the `--json` envelope. The live test runs, and the trigger is left
 in place deliberately. An environmental crash from inside Node's own socket layer is not a thing a
 fixture arranges, so it is the only test of this handler against a real uncaught exception. It asserts
@@ -645,7 +644,7 @@ is that **`appsReconnected` is a different signal's evidence** (it counts debugg
 `fresh-debugger-target` rests on) and the churn's own count was nowhere in the payload. So the report
 named a signal a reader had no way to check, and the reconciliation it invited was a contradiction.
 
-The flakiness is the wave-21 ladder working as designed. The two proofs share one budget and whichever
+The flakiness is the ladder working as designed. The two proofs share one budget and whichever
 answers first ends both, so whether the debugger target arrives before the `Bundled` line is a property
 of the moment. That made a live assertion on `appsReconnected` a coin toss under a run that was, itself,
 correct.
@@ -653,7 +652,7 @@ correct.
 Only this tier could have found it. The stub tier pins `appsReconnected` for each rung with a fixture
 that decides the race, so both orderings pass there and neither is the one a real app takes.
 
-**Fixed in wave 22** ([[0021-honest-reports]] §An observed signal, or the band). Every label names a
+**Fixed** ([[0021-honest-reports]] §An observed signal, or the band). Every label names a
 field of the payload, the label is chosen through that table rather than checked after the fact, and a
 zero on either count carries the sentence saying which of three facts it is. The live test now asserts
 the label's own count, which is the claim the rung actually establishes.
@@ -666,10 +665,8 @@ the label's own count, which is the claim the rung actually establishes.
   narrows what that run has to discover rather than replacing it. The `foreignFlags` snapshot is still
   the countable surface that says where a run is owed.
 - **Two platforms and two apps, all on this machine.** macOS with iOS and Android emulators
-  [narrowed 2026-08-27, wave 25 — it read "one platform" before `live-android` existed; narrowed
-  again 2026-08-28, wave 29]. The paragraph here used to say a **development build** was not run
-  anywhere and that it was the one thing that would give Android a debugger. It is, and `live-devclient`
-  now runs one. So what is still not run anywhere is a **physical device**, Windows, and a
+  [narrowed 2026-08-28]. A **development build** is the one thing that gives Android a debugger, and
+  `live-devclient` runs one. So what is still not run anywhere is a **physical device**, Windows, and a
   development build on **iOS** *inside a suite* (§live-devclient: measured by hand, blocked from
   automation by an iOS confirmation dialog nothing here can answer).
 - **Anything about Android **in Expo Go** that needs a runtime read.** `runtime:tap`'s three refusal
@@ -677,7 +674,7 @@ the label's own count, which is the claim the rung actually establishes.
   column rather than `open`, and `smoke --android` is asserted there to be **22 on a working app**
   rather than expected to pass. A reader quoting "the live tier is green on Android" from that suite
   alone is quoting a suite in which the gate never passes. **`live-devclient` fills every one of
-  those cells** on the same emulator [wave 29]. That is what makes the `live-android` rows a claim
+  those cells** on the same emulator. That is what makes the `live-android` rows a claim
   about Expo Go's engine rather than about the platform, and why both suites are worth keeping.
 - **Whether an Android app was really stopped, at the instant the command returned.** `am force-stop`
   is asynchronous, and exits as soon as ActivityManager takes the request. `runtime:stop --android`
@@ -699,8 +696,8 @@ the label's own count, which is the claim the rung actually establishes.
   Three of the seven findings that suite produced are only visible with an app on both platforms at
   once, and a machine with no booted simulator runs neither those tests nor anything that replaces
   them. The suite prints which of the two runs it is doing, in `beforeAll`, for exactly this reason.
-- **live-cloud has not been seen 7/7.** Wave 23 took it to 6/7 and corrected the last assertion against
-  that run's own artifact, with the session budget spent. The corrected suite is a suite that has not
+- **live-cloud has not been seen 7/7.** The last runs took it to 6/7 and corrected the last assertion
+  against that run's own artifact, with the session budget spent. The corrected suite is a suite that has not
   been run, which is precisely the state this document refuses to call evidence. So the next run of
   `test:live:cloud` is what closes it, and it is one session.
 - **A suite written from one live run carries that run's state as if it were a law.** Three of

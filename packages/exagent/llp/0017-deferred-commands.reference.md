@@ -4,7 +4,7 @@
 **Status:** Deferred — reference
 **Systems:** the reference shelf (`src/deferred/dev-wait/`, `src/deferred/checkpoint/`, `src/deferred/build-wait/`, `src/deferred/runtime-network/`, `src/deferred/doctor-fix/`); the JSONL event declarations these commands left behind in `src/events.ts`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-26 (single-home consolidation 2026-08-28)
+**Date:** 2026-08-26 (single-home consolidation 2026-08-28) · finalized 2026-08-28
 **Related:** [[0016-v1-scope]], [[0010-agent-conventions]], [[0008-guardrails]], [[0005-runtime-loop-tools]], [[0004-smart-start-and-project-state]], [[0006-agent-native-cli-surface]], [[0009-smart-followups]], [[0012-build-explain]], [[0002-testing-and-evals]]
 
 ## What this document is

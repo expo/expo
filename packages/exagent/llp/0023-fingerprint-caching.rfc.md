@@ -1,10 +1,10 @@
 # 0023: Fingerprint Caching — Paying for One Hash Instead of Three
 
 **Type:** RFC
-**Status:** Draft — implemented
+**Status:** Final — implemented
 **Systems:** the fingerprint wrapper (`src/project/fingerprint.ts`); the pinned-file manifest (`src/project/fingerprintKeys.ts`); the cross-run record (`src/project/fingerprintCache.ts`, `.expo/exagent-fingerprint.json`); the project-state probe (`src/project/probe.ts`); the EAS build lookup (`src/status/easBuilds.ts`); the status report (`src/status/statusAsync.ts`, `src/status/sections.ts`, `src/status/format.ts`, `src/status/types.ts`); `exagent dev` (`src/dev/devAsync.ts`, `src/dev/resolveOptions.ts`); `@expo/fingerprint`
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-27
+**Date:** 2026-08-27 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0011-impact-and-freshness]], [[0021-honest-reports]], [[0001-agentic-cli-on-expo-cli]]
 
 ## Summary
@@ -86,11 +86,11 @@ the sources exists to protect. The whole record measures 43 KB for one key on a 
 that ever ran here. A project whose version cannot be read is not cached at all, because a hash
 from another version of the tool is not comparable with this one (llp/0001 §Constraints item 5).
 
-**Finding that package is three rungs, not one** [F111, fixed wave 27]. It was one, the literal
+**Finding that package is three rungs, not one** [F111, fixed 2026-08-28]. One rung is the literal
 path `<projectRoot>/node_modules/@expo/fingerprint/package.json`. Because a null version turns
 the whole cross-run cache off, the effect in a monorepo was that this document's subject silently did
 not exist there: two consecutive `status` runs in a pnpm workspace both reported `source: "computed"`
-and no record was ever written [observed — 2026-08-28, wave 27]. That is an asymmetry rather than a
+and no record was ever written [observed — 2026-08-28]. That is an asymmetry rather than a
 policy, and it is what makes it a defect. The fingerprint CLI *is* found and spawned in the same
 project, from `node_modules/.bin/fingerprint`, which pnpm writes. So the lookup now walks the way
 `node_modules` is actually laid out. First the ancestors' `node_modules`, which is the same walk the
@@ -104,8 +104,8 @@ the first time §the walk up to a hoisted lockfile has been exercised anywhere b
 **What this did not reach: an npm-workspaces monorepo**, where npm hoists so completely that the app
 has no `node_modules` of its own at all. There `resolveFingerprintCli` found no bin, so no hash was
 computed and there was nothing to cache. That is a larger defect than this one, and it lives in the
-project-local bin resolution every command shares rather than in this record [F113, wave 27, **fixed
-wave 28**: `src/utils/projectBin.ts`, [[0015-backend-selection-and-config]] §Resolving a project-local
+project-local bin resolution every command shares rather than in this record [F113, **fixed**:
+`src/utils/projectBin.ts`, [[0015-backend-selection-and-config]] §Resolving a project-local
 bin]. The record works there now: a second `status` in that repository answers `source: "cache"`
 revalidated against 13 files [observed — 2026-08-28].
 
@@ -169,7 +169,7 @@ read statically and never evaluated (llp/0001 §Constraints item 5), and capped 
 cap the project is not cached, rather than cached without them.
 
 **A referenced path may be a directory, and one of them is the default scaffold's** [F112, fixed
-wave 27]. Since SDK 57 `ios.icon` is `./assets/expo.icon`, an icon bundle holding `icon.json` and an
+2026-08-28]. Since SDK 57 `ios.icon` is `./assets/expo.icon`, an icon bundle holding `icon.json` and an
 `Assets/` tree. A stamp of a directory is not a file stamp, so such an entry used to *disappear*
 out of the manifest with nothing said, and no entry is no mismatch. Live: editing
 `assets/expo.icon/icon.json` moved the hash from `f50891f3` to `ed4b0454`, and a warm `status` kept
@@ -221,7 +221,7 @@ Two things make that acceptable rather than merely accepted:
    covers the one native-surface change this CLI makes itself, which is `expo prebuild`, immediately
    rather than in ten minutes. A prebuild run some other way rides on the expiry.
 
-**`exagent install` drops nothing, and does not have to** [measured 2026-08-28, wave 31]. It was worth
+**`exagent install` drops nothing, and does not have to** [measured 2026-08-28]. It was worth
 checking, because `install` changes the project as surely as a plan step does and the dev-step rule
 above could have been read as applying to it. It does not need to: `package.json` and the lockfile are
 both pinned sentinels, so an install moves two stamps and the next read misses on its own. Live on an
@@ -382,16 +382,14 @@ Three honest readings of that table:
 1. **`--explain` is about 38% faster warm**, roughly 1.8 s of 4.7 s, which is the wave's own goal and
    is met. Two per-platform fingerprints run *after* the parallel section and before their EAS calls,
    so they are additive wall time and removing them shows up directly.
-2. **A default `status` is not faster at all.** The saving is real and hidden. A plain `status` scans
-   ports 8081–8085 for a dev server, and that scan costs about 1.3 s, more than the fingerprint it
-   runs in parallel with. Pinning the dev-server probe out of the way exposes the same saving
-   plainly: 1.16–1.27 s becomes 0.27–0.28 s, **about 0.9 s and 77%**. The fingerprint was never the
-   critical path of a default `status`. The port scan is, and that is the next thing worth a wave.
-
-   [corrected — 2026-08-27] The 1.3 s and the 0.9 s the cache recovers behind it are both as measured.
-   The attribution is not: the scan's probes cost about a millisecond, and the 1.3 s was the unfired
-   timers behind them, which a *lock hit* paid in full too. See open question 1 below and
-   [[0004-smart-start-and-project-state]] §The discovery ladder.
+2. **A default `status` is not faster at all.** The saving is real and hidden. Pinning the
+   dev-server probe out of the way exposes it plainly: 1.16–1.27 s becomes 0.27–0.28 s, **about
+   0.9 s and 77%**. What hides it is the 1.3 s a default run spends on dev-server discovery, which is
+   more than the fingerprint it runs in parallel with. The fingerprint was never the critical path of
+   a default `status`. Discovery was — and not through its probes, which cost about a millisecond
+   each, but through the unfired timers behind them, which a *lock hit* that scans no ports at all
+   paid in full too [observed — 2026-08-27]. That is
+   [[0004-smart-start-and-project-state]] §The discovery ladder, where it is fixed.
 3. **The first run costs about 40 ms more**, per the isolation above. Paid once per change, recovered
    on the next run. Moving from sha256 to stamps is what made this number small enough to state: one
    manifest pass over this project's nine pinned files and 1.2 MB went from 0.595 ms to 0.025 ms.
@@ -449,21 +447,13 @@ a real project moves its hash.
 
 ## Open questions
 
-1. ~~**The dev-server port scan.**~~ **Answered — 2026-08-27, and the premise was wrong.**
-   The 1.3 s was real and the scan was not spending it. Discovery's probes cost about a millisecond
-   each; what cost 1.3 s was the `setTimeout` behind each probe's timeout, never cleared and never
-   `unref`ed, keeping the event loop alive long after the report was printed. A default `status`
-   printed a complete report at 263 ms and exited at 1584 ms. The tell that settles it: a **lock
-   hit**, which probes once and skips the scan altogether, cost the same 1.58 s as a five-port scan,
-   so no amount of scanning less would have moved it. Clearing the timer, and aborting the request the
-   timeout abandoned, brings a default `status` to 0.27–0.32 s against a 0.28 s floor. Every
-   `discoverDevServerAsync` caller was paying its whole budget the same way. The design, the ladder,
-   all seven measured scenarios and two remaining limits are in
+1. ~~**The dev-server port scan.**~~ **Answered — 2026-08-27.** The 1.3 s was real and the scan was
+   not spending it: the cost was a `setTimeout` behind each probe's timeout, never cleared and never
+   `unref`ed, keeping the event loop alive long after the report was printed. Clearing the timer, and
+   aborting the request the timeout abandoned, brings a default `status` to 0.27–0.32 s against a
+   0.28 s floor. The design, the ladder, all seven measured scenarios and two remaining limits are in
    [[0004-smart-start-and-project-state]] §The discovery ladder.
 
-   Reading 2 of §What it bought should be read with that correction. The fingerprint cache's saving on
-   a default `status` was real and hidden, exactly as recorded, but the thing hiding it was a timer
-   rather than a scan.
 2. **Should the record be shared between the `all` key and the per-platform keys?** The whole-project
    hash dominates the per-platform ones, because `--platform` filters the same source list, which is
    already why the EAS build cache is keyed on the project hash (`src/status/easBuilds.ts`). It
