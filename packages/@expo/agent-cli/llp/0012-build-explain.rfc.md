@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Final
-**Systems:** `exagent inspect:build-log` (`src/builds/index.ts`, `src/builds/explain/`); the follow-up ladder (`src/followups/explain.ts`); the fixture corpus (`src/builds/explain/__tests__/fixtures/`); `eas-cli`
+**Systems:** `@expo/agent-cli inspect:build-log` (`src/builds/index.ts`, `src/builds/explain/`); the follow-up ladder (`src/followups/explain.ts`); the fixture corpus (`src/builds/explain/__tests__/fixtures/`); `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-24 · finalized 2026-08-28
 **Related:** [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]], [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]]
@@ -20,7 +20,7 @@
 
 ## Summary
 
-A native build fails and prints four thousand lines. Somewhere in them is one line that says why. `exagent build:explain` reads the log and reports that line, as a human table or as one JSON object. The report names which phase the build stopped in, a stable signature for the failure, the line number, the quoted context around it, and the command to run next.
+A native build fails and prints four thousand lines. Somewhere in them is one line that says why. `@expo/agent-cli build:explain` reads the log and reports that line, as a human table or as one JSON object. The report names which phase the build stopped in, a stable signature for the failure, the line number, the quoted context around it, and the command to run next.
 
 Two properties are the whole design, and both are constraints rather than features:
 
@@ -31,11 +31,11 @@ Two properties are the whole design, and both are constraints rather than featur
 
 Two input sources ship: `--file <path>` and `--stdin`. The `<build-id>` form, which would read the log of an EAS build by its id, **does not**, and the reason is upstream. eas-cli has no `build:logs` command ([[0010-agent-conventions]] §Upstream asks), so there is no supported way for this CLI to fetch one.
 
-Decision [confirmed — Kudo, 2026-08-24]. The positional argument is **reserved and reported** rather than rejected as a stray. [[0010-agent-conventions]] §Registry rules (d) makes a stray positional a `BAD_ARGS` naming what was dropped, which is the right answer for an argument that is a typo. This one is not a typo. `exagent build:explain <build-id>` is the command an agent will reach for, it is the form the plan named, and it will exist. So it has a code of its own, `BUILD_ID_UNSUPPORTED`, whose message says the CLI cannot fetch a build's log yet, why, and the two spellings that work today. `Try: npx eas build:view <id>` is the command that prints where the log files are.
+Decision [confirmed — Kudo, 2026-08-24]. The positional argument is **reserved and reported** rather than rejected as a stray. [[0010-agent-conventions]] §Registry rules (d) makes a stray positional a `BAD_ARGS` naming what was dropped, which is the right answer for an argument that is a typo. This one is not a typo. `@expo/agent-cli build:explain <build-id>` is the command an agent will reach for, it is the form the plan named, and it will exist. So it has a code of its own, `BUILD_ID_UNSUPPORTED`, whose message says the CLI cannot fetch a build's log yet, why, and the two spellings that work today. `Try: npx eas build:view <id>` is the command that prints where the log files are.
 
 That reservation shapes the payload too. `source.kind` is `'file' | 'stdin'` and there is no `build` key, because a key that is always `null` for a mode that does not exist is noise a caller has to learn to ignore. When the build-id form lands it adds `source.kind: 'eas-build'`, `source.buildId` and `build`, which is an additive change to a caller reading `failure`.
 
-**Local logs are most of the value anyway,** which is why this half shipped first with no EAS dependency at all. `npx expo run:ios 2>&1 | npx exagent build:explain --json` is the loop an agent driving a local build actually has, and half the committed fixtures came from exactly that.
+**Local logs are most of the value anyway,** which is why this half shipped first with no EAS dependency at all. `npx expo run:ios 2>&1 | npx @expo/agent-cli build:explain --json` is the loop an agent driving a local build actually has, and half the committed fixtures came from exactly that.
 
 ## Two layers of phase detection
 

@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Final
-**Systems:** the change classifier (`src/impact/`, the engine under `exagent status` since 2026-08-26; `exagent impact` was its own command until then); the last-build record (`src/plan/lastBuild.ts`); the fingerprint CLI wrapper (`src/project/fingerprint.ts`); the project-state probe (`src/project/probe.ts`, `src/status/statusAsync.ts`); `@expo/fingerprint`; `eas-cli` `fingerprint:compare` and `build:list`
+**Systems:** the change classifier (`src/impact/`, the engine under `@expo/agent-cli status` since 2026-08-26; `@expo/agent-cli impact` was its own command until then); the last-build record (`src/plan/lastBuild.ts`); the fingerprint CLI wrapper (`src/project/fingerprint.ts`); the project-state probe (`src/project/probe.ts`, `src/status/statusAsync.ts`); `@expo/fingerprint`; `eas-cli` `fingerprint:compare` and `build:list`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-24 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0006-agent-native-cli-surface]], [[0009-smart-followups]], [[0010-agent-conventions]]
@@ -38,7 +38,7 @@ in `src/project/impact.ts` says so in as many words:
 
 The classification was right both times. The **sentence beside it** was one string:
 *"Only JavaScript changed, so reloading the app is enough to pick the package up — no rebuild."*
-So `exagent install expo-haptics --json` on an Expo Go project printed one object holding
+So `@expo/agent-cli install expo-haptics --json` on an Expo Go project printed one object holding
 `impact: "native-module"`, `"ships an ios/ directory"`, `"ships an expo-module.config.json"` — and,
 three keys later, a claim that only JavaScript changed [observed — 2026-08-28, an SDK 57 scaffold,
 `wave31-open-cells/evidence/03-install-haptics.out`].
@@ -132,7 +132,7 @@ Four details are decisions rather than transcription:
 Decision. A platform whose comparison could not be decided reports `needs-native-build`, and the
 file-level view is not consulted for it at all.
 
-The state this is about is the ordinary one. A project on which `exagent dev` has never run a
+The state this is about is the ordinary one. A project on which `@expo/agent-cli dev` has never run a
 native build has no record, so there is nothing to compare against and `fingerprintChanged` is
 `null`. The first implementation treated that as falsy, fell through to the changed files, and
 reported `dev-client-compatible` on a real project [observed — live, 2026-08-24, `notesapp`]. That is
@@ -143,7 +143,7 @@ Three things are wrong with that, and one of them is a contradiction rather than
 - **It is a claim with nothing behind it.** The file-level classifier refines an answer the
   fingerprint already gave: "the native surface did not move, so which kind of cheap is it". With
   no fingerprint answer there is nothing to refine, and the refinement becomes the whole verdict.
-- **It contradicts `exagent dev` about the same project.** [[0004-smart-start-and-project-state]]
+- **It contradicts `@expo/agent-cli dev` about the same project.** [[0004-smart-start-and-project-state]]
   §Implemented in v1 as, item 2 already fixed the direction to err in: unrecorded means stale, so v1
   over-plans a build at worst and never under-plans. So `dev` plans a build for exactly the project
   `impact` was calling `dev-client-compatible`. Two commands of one CLI disagreeing about one
@@ -176,7 +176,7 @@ Two limits, both reported rather than only documented:
 
 ## The record has to hold the sources
 
-Decision. `.expo/exagent-last-build.json` stores the whole `{sources, hash}` per platform.
+Decision. `.expo/agent-cli-last-build.json` stores the whole `{sources, hash}` per platform.
 
 The v1 record stored a bare hash string, which answers "is the last build stale" and nothing else.
 `fingerprint:diff` needs both sides' `sources` to say **what** changed, and "what" is the entire
@@ -209,7 +209,7 @@ hash comparison, and tens of thousands of bytes of sources in a report that has 
 about any of them would be a regression paid by every caller. `impact` fingerprints for itself.
 
 **The same sources are also in the fingerprint cache**, for the same reason and at the same size.
-[[0023-fingerprint-caching]] stores `{hash, sources}` per key in `.expo/exagent-fingerprint.json`,
+[[0023-fingerprint-caching]] stores `{hash, sources}` per key in `.expo/agent-cli-fingerprint.json`,
 because a warm run that kept only the hash would keep the freshness verdict and lose the diff this
 section is about. That record is what makes the fingerprint wrapper's `source: 'computed' | 'cache'`
 field exist, and every consumer here now receives it. So is the kind of check that revalidated it and
@@ -286,7 +286,7 @@ build anyone can install.
 ## Two commands, one classifier — and then one command
 
 Decision [confirmed — Kudo, 2026-08-26], in two steps on the same day. The classification this RFC
-designed first became readable from `exagent status` as well as `exagent impact`; then `impact` was
+designed first became readable from `@expo/agent-cli status` as well as `@expo/agent-cli impact`; then `impact` was
 **removed** and `status` took the whole surface. Both steps are recorded, because the first one's
 argument is what made the second one obviously right.
 
@@ -303,7 +303,7 @@ flags that changed only its caveats. That is a command's worth of surface for a 
 behaviour. The exit-0 objection that seemed to make the separation necessary turned out to be a
 category error. The contract is about what a *report* does, and `--assert` is a caller asking for a
 verdict instead. [[0004-smart-start-and-project-state]] §An explicit flag turns the report into a
-gate has the argument and the exit codes. `exagent impact` is gone, and nothing it could do is gone
+gate has the argument and the exit codes. `@expo/agent-cli impact` is gone, and nothing it could do is gone
 with it.
 
 **The classifier is unchanged, and so is the distinction the split was really about.** It was never
@@ -467,8 +467,8 @@ one who has to know them.
 
 ## Command surface and exit codes
 
-**Superseded as a command, kept as a contract** [2026-08-26]. There is no `exagent impact` any
-more; every rule below now describes `exagent status`, which absorbed it (§Two commands, one
+**Superseded as a command, kept as a contract** [2026-08-26]. There is no `@expo/agent-cli impact` any
+more; every rule below now describes `@expo/agent-cli status`, which absorbed it (§Two commands, one
 classifier — and then one command). The paragraph about the top-level verb and its
 `positionalArgs: 'own'` parse is gone with the entry it described. The exit codes survived the move
 unchanged, and gained one:
@@ -537,7 +537,7 @@ and on `ota.safe` rather than on wording.
 2. `--base <ref>`, which needs either `@expo/fingerprint --git-ref` or an honest `--reinstall`.
    Neither is free, and `--build` covers the common case. Note that the flag never worked: it threw
    `IMPACT_MODE_UNAVAILABLE` on every run, so removing the command that carried it lost nothing.
-3. ~~Whether `status` should gain a `Try: npx exagent impact` rung.~~ **Answered by the fold**
+3. ~~Whether `status` should gain a `Try: npx @expo/agent-cli impact` rung.~~ **Answered by the fold**
    [2026-08-26]: there is nothing to point at. `status` answers both halves — "is the last build
    stale" and "why, and what does it cost" — so a rung naming another command would be the report
    admitting it had not answered the question it had just answered.

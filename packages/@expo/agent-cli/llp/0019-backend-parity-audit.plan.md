@@ -26,7 +26,7 @@ would produce exercises none of that.
 ## The matrix
 
 `L` local, `E` EAS/cloud. `unit` means a test exists over the pure function; `e2e` means a whole
-`exagent` process ran against a stub binary. **Bold** marks what this wave added.
+`@expo/agent-cli` process ran against a stub binary. **Bold** marks what this wave added.
 
 | Command | Backend | Before | After |
 | --- | --- | --- | --- |
@@ -66,7 +66,7 @@ left open in as many words: **has it ever run for real, and where is the evidenc
 One row per v1 command, seven columns. Here is what each cell means, and the distinctions are
 load-bearing.
 
-- **`stub-e2e`** — a whole `exagent` process ran against a stub `expo`/`eas`/dev server (`e2e/`).
+- **`stub-e2e`** — a whole `@expo/agent-cli` process ran against a stub `expo`/`eas`/dev server (`e2e/`).
 - **`live-project`** [added 2026-08-28] — ran against the **real npm registry** and the
   project's **own `expo` CLI**, and against no device at all. That is the whole gate: `registryGate()`
   and nothing else. The column exists because the row it fills, the commands whose backend is the
@@ -353,7 +353,7 @@ produced on its own. The tool on the other side of the spawn is the variable.
 1. **`dev` reported an EAS stop with the Expo CLI's code and the Expo CLI's prose.**
    `stopPromptFor` spelled `code: 'EXPO_NEEDS_INPUT'` for every recognised stop, so an `eas build`
    that stopped for a login exited 7 carrying `EXPO_NEEDS_INPUT` and a message reading *"the Expo
-   CLI asks before it does something it cannot decide"* with a `How:` line about `exagent dev`
+   CLI asks before it does something it cannot decide"* with a `How:` line about `@expo/agent-cli dev`
    flags. The `needsHuman` block was right, and said `npx eas login`. The code and the prose beside
    it were not, which is worse than either being wrong alone. [[0015-backend-selection-and-config]]
    §Running an `eas` step is the paragraph that says these are different scenarios, and the registry
@@ -376,8 +376,8 @@ produced on its own. The tool on the other side of the spawn is the variable.
 
 5. **`smoke --cloud` walked the caller off the backend they chose.** `buildSmokeFollowUps` had no
    notion of `--cloud`, so a cloud run that found no session was answered with
-   `npx exagent navigate / --ios`, described as *"this is what opens one on a booted device"*, and
-   with `npx exagent smoke --ios`. A host that reached for the cloud is very often a host with no
+   `npx @expo/agent-cli navigate / --ios`, described as *"this is what opens one on a booted device"*, and
+   with `npx @expo/agent-cli smoke --ios`. A host that reached for the cloud is very often a host with no
    booted device at all. `src/followups/reload.ts` already carried the flag and this did not. The
    rule is the one the `platform` field's own comment states ("a re-run that drops the platform is a
    different run", F58) applied to the other half of "which device is this run about".

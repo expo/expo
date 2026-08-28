@@ -1,4 +1,4 @@
-# Agent instructions — exagent
+# Agent instructions — @expo/agent-cli
 
 <!-- BEGIN LLP MANAGED BLOCK (llp-adopt) -->
 

@@ -196,7 +196,7 @@ that exist to make an unfamiliar family legible. **A tap whose handler is on an 
 undecided, and would be an added flag rather than a changed one.
 
 The argument the other way, which is what tipped it: the workflow map of [[0024-cli-ui]] puts
-`runtime:tree` and `runtime:tap <testID>` on rungs 3 and 4 of the five-step loop `exagent --help`
+`runtime:tree` and `runtime:tap <testID>` on rungs 3 and 4 of the five-step loop `@expo/agent-cli --help`
 teaches. A
 surface that walks an agent onto a command and tells it in the same screen that the command may
 vanish is asking the agent to distrust its own instructions.
@@ -245,13 +245,13 @@ Two things it changed, both invisible to every test that existed at the time:
    the row the tap had appended.
 2. **A testID goes onto a suggested command unquoted unless a shell would split it.** The messages
    print their suggestion inside a sentence that is itself quoted, so an unconditional
-   `JSON.stringify` produced `run "npx exagent runtime:tree --testID "note-list"" for …`: three
+   `JSON.stringify` produced `run "npx @expo/agent-cli runtime:tree --testID "note-list"" for …`: three
    levels of quote around a string that needed none.
 
 ## What friction run 7 changed
 
 This was the first friction run against a project these commands did not come from. The project is
-`friction/run7/tapapp`, created by `exagent new`, with four screens and testIDs for a disabled
+`friction/run7/tapapp`, created by `@expo/agent-cli new`, with four screens and testIDs for a disabled
 button, two duplicates, a no-handler `Text`, an `editable={false}` input, an input with no
 `onSubmitEditing`, and one testID shared across two screens [observed — iPhone 17 Pro simulator
 `C159CF99-9B06-4D2F-BFDC-010A107E2FBC`, Expo Go, dev server 8190, 2026-08-26]. It is the run §What is

@@ -15,12 +15,12 @@ Ship and develop without a terminal or a laptop. Seeds [confirmed — Kudo, 2026
 
 [confirmed — Kudo seed, 2026-08-19] One command deploys every platform: web via EAS Hosting, and native platforms via launch.expo.dev. The orchestration is deterministic (export, upload, URLs back) so it works equally as a human command and as an agent tool, and agent mode returns structured URLs and status. It pairs with smart `start` ([[0004-smart-start-and-project-state]]): one command to run, one to ship.
 
-Native rail design [confirmed — Kudo chose user-auth ("A"), 2026-08-22; grounded in a study of the expo/launch repo]. launch.expo.dev consumes **project source**, as one gzip tarball, rather than prebuilt artifacts. It generates and runs the EAS workflow itself. So `deploy --native` is three steps: pack the source under create-launch's ignore rules and its ~500 MB limit; upload with the user's own Expo session or `EXPO_TOKEN`, to the same endpoint the public `create-launch` CLI uses; then print the returned launch URL. The **browser handoff is a required UX step, not an error**, because App Store setup needs a browser Apple login and no headless path exists today [observed — expo/launch]. Launch sessions expire after 8 hours. Vendor-token capabilities such as status polling and log streaming exist server-side, but they require a shared secret that cannot ship in a public package. That is a launch-side enhancement if exagent should babysit workflows [inferred].
+Native rail design [confirmed — Kudo chose user-auth ("A"), 2026-08-22; grounded in a study of the expo/launch repo]. launch.expo.dev consumes **project source**, as one gzip tarball, rather than prebuilt artifacts. It generates and runs the EAS workflow itself. So `deploy --native` is three steps: pack the source under create-launch's ignore rules and its ~500 MB limit; upload with the user's own Expo session or `EXPO_TOKEN`, to the same endpoint the public `create-launch` CLI uses; then print the returned launch URL. The **browser handoff is a required UX step, not an error**, because App Store setup needs a browser Apple login and no headless path exists today [observed — expo/launch]. Launch sessions expire after 8 hours. Vendor-token capabilities such as status polling and log streaming exist server-side, but they require a shared secret that cannot ship in a public package. That is a launch-side enhancement if @expo/agent-cli should babysit workflows [inferred].
 
-Shipped [observed — 2026-08-22]: `exagent deploy --native` **delegates to `create-launch` as a subprocess** [confirmed — Kudo, 2026-08-22], which is what constraint 5 of [[0001-agentic-cli-on-expo-cli]] asks for: the tarball, the auth and the upload stay on the other side of the process boundary. Details:
+Shipped [observed — 2026-08-22]: `@expo/agent-cli deploy --native` **delegates to `create-launch` as a subprocess** [confirmed — Kudo, 2026-08-22], which is what constraint 5 of [[0001-agentic-cli-on-expo-cli]] asks for: the tarball, the auth and the upload stay on the other side of the process boundary. Details:
 
 - Resolution order: the project bin, then PATH, then `npx create-launch@latest`. Always `--json`.
-- `--upload-root <dir>` keeps exagent's meaning by running the subprocess from that directory with `--project <app>`.
+- `--upload-root <dir>` keeps @expo/agent-cli's meaning by running the subprocess from that directory with `--project <app>`.
 - Its auth failure maps to `Try: npx expo login`. A machine-readable error object from `create-launch --json` is the recorded upstream ask, because today the auth case is scraped from stderr.
 - Browser handoff and the 8 h expiry work as designed. The expiry is hardcoded, because the service returns no `expiresAt`, which is another recorded ask.
 - `--platform` and `--profile` are typed errors, because a launch covers both platforms.
@@ -76,9 +76,9 @@ and this failure exists precisely because the run had no terminal to prompt in.
 
 ## Headless project creation
 
-[confirmed — Kudo seed, 2026-08-18] `exagent new "<one-line app description>"` covers template choice, `create-expo`, git init, EAS init and a first boot check, with every step flag- or JSON-driven and zero TTY. It depends on non-interactive parity ([[0006-agent-native-cli-surface]]).
+[confirmed — Kudo seed, 2026-08-18] `@expo/agent-cli new "<one-line app description>"` covers template choice, `create-expo`, git init, EAS init and a first boot check, with every step flag- or JSON-driven and zero TTY. It depends on non-interactive parity ([[0006-agent-native-cli-surface]]).
 
-Shipped [observed — 2026-08-22]: `exagent new <dir> [--name] [--no-install] [--no-git] [--json]`. It runs `create-expo --yes` as a subprocess, does a git init when appropriate, and offers follow-ups into the new project, with zero-TTY asserted in e2e. Not yet built from this seed: EAS init, the first-boot check, and the one-line-description form.
+Shipped [observed — 2026-08-22]: `@expo/agent-cli new <dir> [--name] [--no-install] [--no-git] [--json]`. It runs `create-expo --yes` as a subprocess, does a git init when appropriate, and offers follow-ups into the new project, with zero-TTY asserted in e2e. Not yet built from this seed: EAS init, the first-boot check, and the one-line-description form.
 
 ## Cloudflare Workers compatibility (EAS Hosting)
 

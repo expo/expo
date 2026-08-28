@@ -2,14 +2,14 @@
 
 **Type:** RFC
 **Status:** Final
-**Systems:** `exagent` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
+**Systems:** `@expo/agent-cli` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `@expo/agent-cli smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]], [[0017-deferred-commands]]
 
 ## Summary
 
-Tools that let a driving agent observe and manipulate the running app, closing the verify loop that text-only agents cannot close. They ship as self-serve `exagent` CLI commands [confirmed — Kudo, 2026-08-22], and `expo-mcp` is not a dependency. All items are [inferred] unless tagged. The named runtime hooks exist today [observed where noted].
+Tools that let a driving agent observe and manipulate the running app, closing the verify loop that text-only agents cannot close. They ship as self-serve `@expo/agent-cli` CLI commands [confirmed — Kudo, 2026-08-22], and `expo-mcp` is not a dependency. All items are [inferred] unless tagged. The named runtime hooks exist today [observed where noted].
 
 ## Candidates
 
@@ -27,7 +27,7 @@ Tools that let a driving agent observe and manipulate the running app, closing t
 
 ## Implemented in v1 as
 
-Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `packages/exagent`** as CLI commands. The expo-mcp implementation round was abandoned unpushed and the code ported over. Ported surface [observed — 2026-08-22]: `exagent runtime eval <expr>` (an app exception exits 1), `exagent runtime errors [--duration]`, and `exagent navigate <route> [--scheme] [--ios|--android]`. They were renamed on 2026-08-22 to the colon forms `runtime:eval`, `runtime:errors` and `runtime:network`, and the space forms still resolve. `runtime:network` was deferred out of v1 on 2026-08-26; see below and [[0017-deferred-commands]]. The port added 149 new jest tests, for 431 total. It was live-verified twice, as MCP-shaped tools and again as exagent commands against a real SDK 57 app, covering the eval value and exception, error collection with bundle-mapped stacks, and deep-link navigation. The original build and live verification notes [observed — 2026-08-22]:
+Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `packages/@expo/agent-cli`** as CLI commands. The expo-mcp implementation round was abandoned unpushed and the code ported over. Ported surface [observed — 2026-08-22]: `@expo/agent-cli runtime eval <expr>` (an app exception exits 1), `@expo/agent-cli runtime errors [--duration]`, and `@expo/agent-cli navigate <route> [--scheme] [--ios|--android]`. They were renamed on 2026-08-22 to the colon forms `runtime:eval`, `runtime:errors` and `runtime:network`, and the space forms still resolve. `runtime:network` was deferred out of v1 on 2026-08-26; see below and [[0017-deferred-commands]]. The port added 149 new jest tests, for 431 total. It was live-verified twice, as MCP-shaped tools and again as @expo/agent-cli commands against a real SDK 57 app, covering the eval value and exception, error collection with bundle-mapped stacks, and deep-link navigation. The original build and live verification notes [observed — 2026-08-22]:
 
 - `runtime_evaluate` — `CdpClient.evaluateAsync` (Runtime.evaluate, returnByValue + awaitPromise + exceptionDetails); app output fenced with untrusted-content markers per [[0008-guardrails]], including marker-forgery neutralization.
 
@@ -49,7 +49,7 @@ Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `pac
 
 **Verified live** [observed — 2026-08-22, SDK 57 app in Expo Go on an iOS 26.5 simulator]. `evaluateAsync` returned real values, state and exceptions from Hermes. The error collector captured an injected uncaught error, delivered via RN's console path rather than `Runtime.exceptionThrown`, which is why having both capture sources is required. Deep-link navigation landed the app on the `/explore` route, screenshot-confirmed. The live round also found and fixed a blocking bug the unit tests could not see: **Metro's inspector proxy rejects CDP WebSocket handshakes without a same-origin `Origin` header (401)**, so all default connection paths now send it (`createInspectorWebSocket`).
 
-**Network inspection — deferred from v1 (2026-08-26).** `exagent runtime:network` is out of the v1
+**Network inspection — deferred from v1 (2026-08-26).** `@expo/agent-cli runtime:network` is out of the v1
 surface. The CDP Network domain is unstable in React Native and effectively unavailable on Expo Go,
 so the command's most common outcome was an explanation of why it could not answer. Everything that
 was built and verified is now in [[0017-deferred-commands]]: the request, response and failure
@@ -58,7 +58,7 @@ needs. The code is on the reference shelf at `src/deferred/runtime-network/`. Th
 of this LLP ships. The rule that came out of it and outlived it is in [[0010-agent-conventions]] §The
 third: a command that reports on the app does not gate on what it reported.
 
-**Android pass** [observed — 2026-08-22, headless emulator plus the Expo Go 57 APK]: `navigate --android` works end to end, via a **hand-run** `adb reverse` plus an `exp://` deep link, screenshot-confirmed. `exagent` itself ran no `adb reverse` at this point; §The device's loopback is not this machine's is where that becomes the command's job. The hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]). `Runtime.enable` and `Network.enable` merely ack, with no evaluate and no console or network capture. Three consequences: the target selector no longer drops such targets, skipping only on transport failure and ranking -32601 targets behind answering ones; `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`; and errors and network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
+**Android pass** [observed — 2026-08-22, headless emulator plus the Expo Go 57 APK]: `navigate --android` works end to end, via a **hand-run** `adb reverse` plus an `exp://` deep link, screenshot-confirmed. `@expo/agent-cli` itself ran no `adb reverse` at this point; §The device's loopback is not this machine's is where that becomes the command's job. The hard finding: **Expo Go for Android ships a Hermes without any CDP debugger** ("HermesRuntime[RNBridgeless] does not support debugging over the Chrome DevTools Protocol" [observed via Log.entryAdded]). `Runtime.enable` and `Network.enable` merely ack, with no evaluate and no console or network capture. Three consequences: the target selector no longer drops such targets, skipping only on transport failure and ranking -32601 targets behind answering ones; `runtime eval` explains it with `RUNTIME_EVALUATE_UNSUPPORTED`; and errors and network connect but report empty windows there. Runtime capture on Android needs a development build [inferred — not yet verified].
 
 Still open: Android capture via a dev build, performance probe, cross-platform sweep. ("No traffic"
 versus a silently-unsupported Network domain is settled below, in §Android.)
@@ -104,8 +104,8 @@ protocol's rule that reclassification never renames a code applies to a *unifica
 
 Each carries three parts. What: which list is empty, and on which dev server, by URL. Why: the
 request that failed, or the list that was empty and for how long it stayed empty. And How: one
-ladder, in one order, of `npx exagent dev --detach`, then `npx exagent navigate /`, then
-`npx exagent smoke`, which waits for the bundle and the app together. `reachTheAppLadder` is that
+ladder, in one order, of `npx @expo/agent-cli dev --detach`, then `npx @expo/agent-cli navigate /`, then
+`npx @expo/agent-cli smoke`, which waits for the bundle and the app together. `reachTheAppLadder` is that
 sentence as a function, because six copies of it had drifted into six different first steps. One of
 them named a keypress in a terminal that a `--detach`ed dev server does not have (F48-5).
 
@@ -162,11 +162,11 @@ reconnect grace period spending itself before it reports an empty list, which is
 
 ## Reloading the app
 
-Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:reload` puts the running app back on the
+Decision [confirmed — Kudo, 2026-08-23]. `@expo/agent-cli runtime:reload` puts the running app back on the
 code that is on disk, and reports a reload only when one was **observed**.
 
 **Why an action of `runtime`, not a top-level verb** [confirmed — Kudo, 2026-08-23]. It was built
-as `exagent reload` and renamed before it shipped. `runtime` is the group for "read and drive the
+as `@expo/agent-cli reload` and renamed before it shipped. `runtime` is the group for "read and drive the
 running app", and reloading is driving it. It is the same subject as `runtime:eval` and
 `runtime:errors`, reached through the same dev-server connection. A top-level verb would have said
 this is a different kind of thing than the commands it belongs with, and llp/0006's naming rule
@@ -612,7 +612,7 @@ and launches Expo Go. Nothing has opened the *project* in it, so the first `exp:
 the system. `--open-url exp://<host>` is the runner opening the URL in the app it just launched
 [observed — `eas simulator --help`, eas-cli@latest, 2026-08-27: "URL to open in the installed
 application after it launches"], and that is the state the first working session was in before any
-exagent command touched it (`wave19-live/12-open-session.json`, `open host.exp.Exponent`). The live
+@expo/agent-cli command touched it (`wave19-live/12-open-session.json`, `open host.exp.Exponent`). The live
 suite starts its session that way, and `navigate --cloud` went from exit 22 in 60.9 s to exit 0 in
 17.1 s with `attached: true` in 206 ms.
 
@@ -660,7 +660,7 @@ is what makes the ladder one ladder rather than two with a shared name.
 id it had before (§Reloading a cloud session, observed live), so on a project with **no captured dev
 server log** rung 2 has nothing left to observe and exits `22` after spending the whole `--timeout`.
 That is honest, because the app was relaunched and whether it came back is unknown. The fix is the
-first rung of the preflight's own ladder: `npx exagent dev --detach` captures the output that makes
+first rung of the preflight's own ladder: `npx @expo/agent-cli dev --detach` captures the output that makes
 the second observation possible. It is not a regression, because the local relaunch path had exactly
 this hold before, reached from a different direction.
 
@@ -701,7 +701,7 @@ measurement rather than by argument. `runtime:errors` retries target selection f
 
 ## Verifying the route
 
-Decision [confirmed — Kudo, 2026-08-23]. `exagent navigate` checks the route against the project's
+Decision [confirmed — Kudo, 2026-08-23]. `@expo/agent-cli navigate` checks the route against the project's
 routes **before** it opens anything, and a route the project has not got is exit `1`.
 
 The finding [observed — friction run 3, F32]: `navigate /totally-bogus-route-xyz` exited 0, and so
@@ -749,7 +749,7 @@ same project.
   same reasoning as the bundle check of llp/0010: a false red stops a command that would have worked
   and names no fix, which is worse than the false green it replaces.
 - **The last line is a paste, not a list.** A route within a third of its length of a real one is
-  named in `Try:`. Live, `navigate /note` answers `Try: npx exagent navigate /notes`. Nothing close
+  named in `Try:`. Live, `navigate /note` answers `Try: npx @expo/agent-cli navigate /notes`. Nothing close
   enough falls back to `navigate /`.
 
 **The limit, stated because it is easy to over-read.** The check answers whether the *project* has a
@@ -790,7 +790,7 @@ Decision [confirmed — Kudo, 2026-08-25]. The Expo Go link this CLI prints anyw
 **tunnel host** when the dev server has one, and the tunnel is only claimed while it is still up.
 
 The finding [observed — dogfood, 2026-08-24]. A cloud EAS simulator was driven through a tunnel
-(`EXPO_STAGING=1 EXPO_UNSTABLE_TUNNEL_V2=1 exagent start --tunnel --go`), and every URL the CLI
+(`EXPO_STAGING=1 EXPO_UNSTABLE_TUNNEL_V2=1 @expo/agent-cli start --tunnel --go`), and every URL the CLI
 produced named `127.0.0.1:8081` or `192.168.1.233:8081`. Neither is loadable from a machine in
 somebody else's datacentre. The dev server knew the right answer the whole time and this CLI never
 asked it.
@@ -836,7 +836,7 @@ tunnel host from days ago would come from. The comparison is the log's mtime aga
 
 **Deliberately not asked: whether the tunnel is healthy.** A tunnel's lifetime belongs to
 `@expo/ws-tunnel` and its reporting to the Expo CLI [decided — Kudo, 2026-08-26]. This document owns
-*which URL exagent prints* and nothing more. A wrapper that also read the transport's prose for
+*which URL @expo/agent-cli prints* and nothing more. A wrapper that also read the transport's prose for
 failure signatures would be diagnosing a system it does not manage. The consequence is stated
 plainly rather than hidden: a dev server whose tunnel has died still advertises the tunnel host,
 because from here that is indistinguishable from one that is fine.
@@ -915,7 +915,7 @@ machinery at all. That branch prints both forms, labelled, with Expo Go first be
 nothing installed.
 
 `status.next` cannot carry a labelled pair on one line, so where it would have to it names
-`exagent navigate / --print-url` instead, which prints both.
+`@expo/agent-cli navigate / --print-url` instead, which prints both.
 
 ### On a development build, `navigate` goes launcher-first
 
@@ -967,7 +967,7 @@ after 2.6 s, `reversedPort: 8560`, and `attached: true` 82 ms after the route li
 
 ## Resolving a URL without a device
 
-Decision [confirmed — Kudo, 2026-08-25]. `exagent navigate <route> --print-url` resolves everything
+Decision [confirmed — Kudo, 2026-08-25]. `@expo/agent-cli navigate <route> --print-url` resolves everything
 and opens nothing.
 
 The device this CLI can drive and the device the app runs on are not always the same one. A cloud
@@ -996,7 +996,7 @@ and less than half the answer.
 ## The cloud simulator backend
 
 Decision [confirmed — Kudo, 2026-08-26]. Device resolution grows a **third backend**: a simulator
-that runs on EAS rather than on this machine. `exagent navigate --cloud` drives it, and a machine
+that runs on EAS rather than on this machine. `@expo/agent-cli navigate --cloud` drives it, and a machine
 with no local device reaches for it on its own.
 
 This is the other half of §Resolving a URL without a device. That section's dogfood session drove
@@ -1177,7 +1177,7 @@ Added after live staging validation, S12 and S13 [observed — 2026-08-26].
 **A failed `runtime:reload --cloud` leaves the app closed, and said so nowhere (S12).** The device
 fallback is a force-stop and a relaunch. The stop succeeded — `close host.exp.Exponent` on the
 session — and the relaunch was refused, so the session was left up, billing, with nothing running on
-it. The report said only *"The app was not reloaded"* and offered `npx exagent navigate /`, which on
+it. The report said only *"The app was not reloaded"* and offered `npx @expo/agent-cli navigate /`, which on
 a cloud session is the very open that had just failed.
 
 **The path was redesigned for it** (§Reloading a cloud session). There is no `close` in it, so the
@@ -1400,8 +1400,8 @@ with the same empty client list at the far end.)
 
 ## Stopping the app
 
-Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:stop` ends the app on the device, and
-`exagent navigate` starts one. Between them an agent can put a project into a known state without
+Decision [confirmed — Kudo, 2026-08-23]. `@expo/agent-cli runtime:stop` ends the app on the device, and
+`@expo/agent-cli navigate` starts one. Between them an agent can put a project into a known state without
 composing a `simctl` or `adb` line.
 
 **The command is the easy half.** `xcrun simctl terminate <udid> <id>` and `adb shell am force-stop
@@ -1484,7 +1484,7 @@ stopped". The follow-up is the same command with the connected id on it. The old
 
 ## Stopping the dev server
 
-Decision [confirmed — Kudo, 2026-08-23]. `exagent dev:stop` reads the **dev-server lock**, signals
+Decision [confirmed — Kudo, 2026-08-23]. `@expo/agent-cli dev:stop` reads the **dev-server lock**, signals
 the PID it names, and waits for both the lock and the port to go quiet.
 
 The friction it replaces is a shell incantation an agent has to compose and get right,
@@ -1493,7 +1493,7 @@ this project's dev server, and whether the signal reached the bundler as well as
 guess kills something nobody asked about.
 
 The lock answers all three, and it already existed for other reasons. `src/devLock/` holds a socket
-for as long as an `exagent`-started dev server runs, and the line it answers with carries `pid`
+for as long as an `@expo/agent-cli`-started dev server runs, and the line it answers with carries `pid`
 next to `url` and `port`. One `SIGTERM` to that PID is enough for the whole tree, because both
 spawn paths install forwarders for `SIGINT` and `SIGTERM` and pass them to the `expo start` child
 [observed — `src/utils/subprocess.ts`, `src/utils/expoCli.ts` `runExpoAsync`]. Live it takes about
@@ -1585,7 +1585,7 @@ the call was made rather than whether it worked.
 
 ## Reading the detached dev server's output
 
-Decision [confirmed — friction run 4, 2026-08-24]. `exagent dev:logs [--tail <n>] [--json]`.
+Decision [confirmed — friction run 4, 2026-08-24]. `@expo/agent-cli dev:logs [--tail <n>] [--json]`.
 
 The counterpart of `dev --detach` ([[0004-smart-start-and-project-state]] §Daemonization).
 Detaching moves the bundler's output off the terminal, and this is where it goes instead — one file
@@ -1615,7 +1615,7 @@ Amendment [confirmed — friction run 4, 2026-08-24]. Every command of this grou
 as sugar for `--dev-server-url http://127.0.0.1:<n>`, and `runtime:reload`/`runtime:stop` take
 `--platform ios|android` alongside `--ios`/`--android`.
 
-Flag drift is a tax an agent pays in failed commands. `exagent dev --port 8195` is the command that
+Flag drift is a tax an agent pays in failed commands. `@expo/agent-cli dev --port 8195` is the command that
 starts the server, and every command that then talks to it wanted the *other* spelling, so a
 caller with a port in hand got `unknown or unexpected option: --port` [observed — F47, friction run
 4]. The same for platform: `runtime:stop --json` reports `"platform": "ios"` and then refused
@@ -1633,7 +1633,7 @@ http://127.0.0.1:9999`].
 
 ## The smoke gate
 
-Decision [confirmed — Kudo, 2026-08-24]. `exagent smoke` is one command that answers "does this app
+Decision [confirmed — Kudo, 2026-08-24]. `@expo/agent-cli smoke` is one command that answers "does this app
 still boot", by asking the questions of six existing commands **in this process** and adding a
 seventh nothing could ask before: a picture of the screen.
 
@@ -1663,7 +1663,7 @@ The two `dev:wait` rows name the command those questions were first asked by. It
 v1 on 2026-08-26 (see [[0017-deferred-commands]]), and `smoke` is now the only command that
 asks them. The functions are unchanged and live.
 
-**Why one process and not eight.** A `smoke` built out of `exagent` subprocesses would do dev-server
+**Why one process and not eight.** A `smoke` built out of `@expo/agent-cli` subprocesses would do dev-server
 discovery eight times, and eight discoveries on a machine running two projects can answer eight
 different things. It would also hand back a chain of exit codes where the point of the command is
 that there is one. `src/smoke/phases.ts` is the composition, with every dependency injected, so the
@@ -1693,8 +1693,8 @@ that evaluation to have answered.
 
 ### `--platform web` is refused, not answered
 
-Decision [confirmed — Kudo, 2026-08-24]. `exagent smoke --platform web` is `BAD_ARGS`, exit `1`,
-and its `Try:` is `npx exagent dev:wait --platform web`.
+Decision [confirmed — Kudo, 2026-08-24]. `@expo/agent-cli smoke --platform web` is `BAD_ARGS`, exit `1`,
+and its `Try:` is `npx @expo/agent-cli dev:wait --platform web`.
 
 The original plan listed `web` alongside `ios` and `android`. [[0010-agent-conventions]] §What app
 counting can and cannot see is newer than that plan and settles the same shape for
@@ -1776,7 +1776,7 @@ because it is the limit a reader would otherwise assume away.
 Both were found on the first `--start` run and neither was visible in any test [observed —
 2026-08-24].
 
-- **`--start` must not name a platform.** The first version ran `exagent dev --yes --detach
+- **`--start` must not name a platform.** The first version ran `@expo/agent-cli dev --yes --detach
   --wait-ready --ios`, and `expo start --ios` drives Simulator.app through AppleScript. On a Mac
   that has granted no Automation permission the Expo CLI does not catch the refusal and the dev
   server exits with it, which is llp/0010 §A failed plan step reports a failure, and the upstream ask
@@ -1986,7 +1986,7 @@ and the "no device" message is only reachable once `adb` has run and answered.
 
 ### Smaller things the same round settled
 
-- **Follow-ups keep the platform.** `smoke --android` failing suggested `npx exagent smoke`, which
+- **Follow-ups keep the platform.** `smoke --android` failing suggested `npx @expo/agent-cli smoke`, which
   on a Mac reads the simulator [F58]. Every command a follow-up names now carries the flag the run
   had, and `navigate`'s screenshot line carries the `adb` that was actually run rather than a bare
   name this machine cannot execute [F54].
@@ -2069,13 +2069,13 @@ way. The live suite asserts the effect within a bound rather than instantly, per
 claim that "every command a follow-up names now carries the flag the run had".
 `buildRuntimeErrorsFollowUps` took no platform at all (`runtime:reload`, `runtime:errors --duration`).
 `buildStopFollowUps` carried `--cloud` and not the platform (`navigate /`). And
-`buildStartPlanFollowUps` offered a bare `npx exagent dev` after `dev --plan --android`, which is the
+`buildStartPlanFollowUps` offered a bare `npx @expo/agent-cli dev` after `dev --plan --android`, which is the
 one follow-up whose whole promise is "runs the plan above", naming a command that would plan for iOS.
 `--cloud` is still carried alone, because that flag already names the one device a session has.
 
 **F104 (LOW) — `navigate --android`'s screenshot line named a command that cannot answer there.** It
-said to run `npx exagent runtime:tree` first and capture once it lists the screen, which is good
-advice on iOS and exit 1 every time on Android. It now names `npx exagent smoke --android`, whose
+said to run `npx @expo/agent-cli runtime:tree` first and capture once it lists the screen, which is good
+advice on iOS and exit 1 every time on Android. It now names `npx @expo/agent-cli smoke --android`, whose
 screenshot phase waits on the fact F57 chose and captures the screen itself.
 
 **F105 (MED) — the log fallback said the records were "this app's errors".** §Reading Android errors
@@ -2114,7 +2114,7 @@ it opens the first, whether or not anything is loaded.
 Measured on Android, where no dialog can be blamed [observed — `61-navigate-after-stop-android.json`]:
 
 ```
-$ npx exagent navigate / --android --json          # after runtime:stop --android
+$ npx @expo/agent-cli navigate / --android --json          # after runtime:stop --android
   target   "no app is connected to the dev server, and the project depends on expo-dev-client"
   url      "dcapp://"
   connect  [{ target: "dev-build", url: "dcapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081" }]
@@ -2129,7 +2129,7 @@ Three things make it worth a number rather than a caveat:
   the wrong one of two being chosen, by a branch that already knows the answer — `target` says the
   app is not connected and that the project depends on `expo-dev-client`, in the same payload.
 - **It is what every ladder recommends.** `runtime:stop`'s own follow-up is
-  `npx exagent navigate / --<platform>` "so this starts it again on the root route with a clean
+  `npx @expo/agent-cli navigate / --<platform>` "so this starts it again on the root route with a clean
   JavaScript runtime", and on a development build it cannot. So does `dev`'s, and `dev:stop`'s.
 - **It costs the caller the whole attach budget**, 90.6 s on Android and 45.4 s on iOS, on an action
   that could not have worked.

@@ -9,7 +9,7 @@
 
 ## Summary
 
-One deterministic engine answers "what must run to get this app on a device?". Three callers consume it [confirmed — Kudo, 2026-08-19; spelled `start` until 2026-08-22, `dev` since; see §`exagent status`, Renamed]: a single smart command, the post-install "what must rerun?" answer, and the Expo Go compatibility check. Neither agents nor users decide when to prebuild, rebuild, or just start Metro.
+One deterministic engine answers "what must run to get this app on a device?". Three callers consume it [confirmed — Kudo, 2026-08-19; spelled `start` until 2026-08-22, `dev` since; see §`@expo/agent-cli status`, Renamed]: a single smart command, the post-install "what must rerun?" answer, and the Expo Go compatibility check. Neither agents nor users decide when to prebuild, rebuild, or just start Metro.
 
 Per [[0001-agentic-cli-on-expo-cli]] §Constraints, the engine _invokes_ `expo prebuild`, `expo run:*` and `expo start` as subprocesses and consumes their JSONL events. It does not import `@expo/cli` internals.
 
@@ -53,7 +53,7 @@ the worst place for a wrong sentence to be, because it is what a driving agent r
 
 Two changes, both about the plan telling the truth about itself [observed — `src/plan/decide.ts`]:
 
-- **A typed platform flag is in the printed argv.** `exagent dev --ios` has always forwarded `--ios`
+- **A typed platform flag is in the printed argv.** `@expo/agent-cli dev --ios` has always forwarded `--ios`
   to `expo start` [observed — `src/dev/resolveOptions.ts`, `resolveStepArgs`], and the plan printed
   `expo start --go` regardless, so the argv an agent approved was not the argv that ran. The plan
   engine now takes `requestedPlatform`, the flag the caller _typed_, separately from `platform`,
@@ -62,7 +62,7 @@ Two changes, both about the plan telling the truth about itself [observed — `s
   the app. It uses a booted simulator or boots one, installs Expo Go if it is missing, and sends the
   `exp://` URL [observed — `@expo/cli` `openPlatforms.ts` → `PlatformManager.openProjectInExpoGoAsync`;
   verified live 2026-08-23 against an SDK 57 app and a booted iPhone 17 Pro]. Without one, the reason
-  says so and names `exagent navigate /`.
+  says so and names `@expo/agent-cli navigate /`.
 - **The plan's `reasons` list says the same thing the step's `reason` does** [added — 2026-08-23].
   The step was fixed above and the list was not, so `dev --plan --json` with no flag printed
   `"Target platform: ios."` beside `["expo","start","--go"]`. One channel was honest about opening
@@ -71,7 +71,7 @@ Two changes, both about the plan telling the truth about itself [observed — `s
   *acts* on it. It reads `Target platform: ios, named on the command line.` when the flag was typed;
   `No platform was named; this host suggests ios, and the plan builds for it.` when a `run:*` step
   does; and `…, and the plan opens nothing on it — pass --ios or --android, or run
-  "exagent navigate /" once the dev server is up.` when nothing does. That is why the reason list is
+  "@expo/agent-cli navigate /" once the dev server is up.` when nothing does. That is why the reason list is
   built per rule rather than once before the branches: the honest sentence depends on the plan.
 
 **Opening the app is `navigate`, and now everything says so** [observed — `src/followups/`]. The
@@ -79,7 +79,7 @@ capability was never missing. `navigate` resolves the deep link and runs `simctl
 exactly the manual step a friction run had to leave the CLI for. It was only never suggested. The
 `dev-wait-open-app` follow-up used to answer "the bundle is built and nothing is running it" by
 re-suggesting the identical wait, the one action that cannot change the answer. It now
-names `exagent navigate /` first and the gate second. `buildStartFollowUps` gains the same step at
+names `@expo/agent-cli navigate /` first and the gate second. `buildStartFollowUps` gains the same step at
 the head of its ladder, and the cap of three pushes the furthest rung (`eas-build`) off. That is the
 right trade, because a dev server with no app on it cannot be shipped either.
 
@@ -87,7 +87,7 @@ Caveat, recorded because it decides which route to trust [observed — live, 202
 with no usable GUI session, `expo start --ios` opens the app and then **kills the dev server**.
 `ensureSimulatorAppRunningAsync` shells out to `osascript … tell app "System Events"`, that fails,
 and the rejection is unhandled through `openPlatformsAsync` [observed — the same failure in both CI
-and non-CI mode, `@expo/cli` `ensureSimulatorAppRunning.ts`]. `exagent dev` plus `exagent navigate /`
+and non-CI mode, `@expo/cli` `ensureSimulatorAppRunning.ts`]. `@expo/agent-cli dev` plus `@expo/agent-cli navigate /`
 has no such dependency, which is why it is the route the follow-ups name. This is an upstream
 fragility rather than something the wrapper works around. It belongs in llp/0010 §Upstream asks if it
 persists.
@@ -97,19 +97,19 @@ persists.
 - **Expo Go compatibility check** [confirmed — Kudo seed, 2026-08-18]: answer "can this run in Expo Go?" with reasons. Compare dependencies against `packages/expo/bundledNativeModules.json` [observed — file exists], detect config plugins and custom native code, and check SDK support.
 - **Post-install impact decisions** [confirmed — Kudo seed, 2026-08-18]: after `npx expo install {pkg}`, JS-only means keep the dev server and maybe reload; a new config plugin or native module under CNG means prebuild plus a new dev build; bare native dirs mean pod install or gradle sync. Same classifier as the decision table, consumed at a second moment.
 
-## `exagent status`
+## `@expo/agent-cli status`
 
 [confirmed — Kudo seed, 2026-08-22] A `git status`-like overview: one fast, read-only command that answers "where is this project right now, and what would happen next". Composition of existing pieces [inferred]:
 
 - **Project**: name/slug, SDK version, CNG vs bare, dev-client/web deps.
 - **Expo Go**: compatible or not, with reason count (the reasons themselves in the `probe` key of `--json`).
-- **Freshness**: the current fingerprint against `.expo/exagent-last-build.json` per platform, giving `fresh`, `stale` or `unknown` (no fingerprint tool). **And what that costs** [added — 2026-08-26]: the impact class of everything that changed since that build, on its own `impact` line, computed in process from two fingerprints already in hand so it costs no subprocess. `stale` is a fact; this is what to do about it. See §The impact headline is free, the explanation is not.
+- **Freshness**: the current fingerprint against `.expo/agent-cli-last-build.json` per platform, giving `fresh`, `stale` or `unknown` (no fingerprint tool). **And what that costs** [added — 2026-08-26]: the impact class of everything that changed since that build, on its own `impact` line, computed in process from two fingerprints already in hand so it costs no subprocess. `stale` is a fact; this is what to do about it. See §The impact headline is free, the explanation is not.
 - **EAS build**: whether EAS already has a *finished* build made from this exact fingerprint, per platform, as `found`, `none` or `unknown` [added — 2026-08-26]. This is the other half of the freshness question. `freshness` asks whether the app **this machine** built still matches, and a `stale` there used to mean a rebuild. This asks whether anybody has already built exactly this, where the answer is a download. The cached answer is read always, and the network call happens only under `--explain`. See §The EAS build lookup, and why it is opt-in for the measurements that decided that, and for why the cache key is exact.
 - **Dev server**: running or not, and how many CDP targets are connected (is the app open?). Discovery order [observed — 2026-08-22]: an explicit `--dev-server-url`, then the project's **dev-server lock** (below), then the port the project's own `.expo/dev/logs/start.log` names (the `metro:instantiate` event, which is project-scoped but carries no liveness or PID, so it is probed and never trusted), then 8081, then a short scan of the ports `expo start` falls back to.
 - **Skills**: is the agent selection cached, and how does the linked skill count compare to the discovered count (an out-of-sync hint). **Left out of the text report entirely** when no agent is selected *and* nothing was discovered [revised — 2026-08-25]. `no agent selected · no skills discovered` is a line about two things that are not there, on a report whose every other line is a fact about the project [observed — dogfood, 2026-08-24]. The section stays in `--json` and in the `cli:status` event, where a key that is always present is the contract (llp/0006 §Output contract). It returns to the text report the moment either half has something to say, including when the section could not be read at all, because the reason is worth printing.
 - **Device**: does this machine have a booted simulator or an attached device to open the app on? Reported as `present`, `absent`, or `unknown` [added — 2026-08-25]. It gets its own line because it changes what every other suggestion is worth. See llp/0009 §Device-aware ladders for the probe, and for why `unknown` is never rounded down to "none".
 - **Dev server, where a device reaches it**: the tunnel origin, when the run has one and it is still up [added — 2026-08-25]. The `url` above is where the dev server listens *on this machine*, which for a tunnelled run is not the address any device uses. `hostType` and `tunnelUrl` ride along in `--json`, and only a tunnel is worth a word in the text, because `127.0.0.1:8081` already says "this machine". See llp/0005 §Where a device reaches the dev server.
-- **Next action**: the smart-start rule that would fire, as one line (for example "`exagent dev` → expo-go: `expo start --go`"). The exception is **a dev server this project can use already answering**, and then the line is `exagent smoke` with the reason why [observed — 2026-08-23, `buildNextActionStatus`; the command it names became `smoke` on 2026-08-26 when `dev:wait` was deferred, see [[0017-deferred-commands]]]. A dev server with **no app attached and no local device to open one on** gets a third answer [revised — 2026-08-25]: the `exp://<host>` link, or `exagent navigate / --print-url` when no link can be named. See llp/0009 §Device-aware ladders. The old form recommended starting a dev server three rows under a line reporting one as healthy, which is a report disagreeing with itself. On a busy port that second server would not have started either. The rule is still reported either way, because it is the project's shape and a running server does not change it. Deliberately not `runtime:errors`: the `runtime-errors` follow-up already names it, and `next` must not repeat a follow-up. That is the whole reason `status` keeps its follow-ups off the terminal.
+- **Next action**: the smart-start rule that would fire, as one line (for example "`@expo/agent-cli dev` → expo-go: `expo start --go`"). The exception is **a dev server this project can use already answering**, and then the line is `@expo/agent-cli smoke` with the reason why [observed — 2026-08-23, `buildNextActionStatus`; the command it names became `smoke` on 2026-08-26 when `dev:wait` was deferred, see [[0017-deferred-commands]]]. A dev server with **no app attached and no local device to open one on** gets a third answer [revised — 2026-08-25]: the `exp://<host>` link, or `@expo/agent-cli navigate / --print-url` when no link can be named. See llp/0009 §Device-aware ladders. The old form recommended starting a dev server three rows under a line reporting one as healthy, which is a report disagreeing with itself. On a busy port that second server would not have started either. The rule is still reported either way, because it is the project's shape and a running server does not change it. Deliberately not `runtime:errors`: the `runtime-errors` follow-up already names it, and `next` must not repeat a follow-up. That is the whole reason `status` keeps its follow-ups off the terminal.
 
 Contract: human-readable sections by default, like `git status` short prose; `--json` for the machine shape; exit 0 always, because status is information rather than judgment. It stays fast, with no subprocess heavier than the fingerprint CLI and a dev-server probe on a short timeout.
 
@@ -121,7 +121,7 @@ with what each one proves and the `source` it reports:
 | # | Step | Reports | Proves |
 | - | ---- | ------- | ------ |
 | 0 | An explicit `--dev-server-url` or `--port` | `flag` | the caller named it; nothing else is tried |
-| 1 | The project's dev-server lock | `lock` | an `exagent`-started wrapper is alive **and** its URL answered |
+| 1 | The project's dev-server lock | `lock` | an `@expo/agent-cli`-started wrapper is alive **and** its URL answered |
 | 2 | The port `.expo/dev/logs/start.log` last named | `log` | this project started a server there once, and it answered now |
 | 3 | 8081 | `default` | Metro's default answered |
 | 4 | 8082–8085, in parallel | `scan` | *a* Metro answered; not that it is this project's |
@@ -173,7 +173,7 @@ cancels [observed — 2026-08-27, ports 8081–8085 otherwise idle]:
 | -------- | -------------- | ------ | ----- |
 | Dead port named with `--dev-server-url` (the floor: no discovery at all) | `flag` | 0.28–0.30 s | 0.27–0.34 s |
 | No dev server anywhere; project's `start.log` names a dead port (6 probes) | `default` | 1.59–1.60 s | **0.27–0.32 s** |
-| An `exagent dev --detach` server on 8399 (1 probe) | `lock` | 1.58–1.59 s | **0.31–0.33 s** |
+| An `@expo/agent-cli dev --detach` server on 8399 (1 probe) | `lock` | 1.58–1.59 s | **0.31–0.33 s** |
 | A hand-started `expo start --port 8083`, no lock | `log` | 1.57–1.58 s | **0.29–0.33 s** |
 | The same, with `start.log` emptied so nothing knows the port | `scan` | 1.57–1.62 s | **0.29–0.42 s** |
 | A hand-started `expo start` on 8081, no state anywhere | `default` | 1.57–1.59 s | **0.27–0.32 s** |
@@ -217,26 +217,26 @@ answer arrived at 13 ms and the process exited at **813 ms** before, and at **13
 
 ### The dev-server lock
 
-[confirmed — Kudo, 2026-08-22: socket lock in exagent, expo-cli unchanged] The legacy `packager-info.json` is gone from the modern CLI [observed], and its replacement lives in `exagent`, not upstream: `src/devLock/`, taken by the dev-server wrapper `runDevServerAsync` and therefore by both `exagent start` and the final step of an `exagent dev` plan.
+[confirmed — Kudo, 2026-08-22: socket lock in @expo/agent-cli, expo-cli unchanged] The legacy `packager-info.json` is gone from the modern CLI [observed], and its replacement lives in `@expo/agent-cli`, not upstream: `src/devLock/`, taken by the dev-server wrapper `runDevServerAsync` and therefore by both `@expo/agent-cli start` and the final step of an `@expo/agent-cli dev` plan.
 
 **A socket, not a JSON file** [confirmed — Kudo, 2026-08-22]. A file records a fact about a process, and that record outlives the process. Every reader then has to guess whether what it read is still true. That is what made `packager-info.json` unreliable, and what a `pid` field only papers over: PIDs are reused, and a liveness check is a second question with its own race. A listening socket cannot have that bug. It exists only while its owner does, so a reader that got an answer got it from a process that was alive when it answered. Zombie and out-of-date data are impossible by construction rather than by convention.
 
-- **Address**: a pure function of the project root, because the two sides share nothing else. `projectRoot/.expo/exagent-dev-server.sock` on posix, and `\\.\pipe\exagent-dev-server-<sha1(realpath(projectRoot))[0:16]>` on Windows, where a pipe is not a project file and the project can only be in its name. Symlinks are resolved and the digest is lowercased, so one directory is one address. A posix project buried deeper than the kernel's ~104-byte cap on `sun_path` gets the same digest scheme under the temporary directory. The choice depends only on the path length, so both sides make it identically.
+- **Address**: a pure function of the project root, because the two sides share nothing else. `projectRoot/.expo/agent-cli-dev-server.sock` on posix, and `\\.\pipe\agent-cli-dev-server-<sha1(realpath(projectRoot))[0:16]>` on Windows, where a pipe is not a project file and the project can only be in its name. Symlinks are resolved and the digest is lowercased, so one directory is one address. A posix project buried deeper than the kernel's ~104-byte cap on `sun_path` gets the same digest scheme under the temporary directory. The choice depends only on the path length, so both sides make it identically.
 - **Protocol**: the server writes one JSON line (`url`, `port`, `pid`, `startedAt`, `projectRoot`) on connection and ends it. A reader connects with a ~250 ms timeout and reads to the close. A refused connection or a timeout is "no dev server", full stop.
-- **Acquisition**: `EADDRINUSE` on posix means either a live owner or an orphaned socket file, and only a connection tells them apart. An answer means another `exagent` legitimately owns the project's dev server. Silence means the file is an orphan, which is unlinked before listening again. Unlinking can only lose an orphan, because a socket file carries no state and connecting to it is the only way to reach whatever made it. Nothing is ever _read_ out of the file. On Windows a pipe dies with its process, so `EADDRINUSE` is a live owner by definition.
+- **Acquisition**: `EADDRINUSE` on posix means either a live owner or an orphaned socket file, and only a connection tells them apart. An answer means another `@expo/agent-cli` legitimately owns the project's dev server. Silence means the file is an orphan, which is unlinked before listening again. Unlinking can only lose an orphan, because a socket file carries no state and connecting to it is the only way to reach whatever made it. Nothing is ever _read_ out of the file. On Windows a pipe dies with its process, so `EADDRINUSE` is a live owner by definition.
 - **Release**: on the dev server's exit (the wrapper's `finally`) and on process exit, with a best-effort unlink. A leftover socket file is inert by construction. It answers nothing, so no reader is misled, and the next acquisition removes it.
 - **Never load-bearing**: the dev server is the command and the lock is a convenience, so an address that cannot be taken produces one warning and a `cli:dev_lock_skipped` event, never a failure. The port published is the one the dev server itself reported in `start.log` after the spawn timestamp, falling back to `--port` and then 8081.
 - **Still probed, never trusted**: the lock proves the wrapper is alive, and only an HTTP probe of the URL proves the dev server behind it is. Discovery therefore uses the lock to _stop guessing which port_, not to skip the check.
 
 Implemented [observed — 2026-08-22] in `src/devLock/` (`address.ts`, `client.ts`, `server.ts`, `port.ts`, `holdLock.ts`), held by `runDevServerAsync` in `src/start/startAsync.ts`, and read as step 0 of `discoverDevServerAsync` in `src/runtime/devServer.ts`. `runtime:eval|errors|network` went through the same discovery in the same change. They previously assumed 8081 whenever `--dev-server-url` was absent, so a dev server on any other port was invisible to them even with a lock to ask. Two accepted limits: a dev server started by `expo start` directly holds no lock, where the port in `start.log` plus the scan is still the answer; and a posix project path long enough to push the socket past the kernel's cap moves it out of `.expo`, where a person looking for it will not see it.
 
-Merged [confirmed — Kudo, 2026-08-22]: **`status` absorbs the former `exagent context`**, which is removed. `status --json` carries the raw `ProjectState` verbatim under a `probe` key, alongside the sections above. The sections round the probe off for a terminal, giving Expo Go as a reason _count_ and the fingerprint as a hash, and `probe` is what the summarizing dropped. A caller that wants the brief therefore reads one command instead of two. Rationale [inferred]: the two commands shared one probe and differed only in how much of it they printed, which is a flag rather than a verb, and an agent orienting in a project was reliably running both. The probe costs nothing extra here, because `status` already reads it to build its sections. The `install-dev-client` follow-up moved over with it. The `project-context` follow-up that pointed at `context` is gone, because the reasons it promised are now in the same report.
+Merged [confirmed — Kudo, 2026-08-22]: **`status` absorbs the former `@expo/agent-cli context`**, which is removed. `status --json` carries the raw `ProjectState` verbatim under a `probe` key, alongside the sections above. The sections round the probe off for a terminal, giving Expo Go as a reason _count_ and the fingerprint as a hash, and `probe` is what the summarizing dropped. A caller that wants the brief therefore reads one command instead of two. Rationale [inferred]: the two commands shared one probe and differed only in how much of it they printed, which is a flag rather than a verb, and an agent orienting in a project was reliably running both. The probe costs nothing extra here, because `status` already reads it to build its sections. The `install-dev-client` follow-up moved over with it. The `project-context` follow-up that pointed at `context` is gone, because the reasons it promised are now in the same report.
 
-Default change [confirmed — Kudo, 2026-08-22]: **smart mode is `exagent start`'s default.** The plain passthrough moves behind `--passthrough`, and `--smart` stays as an alias. Human guardrail per [[0008-guardrails]]: an interactive terminal facing a plan with build-class steps gets one Y/n confirmation, and non-interactive runs (agents, CI) proceed plan-first without prompting.
+Default change [confirmed — Kudo, 2026-08-22]: **smart mode is `@expo/agent-cli start`'s default.** The plain passthrough moves behind `--passthrough`, and `--smart` stays as an alias. Human guardrail per [[0008-guardrails]]: an interactive terminal facing a plan with build-class steps gets one Y/n confirmation, and non-interactive runs (agents, CI) proceed plan-first without prompting.
 
-Renamed [confirmed — Kudo, 2026-08-22]: **the smart engine is its own verb, `exagent dev`**, and `exagent start` goes back to being `expo start`. The rule that decides this is in [[0006-agent-native-cli-surface]] §The `exagent` launcher: a command sharing a name with an `expo` command behaves like that command, so the engine that does something `expo start` does not cannot be spelled `start`. The two mode flags disappear with the rename. `--smart` had nothing left to distinguish itself from, and `--passthrough` is now the `start` command itself. Everything else about the contract above is unchanged, including the Y/n guardrail.
+Renamed [confirmed — Kudo, 2026-08-22]: **the smart engine is its own verb, `@expo/agent-cli dev`**, and `@expo/agent-cli start` goes back to being `expo start`. The rule that decides this is in [[0006-agent-native-cli-surface]] §The `@expo/agent-cli` launcher: a command sharing a name with an `expo` command behaves like that command, so the engine that does something `expo start` does not cannot be spelled `start`. The two mode flags disappear with the rename. `--smart` had nothing left to distinguish itself from, and `--passthrough` is now the `start` command itself. Everything else about the contract above is unchanged, including the Y/n guardrail.
 
-Implemented [observed — 2026-08-22]: `exagent status [--json] [--dev-server-url]`, at about 65 ms, with per-section error notes and exit 0 (argument errors exit 1). The next action names `exagent dev`. The project name comes from `package.json`, because dynamic app config needs an `expo config` subprocess, the same approximation as item 7 below. Live-verified against a real running project.
+Implemented [observed — 2026-08-22]: `@expo/agent-cli status [--json] [--dev-server-url]`, at about 65 ms, with per-section error notes and exit 0 (argument errors exit 1). The next action names `@expo/agent-cli dev`. The project name comes from `package.json`, because dynamic app config needs an `expo config` subprocess, the same approximation as item 7 below. Live-verified against a real running project.
 
 Rename implemented [observed — 2026-08-22]: the engine is `src/dev/` (`devAsync.ts`, `confirmPlan.ts`, `resolveOptions.ts`), and `resolveDevOptions` resolves `run` with no flag and `plan` with `--plan`, the only two things the command can do. `src/start/` keeps the `expo start` wrapper: `resolveStartOptions` strips exactly two flags of its own (`--no-agent-skills`, `--no-followups`) and forwards everything else untouched, so `expo start` stays the one that rejects an argument it does not know. `dev` reuses the wrapper's `runDevServerAsync` for the dev-server step of a plan, and its `resolveStartFollowUps` for the follow-ups of a run that ends in one.
 
@@ -244,7 +244,7 @@ The guardrail lives in `src/dev/confirmPlan.ts`. It is asked only when four thin
 
 ## The EAS build lookup, and why it is opt-in
 
-Decision [confirmed — Kudo, 2026-08-26]. `exagent status` reports whether **EAS already has a
+Decision [confirmed — Kudo, 2026-08-26]. `@expo/agent-cli status` reports whether **EAS already has a
 finished build made from this project's current fingerprint**, per platform, in three states:
 `found`, `none` or `unknown`, each with a reason. The **cached** answer is read on every run because it
 costs nothing and is exact. The **network** call that produces it happens only under `--explain`.
@@ -287,7 +287,7 @@ for free a *sound* key for an answer about a hash it does not have. A hit costs 
 and is as true as the lookup that wrote it. It is not a stale approximation like the cloud-session
 `stat`, which is tolerated because it is cheap. This one is kept because it is right.
 
-- **`.expo/exagent-eas-builds.json`**, one entry per platform: the `projectHash` it was true for,
+- **`.expo/agent-cli-eas-builds.json`**, one entry per platform: the `projectHash` it was true for,
   the `fingerprintHash` that was actually asked about, `checkedAt`, and the build. An entry that
   cannot name both hashes and a build id is dropped on read rather than repaired, because the entire
   value of this cache is that a hit is exact.
@@ -335,7 +335,7 @@ The sentence lives in `src/followups/cachedBuild.ts` beside `impact`'s, because 
 whole build-cache lookup exists and two copies of it would drift.
 
 **What is still not closed.** This is `status` reporting the answer, not the *plan engine* consuming
-it — item 2 of §Implemented in v1 as still has that half open. `exagent dev` continues to plan a
+it — item 2 of §Implemented in v1 as still has that half open. `@expo/agent-cli dev` continues to plan a
 build for a project whose fingerprint EAS already has a build for.
 
 Shipped as `src/status/easBuilds.ts`, `BuildLookupOutcome` in
@@ -344,11 +344,11 @@ wrapper `impact` reads), and `src/followups/cachedBuild.ts`.
 
 ## The impact headline is free, the explanation is not
 
-Decision [confirmed — Kudo, 2026-08-26]. `exagent status` reports **what a change costs** on every
+Decision [confirmed — Kudo, 2026-08-26]. `@expo/agent-cli status` reports **what a change costs** on every
 run: `js-only`, `dev-client-compatible` or `needs-native-build`, with the one sentence that says what
 carried it. `status --explain` adds the three things that cost a subprocess or a round trip.
-`exagent impact` stays, and stays a *gate* — *for about an hour; it was removed the same day, and
-§The fold: `exagent impact` is removed says where each of its capabilities went.*
+`@expo/agent-cli impact` stays, and stays a *gate* — *for about an hour; it was removed the same day, and
+§The fold: `@expo/agent-cli impact` is removed says where each of its capabilities went.*
 
 **The git analogy is the whole design.** `status` is the **reflex**. You run it constantly, so it has
 to be instant, and it has to answer rather than judge. `impact` is the **gate**. You run it when a
@@ -363,7 +363,7 @@ inputs are already in memory by the time the freshness line is built:
 
 - the working tree's fingerprint **with its sources** — the probe computed them to get its hash, and
   `statusAsync` was already throwing them away before writing `report.probe`;
-- the sources of the last build this CLI ran — `.expo/exagent-last-build.json` has held the whole
+- the sources of the last build this CLI ran — `.expo/agent-cli-last-build.json` has held the whole
   fingerprint since the v2 record ([[0011-impact-and-freshness]] §The record has to hold the
   sources), and reading it was already one file read.
 
@@ -395,7 +395,7 @@ one hash covers both platforms. That is right for freshness, and it is why a cha
 the android answer too. The headline inherits that. `ios` and `android` differ here only when their
 recorded builds were made at different moments, and the report prints one line for both when they
 agree rather than padding itself with the same sentence twice. **This limit survived the fold.** The
-per-platform fingerprint went with `exagent impact`, so nothing resolves an `ios/`-only change from
+per-platform fingerprint went with `@expo/agent-cli impact`, so nothing resolves an `ios/`-only change from
 an `android/`-only one any more. It is the one thing the fold cost. It is cheap to restore, at one
 `fingerprint:generate --platform` per platform on the `--explain` side of the line, and nobody has
 yet met a case that needed it.
@@ -433,7 +433,7 @@ line at all in that case, because the `freshness` line above it has already said
 Shipped in `src/project/localDiff.ts`, `src/impact/fromRecord.ts`,
 `FreshnessImpact` on `PlatformFreshness` and `ota` on `FreshnessStatus`
 (`src/status/types.ts`), the `impact`/`ota`/per-source lines in `src/status/format.ts`, and
-`exagent status [--explain]`.
+`@expo/agent-cli status [--explain]`.
 
 **The third class needed a `git` call, and is worth it** [added — 2026-08-26]. The fingerprint
 cannot tell "Fast Refresh picks it up" from "restart Metro", because both leave the native surface
@@ -448,9 +448,9 @@ outside git is an ordinary case and simply keeps the fingerprint's own answer.
 
 ## An explicit flag turns the report into a gate
 
-Decision [confirmed — Kudo, 2026-08-26]. `exagent status --assert <class>` exits **20** when the
+Decision [confirmed — Kudo, 2026-08-26]. `@expo/agent-cli status --assert <class>` exits **20** when the
 change costs more than the class named, and **22** when no class could be established. Without the
-flag the command exits 0, exactly as before. **`exagent impact` is removed**; its surface is now
+flag the command exits 0, exactly as before. **`@expo/agent-cli impact` is removed**; its surface is now
 `status`, and its modules are the engine underneath.
 
 This reverses the paragraph above it, and the argument that changed is worth keeping. "A command
@@ -490,7 +490,7 @@ and the strictest reading dragged the whole answer to `22`. The rule is now:
 
 `recordedHash` is what separates them, and it was already in the report.
 
-### The fold: `exagent impact` is removed
+### The fold: `@expo/agent-cli impact` is removed
 
 Its four capabilities land as follows, and the accounting is exact because one of them turned out
 never to have worked:
@@ -523,7 +523,7 @@ still `fresh`, exit 0. With `--assert js-only` beside it, exit 20.
 more, so they are `change-*`. They describe what a *change* costs, which is a section of `status`
 now. `impact-cached-build` and `status-cached-build` were the same sentence reached from two
 directions, and with one caller left they are one builder and one id, `cached-build`. The
-suggested-command lint (`src/lint/`) is what caught the stray `npx exagent impact …` strings, and
+suggested-command lint (`src/lint/`) is what caught the stray `npx @expo/agent-cli impact …` strings, and
 what caught `status` printing a `--build` its own parse did not accept.
 
 Shipped in `src/status/assert.ts`, `src/status/resolveOptions.ts`, `AssertStatus` on
@@ -532,15 +532,15 @@ Shipped in `src/status/assert.ts`, `src/status/resolveOptions.ts`, `AssertStatus
 
 ## Daemonization
 
-Decision [confirmed — friction run 4, 2026-08-24]. `exagent dev --detach [--wait-ready]` starts the
-dev server in a process of its own and gives the terminal back. `exagent dev:logs` reads what it
+Decision [confirmed — friction run 4, 2026-08-24]. `@expo/agent-cli dev --detach [--wait-ready]` starts the
+dev server in a process of its own and gives the terminal back. `@expo/agent-cli dev:logs` reads what it
 printed.
 
 The friction is the plainest one in the CLI, and it took four runs to write down because it is
-invisible from inside. `exagent dev` runs the dev server in the *foreground* and never says so, so
+invisible from inside. `@expo/agent-cli dev` runs the dev server in the *foreground* and never says so, so
 the first thing a driving agent does is burn a command timeout on a command that cannot return
 [observed — F46, friction run 4: a seven-minute timeout on the first attempt]. It then prints
-`Suggested next: npx exagent navigate /` and holds the shell that would have run it. Every step
+`Suggested next: npx @expo/agent-cli navigate /` and holds the shell that would have run it. Every step
 after it (`dev:wait`, `navigate`, `runtime:errors`, `runtime:reload`) needs a shell the dev server
 is holding. So an agent has to learn to background the process from outside the CLI, which is
 exactly the kind of shell incantation `dev:stop` exists to remove.
@@ -611,23 +611,23 @@ precedes it is the observation as it was measured.]
 **F121 (MAJOR) — a build that succeeded and installed the app is not recorded, so the next plan
 builds again.** `recordBuildOf` runs only after a step exits 0, and `expo run:*` is one subprocess
 that builds, installs *and* serves. So a run whose compiler finished, whose app is on the device and
-whose launch step then failed leaves `.expo/exagent-last-build.json` untouched, and the next
-`exagent dev` plans another fifteen minutes for an app that is installed and current
+whose launch step then failed leaves `.expo/agent-cli-last-build.json` untouched, and the next
+`@expo/agent-cli dev` plans another fifteen minutes for an app that is installed and current
 [observed — `05-dev-build-ios.log`: `Build Succeeded`, `Installing on iPhone 17 Pro`, then exit 7 on
 the Automation grant; `08-plan-after-successful-build.txt`: `rule: bare-stale`, one `expo run:ios`
 step, *"No development build recorded for ios, so a build is needed"*]. Two things sharpen it:
 
 - **The report's own follow-up is falsified by the run that just happened** — "a build made by
-  exagent is recorded, so the next plan skips it" — and it was.
+  @expo/agent-cli is recorded, so the next plan skips it" — and it was.
 - **The needs-human recovery walks into it.** `macos-automation`'s `How:` says to drop `--ios` and
-  run `npx exagent dev --yes`, which on this rule is not a dev server: it is the same build again.
+  run `npx @expo/agent-cli dev --yes`, which on this rule is not a dev server: it is the same build again.
 
 The rule the fix needs is what "a build happened" may be read off, and none of the three candidates
 is free: the artifact on disk; the app on the device, which is a probe the plan engine deliberately
 does not have (§Implemented in v1 as, item 1); or `Build Succeeded` in a subprocess's output. What is
 *observed* and worth carrying either way: the record is
 written when the **dev server stops**, not when the compiler finishes, because the `run:*` step is
-the dev-server step. So `exagent dev --android` followed by `exagent dev:stop` does record the build,
+the dev-server step. So `@expo/agent-cli dev --android` followed by `@expo/agent-cli dev:stop` does record the build,
 and that is the sequence that makes a second run cheap.
 
 ### Decision: a build is recorded when the app reaches the device, whatever the launch then does
@@ -654,9 +654,9 @@ Two consequences, both stated out loud in the report because nothing in the tool
 them:
 
 - the step failure gains `Note: the app it built is installed on the device, so that build is
-  recorded — the next "npx exagent dev" starts a dev server for it instead of building again`;
+  recorded — the next "npx @expo/agent-cli dev" starts a dev server for it instead of building again`;
 - `macos-automation`'s handoff gains the same sentence, on the line whose `How:` sends the reader to
-  `npx exagent dev --yes`. Without it, that recovery walks back into the fifteen minutes.
+  `npx @expo/agent-cli dev --yes`. Without it, that recovery walks back into the fifteen minutes.
 
 **What is deliberately not recorded.** Two cases. A build that compiled and died before the install,
 because the record would then say a device has an app it has not got. And anything in `inherit`
@@ -695,9 +695,9 @@ whose dev-server step is a plain `expo start`. Guessing `building` would put a s
 compiler into the report of a dev server that never had one.
 
 The `--wait-ready` failure of a building plan says what is happening and names the step. It drops two
-things that were wrong for it: `npx exagent smoke`, which cannot measure a bundler that has not
+things that were wrong for it: `npx @expo/agent-cli smoke`, which cannot measure a bundler that has not
 started, and the split-stack `lsof` note, which is about two listeners on a port nothing is
-listening on yet. It recovers into `npx exagent dev:logs`. The exit code does not change, because the
+listening on yet. It recovers into `npx @expo/agent-cli dev:logs`. The exit code does not change, because the
 wait really did give up.
 
 The same fact reaches the report of a run that asked for no readiness. `dev --detach --json` carries
@@ -708,7 +708,7 @@ of `· detached`. `--wait-ready` is the path the finding was filed against, and 
 ## A busy port is not a step only a person can complete
 
 Decision [confirmed — friction run 4, 2026-08-24]. When the Expo CLI stops on `Use port 8181
-instead?`, `exagent dev` picks a free port itself and runs the step again — unless the caller named
+instead?`, `@expo/agent-cli dev` picks a free port itself and runs the step again — unless the caller named
 `--port`, and then it is exit `20`.
 
 This was exit `7` with `needsHuman.scenario: "expo-prompt"`, a `suggestedCommand` that re-ran the
@@ -739,8 +739,8 @@ where it runs. **`local`** is on this machine, with this machine's toolchain. **
 cloud on EAS, with an Expo account. Two words, one module, no synonyms.
 
 The gap was never in what the CLI *does*. It was that "build" is one word for two things that want
-different things of the caller. `exagent dev` plans `expo run:ios`, which needs Xcode and about
-fifteen minutes of this machine. `exagent build:wait` attaches to something running in a queue in a
+different things of the caller. `@expo/agent-cli dev` plans `expo run:ios`, which needs Xcode and about
+fifteen minutes of this machine. `@expo/agent-cli build:wait` attaches to something running in a queue in a
 data centre, which needs an account and nothing else. A reader who has one and not the other cannot
 tell from the word which advice they were just given. The plan is read *before* anything runs, so a
 caller with no Xcode approved a plan, waited, and met the toolchain as a compiler error many minutes
@@ -840,10 +840,10 @@ it.
 
 ## Implemented in v1 as
 
-[observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/status/`, `src/dev/`, `exagent dev [--plan]`) with these deliberate approximations of the table above:
+[observed — implementation, 2026-08-22] The engine shipped in `packages/@expo/agent-cli` (`src/project/`, `src/plan/`, `src/status/`, `src/dev/`, `@expo/agent-cli dev [--plan]`) with these deliberate approximations of the table above:
 
 1. **No device probe.** "Go or dev client installed on the device" is unobservable without simctl or adb, so those rows are dropped. `expo start` prompts for Go itself, and `expo run:*` installs what it builds.
-2. **No build-cache lookup.** Freshness is the probe fingerprint against `.expo/exagent-last-build.json`, written after a successful `run:*` step. Unrecorded means stale, so v1 over-plans a build at worst and never under-plans. **Closed for `impact`** [added — 2026-08-24]: `eas build:list --fingerprint-hash` is a build-cache lookup, and [[0011-impact-and-freshness]] §The build-cache lookup uses it to turn "you need a native build" into "a finished build already exists for this exact fingerprint". **Closed for `status` too** [added — 2026-08-26]: see §The EAS build lookup, and why it is opt-in, which also records why the answer is cached rather than always fetched. The *plan engine* still does not consult it, and that is the remaining half of this item: `exagent dev` plans a build for a project whose fingerprint EAS already has a build for.
+2. **No build-cache lookup.** Freshness is the probe fingerprint against `.expo/agent-cli-last-build.json`, written after a successful `run:*` step. Unrecorded means stale, so v1 over-plans a build at worst and never under-plans. **Closed for `impact`** [added — 2026-08-24]: `eas build:list --fingerprint-hash` is a build-cache lookup, and [[0011-impact-and-freshness]] §The build-cache lookup uses it to turn "you need a native build" into "a finished build already exists for this exact fingerprint". **Closed for `status` too** [added — 2026-08-26]: see §The EAS build lookup, and why it is opt-in, which also records why the answer is cached rather than always fetched. The *plan engine* still does not consult it, and that is the remaining half of this item: `@expo/agent-cli dev` plans a build for a project whose fingerprint EAS already has a build for.
 3. The recorded hash is the pre-build probe hash, which is what an unchanged project re-probes to. The record now holds the whole fingerprint rather than the hash alone [added — 2026-08-24], because a hash cannot be diffed and "what changed" is the whole of what `impact` reports. A bare string still reads, as a record whose sources are null. See [[0011-impact-and-freshness]] §The record has to hold the sources, including the measurement behind storing it uncompressed.
 4. The `web` rule fires only on an explicit `--web`, because `ProjectState` cannot prove "web-only".
 5. Bare-vs-CNG uses "any native dir present". The argv uses the resolved platform.

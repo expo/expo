@@ -2,14 +2,14 @@
 
 **Type:** RFC
 **Status:** Final
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); `exagent typecheck` (`src/typecheck/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `@expo/agent-cli` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `@expo/agent-cli build:wait` (`src/builds/`); `@expo/agent-cli dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); `@expo/agent-cli typecheck` (`src/typecheck/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
 
 ## Summary
 
-The conventions every `exagent` command shares, written down once so a feature does not decide them again. Three of them: what the exit code means, how one argv resolves to one command, and which of the family's gaps the tool layer is working around rather than fixing. [[0006-agent-native-cli-surface]] owns the shape of the surface. This document owns the rules that hold across all of it.
+The conventions every `@expo/agent-cli` command shares, written down once so a feature does not decide them again. Three of them: what the exit code means, how one argv resolves to one command, and which of the family's gaps the tool layer is working around rather than fixing. [[0006-agent-native-cli-surface]] owns the shape of the surface. This document owns the rules that hold across all of it.
 
 ## Exit codes
 
@@ -79,7 +79,7 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 
 ### The first command in the outcome band: `build:wait`
 
-Deferred from v1 — design now in [[0017-deferred-commands]] §`build:wait`. `exagent build:wait <id>`
+Deferred from v1 — design now in [[0017-deferred-commands]] §`build:wait`. `@expo/agent-cli build:wait <id>`
 was the first command whose whole answer was its exit code, and it is what the `20`–`29` band was
 reserved for; its status-to-code table, the four decisions in that mapping and its live verification
 against real staging builds went to the shelf with the code (`src/deferred/build-wait/`). The band it
@@ -93,11 +93,11 @@ across a ~10-minute queue on either platform. The cause is general and worth kno
 CLI reads EAS JSON: `printJsonOnlyOutput` sanitizes each payload by **deleting every key whose value
 is null**. No parser may try to tell "the service said null" from "the service said nothing".
 
-Two consequences of adopting the convention are worth stating. First, adopting it changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
+Two consequences of adopting the convention are worth stating. First, adopting it changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `@expo/agent-cli dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
 
 ### The second: the readiness gate, and what an outcome is an outcome _about_
 
-Deferred from v1 — the `exagent dev:wait` **command** is out of the surface and its design is now in
+Deferred from v1 — the `@expo/agent-cli dev:wait` **command** is out of the surface and its design is now in
 [[0017-deferred-commands]] §`dev:wait`. What follows stayed here because it still governs live code:
 `src/runtime/waitReady.ts` and `src/runtime/bundleCheck.ts` are what `smoke`, `runtime:reload` and
 `dev --detach --wait-ready` call, so every question this section and the four below it settle is
@@ -105,7 +105,7 @@ still asked — by `smoke`, which asks all of them and three more in one command
 `dev:wait` throughout because that is the command the findings were made against; read those
 mentions as the record of where a live rule came from.
 
-[observed — 2026-08-23, `src/dev/`] `exagent dev:wait` joined the band next, and it made the band's
+[observed — 2026-08-23, `src/dev/`] `@expo/agent-cli dev:wait` joined the band next, and it made the band's
 one ambiguity concrete. `20` says "the operation failed", and a readiness gate has to decide what
 its operation _is_. Is it waiting for a dev server to answer, or establishing that this project's app
 is in a state worth reading? The command exists for the second, so that is what its code answers.
@@ -299,11 +299,11 @@ valid JSON`, which describes byte 0 of a body the reader never sees.
 its whole contract is that it never waits, while a cold first build is tens of seconds and nothing
 the dev server exposes says "is the last build broken" without building. The honest arrangement is
 the one now in place: `status` reports where the project is, and its `next` line points at
-`exagent smoke`, which is the command that pays for the answer [revised — 2026-08-26; it named `exagent dev:wait --require-app` until that command was deferred, [[0017-deferred-commands]] §`dev:wait`].
+`@expo/agent-cli smoke`, which is the command that pays for the answer [revised — 2026-08-26; it named `@expo/agent-cli dev:wait --require-app` until that command was deferred, [[0017-deferred-commands]] §`dev:wait`].
 
 ### The third: a collector that can be asked to be a gate
 
-[observed — 2026-08-23, `src/runtime/`; friction run 2, F25] `exagent runtime:errors` is the first
+[observed — 2026-08-23, `src/runtime/`; friction run 2, F25] `@expo/agent-cli runtime:errors` is the first
 command in the band whose entry is **opt-in**, and the reason is the difference between a check and
 a window. `dev:wait` asks a question with an answer, does this project's entry bundle compile, so
 its exit code can carry the verdict. `runtime:errors` watches for a while and reports what arrived,
@@ -334,7 +334,7 @@ says a caller is gating on this.
 
 ### The fourth: `typecheck`, and the gate the other three could not be
 
-[observed — 2026-08-23, `src/typecheck/`] `exagent typecheck` is the fourth command in the band, and
+[observed — 2026-08-23, `src/typecheck/`] `@expo/agent-cli typecheck` is the fourth command in the band, and
 the first one whose _whole reason to exist_ is a class of failure the band's other members are
 structurally blind to.
 
@@ -369,7 +369,7 @@ Four details of that are decisions rather than transcription:
   setup as a pass, and the reason it printed was false. There are **three** states rather than two.
   No `tsconfig.json` and no `.ts`/`.tsx` sources is a JavaScript project and exits `0`. Either of
   those present with no `node_modules/.bin/tsc` is a broken setup and exits `1` with
-  `TYPECHECK_CLI_MISSING` and `Try: npx exagent install typescript --dev`. A compiler present runs.
+  `TYPECHECK_CLI_MISSING` and `Try: npx @expo/agent-cli install typescript --dev`. A compiler present runs.
   The sources are evidence in their own right because a project can lose its `tsconfig.json` and
   still be one. `.d.ts` files alone are not, since `expo-env.d.ts` is generated into every app.
 - **No compiler is ever fetched.** `doctor:check` falls back to `npx expo-doctor` and this
@@ -395,7 +395,7 @@ replaces in each — is [[0009-smart-followups]] §Where the typecheck rung goes
 
 ### The fifth: `runtime:reload`, and the difference between failed and inconclusive
 
-[observed — 2026-08-23, `src/runtime/reload/`; friction run 3, F31] `exagent runtime:reload` is the
+[observed — 2026-08-23, `src/runtime/reload/`; friction run 3, F31] `@expo/agent-cli runtime:reload` is the
 first command that uses **both** codes of the band in one run, and the boundary between them is the
 whole design (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
 
@@ -478,14 +478,14 @@ step it deliberately skipped, which is the same class of unverified claim the wh
 
 ### The sixth: `status --assert`, and a gate that is not about a process
 
-[observed — 2026-08-24 as `impact --assert`; moved onto `status` 2026-08-26 when `exagent impact`
+[observed — 2026-08-24 as `impact --assert`; moved onto `status` 2026-08-26 when `@expo/agent-cli impact`
 was folded in, see [[0011-impact-and-freshness]] §Two commands, one classifier — and then one
 command] This is the first command in the band whose subject is neither a process nor a service but
 a **classification** of the working tree, and it joins the band the way `runtime:errors` did:
 opt-in.
 
 The default is `0` always, because `status` is information rather than judgment. That is the contract
-[[0004-smart-start-and-project-state]] §`exagent status` gives it. `--assert <class>` is the gate,
+[[0004-smart-start-and-project-state]] §`@expo/agent-cli status` gives it. `--assert <class>` is the gate,
 and it exits `20` when the real class is stronger than the one named.
 
 **A command whose default is `0` by contract can still carry a gate, and this is the rule for when.**
@@ -606,7 +606,7 @@ Rows with no signature are not a gap. `ios-credentials`, `device-register` and `
 
 Amendment [confirmed — friction run 4, 2026-08-24]. `Use port 8181 instead?` matches the
 `expo-prompt` signatures like every other question the Expo CLI asks, and it is the only one a
-machine can answer for itself. `exagent dev` recognises it **before** the classifier runs
+machine can answer for itself. `@expo/agent-cli dev` recognises it **before** the classifier runs
 (`src/dev/portCollision.ts`) and either retries the step on a free port it picked or, when the
 caller named `--port`, reports `PORT_IN_USE` with exit `20`.
 
@@ -625,7 +625,7 @@ complete.
 
 ### Four layers, in priority order
 
-1. **Preflight**. Ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself, so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out", because the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`]. `src/needsHuman/assertAuth.ts` is the same answer _raised_, for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
+1. **Preflight**. Ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself, so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out", because the two lead to different next actions. This is the `auth` section of `@expo/agent-cli status` [observed — `src/status/`]. `src/needsHuman/assertAuth.ts` is the same answer _raised_, for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
 
    Three things count as "cannot run", and the third was a bug [fixed — 2026-08-23]. No `eas` on this machine, a run that passed the deadline, and **a binary under that name that is not the EAS CLI**. The third exits non-zero exactly like a signed-out CLI does, so it read as "signed out". On a machine whose PATH `eas` is a wrapper that crashes, which is not hypothetical because the friction run's was, every command with a preflight would have stopped and handed its user a login they did not need. `looksLikeWrapperCrash` (§The binary may not be the CLI) is what tells the two apart.
 
@@ -654,7 +654,7 @@ _project_ then reads that frozen server and certifies code the agent has already
 run 1's F1 failure mode reproduced through a different mechanism, on the exact path the F1 fix was
 written for [observed — friction run 2, 2026-08-23: a syntax error appended to a route of a live SDK
 57 app left `dev:wait --json` at `bundle.ok: true`, exit 0, while the same file on a server started
-by `exagent start`, which never set `CI`, exited 20].
+by `@expo/agent-cli start`, which never set `CI`, exited 20].
 
 **Dropping it costs nothing, because the two concerns were never the same mechanism.**
 `isInteractive()` is `!shouldReduceLogs() && !env.CI && process.stdout.isTTY` [observed —
@@ -663,7 +663,7 @@ by `exagent start`, which never set `CI`, exited 20].
 mode but `inherit`]. So the CLI already knows nobody can answer it. The prompt helper still throws
 `Input is required, but 'npx expo' is in non-interactive mode.`, layer 3 still recognises it, and the
 keypress menu of `expo start` is still never installed [observed — `start/startAsync.ts:140`].
-Verified live: with 8140 held, `exagent dev --yes --json --port 8140` exits **7** in one second with
+Verified live: with 8140 held, `@expo/agent-cli dev --yes --json --port 8140` exits **7** in one second with
 the full envelope and the three-line handoff, exactly as it did with `CI=1`.
 
 Three details of that are decisions rather than transcription:
@@ -684,7 +684,7 @@ nothing to pass. The upstream ask that would retire this exception is recorded b
 #### The last two layers
 
 3. **Exit signature**. Match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share.
-4. **Prompt-hang guard**. For a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
+4. **Prompt-hang guard**. For a captured child only, and only when the caller opts in. If it writes nothing for `AGENT_CLI_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
 
 The prompt shape is `/[?:]\s*$|^\s*[?›»]\s+\S|\(y\/N\)|\(Y\/n\)|Password|passphrase/i` [observed — `src/needsHuman/detect.ts`]. The leading-marker half was added because `prompts` and `inquirer` write the marker at the _start_: `? Select a platform` is a question that ends in neither a question mark nor a colon.
 
@@ -705,15 +705,15 @@ The `Try:` lines of `deploy` and `build:wait` changed for the same reason. `npx 
 
 The breaking change [observed — `e2e/__tests__/deploy-test.ts`]: the deploy's two auth failures exited `1` and now exit `7`. At 0.0.2 that is the right moment, and a CHANGELOG entry records it.
 
-The plan engine joined the protocol on the same terms [added — 2026-08-23]. `exagent dev` runs its steps as subprocesses, and a step whose output this process can see is a step whose stop can be classified. So `dev` captures its steps whenever nobody is watching a terminal, under `--json` or a non-TTY run, and inherits when somebody is. `Input is required, but 'npx expo' is in non-interactive mode.` is then exit `7` rather than the subprocess's own `1`, which is the definition of the code: what the command is waiting for is an answer, and no re-run supplies one. The message names `--port` for the case that produces it almost every time, which is 8081 already taken and the CLI asking whether to use 8082, because that flag answers the question before it is asked. The friction run of 2026-08-23 is what this is for: `exagent dev --yes` is the documented non-interactive entry point, and on a busy port it exited 1 having started nothing.
+The plan engine joined the protocol on the same terms [added — 2026-08-23]. `@expo/agent-cli dev` runs its steps as subprocesses, and a step whose output this process can see is a step whose stop can be classified. So `dev` captures its steps whenever nobody is watching a terminal, under `--json` or a non-TTY run, and inherits when somebody is. `Input is required, but 'npx expo' is in non-interactive mode.` is then exit `7` rather than the subprocess's own `1`, which is the definition of the code: what the command is waiting for is an answer, and no re-run supplies one. The message names `--port` for the case that produces it almost every time, which is 8081 already taken and the CLI asking whether to use 8082, because that flag answers the question before it is asked. The friction run of 2026-08-23 is what this is for: `@expo/agent-cli dev --yes` is the documented non-interactive entry point, and on a busy port it exited 1 having started nothing.
 
 ### A failed plan step reports a failure, not a plan
 
-Decision [confirmed — Kudo, 2026-08-23]. `exagent dev` prints its plan object only when every step
+Decision [confirmed — Kudo, 2026-08-23]. `@expo/agent-cli dev` prints its plan object only when every step
 of it worked. A run whose step failed raises instead, so `--json` gets the error envelope of §The
 `--json` error envelope and a terminal gets what / **Why:** / **How:**.
 
-The finding [observed — friction run 2, 2026-08-23]: `exagent dev --yes --json --ios` exited **7**
+The finding [observed — friction run 2, 2026-08-23]: `@expo/agent-cli dev --yes --json --ios` exited **7**
 with the plan object on stdout, carrying keys `target`, `rule`, `steps`, `reasons` and `followups`
 and no `error`, with zero bytes on stderr and no dev server on the port. An agent parsing stdout read
 a started dev server, an agent reading stderr read nothing, and only the exit code disagreed with
@@ -732,7 +732,7 @@ Three things were wrong at once, and each is fixed on its own terms:
   flipping a switch in System Settings, which is the definition of exit `7`, so it is a registry row
   now (`macos-automation`) and arrives with the whole handoff instead of a bare code.
 - **The `7` itself was a coincidence.** Node leaves with `7` after an unhandled rejection inside an
-  exception handler [observed live, 2026-08-23], and `exagent dev` forwards a step's code verbatim,
+  exception handler [observed live, 2026-08-23], and `@expo/agent-cli dev` forwards a step's code verbatim,
   so the CLI's own needs-human code arrived by accident. The forwarding rule does **not** change,
   because inventing a code would hide the one the tool reported. What changed is that the payload now
   says which it is: a genuine stop carries `error.needsHuman`, and a coincidence carries `null` under
@@ -742,10 +742,10 @@ Three things were wrong at once, and each is fixed on its own terms:
 What is deliberately _not_ changed: `--ios` stays in the plan's argv. It is the step that opens the
 app, it works on a Mac with the permission granted, and llp/0004's `reason` already tells a reader
 what each form does. The recovery an agent can take without a person is to start without `--ios`,
-then run `exagent navigate /`, which deep-links through `simctl openurl` and needs no Automation
+then run `@expo/agent-cli navigate /`, which deep-links through `simctl openurl` and needs no Automation
 grant. That is named in the error's `How:` line, where it is read at the moment it is useful.
 
-One limit stays, deliberately: the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified. `src/passthrough/` is unchanged on purpose. The second limit recorded here, that there was no `--json` error envelope, has since been lifted; see the section below.
+One limit stays, deliberately: the **forwarded commands are not covered**. `@expo/agent-cli login`, `@expo/agent-cli prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified. `src/passthrough/` is unchanged on purpose. The second limit recorded here, that there was no `--json` error envelope, has since been lifted; see the section below.
 
 Signature matching is version-coupled to two CLIs that do not promise their wording. That is why the generic rows exist, why they are last, and why the upstream ask below is the real fix.
 
@@ -806,29 +806,29 @@ goes in it that is not already in the message a person reads: it is the same fac
 
 - **The exit code is still the first thing to read.** The envelope explains a failure; it does not signal one. `7` and the `20`–`29` band mean exactly what the table above says.
 
-Implementation [observed — `src/utils/jsonMode.ts`, `src/utils/errors.ts`, `src/cli.ts`]. `logCmdError` is the one function every command's failure funnels into, and it runs _after_ the command module threw, often before that module ever parsed its own arguments. So the flag is answered once, by the launcher, from the raw argv: `setJsonRequested(argvRequestsJson(commandArgs))`. `argvRequestsJson` only looks before a `--` separator, because `install` and `start` forward everything after it to another tool, and `exagent install -- --json` is npm's flag rather than ours. The alternative, an argument on `logCmdError` and on every `.catch(logCmdError)`, is thirty call sites carrying one boolean that cannot change during a run.
+Implementation [observed — `src/utils/jsonMode.ts`, `src/utils/errors.ts`, `src/cli.ts`]. `logCmdError` is the one function every command's failure funnels into, and it runs _after_ the command module threw, often before that module ever parsed its own arguments. So the flag is answered once, by the launcher, from the raw argv: `setJsonRequested(argvRequestsJson(commandArgs))`. `argvRequestsJson` only looks before a `--` separator, because `install` and `start` forward everything after it to another tool, and `@expo/agent-cli install -- --json` is npm's flag rather than ours. The alternative, an argument on `logCmdError` and on every `.catch(logCmdError)`, is thirty call sites carrying one boolean that cannot change during a run.
 
-One consequence for a command that prints its payload _before_ it can fail. `exagent dev --json` used to emit the plan object and then run the plan, so a failing run would have printed two objects. Worse, the dev server it spawned inherited stdout and appended raw Metro log lines to the JSON [observed — friction run, 2026-08-23: `JSON.parse` failed at the byte after the closing brace]. In `--json` mode `dev` now captures the subprocess and prints exactly one object when the run ends: the plan with the step results on a clean exit, or the envelope. `dev --plan --json` is unchanged, because there the plan _is_ the answer and nothing runs after it. The plan still reaches a driving agent before the first step either way, on the `cli:start_plan` event.
+One consequence for a command that prints its payload _before_ it can fail. `@expo/agent-cli dev --json` used to emit the plan object and then run the plan, so a failing run would have printed two objects. Worse, the dev server it spawned inherited stdout and appended raw Metro log lines to the JSON [observed — friction run, 2026-08-23: `JSON.parse` failed at the byte after the closing brace]. In `--json` mode `dev` now captures the subprocess and prints exactly one object when the run ends: the plan with the step results on a clean exit, or the envelope. `dev --plan --json` is unchanged, because there the plan _is_ the answer and nothing runs after it. The plan still reaches a driving agent before the first step either way, on the `cli:start_plan` event.
 
 ## Registry rules
 
-Two resolution rules generalize what [[0006-agent-native-cli-surface]] §The `exagent` launcher describes, and both live in the one pure `resolveCommand` [observed — `src/commandRegistry.ts`].
+Two resolution rules generalize what [[0006-agent-native-cli-surface]] §The `@expo/agent-cli` launcher describes, and both live in the one pure `resolveCommand` [observed — `src/commandRegistry.ts`].
 
 ### (a) Options without an action are an error, not help
 
-Before [observed — 2026-08-22]: `exagent runtime --json` resolved to `group-help`, printed the group listing, and **exited 0**. A human reads that as an answer. An agent reads the exit code, believes its command worked, and waits for output that is never coming. A silent no-op is the one answer a driving agent cannot recover from.
+Before [observed — 2026-08-22]: `@expo/agent-cli runtime --json` resolved to `group-help`, printed the group listing, and **exited 0**. A human reads that as an answer. An agent reads the exit code, believes its command worked, and waits for output that is never coming. A silent no-op is the one answer a driving agent cannot recover from.
 
-Now [observed — 2026-08-23]: a group name followed by options and no action, in a group with no `defaultAction`, resolves to `flags-without-action`. `cli.ts` prints the group listing first and the error last, because the last line is what an agent acts on, as `UNKNOWN_ACTION` with `Try: npx exagent <group> --help`, and exits `1`.
+Now [observed — 2026-08-23]: a group name followed by options and no action, in a group with no `defaultAction`, resolves to `flags-without-action`. `cli.ts` prints the group listing first and the error last, because the last line is what an agent acts on, as `UNKNOWN_ACTION` with `Try: npx @expo/agent-cli <group> --help`, and exits `1`.
 
-Three things are unchanged, deliberately. A bare group still prints its listing and exits `0`, because there is nothing wrong with asking a group what it does. `<group> --help` and `-h` are always the listing. And a group that declares a `defaultAction` still gives it every option, so `exagent doctor --json` checks, because there the options do belong to something.
+Three things are unchanged, deliberately. A bare group still prints its listing and exits `0`, because there is nothing wrong with asking a group what it does. `<group> --help` and `-h` are always the listing. And a group that declares a `defaultAction` still gives it every option, so `@expo/agent-cli doctor --json` checks, because there the options do belong to something.
 
 ### (b) A group cannot capture the bare form of a forwarded `expo` command
 
-The case it is written for [inferred, no such group exists yet]: `config` is in the forwarded set, and a future `config:*` group would want the colon names without taking `exagent config` away from `expo config`. The naming rule of llp/0006 decides it, because a command sharing a name with an `expo` command behaves like that command. So:
+The case it is written for [inferred, no such group exists yet]: `config` is in the forwarded set, and a future `config:*` group would want the colon names without taking `@expo/agent-cli config` away from `expo config`. The naming rule of llp/0006 decides it, because a command sharing a name with an `expo` command behaves like that command. So:
 
-- The **bare** form of such a name forwards: `exagent config --type public` is `expo config --type public`.
+- The **bare** form of such a name forwards: `@expo/agent-cli config --type public` is `expo config --type public`.
 - The **colon** forms belong to the group: `config:doctor` resolves as any group action does, and an action the group does not have is `UNKNOWN_ACTION`, never a forward.
-- The **space** form is unavailable there: `exagent config doctor` forwards two arguments to `expo config`, because the bare form is what it starts from.
+- The **space** form is unavailable there: `@expo/agent-cli config doctor` forwards two arguments to `expo config`, because the bare form is what it starts from.
 
 Cost [observed]: a group under a forwarded name reaches its actions by one spelling instead of two, so the "the space form is free" property of llp/0006 has an exception, and the group's `--help` must show the colon form. That is cheaper than a name meaning two things depending on its arguments.
 
@@ -836,21 +836,21 @@ Cost [observed]: a group under a forwarded name reaches its actions by one spell
 
 > **Amendment — 2026-08-26 ([[0016-v1-scope]]).** No group is named after another CLI's verb any
 > more: the v1 narrowing emptied `build` — `build:wait` deferred, `build:explain` renamed to
-> `inspect:build-log` — so `exagent build --platform ios` is now a name in none of the three maps,
+> `inspect:build-log` — so `@expo/agent-cli build --platform ios` is now a name in none of the three maps,
 > and the answer comes from the absent-capability table instead: "starting a build is the EAS CLI's
 > job", with `Try: npx eas build`. The one thing lost is the caller's own flags on that line, which
 > is the price of the answer moving from a group to a name. The `bareNameCommand` mechanism below is
 > kept and still tested, because the next group named after another CLI's verb wants it.
 
-Rule (a) says what `exagent build --platform ios` must not do, which is print a listing and exit 0. It does not say what the reader should do instead, and for this group the honest answer is not "read our help". `build` is a real verb of a real CLI, `--platform ios` is a real flag of it, and the caller aimed a correct command at the wrong binary.
+Rule (a) says what `@expo/agent-cli build --platform ios` must not do, which is print a listing and exit 0. It does not say what the reader should do instead, and for this group the honest answer is not "read our help". `build` is a real verb of a real CLI, `--platform ios` is a real flag of it, and the caller aimed a correct command at the wrong binary.
 
-So [observed — 2026-08-23, `src/commandRegistry.ts`] a `CommandGroup` may declare `bareNameCommand`, the command another CLI owns its bare name for. When it has one, the `flags-without-action` error names it, and the `Try:` line is that command **with the caller's own flags on it**, as in `Try: npx eas build --platform ios`, so the recovery is a paste rather than a re-read. A group without one is unchanged and recovers into `npx exagent <group> --help`.
+So [observed — 2026-08-23, `src/commandRegistry.ts`] a `CommandGroup` may declare `bareNameCommand`, the command another CLI owns its bare name for. When it has one, the `flags-without-action` error names it, and the `Try:` line is that command **with the caller's own flags on it**, as in `Try: npx eas build --platform ios`, so the recovery is a paste rather than a re-read. A group without one is unchanged and recovers into `npx @expo/agent-cli <group> --help`.
 
-This is narrower than rule (b), and the two do not overlap. Rule (b) is for a name in the _forwarded_ set, where `exagent` runs the other command itself. This is for a name owned by a CLI `exagent` does not forward, where the only thing to hand back is the command line.
+This is narrower than rule (b), and the two do not overlap. Rule (b) is for a name in the _forwarded_ set, where `@expo/agent-cli` runs the other command itself. This is for a name owned by a CLI `@expo/agent-cli` does not forward, where the only thing to hand back is the command line.
 
 ### (d) An argument a command has no place for is an error, not a shrug
 
-The same failure as rule (a), one level down. `exagent checkpoint:undo <id>` accepted the argument,
+The same failure as rule (a), one level down. `@expo/agent-cli checkpoint:undo <id>` accepted the argument,
 dropped it, restored the newest checkpoint over the working tree, and reported that it had worked
 [observed — friction run 2, F22]. `checkpoint:list` prints ids and the option is `--id`, so
 `checkpoint:undo <id>` is the natural line to type, and the one destructive command in the set was
@@ -907,7 +907,7 @@ neither documented.
 
 ## Suggestions are pasted, so they have to be runnable
 
-Decision [confirmed — Kudo, 2026-08-25]. Every suggestion is **written** `npx exagent …` and
+Decision [confirmed — Kudo, 2026-08-25]. Every suggestion is **written** `npx @expo/agent-cli …` and
 **printed** in the spelling of the runner the caller actually used.
 
 The finding [observed — dogfood, 2026-08-24]. The project's own `AGENTS.md` says "Use `bunx` instead
@@ -927,26 +927,26 @@ would have to be redone for the next runner.
 actually fires is `npm_config_user_agent`, which is `bun/1.3.14 npm/? node/…` under both `bunx` and
 `bun run`, and `npm/11.17.0 node/…` under `npx`. `npm_execpath` points at the Bun binary in the same
 cases and is kept as a fallback. `BUN_INSTALL` is deliberately **not** consulted. It says Bun is
-installed rather than that it started this process, and a Mac with `~/.bun` running `npx exagent`
+installed rather than that it started this process, and a Mac with `~/.bun` running `npx @expo/agent-cli`
 would be handed a line for a runner it is not in.
 
 **Scoped to this CLI's own name.** `npx eas-cli` is a *different package name* under Bun, because
 projects run it as `bunx eas-cli`, and `npx expo` may be too. So a blanket `npx` to `bunx` swap would
-produce lines that do not run. Only `npx exagent` is rewritten.
+produce lines that do not run. Only `npx @expo/agent-cli` is rewritten.
 
 **The machine channels keep the written form.** The `--json` payloads and the `cli:followups` and
-`cli:error` events carry `npx exagent`, whatever shell the terminal is. That contract does not move
-with the caller's runner, and `npx exagent` runs in a Bun project exactly as it does anywhere else.
+`cli:error` events carry `npx @expo/agent-cli`, whatever shell the terminal is. That contract does not move
+with the caller's runner, and `npx @expo/agent-cli` runs in a Bun project exactly as it does anywhere else.
 
 ### The runner this CLI *spawns* with is a different question
 
-[confirmed — Kudo, 2026-08-26, from a field report: `bunx exagent whoami` spawned `npm exec eas-cli`.]
+[confirmed — Kudo, 2026-08-26, from a field report: `bunx @expo/agent-cli whoami` spawned `npm exec eas-cli`.]
 
 The scoping rule above is about **text a person reads**, and it is right. A suggestion naming
 another package is a line that may not run under Bun, so only this CLI's own name is rewritten. It
 was silently doing a second job it was never meant to do, though. Nothing rewrote the runner this
 CLI *spawns* published packages with, and that was the literal `npx` in five places. So a caller who
-reached `exagent` through Bun was handed npm's exec for every package the CLI fetches: a different
+reached `@expo/agent-cli` through Bun was handed npm's exec for every package the CLI fetches: a different
 runner, a different cache, and a slower first run, from a CLI they had reached through Bun.
 
 `src/utils/packageRunner.ts` is the second answer, and the split is the design: **a suggestion is
@@ -1004,7 +1004,7 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   live, 2026-08-23, in both CI and non-CI mode; the app *was* opened first]. Opening a window is a
   convenience and should not be able to fail a start, the way the eager Xcode warm-up already
   swallows its own error [observed — `startAsync.ts`]. Worked around by not relying on `--ios`:
-  llp/0004 §A plan step's `reason` records why the follow-ups name `exagent navigate /` instead.
+  llp/0004 §A plan step's `reason` records why the follow-ups name `@expo/agent-cli navigate /` instead.
 - Separate "nobody can answer a prompt" from "do not watch files". `CI` means both today
   [observed — `isWatchEnabled()` returns `!env.CI`], so a wrapper that wants the first has to give
   up the second, and a wrapper that wants the second has to accept the first. Either an
@@ -1032,7 +1032,7 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
 - **A `--no-git` flag.** `create-expo` runs `git init` and commits, unconditionally, and its help lists
   `--yes`, `--no-install`, `--no-agents-md`, `--template`, `--example`, `--version` and `--help` and
   nothing for git [observed — `create-expo@latest --help`, 2026-08-28]. So a wrapper that offers "no
-  repository" cannot ask for one, and `exagent new --no-git` used to *report* a skip beside a `.git`
+  repository" cannot ask for one, and `@expo/agent-cli new --no-git` used to *report* a skip beside a `.git`
   holding an "Initial commit" — a false statement in a documented `--json` field (F110). It is not
   hypothetical demand: a project about to be nested in an existing repository, and a scratch project
   for a test tier that asserts it is outside every git checkout (llp/0022 §live-local), both want it.

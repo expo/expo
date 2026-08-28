@@ -118,7 +118,7 @@ also the reason one of its cleanups will. The ordering has a trap in it that thi
 second run: the cleanup that deletes the directory the other cleanups run *in* has to be registered
 first so that it runs last, or both of them answer `spawn node ENOENT`.
 
-Every suite prints a **cost line**: wall time, `exagent` runs, scaffolds, deploys, cloud sessions,
+Every suite prints a **cost line**: wall time, `@expo/agent-cli` runs, scaffolds, deploys, cloud sessions,
 and where the evidence went. The audience is somebody deciding whether to run this tier, and the
 numbers that matter to them are the ones with a price.
 
@@ -128,8 +128,8 @@ names its artifact rather than quoting kilobytes of a bundler's opinion into a j
 
 ## live-project: the commands whose backend is the project
 
-[added 2026-08-28] **32 tests, 44 s, 49 `exagent` runs, one scaffold, free.** One project
-scaffolded by `exagent new`, and the commands that act on *it* rather than on a device: `install`
+[added 2026-08-28] **32 tests, 44 s, 49 `@expo/agent-cli` runs, one scaffold, free.** One project
+scaffolded by `@expo/agent-cli new`, and the commands that act on *it* rather than on a device: `install`
 adding a package, `agents:setup`, `skills:sync/list/show/clean`, `inspect:config-plugins`, `start`,
 and the forwarded `expo` set.
 
@@ -184,7 +184,7 @@ and it is the reason no assertion here may name a package manager's error codes.
 
 ## live-local: the whole loop, on a real simulator
 
-One project scaffolded by `exagent new` into a scratch directory, and the v1 local loop run against it
+One project scaffolded by `@expo/agent-cli new` into a scratch directory, and the v1 local loop run against it
 on a booted iOS simulator running Expo Go. 30 tests, ~60 s, free.
 
 The scratch directory must be **outside every git checkout**, and the harness asserts it by walking up
@@ -212,7 +212,7 @@ Here is what this suite reaches that nothing below it can.
   pin that Metro agrees, that the bundle read is the one on disk, or that recovery needs no restart,
   because its bundle response is whatever the fixture returns.
 
-The break is a **syntax error** and never a dead statement. `exagent new` scaffolds
+The break is a **syntax error** and never a dead statement. `@expo/agent-cli new` scaffolds
 `experiments.reactCompiler: true`, and the React Compiler deletes unreachable statements out of a
 render body. So `(undefined as any).boom` is compiled away and every gate stays honestly green
 [observed — friction run 7 §5]. Someone loses an hour to this once per project, and it is written here
@@ -301,20 +301,20 @@ reached by *asking* the runtime rather than by knowing the platform, which is th
 vindicated rather than a fix.
 
 **It does not scaffold, and that is the design.** Every other suite here makes its own project in
-`beforeAll` because `exagent new` costs seconds. A development build costs about **fifteen minutes**
+`beforeAll` because `@expo/agent-cli new` costs seconds. A development build costs about **fifteen minutes**
 of Gradle or Xcode, and the sibling rule of §What a live assertion is allowed to be, that a suite must
 be runnable in a minute, makes that impossible. So the artifact is the *prerequisite*, the way
-`live-eas` treats an EAS-linked project. `EXAGENT_LIVE_DEVCLIENT_PROJECT` names a project somebody
+`live-eas` treats an EAS-linked project. `AGENT_CLI_LIVE_DEVCLIENT_PROJECT` names a project somebody
 has already built, and the gate is two facts rather than one:
 
 - the project's `android.package` is installed on the attached device (`pm list packages`), and
-- `.expo/exagent-last-build.json` records an android build.
+- `.expo/agent-cli-last-build.json` records an android build.
 
-The second half is not belt and braces. `exagent dev` plans a **build** for a platform with no
+The second half is not belt and braces. `@expo/agent-cli dev` plans a **build** for a platform with no
 recorded fingerprint, so a project whose app is installed and whose record is missing would send
 `beforeAll` into the fifteen minutes the gate exists to avoid. The two really are separable, which is
 what F121 was about. The record is written when the **app reaches the device**, so
-`npx exagent dev --android --yes` alone is enough to satisfy the gate. Before it, the
+`npx @expo/agent-cli dev --android --yes` alone is enough to satisfy the gate. Before it, the
 `expo run:android` step had to *exit*, which meant stopping its dev server too.
 
 **It uses the project in place.** The scratch-outside-git rule exists because `eas deploy` and
@@ -430,7 +430,7 @@ properties of undefined (reading 'body')` and a pointer at ngrok's status page
 [observed — `wave19-live/01-dev-tunnel.err`, 2026-08-27]. What works is a **proxy origin**: a public
 name for the port (`tuft host add`) and `EXPO_PACKAGER_PROXY_URL` so the dev server advertises it. So
 the prerequisite gate is not "is ngrok installed". It is "is there a way to publish a local port", with
-`EXAGENT_LIVE_PUBLIC_ORIGIN` as the escape hatch for a machine with a different one.
+`AGENT_CLI_LIVE_PUBLIC_ORIGIN` as the escape hatch for a machine with a different one.
 
 This also moved where the address is read from. A proxied dev server prints
 `Waiting on http://localhost:<port>` and names the real origin only in its manifest's `launchAsset.url`.
@@ -465,7 +465,7 @@ nothing more. Exit 22 with `attached: false` is the honest outcome, and a test d
 the CLI is honest about a wall upstream of it, and the branch that would notice the wall moving is
 written into the test.
 
-It is gated **twice**: on prerequisites, like every suite, and on `EXAGENT_LIVE_CLOUD=1`, because its
+It is gated **twice**: on prerequisites, like every suite, and on `AGENT_CLI_LIVE_CLOUD=1`, because its
 prerequisites can all hold on a machine whose owner did not mean to start a billing session from a test
 run. Cleanup ends the expensive thing first. The session is stopped unconditionally, with `--id` so
 that only this run's is touched, and it does not read the id first, because the failure worth guarding
@@ -493,7 +493,7 @@ nothing has opened the *project* in it. So the first `exp://` URL goes to the **
 "Open in 'Expo Go'?", and nobody answers. That is `navigate --cloud` at exit 22 after 60.9 s with the
 `open` verb having exited 0, then two 180 s reloads that served no bundle.
 `eas simulator … --open-url exp://<host>` is the runner opening the URL in the app it just launched,
-which is the state the first *working* session was in before any exagent command touched it. With it,
+which is the state the first *working* session was in before any @expo/agent-cli command touched it. With it,
 the same command is exit 0 in 17.1 s with `attached: true` in 206 ms. [[0005-runtime-loop-tools]] §The
 dialog nobody is there to answer records the layered fix.
 
@@ -582,7 +582,7 @@ own install progress ("Resolving dependencies")`, which is the guard standing wh
 to be. With the mutex on, five consecutive runs answered both platforms from `eas`.
 
 One thing about the test itself is worth carrying, because it is the shape a live test fails in
-silently. The F93 test **deletes `.expo/exagent-eas-builds.json` first**. Without that, the tests above
+silently. The F93 test **deletes `.expo/agent-cli-eas-builds.json` first**. Without that, the tests above
 it have warmed the cache, iOS answers from one `readFileSync`, and the concurrent pair the defect needs
 never exists. The test passed while exercising a single lookup [observed — 2026-08-27: `source:
 "cache"` for ios, `"eas"` for android]. A live test whose subject is a *race* has to assert that both
@@ -594,7 +594,7 @@ sides raced.
 that handler recognises macOS `EMFILE` and **rethrows everything else**. Node's exit code for an
 exception thrown from inside an `uncaughtException` handler is **7**, "Internal Exception Handler
 Run-Time Failure", which is exactly the code [[0010-agent-conventions]] §Exit codes reserves for
-needs-human. Proven with no exagent involved:
+needs-human. Proven with no @expo/agent-cli involved:
 
 ```
 node -e "process.on('uncaughtException',(e)=>{throw e}); setImmediate(()=>{throw new Error('x')})"

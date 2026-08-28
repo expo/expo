@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Final
-**Systems:** the plan engine (`src/plan/decide.ts`, `src/plan/resolveAsync.ts`, `src/plan/runTarget.ts`); the toolchain probe and its vocabulary (`src/toolchain/`); the developer config (`src/settings/`); EAS CLI resolution (`src/utils/easCli.ts`, `src/utils/packageRunner.ts`, `src/utils/processGroup.ts`); project-local bin resolution (`src/utils/projectBin.ts`, and its callers `src/utils/expoCli.ts`, `src/typecheck/checkAsync.ts`, `src/project/fingerprint.ts`, `src/passthrough/auth.ts`, `src/needsHuman/preflight.ts`, `src/doctor/checkAsync.ts`, `src/deploy/launchCli.ts`); `exagent dev` (`src/dev/`); `exagent status` (`src/status/`); the change-class follow-ups (`src/followups/change.ts`; `exagent impact` carried these until it was folded into `status`, 2026-08-26)
+**Systems:** the plan engine (`src/plan/decide.ts`, `src/plan/resolveAsync.ts`, `src/plan/runTarget.ts`); the toolchain probe and its vocabulary (`src/toolchain/`); the developer config (`src/settings/`); EAS CLI resolution (`src/utils/easCli.ts`, `src/utils/packageRunner.ts`, `src/utils/processGroup.ts`); project-local bin resolution (`src/utils/projectBin.ts`, and its callers `src/utils/expoCli.ts`, `src/typecheck/checkAsync.ts`, `src/project/fingerprint.ts`, `src/passthrough/auth.ts`, `src/needsHuman/preflight.ts`, `src/doctor/checkAsync.ts`, `src/deploy/launchCli.ts`); `@expo/agent-cli dev` (`src/dev/`); `@expo/agent-cli status` (`src/status/`); the change-class follow-ups (`src/followups/change.ts`; `@expo/agent-cli impact` carried these until it was folded into `status`, 2026-08-26)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-26 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0008-guardrails]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0011-impact-and-freshness]]
@@ -12,7 +12,7 @@
 Two decisions this CLI was making badly, and one place to record what a developer wants.
 
 1. **Where a build runs is part of the plan, not a footnote under it.** [[0004-smart-start-and-project-state]] §Where a build runs gave the CLI two words for the two places, and a probe that answers which of them this machine can do. It then deliberately left the plan's *steps* alone, adding sentences and a warning instead. On a host that cannot build for the target platform at all, that is a plan nobody should approve, printed as though they should. The selection now happens **while the plan is decided**, so a machine with no Xcode gets `eas build` in the steps.
-2. **The developer may disagree, and there has to be somewhere to say so.** They may want a dev build where Expo Go would do, or the cloud where the toolchain exists. One config, four keys, in `package.json` under `expo.exagent`.
+2. **The developer may disagree, and there has to be somewhere to say so.** They may want a dev build where Expo Go would do, or the cloud where the toolchain exists. One config, four keys, in `package.json` under `expo.agentCli`.
 
 ## Impossible is not missing
 
@@ -37,7 +37,7 @@ precedence is the contract:
 | Rank | Input | Wins because |
 | --- | --- | --- |
 | 1 | A flag on this command line (`--eas`, `--local`) | It is the most recent thing anyone said. |
-| 2 | The project's `exagent` config | The developer wrote it down on purpose. |
+| 2 | The project's `@expo/agent-cli` config | The developer wrote it down on purpose. |
 | 3 | The host cannot have the toolchain (`impossible`) | No install here would change it. |
 | 4 | The probe found the toolchain missing | This machine cannot, and could. |
 | 5 | Nothing | Builds run here. |
@@ -119,7 +119,7 @@ nothing installed would mark the next plan fresh against an app no device is run
 
 ### Running an `eas` step
 
-`exagent dev` executed `expo` and refused everything else (`assertExpoStep`). It now accepts `expo`
+`@expo/agent-cli dev` executed `expo` and refused everything else (`assertExpoStep`). It now accepts `expo`
 and `eas`, resolved through `resolveEasCliOrThrow`, the *throwing* resolver. A plan that
 chose the cloud cannot do its job without the CLI, so an unreachable `eas` is an error rather than a
 step that quietly does nothing. That error needs a machine with no package runner at all, because
@@ -278,7 +278,7 @@ plain `npm install`, where `apps/mobile/node_modules` does not exist]. What the 
 | --- | --- | --- |
 | `typecheck --json` | exit 1 `TYPECHECK_CLI_MISSING`, "install the project's dependencies" | they were installed, and `tsc` was at the workspace root |
 | `status` freshness | `no fingerprint tool … install @expo/fingerprint` | installed, one directory up; no hash was computed at all |
-| `status` auth | `unknown (nothing could answer)` | `exagent whoami` names the account in the same directory |
+| `status` auth | `unknown (nothing could answer)` | `@expo/agent-cli whoami` names the account in the same directory |
 | `doctor`, `deploy --native` | nothing — they downloaded the tool | the repository had already installed it |
 
 The last row is why this is worth a section rather than a patch: two of the six *degraded quietly*,
@@ -333,16 +333,16 @@ silently ignored: "Expo Go cannot run this project, so the plan is a development
 That is the difference between a preference that was considered and one that was dropped.
 
 **No new flag names.** `--go` and `--dev-client` are `expo start`'s own, are already accepted and
-forwarded by `exagent dev`, and already mean exactly this to a reader. They are now read *first*, as
+forwarded by `@expo/agent-cli dev`, and already mean exactly this to a reader. They are now read *first*, as
 the run target the plan is decided against. Passing both is refused.
 
 ## Where the config lives
 
-Decision [decided — 2026-08-26]: **`package.json` › `expo` › `exagent`**.
+Decision [decided — 2026-08-26]: **`package.json` › `expo` › `@expo/agent-cli`**.
 
 Four candidates were considered against what each one costs.
 
-**`app.json`, as a top-level `exagent` key beside `expo`. Rejected, because it is broken by design.**
+**`app.json`, as a top-level `@expo/agent-cli` key beside `expo`. Rejected, because it is broken by design.**
 `@expo/config`'s `reduceExpoObject` warns and **discards every top-level key** when an `expo` object
 is present: *"Root-level `expo` object found. Ignoring extra keys in Expo config"*
 [observed — `packages/@expo/config/src/Config.ts`]. Every Expo command in the project would print
@@ -356,7 +356,7 @@ machinery [[0011-impact-and-freshness]] and the plan engine are built on. It is 
 the app's manifest and readable at runtime, which a preference about this developer's laptop has no
 business being.
 
-**`exagent.config.js`. Rejected for now, recorded as a follow-up.** `metro.config.js` is a file
+**`agent-cli.config.js`. Rejected for now, recorded as a follow-up.** `metro.config.js` is a file
 because Metro's configuration is *functions*, meaning resolvers and transformers, and cannot be JSON.
 `eas.json` is a file because it holds many named profiles with a schema of its own, and is EAS's
 contract with the service. This config is four scalars. A `.js` file would mean `require`-ing
@@ -364,7 +364,7 @@ project code inside a CLI whose `status` promises to be instant, and it would ma
 unreadable by anything that is not this CLI, including another agent and including this CLI's own
 `--json`. If computed values ever become necessary, that is the moment to add it.
 
-**`package.json` › `expo.exagent`. Chosen.** It is where this repository already keeps every other
+**`package.json` › `expo.agentCli`. Chosen.** It is where this repository already keeps every other
 piece of *tooling* configuration, as distinct from *app* configuration:
 `expo.install.exclude` for the Expo CLI's installer
 [observed — `packages/@expo/cli/src/install/checkPackages.ts`], `expo.doctor`
@@ -374,18 +374,18 @@ JSON, so one `readFileSync` answers it. Nothing here moves a hash or ships into 
 reasons: `package.json`'s `expo` key is **not** merged into the `ExpoConfig`, since only `name`,
 `version` and `description` are read from that file [observed — `Config.ts`
 `ensureConfigHasDefaultValues`], and only `scripts` and the dependency set reach the fingerprint
-[observed — `sourcer/Bare.ts`]. And `expo.<tool>` survives `exagent` ever merging into the Expo CLI
+[observed — `sourcer/Bare.ts`]. And `expo.<tool>` survives `@expo/agent-cli` ever merging into the Expo CLI
 without the key moving.
 
 The module is `src/settings/` rather than `src/config/`, because `src/config/` is
-`exagent inspect:config-plugins`, the **app** config, which is the opposite kind of file.
+`@expo/agent-cli inspect:config-plugins`, the **app** config, which is the opposite kind of file.
 
 ### The schema
 
 ```json
 {
   "expo": {
-    "exagent": {
+    "agentCli": {
       "target": "expo-go" | "dev-build",
       "buildBackend": "local" | "eas",
       "ios": { "buildBackend": "local" | "eas" },
@@ -404,7 +404,7 @@ is. `target` has no per-platform form, because it is about the app, which is not
 
 Unknown keys and unknown values are **errors**, not warnings [decided — 2026-08-26].
 
-The cost is real and is accepted. A project that names a key a newer `exagent` added cannot be read
+The cost is real and is accepted. A project that names a key a newer `@expo/agent-cli` added cannot be read
 by an older one, and the error says exactly that and lists the keys the running version knows. It is
 worth paying because every key here exists to change what a build does. A preference
 that was meant to change a plan and silently did not is a **wrong plan approved as a right one**,
@@ -414,12 +414,12 @@ what people actually write.
 
 Two smaller calls. A `package.json` that is not valid JSON is an error rather than "no config",
 because a file this CLI cannot parse is a file whose preferences it cannot honour, and pretending
-none were written is the silent drop again. A project with **no** `exagent` key is not an error and
+none were written is the silent drop again. A project with **no** `@expo/agent-cli` key is not an error and
 never warns, because saying nothing is the default and by far the common case.
 
 `status` is the one exception to the fatality. It catches the error, reports every other line, and
 exits 0, because `status` promises to be information rather than judgment
-([[0004-smart-start-and-project-state]] §`exagent status`), and every other fact in that report is
+([[0004-smart-start-and-project-state]] §`@expo/agent-cli status`), and every other fact in that report is
 still worth having. `impact` does the same for the follow-up hint, for the same reason: it answers a
 question about a *change*, and refusing to answer it over a preference file would be the wrong
 trade.
@@ -452,10 +452,10 @@ Three changes, all of them the same idea: a ladder must not offer a route the pl
   cloud route needs an account, and "not signed in" is a failure that otherwise arrives *after* the
   upload. `eas-build-instead` survives for the one case that still produces a local plan on a
   machine that cannot build: a `--local`, or a config that asked for it.
-- **`impact`'s `needs-native-build`** keeps `npx exagent dev` first whichever backend was chosen,
+- **`impact`'s `needs-native-build`** keeps `npx @expo/agent-cli dev` first whichever backend was chosen,
   because it is the command that *makes a plan*, and on a host that cannot build, the plan it makes is
   the cloud one. What changes is the sentence, which now says which route that is and why. The second
-  rung becomes `npx exagent dev --local`, the way past a choice the caller disagrees with.
+  rung becomes `npx @expo/agent-cli dev --local`, the way past a choice the caller disagrees with.
 - Nothing labels a preference it did not act on, and everything labels one it did. The run-target
   sentence is printed on **every** native row rather than only the row it moved, because "did my
   config do anything?" is a question the plan has to answer either way.

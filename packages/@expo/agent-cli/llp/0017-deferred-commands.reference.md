@@ -24,11 +24,11 @@ mechanism is the shape it is.
 
 | Section                     | The command                          | Code                        | Why it left v1                        |
 | --------------------------- | ------------------------------------ | --------------------------- | ------------------------------------- |
-| §`dev:wait`                 | `exagent dev:wait`                   | `src/deferred/dev-wait/`    | `smoke` asks its questions and three more |
-| §The checkpoint system      | `exagent checkpoint[:list\|:undo]`   | `src/deferred/checkpoint/`  | agents manage git themselves          |
-| §`build:wait`               | `exagent build:wait <id>`            | `src/deferred/build-wait/`  | wants to be `build --wait`, not a command |
-| §`runtime:network`          | `exagent runtime:network`            | `src/deferred/runtime-network/` | the CDP Network domain is unstable and absent on Expo Go |
-| §`doctor:fix`               | `exagent doctor:fix`                 | `src/deferred/doctor-fix/`  | the check half is the v1 answer       |
+| §`dev:wait`                 | `@expo/agent-cli dev:wait`                   | `src/deferred/dev-wait/`    | `smoke` asks its questions and three more |
+| §The checkpoint system      | `@expo/agent-cli checkpoint[:list\|:undo]`   | `src/deferred/checkpoint/`  | agents manage git themselves          |
+| §`build:wait`               | `@expo/agent-cli build:wait <id>`            | `src/deferred/build-wait/`  | wants to be `build --wait`, not a command |
+| §`runtime:network`          | `@expo/agent-cli runtime:network`            | `src/deferred/runtime-network/` | the CDP Network domain is unstable and absent on Expo Go |
+| §`doctor:fix`               | `@expo/agent-cli doctor:fix`                 | `src/deferred/doctor-fix/`  | the check half is the v1 answer       |
 
 **What is not here, and this is the one exception to the rule above.** A deferred area's findings
 that still govern **live** code stayed in the LLP that made them, and every section below names which
@@ -48,7 +48,7 @@ around them moves. Read a path as where a thing was on 2026-08-26, not as where 
 
 ## `dev:wait`
 
-`exagent dev:wait` waited for this project's dev server to be ready, proved the dev server was
+`@expo/agent-cli dev:wait` waited for this project's dev server to be ready, proved the dev server was
 **this** project's, and built the entry bundle to prove the project compiles. Code:
 `src/deferred/dev-wait/` (`wait.ts`, `waitAsync.ts`, `resolveWaitOptions.ts`, `waitFormat.ts`,
 `followups.ts`, and the tier-0 eval scenario `dev-wait-no-dev-server.eval.json`).
@@ -64,15 +64,15 @@ between two.
 
 | what it was reached for         | the v1 answer                            |
 | ------------------------------- | ---------------------------------------- |
-| the gate before reading the app | `exagent smoke`                          |
-| app health over a window        | `exagent runtime:errors --fail-on-error` |
-| readiness at start              | `exagent dev --detach --wait-ready`      |
+| the gate before reading the app | `@expo/agent-cli smoke`                          |
+| app health over a window        | `@expo/agent-cli runtime:errors --fail-on-error` |
+| readiness at start              | `@expo/agent-cli dev --detach --wait-ready`      |
 
 Every one of these had to be a command that exists, because a suggestion is a command the reader runs
 ([[0009-smart-followups]], and the rule as [[0016-v1-scope]] states it).
 
-`status`'s `next` line is the one worth naming. It was `exagent dev:wait --require-app` and is now
-`exagent smoke`, which is a *larger* command than the one it replaces. That is the point of the
+`status`'s `next` line is the one worth naming. It was `@expo/agent-cli dev:wait --require-app` and is now
+`@expo/agent-cli smoke`, which is a *larger* command than the one it replaces. That is the point of the
 deferral rather than a cost of it: the reason `dev:wait` went is that the smaller gate invited an
 agent to believe it had a verdict.
 
@@ -113,7 +113,7 @@ the same thing of the command that answers it now.
 
 ## The checkpoint system
 
-`exagent checkpoint [--label]`, `exagent checkpoint:list` and `exagent checkpoint:undo [--id]`, plus
+`@expo/agent-cli checkpoint [--label]`, `@expo/agent-cli checkpoint:list` and `@expo/agent-cli checkpoint:undo [--id]`, plus
 the automatic snapshots that `install`, `agents:setup` and a prebuilding `dev` plan took. Code:
 `src/deferred/checkpoint/` (`create.ts`, `restore.ts`, `store.ts`, `integration.ts`, `events.ts`,
 `followups.ts`, `types.ts`, `index.ts`).
@@ -134,10 +134,10 @@ never deletes files created after the snapshot, is the first thing to revisit if
 
 [observed — 2026-08-22]
 
-**Checkpoints/undo** was one colon group, per [[0006-agent-native-cli-surface]] §The `exagent` launcher: `exagent checkpoint [--label]`, where the bare group takes the snapshot; `exagent checkpoint:list`; and `exagent checkpoint:undo [--id]`. The top-level `exagent undo` and its `--list` flag are gone [confirmed — Kudo, 2026-08-22].
+**Checkpoints/undo** was one colon group, per [[0006-agent-native-cli-surface]] §The `@expo/agent-cli` launcher: `@expo/agent-cli checkpoint [--label]`, where the bare group takes the snapshot; `@expo/agent-cli checkpoint:list`; and `@expo/agent-cli checkpoint:undo [--id]`. The top-level `@expo/agent-cli undo` and its `--list` flag are gone [confirmed — Kudo, 2026-08-22].
 
-- **When one was taken.** Automatically before `expo install`, before `agents:setup`'s AGENTS.md write, and before an `exagent dev` plan containing prebuild. `--no-checkpoint` or `EXAGENT_NO_CHECKPOINT` skipped it.
-- **The snapshot.** A temp-index `git add -A .`, then `write-tree`, then a parent-linked `commit-tree` written as an **unreferenced object**. HEAD, branches, the index and the reflog are untouched. Ids live in `.expo/exagent-checkpoints.json`, capped at 20.
+- **When one was taken.** Automatically before `expo install`, before `agents:setup`'s AGENTS.md write, and before an `@expo/agent-cli dev` plan containing prebuild. `--no-checkpoint` or `AGENT_CLI_NO_CHECKPOINT` skipped it.
+- **The snapshot.** A temp-index `git add -A .`, then `write-tree`, then a parent-linked `commit-tree` written as an **unreferenced object**. HEAD, branches, the index and the reflog are untouched. Ids live in `.expo/agent-cli-checkpoints.json`, capped at 20.
 - **The restore.** `read-tree` plus `checkout-index -a -f`. It restores everything the checkpoint holds, including since-deleted files, and reports restored and kept counts. Documented limit: it **never deletes** files created after the snapshot.
 - **What it never held.** Gitignored files are in no checkpoint, which is why the `install-dependencies` follow-up exists. And `git gc --prune=now` can reap old snapshots, which `CHECKPOINT_OBJECT_MISSING` names.
 
@@ -148,7 +148,7 @@ plumbing is what moved ([[0016-v1-scope]] §Deferred is a place). The suites mov
 
 ### Deleting what a checkpoint cannot hold
 
-[added — 2026-08-24, with `exagent doctor:fix`; see §`doctor:fix`. Both commands are deferred, so
+[added — 2026-08-24, with `@expo/agent-cli doctor:fix`; see §`doctor:fix`. Both commands are deferred, so
 nothing below is shipped. The **general rule** this section produced is not about checkpoints and
 stayed live, in [[0008-guardrails]] §A command whose targets are gitignored.]
 
@@ -162,24 +162,24 @@ So the honesty had to travel with the artifact rather than stay in a document. T
 ### What stayed in [[0008-guardrails]]
 
 The other three guardrails of that document are unaffected and ship: the plan-with-cost dry run
-(`exagent dev --plan` and `src/dev/confirmPlan.ts`), the permission tiers, and the
+(`@expo/agent-cli dev --plan` and `src/dev/confirmPlan.ts`), the permission tiers, and the
 untrusted-content marking the runtime commands do. So does the general rule the section above
 produced, which is about gitignored targets rather than about snapshots.
 
 ## `build:wait`
 
-`exagent build:wait <id>` attached to an EAS build that already existed — one started by CI, by the
+`@expo/agent-cli build:wait <id>` attached to an EAS build that already existed — one started by CI, by the
 dashboard, or by another agent — polled it, and left with what the build did. Code:
 `src/deferred/build-wait/` (`buildWaitAsync.ts`, `waitAsync.ts`, `status.ts`, `parseView.ts`,
 `resolveOptions.ts`, `format.ts`, `followups.ts`, `types.ts`, `index.ts`).
 
 **Why it left** [confirmed — Kudo, 2026-08-26]: the shape is wrong rather than the work. A caller
-who wants to wait on a build has already run a build command, and `exagent build:wait <id>` asks
+who wants to wait on a build has already run a build command, and `@expo/agent-cli build:wait <id>` asks
 them to carry an id from one command to another, while `npx eas build --wait` does the whole thing
 in one. The answer is a **`--wait` flag on a build verb this CLI owns**, not a command of its own.
 
-**Re-entry criteria:** `exagent build` exists as a verb with local and EAS parity, meaning the same
-flag waits on a local `expo run:ios` and on an EAS build, so that `exagent build --wait` is one answer
+**Re-entry criteria:** `@expo/agent-cli build` exists as a verb with local and EAS parity, meaning the same
+flag waits on a local `expo run:ios` and on an EAS build, so that `@expo/agent-cli build --wait` is one answer
 rather than two commands wearing one name. The table below is what it returns as.
 
 **What stayed in [[0010-agent-conventions]]:** three things, all in §Exit codes there. The `20`–`29`
@@ -216,15 +216,15 @@ Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never t
 [moved here from [[0012-build-explain]], 2026-08-28. The command it names was `build:explain` when
 this was decided, and is `inspect:build-log` now ([[0016-v1-scope]]).]
 
-`build:wait`'s errored ladder gains a rung naming `npx exagent build:explain --file <path>`, and its `why` says the step in between out loud: _"Once the log above is saved to a file, this locates the failing line in it and names the fix. Nothing here can download it for you yet."_
+`build:wait`'s errored ladder gains a rung naming `npx @expo/agent-cli build:explain --file <path>`, and its `why` says the step in between out loud: _"Once the log above is saved to a file, this locates the failing line in it and names the fix. Nothing here can download it for you yet."_
 
-That wording is the decision. The obvious rung would have been `npx exagent build:explain <build-id>`, because the wait has the id and handing it straight over is the loop an agent wants. It is also the one form that does not work, so the rung would have sent an agent to a command that errors, one hop after a command that worked. [[0009-smart-followups]]'s contract is that a follow-up is the next thing to _run_, and a rung that cannot be run is worse than no rung. Submissions do not get it at all: a submission log is not a native build log, and the rule table was written against those.
+That wording is the decision. The obvious rung would have been `npx @expo/agent-cli build:explain <build-id>`, because the wait has the id and handing it straight over is the loop an agent wants. It is also the one form that does not work, so the rung would have sent an agent to a command that errors, one hop after a command that worked. [[0009-smart-followups]]'s contract is that a follow-up is the next thing to _run_, and a rung that cannot be run is worse than no rung. Submissions do not get it at all: a submission log is not a native build log, and the rule table was written against those.
 
 What stayed in [[0012-build-explain]] is the argument this fed: the reserved `<build-id>` form exists because fetching, decompressing and expiring a log are three things a reader should not have to get right by hand.
 
 ## `runtime:network`
 
-`exagent runtime:network` collected the running app's network traffic over the CDP Network domain.
+`@expo/agent-cli runtime:network` collected the running app's network traffic over the CDP Network domain.
 Code: `src/deferred/runtime-network/` (`runtimeNetworkAsync.ts`, `networkCollector.ts`,
 `resolveOptions.ts`, `format.ts`, `followups.ts`, `help.ts`).
 
@@ -234,7 +234,7 @@ edge cases, so the command's most common outcome was an explanation of why it co
 
 **Re-entry criteria:** React Native ships network inspection outside
 `InspectorFlags::getNetworkInspectionEnabled()`, or Expo Go carries a runtime that implements the
-domain, so that a default `exagent runtime:network` run against a default project returns a request
+domain, so that a default `@expo/agent-cli runtime:network` run against a default project returns a request
 log rather than `NETWORK_DOMAIN_UNAVAILABLE`.
 
 **What stayed in [[0005-runtime-loop-tools]]:** three things. The §Candidates bullet that proposed it,
@@ -245,7 +245,7 @@ reported*, which was written against this command and outlived it.
 
 ### What was built and verified
 
-[observed — 2026-08-22]: `exagent runtime network`, a CDP Network domain collector. It correlated request, response and failure by requestId, and counted three outcomes: answered, failed, and never-answered. The third exists because RN never sends `Network.loadingFailed` for a refused connection [observed, SDK 57/RN 0.86]. Live-verified on iOS against 200, 404 and refused.
+[observed — 2026-08-22]: `@expo/agent-cli runtime network`, a CDP Network domain collector. It correlated request, response and failure by requestId, and counted three outcomes: answered, failed, and never-answered. The third exists because RN never sends `Network.loadingFailed` for a refused connection [observed, SDK 57/RN 0.86]. Live-verified on iOS against 200, 404 and refused.
 
 **Two refusals, not one** [observed — `ReactCommon/jsinspector-modern/HostAgent.cpp`, React Native 0.86, 2026-08-23]. `Network.enable` fails for two unrelated reasons, and the command must not report either as the other:
 
@@ -256,14 +256,14 @@ The classification is by the runtime's own answer: `classifyNetworkDomainRefusal
 
 ## `doctor:fix`
 
-`exagent doctor:fix` reset the caches and build state an Expo project accumulates, from a table an
+`@expo/agent-cli doctor:fix` reset the caches and build state an Expo project accumulates, from a table an
 agent could read before it ran anything. Code: `src/deferred/doctor-fix/` (`fix.ts`, `fixAsync.ts`,
 `fixPlan.ts`, `fixApply.ts`, `fixSteps.ts`, `fixSafety.ts`, `fixFormat.ts`, `fixTypes.ts`,
 `packageManager.ts`, `resolveFixOptions.ts`, `followups.ts`), with `src/deferred/checkpoint/git.ts`.
 This section was llp/0013 until 2026-08-26; the document was folded in here whole and deleted.
 
 **Why it left** [confirmed — Kudo, 2026-08-26]: the split it opens with, expo-doctor diagnoses and
-`exagent` acts, is real, but only the diagnosing half earns a place in a first surface. What
+`@expo/agent-cli` acts, is real, but only the diagnosing half earns a place in a first surface. What
 `doctor:fix` deletes is caches and build state, and every one of them is something an agent can
 delete with the tool it already has. `rm -rf node_modules && npx expo prebuild --clean` is one line
 an agent writes without help. The command's value is the *table* and the safety rules around it,
@@ -283,15 +283,15 @@ worth asking for whether or not this command comes back.
 
 ### The split, and the asymmetry it is arranged around
 
-`expo-doctor` diagnoses and `exagent` acts. `doctor:check` was the first half of that split ([[0010-agent-conventions]] §Exit codes). This is the second: one command that resets the caches and build state an Expo project accumulates, from a table an agent can read before it runs anything.
+`expo-doctor` diagnoses and `@expo/agent-cli` acts. `doctor:check` was the first half of that split ([[0010-agent-conventions]] §Exit codes). This is the second: one command that resets the caches and build state an Expo project accumulates, from a table an agent can read before it runs anything.
 
 The whole command is arranged around one asymmetry. Every other mutating command in this CLI **adds**, whether an install, a prebuild or a build, and the expensive mistake there is a prompt nobody can answer. This one **deletes**, and the expensive mistake is a plan nobody read.
 
 ### Dry run is the default, and `--apply` is what executes
 
-Decision [confirmed — Kudo, 2026-08-24]. `exagent doctor:fix` prints what it would do and touches nothing. `--apply` runs it.
+Decision [confirmed — Kudo, 2026-08-24]. `@expo/agent-cli doctor:fix` prints what it would do and touches nothing. `--apply` runs it.
 
-This is the opposite of `exagent dev`, which runs the plan it prints ([[0004-smart-start-and-project-state]]), and the difference is worth stating rather than discovering. `dev` is asked for an outcome, getting this app onto a device, and a plan is how it explains itself on the way. `doctor:fix` is asked for a *deletion*, and a deletion has no partial answer to fall back on. A driving agent that misreads `dev` loses a few minutes of prebuild. One that misreads this loses `node_modules` and a `Podfile.lock`.
+This is the opposite of `@expo/agent-cli dev`, which runs the plan it prints ([[0004-smart-start-and-project-state]]), and the difference is worth stating rather than discovering. `dev` is asked for an outcome, getting this app onto a device, and a plan is how it explains itself on the way. `doctor:fix` is asked for a *deletion*, and a deletion has no partial answer to fall back on. A driving agent that misreads `dev` loses a few minutes of prebuild. One that misreads this loses `node_modules` and a `Podfile.lock`.
 
 The default costs one round trip and buys the property the tests are written around: **a `doctor:fix` with no `--apply` on it cannot delete anything, whatever else is wrong with the invocation.** The first e2e test plants every cache the safe tier looks for, runs the dry run, and asserts each planted path is still on disk. A test on the exit code alone would pass for a command that deleted everything and said it had not.
 
@@ -409,7 +409,7 @@ The trigger is the **tier**, not the time class the `dev` prompt uses. Everythin
 
 **`20` for a failed step is a deliberate deviation** from the plan this was built from, which said `1`. Per [[0010-agent-conventions]] §Exit codes, `1` means *the tool did not work*, and a `doctor:fix` whose `pod install` failed did its job perfectly. It planned correctly, deleted correctly, and reported the subject's failure. `1` there would send an agent to fix its own invocation, and there is nothing to fix.
 
-A declined confirmation exits `0`, matching `exagent dev`. Nothing ran because nobody asked for it to, which is not a failure of anything.
+A declined confirmation exits `0`, matching `@expo/agent-cli dev`. Nothing ran because nobody asked for it to, which is not a failure of anything.
 
 New codes: `DOCTOR_FIX_UNSAFE_PATH`, `DOCTOR_FIX_DIRTY_NATIVE`.
 
@@ -417,7 +417,7 @@ New codes: `DOCTOR_FIX_UNSAFE_PATH`, `DOCTOR_FIX_DIRTY_NATIVE`.
 
 `--json` prints one object whose key set never varies ([[0006-agent-native-cli-surface]] §Output contract): `projectRoot`, `tier`, `applied`, `platforms`, `packageManager`, `steps`, `skipped`, `results`, `checkpoint`, `followups`. `results` and `checkpoint` are `null` on a dry run rather than absent.
 
-A `FixStep` reuses `PlanStep`'s `{ id, reason, timeClass }` triple and its `TimeClass` verbatim ([[0004-smart-start-and-project-state]], `src/project/types.ts`). An agent already reads that shape from `exagent dev --plan`, and a second spelling of "what will run and how long it costs" would make it read two. What it adds is what a reset has and a start plan does not: `targets`, `scope`, `bytes`, `recoverable`.
+A `FixStep` reuses `PlanStep`'s `{ id, reason, timeClass }` triple and its `TimeClass` verbatim ([[0004-smart-start-and-project-state]], `src/project/types.ts`). An agent already reads that shape from `@expo/agent-cli dev --plan`, and a second spelling of "what will run and how long it costs" would make it read two. What it adds is what a reset has and a start plan does not: `targets`, `scope`, `bytes`, `recoverable`.
 
 - **`bytes` is `null` when it was not measured.** The walk stops at 20 000 entries, because a dry run has to be fast and `node_modules` is a hundred thousand files. `null` means the walk stopped. Printing `0 B` for a directory that is 400 MB would be the one number a reader must not be given.
 - **`skipped` carries a reason, always.** "This step was not planned" is a fact an agent has to act on, and the reason is what makes it actionable: `No ios/Podfile. This is a CNG project…`, `Affects every project on this machine. Pass --allow-machine-wide…`, `Nothing to delete: <the exact paths>`.
@@ -432,7 +432,7 @@ The names, the per-directory precedence and the npm fallback mirror `@expo/packa
 
 ### Follow-ups
 
-Per [[0009-smart-followups]]. A dry run with steps offers `doctor:fix --tier <the caller's tier> --apply`, spelled so the next command is a paste. A dry run with **no** steps offers `doctor:check` and the next tier up, because "this tier found nothing" and "nothing is wrong" are different answers. A successful apply offers `exagent dev`, plus `doctor:check` when the packages were reinstalled. A failed apply names the step that failed and offers the re-run. It deliberately does *not* offer `dev`, because the reset did not finish.
+Per [[0009-smart-followups]]. A dry run with steps offers `doctor:fix --tier <the caller's tier> --apply`, spelled so the next command is a paste. A dry run with **no** steps offers `doctor:check` and the next tier up, because "this tier found nothing" and "nothing is wrong" are different answers. A successful apply offers `@expo/agent-cli dev`, plus `doctor:check` when the packages were reinstalled. A failed apply names the step that failed and offers the re-run. It deliberately does *not* offer `dev`, because the reset did not finish.
 
 ### Testing
 
@@ -458,6 +458,6 @@ One documentation bug, found on the way and new here. `docs/pages/troubleshootin
 ### Open questions
 
 1. Should `doctor:fix` gain a `--from-check` mode that plans only the steps the last `doctor:check` implicates? It needs the `expo-doctor --json` ask first.
-2. Should the safe tier run automatically as the recovery hop after a bundler failure in `exagent dev`? That is a [[0009-smart-followups]] follow-up rather than a default.
+2. Should the safe tier run automatically as the recovery hop after a bundler failure in `@expo/agent-cli dev`? That is a [[0009-smart-followups]] follow-up rather than a default.
 3. `derived-data` matches by scheme prefix, so two projects with the same scheme name have directories with the same prefix. The flag and the listed matches are the mitigation today, and nothing short of a build tells them apart [inferred].
 

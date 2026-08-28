@@ -2,14 +2,14 @@
 
 **Type:** RFC
 **Status:** Final — implemented
-**Systems:** the fingerprint wrapper (`src/project/fingerprint.ts`); the pinned-file manifest (`src/project/fingerprintKeys.ts`); the cross-run record (`src/project/fingerprintCache.ts`, `.expo/exagent-fingerprint.json`); the project-state probe (`src/project/probe.ts`); the EAS build lookup (`src/status/easBuilds.ts`); the status report (`src/status/statusAsync.ts`, `src/status/sections.ts`, `src/status/format.ts`, `src/status/types.ts`); `exagent dev` (`src/dev/devAsync.ts`, `src/dev/resolveOptions.ts`); `@expo/fingerprint`
+**Systems:** the fingerprint wrapper (`src/project/fingerprint.ts`); the pinned-file manifest (`src/project/fingerprintKeys.ts`); the cross-run record (`src/project/fingerprintCache.ts`, `.expo/agent-cli-fingerprint.json`); the project-state probe (`src/project/probe.ts`); the EAS build lookup (`src/status/easBuilds.ts`); the status report (`src/status/statusAsync.ts`, `src/status/sections.ts`, `src/status/format.ts`, `src/status/types.ts`); `@expo/agent-cli dev` (`src/dev/devAsync.ts`, `src/dev/resolveOptions.ts`); `@expo/fingerprint`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-27 · finalized 2026-08-28
 **Related:** [[0004-smart-start-and-project-state]], [[0011-impact-and-freshness]], [[0021-honest-reports]], [[0001-agentic-cli-on-expo-cli]]
 
 ## Summary
 
-`exagent status --explain` computed **three fingerprints**, and each one cost about a second. The
+`@expo/agent-cli status --explain` computed **three fingerprints**, and each one cost about a second. The
 three are the same three the previous run computed, in a project nobody touched in between. This
 document is the two caches that fix that. It is also the rules that keep the report honest about
 which of them answered, because a cached hash is a claim about the past reported in the present tense.
@@ -66,14 +66,14 @@ duplicate for the memo to collapse. It is kept because it is correct and cheap, 
 paths where a key does repeat (a comparison and a probe in one process), and it is the guard that
 keeps a future call site from silently doubling the cost. The win in the numbers below is Layer 2's.
 
-`clearFingerprintMemo(projectRoot?)` drops it. `exagent dev` calls it after every plan step, because
+`clearFingerprintMemo(projectRoot?)` drops it. `@expo/agent-cli dev` calls it after every plan step, because
 an install, a prebuild or a build has just changed the project and every hash above that point
 describes a project that no longer exists.
 
 ## Layer 2 — the cross-run cache
 
-`.expo/exagent-fingerprint.json`, beside the records `exagent-last-build.json` and
-`exagent-eas-builds.json` already keep there, and best-effort like both: a project whose `.expo`
+`.expo/agent-cli-fingerprint.json`, beside the records `agent-cli-last-build.json` and
+`agent-cli-eas-builds.json` already keep there, and best-effort like both: a project whose `.expo`
 cannot be written loses a cache, not an answer.
 
 One entry per `platform|preset` key, holding `{hash, sources, computedAt, cliVersion, keyManifest}`.
@@ -217,16 +217,16 @@ Two things make that acceptable rather than merely accepted:
 1. **The report says so.** The caveat `everything in ios/ and android/, which this cache does not
    look at — a native edit, or a prebuild that creates them, is caught by the cache's own expiry and
    not by these files` is on every hit, in `--json` under `freshness.hashSource.caveats`.
-2. **`exagent dev` drops the record after every plan step it runs** (`src/dev/devAsync.ts`). That
+2. **`@expo/agent-cli dev` drops the record after every plan step it runs** (`src/dev/devAsync.ts`). That
    covers the one native-surface change this CLI makes itself, which is `expo prebuild`, immediately
    rather than in ten minutes. A prebuild run some other way rides on the expiry.
 
-**`exagent install` drops nothing, and does not have to** [measured 2026-08-28]. It was worth
+**`@expo/agent-cli install` drops nothing, and does not have to** [measured 2026-08-28]. It was worth
 checking, because `install` changes the project as surely as a plan step does and the dev-step rule
 above could have been read as applying to it. It does not need to: `package.json` and the lockfile are
 both pinned sentinels, so an install moves two stamps and the next read misses on its own. Live on an
 SDK 57 scaffold — `status` twice for `computed` then `cache` at 12 pinned files, `install expo-clipboard`,
-then `status` again: `source: "computed"` and a new hash, with `.expo/exagent-fingerprint.json` still
+then `status` again: `source: "computed"` and a new hash, with `.expo/agent-cli-fingerprint.json` still
 on disk. Asserted by `live-project`, so the distinction between "nothing drops it" and "nothing needs
 to" cannot quietly stop being true.
 
@@ -241,13 +241,13 @@ to" cannot quietly stop being true.
 | A different platform or preset is asked for | recompute (its own entry) |
 | The record is older than {@link FINGERPRINT_CACHE_TTL_MS} | recompute |
 | The record is missing, corrupt, or from another schema version | recompute |
-| A completed `exagent dev` plan step | recompute — the record is dropped outright |
-| A completed `exagent install` | recompute — **the record is left in place and the key misses by itself** |
+| A completed `@expo/agent-cli dev` plan step | recompute — the record is dropped outright |
+| A completed `@expo/agent-cli install` | recompute — **the record is left in place and the key misses by itself** |
 | A file no sentinel names (`src/**`, `index.js`) changes | **hit** |
 | Anything under `ios/` or `android/` changes | **hit** — bounded by the TTL only |
-| A prebuild run outside `exagent dev` | **hit** — bounded by the TTL only |
+| A prebuild run outside `@expo/agent-cli dev` | **hit** — bounded by the TTL only |
 | An edit that preserved a pinned file's size *and* timestamp | **hit** — bounded by the TTL only |
-| `--no-fingerprint-cache` or `EXAGENT_NO_FINGERPRINT_CACHE` | not read (still written) |
+| `--no-fingerprint-cache` or `AGENT_CLI_NO_FINGERPRINT_CACHE` | not read (still written) |
 
 Two mechanical hazards, both found rather than anticipated:
 
@@ -259,7 +259,7 @@ agree. Otherwise the run reports its measurement and caches nothing.
 finish together, into one file. Three concurrent read-modify-writes lost an entry, and sometimes
 truncated the file so that all three were lost [observed — e2e, 2026-08-27, before the fix]. Writes
 are now queued per project within the process and land through a temporary file and a `rename`, so a
-second `exagent` process can never read a half-written record.
+second `@expo/agent-cli` process can never read a half-written record.
 
 ## What the stamps miss, and the dynamic config caveat
 
@@ -268,7 +268,7 @@ are what the TTL is sized against, and because a caveat only counted in a docume
 nobody read (llp/0021 §A note only in `--json` is a note nobody read).
 
 1. **A native edit.** `ios/` and `android/` are outside the key, per the section above. This is the
-   largest of the three, and the one `exagent dev` short-circuits for its own prebuild.
+   largest of the three, and the one `@expo/agent-cli dev` short-circuits for its own prebuild.
 2. **An edit that preserved a pinned file's size and modification time.** It is rare, because no
    editor or package manager does it, but it is not impossible, and a stamp cannot see it where a
    content hash could. That is the cost of the stamp, stated rather than buried.
@@ -346,10 +346,10 @@ go looking for.
 
 ## Every consumer can turn it off
 
-- `exagent status --no-fingerprint-cache` and `exagent dev --no-fingerprint-cache`, threaded to the
+- `@expo/agent-cli status --no-fingerprint-cache` and `@expo/agent-cli dev --no-fingerprint-cache`, threaded to the
   probe *and* to the EAS build lookup. The lookup pays for two of the three, so a flag that only
   reached the probe would apply to a third of the cost it is about.
-- `EXAGENT_NO_FINGERPRINT_CACHE=1`, for the paths with no flag of their own, meaning the probe inside
+- `AGENT_CLI_NO_FINGERPRINT_CACHE=1`, for the paths with no flag of their own, meaning the probe inside
   `agents:setup` and an `impact` comparison. A flag overrules it. A flag that was *not* passed states
   nothing, so `--no-fingerprint-cache`'s absence leaves the variable in charge.
 
@@ -430,7 +430,7 @@ because the whole subject is a **number of subprocesses**. A memo hit, a cache h
 recomputation all print the same hash. One default run spawns one. `--explain` spawns three. The next
 `--explain` spawns none and says `cache`. Touching `app.json` or adding a lockfile spawns again, and
 touching `index.js` does not. A version bump does. `--no-fingerprint-cache` and
-`EXAGENT_NO_FINGERPRINT_CACHE` do. And the bare block asserts the shape of the trade in both
+`AGENT_CLI_NO_FINGERPRINT_CACHE` do. And the bare block asserts the shape of the trade in both
 directions: a nested native edit is **not** seen and the report names the gap, while a Pods tree is
 neither stat-ed nor a reason to recompute.
 

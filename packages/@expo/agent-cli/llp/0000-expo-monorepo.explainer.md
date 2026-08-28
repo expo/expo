@@ -9,7 +9,7 @@
 
 ## What this is
 
-The root LLP for this corpus, scoped to `packages/exagent` since 2026-08-21. Read it to get oriented, then use the index below to find the document that governs what you are about to change.
+The root LLP for this corpus, scoped to `packages/@expo/agent-cli` since 2026-08-21. Read it to get oriented, then use the index below to find the document that governs what you are about to change.
 
 ## The repository
 

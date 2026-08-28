@@ -14,7 +14,7 @@ kind. In every one of them the CLI **had** the right answer and reported a diffe
 detached child wrote its own needs-human verdict into a log while the parent printed `Bundler ready`
 and exit 0. `dev:stop --port 8195` read a lock for port 8190 and killed that. One EAS build's
 fingerprint comparison was copied onto both platforms and said an iOS build could run android code.
-`status` reported `auth unknown (nothing could answer)` in a directory where `exagent whoami` printed
+`status` reported `auth unknown (nothing could answer)` in a directory where `@expo/agent-cli whoami` printed
 the name.
 
 None of them is a missing feature. Each is a **claim made about the wrong subject**, or at the wrong
@@ -243,7 +243,7 @@ F96, and the deciding pair of lines is in one artifact directory
 [observed — live cloud, 2026-08-27, `live-cloud-…T18-27-42-028Z`]:
 
 ```
-003-print-url.txt   "url": "exp://exagent-live-8500.tuft.host/--/?",  "hostType": "tunnel"
+003-print-url.txt   "url": "exp://agent-cli-live-8500.tuft.host/--/?",  "hostType": "tunnel"
 007-smoke-cloud.txt CommandError: … a cloud simulator cannot load exp://127.0.0.1:8500/--/?
 ```
 
@@ -312,7 +312,7 @@ options block as well as in its forwarded-flags paragraph, because the block is 
 The rule above is about the argv a run executes. The same rule applies to the argv a run *hands
 back*, and it has been re-found four times because each site builds its own suggestion string. F142
 is the fourth: `navigate / --ios` against a dev server that had died recovered into
-`npx exagent dev --detach`, and a bare `dev` asks the plan engine to pick a platform — on a Mac it
+`npx @expo/agent-cli dev --detach`, and a bare `dev` asks the plan engine to pick a platform — on a Mac it
 picks iOS, which happens to be right, and on the same project with `--android` it would be wrong. The
 line handed back was a different run from the one asked for either way.
 
@@ -367,12 +367,12 @@ per-platform `reason` of the `eas build` line: too long for the line means print
 
 ## Two CLIs read one session file
 
-`status` reported `auth unknown (nothing could answer)` in a directory where `exagent whoami`
+`status` reported `auth unknown (nothing could answer)` in a directory where `@expo/agent-cli whoami`
 printed `kudochien` [F65]. The preflight asked only the `eas` binary, which on that machine was a
 shim that panicked.
 
 **The decision.** The preflight asks the EAS CLI first and, when that produced no answer, the
-project's own `expo whoami`, which is the rung `exagent whoami` itself uses. Both CLIs read the same
+project's own `expo whoami`, which is the rung `@expo/agent-cli whoami` itself uses. Both CLIs read the same
 `state.json`, so it is the same question asked of the CLI the project actually installed. The
 `source` field says which answered, and the union gains `expo whoami`.
 
@@ -508,7 +508,7 @@ with `Try: <the broken binary> whoami`, a recovery that reproduces the panic [F6
 
 ## A generated file is not a mistake in the code
 
-A brand-new `exagent new` project fails `exagent typecheck` [F64]: `tsconfig.json` includes
+A brand-new `@expo/agent-cli new` project fails `@expo/agent-cli typecheck` [F64]: `tsconfig.json` includes
 `expo-env.d.ts`, that file does not exist until something generates it, and the two diagnostics that
 follow are about CSS-module imports whose types live in the `expo/types` reference it carries. The
 follow-up said *"Fix the diagnostics above"* — advice for a problem the caller cannot fix by editing
@@ -520,7 +520,7 @@ the typegen through a subprocess. There is no such subprocess. `expo-env.d.ts` i
 `@expo/cli/src/index.ts` has no typegen verb [observed — SDK 57]. Writing the file here instead
 would be this CLI keeping a copy of another package's template, which [[0001-agentic-cli-on-expo-cli]] §Constraints exists
 to prevent. So the case is **recognised** and reported as what it is. The report names the file, what
-generates it, and `npx exagent dev --detach --wait-ready`, and that command *replaces* the "fix the
+generates it, and `npx @expo/agent-cli dev --detach --wait-ready`, and that command *replaces* the "fix the
 diagnostics" rung. The note is printed above the diagnostics, because it changes what they mean.
 
 Detection is two cheap facts: `tsconfig.json` mentions the file, and the file is absent. The mention
@@ -534,7 +534,7 @@ wrong can only cost the note rather than produce a false one.
 
 `doctor`'s follow-up was `npx expo install --check`, quoted out of expo-doctor's advice [F78]. That
 advice is written for a person. The reader of a `Suggested next:` line is usually an agent driving
-this CLI, and `exagent install --check` runs the same check and adds the structured `check` object
+this CLI, and `@expo/agent-cli install --check` runs the same check and adds the structured `check` object
 the rest of the surface expects. The advice itself is still quoted verbatim above, because those are
 expo-doctor's words, and only the offered command is rewritten. The mapping is a table of two rows,
 `--check` and `--fix`, because a rewrite is a claim that two commands do the same thing, and that is
@@ -583,8 +583,8 @@ the rung in the one state it is for.
 
 The other half of K7. Every rung of `next` drives a local simulator or an attached device, and the
 section chose between them from the local device probe alone. So a run whose app was on an EAS
-Simulator over a tunnel was told `exagent smoke`, which looks for a simulator here, and
-`exagent navigate /`, which opens one here.
+Simulator over a tunnel was told `@expo/agent-cli smoke`, which looks for a simulator here, and
+`@expo/agent-cli navigate /`, which opens one here.
 
 **The decision.** A cloud session on record plus a local device that is not `present` is a **cloud
 loop**, and every rung takes `--cloud`: `smoke --cloud` when an app is connected, and
@@ -596,7 +596,7 @@ there is no device here.
 
 ## The scheme in "Waiting on" is not the dev server's
 
-K8, and it is an upstream bug with an exagent-side consequence.
+K8, and it is an upstream bug with an agent-cli-side consequence.
 
 **What Kudo saw.** Metro's stdout on a tunnelled run printed
 `Waiting on exp+dailywords-grok://<host>.on.staging.expo.app`, a URL that opens the dev-client
@@ -758,7 +758,7 @@ user", and got none of the three things 7 promises: no handoff block, no `cli:ne
 The mechanism was one line, and it is worth knowing about Node rather than about this CLI:
 `src/utils/errors.ts` registered an `uncaughtException` handler for the macOS `EMFILE` watcher limit,
 and that handler **rethrew** everything else. Node's exit code for an exception thrown from inside an
-`uncaughtException` handler is 7, "Internal Exception Handler Run-Time Failure". With no `exagent` in
+`uncaughtException` handler is 7, "Internal Exception Handler Run-Time Failure". With no `@expo/agent-cli` in
 the picture:
 
 ```

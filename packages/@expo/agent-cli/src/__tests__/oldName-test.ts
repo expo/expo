@@ -12,11 +12,19 @@
 // SCREAMING for env vars) and a partial sweep leaves whichever one the author forgot.
 //
 // The needle is assembled from two halves rather than written out, because a test that fails on
-// its own source is a test nobody can write. The same trick is why there is no allowlist: the one
-// incidental collision this corpus had — a `SkillsAgent` fixture named for the Codex agent, whose
-// last seven letters spell the old name — was renamed instead of excused. If this suite starts
-// failing on a word that merely contains the letters, rename the word; an allowlist here would be
-// a hole that the next real occurrence hides in.
+// its own source is a test nobody can write.
+//
+// There is no allowlist for incidental collisions. The one this corpus had — a `SkillsAgent`
+// fixture named for the Codex agent, whose last seven letters spell the old name — was renamed
+// instead of excused. If this suite starts failing on a word that merely contains the letters,
+// rename the word.
+//
+// There is one exception, and it is {@link EXPECTED_FILE}: the npm reservation in `llp/0001` §Naming.
+// The alias-publish recommendation there names the package to publish, and a rename would make the
+// paragraph unactionable — the point of it is that the *old* name is registered and should redirect
+// here. The exception is a **count**, not a file: the test fails when the number moves in either
+// direction, so a new occurrence cannot hide behind the three that are meant to be there, and a
+// deletion cannot quietly leave the allowlist pointing at nothing.
 
 import fs from 'fs';
 import path from 'path';
@@ -42,6 +50,15 @@ const OLD_NAME = ['ex', 'agent'].join('');
 const OLD_NAME_PATTERN = new RegExp(OLD_NAME, 'i');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '../..');
+
+/**
+ * The one document allowed to spell the old name, and where in it.
+ *
+ * `llp/0001` §Naming records what is reserved on npm and recommends publishing it as an alias that
+ * redirects here. Three occurrences: the registry observation, the superseded 2026-08-20 decision,
+ * and the recommendation itself.
+ */
+const EXPECTED_FILE = path.join('llp', '0001-agentic-cli-on-expo-cli.rfc.md');
 
 /**
  * Directories under a scanned root that are not the package's content.
@@ -125,9 +142,16 @@ describe('the old name', () => {
     ['e2e', ['e2e']],
     ['e2e-live', ['e2e-live']],
     ['evals', ['evals']],
-    ['llp', ['llp']],
   ])('is gone from %s/', (_area, roots) => {
     expect(scan(roots)).toEqual([]);
+  });
+
+  it(`is gone from llp/, apart from the npm reservation`, () => {
+    const found = scan(['llp']);
+    // Exact, not a maximum. A fourth occurrence is a real one and fails here; a second occurrence
+    // means the reservation paragraph was edited, and this number should be edited with it.
+    expect(found).toHaveLength(3);
+    expect(found.every((line) => line.startsWith(`${EXPECTED_FILE}:`))).toBe(true);
   });
 
   it(`is gone from the package's own documents`, () => {

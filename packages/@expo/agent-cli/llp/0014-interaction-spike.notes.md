@@ -2,7 +2,7 @@
 
 **Type:** Notes (Spike)
 **Status:** Final — spike record, not a design of record. **Implemented** in `src/runtime/interact/` as of 2026-08-26; what was built, and the eight things this record left open, are in [[0018-interaction-commands]].
-**Systems:** proposed `exagent runtime:tree` / `runtime:tap` / `runtime:type`; `src/runtime/cdpClient.ts`; `src/runtime/promiseSettling.ts`; fixtures in `src/runtime/__tests__/fixtures/spike-view-tree/`
+**Systems:** proposed `@expo/agent-cli runtime:tree` / `runtime:tap` / `runtime:type`; `src/runtime/cdpClient.ts`; `src/runtime/promiseSettling.ts`; fixtures in `src/runtime/__tests__/fixtures/spike-view-tree/`
 **Author:** Tuft agent (spike run for Kudo)
 **Date:** 2026-08-24 · finalized 2026-08-28
 **Related:** [[0018-interaction-commands]], [[0005-runtime-loop-tools]], [[0008-guardrails]], [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0016-v1-scope]]
@@ -253,7 +253,7 @@ scope for this spike. The fiber walk works, so nothing is blocked on this.
 what stays a fixed size as the app grows:
 
 ```
-exagent runtime:tree [--all] [--all-screens] [--testID <id>] [--max-nodes <n>] [--json]
+@expo/agent-cli runtime:tree [--all] [--all-screens] [--testID <id>] [--max-nodes <n>] [--json]
 ```
 
 `--all` is the full projection: every node with a testID, a label, a role, a handler or text.
@@ -263,7 +263,7 @@ Without it, only nodes with a handler or a testID. `--max-nodes` truncates and s
 `runtime:tap` — matching by element, not by fiber:
 
 ```
-exagent runtime:tap <testID> [--index <n>] [--all-screens] [--verify] [--force] [--json]
+@expo/agent-cli runtime:tap <testID> [--index <n>] [--all-screens] [--verify] [--force] [--json]
 ```
 
 JSON: `{ testID, matched, index, component, handler, handlerOn, handlerOutsideMatch, disabled,
@@ -276,14 +276,14 @@ changed, at 8 ms per hypothesis 5.
 `runtime:type` — same matching, `onChangeText`:
 
 ```
-exagent runtime:type <text> --testID <id> [--submit] [--all-screens] [--json]
+@expo/agent-cli runtime:type <text> --testID <id> [--submit] [--all-screens] [--json]
 ```
 
 `--submit` calls `onSubmitEditing` after the text. Exit `0` when it was handled, and a `20`-band code
 for no match, no handler, or an ambiguous one, per [[0010-agent-conventions]].
 
 All three go through `evaluateOverSessionAsync` in `src/runtime/cdpClient.ts` unchanged. That was
-verified by running the fiber walk through the shipped `exagent runtime:eval`, which returned
+verified by running the fiber walk through the shipped `@expo/agent-cli runtime:eval`, which returned
 `{"fibers": 3279}` with the `promiseSettling` wrapper in place and nothing to adjust. Every string
 in the output comes from the app, so all of it is fenced under [[0008-guardrails]].
 

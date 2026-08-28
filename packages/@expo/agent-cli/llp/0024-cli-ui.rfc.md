@@ -12,7 +12,7 @@
 The help was confused [confirmed — Kudo, 2026-08-28: "our help feels confused… should find help a
 way let agent to know the typical workflow"]. Three problems, one cause.
 
-- **`exagent --help` listed thirty names and never said which one comes first.** A listing answers
+- **`@expo/agent-cli --help` listed thirty names and never said which one comes first.** A listing answers
   "does a command for this exist". It cannot answer "I have a project and nothing else, what do I
   run", which is the question an agent handed this CLI actually has.
 - **Every command's `--help` had a shape of its own**, because every command's author wrote one:
@@ -28,7 +28,7 @@ to a shape.
 
 ## The template
 
-One shape for every `npx exagent <command> --help`, in the order a caller needs the answers:
+One shape for every `npx @expo/agent-cli <command> --help`, in the order a caller needs the answers:
 
 ```
   <command> — <one-line summary, from the registry>
@@ -40,7 +40,7 @@ One shape for every `npx exagent <command> --help`, in the order a caller needs 
   JSON (--json)     stdout, stderr, and every top-level key — where --json exists
   Notes             the honest limits and this command's own exit codes
 
-  New here? npx exagent help workflow
+  New here? npx @expo/agent-cli help workflow
 ```
 
 The decision that makes it enforceable: a help block is **data**, not a string. `CommandHelp`
@@ -51,7 +51,7 @@ loads every spec and asserts:
 
 1. the spec names itself, so a block copied from a neighbour cannot document the neighbour;
 2. the usage line is this CLI's own invocation, and `-h, --help` is in the options;
-3. there are two to four examples, each starting `npx exagent ` and each saying what it gets you;
+3. there are two to four examples, each starting `npx @expo/agent-cli ` and each saying what it gets you;
 4. every `Typically next` name **resolves against the registry**, which is the same check the
    suggested-command lint runs over `Try:` lines ([[0006-agent-native-cli-surface]] §Errors are
    prompts);
@@ -63,7 +63,7 @@ is where a wall of prose grows back one paragraph at a time; the cap is what sen
 the `workflow` topic and to the LLPs instead.
 
 The examples are checked twice over. The template test checks their shape; the existing
-suggested-command sweep (`src/lint/`) already reads every `npx exagent …` string literal in `src/`
+suggested-command sweep (`src/lint/`) already reads every `npx @expo/agent-cli …` string literal in `src/`
 and resolves it, so an example naming a renamed command or a flag that no longer exists fails the
 lint that was already there. Nothing new was needed for that, which is the argument for writing
 examples as literals rather than as a table.
@@ -76,7 +76,7 @@ listing stays one line per command.
 
 ## The workflow map
 
-`exagent --help` leads with what to run, above the listing:
+`@expo/agent-cli --help` leads with what to run, above the listing:
 
 ```
   What to run, in order
@@ -119,7 +119,7 @@ does not come after "release".
 Five steps, because five is how many there are between an unopened project and a released one. The
 map is **data** (`workflow` and `oneTimeSetup` in `src/commandRegistry.ts`) and a unit test resolves
 every rung, so a rename cannot leave the map naming a command that no longer exists. The on-ramp
-prints the same data with `npx exagent ` in front of it: two screens that each claim to say what to
+prints the same data with `npx @expo/agent-cli ` in front of it: two screens that each claim to say what to
 run first are two screens that will one day disagree.
 
 The listing under it keeps its sections but loses its prose: one line per command, the summary in a
@@ -129,10 +129,10 @@ it, rather than in the Account block. A listing is for finding the command.
 
 ## The on-ramp
 
-`npx exagent help workflow` is one screen written for an agent that has never seen this CLI: the
+`npx @expo/agent-cli help workflow` is one screen written for an agent that has never seen this CLI: the
 five steps, which commands read and which act, the five exit-code bands and what to do about each,
 the `--json` contract including the failure envelope, the `Try:` convention, and the one command
-that asks EAS anything. Every help block ends with `New here? npx exagent help workflow`, and so
+that asks EAS anything. Every help block ends with `New here? npx @expo/agent-cli help workflow`, and so
 does the top-level screen.
 
 **A topic is a positional argument, not a flag.** `git help workflows`, `npm help folders`: a topic
@@ -146,13 +146,13 @@ the genre of the document instead, which tells a reader nothing about whether it
 want.
 
 `help` is a **command**, because that is the word somebody types when they have been handed a CLI
-and nothing else. `exagent help` prints the top-level screen, `exagent help <topic>` a topic, and
-`exagent help <command>` that command's own help — by resolving the name through `resolveCommand`
+and nothing else. `@expo/agent-cli help` prints the top-level screen, `@expo/agent-cli help <topic>` a topic, and
+`@expo/agent-cli help <command>` that command's own help — by resolving the name through `resolveCommand`
 and running the command with `--help`, so there is no second place for a help block to come from.
 Topics are looked up first, so a command that one day takes a topic's word cannot take its answer.
 
 The mechanism is a list (`src/help/topics.ts`), so `help` stays **one registry entry** however many
-topics there come to be, and `exagent help --help` names them without a second list to maintain.
+topics there come to be, and `@expo/agent-cli help --help` names them without a second list to maintain.
 Only `workflow` ships: the exit-code table and the `--json` contract live inside it, where a reader
 meets them in the order they need them, and splitting them out before anybody has asked would be
 three screens where one is being read. The name itself is one string, `ON_RAMP_TOPIC` in
@@ -166,7 +166,7 @@ first thing an agent that has learned this CLI's naming types), the bare `workfl
 reaches none of them, so the table is the only thing that can.
 
 The acceptance test for this screen is not a unit test. It is a **naive-agent walk**: start a
-scratch project and drive the whole loop using only what `exagent -h` and this topic say. Every
+scratch project and drive the whole loop using only what `@expo/agent-cli -h` and this topic say. Every
 place the walk had to guess is a defect in this text.
 
 ## Colors are for humans

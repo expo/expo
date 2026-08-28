@@ -75,12 +75,12 @@ exists. The per-command redirects are with the designs, see [[0017-deferred-comm
 
 Two commands read something a project produced and ran nothing. Both sat under a group named after another CLI's verb:
 
-- `build:explain` was in `build`, which after `build:wait`'s deferral held one command that starts no build. The group existed to be answered with `npx eas build` when somebody typed `exagent build --platform ios` ([[0010-agent-conventions]] §Registry rules (c)) — which is a job for the absent-capability table, not for a group.
+- `build:explain` was in `build`, which after `build:wait`'s deferral held one command that starts no build. The group existed to be answered with `npx eas build` when somebody typed `@expo/agent-cli build --platform ios` ([[0010-agent-conventions]] §Registry rules (c)) — which is a job for the absent-capability table, not for a group.
 - `config:effective` was in `config`, a forwarded `expo` command, so rule (b) left it reachable by its colon form only.
 
-`inspect` is this CLI's own name for what the caller is doing, so both spellings work again (`exagent inspect config-plugins` resolves), and it is where every read-only answer that follows belongs. The source directories keep their names — `src/builds/`, `src/config/` — because [[0012-build-explain]] and the rule fixtures reference them throughout and moving them would rewrite a hundred paths to say nothing new.
+`inspect` is this CLI's own name for what the caller is doing, so both spellings work again (`@expo/agent-cli inspect config-plugins` resolves), and it is where every read-only answer that follows belongs. The source directories keep their names — `src/builds/`, `src/config/` — because [[0012-build-explain]] and the rule fixtures reference them throughout and moving them would rewrite a hundred paths to say nothing new.
 
-`exagent build` is now a name this CLI does not have. It answers from `absentCapabilities`: *starting a build is the EAS CLI's job*, `Try: npx eas build`, with `inspect:build-log` named as what this CLI does have. The one thing lost against the old group is the caller's own flags on that `Try:` line.
+`@expo/agent-cli build` is now a name this CLI does not have. It answers from `absentCapabilities`: *starting a build is the EAS CLI's job*, `Try: npx eas build`, with `inspect:build-log` named as what this CLI does have. The one thing lost against the old group is the caller's own flags on that `Try:` line.
 
 ## Experimental is per command, never per group
 
@@ -141,7 +141,7 @@ below. That list is what makes "experimental" a state with a way out, in the sam
 **The interaction commands graduated on a criterion they wrote for themselves.**
 [[0018-interaction-commands]] §What is still unverified ends: *the first friction run against a
 project this did not come from is what closes those, and is the re-entry point for the
-`[experimental]` mark.* That run is friction run 7, on a project `exagent new` scaffolded for it. It
+`[experimental]` mark.* That run is friction run 7, on a project `@expo/agent-cli new` scaffolded for it. It
 cost nine findings and every one was fixed. Two live passes have happened since against two further
 apps and two further runtimes, and `src/runtime/interact/` has had no non-help commit between. The
 record set the criterion and the criterion was met.
@@ -218,7 +218,7 @@ check fails [observed — `packages/expo-doctor/src/doctor.ts`]. This command do
 code [decided — friction run 7's F68]. [[0010-agent-conventions]] §Exit codes gives
 `1` one meaning across the whole surface: *the tool did not work*. Using it for *the tool worked and
 the project has a problem*, which `typecheck` and `smoke` both report as
-`20`, makes `exagent doctor --bogus` and a project with one failing check indistinguishable, and
+`20`, makes `@expo/agent-cli doctor --bogus` and a project with one failing check indistinguishable, and
 an agent cannot use `doctor` as a gate without parsing prose.
 
 So: **0** when every check passed, **20** when any failed, and **1** only for a run that produced no
@@ -233,7 +233,7 @@ say about them — it has a verdict, so it owes the protocol's code.
 ## What this costs
 
 - **A wait that only needs the bundler is now a whole smoke run.** A CI job with no device has no cheaper gate than `typecheck`. If that turns out to bite, `dev:wait` comes back, or `smoke` grows the flags that cut it down — which is its re-entry criterion.
-- **`install --json` loses a key** (`checkpoint`), and `EXAGENT_NO_CHECKPOINT` and the `--no-checkpoint` flags are gone from `install`, `dev` and `agents:setup`. An unknown flag is an error, so a script that passed one finds out.
+- **`install --json` loses a key** (`checkpoint`), and `AGENT_CLI_NO_CHECKPOINT` and the `--no-checkpoint` flags are gone from `install`, `dev` and `agents:setup`. An unknown flag is an error, so a script that passed one finds out.
 - **`web` has no bundle gate.** `smoke --platform web` is refused ([[0005-runtime-loop-tools]] §`--platform web` is refused), and for the part web *can* answer it names `typecheck`, which is a weaker answer honestly labelled.
 - **The reference shelf is unverified code.** Nothing type-checks it and nothing runs its tests, so it rots at the rate the tree around it moves. That is the accepted price of keeping it: the alternative is deleting the work and rebuilding from prose.
 

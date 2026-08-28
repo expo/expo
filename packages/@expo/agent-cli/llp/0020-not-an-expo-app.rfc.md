@@ -12,7 +12,7 @@
 There are two wrong-directory failures, and this CLI only recognised one of them. `NO_PROJECT`
 answers "no `package.json` anywhere above you". The other is **a `package.json` that is not an app**,
 and it was not recognised at all. The decision table of [[0004-smart-start-and-project-state]]
-§Decision table read *no `expo` dependency* as *lacks a dev client*, so `exagent dev` at a repository
+§Decision table read *no `expo` dependency* as *lacks a dev client*, so `@expo/agent-cli dev` at a repository
 or workspace root produced a plan reading `expo install expo-dev-client`, then `expo prebuild`, then
 `expo run:ios` [observed — 2026-08-26, a temporary directory holding
 `{"name":"plain","version":"1.0.0"}`]. An agent that ran `dev` one directory too high was handed a
@@ -20,8 +20,8 @@ plan to **install packages into the wrong repository and then build it**, with n
 the output saying that this directory holds no app.
 
 The trap did not stop at `dev`. `status` in the same directory printed
-`next  exagent dev → needs-dev-client: expo install expo-dev-client (+2 more steps)` and a follow-up
-reading `npx exagent install expo-dev-client`. That is the same instruction, one hop later, from the
+`next  @expo/agent-cli dev → needs-dev-client: expo install expo-dev-client (+2 more steps)` and a follow-up
+reading `npx @expo/agent-cli install expo-dev-client`. That is the same instruction, one hop later, from the
 command an agent runs to *orient itself*.
 
 ## The decision
@@ -60,7 +60,7 @@ Four of those rows are the ones worth arguing about.
 **`status` answers rather than refusing**, and it is the only command that does. It is how a caller
 *finds out* it is in the wrong place, so refusing it would take away the report that diagnoses the
 refusal. It gains four things: a field (`project.isExpoApp`), a `not an Expo app` clause on its
-project line, a `next` that names neither `exagent dev` nor any plan step, and a single follow-up
+project line, a `next` that names neither `@expo/agent-cli dev` nor any plan step, and a single follow-up
 pointing out of the directory, in place of the four rungs that assumed an app was here.
 
 **`doctor` stops**, which is the row that is not obvious. Left alone it exited `0` with
@@ -111,9 +111,9 @@ Why: /repo/package.json declares no "expo" dependency, which is what makes a pac
   The likeliest cause is a command run one directory too high — a repository or workspace root
   above the app.
 How: change to the app's own directory and run this again; create an app here with
-  "npx exagent new my-app"; or, if you really mean to add Expo to this package, run
-  "npx exagent install expo" first.
-Try: npx exagent new my-app
+  "npx @expo/agent-cli new my-app"; or, if you really mean to add Expo to this package, run
+  "npx @expo/agent-cli install expo" first.
+Try: npx @expo/agent-cli new my-app
 ```
 
 **Exit `1`, the same band as `NO_PROJECT`** ([[0010-agent-conventions]] §Exit codes). The tool did
@@ -123,7 +123,7 @@ here.
 
 **The `Try:` line is the one recovery that changes nothing that is already here.** Three recoveries
 are spelled in the `How:` sentence, and only one can go on the line an agent acts on. `cd` is not a
-command this CLI can name. `npx exagent install expo` writes into a repository the caller most
+command this CLI can name. `npx @expo/agent-cli install expo` writes into a repository the caller most
 likely only walked past, which is the very mutation this whole document exists to prevent, so it
 stays in the prose where a reader who really means it will find it. Creating an app leaves everything
 that is already here untouched, so that is what the machine-readable field says.
