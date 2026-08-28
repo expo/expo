@@ -180,6 +180,9 @@ test.describe('Community BottomSheet screen', () => {
 
     await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
     await openPanel(page).getByRole('button', { name: 'Snap 2' }).click();
+    await expect
+      .poll(async () => (await openPanel(page).boundingBox())?.height ?? 0)
+      .toBeGreaterThan(400);
     const snapBox = await openPanel(page).boundingBox();
     if (!snapBox) {
       throw new Error('Snap sheet bounding box missing');
