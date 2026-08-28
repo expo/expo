@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Stopped passing `testString` to `expo-font`, which removed the option; font loading no longer needs one. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
+
 - Promote Expo Symbols from beta to stable. ([#48537](https://github.com/expo/expo/pull/48537) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.1 - 2026-07-15
