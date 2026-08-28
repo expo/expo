@@ -26,6 +26,14 @@ describe('create-updates-resources-ios.sh', () => {
       metroDev: 'true',
     },
     {
+      build: 'a custom Debug build',
+      configuration: 'DebugStaging',
+      easBuild: '',
+      inheritedMode: '',
+      mode: 'development',
+      metroDev: 'true',
+    },
+    {
       build: 'a Release build',
       configuration: 'Release',
       easBuild: '',

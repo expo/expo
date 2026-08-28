@@ -9,7 +9,7 @@ class ExpoUpdatesPluginTest {
     data class TestCase(
       val name: String,
       val inheritedMode: String?,
-      val isDebuggableVariant: Boolean,
+      val isDevelopmentBuild: Boolean,
       val expectedMode: String
     )
 
@@ -26,7 +26,38 @@ class ExpoUpdatesPluginTest {
         testCase.expectedMode,
         getConfigMode(
           inheritedMode = testCase.inheritedMode,
-          isDebuggableVariant = testCase.isDebuggableVariant
+          isDevelopmentBuild = testCase.isDevelopmentBuild
+        )
+      )
+    }
+  }
+
+  @Test
+  fun `selects development builds`() {
+    data class TestCase(
+      val name: String,
+      val buildType: String,
+      val isDebuggableVariant: Boolean,
+      val nativeDebuggingEnabled: Boolean,
+      val expected: Boolean
+    )
+
+    val testCases = listOf(
+      TestCase("debuggable variant", "debug", true, false, true),
+      TestCase("non-debuggable variant", "release", false, false, false),
+      TestCase("native Debug build", "debug", false, true, true),
+      TestCase("native optimized Debug build", "debugOptimized", false, true, true),
+      TestCase("native Release build", "release", false, true, false)
+    )
+
+    testCases.forEach { testCase ->
+      assertEquals(
+        testCase.name,
+        testCase.expected,
+        isDevelopmentBuild(
+          buildType = testCase.buildType,
+          isDebuggableVariant = testCase.isDebuggableVariant,
+          nativeDebuggingEnabled = testCase.nativeDebuggingEnabled
         )
       )
     }
