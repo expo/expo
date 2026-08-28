@@ -26,6 +26,24 @@ describe('assertValidFontFaces', () => {
     ).toThrow(/path/);
   });
 
+  it('rejects two faces that declare the same weight and style', () => {
+    expect(() =>
+      assertValidFontFaces('Family', [
+        { path: 'a.ttf', weight: 400, style: 'normal' },
+        { path: 'b.ttf', weight: '400', style: 'normal' },
+      ])
+    ).toThrow('two faces');
+  });
+
+  it('accepts equal weights when a face leaves style undeclared', () => {
+    expect(() =>
+      assertValidFontFaces('Family', [
+        { path: 'a.ttf', weight: 400, style: 'normal' },
+        { path: 'b.ttf', weight: 400 },
+      ])
+    ).not.toThrow();
+  });
+
   it('accepts a valid single-face definition', () => {
     expect(() => assertValidFontFaces('Family', [{ path: 'a.ttf', weight: 400 }])).not.toThrow();
   });

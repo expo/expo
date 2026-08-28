@@ -216,6 +216,12 @@ describe('_matchesFontFaceOptions', () => {
   const bold = rule({ fontFamily: 'Wix Madefor Text', fontWeight: '800', fontStyle: '' });
   const otherFamily = rule({ fontFamily: 'Other Family', fontWeight: '400', fontStyle: '' });
 
+  it('matches a variable-font range weight by the same range, not by a weight inside it', () => {
+    const variable = rule({ fontFamily: 'Wix Madefor Text', fontWeight: '100 900', fontStyle: '' });
+    expect(_matchesFontFaceOptions(variable, 'Wix Madefor Text', { weight: '100 900' })).toBe(true);
+    expect(_matchesFontFaceOptions(variable, 'Wix Madefor Text', { weight: 400 })).toBe(false);
+  });
+
   it('matches by family name alone when no options are given', () => {
     expect(_matchesFontFaceOptions(regular, 'Wix Madefor Text')).toBe(true);
     expect(_matchesFontFaceOptions(italic, 'Wix Madefor Text')).toBe(true);
