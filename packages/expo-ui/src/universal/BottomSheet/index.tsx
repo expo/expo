@@ -1,27 +1,28 @@
-import { useColorScheme } from 'react-native';
-import { Drawer } from 'vaul';
+import { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, useColorScheme, useWindowDimensions } from 'react-native';
 
+import { BottomSheetDialog } from '../../web/BottomSheetDialog';
 import type { BottomSheetProps, SnapPoint } from './types';
 import { resolveContentPadding } from './utils';
 
-// Visually-hidden style for the screen-reader-only Drawer.Title.
-const visuallyHiddenStyle: React.CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
+function snapPointToHeightPx(snapPoint: SnapPoint, viewportHeight: number): number {
+  if (snapPoint === 'half') return Math.round(viewportHeight * 0.5);
+  if (snapPoint === 'full') return viewportHeight;
+  if ('fraction' in snapPoint) return Math.round(viewportHeight * snapPoint.fraction);
+  return snapPoint.height;
+}
 
-function snapPointToVaul(snapPoint: SnapPoint): string | number {
-  if (snapPoint === 'half') return 0.5;
-  if (snapPoint === 'full') return 1;
-  if ('fraction' in snapPoint) return snapPoint.fraction;
-  return `${snapPoint.height}px`;
+function nearestSnapIndex(height: number, snapHeights: number[]): number {
+  let nearestIndex = 0;
+  let nearestDist = Infinity;
+  snapHeights.forEach((snapHeight, index) => {
+    const dist = Math.abs(snapHeight - height);
+    if (dist < nearestDist) {
+      nearestDist = dist;
+      nearestIndex = index;
+    }
+  });
+  return nearestIndex;
 }
 
 /**
@@ -43,83 +44,55 @@ export function BottomSheet({
     left: 16,
     right: 16,
   });
-  const vaulSnapPoints = snapPoints?.length ? snapPoints.map(snapPointToVaul) : undefined;
-  const hasSnapPoints = vaulSnapPoints != null;
+  const { height: viewportHeight } = useWindowDimensions();
+  const snapHeights = useMemo(() => {
+    if (!snapPoints?.length) return undefined;
+    return snapPoints.map((point) => snapPointToHeightPx(point, viewportHeight));
+  }, [snapPoints, viewportHeight]);
+  const [snapIndex, setSnapIndex] = useState(0);
+
+  useEffect(() => {
+    if (isPresented) setSnapIndex(0);
+  }, [isPresented]);
+
+  const bodyStyle = useMemo(
+    () => ({
+      paddingTop: top,
+      paddingBottom: bottom,
+      paddingLeft: left,
+      paddingRight: right,
+    }),
+    [top, bottom, left, right]
+  );
 
   return (
-    <Drawer.Root
+    <BottomSheetDialog
       open={isPresented}
       onOpenChange={(open) => {
         if (!open) onDismiss();
       }}
-      snapPoints={vaulSnapPoints}>
-      <Drawer.Portal>
-        <Drawer.Overlay style={overlayStyle} />
-        <Drawer.Content
-          style={{
-            ...contentStyle,
-            ...(isDark && { backgroundColor: '#000' }),
-            // Snap-points mode: vaul translates the drawer by `viewport - snapHeight`.
-            // The drawer has to fill the viewport or it gets pushed off-screen.
-            ...(hasSnapPoints ? snapPointContentStyle : noSnapPointContentStyle),
-            ...(showDragIndicator && dragIndicatorSpacing),
-          }}
-          aria-describedby={undefined}>
-          {/* Radix Dialog requires a title for a11y; render visually-hidden. */}
-          <Drawer.Title style={visuallyHiddenStyle}>Bottom sheet</Drawer.Title>
-          {showDragIndicator && <Drawer.Handle />}
-          <div
-            style={{
-              ...innerStyle,
-              paddingTop: top,
-              paddingBottom: bottom,
-              paddingLeft: left,
-              paddingRight: right,
-            }}
-            data-testid={testID}>
-            {children}
-          </div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+      showHandle={showDragIndicator}
+      height={snapHeights?.[snapIndex]}
+      minSnapHeight={snapHeights?.[0]}
+      onDragEnd={
+        snapHeights
+          ? (nextHeight) => {
+              setSnapIndex(nearestSnapIndex(nextHeight, snapHeights));
+            }
+          : undefined
+      }
+      style={isDark ? styles.darkSheet : undefined}
+      innerTestID={testID}
+      bodyStyle={bodyStyle}>
+      {children}
+    </BottomSheetDialog>
   );
 }
 
-const overlayStyle: React.CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.4)',
-  zIndex: 50,
-};
-
-const contentStyle: React.CSSProperties = {
-  position: 'fixed',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  backgroundColor: 'white',
-  borderTopLeftRadius: 16,
-  borderTopRightRadius: 16,
-  zIndex: 50,
-  outline: 'none',
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const snapPointContentStyle: React.CSSProperties = {
-  height: '96vh',
-};
-
-const noSnapPointContentStyle: React.CSSProperties = {
-  maxHeight: '85vh',
-};
-
-const innerStyle: React.CSSProperties = {
-  overflow: 'auto',
-};
-
-const dragIndicatorSpacing: React.CSSProperties = {
-  paddingTop: 16,
-};
+const styles = StyleSheet.create({
+  darkSheet: {
+    backgroundColor: '#000',
+  },
+});
 
 export * from './types';

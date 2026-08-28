@@ -12,7 +12,7 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
-A `BottomSheet` component with an API compatible with `@gorhom/bottom-sheet`. It wraps the platform-specific `@expo/ui` primitives: [Jetpack Compose ModalBottomSheet](../jetpack-compose/bottomsheet) on Android and [SwiftUI BottomSheet](../swift-ui/bottomsheet) on iOS. On web, it uses a [vaul](https://github.com/emilkowalski/vaul) drawer.
+A `BottomSheet` component with an API compatible with `@gorhom/bottom-sheet`. It wraps the platform-specific `@expo/ui` primitives: [Jetpack Compose ModalBottomSheet](../jetpack-compose/bottomsheet) on Android and [SwiftUI BottomSheet](../swift-ui/bottomsheet) on iOS. On web, it uses an HTML `<dialog>` bottom sheet.
 
 If you need lower-level control over platform-specific styling, modifiers, or layout behavior, use the native primitives directly.
 
@@ -244,14 +244,14 @@ export default function BottomSheetScrollableExample() {
 
 `@gorhom/bottom-sheet` renders inline at the bottom of its parent view. This component uses native modal presentation on Android and iOS, and a drawer overlay on web.
 
-This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and animation layer through `react-native-gesture-handler` and `react-native-reanimated`, while `@expo/ui/community/bottom-sheet` delegates those behaviors to Jetpack Compose, SwiftUI, and the web drawer primitive. As a result, this component is best suited for modal bottom sheet flows, including callsites that use the `BottomSheet` API rather than `BottomSheetModal`.
+This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and animation layer through `react-native-gesture-handler` and `react-native-reanimated`, while `@expo/ui/community/bottom-sheet` delegates those behaviors to Jetpack Compose, SwiftUI, and an HTML `<dialog>` on web. As a result, this component is best suited for modal bottom sheet flows, including callsites that use the `BottomSheet` API rather than `BottomSheetModal`.
 
 | Feature                | Android                                        | iOS                               | Web                           |
 | ---------------------- | ---------------------------------------------- | --------------------------------- | ----------------------------- |
-| Presentation           | Jetpack Compose modal bottom sheet             | SwiftUI sheet                     | vaul drawer                   |
+| Presentation           | Jetpack Compose modal bottom sheet             | SwiftUI sheet                     | HTML `<dialog>` bottom sheet  |
 | Snap points            | Maps to partial and expanded states            | Supports provided snap points     | Supports provided snap points |
 | No `snapPoints`        | Fits content                                   | Fits content                      | Fits content                  |
-| Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables drawer dismiss        |
+| Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables overlay tap, Escape, and pan-down dismiss |
 | Persistent inline peek | Not supported                                  | Not supported                     | Not supported                 |
 
 > **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
@@ -260,7 +260,7 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 
 | Export                     | Supported   | Notes                                                     |
 | -------------------------- | ----------- | --------------------------------------------------------- |
-| `BottomSheet`              | <YesIcon /> | Modal on Android and iOS, drawer on web                   |
+| `BottomSheet`              | <YesIcon /> | Modal on Android and iOS, HTML dialog on web              |
 | `BottomSheetModal`         | <YesIcon /> | Starts closed and opens with `present()`                  |
 | `BottomSheetModalProvider` | <YesIcon /> | Renders children directly for compatibility               |
 | `BottomSheetView`          | <YesIcon /> | Wraps sheet content                                       |
