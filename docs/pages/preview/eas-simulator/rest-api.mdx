@@ -1,0 +1,243 @@
+---
+title: EAS Simulator REST API
+sidebar_title: REST API
+description: Create, inspect, connect to, and stop EAS Simulator sessions from your own systems with the REST API.
+---
+
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+The EAS Simulator REST API lets you manage remote device sessions from CI, an agent, or another HTTP client without running EAS CLI. All endpoints live under `https://api.expo.dev`. Requests and responses are JSON, and successful responses wrap the result in `data`.
+
+Create a session, poll it until connection details are available, and stop it when you finish. The REST API manages the session lifecycle. Use the selected controller for device actions such as installing an app, pressing a button, or taking a screenshot.
+
+## Authentication
+
+All endpoints require an [Expo access token](/accounts/programmatic-access/), sent as a bearer token in the `Authorization` header. The account that owns the project must have EAS Simulator access.
+
+For production integrations, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project and assign it a role that can create and stop sessions. A [personal access token](/accounts/programmatic-access/#personal-access-tokens) also works for scripts.
+
+```text
+Authorization: Bearer <EXPO_TOKEN>
+Content-Type: application/json
+```
+
+The examples below read the token from the `EXPO_TOKEN` environment variable. Keep this token in your CI secret store or server environment, not in client code.
+
+> **warning** Session responses can include controller credentials. Treat connection details as secrets: do not commit them, include them in logs, or expose them in a public response. All endpoints send `Cache-Control: private, no-store` and `Pragma: no-cache`; do not cache session responses.
+
+## Create a session
+
+```text
+POST /v2/device-run-sessions
+```
+
+Creates a session and queues the remote device. The request returns before the device and controller are ready.
+
+### Request body
+
+| Field                   | Type          | Required | Description                                                                                                                                                                                                                        |
+| ----------------------- | ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                          |
+| `platform`              | string        | Yes      | `android` or `ios`.                                                                                                                                                                                                                |
+| `name`                  | string        | No       | A descriptive session name, up to 255 characters. Must not be blank.                                                                                                                                                               |
+| `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `serve-sim`. Defaults to `agent-device`.                                                                                                                                                    |
+| `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                             |
+| `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                       |
+| `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. Omit to use the account default.                                                                             |
+| `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. If you also set `maxDurationMinutes`, must be smaller than that value. Omit to disable the idle timeout. Not supported for `serve-sim`. |
+| `resourceClass`         | string        | No       | Defaults to `medium`. The `large` resource class is restricted and is not available for general use.                                                                                                                               |
+| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                  |
+| `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters.                                                                                                                                               |
+| `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go.                                                                                                                                                                                       |
+| `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"57"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                 |
+| `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                            |
+| `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source. Maximum 2,048 characters.                                                                                        |
+
+`buildId`, `applicationArchiveUrl`, and `expoGo: true` are mutually exclusive application sources. If you omit all three, the session starts with a blank device. Automatic application setup applies to `agent-device`, `argent`, and `serve-sim`. For `appium`, install and launch the app through your Appium client.
+
+The REST API uses `serve-sim` for the session type that EAS CLI calls `web-preview-only`. It is only available on iOS and does not support an idle timeout. Other session types provide a controller and include a web preview on supported iOS sessions.
+
+The maximum session duration is 115 minutes, excluding the five minutes reserved for cleanup. Your account can have a lower duration limit.
+
+### Example
+
+Replace `appId` and `buildId` with your EAS project ID and a compatible build ID:
+
+<Terminal
+  cmd={[
+    `$ curl -X POST "https://api.expo.dev/v2/device-run-sessions" \\`,
+    `    -H "Authorization: Bearer $EXPO_TOKEN" \\`,
+    `    -H "Content-Type: application/json" \\`,
+    `    -d '{`,
+    `      "appId": "a415eac6-231a-4b38-b481-3255a59f13b8",`,
+    `      "platform": "ios",`,
+    `      "type": "agent-device",`,
+    `      "name": "Checkout flow screenshots",`,
+    `      "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",`,
+    `      "maxDurationMinutes": 30,`,
+    `      "maxIdleTimeMinutes": 5`,
+    `    }'`,
+  ]}
+/>
+
+### Response
+
+Returns `200 OK` with the new session's metadata:
+
+```json
+{
+  "data": {
+    "id": "019d9d17-013a-7e05-89aa-4aa83ff68c32",
+    "appId": "a415eac6-231a-4b38-b481-3255a59f13b8",
+    "url": "https://expo.dev/accounts/acme/projects/example/simulator-sessions/019d9d17-013a-7e05-89aa-4aa83ff68c32",
+    "jobRunId": "019d9d17-1a3f-7c10-bdee-5f2811a9d6ad",
+    "name": "Checkout flow screenshots",
+    "type": "agent-device",
+    "packageVersion": null,
+    "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",
+    "applicationArchiveUrl": null,
+    "platform": "ios",
+    "status": "new",
+    "remoteConfig": null,
+    "maxDurationMinutes": 30,
+    "maxIdleTimeMinutes": 5,
+    "startedAt": null,
+    "finishedAt": null,
+    "createdAt": "2026-08-28T10:00:00.000Z",
+    "updatedAt": "2026-08-28T10:00:00.000Z"
+  }
+}
+```
+
+Save `data.id` and set it as `SESSION_ID` for the remaining examples. `url` links to the session page on expo.dev; it is not the live browser preview URL.
+
+`buildId` contains the supplied build ID. `applicationArchiveUrl` contains the supplied archive URL or the resolved Expo Go archive URL; it is `null` when using `buildId`. Optional values such as `name`, `packageVersion`, and `maxIdleTimeMinutes` are `null` when omitted.
+
+The response's `maxDurationMinutes` reports the session duration, excluding cleanup time. A request for 30 minutes returns `30`. It is `null` if there is no associated job.
+
+`remoteConfig` is `null` while the session is starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
+
+## Get a session
+
+```text
+GET /v2/device-run-sessions/:deviceRunSessionId
+```
+
+Returns `200 OK` with the same session object as the create endpoint, including its current status, timestamps, and `remoteConfig`. Replace `:deviceRunSessionId` with the session ID. No separate connection request is needed.
+
+### Example
+
+<Terminal
+  cmd={[
+    `$ curl "https://api.expo.dev/v2/device-run-sessions/$SESSION_ID" \\`,
+    `    -H "Authorization: Bearer $EXPO_TOKEN"`,
+  ]}
+/>
+
+### Response
+
+An agent-device session that is ready returns connection details alongside its metadata:
+
+```json
+{
+  "data": {
+    "id": "019d9d17-013a-7e05-89aa-4aa83ff68c32",
+    "appId": "a415eac6-231a-4b38-b481-3255a59f13b8",
+    "url": "https://expo.dev/accounts/acme/projects/example/simulator-sessions/019d9d17-013a-7e05-89aa-4aa83ff68c32",
+    "jobRunId": "019d9d17-1a3f-7c10-bdee-5f2811a9d6ad",
+    "name": "Checkout flow screenshots",
+    "type": "agent-device",
+    "packageVersion": null,
+    "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",
+    "applicationArchiveUrl": null,
+    "platform": "ios",
+    "status": "in-progress",
+    "remoteConfig": {
+      "agentDeviceRemoteSessionUrl": "https://controller.example.com",
+      "agentDeviceRemoteSessionToken": "<session-token>",
+      "webPreviewUrl": "https://preview.example.com"
+    },
+    "maxDurationMinutes": 30,
+    "maxIdleTimeMinutes": 5,
+    "startedAt": "2026-08-28T10:01:00.000Z",
+    "finishedAt": null,
+    "createdAt": "2026-08-28T10:00:00.000Z",
+    "updatedAt": "2026-08-28T10:01:00.000Z"
+  }
+}
+```
+
+### Session status
+
+The REST API returns lowercase status values:
+
+| Value         | Meaning                                                                                 |
+| ------------- | --------------------------------------------------------------------------------------- |
+| `new`         | The session is queued or preparing the device and controller. `remoteConfig` is `null`. |
+| `in-progress` | The session is running. Connect when `remoteConfig` is not `null`.                      |
+| `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                            |
+| `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.                    |
+
+Poll this endpoint until `status` is `in-progress` and `remoteConfig` is not `null`, then connect using that configuration. Allow time between requests and set a timeout in your integration. If the status becomes `stopped` or `errored`, stop polling and inspect the session page at `url`.
+
+### Connection details
+
+The fields in `remoteConfig` depend on the session type. Connection details are only returned while the session is `in-progress`. After it stops or errors, the session response returns `remoteConfig: null` even if the session previously had connection details.
+
+| Session type   | Connection fields                                                                            |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `agent-device` | `agentDeviceRemoteSessionUrl` and `agentDeviceRemoteSessionToken`. Optional `webPreviewUrl`. |
+| `argent`       | `toolsUrl`, optional `toolsAuthToken`, and optional `webPreviewUrl`.                         |
+| `appium`       | `appiumUrl`, a `capabilities` object, and optional `webPreviewUrl`.                          |
+| `serve-sim`    | `previewUrl`. This session type has no controller.                                           |
+
+For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Run and control an app](/preview/eas-simulator/run-and-control/) for controller usage.
+
+Open `webPreviewUrl` (or `previewUrl` for `serve-sim`) in a desktop browser to view supported iOS sessions. Do not open it on the remote device. Android sessions do not currently provide a browser preview.
+
+## Stop a session
+
+```text
+POST /v2/device-run-sessions/:deviceRunSessionId/stop
+```
+
+Stops a session. This endpoint does not require a request body.
+
+### Example
+
+<Terminal
+  cmd={[
+    `$ curl -X POST "https://api.expo.dev/v2/device-run-sessions/$SESSION_ID/stop" \\`,
+    `    -H "Authorization: Bearer $EXPO_TOKEN"`,
+  ]}
+/>
+
+### Response
+
+Returns `200 OK` with the session object. An active session transitions to `stopped`, includes `finishedAt`, and returns `remoteConfig: null`. The operation is idempotent: if the session is already `stopped` or `errored`, it returns that session without changing its status or finish time. Connection details remain `null`.
+
+Always stop the session when your work finishes, including on errors or polling timeouts. Returning from an HTTP request does not stop the remote device. Use a cleanup handler in your integration and set `maxDurationMinutes` to limit unattended usage.
+
+## Errors
+
+| Status | Reason                                                                                                                                                                                                                                                 |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 400    | The request fails validation. Examples include an invalid UUID, incompatible application sources, unsupported session options, or a duration outside the account's limit. Session creation also fails if EAS Simulator is not enabled for the account. |
+| 403    | The token does not have permission to read the project or perform the requested action.                                                                                                                                                                |
+| 404    | No project or session exists with the given ID.                                                                                                                                                                                                        |
+
+Use the returned error message to identify which option or permission needs attention. For session startup failures, inspect the session page linked by `url`.
+
+## Next step
+
+<BoxLink
+  title="Run and control your app"
+  description="Choose a compatible build, connect a controller, and interact with the remote device."
+  href="/preview/eas-simulator/run-and-control/"
+  Icon={Cloud01Icon}
+/>

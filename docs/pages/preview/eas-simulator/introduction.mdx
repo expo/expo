@@ -1,7 +1,7 @@
 ---
 title: Introduction to EAS Simulator
 sidebar_title: Introduction
-description: Run and control remote iOS Simulators and Android Emulators on EAS infrastructure from the CLI, an AI agent, or a browser.
+description: Run and control remote iOS Simulators and Android Emulators on EAS infrastructure from the CLI, REST API, an AI agent, or a browser.
 ---
 
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
@@ -49,12 +49,12 @@ A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another ba
 
 An EAS Simulator workflow has four stages:
 
-1. **Start a session** with EAS CLI. Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
+1. **Start a session** with EAS CLI or the [REST API](/preview/eas-simulator/rest-api/). Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
 2. **Install your app.** Pass an EAS Build, application archive URL, or Expo Go to the start command, or install a local build through the controller after the session starts. A session without an application source starts with a blank device.
 3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or [Appium](https://appium.io/docs/en/) for programmatic control. Supported iOS sessions also include a web preview.
 4. **Stop the session.** Stop it explicitly when you finish. An unattended non-interactive session continues consuming usage until it stops or reaches a configured limit.
 
-EAS CLI manages the session lifecycle and connection configuration. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
+EAS CLI manages the session lifecycle and connection configuration. Use the REST API to manage sessions from your own HTTP client. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
 
 ## Available surfaces
 
@@ -92,6 +92,13 @@ Use [EAS Build](/build/introduction/) to create installable builds, and use loca
   title="CLI reference"
   description="Review the experimental simulator commands, flags, output, and managed environment file."
   href="/preview/eas-simulator/cli-reference/"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="REST API"
+  description="Create, inspect, connect to, and stop sessions from CI or your own HTTP client."
+  href="/preview/eas-simulator/rest-api/"
   Icon={Cloud01Icon}
 />
 
