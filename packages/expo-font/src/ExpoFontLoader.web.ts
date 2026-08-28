@@ -271,7 +271,7 @@ function getStyleElement(): HTMLStyleElement {
 const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
 // CSS font weights run from 1 to 1000, alone or as a variable-font range ('100 900').
 // No leading zero: '0400' is not a weight.
-const CSS_WEIGHT_NUMERIC_RE = /^[1-9]\d{0,3}( [1-9]\d{0,3})?$/;
+const CSS_WEIGHT_NUMERIC_RE = /^(1000|[1-9]\d{0,2})( (1000|[1-9]\d{0,2}))?$/;
 
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
   const declarations = [
