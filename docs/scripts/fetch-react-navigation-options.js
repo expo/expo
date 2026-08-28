@@ -93,17 +93,17 @@ function parseOptionsFromMarkdown(markdown, config) {
       continue;
     }
 
+    let platform = 'Both';
+    if (content.includes('Only supported on iOS')) {
+      platform = 'iOS only';
+    } else if (content.includes('Only supported on Android')) {
+      platform = 'Android only';
+    }
+
     let rawContent = content;
 
     if (typeof config.preprocessOptionContent === 'function') {
       rawContent = config.preprocessOptionContent(optionName, rawContent, optionsSection);
-    }
-
-    let platform = 'Both';
-    if (rawContent.includes('Only supported on iOS')) {
-      platform = 'iOS only';
-    } else if (rawContent.includes('Only supported on Android')) {
-      platform = 'Android only';
     }
 
     let description = rawContent
@@ -111,7 +111,7 @@ function parseOptionsFromMarkdown(markdown, config) {
       .replace(/:::warning[\S\s]*?(?=\n\n|\n[A-Z]|$)/g, '')
       .replace(/:::note[\S\s]*?(?=\n\n|\n[A-Z]|$)/g, '')
       .replace(/:::/g, '')
-      .replace(/<Tabs[\S\s]*?<\/Tabs>/g, tabsBlock => {
+      .replace(/<(Config)?Tabs[\S\s]*?<\/(Config)?Tabs>/g, tabsBlock => {
         const codeBlocks = Array.from(tabsBlock.matchAll(/```[\S\s]*?```/g)).map(match => match[0]);
         if (codeBlocks.length === 0) {
           return '';
@@ -128,6 +128,9 @@ function parseOptionsFromMarkdown(markdown, config) {
       .replace(/Example:\s*\n\n[^\n]*\n/g, '')
       .replace(/!\[([^\]]*)]\([^)]+\)/g, '')
       .replace(/\[([^\]]+)]\([^)]+\)/g, '$1')
+      .replace(/<div className="options-grid">([\S\s]*?)<\/div>/g, (_match, items) =>
+        items.replace(/^([\t ]*)-(?:[\t ]*\n){2}[\t ]*(`[^`]+`)/gm, '$1- $2')
+      )
       .replace(/\n\s*(Android|iOS):\s*\n\s*(?=\n|$)/g, '')
       .replace(/##### `([^`]+)`/g, '\n\n**$1**')
       .replace(/##### ([^\n]+)/g, '\n\n**$1**')

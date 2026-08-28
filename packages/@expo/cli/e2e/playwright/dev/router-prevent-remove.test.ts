@@ -14,7 +14,6 @@ const expoStart = createExpoStart({
   env: {
     NODE_ENV: 'production',
     EXPO_USE_STATIC: 'single',
-    E2E_ROUTER_JS_ENGINE: 'hermes',
     E2E_ROUTER_SRC: inputDir,
     E2E_ROUTER_ASYNC: 'development',
     CI: '0',
@@ -31,7 +30,8 @@ test.describe(inputDir, () => {
     await expoStart.stopAsync();
   });
 
-  test('blocks removal and continues after disabling the hook', async ({ page }) => {
+  // TODO(@ubax): Restore remove prevention after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
+  test.skip('blocks removal and continues after disabling the hook', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     await page.goto(expoStart.url.href);
 

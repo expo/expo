@@ -162,6 +162,19 @@ class DispatchUtilsClassifyResponseTest {
     }
   }
 
+  @Test
+  fun `413 returns PayloadTooLarge with or without Retry-After`() {
+    for (retryAfter in listOf(null, "120")) {
+      val result = DispatchUtils.classifyResponse(
+        statusCode = 413,
+        retryAfterHeader = retryAfter,
+        responseBody = null
+      )
+
+      assertEquals(DispatchResult.PayloadTooLarge, result)
+    }
+  }
+
   // MARK: -- Non-retryable 4xx / other 5xx
 
   @Test
@@ -250,6 +263,13 @@ class DispatchUtilsShouldRemovePendingTest {
   @Test
   fun `Success removes pending IDs`() {
     assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.Success))
+  }
+
+  // Multi-record payloads are retried in smaller chunks before this check, so a 413 here
+  // represents a single oversized record that must not wedge the queue.
+  @Test
+  fun `PayloadTooLarge removes pending IDs`() {
+    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.PayloadTooLarge))
   }
 
   // `Retryable` is the "leave them alone" case — the next dispatch round picks the same

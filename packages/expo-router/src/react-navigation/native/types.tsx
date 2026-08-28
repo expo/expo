@@ -1,12 +1,7 @@
 import type { ColorValue } from 'react-native';
 
-import type {
-  getActionFromState as getActionFromStateDefault,
-  getPathFromState as getPathFromStateDefault,
-  getStateFromPath as getStateFromPathDefault,
-  PathConfigMap,
-  Route,
-} from '../core';
+import type { getStateFromPath as getExpoStateFromPath } from '../../fork/getStateFromPath';
+import type { getPathFromState as getPathFromStateDefault, PathConfigMap, Route } from '../core';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -58,11 +53,6 @@ export type Theme = NativeTheme;
 export type LocaleDirection = 'ltr' | 'rtl';
 
 export type LinkingOptions<ParamList extends object> = {
-  /**
-   * Whether deep link handling should be enabled.
-   * Defaults to true.
-   */
-  enabled?: boolean;
   /**
    * The prefixes are stripped from the URL before parsing them.
    * Usually they are the `scheme` + `host` (e.g. `myapp://chat?user=jane`)
@@ -166,16 +156,12 @@ export type LinkingOptions<ParamList extends object> = {
   /**
    * Custom function to parse the URL to a valid navigation state (advanced).
    */
-  getStateFromPath?: typeof getStateFromPathDefault;
+  getStateFromPath?: typeof getExpoStateFromPath;
   /**
    * Custom function to convert the state object to a valid URL (advanced).
    * Only applicable on Web.
    */
   getPathFromState?: typeof getPathFromStateDefault;
-  /**
-   * Custom function to convert the state object to a valid action (advanced).
-   */
-  getActionFromState?: typeof getActionFromStateDefault;
 };
 
 /**

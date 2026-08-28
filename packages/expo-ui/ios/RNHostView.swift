@@ -5,22 +5,55 @@ import ExpoModulesCore
 
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
+  /**
+   Whether this view owns its subtree's touches and is the origin its content is measured from. Set
+   by the JavaScript side for content presented in its own view controller — see `RNHostView.tsx`,
+   which reads it from the sheet or popover presenting the content.
+
+   Also read by `ExpoViewShadowNode` in C++, which turns it into the `RootNodeKind` trait so
+   `measure()` stops its ancestor walk here.
+   */
+  @Field var layoutRoot: Bool = false
 }
 
+// Touches and `measure()` must agree on a coordinate space. Which space depends on where the
+// content sits:
+//  Normal tree:
+//    The surface root above us already dispatches, in surface coordinates. We attach
+//    nothing and publish a content origin, so `measure()` matches those touches.
+//  Sheet, popover:  
+//    Presented in its own view controller, so nothing above dispatches and the
+//    content would get no touches at all. We attach our own handler, and
+//   `layoutRoot` measures from this view — the space those touches arrive in.
+//
+// Attaching a handler in the normal tree would give the subtree two streams in two spaces: UIKit
+// delivers a touch to the hit view and every ancestor, and the root's cannot be suppressed from
+// below, so presses would cancel on any movement.
 struct RNHostView: ExpoSwiftUI.View {
 
   @ObservedObject var props: RNHostViewProps
-  // Owns the RCTSurfaceTouchHandler we attach to the hosted RN view so it is detached again when
-  // this host disappears.
   @StateObject private var touchHandler = RNHostTouchHandler()
 
   var body: some View {
+    hostedContent
+      .modifier(
+        PublishContentOriginModifier(
+          shadowNodeProxy: props.shadowNodeProxy,
+          isEnabled: !props.layoutRoot
+        )
+      )
+  }
+
+  @ViewBuilder
+  private var hostedContent: some View {
     if props.matchContents, let childUIView = firstChildUIView {
       ApplySizeFromYogaNode(childUIView: childUIView) {
         Children()
       }
       .onAppear {
-        touchHandler.attach(to: childUIView)
+        if props.layoutRoot {
+          touchHandler.attach(to: childUIView)
+        }
       }
       .onDisappear {
         touchHandler.detach()
@@ -30,12 +63,17 @@ struct RNHostView: ExpoSwiftUI.View {
       // natural size instead of falling into the fill branch below, which would
       // stretch a self-sizing SwiftUI view to fill its container.
       Children()
+    } else if props.children?.isEmpty ?? true {
+      // Nothing is mounted yet (e.g. a hosted RN `Modal` renders null until `visible` is true).
+      // Render nothing instead of an empty fill frame, which would take up space in the
+      // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
+      EmptyView()
     } else {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
-          if let view = firstChildUIView {
+          if props.layoutRoot, let view = firstChildUIView {
             touchHandler.attach(to: view)
           }
         }
@@ -47,6 +85,29 @@ struct RNHostView: ExpoSwiftUI.View {
 
   private var firstChildUIView: UIView? {
     props.children?.first?.uiView
+  }
+}
+
+// Publishes where SwiftUI placed this view inside its `Host`, so `measure()` reports the position
+// the hosted content actually occupies.
+private struct PublishContentOriginModifier: ViewModifier {
+  let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  let isEnabled: Bool
+
+  func body(content: Content) -> some View {
+    if isEnabled {
+      content
+        .onGeometryChange(for: CGRect.self) { proxy in
+          proxy.frame(in: .named(expoHostCoordinateSpace))
+        } action: { frame in
+          shadowNodeProxy.setContentOrigin?(frame.origin)
+        }
+        .onDisappear {
+          shadowNodeProxy.clearContentOrigin?()
+        }
+    } else {
+      content
+    }
   }
 }
 

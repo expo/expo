@@ -157,18 +157,26 @@ export const containerRelativeFrame = (params: {
 
 /**
  * Sets padding on a view.
- * Supports individual edges or shorthand properties.
+ * Supports individual edges or shorthand properties. Every edge accepts a length in points or
+ * `'default'` to apply the system default padding to that edge. Edges set by a specific property
+ * take precedence over the shorthand ones, and unspecified edges get no padding.
+ * Calling it without parameters applies the system default padding to all edges.
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
+ * @example
+ * ```tsx
+ * // The system default padding on top, 12 points on the sides, nothing at the bottom.
+ * <Text modifiers={[padding({ top: 'default', horizontal: 12 })]}>Hello</Text>
+ * ```
  */
 export const padding = (params?: {
-  top?: number;
-  bottom?: number;
-  leading?: number;
-  trailing?: number;
-  horizontal?: number;
-  vertical?: number;
-  all?: number;
+  top?: number | 'default';
+  bottom?: number | 'default';
+  leading?: number | 'default';
+  trailing?: number | 'default';
+  horizontal?: number | 'default';
+  vertical?: number | 'default';
+  all?: number | 'default';
 }) => createModifier('padding', params);
 
 /**
@@ -1122,6 +1130,30 @@ export const listRowSeparatorTint = (color?: Color, edges?: 'all' | 'top' | 'bot
 export const listRowSpacing = (spacing?: number) => createModifier('listRowSpacing', { spacing });
 
 /**
+ * Sets the position of a horizontal alignment guide of this view.
+ *
+ * Use the `'listRowSeparatorLeading'` guide to set where the separator of a `List` row starts.
+ * SwiftUI insets a row separator past a leading `Image`, but not past other leading content, so
+ * rows with different leading content get separators that start at different offsets.
+ * @param guide - The horizontal alignment guide to set. `'listRowSeparatorLeading'` and
+ * `'listRowSeparatorTrailing'` do nothing on tvOS, where SwiftUI does not provide them.
+ * @param value - The position of the guide, in points from the leading edge of the view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/alignmentguide(_:computevalue:)-9mdoh).
+ *
+ * @example
+ * ```tsx
+ * <HStack modifiers={[alignmentGuide('listRowSeparatorLeading', 32)]}>
+ *   <Text>A</Text>
+ *   <Text>The separator starts 32 points from the leading edge</Text>
+ * </HStack>
+ * ```
+ */
+export const alignmentGuide = (
+  guide: 'leading' | 'center' | 'trailing' | 'listRowSeparatorLeading' | 'listRowSeparatorTrailing',
+  value: number
+) => createModifier('alignmentGuide', { guide, value });
+
+/**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
  * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
  * You can truncate at the beginning, middle, or end of the text view.
@@ -1735,6 +1767,7 @@ export type BuiltInModifier =
   | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof listRowSeparatorTint>
   | ReturnType<typeof listRowSpacing>
+  | ReturnType<typeof alignmentGuide>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>

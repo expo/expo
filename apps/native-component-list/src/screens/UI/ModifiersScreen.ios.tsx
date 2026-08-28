@@ -33,6 +33,7 @@ import {
   listRowSeparator,
   listRowSeparatorTint,
   listRowSpacing,
+  alignmentGuide,
   border,
   strokeBorder,
   onTapGesture,
@@ -250,6 +251,21 @@ export default function ModifiersScreen() {
             <Text modifiers={[listRowSeparatorTint('red')]}>Red separator</Text>
             <Text modifiers={[listRowSeparatorTint('blue', 'bottom')]}>Blue bottom separator</Text>
             <Text>Default separator</Text>
+          </Section>
+
+          <Section title="List row separator leading alignment">
+            <HStack spacing={12}>
+              <Image systemName="circle" size={20} />
+              <Text>Leading image</Text>
+            </HStack>
+            <HStack spacing={12}>
+              <Text>A</Text>
+              <Text>Leading text</Text>
+            </HStack>
+            <HStack spacing={12} modifiers={[alignmentGuide('listRowSeparatorLeading', 32)]}>
+              <Text>A</Text>
+              <Text>Leading text, aligned separator</Text>
+            </HStack>
           </Section>
 
           <Section title="List row spacing">
@@ -680,6 +696,35 @@ export default function ModifiersScreen() {
               // primary is a named color in SwiftUI
               modifiers={[foregroundStyle({ type: 'color', color: 'primary' })]}
             />
+          </Section>
+
+          <Section title="Padding">
+            <Text
+              modifiers={[
+                padding(),
+                background('#E8F0FE'),
+                foregroundStyle({ type: 'color', color: '#1A1A1A' }),
+              ]}>
+              System default padding on every edge
+            </Text>
+
+            <Text
+              modifiers={[
+                padding({ top: 'default', horizontal: 24 }),
+                background('#E8F0FE'),
+                foregroundStyle({ type: 'color', color: '#1A1A1A' }),
+              ]}>
+              System default on top, 24 points on the sides, none at the bottom
+            </Text>
+
+            <Text
+              modifiers={[
+                padding({ all: 'default', leading: 0 }),
+                background('#E8F0FE'),
+                foregroundStyle({ type: 'color', color: '#1A1A1A' }),
+              ]}>
+              System default on every edge except the leading one
+            </Text>
           </Section>
 
           {/* New Modifier System Demo Section */}

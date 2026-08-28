@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Document that every `tint` value adds a color layer on top of the blur. ([#49248](https://github.com/expo/expo/pull/49248) by [@expo-bot](https://github.com/expo-bot))
+
 ## 57.0.2 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

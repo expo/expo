@@ -130,6 +130,16 @@ struct ObservabilityClassifyResponseTests {
   // MARK: - Non-retryable 4xx / other 5xx
 
   @Test
+  func `413 returns payloadTooLarge`() {
+    let result = DispatchUtils.classifyResponse(
+      statusCode: 413,
+      retryAfterHeader: nil,
+      partialSuccess: nil
+    )
+    #expect(result == .payloadTooLarge)
+  }
+
+  @Test
   func `400 returns nonRetryable`() {
     let result = DispatchUtils.classifyResponse(
       statusCode: 400,

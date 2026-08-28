@@ -87,7 +87,7 @@ export default function App() {
       });
       setResult(ageRange);
     } catch (error) {
-      setResult({ error: error.message });
+      setResult({ error: error instanceof Error ? error.message : String(error) });
     }
   };
 
@@ -118,6 +118,37 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+## Testing age signals on Android
+
+Google Play only reports age signals to accounts it has enabled, so your test accounts may not have the age range you need. Use [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake) to fake them instead, through Google Play's [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api).
+
+Only debuggable builds can fake signals, because faked signals would let any code in the app bypass your age gating. Passing anything other than `null` in a build that is not debuggable throws `ERR_AGE_RANGE_FAKE_SIGNALS_NOT_DEBUGGABLE`.
+
+Your requests do not change, only what they report:
+
+```ts
+// Report a supervised 13 to 15 year old with a change waiting for approval.
+AgeRange.setFakeAgeSignals({
+  ageSignalsStatus: 'SHARED',
+  lowerBound: 13,
+  upperBound: 15,
+  ageRangeSource: 'TIER_B',
+  significantChangeStatus: 'PENDING',
+});
+
+const status = await AgeRange.requestAgeSignalsAccessAsync();
+const { lowerBound } = await AgeRange.requestAgeRangeAsync({ threshold1: 18 });
+
+// Report the real signals again.
+AgeRange.setFakeAgeSignals(null);
+```
+
+To fake a failure, pass an [error code](https://developer.android.com/google/play/age-signals/handle-errors) instead of signals:
+
+```ts
+AgeRange.setFakeAgeSignals({ errorCode: -4 });
+```
+
 ## Additional resources
 
 - [Play Age Signals API](https://developer.android.com/google/play/age-signals/use-age-signals-api): Android documentation for age signals
@@ -135,9 +166,11 @@ import * as AgeRange from 'expo-age-range';
 
 Available in the `code` property of any error thrown by the native module. For Android-specific error codes, see the "Error code reference" in [Use Play Age Signals API docs](https://developer.android.com/google/play/age-signals/handle-errors).
 
-| Code                            | Platform                                 | Description                                                                                                        |
-| ------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `ERR_AGE_RANGE_USER_DECLINED`   | <PlatformTags platforms={['ios']} />     | User declined to share their age range.                                                                            |
-| `ERR_AGE_RANGE_NOT_AVAILABLE`   | <PlatformTags platforms={['ios']} />     | Age range not available. The most likely cause is that user is not signed in to their Apple account on the device. |
-| `ERR_AGE_RANGE_INVALID_REQUEST` | <PlatformTags platforms={['ios']} />     | The provided params were invalid. The age ranges need to be minimum 2 years apart.                                 |
-| `ERR_AGE_RANGE_TASK_CANCELLED`  | <PlatformTags platforms={['android']} /> | The user dismissed the Play Age Signals age sharing consent screen.                                                |
+| Code                                        | Platform                                 | Description                                                                                                        |
+| ------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `ERR_AGE_RANGE_USER_DECLINED`               | <PlatformTags platforms={['ios']} />     | User declined to share their age range.                                                                            |
+| `ERR_AGE_RANGE_NOT_AVAILABLE`               | <PlatformTags platforms={['ios']} />     | Age range not available. The most likely cause is that user is not signed in to their Apple account on the device. |
+| `ERR_AGE_RANGE_INVALID_REQUEST`             | <PlatformTags platforms={['ios']} />     | The provided params were invalid. The age ranges need to be minimum 2 years apart.                                 |
+| `ERR_AGE_RANGE_TASK_CANCELLED`              | <PlatformTags platforms={['android']} /> | The user dismissed the Play Age Signals age sharing consent screen.                                                |
+| `ERR_AGE_RANGE_FAKE_SIGNALS_CONFLICT`       | <PlatformTags platforms={['android']} /> | `setFakeAgeSignals` was passed both an `errorCode` and age signals.                                                |
+| `ERR_AGE_RANGE_FAKE_SIGNALS_NOT_DEBUGGABLE` | <PlatformTags platforms={['android']} /> | `setFakeAgeSignals` was asked to fake signals in a build that is not debuggable.                                   |

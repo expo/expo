@@ -43,24 +43,41 @@ class PendingMetricsManagerTest {
       manager.addPendingMetrics(metricIds)
 
       // Assert
-      val result = manager.getAllPendingMetricIds()
+      val result = manager.getPendingMetricIds(Int.MAX_VALUE)
       assertEquals(3, result.size)
       assertTrue(result.containsAll(metricIds))
     }
 
   @Test
-  fun `getAllPendingMetricIds returns all inserted IDs from multiple add calls`() =
+  fun `getPendingMetricIds returns all inserted IDs from multiple add calls`() =
     runTest {
       // Arrange
       manager.addPendingMetrics(listOf("metric-1", "metric-2"))
       manager.addPendingMetrics(listOf("metric-3"))
 
       // Act
-      val result = manager.getAllPendingMetricIds()
+      val result = manager.getPendingMetricIds(Int.MAX_VALUE)
 
       // Assert
       assertEquals(3, result.size)
       assertTrue(result.containsAll(listOf("metric-1", "metric-2", "metric-3")))
+    }
+
+  @Test
+  fun `getPendingMetricIds returns the oldest IDs up to the limit`() =
+    runTest {
+      database.pendingMetricDao().insertAll(
+        listOf(
+          PendingMetric("metric-3", "2025-01-03T00:00:00.000Z"),
+          PendingMetric("metric-1", "2025-01-01T00:00:00.000Z"),
+          PendingMetric("metric-4", "2025-01-04T00:00:00.000Z"),
+          PendingMetric("metric-2", "2025-01-02T00:00:00.000Z")
+        )
+      )
+
+      val result = manager.getPendingMetricIds(2)
+
+      assertEquals(listOf("metric-1", "metric-2"), result)
     }
 
   @Test
@@ -73,7 +90,7 @@ class PendingMetricsManagerTest {
       manager.removePendingMetrics(listOf("metric-1", "metric-3"))
 
       // Assert
-      val remaining = manager.getAllPendingMetricIds()
+      val remaining = manager.getPendingMetricIds(Int.MAX_VALUE)
       assertEquals(1, remaining.size)
       assertEquals("metric-2", remaining[0])
     }
@@ -89,13 +106,13 @@ class PendingMetricsManagerTest {
       manager.addPendingMetrics(listOf("recent-metric"))
 
       // Verify both exist
-      assertEquals(2, manager.getAllPendingMetricIds().size)
+      assertEquals(2, manager.getPendingMetricIds(Int.MAX_VALUE).size)
 
       // Act
       manager.cleanupOldPendingMetrics()
 
       // Assert - only recent metric survives
-      val remaining = manager.getAllPendingMetricIds()
+      val remaining = manager.getPendingMetricIds(Int.MAX_VALUE)
       assertEquals(1, remaining.size)
       assertEquals("recent-metric", remaining[0])
     }
@@ -110,7 +127,7 @@ class PendingMetricsManagerTest {
       manager.addPendingMetrics(listOf("metric-2", "metric-3"))
 
       // Assert - no duplicates
-      val result = manager.getAllPendingMetricIds()
+      val result = manager.getPendingMetricIds(Int.MAX_VALUE)
       assertEquals(3, result.size)
       assertTrue(result.containsAll(listOf("metric-1", "metric-2", "metric-3")))
     }
@@ -125,7 +142,17 @@ class PendingMetricsManagerTest {
       manager.removePendingMetrics(emptyList())
 
       // Assert - nothing removed
-      assertEquals(2, manager.getAllPendingMetricIds().size)
+      assertEquals(2, manager.getPendingMetricIds(Int.MAX_VALUE).size)
+    }
+
+  @Test
+  fun `removeAllPendingMetrics deletes all pending metrics`() =
+    runTest {
+      manager.addPendingMetrics(listOf("metric-1", "metric-2"))
+
+      manager.removeAllPendingMetrics()
+
+      assertFalse(manager.hasPendingMetrics())
     }
 
   @Test
@@ -136,13 +163,13 @@ class PendingMetricsManagerTest {
       allIds.chunked(500).forEach { chunk ->
         manager.addPendingMetrics(chunk)
       }
-      assertEquals(1100, manager.getAllPendingMetricIds().size)
+      assertEquals(1100, manager.getPendingMetricIds(Int.MAX_VALUE).size)
 
       // Act - remove all 1100 at once
       manager.removePendingMetrics(allIds)
 
       // Assert - all removed
-      val remaining = manager.getAllPendingMetricIds()
+      val remaining = manager.getPendingMetricIds(Int.MAX_VALUE)
       assertTrue("Expected empty but got ${remaining.size} items", remaining.isEmpty())
     }
 }

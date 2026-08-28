@@ -64,7 +64,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
           <Dialog.Content
             className={mergeClasses(
               'dialog-content',
-              'top-0 left-0 max-h-[90vh] w-[90vw] max-w-125 overflow-hidden rounded-lg border border-default bg-default wrap-break-word shadow-md outline-0 backface-hidden',
+              'top-0 left-0 max-h-[90vh] w-[90vw] max-w-125 overflow-hidden rounded-[40px] border border-default bg-default wrap-break-word shadow-md outline-0 backface-hidden',
               'data-[state=open]:animate-slideUpAndFadeIn',
               'data-[state=closed]:animate-fadeOut'
             )}>
@@ -110,7 +110,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                       <LABEL>Feedback</LABEL>
                       <Textarea
                         autoFocus
-                        className="h-45 resize-none"
+                        className="h-45 resize-none rounded-2xl"
                         characterLimit={1000}
                         value={feedback}
                         onChange={event => {
@@ -125,6 +125,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                       </CALLOUT>
                       <Input
                         type="email"
+                        className="rounded-3xl"
                         placeholder="your@email.com"
                         value={email}
                         onChange={event => {
