@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
 import { Log } from '../../../log';
@@ -16,6 +17,8 @@ jest.mock('../../hints', () => ({
 }));
 
 jest.mock('../../../log');
+
+jest.mock('@expo/spawn-async', () => jest.fn(async () => ({ stderr: '', stdout: '' })));
 
 jest.mock('../../../utils/port');
 jest.mock('../../../utils/nodeEnv', () => ({
@@ -62,7 +65,11 @@ jest.mock('../XcodeBuild', () => ({
 
 jest.mock('../launchApp', () => ({
   launchAppAsync: jest.fn(async () => {}),
-  getLaunchInfoForBinaryAsync: jest.fn(async () => ({})),
+  getLaunchInfoForBinaryAsync: jest.fn(async () => ({ schemes: ['test'] })),
+}));
+
+jest.mock('../validateExternalBinary', () => ({
+  getValidBinaryPathAsync: jest.fn(async (binaryPath) => binaryPath),
 }));
 
 const mockPlatform = (value: typeof process.platform) =>
@@ -99,6 +106,31 @@ describe(runIosAsync, () => {
       '/',
       expect.objectContaining({ mode: 'production' })
     );
+  });
+
+  it('passes the config mode when rebundling Expo config', async () => {
+    mockPlatform('darwin');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
+
+    await runIosAsync('/', {
+      binary: '/mock_binary',
+      configuration: 'Release',
+      device: 'mock',
+      rebundle: true,
+    });
+
+    expect(spawnAsync).toHaveBeenCalledWith('node', expect.any(Array), {
+      env: expect.objectContaining({ __EXPO_CONFIG_MODE: 'production' }),
+    });
   });
 
   it(`asserts that the function only runs on darwin machines`, async () => {
