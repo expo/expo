@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
+- Remove `beforeRemove`, `__unsafe_action__`, `PreventRemoveContext`, and `usePreventRemoveContext` from `expo-router/react-navigation`. ([#49408](https://github.com/expo/expo/pull/49408) by [@Ubax](https://github.com/Ubax))
 - Preserve the focused route when switching navigator types in a conditional layout. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
 - Generate deterministic navigation states and route keys. Complete states from custom routers or persisted state must include `routeKeySeq`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
 - Defer `navigation.dispatch` and navigation helper actions until after commit. Use `navigation.dispatchSync` for synchronous dispatch; dispatch functions are no longer supported. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
@@ -44,6 +46,7 @@
 
 ### 🎉 New features
 
+- Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Add unstable `NavigationAwareActivity` component. ([#49164](https://github.com/expo/expo/pull/49164) by [@Ubax](https://github.com/Ubax))
 - Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
 - Export `NativeStackView` for custom navigator implementations on web. ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
@@ -59,6 +62,7 @@
 - Add a `processScreens` option to the `standard-navigation` integration. ([#48290](https://github.com/expo/expo/pull/48290) by [@Ubax](https://github.com/Ubax))
 - Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
 - Honor loader `Cache-Control` headers via the platform HTTP cache instead of caching loader data in memory ([#48087](https://github.com/expo/expo/pull/48087) by [@hassankhan](https://github.com/hassankhan))
+- Cancel pending loader requests when their routes are removed during navigation ([#48451](https://github.com/expo/expo/pull/48451) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
@@ -79,6 +83,9 @@
 
 ### 💡 Others
 
+- Remove module-level mutable navigation state from Expo Router. ([#49403](https://github.com/expo/expo/pull/49403) by [@Ubax](https://github.com/Ubax))
+- Remove the dev-only `stack` field from the `__unsafe_action__` event in `expo-router/react-navigation`. ([#49431](https://github.com/expo/expo/pull/49431) by [@Ubax](https://github.com/Ubax))
+- Read navigation state from the React tree instead of imperative refs. ([#49433](https://github.com/expo/expo/pull/49433) by [@Ubax](https://github.com/Ubax))
 - Scope routing queues to each router root and bind `useRouter()` to its owning container. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
 - Derive `useIsFocused` from context. ([#49390](https://github.com/expo/expo/pull/49390) by [@Ubax](https://github.com/Ubax))
 - Base `useNavigationState` on global state. ([#49381](https://github.com/expo/expo/pull/49381) by [@jakub-agent](https://github.com/jakub-agent))

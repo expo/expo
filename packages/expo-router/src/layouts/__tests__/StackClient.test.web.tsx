@@ -3,7 +3,8 @@ import { act, render, screen } from '@testing-library/react';
 import { View } from 'react-native';
 
 import { ExpoRoot } from '../../ExpoRoot';
-import { store } from '../../global-state/router-store';
+import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
+import { navigationRef } from '../../global-state/navigationRef';
 import { router } from '../../imperative-api';
 import type { NativeStackHeaderProps } from '../../react-navigation/native-stack';
 import { getMockContext } from '../../testing-library/mock-config';
@@ -43,11 +44,11 @@ describe('StackClient on web', () => {
 
     act(() => router.push('/second'));
     expect(screen.getByTestId('second')).toBeTruthy();
-    expect(store.getRouteInfo().pathname).toBe('/second');
+    expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/second');
     expect(backHref).toBe('/');
 
     act(() => router.back());
     expect(screen.getByTestId('index')).toBeTruthy();
-    expect(store.getRouteInfo().pathname).toBe('/');
+    expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/');
   });
 });

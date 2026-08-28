@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { isRoutePreloadedInStack } from '../../utils/stack';
 import type {
   NavigationAction,
   NavigationState,
@@ -9,11 +10,7 @@ import type {
   PartialState,
   Router,
 } from '../routers';
-import {
-  type AddKeyedListener,
-  type AddListener,
-  NavigationBuilderContext,
-} from './NavigationBuilderContext';
+import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
@@ -21,6 +18,7 @@ import type {
   Descriptor,
   DescriptorRouteProp,
   EventMapBase,
+  EventMapCore,
   NavigationHelpers,
   NavigationProp,
   RouteConfig,
@@ -71,11 +69,10 @@ type Options<
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
-  getState: () => State;
+  state: State;
   addListener: AddListener;
-  addKeyedListener: AddKeyedListener;
   router: Router<State, NavigationAction>;
-  emitter: NavigationEventEmitter<EventMap>;
+  emitter: NavigationEventEmitter<EventMapCore<State>>;
 };
 
 /**
@@ -99,59 +96,42 @@ export function useDescriptors<
   navigation,
   screenOptions,
   screenLayout,
-  getState,
+  state,
   addListener,
-  addKeyedListener,
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const {
-    handleAction,
-    getStateForKey,
-    resetNavigator,
-    onDispatchAction,
-    onOptionsChange,
-    stackRef,
-  } = use(NavigationBuilderContext);
+  const { handleAction, resetNavigator, onOptionsChange } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
       handleAction,
-      getStateForKey,
       resetNavigator,
       addListener,
-      addKeyedListener,
-      onDispatchAction,
       onOptionsChange,
-      stackRef,
     }),
-    [
-      navigation,
-      handleAction,
-      getStateForKey,
-      resetNavigator,
-      addListener,
-      addKeyedListener,
-      onDispatchAction,
-      onOptionsChange,
-      stackRef,
-    ]
+    [navigation, handleAction, resetNavigator, addListener, onOptionsChange]
   );
 
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
     routes,
     routeNames,
-    getState,
     navigation,
     setOptions,
     router,
-    emitter,
+    // The same runtime emitter handles custom events; this generic only exposes core events here.
+    emitter: emitter as unknown as NavigationEventEmitter<EventMap>,
   });
 
   const cachedRoutes = useRouteCache(routes);
+  const emitRemovalEvent = React.useCallback(
+    (routeKey: string, type: 'removePrevented' | 'removed', action: NavigationAction) =>
+      emitter.emit({ type, target: routeKey, data: { action } }),
+    [emitter]
+  );
 
   const getOptions = (
     route: DescriptorRouteProp<ParamListBase, string>,
@@ -235,6 +215,7 @@ export function useDescriptors<
         routeState={routeState}
         options={customOptions}
         clearOptions={clearOptions}
+        emitRemovalEvent={emitRemovalEvent}
       />
     );
 
@@ -270,7 +251,7 @@ export function useDescriptors<
   >;
 
   const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
-    const navigation = getNavigation(route);
+    const navigation = getNavigation(route, isRoutePreloadedInStack(state, route));
 
     if (screens[route.name] === undefined) {
       acc[route.key] = {
@@ -318,13 +299,13 @@ export function useDescriptors<
     if (!config) {
       return {
         route,
-        navigation: getNavigation({ key: route.name, name: route.name }),
+        navigation: getNavigation({ key: route.name, name: route.name }, false),
         options: {} as ScreenOptions,
         render: () => null,
       } as DescriptorMap[string];
     }
 
-    const navigation = getNavigation({ key: route.name, name: route.name });
+    const navigation = getNavigation({ key: route.name, name: route.name }, false);
     return {
       route,
       navigation,

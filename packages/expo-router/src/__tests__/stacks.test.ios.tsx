@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -189,7 +189,7 @@ test('dismissAll nested', () => {
   // The last route should include a sub-state for /one/_layout
   // It will have three routes  (/one/index, /one/page, /one/two)
   // The last route should include a sub-state for /one/two/_layout
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -304,7 +304,7 @@ test('dismissAll nested', () => {
   // This should only dismissing the sub-state for /one/two/_layout
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one/two');
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -407,7 +407,7 @@ test('dismissAll nested', () => {
   // This should only dismissing the sub-state for /one/_layout
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one');
-  expect(store.state).toStrictEqual({
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -593,7 +593,7 @@ describe('singular', () => {
       }
     );
 
-    expectCompleteStateToMatch(store.state, {
+    expectCompleteStateToMatch(navigationRef.getRootState(), {
       index: 0,
       key: expect.any(String),
       routeNames: ['__root', '+not-found', '_sitemap'],

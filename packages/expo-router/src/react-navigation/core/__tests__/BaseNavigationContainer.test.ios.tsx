@@ -732,6 +732,66 @@ test('emits option events when options change with tab router', () => {
   expect(ref.current?.getCurrentOptions()).toEqual({ h: 9 });
 });
 
+test('does not emit options from an unfocused nested navigator', () => {
+  const NoFocusMockRouter = (options: DefaultRouterOptions) => ({
+    ...MockRouter(options),
+    shouldActionChangeFocus: () => false,
+  });
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      NoFocusMockRouter,
+      props
+    );
+
+    React.useImperativeHandle(ref, () => navigation, [navigation]);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  });
+  const child = React.createRef<any>();
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const listener = jest.fn();
+
+  render(
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        routes: [
+          { name: 'first' },
+          { name: 'nested', state: { routes: [{ name: 'third' }, { name: 'fourth' }] } },
+        ],
+      }}>
+      <TestNavigator>
+        <Screen name="first" options={{ x: 1 }}>
+          {() => null}
+        </Screen>
+        <Screen name="nested">
+          {() => (
+            <TestNavigator ref={child}>
+              <Screen name="third" options={{ g: 5 }}>
+                {() => null}
+              </Screen>
+              <Screen name="fourth" options={{ h: 9 }}>
+                {() => null}
+              </Screen>
+            </TestNavigator>
+          )}
+        </Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+  ref.current?.addListener('options', listener);
+
+  act(() => child.current.navigate('fourth'));
+
+  expect(ref.current?.getCurrentRoute()?.name).toBe('first');
+  expect(listener).not.toHaveBeenCalled();
+  expect(ref.current?.getCurrentOptions()).toEqual({ x: 1 });
+});
+
 test('emits option events when options change with stack router', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);

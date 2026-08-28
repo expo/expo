@@ -2,7 +2,7 @@ import { screen, act } from '@testing-library/react-native';
 import { useEffect } from 'react';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -36,7 +36,7 @@ it('prefetch a sibling route', () => {
     },
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -68,7 +68,7 @@ it('prefetch a sibling route', () => {
     router.prefetch('/test');
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -137,7 +137,7 @@ it('will prefetch the correct route within a group', () => {
     '(b)/test': () => null,
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -169,7 +169,7 @@ it('will prefetch the correct route within a group', () => {
     router.prefetch('/test');
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -212,7 +212,7 @@ it('will prefetch the correct route within nested groups', () => {
     '(b)/test': () => null,
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -244,7 +244,7 @@ it('will prefetch the correct route within nested groups', () => {
     router.prefetch('/test');
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -285,7 +285,7 @@ it('works with relative Href', () => {
     test: () => null,
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -317,7 +317,7 @@ it('works with relative Href', () => {
     router.prefetch('./test');
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -358,7 +358,7 @@ it('works with params', () => {
     test: () => null,
   });
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -440,7 +440,7 @@ it('ignores the current route', () => {
     }
   );
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -560,7 +560,7 @@ it('can prefetch a deeply nested route', () => {
     }
   );
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -707,7 +707,7 @@ it('can prefetch a parent route', () => {
     }
   );
 
-  expectCompleteStateToMatch(store.state, {
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -961,7 +961,6 @@ it('can still use <Screen /> while prefetching in tabs', () => {
     'Should only change after focus',
     'index',
     'Should only change after focus',
-    'index',
   ]);
 });
 

@@ -6,6 +6,9 @@
     },
     {
       "path": "./plugin"
+    },
+    {
+      "path": "./cli"
     }
   ]
 }

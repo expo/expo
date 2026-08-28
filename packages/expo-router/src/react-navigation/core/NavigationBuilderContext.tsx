@@ -1,25 +1,14 @@
 'use client';
 import * as React from 'react';
 
-import type { NavigationAction, NavigationState, ParamListBase } from '../routers';
+import type { NavigationAction, ParamListBase } from '../routers';
 import type { NavigationHelpers } from './types';
 
 export type ListenerMap = {
   focus: FocusedNavigationListener;
 };
 
-export type KeyedListenerMap = {
-  preventRemove: ChildPreventRemoveListener;
-  beforeRemove: ChildBeforeRemoveListener;
-};
-
 export type AddListener = <T extends keyof ListenerMap>(type: T, listener: ListenerMap[T]) => void;
-
-export type AddKeyedListener = <T extends keyof KeyedListenerMap>(
-  type: T,
-  key: string,
-  listener: KeyedListenerMap[T]
-) => void;
 
 export type FocusedNavigationCallback<T> = (navigation: NavigationHelpers<ParamListBase>) => T;
 
@@ -28,26 +17,16 @@ export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<
   result: T;
 };
 
-export type ChildPreventRemoveListener = (action: NavigationAction) => boolean;
-
-export type ChildBeforeRemoveListener = (action: NavigationAction) => void;
-
 /**
  * Context which holds the required helpers needed to build nested navigators.
  */
 export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
-  getStateForKey: (key: string) => NavigationState | undefined;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
   addListener?: AddListener;
-  addKeyedListener?: AddKeyedListener;
-  onDispatchAction: (action: NavigationAction, noop: boolean) => void;
   onOptionsChange: (options: object, routeKey?: string) => void;
-  stackRef?: React.MutableRefObject<string | undefined>;
 }>({
   handleAction: () => undefined,
-  getStateForKey: () => undefined,
   resetNavigator: () => undefined,
-  onDispatchAction: () => undefined,
   onOptionsChange: () => undefined,
 });

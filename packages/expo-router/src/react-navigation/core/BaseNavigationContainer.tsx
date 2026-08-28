@@ -10,10 +10,15 @@ import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
 } from '../../global-state/getRouteInfoFromState';
+import {
+  GlobalRoutesWithRemovalPreventedContext,
+  RemovalPreventionProvider,
+} from '../../global-state/removalPrevention';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
+import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
-import { StoreContext } from '../../global-state/storeContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
+import { useNavigationTreeReportEvents } from '../../global-state/useNavigationTreeReportEvents';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -27,6 +32,7 @@ import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationStateContext } from './NavigationStateContext';
+import { RootNavigationStateContext } from './RootNavigationStateContext';
 import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
 import { checkSerializable } from './checkSerializable';
 import { NOT_INITIALIZED_ERROR } from './createNavigationContainerRef';
@@ -39,14 +45,12 @@ import type {
 import { useChildListeners } from './useChildListeners';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useEventEmitter } from './useEventEmitter';
-import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useOptionsGetters } from './useOptionsGetters';
 
 type InternalNavigationContainerProps = Omit<NavigationContainerProps, 'initialState'> & {
   initialState: InitialState;
   ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
   UNSTABLE_routeNode?: RouteNode;
-  UNSTABLE_onStateChangeInsertion?: (state: NavigationState) => void;
 };
 
 const serializableWarnings: string[] = [];
@@ -66,17 +70,17 @@ const duplicateNameWarnings: string[] = [];
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
   const registry = use(RouterRegistryContext);
+  const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   // TODO(@ubax): investigate if this is really needed
-  if (registry === undefined) {
-    return (
-      <RouterRegistryProvider>
-        <BaseNavigationContainerInner {...props} />
-      </RouterRegistryProvider>
-    );
+  let content = <BaseNavigationContainerInner {...props} />;
+  if (routesWithRemovalPrevented === undefined) {
+    content = <RemovalPreventionProvider>{content}</RemovalPreventionProvider>;
   }
-
-  return <BaseNavigationContainerInner {...props} />;
+  if (registry === undefined) {
+    content = <RouterRegistryProvider>{content}</RouterRegistryProvider>;
+  }
+  return content;
 }
 
 function BaseNavigationContainerInner({
@@ -85,13 +89,12 @@ function BaseNavigationContainerInner({
   onStateChange,
   onReady,
   UNSTABLE_routeNode,
-  UNSTABLE_onStateChangeInsertion,
   theme,
   children,
 }: InternalNavigationContainerProps) {
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
 
   if (!parent.isDefault) {
     throw new Error(
@@ -100,35 +103,25 @@ function BaseNavigationContainerInner({
   }
 
   const registry = use(RouterRegistryContext)!;
+  const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext)!;
   const emitter = useEventEmitter<NavigationContainerEventMap>();
-  // TODO(@ubax): investigate if this is really needed
-  const stackRef = React.useRef<string | undefined>(undefined);
-  // TODO(@ubax): invoke this callback from global reducer dispatches.
-  // https://linear.app/expo/issue/ENG-26123
-  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
-    emitter.emit({
-      type: '__unsafe_action__',
-      data: { action, noop, stack: stackRef.current },
-    });
-  });
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, getState, getStateForKey, resetNavigator, handleAction, processIntent } =
+  const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
     useNavigationTreeReducer({
       initialState,
       routeNode: UNSTABLE_routeNode,
       registry,
-      linking: store?.linking,
-      redirects: store?.redirects,
-      onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
+      routesWithRemovalPrevented,
+      linking: routerConfig?.linking,
+      redirects: routerConfig?.redirects,
     });
+  useNavigationTreeReportEvents(report, consumeReportEvents);
 
   const hasNotifiedInitialStateRef = React.useRef(false);
   const lastNotifiedStateRef = React.useRef<NavigationState | undefined>(undefined);
 
   const { listeners, addListener } = useChildListeners();
-
-  const { addKeyedListener } = useKeyedChildListeners();
 
   const dispatch = useLatestCallback((action: NavigationAction) => {
     if (listeners.focus[0] == null) {
@@ -139,6 +132,9 @@ function BaseNavigationContainerInner({
   });
 
   const dispatchSync = useLatestCallback((action: NavigationAction) => {
+    // TODO(@ubax): Throw if this is called from a `removePrevented` callback.
+    // TODO(@ubax): Review urgent dispatches interleaved with pending navigation transitions. React
+    // rebases the queued actions, but intermediate state can reflect only the urgent action.
     handleAction(action);
   });
 
@@ -156,9 +152,7 @@ function BaseNavigationContainerInner({
     }
   });
 
-  const getRootState = useLatestCallback(() => {
-    return getState();
-  });
+  const getRootState = useLatestCallback(() => state);
 
   const getCurrentRoute = useLatestCallback(() => {
     const state = getRootState();
@@ -172,9 +166,8 @@ function BaseNavigationContainerInner({
     return route as Route<string> | undefined;
   });
 
-  const isReady = useLatestCallback(
-    () => listeners.focus[0] != null && registry.has(getState().key)
-  );
+  // TODO(@ubax): check if this is still needed anywhere
+  const isReady = useLatestCallback(() => listeners.focus[0] != null && registry.has(state.key));
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -192,7 +185,7 @@ function BaseNavigationContainerInner({
       isFocused: () => true,
       canGoBack,
       getParent: () => undefined,
-      getState,
+      getState: getRootState,
       getRootState,
       getCurrentRoute,
       getCurrentOptions,
@@ -209,7 +202,6 @@ function BaseNavigationContainerInner({
       getCurrentOptions,
       getCurrentRoute,
       getRootState,
-      getState,
       isReady,
     ]
   );
@@ -242,23 +234,11 @@ function BaseNavigationContainerInner({
   const builderContext = React.useMemo(
     () => ({
       addListener,
-      addKeyedListener,
       handleAction,
-      getStateForKey,
       resetNavigator,
-      onDispatchAction,
       onOptionsChange,
-      stackRef,
     }),
-    [
-      addListener,
-      addKeyedListener,
-      getStateForKey,
-      handleAction,
-      onDispatchAction,
-      onOptionsChange,
-      resetNavigator,
-    ]
+    [addListener, handleAction, onOptionsChange, resetNavigator]
   );
 
   const context = React.useMemo(
@@ -388,10 +368,12 @@ function BaseNavigationContainerInner({
       <NavigationBuilderContext.Provider value={builderContext}>
         <NavigationStateContext.Provider value={context}>
           <RouteInfoContext.Provider value={routeInfo}>
-            <EnsureSingleNavigator>
-              <ThemeProvider value={theme}>{children}</ThemeProvider>
-            </EnsureSingleNavigator>
-            <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+            <RootNavigationStateContext.Provider value={state}>
+              <EnsureSingleNavigator>
+                <ThemeProvider value={theme}>{children}</ThemeProvider>
+              </EnsureSingleNavigator>
+              <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+            </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>
       </NavigationBuilderContext.Provider>

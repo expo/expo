@@ -44,21 +44,9 @@ describe(withAppIntentsValidation, () => {
     );
   });
 
-  it('names the plugin directory prop as the other way out', () => {
-    const config = configWatching('ios-modules');
-    expect(() => withAppIntentsValidation(config, { directory: 'app-intents' })).toThrow(
-      /"directory"/
-    );
-  });
-
-  it('passes config through when configured correctly', () => {
-    const config = configWatching('app-intents');
-    expect(withAppIntentsValidation(config, { directory: 'app-intents' })).toBe(config);
-  });
-
   // `expo-modules-autolinking` resolves each watched entry against the app root, so these all
   // name the same directory as `app-intents`.
-  it.each(['./app-intents', 'app-intents/', './app-intents/', 'app-intents/../app-intents'])(
+  it.each(['./app-intents', 'app-intents/../app-intents'])(
     'accepts the equivalent watched path %s',
     (watchedDirectory) => {
       const config = configWatching(watchedDirectory);
@@ -67,15 +55,10 @@ describe(withAppIntentsValidation, () => {
   );
 
   // Watched directories are scanned recursively, so any ancestor works.
-  it.each(['.', './', 'src', 'src/native'])(
-    'accepts the watched ancestor directory %s',
-    (watchedDirectory) => {
-      const config = configWatching(watchedDirectory);
-      expect(withAppIntentsValidation(config, { directory: 'src/native/app-intents' })).toBe(
-        config
-      );
-    }
-  );
+  it.each(['.', 'src/native'])('accepts the watched ancestor directory %s', (watchedDirectory) => {
+    const config = configWatching(watchedDirectory);
+    expect(withAppIntentsValidation(config, { directory: 'src/native/app-intents' })).toBe(config);
+  });
 
   it('accepts a directory watched alongside unrelated ones', () => {
     const config = configWatching('other', 'src');

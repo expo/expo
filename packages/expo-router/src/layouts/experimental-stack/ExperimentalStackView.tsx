@@ -4,10 +4,13 @@ import { StyleSheet, View } from 'react-native';
 import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
 import {
+  isRouteRemovalPrevented,
+  useRoutesWithRemovalPrevented,
+} from '../../global-state/removalPrevention';
+import {
   type ParamListBase,
   StackActions,
   type StackNavigationState,
-  usePreventRemoveContext,
 } from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
@@ -32,7 +35,7 @@ type Props = {
 
 export function ExperimentalStackView({ state, navigation, descriptors }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
-  const { preventedRoutes } = usePreventRemoveContext();
+  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
   return (
     <View style={styles.container}>
@@ -41,7 +44,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
           const descriptor = descriptors[route.key]!;
           const isPreloaded = index > state.index;
           const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
-          const preventFromContext = preventedRoutes[route.key]?.preventRemove ?? false;
+          const preventFromContext = isRouteRemovalPrevented(route, routesWithRemovalPrevented);
 
           return (
             <ScreenView

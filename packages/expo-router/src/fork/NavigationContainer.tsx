@@ -1,9 +1,8 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
+import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { RoutingQueueApiContext, RoutingQueueProvider } from '../global-state/routingQueueContext';
-import { syncStoreNavigationState } from '../global-state/store';
-import { StoreContext } from '../global-state/storeContext';
 import type {
   DocumentTitleOptions,
   LinkingOptions,
@@ -75,7 +74,7 @@ function NavigationContainerInner(
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
 ) {
-  const store = React.use(StoreContext);
+  const routerConfig = React.use(RouterConfigContext);
 
   if (linking?.config) {
     validatePathConfig(linking.config);
@@ -147,22 +146,6 @@ function NavigationContainerInner(
   });
 
   const [isResolved, initialState] = useThenable(getInitialState);
-  if (
-    store &&
-    // Linking state remains the initial state forever. Once navigation is ready,
-    // `onStateChange` owns the store and this must not restore stale state.
-    !refContainer.current?.isReady() &&
-    // Async linking may not have produced its initial state yet.
-    initialState &&
-    // Avoid recalculating route info when the store already has this exact state.
-    initialState !== store.state
-  ) {
-    // TODO(@ubax): remove this render-phase global write with store ownership teardown.
-    // https://linear.app/expo/issue/ENG-26124
-    // Children read route info during this render, so an effect would update the store too late.
-    syncStoreNavigationState(initialState);
-  }
-
   React.useImperativeHandle(ref, () => refContainer.current!);
 
   if (!isResolved) {
@@ -187,8 +170,7 @@ function NavigationContainerInner(
             onReady={onReadyForLinkingHandling}
             onStateChange={onStateChangeForLinkingHandling}
             initialState={initialState}
-            UNSTABLE_routeNode={store?.routeNode ?? undefined}
-            UNSTABLE_onStateChangeInsertion={store ? syncStoreNavigationState : undefined}
+            UNSTABLE_routeNode={routerConfig?.routeNode ?? undefined}
             ref={refContainer}
           />
         </LinkingContext.Provider>

@@ -1,6 +1,14 @@
 'use client';
 
-import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
+import {
+  createContext,
+  use,
+  useMemo,
+  useState,
+  useTransition,
+  type PropsWithChildren,
+  type TransitionStartFunction,
+} from 'react';
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import { createImperativeRouter, router, unboundRouter } from './router';
@@ -17,29 +25,35 @@ const throwMissingRoutingQueue = () => {
 export type RoutingQueueApi = {
   enqueue: (intent: RoutingIntent) => void;
   dequeue: (processed: RoutingIntent[]) => void;
+  startTransition: TransitionStartFunction;
 };
 
 export const RoutingQueueApiContext = createContext<RoutingQueueApi | undefined>(undefined);
 export const PendingIntentsContext = createContext<RoutingIntent[]>(EMPTY);
+export const NavigationPendingContext = createContext(false);
 
 export function RoutingQueueProvider({ children }: PropsWithChildren) {
   const [queue, setQueue] = useState(EMPTY);
+  const [isPending, startTransition] = useTransition();
   const api = useMemo<RoutingQueueApi>(
     () => ({
       enqueue: (intent) => setQueue((previous) => [...previous, intent]),
       // Keep intents added between the drained render and this state update.
       dequeue: (processed) =>
         setQueue((previous) => (previous === processed ? EMPTY : previous.slice(processed.length))),
+      startTransition,
     }),
-    []
+    [startTransition]
   );
 
   return (
     <RoutingQueueApiContext.Provider value={api}>
-      <PendingIntentsContext.Provider value={queue}>
-        {children}
-        <ImperativeRoutingQueueBridge enqueue={api.enqueue} />
-      </PendingIntentsContext.Provider>
+      <NavigationPendingContext.Provider value={isPending || queue.length > 0}>
+        <PendingIntentsContext.Provider value={queue}>
+          {children}
+          <ImperativeRoutingQueueBridge enqueue={api.enqueue} />
+        </PendingIntentsContext.Provider>
+      </NavigationPendingContext.Provider>
     </RoutingQueueApiContext.Provider>
   );
 }

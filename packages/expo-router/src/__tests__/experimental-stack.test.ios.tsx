@@ -336,8 +336,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     }
   });
 
-  // TODO(@ubax): Restore nested remove prevention after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-  it.skip('onNativeDismissPrevented dispatches a pop through nested prevention', () => {
+  it('onNativeDismissPrevented dispatches a pop through nested prevention', () => {
     const onPreventRemove = jest.fn();
     const onGestureCancel = jest.fn();
     const ProtectedScreen = () => {

@@ -26,7 +26,7 @@ afterEach(() => {
 });
 
 test('preserves reference for navigation objects', () => {
-  expect.assertions(2);
+  expect.assertions(4);
 
   const state: NavigationState = {
     type: 'tab',
@@ -41,7 +41,6 @@ test('preserves reference for navigation objects', () => {
     ],
   };
 
-  const getState = () => state;
   const navigation = {} as any;
   const setOptions = (() => {}) as any;
   const router = MockRouter({});
@@ -53,14 +52,16 @@ test('preserves reference for navigation objects', () => {
     const getNavigation = useNavigationCache({
       routes: state.routes,
       routeNames: state.routeNames,
-      getState,
       navigation,
       setOptions,
       router,
       emitter,
     });
 
-    const navigations = state.routes.map((route) => getNavigation(route));
+    const navigations = state.routes.flatMap((route) => [
+      getNavigation(route, false),
+      getNavigation(route, true),
+    ]);
     if (previous.current !== undefined) {
       navigations.forEach((navigation, index) => {
         expect(navigation).toBe(previous.current[index]);
@@ -82,15 +83,6 @@ test('preserves reference for navigation objects', () => {
 test('preserves placeholder navigation after the route is created', () => {
   let routeNames = ['Foo', 'Bar'];
   let routes = [{ key: 'Foo-key', name: 'Foo' }];
-  const getState = (): NavigationState => ({
-    type: 'tab',
-    stale: false as const,
-    routeKeySeq: 0,
-    index: 0,
-    key: 'State',
-    routeNames,
-    routes,
-  });
   const navigation = {
     getId: () => 'State',
     getParent: jest.fn(),
@@ -104,7 +96,6 @@ test('preserves placeholder navigation after the route is created', () => {
     getNavigation = useNavigationCache({
       routes,
       routeNames,
-      getState,
       navigation,
       setOptions,
       router,
@@ -114,12 +105,12 @@ test('preserves placeholder navigation after the route is created', () => {
   };
 
   const root = render(<Test />);
-  const placeholderNavigation = getNavigation!({ key: 'Bar', name: 'Bar' });
+  const placeholderNavigation = getNavigation!({ key: 'Bar', name: 'Bar' }, false);
 
   routes = [...routes, { key: 'Bar-key', name: 'Bar' }];
   root.update(<Test />);
 
-  expect(getNavigation!({ key: 'Bar', name: 'Bar' })).toBe(placeholderNavigation);
+  expect(getNavigation!({ key: 'Bar', name: 'Bar' }, false)).toBe(placeholderNavigation);
 
   routeNames = ['Foo'];
   routes = routes.filter((route) => route.name !== 'Bar');
@@ -283,7 +274,7 @@ test('returns correct value for isFocused after changing screens', () => {
   expect(navigation.isFocused()).toBe(false);
 });
 
-test('ignores dispatches from a preloaded stack screen until it is promoted', () => {
+test('uses a no-op navigation object for a preloaded stack screen', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -346,20 +337,22 @@ test('ignores dispatches from a preloaded stack screen until it is promoted', ()
 
   act(() => ref.current?.navigate('second'));
 
-  expect(navigation).toBe(preloadedNavigation);
+  expect(navigation).not.toBe(preloadedNavigation);
+  const activeNavigation = navigation;
   enqueue.mockClear();
 
-  act(() => preloadedNavigation.dispatch(CommonActions.goBack()));
+  act(() => activeNavigation.dispatch(CommonActions.goBack()));
 
   expect(enqueue).toHaveBeenCalledTimes(1);
   expect(enqueue).toHaveBeenCalledWith({
-    type: 'NAVIGATOR_ACTION',
-    payload: expect.objectContaining({
+    type: 'ACTION',
+    payload: {
       action: expect.objectContaining({
         source: expect.any(String),
         type: 'GO_BACK',
       }),
-    }),
+      originKey: expect.any(String),
+    },
   });
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['first']);
 });

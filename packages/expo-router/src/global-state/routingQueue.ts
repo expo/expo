@@ -21,15 +21,6 @@ interface RoutingIntentMetadata {
 export type RoutingIntent =
   | NavigateToHrefIntent
   | {
-      type: 'NAVIGATOR_ACTION';
-      payload: {
-        action: NavigationAction;
-        dispatchSync: (action: NavigationAction) => void;
-      };
-      metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
-    }
-  | {
       type: 'ACTION';
       payload: { action: NavigationAction; originKey?: string };
       metadata?: RoutingIntentMetadata;

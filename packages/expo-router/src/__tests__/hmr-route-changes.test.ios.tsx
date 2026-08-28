@@ -4,7 +4,7 @@ import { useCallback, type ReactElement } from 'react';
 import { Text } from 'react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -28,11 +28,11 @@ it('preserves live navigation state when the initial location changes on re-rend
   };
   const result = renderRouter(routes, { initialUrl: '/' });
   act(() => router.push('/second'));
-  const navigationState = store.state;
+  const navigationState = navigationRef.getRootState();
 
   result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
 
-  expect(store.state).toStrictEqual(navigationState);
+  expect(navigationRef.getRootState()).toStrictEqual(navigationState);
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
@@ -161,7 +161,7 @@ it('does not crash when a route file is renamed after navigation', () => {
   ).not.toThrow();
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(store.navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+  expect(navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
     'index',
     'third',
   ]);
@@ -274,7 +274,7 @@ it('preserves surviving stack history when a route file is renamed', () => {
 
   expect(screen.getByTestId('details')).toBeVisible();
   expect(
-    store.navigationRef.current?.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    navigationRef.current?.getRootState().routes[0]!.state!.routes.map((route) => route.name)
   ).toStrictEqual(['index', 'details']);
 
   act(() => router.back());
@@ -306,7 +306,7 @@ it('does not crash when a tab route file is renamed after navigation', () => {
   ).not.toThrow();
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(store.navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+  expect(navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
     'index',
     'third',
   ]);

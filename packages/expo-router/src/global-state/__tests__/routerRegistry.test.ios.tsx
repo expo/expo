@@ -8,7 +8,7 @@ import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
 import { StackActions, type NavigationState } from '../../react-navigation/native';
 import { getMockContext, renderRouter } from '../../testing-library';
-import { store } from '../router-store';
+import { navigationRef } from '../navigationRef';
 import {
   RouterRegistryProvider,
   RouterRegistryContext,
@@ -46,7 +46,7 @@ function collectStateKeys(state: NavigationState): string[] {
 }
 
 function getLayoutState(): NavigationState {
-  const layoutState = store.navigationRef.current!.getRootState().routes[0]!.state;
+  const layoutState = navigationRef.current!.getRootState().routes[0]!.state;
 
   if (layoutState?.stale !== false) {
     throw new Error('Expected initialized layout state');
@@ -190,7 +190,7 @@ describe('navigation builder registration', () => {
       index: Probe,
     });
 
-    const rootState = store.navigationRef.current!.getRootState();
+    const rootState = navigationRef.current!.getRootState();
     const layoutState = rootState.routes[0]!.state!;
 
     expect([...registry.keys()]).toEqual(expect.arrayContaining([rootState.key, layoutState.key]));
@@ -289,12 +289,12 @@ describe('navigation builder registration', () => {
         <ExpoRoot context={context} location="/" />
       </StrictMode>
     );
-    const initialKeys = collectStateKeys(store.navigationRef.current!.getRootState());
+    const initialKeys = collectStateKeys(navigationRef.current!.getRootState());
     const initialMounts = mounts;
 
     act(() => rerenderLayout());
 
-    expect(collectStateKeys(store.navigationRef.current!.getRootState())).toEqual(initialKeys);
+    expect(collectStateKeys(navigationRef.current!.getRootState())).toEqual(initialKeys);
     expect(mounts).toBe(initialMounts);
   });
 
