@@ -143,4 +143,29 @@ describe('BottomSheetDialog drag cancel', () => {
     expect(onOpenChange).not.toHaveBeenCalled();
     expect(onDragEnd).not.toHaveBeenCalled();
   });
+
+  it('should abort the drag on lostpointercapture without dismissing or snapping', async () => {
+    const onOpenChange = jest.fn();
+    const onDragEnd = jest.fn();
+    render(
+      <BottomSheetDialog
+        open
+        onOpenChange={onOpenChange}
+        onDragEnd={onDragEnd}
+        height={400}
+        minSnapHeight={200}>
+        <Text>Body</Text>
+      </BottomSheetDialog>
+    );
+
+    const panel = await waitFor(() => screen.getByTestId('expo-ui-bottom-sheet'));
+    act(() => {
+      dispatchPointer(panel, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 180 });
+      dispatchPointer(panel, 'lostpointercapture', { pointerId: 1, clientY: 180 });
+    });
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(onDragEnd).not.toHaveBeenCalled();
+  });
 });

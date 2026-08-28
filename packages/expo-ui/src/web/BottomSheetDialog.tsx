@@ -367,6 +367,11 @@ export function BottomSheetDialog({
         startHeight: resolveStartHeight(),
         active: false,
       };
+      if (typeof sheet.setPointerCapture === 'function') {
+        try {
+          sheet.setPointerCapture(event.pointerId);
+        } catch {}
+      }
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -401,7 +406,7 @@ export function BottomSheetDialog({
       onDragEnd?.(predicted);
     };
 
-    const onPointerCancel = (event: PointerEvent) => {
+    const abortDrag = (event: PointerEvent) => {
       const drag = dragRef.current;
       if (!drag || drag.pointerId !== event.pointerId) return;
       dragRef.current = null;
@@ -411,12 +416,16 @@ export function BottomSheetDialog({
     sheet.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerCancel);
+    window.addEventListener('pointercancel', abortDrag);
+    sheet.addEventListener('lostpointercapture', abortDrag);
     return () => {
       sheet.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerCancel);
+      window.removeEventListener('pointercancel', abortDrag);
+      sheet.removeEventListener('lostpointercapture', abortDrag);
+      dragRef.current = null;
+      setDragHeight(null);
     };
   }, [open, mounted, resolveStartHeight, minSnapHeight, dismissible, commitClose, onDragEnd]);
 
