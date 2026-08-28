@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
-
 ### 💡 Others
+
+## 56.0.6 — 2026-08-28
+
+### 🐛 Bug fixes
+
+- Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ## 56.0.5 — 2026-06-10
 

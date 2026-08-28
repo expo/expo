@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed ignore patterns (built-in and `.fingerprintignore`) not matching on Windows, which made fingerprints differ between Windows machines and EAS builds ("Runtime version mismatch"). ([#46816](https://github.com/expo/expo/pull/46816) by [@blurbyte](https://github.com/blurbyte))
-
 ### 💡 Others
+
+## 0.19.10 — 2026-08-28
+
+### 🐛 Bug fixes
+
+- Fixed ignore patterns (built-in and `.fingerprintignore`) not matching on Windows, which made fingerprints differ between Windows machines and EAS builds ("Runtime version mismatch"). ([#46816](https://github.com/expo/expo/pull/46816) by [@blurbyte](https://github.com/blurbyte))
 
 ## 0.19.9 — 2026-07-23
 

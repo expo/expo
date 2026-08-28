@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.1.7 — 2026-08-28
+
+### 💡 Others
+
 - Support Node 26's `stripTypeScriptTypes` and call without transform-mode, to fix the fallback when TypeScript isn't installed ([#48826](https://github.com/expo/expo/pull/48826) by [@kkkhs](https://github.com/kkkhs))
 
 ## 56.1.6 — 2026-07-23

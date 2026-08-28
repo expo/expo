@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.19.12 — 2026-08-28
+
+_This version does not introduce any user-facing changes._
+
 ## 1.19.11 — 2026-08-17
 
 ### 🎉 New features
