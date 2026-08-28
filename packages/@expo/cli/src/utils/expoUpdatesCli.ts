@@ -1,3 +1,4 @@
+import { type EnvMode, getOriginalEnv, setNodeEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import resolveFrom, { silent as silentResolveFrom } from 'resolve-from';
 
@@ -5,7 +6,11 @@ export class ExpoUpdatesCLIModuleNotFoundError extends Error {}
 export class ExpoUpdatesCLIInvalidCommandError extends Error {}
 export class ExpoUpdatesCLICommandFailedError extends Error {}
 
-export async function expoUpdatesCommandAsync(projectDir: string, args: string[]): Promise<string> {
+export async function expoUpdatesCommandAsync(
+  projectDir: string,
+  args: string[],
+  mode: EnvMode
+): Promise<string> {
   let expoUpdatesCli;
   try {
     expoUpdatesCli =
@@ -19,10 +24,14 @@ export async function expoUpdatesCommandAsync(projectDir: string, args: string[]
   }
 
   try {
+    const commandEnv = getOriginalEnv();
+    setNodeEnv(mode, { systemEnv: commandEnv });
+    commandEnv.__EXPO_CONFIG_MODE = mode;
+
     return (
       await spawnAsync(expoUpdatesCli, args, {
         stdio: 'pipe',
-        env: { ...process.env },
+        env: commandEnv as NodeJS.ProcessEnv,
       })
     ).stdout;
   } catch (e: any) {
