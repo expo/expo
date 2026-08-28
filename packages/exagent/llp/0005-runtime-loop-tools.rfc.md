@@ -2007,11 +2007,11 @@ below is one dev server with an iPhone 17 Pro simulator and a `tuft-pixel` emula
 parameter, and a parameter can be accepted and then not passed on.
 
 **F100 (CRITICAL) — `runtime:errors` and `smoke`'s error window read the runtime that answers.**
-`CdpRuntimeErrorCollector` takes `platform` and `deviceIndex` — `runtimeAsync` and `smokeAsync` both
-pass them — and built its `CdpClient` by naming four other options, so those two were dropped.
-Unscoped, the default selector ranks a target that answers `Runtime.evaluate` **above** one that
-answers `-32601` (§Android pass), and Expo Go for Android is the second kind: so the selection landed
-on iOS *by design*. Measured, in one minute, both apps on `/lab` throwing
+`CdpRuntimeErrorCollector` takes `platform` and `deviceIndex`, and `runtimeAsync` and `smokeAsync`
+both pass them. It then built its `CdpClient` by naming four other options, so those two were
+dropped. Unscoped, the default selector ranks a target that answers `Runtime.evaluate` **above** one
+that answers `-32601` (§Android pass), and Expo Go for Android is the second kind, so the selection
+landed on iOS *by design*. Measured, in one minute, with both apps on `/lab` throwing
 `new Error("W25 boom on " + Platform.OS)`:
 
 | command | answer |
@@ -2019,76 +2019,76 @@ on iOS *by design*. Measured, in one minute, both apps on `/lab` throwing
 | `runtime:eval "1+1" --android` | exit 1, `RUNTIME_EVALUATE_UNSUPPORTED` |
 | `runtime:errors --android` | `count: 1`, message **`W25 boom on ios`**, `runtimeReadable: true` |
 
-Two commands, one flag, two runtimes — and the `runtimeReadable: true` also suppressed the
+Two commands, one flag, two runtimes. And the `runtimeReadable: true` also suppressed the
 dev-server-log fallback F52 built for exactly this runtime. The collector now forwards every
 `CdpClientOptions` key with a rest spread, which cannot go stale when an option is added.
 
 **F101 (CRITICAL) — `runtime:stop --android` force-stopped the iOS application id.** `resolveAppId`
 took `targetAppIds.find(Boolean)` off the **unscoped** target list, and the two Expo Go ids differ by
 one capital letter (§The dev server does not label its targets). The dev server listed iOS first, so
-the command ran `adb -s emulator-5554 shell am force-stop host.exp.Exponent` — not an installed
-package on Android — and reported `stopped: true, wasRunning: true` while
+the command ran `adb -s emulator-5554 shell am force-stop host.exp.Exponent`, which is not an
+installed package on Android, and reported `stopped: true, wasRunning: true` while
 `adb shell pidof host.exp.exponent` still answered `3933` and the target stayed listed. Two fixes,
 because either alone leaves a hole:
 
 - `preflightRuntimeAsync` scopes `appTargets` for **every** caller that names a platform, not only
   for `need: 'debugger-target'`. That field is documented as "the targets this command may read", and
   it was the unscoped list for `runtime:stop` (`optional`) and `runtime:reload` (`dev-server`). Only a
-  command that *requires* a runtime still refuses on an empty scope — for `reload` an empty scope is a
+  command that *requires* a runtime still refuses on an empty scope. For `reload` an empty scope is a
   rung of its ladder, and for `stop` it is the state [[0010-agent-conventions]] §The seventh and
   eighth calls a success.
 - `resolveAppId` drops the other platform's Expo Go id before it takes the first one. It is the one id
-  in that list that can be *shown* to be about another device; an id it cannot place is kept, because
+  in that list that can be *shown* to be about another device. An id it cannot place is kept, because
   a development build's package name says nothing about a platform.
 
 **F102 (MAJOR) — `wasRunning` was `true` on every Android stop, on no evidence.** `am force-stop`
-exits 0 and prints nothing whether the app was running or not — `appProcess.ts`'s own comment said so
-— and the result was still returned as `verified: true, wasAlreadyStopped: false`, which the report
+exits 0 and prints nothing whether the app was running or not, which `appProcess.ts`'s own comment
+said. The result was still returned as `verified: true, wasAlreadyStopped: false`, which the report
 renders as "the app was running". `stopAppOnDeviceAsync` now asks `adb shell pidof <appId>` **before**
-the stop: a pid makes `wasRunning` an observation, exit 1 with nothing said makes it `false`, and a
+the stop. A pid makes `wasRunning` an observation, exit 1 with nothing said makes it `false`, and a
 `pidof` that could not run makes `verified` false and `wasRunning` null.
 
 **And `am force-stop` is asynchronous.** The `adb shell` exits as soon as ActivityManager has taken
-the request; `pidof` still answers for a moment afterwards [observed — the second run of
-`live-android`]. So `stopped: true` means the stop ran, not that the process is already gone, and a
-caller that needs the second fact has to look. `simctl terminate` on iOS does not behave this way.
-The live suite asserts the effect within a bound rather than instantly, per [[0022-live-tier]] §What a
-live assertion is allowed to be.
+the request, and `pidof` still answers for a moment afterwards [observed — the second run of
+`live-android`]. So `stopped: true` means the stop ran rather than that the process is already gone,
+and a caller that needs the second fact has to look. `simctl terminate` on iOS does not behave this
+way. The live suite asserts the effect within a bound rather than instantly, per [[0022-live-tier]]
+§What a live assertion is allowed to be.
 
 **F103 (MAJOR) — three follow-up builders dropped the platform flag**, against §Smaller things' own
-claim that "every command a follow-up names now carries the flag the run had":
-`buildRuntimeErrorsFollowUps` took no platform at all (`runtime:reload`, `runtime:errors --duration`),
-`buildStopFollowUps` carried `--cloud` and not the platform (`navigate /`), and
-`buildStartPlanFollowUps` offered a bare `npx exagent dev` after `dev --plan --android` — the one
-follow-up whose whole promise is "runs the plan above", naming a command that would plan for iOS.
+claim that "every command a follow-up names now carries the flag the run had".
+`buildRuntimeErrorsFollowUps` took no platform at all (`runtime:reload`, `runtime:errors --duration`).
+`buildStopFollowUps` carried `--cloud` and not the platform (`navigate /`). And
+`buildStartPlanFollowUps` offered a bare `npx exagent dev` after `dev --plan --android`, which is the
+one follow-up whose whole promise is "runs the plan above", naming a command that would plan for iOS.
 `--cloud` is still carried alone, because that flag already names the one device a session has.
 
 **F104 (LOW) — `navigate --android`'s screenshot line named a command that cannot answer there.** It
-said to run `npx exagent runtime:tree` first and capture once it lists the screen: good advice on iOS,
-exit 1 every time on Android. It now names `npx exagent smoke --android`, whose screenshot phase waits
-on the fact F57 chose and captures the screen itself.
+said to run `npx exagent runtime:tree` first and capture once it lists the screen, which is good
+advice on iOS and exit 1 every time on Android. It now names `npx exagent smoke --android`, whose
+screenshot phase waits on the fact F57 chose and captures the screen itself.
 
 **F105 (MED) — the log fallback said the records were "this app's errors".** §Reading Android errors
 anyway already records that the log does not name a platform, and the caveat above the records
 contradicted it. With both apps connected, `runtime:errors --android --fail-on-error` exited **20** on
-a record whose own text was `[Error: W25 boom on ios]`. The log cannot be scoped — that is the finding
-— so what changed is the saying: `devServerLog.otherPlatformsConnected` names the platforms whose app
-writes to the same log, and the caveat says a record below may be from one of them.
+a record whose own text was `[Error: W25 boom on ios]`. The log cannot be scoped, which is the
+finding, so what changed is the saying. `devServerLog.otherPlatformsConnected` names the platforms
+whose app writes to the same log, and the caveat says a record below may be from one of them.
 
 **F106 (MED) — `status` named one device, and iOS wins on macOS.** `readLocalDeviceProbe` took
 `probes.find((probe) => probe.device)`, so the section whose whole subject is what this machine has
 printed `device  ios iPhone 17 Pro (C159CF99-…)` on a run whose only connected app was Expo Go on
-`emulator-5554`. `LocalDeviceStatus.devices` lists every device now; the singular fields stay the
+`emulator-5554`. `LocalDeviceStatus.devices` lists every device now. The singular fields stay the
 first, because the ladders in that report branch on them.
 
 **F107 (MED, deferred) — `smoke`'s error window has no dev-server-log fallback.** So on Android the
 `errors` phase is `inconclusive` where `runtime:errors --android` reports a real, symbolicated,
-log-backed observation of the same window. Nothing it prints is false — the reason names the runtime,
-not the app — and the phase above it (`runtime`) is inconclusive either way, so the outcome would stay
-22 regardless. It is deferred rather than fixed because the decision it needs is not a bug fix:
-whether a gate may fail on a record it cannot attribute to the platform it was asked about (F105), on
-a dev server with two apps. Until that is answered, `smoke --android` cannot tell a healthy Android
-app from a crashing one and `runtime:errors --android --fail-on-error` can.
+log-backed observation of the same window. Nothing it prints is false, because the reason names the
+runtime rather than the app, and the phase above it (`runtime`) is inconclusive either way, so the
+outcome would stay 22 regardless. It is deferred rather than fixed because the decision it needs is
+not a bug fix: whether a gate may fail on a record it cannot attribute to the platform it was asked
+about (F105), on a dev server with two apps. Until that is answered, `smoke --android` cannot tell a
+healthy Android app from a crashing one, and `runtime:errors --android --fail-on-error` can.
 
 ### F123 — `navigate` opens the route link at an app that is not loaded
 
@@ -2135,14 +2135,14 @@ first is already complete). Expo Go needs none of it — `exp://<host>/--/<route
 navigates in one URL, which is why nothing noticed.
 
 **How wave 30 answered those** (§On a development build, `navigate` goes launcher-first). Two opens
-with a wait between them, exactly as sketched. `attached` keeps meaning what it has always meant —
-an app of this platform holds a debugger target when the run ends — and the launcher's own wait is
-reported separately as `launch.attached`, so "the app came up" and "the route was delivered to it"
-stay two facts. The exit codes are unchanged: nothing new can fail, and a run where nothing attaches
-is the 22 it already was. The second open is **not** skipped for the root route: the launcher loads
-whatever the app last had, which is not necessarily `/`, and one extra intent costs milliseconds.
-Live: exit 0 in 3.0 s where the finding above is 90.6 s [`live-devclient`
-`026-f123-navigate-cold.txt`].
+with a wait between them, exactly as sketched. `attached` keeps meaning what it has always meant,
+which is that an app of this platform holds a debugger target when the run ends, and the launcher's
+own wait is reported separately as `launch.attached`, so "the app came up" and "the route was
+delivered to it" stay two facts. The exit codes are unchanged, because nothing new can fail, and a
+run where nothing attaches is the 22 it already was. The second open is **not** skipped for the root
+route, because the launcher loads whatever the app last had, which is not necessarily `/`, and one
+extra intent costs milliseconds. Live: exit 0 in 3.0 s where the finding above is 90.6 s
+[`live-devclient` `026-f123-navigate-cold.txt`].
 
 ### The wall was Expo Go's, not Android's
 
@@ -2170,27 +2170,28 @@ emulator, answers everything Expo Go refuses:
 Two things this changes, and one it does not:
 
 - **`smoke --android` is a gate again.** §What `smoke --android` is says "not a green light, and it
-  never will be" — true of Expo Go, and the sentence should have named it. On a development build
-  the `runtime` phase measures, so llp/0010 §The sixth is satisfied and the gate returns a verdict.
+  never will be". That is true of Expo Go, and the sentence should have named it. On a development
+  build the `runtime` phase measures, so llp/0010 §The sixth is satisfied and the gate returns a
+  verdict.
 - **The `--android` refusal band is about an *app*.** `RUNTIME_EVALUATE_UNSUPPORTED` is the right
   answer when the runtime says it carries no debugger, and it is reached by asking rather than by
-  knowing the platform — which is why nothing had to change for this to work. The measurement is
+  knowing the platform, which is why nothing had to change for this to work. The measurement is
   what was missing, not the code.
-- **F107 is unchanged**, and narrower than it looked: `smoke`'s error window has no dev-server-log
+- **F107 is unchanged**, and narrower than it looked. `smoke`'s error window has no dev-server-log
   fallback, which matters only for a runtime that cannot answer. On a development build both phases
   measure, so the gap is Expo-Go-on-Android's alone.
 
 **There is no automated iOS half of this, and the reason is a machine fact worth its own line.**
 Every way this CLI opens an app on a local iOS simulator is `xcrun simctl openurl`, and on iOS 26.5
-that raises a springboard confirmation — `Open in "<app>"?` — for a **development build**'s scheme,
+that raises a springboard confirmation, `Open in "<app>"?`, for a **development build**'s scheme,
 on every call rather than only the first, with the app foregrounded or not. Nothing launches until
 somebody taps Open. Measured against Expo Go on the same simulator minutes apart:
-`exp://127.0.0.1:8901` launched Expo Go and registered a debugger target inside 4 s;
+`exp://127.0.0.1:8901` launched Expo Go and registered a debugger target inside 4 s, while
 `dcapp://expo-development-client/?url=…` and `exp+dcapp://…` both left the simulator on the
 springboard with **0 targets after 24 s** [observed — `27-clean-connect-url.png`,
 `19-after-expgo-url.png`, 2026-08-28]. This is §The dialog nobody is there to answer, which wave 23
 recorded as a *cloud* fact, on a laptop. The four gates that let `navigate --cloud` answer the dialog
-start with "only on `--cloud`; a dialog on the machine at somebody's desk has somebody at it" — and
+start with "only on `--cloud`; a dialog on the machine at somebody's desk has somebody at it", and
 a Tuft machine driving its own simulator is a desk with nobody at it. Whether that gate should be
 about the *device* rather than about the flag is the open question this leaves.
 
@@ -2204,39 +2205,40 @@ With the dialog answered by hand, the iOS development build behaves like the And
 **On Expo Go**, and only there — §The wall was Expo Go's, not Android's measured the same command at
 exit **0** on a development build, and the sentence below was written before anything had run one.
 
-Not a green light, and it never will be on Expo Go: exit **22 on a working app**, because
-[[0010-agent-conventions]] §The sixth says a gate that cannot measure must not pass and the `runtime`
+Not a green light, and it never will be on Expo Go. It is exit **22 on a working app**, because
+[[0010-agent-conventions]] §The sixth says a gate that cannot measure must not pass, and the `runtime`
 phase cannot measure. What it is instead is four proofs and two abstentions, and the report says which
-is which — `dev-server`, `bundler-ready`, `bundle` (for **android**), `app` and `screenshot` all
-`ok`; `runtime` and `errors` `inconclusive` with the reason naming the engine. A broken Android bundle
-is still exit 20 with the later phases skipped, which is the answer that matters most often.
+is which. `dev-server`, `bundler-ready`, `bundle` (for **android**), `app` and `screenshot` are all
+`ok`, while `runtime` and `errors` are `inconclusive` with the reason naming the engine. A broken
+Android bundle is still exit 20 with the later phases skipped, which is the answer that matters most
+often.
 
 ## Testing
 
-Each tool: schema unit tests + tier-0 e2e coverage against a fixture app on a simulator ([[0002-testing-and-evals]]; scripted MCP replay is optional/deferred there). The composite loops are tier-1/2 eval scenarios.
+Each tool gets schema unit tests plus tier-0 e2e coverage against a fixture app on a simulator ([[0002-testing-and-evals]], where scripted MCP replay is optional and deferred). The composite loops are tier-1 and tier-2 eval scenarios.
 
 The two additions above are tested at both tiers, and the split follows where each one can be wrong
 [observed — 2026-08-23].
 
 `reload` speaks a protocol nobody promises, so the e2e stub dev server grew a real `/message`
-WebSocket rather than a mock: it requires `version: 2` on every frame, answers `getpeers`, and
-re-registers its peers under new ids when a broadcast arrives. Four modes — `v2`, `deaf` (opens and
-never answers, i.e. another protocol version), `no-churn` (answers, nothing reconnects), and `none`
-— which is what makes the three outcomes of the command testable through the published bin: exit 0
-with `verifiedBy: message-socket-peers` and no device touched, exit 20 naming the protocol version,
-and exit 20 naming the app that did not act. The unit tests own what the client *sends* (the
-version stamp on every frame, a broadcast with no `id` and no `target`, a reply matched to its
-request, silence answering `null`) and what `peersChanged` concludes.
+WebSocket rather than a mock. It requires `version: 2` on every frame, answers `getpeers`, and
+re-registers its peers under new ids when a broadcast arrives. It has four modes: `v2`; `deaf`, which
+opens and never answers, standing in for another protocol version; `no-churn`, which answers while
+nothing reconnects; and `none`. That is what makes the three outcomes of the command testable through
+the published bin: exit 0 with `verifiedBy: message-socket-peers` and no device touched, exit 20
+naming the protocol version, and exit 20 naming the app that did not act. The unit tests own what the
+client *sends*, meaning the version stamp on every frame, a broadcast with no `id` and no `target`, a
+reply matched to its request, and silence answering `null`, plus what `peersChanged` concludes.
 
-The route table is unit-tested against the conventions, because that is where it can be wrong: 24
-cases covering the router-root precedence, group stripping, `index` collapsing, the `+`
+The route table is unit-tested against the conventions, because that is where it can be wrong. 24
+cases cover the router-root precedence, group stripping, `index` collapsing, the `+`
 conventions, platform variants, dynamic and catch-all matching, the group-inclusive spelling, and
-the three fail-open paths. The e2e tests own the process boundary the check exists to protect —
+the three fail-open paths. The e2e tests own the process boundary the check exists to protect:
 that a bogus route reaches the device tool **zero** times.
 
 The two stop commands split the same way, and the split is what makes them testable at all.
 `dev:stop` signals a **real process**, so its e2e test starts one that records the signal it
-receives and asserts that the PID the lock named is the PID that got it — a mocked `process.kill`
+receives and asserts that the PID the lock named is the PID that got it. A mocked `process.kill`
 would prove nothing about the only thing the command does. `runtime:stop` runs a **real device
 tool**, so its e2e test asserts the exact argv handed to a stub `xcrun`. The unit tests own the
 decisions: the ranked application-id resolution, the three `dev:stop` states, and both halves of
@@ -2271,13 +2273,13 @@ Counts as of this change: 2055 unit (from 1882), 363 e2e (from 341).
 
 [added — 2026-08-24] Fixing F39/F45 changed what a test *fixture* has to be, and that is the part
 worth recording. Every "reloaded: true" assertion in this package used to run against a stub whose
-`/json/list` answered the same target forever — which is a stub of an app that never reloaded, and
+`/json/list` answered the same target forever. That is a stub of an app that never reloaded, and
 every one of those assertions passed for it. The two tiers grew the same property:
 
 - the e2e stub dev server re-registers its debugger targets under a page id it has never used when
-  a `v2` reload broadcast arrives, beside the peer churn it already did, and `reloadTargets` picks
-  `reconnect` (the default), `stale` (peers churn, the same target stays) or `gone` (the app quits)
-  — the last two being F39 and F45 as fixtures;
+  a `v2` reload broadcast arrives, beside the peer churn it already did. `reloadTargets` picks
+  `reconnect` (the default), `stale` (peers churn while the same target stays) or `gone` (the app
+  quits), and the last two are F39 and F45 as fixtures;
 - the unit fixture flips its listing from the socket's own `broadcastReload`, so the change is
   caused by the broadcast rather than counted off the reads.
 
@@ -2287,9 +2289,9 @@ target and *no* message-socket peer, which no real app is, and under the new rul
 the app, which is what "no app is connected" means on both channels at once.
 
 The other half of the same fix does **not** reach tier 0, and that is a boundary rather than a gap
-in the suite: the grace period `runtime:errors` uses answers a target that is *listed* and refuses a
+in the suite. The grace period `runtime:errors` uses answers a target that is *listed* and refuses a
 CDP connection, and the e2e stub carries no inspector proxy to refuse one. Its two halves are
-unit-tested where they can be — an empty target list that fills, and a selector that can make
-nothing of the list it is given — and the behaviour itself was verified live, ten rounds.
+unit-tested where they can be, as an empty target list that fills and a selector that can make
+nothing of the list it is given, and the behaviour itself was verified live over ten rounds.
 [[0002-testing-and-evals]] §Resolved decisions records where that line falls and what stands in for
 it on the far side.
