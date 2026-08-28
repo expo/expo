@@ -1,7 +1,37 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const startHelp: CommandHelp = {
+  command: 'start',
+  usage: 'npx exagent start',
+  options: [
+    `--no-agent-skills   Skip linking agent skills from installed packages`,
+    `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help          Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent start',
+      gets: 'expo start in this terminal, plus a sync of this project’s agent skills',
+    },
+    {
+      run: 'npx exagent start --web --port 8082',
+      gets: 'the same, with --web --port 8082 forwarded to expo start untouched',
+    },
+    {
+      run: 'npx exagent start -- --web --port 8082',
+      gets: 'the same again: everything after -- goes to the Expo CLI verbatim',
+    },
+  ],
+  next: ['navigate', 'runtime:errors', 'dev'],
+  notes: [
+    `This is expo start: it probes nothing and plans nothing, and it holds this terminal.`,
+    `To have the prebuild and the native build decided for you, run "npx exagent dev" instead.`,
+    `It has no --json of its own; run "npx expo start --help" for the arguments it forwards.`,
+  ],
+};
 
 export const exagentStart: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -24,30 +54,7 @@ export const exagentStart: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Start the dev server with "expo start", then sync the agent skills of the project`,
-      chalk`npx exagent start {dim [options]}`,
-      [
-        `--no-agent-skills   Skip linking agent skills from installed packages`,
-        `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help          Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  This command is {bold expo start}: it probes nothing, plans nothing, and forwards every`,
-        chalk`  argument it does not own to the Expo CLI untouched, separator included.`,
-        chalk`    {dim $} npx exagent start --web --port 8082`,
-        chalk`    {dim >} expo start --web --port 8082`,
-        chalk`    {dim $} npx exagent start -- --web --port 8082`,
-        '',
-        chalk`  To decide what must run first — {bold expo prebuild} and {bold expo run:ios}/{bold expo run:android}`,
-        chalk`  before the dev server — run {bold npx exagent dev}, which prints that plan and runs it.`,
-        chalk`    {dim $} npx exagent dev --plan`,
-        '',
-        chalk`  Run {bold npx expo start --help} for the arguments the Expo CLI accepts.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(startHelp);
   }
 
   // Load modules after the help prompt so `npx exagent start -h` shows as fast as possible.

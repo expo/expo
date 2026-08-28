@@ -1,7 +1,51 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const typecheckHelp: CommandHelp = {
+  command: 'typecheck',
+  usage: 'npx exagent typecheck',
+  options: [
+    `--json            Print the whole report as JSON, every diagnostic included`,
+    `--no-followups    Leave the suggested follow-up commands out of the report`,
+    `-h, --help        Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent typecheck',
+      gets: 'one line per type error, and exit 20 when there is one',
+    },
+    {
+      run: 'npx exagent typecheck --json',
+      gets: 'every diagnostic as data: file, line, column, code, message',
+    },
+  ],
+  next: ['smoke', 'status'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: [
+      'projectRoot',
+      'checked',
+      'reason',
+      'errorCount',
+      'errors',
+      'durationMs',
+      'generatedTypes',
+      'followups',
+    ],
+  },
+  notes: [
+    `Read-only. It runs the project's own node_modules/.bin/tsc --noEmit and reports its`,
+    `diagnostics as data. No compiler is ever fetched: a type check is a function of this`,
+    `project's own compiler, tsconfig.json and @types.`,
+    `This is the gate the others cannot be — a type error that is neither a syntax error nor a`,
+    `throw is invisible to smoke and to runtime:errors, and it is the ordinary case.`,
+    `Exit codes: 0 it type-checks · 20 it does not · 1 the compiler is missing or could not run.`,
+    `A JavaScript project has nothing to check: that is checked: false with a reason, and exit 0.`,
+  ],
+};
 
 export const exagentTypecheck: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -17,45 +61,7 @@ export const exagentTypecheck: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Type-check this project with its own TypeScript compiler`,
-      chalk`npx exagent typecheck {dim [options]}`,
-      [
-        `--json            Print the whole report as JSON, every diagnostic included`,
-        `--no-followups    Leave the suggested follow-up commands out of the report`,
-        `-h, --help        Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  Read-only. It runs the project's own {bold node_modules/.bin/tsc --noEmit --pretty false}`,
-        chalk`  as a subprocess and reports its diagnostics as data: {bold file}, {bold line}, {bold column}, {bold code}`,
-        chalk`  and {bold message}, one entry each.`,
-        '',
-        chalk`  This is the gate the other ones cannot be. {bold smoke} says the entry bundle compiles`,
-        chalk`  and {bold runtime:errors} says what the running app threw — a type error that is neither a`,
-        chalk`  syntax error nor a throw is invisible to both, and it is the ordinary case: a property`,
-        chalk`  that does not exist is {bold undefined} at runtime, so the app renders, wrongly.`,
-        '',
-        chalk`  Exit codes: {bold 0} the project type-checks, {bold 20} it does not, {bold 1} the compiler could`,
-        chalk`  not be run, is missing, or failed without reporting anything.`,
-        '',
-        chalk`  A {bold JavaScript} project — no {bold tsconfig.json} and no {bold .ts}/{bold .tsx} files — has nothing to`,
-        chalk`  check. That is reported as {bold checked: false} with a reason, and exits {bold 0}: a gate that`,
-        chalk`  went red for the absence of TypeScript would be red for every JavaScript project`,
-        chalk`  forever.`,
-        '',
-        chalk`  A {bold TypeScript} project with no compiler is a different answer, and it exits {bold 1}. A`,
-        chalk`  {bold tsconfig.json} with no {bold node_modules/.bin/tsc} behind it is a broken setup, not a`,
-        chalk`  project with nothing to check, and reporting it as the latter passes every gate that`,
-        chalk`  reads the exit code. Install the dependencies, or add the compiler:`,
-        chalk`    {dim $} npx exagent install typescript --dev`,
-        '',
-        chalk`  No compiler is ever fetched. A type check is a function of the project's own compiler`,
-        chalk`  version, its {bold tsconfig.json} and its {bold @types}, so one from the registry would answer`,
-        chalk`  a question about a project that does not exist.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(typecheckHelp);
   }
 
   // Load modules after the help prompt so `npx exagent typecheck -h` shows as fast as possible.

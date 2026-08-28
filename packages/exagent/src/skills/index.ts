@@ -1,7 +1,118 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp, strayArgumentError } from '../utils/args';
+import { assertWithOptionsArgs, strayArgumentError } from '../utils/args';
+
+export const skillsSyncHelp: CommandHelp = {
+  command: 'skills:sync',
+  usage: 'npx exagent skills:sync',
+  options: [
+    `--agent <agent>          Link skills for specific agents (can be used multiple times)`,
+    `--dry-run                Print planned changes without modifying the project`,
+    `--json                   Print the result as one JSON object`,
+    `--no-followups           Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help               Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent skills:sync',
+      gets: 'the installed packages’ skills linked into the agent directories',
+    },
+    { run: 'npx exagent skills:sync --dry-run', gets: 'what would be linked; nothing is written' },
+    {
+      run: 'npx exagent skills:sync --agent claude --json',
+      gets: 'the same for one agent, as one object',
+    },
+  ],
+  next: ['skills:list', 'agents:setup', 'status'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: ['dryRun', 'agents', 'discovered', 'linked', 'removed', 'skipped', 'followups'],
+  },
+  notes: [
+    `"npx exagent skills" runs this action. Only symlinks this CLI created are managed, so a`,
+    `file of your own with the same name is reported as skipped rather than replaced.`,
+  ],
+};
+
+export const skillsListHelp: CommandHelp = {
+  command: 'skills:list',
+  usage: 'npx exagent skills:list',
+  options: [
+    `--json                   Print the result as one JSON object`,
+    `-h, --help               Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent skills:list',
+      gets: 'the skills the installed packages ship, and where each one is linked',
+    },
+    { run: 'npx exagent skills:list --json', gets: 'the same as one object under skills' },
+  ],
+  next: ['skills:show', 'skills:sync'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: ['skills'],
+  },
+};
+
+export const skillsShowHelp: CommandHelp = {
+  command: 'skills:show',
+  usage: 'npx exagent skills:show <package> [skill]',
+  options: [`-h, --help               Usage info`],
+  examples: [
+    {
+      run: 'npx exagent skills:show expo-router',
+      gets: 'the SKILL.md text of that package, printed as it is on disk',
+    },
+    {
+      run: 'npx exagent skills:show expo-router expo-router',
+      gets: 'one named skill of that package, when it ships several',
+    },
+  ],
+  next: ['skills:list', 'skills:sync'],
+  notes: [
+    `This prints the SKILL.md itself, so it has no --json: the document is the payload.`,
+    `Read what a package teaches without linking it into an agent directory first.`,
+  ],
+};
+
+export const skillsCleanHelp: CommandHelp = {
+  command: 'skills:clean',
+  usage: 'npx exagent skills:clean',
+  options: [
+    `--dry-run                Print what would be removed without removing it`,
+    `--json                   Print the result as one JSON object`,
+    `-h, --help               Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent skills:clean',
+      gets: 'every managed skill link is removed; your own files are left alone',
+    },
+    { run: 'npx exagent skills:clean --dry-run --json', gets: 'what would go, as one object' },
+  ],
+  next: ['skills:sync', 'skills:list'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: ['dryRun', 'skillsDirs', 'removed'],
+  },
+  notes: [
+    `Only symlinks into node_modules count as managed, so this is safe to run in a project that`,
+    `keeps hand-written skills in the same directories.`,
+  ],
+};
+
+/** The help of one action of the group, by the name the registry hands over as `argv[0]`. */
+const SKILLS_HELP: { [action: string]: CommandHelp } = {
+  sync: skillsSyncHelp,
+  list: skillsListHelp,
+  show: skillsShowHelp,
+  clean: skillsCleanHelp,
+};
 
 export const exagentSkills: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -19,23 +130,9 @@ export const exagentSkills: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Link agent skills from installed npm packages`,
-      chalk`npx exagent skills:{dim <action>}`,
-      [
-        chalk`{bold skills:sync}              Link the skills of the installed packages {dim (npx exagent skills)}`,
-        chalk`{bold skills:list}              List the skills the installed packages ship`,
-        chalk`{bold skills:show} <package> [skill]  Print the SKILL.md contents of a package`,
-        chalk`{bold skills:clean}             Remove the managed skill links`,
-        '',
-        `--agent <agent>          Link skills for specific agents (can be used multiple times)`,
-        `--dry-run                Print planned changes without modifying the project`,
-        // `show` prints the SKILL.md itself, which is the whole point of it, so it has no JSON form.
-        `--json                   Print the result as one JSON object (${'`'}sync${'`'}, ${'`'}list${'`'}, ${'`'}clean${'`'})`,
-        `--no-followups           Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help               Usage info`,
-      ].join('\n')
-    );
+    // The registry hands the action over as the first argument, whichever spelling was used; the
+    // bare `skills` runs `sync`, so that is what its help documents.
+    printCommandHelp(SKILLS_HELP[String(args._[0] ?? 'sync')] ?? skillsSyncHelp);
   }
 
   // Load modules after the help prompt so `npx exagent skills:sync -h` shows as fast as possible.

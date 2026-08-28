@@ -15,7 +15,9 @@ import {
   unknownCommandSuggestion,
 } from './commandRegistry';
 import { EXIT_OK } from './exitCodes';
+import { formatHowTo } from './help/howTo';
 import * as Log from './log';
+import { configureColor } from './utils/color';
 import { argvRequestsJson, setJsonRequested } from './utils/jsonMode';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG`, the same way
@@ -33,6 +35,10 @@ const args = arg(
     // Types
     '--version': Boolean,
     '--help': Boolean,
+    // @ref llp/0024-cli-ui.rfc.md §The on-ramp — the same screen as `exagent help how-to`, on the
+    // flag an agent reaches for when it has been told this CLI has an on-ramp and nothing more.
+    // A second spelling of one screen costs a line here; a caller that guesses wrong costs a hop.
+    '--how-to': Boolean,
 
     // Aliases
     '-v': '--version',
@@ -56,6 +62,13 @@ const commandArgs = subcommand == null ? [] : rawArgv.slice(rawArgv.indexOf(subc
 // argument parsing, so the launcher answers "was JSON asked for" once, from the raw argv.
 setJsonRequested(argvRequestsJson(commandArgs));
 
+// @ref llp/0024-cli-ui.rfc.md §Colors are for humans — decided once, for the whole process, before
+// any command builds a string. A `--json` run and a piped run print no escape sequences at all.
+configureColor({
+  json: argvRequestsJson(rawArgv),
+  isTty: process.stdout.isTTY === true,
+});
+
 // Push the help flag onto the command args, e.g. for `npx exagent --help skills`. This runs before
 // the command is resolved, so `exagent --help runtime` is the same request as `exagent runtime -h`.
 if (
@@ -78,7 +91,9 @@ const resolution = subcommand == null ? null : resolveCommand(subcommand, comman
 installEventLogger({
   command: args['--version']
     ? 'exagent --version'
-    : resolution == null
+    : args['--how-to']
+      ? 'exagent --how-to'
+      : resolution == null
       ? 'exagent --help'
       : resolution.kind === 'command'
         ? `exagent ${resolution.name}`
@@ -89,6 +104,12 @@ installEventLogger({
 if (args['--version']) {
   console.log(version);
   process.exit(EXIT_OK);
+}
+
+// Before the resolution, and before the top-level help: `exagent --how-to` is the on-ramp whatever
+// else is on the line, and `exagent help --how-to` should not have to be a second thing to learn.
+if (args['--how-to']) {
+  Log.exit(formatHowTo(), EXIT_OK);
 }
 
 if (resolution == null) {

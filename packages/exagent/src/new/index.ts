@@ -1,7 +1,41 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const newHelp: CommandHelp = {
+  command: 'new',
+  usage: 'npx exagent new <directory>',
+  options: [
+    `--name <name>   Display name of the app, written into app.json`,
+    `--no-install    Skip installing the dependencies`,
+    `--no-git        Skip initializing a git repository`,
+    `--json          Print the result as JSON`,
+    `--no-followups  Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help      Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent new my-app',
+      gets: 'a project in ./my-app, dependencies installed, git initialized',
+    },
+    { run: 'npx exagent new my-app --name "My App"', gets: 'the same, with a display name set' },
+    {
+      run: 'npx exagent new my-app --json --no-install',
+      gets: 'one object, and the scaffold without the dependency install',
+    },
+  ],
+  next: ['status', 'dev', 'agents:setup'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'the create-expo output, progress and errors',
+    keys: ['projectRoot', 'name', 'created', 'installed', 'gitInitialized', 'followups'],
+  },
+  notes: [
+    `Runs create-expo in a subprocess with every prompt answered, so it works with no TTY`,
+    `attached — the shape an agent runs it in.`,
+  ],
+};
 
 export const exagentNew: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -24,27 +58,7 @@ export const exagentNew: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Create a new Expo project without a terminal: scaffold, git, and what to run next`,
-      chalk`npx exagent new {dim <directory>}`,
-      [
-        `--name <name>   Display name of the app, written into app.json`,
-        `--no-install    Skip installing the dependencies`,
-        `--no-git        Skip initializing a git repository`,
-        `--json          Print the result as JSON`,
-        `--no-followups  Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help      Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  Runs {bold create-expo} in a subprocess with every prompt answered, so the command`,
-        chalk`  works with no TTY attached — the shape an agent runs it in.`,
-        '',
-        chalk`    {dim $} npx exagent new my-app --name "My App"`,
-        chalk`    {dim $} npx exagent new my-app --json --no-install`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(newHelp);
   }
 
   // Load modules after the help prompt so `npx exagent new -h` shows as fast as possible.

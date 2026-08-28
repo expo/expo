@@ -1,7 +1,43 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const agentsSetupHelp: CommandHelp = {
+  command: 'agents:setup',
+  usage: 'npx exagent agents:setup',
+  options: [
+    `--agent <agent>     Set up for specific agents (can be used multiple times)`,
+    `--no-agents-md      Do not create or update AGENTS.md`,
+    `--no-agent-skills   Do not link the agent skills of the installed packages`,
+    `--json              Print the result as JSON`,
+    `-h, --help          Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent agents:setup',
+      gets: 'AGENTS.md gets a managed block, and the installed packages’ skills are linked',
+    },
+    {
+      run: 'npx exagent agents:setup --agent claude --json',
+      gets: 'the same for one agent, as one object',
+    },
+    {
+      run: 'npx exagent agents:setup --no-agents-md',
+      gets: 'the skill links only; AGENTS.md is left alone',
+    },
+  ],
+  next: ['skills:list', 'status', 'dev'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: ['projectRoot', 'skills', 'agentsMd', 'agents', 'notes'],
+  },
+  notes: [
+    `Safe to run again at any time. Everything outside the AGENTS.md block markers is yours and`,
+    `is left untouched, and CLAUDE.md is never written.`,
+  ],
+};
 
 export const exagentAgentsSetup: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -19,29 +55,7 @@ export const exagentAgentsSetup: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Set this project up for coding agents`,
-      chalk`npx exagent agents:setup`,
-      [
-        `--agent <agent>     Set up for specific agents (can be used multiple times)`,
-        `--no-agents-md      Do not create or update AGENTS.md`,
-        `--no-agent-skills   Do not link the agent skills of the installed packages`,
-        `--json              Print the result as JSON`,
-        `-h, --help          Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  Two things, both safe to run again at any time:`,
-        '',
-        chalk`  1. Links the agent skills the installed packages ship, like {bold npx exagent skills:sync}.`,
-        chalk`  2. Maintains one managed block in the project's {bold AGENTS.md}: what this project is,`,
-        chalk`     whether Expo Go can run it, and the commands that answer in a machine-readable shape.`,
-        '',
-        chalk`  Everything outside the block markers is yours and is left untouched. {bold CLAUDE.md} is`,
-        chalk`  never written; when one exists that does not reference AGENTS.md, the command says so.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(agentsSetupHelp);
   }
 
   // Load modules after the help prompt so `npx exagent agents:setup -h` shows as fast as possible.

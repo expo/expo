@@ -5,6 +5,7 @@
 import chalk from 'chalk';
 
 import type { ImpactClass, OtaSafety } from '../impact/types';
+import { renderForInvoker } from '../utils/invoker';
 import type { PlanBuildLocation } from '../toolchain/types';
 import type {
   AssertStatus,
@@ -433,16 +434,27 @@ const PLATFORM_WIDTH = 9;
 function freshnessLine(freshness: FreshnessStatus): string {
   const indent = ' '.repeat(LABEL_WIDTH);
   const platforms = [...new Set(freshness.platforms.map((entry) => entry.platform))];
+  // @ref llp/0024-cli-ui.rfc.md §`status` reads like the help
+  // A detail every platform shares is a fact about the *run*, not about a platform: "EAS was not
+  // asked — pass --explain" was printed on the ios row and again on the android row, which is the
+  // same sentence twice on a report whose whole shape is one fact per line. It is said once, under
+  // the rows it explains. A detail only one platform has stays on that platform's row, where it is
+  // the thing that tells the two apart.
+  const shared = sharedDetails(freshness);
   const lines = platforms.map((platform, index) => {
     const axes = freshness.platforms
       .filter((entry) => entry.platform === platform)
       .map((entry) => {
         const state =
           entry.state === 'fresh' ? chalk.green('fresh') : chalk.yellow(entry.state);
-        return `${chalk.dim(entry.backend)} ${state}${entry.detail ? ` (${entry.detail})` : ''}`;
+        const detail = entry.detail && !shared.includes(entry.detail) ? ` (${entry.detail})` : '';
+        return `${chalk.dim(entry.backend)} ${state}${detail}`;
       });
     return `${index === 0 ? '' : indent}${platform.padEnd(PLATFORM_WIDTH)}${axes.join(SEPARATOR)}`;
   });
+  for (const detail of shared) {
+    lines.push(`${indent}${chalk.dim(detail)}`);
+  }
   // The fingerprint error explains every `unknown` above it, so it belongs under them.
   if (freshness.error) {
     lines.push(`${indent}${chalk.dim(`fingerprint error: ${summarize(freshness.error)}`)}`);
@@ -452,6 +464,29 @@ function freshnessLine(freshness: FreshnessStatus): string {
     lines.push(`${indent}${chalk.dim(provenance)}`);
   }
   return lines.join('\n');
+}
+
+/**
+ * The details every platform of the freshness section carries, in the order they first appear.
+ *
+ * "Every platform", not "more than one": a project with one platform has no repetition to remove,
+ * and moving its only detail off the row would leave the row saying less than it did.
+ */
+function sharedDetails(freshness: FreshnessStatus): string[] {
+  const platforms = new Set(freshness.platforms.map((entry) => entry.platform));
+  if (platforms.size < 2) {
+    return [];
+  }
+  const seen = new Map<string, Set<string>>();
+  for (const entry of freshness.platforms) {
+    if (!entry.detail) {
+      continue;
+    }
+    seen.set(entry.detail, (seen.get(entry.detail) ?? new Set()).add(entry.platform));
+  }
+  return [...seen.entries()]
+    .filter(([, on]) => on.size === platforms.size)
+    .map(([detail]) => detail);
 }
 
 /**
@@ -640,18 +675,22 @@ function authLine(auth: AuthStatus): string {
 
 function nextLine(next: NextActionStatus): string {
   const [first, ...rest] = next.steps;
+  // Rewritten for the runner in use as it goes out, the way a follow-up is (`src/utils/invoker.ts`):
+  // the report is written `npx exagent …` and a Bun project reads `bunx exagent …`. The `--json`
+  // value is the written form, unchanged.
+  const command = renderForInvoker(next.command);
   // A next action that is not the plan carries its own reason, and that reason is the whole of
   // what it has to say: there is no step list to print, because it runs one exagent command.
   if (next.why) {
-    return `${chalk.bold(next.command)}${SEPARATOR}${chalk.dim(next.why)}`;
+    return `${chalk.bold(command)}${SEPARATOR}${chalk.dim(next.why)}`;
   }
   if (first == null) {
-    return `${chalk.bold(next.command)} → ${next.rule}`;
+    return `${chalk.bold(command)} → ${next.rule}`;
   }
   const more = rest.length
     ? chalk.dim(` (+${rest.length} more ${pluralize(rest.length, 'step', 'steps')})`)
     : '';
-  return `${chalk.bold(next.command)} → ${next.rule}: ${chalk.cyan(first.argv.join(' '))}${more}`;
+  return `${chalk.bold(command)} → ${next.rule}: ${chalk.cyan(first.argv.join(' '))}${more}`;
 }
 
 function pluralize(count: number, single: string, plural: string): string {

@@ -353,33 +353,63 @@ describe('exagent', () => {
 
   // The top-level listing is grouped by the job at hand, not alphabetically: an agent reading it
   // has to be able to pick a command (llp/0006 §The `exagent` launcher).
+  //
+  // @ref llp/0024-cli-ui.rfc.md §The workflow map
+  // The sections were renamed and the commands are one line each with their summary, so the
+  // assertion is on the section titles and on every command being present — which is what this
+  // test was always for. The comma-joined line it used to pin was the rendering, not the rule.
   it('prints the sectioned command listing with `--help`', async () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.all).toContain('Develop');
-    expect(result.all).toContain(
-      'dev, dev:logs, dev:stop, typecheck, start, install, status'
-    );
-    expect(result.all).toContain('Create');
-    expect(result.all).toContain('Deployment');
-    expect(result.all).toContain('Debug a running app');
-    // The section wraps at 80 columns now that it holds six commands, so the assertion is on
-    // the commands rather than on one rendered line.
+    for (const title of [
+      'Develop',
+      'Understand the project',
+      'Check a running app',
+      'Create and ship',
+      'Agent setup',
+      'Learn',
+      'Expo CLI (fallback to npx expo <command>)',
+    ]) {
+      expect(result.all).toContain(title);
+    }
     for (const command of [
+      'dev',
+      'dev:logs',
+      'dev:stop',
+      'typecheck',
+      'start',
+      'install',
+      'status',
+      'new',
+      'deploy',
       'runtime:eval',
       'runtime:errors',
       'runtime:reload',
       'runtime:stop',
       'navigate',
+      'agents:setup',
+      'skills:sync',
+      'help',
     ]) {
       expect(result.all).toContain(command);
     }
-    expect(result.all).toContain('Agent setup');
-    expect(result.all).toContain('agents:setup');
-    expect(result.all).toContain('skills:sync');
-    expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
-    expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
+  });
+
+  // @ref llp/0024-cli-ui.rfc.md §The workflow map
+  // The listing says which commands exist; the map above it says which one to run first, and the
+  // on-ramp under the map teaches the protocol. A caller who has never seen this CLI needs all
+  // three, in that order, on the first screen they are given.
+  it('puts the loop and the on-ramp above the listing', async () => {
+    const result = await executeExagentAsync(projectRoot, ['--help']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.all).toContain('The loop');
+    expect(result.all).toContain('npx exagent help how-to');
+    for (const stage of ['orient', 'run', 'iterate', 'gate', 'ship', 'once']) {
+      expect(result.all).toContain(stage);
+    }
+    expect(result.all.indexOf('The loop')).toBeLessThan(result.all.indexOf('Develop'));
   });
 
   it('prints the package version with `--version`', async () => {

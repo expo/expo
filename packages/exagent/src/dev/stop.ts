@@ -1,14 +1,62 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the dev server
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import {
-  assertWithOptionsArgs,
-  DURATION_HELP_NOTE,
-  DURATION_METAVAR,
-  printHelp,
-} from '../utils/args';
+import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../utils/args';
+
+export const devStopHelp: CommandHelp = {
+  command: 'dev:stop',
+  usage: 'npx exagent dev:stop',
+  options: [
+    `--port <port>         Look at this port when no lock answers for the project`,
+    `--signal <signal>     SIGTERM (default), SIGINT, or SIGKILL`,
+    `--force               Stop a dev server on --port that no lock answers for`,
+    `--timeout ${DURATION_METAVAR}  How long to wait for it to go (default: 10s)`,
+    `--json                Print the result as JSON`,
+    `--no-followups        Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help            Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent dev:stop',
+      gets: 'this project’s dev server is signalled and gone; exit 0 if none was running',
+    },
+    { run: 'npx exagent dev:stop --json', gets: 'the same as one object: pid, port, url, stopped' },
+    {
+      run: 'npx exagent dev:stop --port 8081 --force',
+      gets: 'stops a dev server on that port that this CLI did not start',
+    },
+  ],
+  next: ['dev', 'status'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: [
+      'stopped',
+      'pid',
+      'port',
+      'url',
+      'lockHeld',
+      'signal',
+      'forced',
+      'forceRefusedBy',
+      'processStillRunning',
+      'portStillAnswering',
+      'reason',
+      'detail',
+      'waitedMs',
+      'followups',
+    ],
+  },
+  notes: [
+    `It signals the process named by this project's dev-server lock, so there is no port to`,
+    `guess at. A port with no lock behind it is another project's server: reported, left alone,`,
+    `and stopped only by --force, and only when the port and the process both look like one.`,
+    `Exit codes: 0 stopped, or nothing was running · 20 something is still there.`,
+    DURATION_HELP_NOTE,
+  ],
+};
 
 export const exagentDevStop: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -30,43 +78,7 @@ export const exagentDevStop: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Stop this project's dev server`,
-      chalk`npx exagent dev:stop`,
-      [
-        `--port <port>         Look at this port when no lock answers for the project`,
-        `--signal <signal>     SIGTERM (default), SIGINT, or SIGKILL`,
-        `--force               Stop a dev server on --port that no lock answers for`,
-        `--timeout ${DURATION_METAVAR}  How long to wait for it to go (default: 10s)`,
-        `--json                Print the result as JSON`,
-        `--no-followups        Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help            Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  {dim $} npx exagent dev:stop`,
-        chalk`  {dim $} npx exagent dev:stop --json`,
-        chalk`  {dim $} npx exagent dev:stop --port 8081 --force`,
-        '',
-        chalk`  {bold How it knows what to stop.} While {bold exagent dev} or {bold exagent start} runs a dev`,
-        chalk`  server, it holds a lock for the project, and the line that lock answers with names`,
-        chalk`  the process holding it. That PID is signalled, and the signal reaches the bundler`,
-        chalk`  with it — so there is no port to guess at and no {bold lsof} to compose.`,
-        '',
-        chalk`  {bold What it will not do.} A port that something is listening on with no lock behind it`,
-        chalk`  is a dev server this CLI did not start — most often a second project's. It is`,
-        chalk`  reported, with its PID when this machine will name one, and left running. {bold --force}`,
-        chalk`  stops it, and only when {bold two} things agree: the port answers as an Expo dev server,`,
-        chalk`  and the process on it looks like one. Either alone can be wrong about which process`,
-        chalk`  owns the port right now.`,
-        '',
-        chalk`  Exit codes: {bold 0} stopped, or nothing was running; {bold 20} something is still there.`,
-        chalk`  Nothing running is success on purpose — it is the state the caller asked for.`,
-        '',
-        `  ${DURATION_HELP_NOTE}`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(devStopHelp);
   }
 
   // Load modules after the help prompt so `npx exagent dev:stop -h` shows as fast as possible.

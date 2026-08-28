@@ -1,7 +1,39 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const doctorCheckHelp: CommandHelp = {
+  command: 'doctor:check',
+  usage: 'npx exagent doctor:check',
+  options: [
+    `--json            Print the whole report as JSON, expo-doctor's full text included`,
+    `--no-followups    Leave the suggested follow-up commands out of the report`,
+    `-h, --help        Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent doctor',
+      gets: 'the failed checks and the advice each gave; exit 20 when any failed',
+    },
+    {
+      run: 'npx exagent doctor:check --json',
+      gets: 'the same as one object, with everything expo-doctor printed under raw',
+    },
+  ],
+  next: ['status', 'install', 'dev'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: ['passed', 'failed', 'checks', 'parse', 'projectRoot', 'exitCode', 'raw', 'followups'],
+  },
+  notes: [
+    `Read-only: it runs expo-doctor --verbose as a subprocess and normalizes what it printed.`,
+    `Exit codes: 0 every check passed · 20 a check failed · 1 expo-doctor could not be run.`,
+    `expo-doctor has no --json, so the report is read back out of its prose. The parse field`,
+    `says how well that went (full, best-effort, failed) and raw holds the original text.`,
+  ],
+};
 
 export const exagentDoctorCheck: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -17,30 +49,7 @@ export const exagentDoctorCheck: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Diagnose this project by running expo-doctor, and normalize its report`,
-      chalk`npx exagent doctor:check {dim [options]}`,
-      [
-        `--json            Print the whole report as JSON, expo-doctor's full text included`,
-        `--no-followups    Leave the suggested follow-up commands out of the report`,
-        `-h, --help        Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  Read-only. It runs {bold expo-doctor --verbose} as a subprocess — the project's own copy`,
-        chalk`  first, then {bold npx expo-doctor} — and reports the checks that failed with the advice`,
-        chalk`  each of them gave. It exits {bold 0} when every check passed and {bold 20} when any failed, like`,
-        chalk`  every other gate in this CLI; {bold 1} means expo-doctor could not be run at all. Its own exit`,
-        chalk`  code is kept on the {bold exitCode} field of {bold --json}.`,
-        '',
-        chalk`  expo-doctor has no {bold --json}, so the report is read back out of its prose and says how`,
-        chalk`  well that went. {bold --json} carries a {bold parse} field ({bold full}, {bold best-effort} or {bold failed}) and`,
-        chalk`  a {bold raw} field with everything expo-doctor printed, so nothing the parse missed is lost.`,
-        '',
-        chalk`  {bold npx exagent doctor} runs this command.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(doctorCheckHelp);
   }
 
   // Load modules after the help prompt so `npx exagent doctor:check -h` shows as fast as possible.

@@ -1,8 +1,68 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the app
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const runtimeStopHelp: CommandHelp = {
+  command: 'runtime:stop',
+  usage: 'npx exagent runtime:stop',
+  options: [
+    `--ios, --platform ios   Stop the app on the booted iOS simulator`,
+    `--android               Stop the app on the attached Android device`,
+    `--cloud                 Stop the app on this project's EAS Simulator session`,
+    `--app-id <id>           Application id to stop, instead of the one this works out`,
+    `--dev-server-url <url>  Dev server to ask which app is running (default: the project's own)`,
+    `--port <number>         Dev server on this port, short for --dev-server-url`,
+    `--json                  Print the result as JSON`,
+    `--no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help              Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent runtime:stop',
+      gets: 'the app on the device stops; exit 0 also when it was not running',
+    },
+    {
+      run: 'npx exagent runtime:stop --ios --json',
+      gets: 'the same on the booted simulator, as one object naming which app it stopped',
+    },
+    {
+      run: 'npx exagent runtime:stop --app-id com.example.myapp',
+      gets: 'stops exactly that application id, whatever the dev server reports',
+    },
+  ],
+  next: ['navigate', 'dev', 'status'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: [
+      'stopped',
+      'wasRunning',
+      'platform',
+      'deviceBackend',
+      'deviceId',
+      'bundleId',
+      'bundleIdSource',
+      'bundleIdReason',
+      'command',
+      'reason',
+      'connectedAppIds',
+      'appIdMismatch',
+      'followups',
+    ],
+  },
+  notes: [
+    `The counterpart of navigate, which starts the app. The hard part is which app: Expo Go and`,
+    `a development build are different applications. Evidence is ranked — --app-id, the app`,
+    `connected to the dev server, the app config, then Expo Go — and bundleIdSource says which.`,
+    `The one runtime command that needs no dev server: it acts on a device, not on a debugger.`,
+    `--cloud stops the app, never the EAS Simulator session, which keeps billing. End the`,
+    `session with "npx eas simulator:stop".`,
+    `Exit 20 has one cause: --app-id named an app that is not running while the dev server`,
+    `reports a different one that is. Nothing was stopped — most often a typo in the id.`,
+  ],
+};
 
 export const exagentRuntimeStop: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -24,59 +84,7 @@ export const exagentRuntimeStop: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Stop the app on the device it is running on`,
-      chalk`npx exagent runtime:stop`,
-      [
-        `--ios, --platform ios   Stop the app on the booted iOS simulator`,
-        `--android               Stop the app on the attached Android device`,
-        `--cloud                 Stop the app on this project's EAS Simulator session`,
-        `--app-id <id>           Application id to stop, instead of the one this works out`,
-        `--dev-server-url <url>  Dev server to ask which app is running (default: the project's own)`,
-        `--port <number>         Dev server on this port, short for --dev-server-url`,
-        `--json                  Print the result as JSON`,
-        `--no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help              Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  {dim $} npx exagent runtime:stop`,
-        chalk`  {dim $} npx exagent runtime:stop --ios --json`,
-        chalk`  {dim $} npx exagent runtime:stop --app-id com.example.myapp`,
-        '',
-        chalk`  The counterpart of {bold navigate}, which starts the app. Between them an agent can put`,
-        chalk`  the app into a known state without composing a {bold simctl} or {bold adb} line.`,
-        '',
-        chalk`  {bold Which app.} The hard part is not the command, it is the name: Expo Go and a`,
-        chalk`  development build are different applications, and a project moves between them.`,
-        chalk`  The evidence is ranked — {bold --app-id}, then the app actually connected to the dev`,
-        chalk`  server, then {bold ios.bundleIdentifier} / {bold android.package} from the app config, then`,
-        chalk`  Expo Go. The report names which of those it used, so a wrong stop is diagnosable.`,
-        chalk`  The dev server outranks the config because the config says what a {bold build} of this`,
-        chalk`  project would be called, and the dev server says what is running right now.`,
-        '',
-        chalk`  {bold --cloud stops the app, never the session.} It sends the session controller's`,
-        chalk`  {bold close <app-id>} verb, which is the same act as {bold simctl terminate} — the remote`,
-        chalk`  machine stays up and keeps billing. To end the session itself, and its billing, run`,
-        chalk`  {bold npx eas simulator:stop}. The flag is never taken on its own: a run with no local`,
-        chalk`  device says it has none rather than quietly reaching for a paid one.`,
-        '',
-        chalk`  An app that was not running is a success with a note, not a failure: the state the`,
-        chalk`  caller asked for is the state it is in. {bold wasRunning} in {bold --json} says which it was.`,
-        '',
-        chalk`  {bold The one runtime command that needs no dev server.} The rest of the family refuses`,
-        chalk`  when nothing is connected — there is nothing to read or drive — and this one acts on a`,
-        chalk`  {bold device}, so a dev server that is down only costs it the best evidence for which app`,
-        chalk`  to name. What it does need is a device: with none, it says so and names how to look`,
-        chalk`  ({bold xcrun simctl list devices booted}, {bold adb devices}).`,
-        '',
-        chalk`  {bold The one exception is exit 20:} {bold --app-id} named an app that was not running {bold and}`,
-        chalk`  the dev server is reporting a different app that is. Nothing was stopped, and the app`,
-        chalk`  on the device is untouched — a typo in the id looks exactly like this. The error`,
-        chalk`  names the connected id and the same command aimed at it.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(runtimeStopHelp);
   }
 
   // Load modules after the help prompt so `npx exagent runtime:stop -h` shows as fast as possible.

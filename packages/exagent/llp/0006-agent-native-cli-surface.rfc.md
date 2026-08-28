@@ -5,7 +5,7 @@
 **Systems:** `packages/@expo/cli`; JSONL events; `exagent` launcher (new)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
-**Related:** [[0001-agentic-cli-on-expo-cli]], [[0004-smart-start-and-project-state]]
+**Related:** [[0001-agentic-cli-on-expo-cli]], [[0004-smart-start-and-project-state]], [[0024-cli-ui]]
 
 ## Summary
 
@@ -86,7 +86,7 @@ The rules are implemented as data rather than as string matching [observed — 2
 - **The space form is free.** `<group> <action>` resolves to the same command as `<group>:<action>` when the action is the argument right after the group, so an agent that types `skills list` is never wrong. The colon is canonical, and the space form is silent.
 - **A bare group is answerable.** `exagent runtime` prints the group's actions and exits 0. A group that declares a `defaultAction` runs it instead, so `exagent skills` syncs and `exagent doctor` checks. `exagent <group> --help` is always the listing.
 - **A group whose actions share their options stays one module.** `withAction(action, load)` hands the action back as `argv[0]`, which is where such a module already reads it. So `runtime` and `skills` keep one `--help` block and one argument resolver, while `dev` has one command per action. Which of the two a group is, is a property of its entry rather than of the resolver.
-- **The help cannot drift.** `helpSections` groups the surface by the job at hand: Develop, Create, Deployment, Debug a running app, Agent setup, Checkpoints, and Expo CLI for the forwarded set. A unit test pins that every name in all three lists appears in exactly one section, so neither a new command nor a newly forwarded one can ship undiscoverable.
+- **The help cannot drift.** `helpSections` groups the surface by the job at hand: Develop, Understand the project, Check a running app, Create and ship, Agent setup, Learn, Account, and Expo CLI for the forwarded set. A unit test pins that every name in all three lists appears in exactly one section, so neither a new command nor a newly forwarded one can ship undiscoverable. What each of those screens actually says — the workflow map above the listing, the one template every command's `--help` comes out in, the `help how-to` on-ramp, and the palette — is [[0024-cli-ui]]. The registry carries the data all of it reads: a one-line `summary` and a lazy `help` loader on every entry, and the `workflow` map.
 - **Adding a command is one entry.** A new action is a line in a group's `actions`. A new group is a key in `commandGroups`. A newly forwarded `expo` command is a string in `forwardedCommands`. Another name for an existing command is a pair in `commandAliases`. No `switch`, no `if (command === 'runtime:eval')`, and no CLI framework: the resolution is about 45 lines over the three lists.
 
 Implemented [observed — 2026-08-22]: `start` and `install` add skill sync and follow-ups to `expo start` and `expo install`, and forward every other argument untouched. The plan-first engine that `start` briefly owned is the `dev` verb. The forwarded set runs through `src/passthrough/`, which spawns the project's `expo` CLI with stdio inherited, forwards the exit code, emits one `cli:expo_passthrough` event, and adds nothing else.

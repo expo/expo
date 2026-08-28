@@ -2,8 +2,7 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one fact per line, and the
 // same shape for a human terminal and an agent transcript.
 
-import chalk from 'chalk';
-
+import { color } from '../utils/color';
 import { renderForInvoker } from '../utils/invoker';
 import type { FollowUp } from './types';
 
@@ -26,10 +25,13 @@ export function formatFollowUps(followups: FollowUp[]): string {
     // A leading blank line: the section trails whatever the command printed, and every command
     // prints something, so it needs the separation to read as its own block.
     '',
-    chalk.bold('Suggested next:'),
+    // @ref llp/0024-cli-ui.rfc.md §Colors are for humans — the same three roles the help block
+    // uses, so the state-aware `Suggested next:` and the static `Typically next` of a `--help`
+    // read as the same kind of thing rather than as two conventions.
+    color.heading('Suggested next:'),
     ...followups.map(
       (followup, index) =>
-        `  ${chalk.cyan(commands[index]!.padEnd(width))}  — ${chalk.dim(renderForInvoker(followup.why))}`
+        `  ${color.command(commands[index]!.padEnd(width))}  — ${color.muted(renderForInvoker(followup.why))}`
     ),
   ].join('\n');
 }

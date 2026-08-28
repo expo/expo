@@ -1,7 +1,49 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const deployHelp: CommandHelp = {
+  command: 'deploy',
+  usage: 'npx exagent deploy',
+  options: [
+    `--web                Deploy the web export to EAS Hosting`,
+    `--native             Launch the native app with create-launch (launch.expo.dev)`,
+    `--upload-root <dir>  Directory to upload for --native. Default: the project itself`,
+    `--json               Print the result as JSON`,
+    `--no-followups       Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help           Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent deploy',
+      gets: 'a project with web support deploys its web app; no target flag needed',
+    },
+    {
+      run: 'npx exagent deploy --web --json',
+      gets: 'the same, as one object: expo export --platform web, then eas deploy',
+    },
+    {
+      run: 'npx exagent deploy --native',
+      gets: 'a launch.expo.dev URL to open — the store steps happen in the browser',
+    },
+    {
+      run: 'npx exagent deploy --native --upload-root ../..',
+      gets: 'the same, for an app that lives inside a monorepo',
+    },
+  ],
+  next: ['status', 'smoke'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'the subprocess output, progress and errors',
+    keys: ['projectRoot', 'targets', 'web', 'native', 'followups'],
+  },
+  notes: [
+    `--native stops at a URL a person has to open, and exits 7: the store account, the signing`,
+    `and the submission all happen there. Hand the URL over; no command finishes it for you.`,
+    `Sign in once with "npx expo login", or set EXPO_TOKEN on a machine that cannot.`,
+  ],
+};
 
 export const exagentDeploy: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -24,39 +66,7 @@ export const exagentDeploy: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Ship the project: the web app to EAS Hosting, the native app through launch.expo.dev`,
-      chalk`npx exagent deploy`,
-      [
-        `--web                Deploy the web export to EAS Hosting`,
-        `--native             Launch the native app with create-launch (launch.expo.dev)`,
-        `--upload-root <dir>  Directory to upload for --native. Default: the project itself`,
-        `--json               Print the result as JSON`,
-        `--no-followups       Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help           Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  With no target flag, a project that has web support deploys its web app.`,
-        '',
-        chalk`    {dim $} npx exagent deploy --web --json`,
-        chalk`    {dim >} expo export --platform web && eas deploy --non-interactive`,
-        '',
-        chalk`  {bold --native} runs {bold create-launch} in a subprocess, which uploads your project source as`,
-        chalk`  the signed in Expo user and answers with a launch URL. Opening that URL is a`,
-        chalk`  required step: the store account, the signing and the submission for iOS and`,
-        chalk`  Android happen in the browser.`,
-        '',
-        chalk`    {dim $} npx exagent deploy --native`,
-        chalk`    {dim >} create-launch --json`,
-        '',
-        chalk`    {dim $} npx exagent deploy --native --upload-root ../..    {dim # an app in a monorepo}`,
-        chalk`    {dim >} create-launch --json --project my-app          {dim # run from ../..}`,
-        '',
-        chalk`  Sign in once with {bold npx expo login}, or set {bold EXPO_TOKEN} on a machine that cannot.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(deployHelp);
   }
 
   // Load modules after the help prompt so `npx exagent deploy -h` shows as fast as possible.

@@ -9,10 +9,54 @@
 // fixtures name throughout, and moving it would rewrite a hundred references to say nothing new.
 // (`src/build/` was never available — the repository's `.gitignore` has `/packages/**/build/`.)
 
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const inspectBuildLogHelp: CommandHelp = {
+  command: 'inspect:build-log',
+  usage: 'npx exagent inspect:build-log --file <path> | --stdin',
+  options: [
+    `--file <path>          Read the log from this file`,
+    `--stdin                Read the log from stdin. Implied when stdin is not a terminal`,
+    `--platform ios|android Narrow the rules to one platform's phases`,
+    `--context <n[:m]>      Lines of context around the match. Default: 8 before, 20 after`,
+    `--all                  Report every match, not only the failing phase's first`,
+    `--json                 Print the report as JSON`,
+    `--no-followups         Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help             Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent inspect:build-log --file ~/Downloads/xcodebuild.log',
+      gets: 'the failing phase, the line it failed on, and the lines around it',
+    },
+    {
+      run: 'npx exagent inspect:build-log --stdin --json',
+      gets: 'the same from a piped log, as one object',
+    },
+    {
+      run: 'npx exagent inspect:build-log --file build.log --all',
+      gets: 'every rule that matched, not only the failing phase’s first',
+    },
+  ],
+  next: ['doctor', 'status'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: ['source', 'phases', 'failure', 'otherFailures', 'logTail', 'followups'],
+  },
+  notes: [
+    `Deterministic extraction, not summarization: a capped rule table, each rule with a fixture`,
+    `and a test. Every answer carries the line it came from.`,
+    `Exit codes: 0 a report was produced, "no error located" included · 1 no report could be`,
+    `produced · 22 what arrived is not text, most often a log still brotli-compressed.`,
+    `"npx exagent inspect:build-log <build-id>" is reserved and does not work yet: eas-cli has no`,
+    `build:logs, so an EAS build's log has to be saved and passed with --file. Run`,
+    `"npx eas build:view" for where those files are.`,
+  ],
+};
 
 export const exagentInspectBuildLog: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -35,45 +79,7 @@ export const exagentInspectBuildLog: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Read a build log and say what failed in it`,
-      chalk`npx exagent inspect:build-log {dim --file <path> | --stdin [options]}`,
-      [
-        `--file <path>          Read the log from this file`,
-        `--stdin                Read the log from stdin. Implied when stdin is not a terminal`,
-        `--platform ios|android Narrow the rules to one platform's phases`,
-        `--context <n[:m]>      Lines of context around the match. Default: 8 before, 20 after`,
-        `--all                  Report every match, not only the failing phase's first`,
-        `--json                 Print the report as JSON`,
-        `--no-followups         Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help             Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  Deterministic extraction, not summarization: a capped table of rules that ship in`,
-        chalk`  this repository, each with a fixture and a test. Every answer carries the line it`,
-        chalk`  came from, so nothing has to be taken on trust.`,
-        '',
-        chalk`    {dim $} npx expo run:ios 2>&1 | npx exagent inspect:build-log --json`,
-        chalk`    {dim $} npx exagent inspect:build-log --file ~/Downloads/xcodebuild.log`,
-        '',
-        chalk`  {bold Exit codes}:`,
-        '',
-        chalk`     {bold 0}   a report was produced — including "no error located", which is a report`,
-        chalk`     {bold 1}   no report could be produced: unreadable file, empty log, bad flag`,
-        chalk`     {bold 22}  what arrived is not a log: binary, most often one still compressed`,
-        '',
-        chalk`  {bold It refuses input that is not text.} EAS serves a build log brotli-encoded, so a`,
-        chalk`  response saved without decoding it is binary — and "no error located" for binary reads`,
-        chalk`  as a build that passed. Decode it first: {bold brotli --decompress}, or fetch with`,
-        chalk`  {bold curl --compressed}.`,
-        '',
-        chalk`  {bold npx exagent inspect:build-log <build-id>} is reserved and does not work yet: eas-cli`,
-        chalk`  has no {bold build:logs} command, so an EAS build's log has to be saved and passed in`,
-        chalk`  with {bold --file}. {bold npx eas build:view <id>} prints where the log files are.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(inspectBuildLogHelp);
   }
 
   // Load modules after the help prompt so `npx exagent inspect:build-log -h` shows as fast as possible.

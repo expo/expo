@@ -1,7 +1,59 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const installHelp: CommandHelp = {
+  command: 'install',
+  usage: 'npx exagent install <package>...',
+  options: [
+    `--check             Report which installed packages are out of date, and install nothing`,
+    `--json              Print the result as JSON`,
+    `--no-agent-skills   Skip linking agent skills from the installed packages`,
+    `--no-skill-context  Skip printing installed skills for a detected coding agent`,
+    `--no-impact         Skip the report of what must rerun after the install`,
+    `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
+    `-h, --help          Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent install expo-sqlite',
+      gets: 'the version this SDK wants, installed, and any skills it ships linked',
+    },
+    {
+      run: 'npx exagent install --check',
+      gets: 'which installed packages are out of date; nothing is installed',
+    },
+    {
+      run: 'npx exagent install expo-router --json',
+      gets: 'one object: what was installed, what must rerun, which packages ship skills',
+    },
+    {
+      run: 'npx exagent install react -- --verbose',
+      gets: 'the same install, with everything after -- handed to the package manager',
+    },
+  ],
+  next: ['status', 'dev', 'typecheck'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'the Expo CLI’s own output, progress and errors',
+    keys: [
+      'projectRoot',
+      'packages',
+      'installed',
+      'exitCode',
+      'impact',
+      'skillPackages',
+      'check',
+      'followups',
+    ],
+  },
+  notes: [
+    `The expo install flags are forwarded to the project's Expo CLI: --check, --dev, --fix,`,
+    `--npm, --pnpm, --yarn, --bun. Run "npx expo install --help" for what they do.`,
+    `npx exagent add is this same command, because expo add is expo install.`,
+  ],
+};
 
 export const exagentInstall: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -24,43 +76,7 @@ export const exagentInstall: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Install packages with the Expo CLI and link the skills they ship`,
-      chalk`npx exagent install {dim [package...]}`,
-      [
-        `--check             Report which installed packages are out of date, and install nothing`,
-        `--json              Print the result as JSON`,
-        `--no-agent-skills   Skip linking agent skills from the installed packages`,
-        `--no-skill-context  Skip printing installed skills for a detected coding agent`,
-        `--no-impact         Skip the report of what must rerun after the install`,
-        `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help          Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  The {bold expo install} flags are passed to the project's Expo CLI:`,
-        chalk`  {bold --check}, {bold --dev}, {bold --fix}, {bold --npm}, {bold --pnpm}, {bold --yarn}, {bold --bun}.`,
-        chalk`    {dim $} npx exagent install expo-sqlite --dev`,
-        chalk`    {dim >} expo install expo-sqlite --dev`,
-        '',
-        chalk`  Anything after a {bold --} separator goes to the package manager untouched.`,
-        chalk`    {dim $} npx exagent install react {bold --} --verbose`,
-        '',
-        chalk`  {bold --json} prints one object: the packages, whether they were installed, the`,
-        chalk`  impact classification, which packages ship agent`,
-        chalk`  skills, and the follow-ups. Nothing else is written to stdout in that mode.`,
-        '',
-        chalk`  With {bold --check}, the {bold check} key carries the verdict: {bold ok}, the Expo CLI's own`,
-        chalk`  report under {bold report}, what it printed instead under {bold output} when it stopped before`,
-        chalk`  producing one, and {bold notes} for anything this CLI can add — a package that is in no`,
-        chalk`  {bold package.json} at all, or one that is in it and not in {bold node_modules}.`,
-        '',
-        chalk`  {bold npx exagent add} is the same command, because {bold expo add} is {bold expo install}.`,
-        '',
-        chalk`  Run {bold npx expo install --help} for what those forwarded arguments do.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(installHelp);
   }
 
   // Load modules after the help prompt so `npx exagent install -h` shows as fast as possible.

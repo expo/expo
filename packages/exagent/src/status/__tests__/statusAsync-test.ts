@@ -986,7 +986,7 @@ describe(printStatusAsync, () => {
       // The dev server of this fixture is running with an app attached, so `next` is the readiness
       // gate rather than `exagent dev` — and deliberately not `runtime:errors`, which the
       // `runtime-errors` follow-up above already names.
-      expect(report.next.command).toBe('exagent smoke');
+      expect(report.next.command).toBe('npx exagent smoke');
       expect(
         report.followups.map((followup: { command: string }) => followup.command)
       ).not.toContain(report.next.command);

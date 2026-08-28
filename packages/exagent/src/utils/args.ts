@@ -250,6 +250,15 @@ function parseDuration(value: unknown): number {
   return Number(value);
 }
 
+/**
+ * @deprecated Use `printCommandHelp` from `src/help/format.ts`.
+ *
+ * The free-form help block every command used to build for itself: an `Info` line, a usage line,
+ * an option list, and an `extra` string that grew into sixty lines of rationale. One shape per
+ * command is a shape nothing can check, which is why the registry now requires a `CommandHelp`
+ * (llp/0024). Nothing under a registry entry calls this — only `src/deferred/`, the v1 narrowing's
+ * reference shelf (llp/0016), which is kept verbatim and loaded by nothing.
+ */
 export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
   Log.exit(
     chalk`

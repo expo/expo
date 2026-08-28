@@ -35,8 +35,18 @@ const PLATFORMS: NativePlatform[] = ['ios', 'android'];
 /** How many characters of a fingerprint hash are shown, as in the plan engine. */
 const HASH_DISPLAY_LENGTH = 8;
 
-/** The command the next action names: the one that decides a plan and runs it. */
-const NEXT_ACTION_COMMAND = 'exagent dev';
+/**
+ * The command the next action names: the one that decides a plan and runs it.
+ *
+ * @ref llp/0024-cli-ui.rfc.md §`status` reads like the help
+ * Written `npx exagent …`, like every other command this CLI hands a caller — a `Try:` line, a
+ * follow-up, an example in a `--help`. It used to be the bare `exagent dev`, which is the one
+ * spelling that is not runnable: nothing puts `exagent` on the PATH of a project that installed it
+ * [found by the wave-34 naive-agent walk]. `src/status/format.ts` rewrites it for the runner in use
+ * as it prints, so a Bun project reads `bunx exagent dev`; the `--json` value stays as written,
+ * exactly as a follow-up's does.
+ */
+const NEXT_ACTION_COMMAND = 'npx exagent dev';
 
 /**
  * The command the next action names when this directory is not an Expo app.
@@ -45,7 +55,7 @@ const NEXT_ACTION_COMMAND = 'exagent dev';
  * that is already here, where adding Expo to this package would write into a repository the caller
  * most likely only walked past (llp/0020 §The recovery is the safe one).
  */
-const NOT_AN_APP_COMMAND = 'exagent new my-app';
+const NOT_AN_APP_COMMAND = 'npx exagent new my-app';
 
 /**
  * The gate to put in front of anything that reads the app, once a dev server is up.
@@ -56,7 +66,7 @@ const NOT_AN_APP_COMMAND = 'exagent new my-app';
  * the `runtime-errors` follow-up already says it — `next` naming it too would be the duplication
  * that `status` keeps its follow-ups silent to avoid.
  */
-const VERIFY_COMMAND = 'exagent smoke';
+const VERIFY_COMMAND = 'npx exagent smoke';
 
 /**
  * The command to name when a dev server is up and nothing is attached to it.
@@ -67,7 +77,7 @@ const VERIFY_COMMAND = 'exagent smoke';
  * Nothing was going to do that, so the suggestion was a two-minute wait with one possible ending.
  * This is the command that changes the state the wait is waiting for.
  */
-const OPEN_APP_COMMAND = 'exagent navigate /';
+const OPEN_APP_COMMAND = 'npx exagent navigate /';
 
 /**
  * The command to name when there is no local device to open the app on and no URL to hand over.
@@ -75,7 +85,7 @@ const OPEN_APP_COMMAND = 'exagent navigate /';
  * It resolves the URL the way `navigate` would — the scheme of a development build, the Expo Go
  * host, the tunnel — and opens nothing, which is the only part of `navigate` that needs a device.
  */
-const PRINT_URL_COMMAND = 'exagent navigate / --print-url';
+const PRINT_URL_COMMAND = 'npx exagent navigate / --print-url';
 
 /** What the project is: name, SDK, and how its native side is produced. */
 export function buildProjectStatus(state: ProjectState, packageName: string | null): ProjectStatus {

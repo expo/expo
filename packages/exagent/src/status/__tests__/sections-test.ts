@@ -461,7 +461,7 @@ describe(buildNextActionStatus, () => {
   it(`should not name exagent dev for a directory that is not an Expo app`, () => {
     const next = buildNextActionStatus(mockState({ isExpoApp: false }), {}, 'ios', null);
 
-    expect(next.command).not.toBe('exagent dev');
+    expect(next.command).not.toBe('npx exagent dev');
     expect(next.rule).toBe('not-expo-app');
     expect(next.target).toBe('none');
     expect(next.steps).toEqual([]);
@@ -491,7 +491,7 @@ describe(buildNextActionStatus, () => {
   it(`should report the Expo Go rule and the command that runs it`, () => {
     const next = buildNextActionStatus(mockState(), {}, 'ios', null);
 
-    expect(next.command).toBe('exagent dev');
+    expect(next.command).toBe('npx exagent dev');
     expect(next.rule).toBe('expo-go');
     expect(next.target).toBe('expo-go');
     expect(next.steps[0]!.argv).toEqual(['expo', 'start', '--go']);
@@ -555,7 +555,7 @@ describe(buildNextActionStatus, () => {
     it(`should send a matched server with no app to the command that opens one`, () => {
       const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus());
 
-      expect(next.command).toBe('exagent navigate /');
+      expect(next.command).toBe('npx exagent navigate /');
       expect(next.why).toContain('no app is connected');
       // The project's own shape does not change because a server is up.
       expect(next.rule).toBe('expo-go');
@@ -572,7 +572,7 @@ describe(buildNextActionStatus, () => {
         devServerStatus({ appsConnected: 1 })
       );
 
-      expect(next.command).toBe('exagent smoke');
+      expect(next.command).toBe('npx exagent smoke');
       expect(next.why).toContain('app connected');
     });
 
@@ -587,7 +587,7 @@ describe(buildNextActionStatus, () => {
         devServerStatus({ projectRootMatched: null, appsConnected: 1 })
       );
 
-      expect(next.command).toBe('exagent smoke');
+      expect(next.command).toBe('npx exagent smoke');
     });
 
     it(`should keep the plan for another project's dev server`, () => {
@@ -598,7 +598,7 @@ describe(buildNextActionStatus, () => {
         devServerStatus({ projectRootMatched: false, appsConnected: 1 })
       );
 
-      expect(next.command).toBe('exagent dev');
+      expect(next.command).toBe('npx exagent dev');
       expect(next.why).toBeNull();
       expect(next.steps[0]!.argv).toEqual(['expo', 'start', '--go']);
     });
@@ -652,7 +652,7 @@ describe(buildNextActionStatus, () => {
 
         const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus(), absent);
 
-        expect(next.command).toBe('exagent navigate / --print-url');
+        expect(next.command).toBe('npx exagent navigate / --print-url');
       });
 
       // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
@@ -687,7 +687,7 @@ describe(buildNextActionStatus, () => {
           null
         );
 
-        expect(next.command).toBe('exagent navigate / --print-url');
+        expect(next.command).toBe('npx exagent navigate / --print-url');
       });
 
       // Two applications could be meant, and one line cannot carry a labelled pair.
@@ -701,7 +701,7 @@ describe(buildNextActionStatus, () => {
           'myapp'
         );
 
-        expect(next.command).toBe('exagent navigate / --print-url');
+        expect(next.command).toBe('npx exagent navigate / --print-url');
         expect(next.why).toContain('nothing established');
       });
 
@@ -713,7 +713,7 @@ describe(buildNextActionStatus, () => {
           state: 'unknown',
         });
 
-        expect(next.command).toBe('exagent navigate /');
+        expect(next.command).toBe('npx exagent navigate /');
       });
 
       it(`keeps navigate when a device is there`, () => {
@@ -726,7 +726,7 @@ describe(buildNextActionStatus, () => {
           reason: null,
         });
 
-        expect(next.command).toBe('exagent navigate /');
+        expect(next.command).toBe('npx exagent navigate /');
       });
     });
 
@@ -738,7 +738,7 @@ describe(buildNextActionStatus, () => {
         devServerStatus({ running: false, ready: null })
       );
 
-      expect(next.command).toBe('exagent dev');
+      expect(next.command).toBe('npx exagent dev');
       expect(next.why).toBeNull();
     });
   });
@@ -869,7 +869,7 @@ describe('buildNextActionStatus with a cloud session on record', () => {
       true
     );
 
-    expect(next.command).toBe('exagent navigate / --cloud');
+    expect(next.command).toBe('npx exagent navigate / --cloud');
     expect(next.why).toContain('EAS Simulator session');
   });
 
@@ -895,7 +895,7 @@ describe('buildNextActionStatus with a cloud session on record', () => {
 
     const next = buildNextActionStatus(state, {} as never, 'ios', withApp, absentDevice, null, true);
 
-    expect(next.command).toBe('exagent smoke --cloud');
+    expect(next.command).toBe('npx exagent smoke --cloud');
     expect(next.why).toContain('EAS Simulator session');
   });
 
@@ -919,7 +919,7 @@ describe('buildNextActionStatus with a cloud session on record', () => {
       true
     );
 
-    expect(next.command).toBe('exagent smoke');
+    expect(next.command).toBe('npx exagent smoke');
   });
 
   // A probe that could not run is not evidence of a local device, and the caller has *told* this
@@ -943,7 +943,7 @@ describe('buildNextActionStatus with a cloud session on record', () => {
       true
     );
 
-    expect(next.command).toBe('exagent navigate / --cloud');
+    expect(next.command).toBe('npx exagent navigate / --cloud');
     expect(next.why).toContain('could not answer');
   });
 
@@ -968,7 +968,7 @@ describe('buildNextActionStatus with a cloud session on record', () => {
       false
     );
 
-    expect(next.command).toBe('exagent navigate /');
+    expect(next.command).toBe('npx exagent navigate /');
   });
 });
 

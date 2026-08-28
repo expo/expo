@@ -86,6 +86,7 @@ describe("the option lists the sweep checks against", () => {
         "dev:run",
         "dev:stop",
         "doctor:check",
+        "help",
         "inspect:build-log",
         "inspect:config-plugins",
         "install",

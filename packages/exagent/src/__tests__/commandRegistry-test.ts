@@ -6,14 +6,18 @@ import {
   forwardedCommands,
   formatGroupHelp,
   formatTopLevelHelp,
+  commandSummary,
   helpSections,
+  isUnstableCommand,
   resolveCommand,
   suggestCommandNames,
   topLevelCommands,
   unknownCommandMessage,
   unknownCommandSuggestion,
   withAction,
+  workflow,
 } from '../commandRegistry';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
 
 /**
@@ -24,6 +28,26 @@ import type { Command } from '../types';
  * here may also be a real group (`config` is), and taking it out would leave every later test in
  * this file running against a registry with a command missing.
  */
+/**
+ * A help spec for a group that exists for the length of one test.
+ *
+ * The registry requires one on every action (llp/0024), and the resolution rules these tests are
+ * about never load it — so it is the smallest object that type-checks, not a second template to
+ * keep in step. `src/help/__tests__/template-test.ts` is what checks the real ones.
+ */
+function syntheticHelp(command: string): CommandHelp {
+  return {
+    command,
+    usage: `npx exagent ${command}`,
+    options: ['-h, --help   Usage info'],
+    examples: [
+      { run: `npx exagent ${command}`, gets: 'nothing; this command exists for one test' },
+      { run: `npx exagent ${command} --help`, gets: 'this block' },
+    ],
+    next: ['status'],
+  };
+}
+
 function withGroup(name: string, group: (typeof commandGroups)[string], test: () => void): void {
   const previous = commandGroups[name];
   commandGroups[name] = group;
@@ -235,6 +259,7 @@ describe(resolveCommand, () => {
         doctor: {
           summary: 'Synthetic action',
           load: async () => (() => {}) as Command,
+          help: async () => syntheticHelp('config:doctor'),
         },
       },
     };
@@ -523,7 +548,11 @@ describe('a group whose name is another CLI’s verb', () => {
     summary: 'Synthetic group named after another CLI’s verb',
     bareNameCommand: 'npx eas build',
     actions: {
-      explain: { summary: 'Synthetic action', load: async () => (() => {}) as Command },
+      explain: {
+        summary: 'Synthetic action',
+        load: async () => (() => {}) as Command,
+        help: async () => syntheticHelp('build:explain'),
+      },
     },
   };
 
@@ -567,6 +596,17 @@ describe('the build verb, which this CLI no longer groups anything under', () =>
       kind: 'unknown-command',
       command: 'build',
     });
+  });
+
+  // @ref llp/0024-cli-ui.rfc.md §The on-ramp
+  // Not a typo: `help:how-to` is the colon convention applied to a command that takes an argument,
+  // which is a correct guess about the wrong shape. The edit distance to any real name is large, so
+  // only the absent-capability table can answer it.
+  it('sends the colon spelling of the on-ramp to the one that works', () => {
+    for (const typed of ['help:how-to', 'how-to']) {
+      expect(unknownCommandMessage(typed)).toContain('npx exagent help how-to');
+      expect(unknownCommandSuggestion(typed)).toBe('npx exagent help how-to');
+    }
   });
 
   it('answers with the CLI that does start a build, and with the log reader that stayed', () => {
@@ -622,10 +662,59 @@ describe(formatTopLevelHelp, () => {
     const help = formatTopLevelHelp();
 
     expect(help).toContain('Develop');
-    expect(help).toContain('Create');
-    expect(help).toContain('Deployment');
-    expect(help).toContain('Debug a running app');
+    expect(help).toContain('Understand the project');
+    expect(help).toContain('Check a running app');
+    expect(help).toContain('Create and ship');
     expect(help).toContain('Agent setup');
+    expect(help).toContain('Learn');
+  });
+
+  // @ref llp/0024-cli-ui.rfc.md §The workflow map
+  // The listing says which commands exist; only the map says which one to run first, which is
+  // the question an agent that has never seen this CLI actually has.
+  it('puts the workflow map above the listing, with the on-ramp under it', () => {
+    const help = formatTopLevelHelp();
+
+    expect(help).toContain('The loop');
+    for (const { stage } of workflow) {
+      expect(help).toContain(stage);
+    }
+    expect(help).toContain('npx exagent help how-to');
+    expect(help.indexOf('The loop')).toBeLessThan(help.indexOf('Commands'));
+  });
+
+  // One line per command, so the screen is scannable: a summary long enough to wrap turns the
+  // listing back into the wall of prose this replaced.
+  it('gives every command a summary that fits on its line', () => {
+    const width = 80 - '      '.length - 24;
+    for (const { title, commands, wrapped } of helpSections) {
+      if (wrapped) {
+        continue;
+      }
+      for (const command of commands) {
+        const tag = isUnstableCommand(command) ? ' [experimental]' : '';
+        // The section and the command are in the assertion so a failure names which line wrapped.
+        expect({ title, command, over: (commandSummary(command) + tag).length > width }).toEqual({
+          title,
+          command,
+          over: false,
+        });
+      }
+    }
+  });
+});
+
+// @ref llp/0024-cli-ui.rfc.md §The workflow map
+// The map is data, so a rename that leaves it behind is caught here rather than by a reader
+// running a rung and being told the command does not exist.
+describe('workflow', () => {
+  it('names commands that all resolve', () => {
+    for (const { rungs } of workflow) {
+      for (const { run } of rungs) {
+        const [command, ...rest] = run.split(' ');
+        expect(resolveCommand(command!, rest).kind).toMatch(/^(command|passthrough)$/);
+      }
+    }
   });
 });
 

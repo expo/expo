@@ -18,12 +18,22 @@
 // it fails saying so. There is no open-ended fallback, so a typo is answered here instead of
 // becoming an `expo` invocation that could not have meant anything.
 
-import chalk from 'chalk';
-
+import type { CommandHelp } from './help/types';
 import type { Command } from './types';
+import { color } from './utils/color';
 
 /** Loads one command module on demand, so `exagent --help` never pays for the whole CLI. */
 export type CommandLoader = () => Promise<Command>;
+
+/**
+ * Loads one command's help spec on demand.
+ *
+ * Separate from {@link CommandLoader} and pointing at the same module: the spec is data
+ * (`src/help/types.ts`), so the template test can load every one of them and check the sections
+ * without running a command or spawning a process. Required on every entry, so a new command
+ * cannot ship with a `--help` that is whatever its author felt like writing.
+ */
+export type HelpLoader = () => Promise<CommandHelp>;
 
 /**
  * Whether a command may change or vanish, which is a property of the **command** and not of the
@@ -42,16 +52,28 @@ export type Unstable = true;
 
 /** One action of a group, e.g. the `eval` of `runtime:eval`. */
 export interface CommandAction {
-  /** One line, printed by the group help. */
+  /** One line, printed by the group help and by the top-level listing. */
   summary: string;
   load: CommandLoader;
+  /** @see HelpLoader */
+  help: HelpLoader;
   /** @see Unstable */
   unstable?: Unstable;
 }
 
 /** One command with a name of its own, e.g. `smoke`. */
 export interface TopLevelCommand {
+  /**
+   * One line, printed by the top-level listing.
+   *
+   * Here rather than in the command's own {@link CommandHelp}, so the listing can print it without
+   * loading twenty command modules — and so the sentence a caller reads in the listing is the same
+   * sentence they read at the head of that command's help.
+   */
+  summary: string;
   load: CommandLoader;
+  /** @see HelpLoader */
+  help: HelpLoader;
   /** @see Unstable */
   unstable?: Unstable;
 }
@@ -91,23 +113,64 @@ export function withAction(action: string, load: CommandLoader): CommandLoader {
 
 /** Commands with a name of their own. Add a new top-level command here. */
 export const topLevelCommands: { [command: string]: TopLevelCommand } = {
-  deploy: { load: () => import('./deploy').then((i) => i.exagentDeploy) },
-  install: { load: () => import('./install').then((i) => i.exagentInstall) },
-  navigate: { load: () => import('./navigate').then((i) => i.exagentNavigate) },
-  new: { load: () => import('./new').then((i) => i.exagentNew) },
+  deploy: {
+    summary: 'Ship the web app, or launch the native one',
+    load: () => import('./deploy').then((i) => i.exagentDeploy),
+    help: () => import('./deploy').then((i) => i.deployHelp),
+  },
+  // The on-ramp, as a command rather than only as a flag. An agent that has been handed this CLI
+  // and nothing else types the word it knows — `help` — and the answer has to be the loop, not a
+  // suggestion to read something else (llp/0024 §The on-ramp).
+  help: {
+    summary: `Learn the workflow, or one command's help`,
+    load: () => import('./help').then((i) => i.exagentHelp),
+    help: () => import('./help').then((i) => i.helpHelp),
+  },
+  install: {
+    summary: 'Install packages, and link the skills they ship',
+    load: () => import('./install').then((i) => i.exagentInstall),
+    help: () => import('./install').then((i) => i.installHelp),
+  },
+  navigate: {
+    summary: 'Open a route in the app on a booted device',
+    load: () => import('./navigate').then((i) => i.exagentNavigate),
+    help: () => import('./navigate').then((i) => i.navigateHelp),
+  },
+  new: {
+    summary: 'Create a new Expo project without a terminal',
+    load: () => import('./new').then((i) => i.exagentNew),
+    help: () => import('./new').then((i) => i.newHelp),
+  },
   // A capability only this CLI has, so it gets a verb of its own (llp/0006 naming rule): `expo`
   // has no `smoke` in its command map, so there is no `expo` behaviour for this name to match.
   //
   // Unstable: the gate is eight phases, and which of them belong in one command is the thing a
   // first release is for finding out. The name is not going anywhere; the phase list and the
   // outcome table might.
-  smoke: { load: () => import('./smoke').then((i) => i.exagentSmoke), unstable: true },
-  start: { load: () => import('./start').then((i) => i.exagentStart) },
-  status: { load: () => import('./status').then((i) => i.exagentStatus) },
+  smoke: {
+    summary: 'Prove the app boots, on a device',
+    load: () => import('./smoke').then((i) => i.exagentSmoke),
+    help: () => import('./smoke').then((i) => i.smokeHelp),
+    unstable: true,
+  },
+  start: {
+    summary: 'expo start, plus a sync of the agent skills',
+    load: () => import('./start').then((i) => i.exagentStart),
+    help: () => import('./start').then((i) => i.startHelp),
+  },
+  status: {
+    summary: 'Where the project is now, and what to run next',
+    load: () => import('./status').then((i) => i.exagentStatus),
+    help: () => import('./status').then((i) => i.statusHelp),
+  },
   // A capability only this CLI has gets a verb of its own (llp/0006 naming rule): `expo` has no
   // `typecheck` in its command map [observed — `packages/@expo/cli/src/index.ts`, 2026-08-23], so
   // there is no `expo` behaviour for this name to have to match.
-  typecheck: { load: () => import('./typecheck').then((i) => i.exagentTypecheck) },
+  typecheck: {
+    summary: `Type-check with the project's own compiler`,
+    load: () => import('./typecheck').then((i) => i.exagentTypecheck),
+    help: () => import('./typecheck').then((i) => i.typecheckHelp),
+  },
 };
 
 /** Commands that belong to a group. Add a new action, or a new group, here. */
@@ -116,8 +179,9 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     summary: 'Set this project up for coding agents',
     actions: {
       setup: {
-        summary: 'Link the agent skills and maintain the managed block of AGENTS.md',
+        summary: 'Write AGENTS.md and link the agent skills',
         load: () => import('./agents').then((i) => i.exagentAgentsSetup),
+        help: () => import('./agents').then((i) => i.agentsSetupHelp),
       },
     },
   },
@@ -132,13 +196,15 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     summary: 'Read what this project produced, without running it',
     actions: {
       'build-log': {
-        summary: 'Read a native build log and say what failed in it',
+        summary: 'Say what failed in a build log',
         load: () => import('./builds').then((i) => i.exagentInspectBuildLog),
+        help: () => import('./builds').then((i) => i.inspectBuildLogHelp),
         unstable: true,
       },
       'config-plugins': {
-        summary: 'What the config plugins actually produced, per platform',
+        summary: 'What the config plugins produced',
         load: () => import('./config').then((i) => i.exagentInspectConfigPlugins),
+        help: () => import('./config').then((i) => i.inspectConfigPluginsHelp),
         unstable: true,
       },
     },
@@ -152,16 +218,19 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     defaultAction: 'run',
     actions: {
       run: {
-        summary: 'Decide what must run to get this app on a device, print the plan, then run it',
+        summary: 'Get this app onto a device: plan it, then run it',
         load: () => import('./dev').then((i) => i.exagentDev),
+        help: () => import('./dev').then((i) => i.devRunHelp),
       },
       stop: {
         summary: `Stop this project's dev server`,
         load: () => import('./dev/stop').then((i) => i.exagentDevStop),
+        help: () => import('./dev/stop').then((i) => i.devStopHelp),
       },
       logs: {
-        summary: `Read what this project's detached dev server has printed`,
+        summary: 'Read what the detached dev server printed',
         load: () => import('./dev/logs').then((i) => i.exagentDevLogs),
+        help: () => import('./dev/logs').then((i) => i.devLogsHelp),
       },
     },
   },
@@ -170,8 +239,9 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     defaultAction: 'check',
     actions: {
       check: {
-        summary: 'Run the expo-doctor checks and normalize the report',
+        summary: 'Run expo-doctor and normalize its report',
         load: () => import('./doctor').then((i) => i.exagentDoctorCheck),
+        help: () => import('./doctor').then((i) => i.doctorCheckHelp),
       },
     },
   },
@@ -181,10 +251,12 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       eval: {
         summary: 'Evaluate JavaScript in the running app',
         load: withAction('eval', () => import('./runtime').then((i) => i.exagentRuntime)),
+        help: () => import('./runtime').then((i) => i.runtimeEvalHelp),
       },
       errors: {
         summary: 'Collect runtime errors over a time window',
         load: withAction('errors', () => import('./runtime').then((i) => i.exagentRuntime)),
+        help: () => import('./runtime').then((i) => i.runtimeErrorsHelp),
       },
       // The interaction commands, from the spike of llp/0014. Modules of their own, like
       // `dev:stop`: each takes different options and has honest limits that belong in its own
@@ -195,30 +267,35 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       // recorded with the payload that showed it — and a `RectButton` in a library nobody tried is
       // the case that moves these command shapes.
       tree: {
-        summary: 'List what is on the screen, and what a tap on it would find',
+        summary: 'What is on screen, ready for a tap',
         load: () => import('./runtime/interact/tree').then((i) => i.exagentRuntimeTree),
+        help: () => import('./runtime/interact/tree').then((i) => i.runtimeTreeHelp),
         unstable: true,
       },
       tap: {
         summary: 'Tap the element carrying a testID',
         load: () => import('./runtime/interact/tap').then((i) => i.exagentRuntimeTap),
+        help: () => import('./runtime/interact/tap').then((i) => i.runtimeTapHelp),
         unstable: true,
       },
       type: {
-        summary: 'Type text into the input carrying a testID',
+        summary: 'Type into the input with a testID',
         load: () => import('./runtime/interact/type').then((i) => i.exagentRuntimeType),
+        help: () => import('./runtime/interact/type').then((i) => i.runtimeTypeHelp),
         unstable: true,
       },
       // Two actions with modules of their own, like `dev:stop`: they drive the app rather than
       // read it, so they take different options and print different reports, and folding them
       // into the shared `runtime` module would give one `--help` block three subjects.
       reload: {
-        summary: 'Reload the app, so it runs the code that is on disk now',
+        summary: 'Reload the app onto the code on disk now',
         load: () => import('./runtime/reload').then((i) => i.exagentReload),
+        help: () => import('./runtime/reload').then((i) => i.runtimeReloadHelp),
       },
       stop: {
-        summary: 'Stop the app on the device it is running on',
+        summary: 'Stop the app on the device it runs on',
         load: () => import('./runtime/stop').then((i) => i.exagentRuntimeStop),
+        help: () => import('./runtime/stop').then((i) => i.runtimeStopHelp),
       },
     },
   },
@@ -227,20 +304,24 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     defaultAction: 'sync',
     actions: {
       sync: {
-        summary: 'Link the skills of the installed packages into the agent directories',
+        summary: `Link the installed packages' skills`,
         load: withAction('sync', () => import('./skills').then((i) => i.exagentSkills)),
+        help: () => import('./skills').then((i) => i.skillsSyncHelp),
       },
       list: {
         summary: 'List the skills the installed packages ship',
         load: withAction('list', () => import('./skills').then((i) => i.exagentSkills)),
+        help: () => import('./skills').then((i) => i.skillsListHelp),
       },
       show: {
         summary: `Print the SKILL.md of a package`,
         load: withAction('show', () => import('./skills').then((i) => i.exagentSkills)),
+        help: () => import('./skills').then((i) => i.skillsShowHelp),
       },
       clean: {
         summary: 'Remove the managed skill links',
         load: withAction('clean', () => import('./skills').then((i) => i.exagentSkills)),
+        help: () => import('./skills').then((i) => i.skillsCleanHelp),
       },
     },
   },
@@ -425,10 +506,101 @@ function actionNames(group: string): string[] {
   return Object.keys(commandGroups[group]!.actions).map((action) => `${group}:${action}`);
 }
 
-/** One section of the top-level help: a job an agent has, and the commands that do it. */
+/**
+ * The one-line summary of one runnable name.
+ *
+ * The registry is the only place a summary is written. The top-level listing prints it without
+ * loading a command module, and `src/help/format.ts` prints the same string at the head of that
+ * command's `--help` — so the sentence that made a caller pick the command is the sentence they
+ * read when they get there.
+ */
+export function commandSummary(name: string): string {
+  const [group, action] = name.split(':');
+  if (action != null) {
+    return commandGroups[group!]!.actions[action]!.summary;
+  }
+  const bare = commandGroups[name];
+  if (bare?.defaultAction) {
+    return bare.actions[bare.defaultAction]!.summary;
+  }
+  return topLevelCommands[name]!.summary;
+}
+
+/** One rung of the workflow map: a command line, and what running it gets you. */
+export interface WorkflowRung {
+  /** The command as a caller types it after `npx exagent`, e.g. `dev --detach`. */
+  run: string;
+  /** What it gets you, in the present tense. Short enough to sit in a column. */
+  gets: string;
+}
+
+/** One stage of the workflow map, e.g. `iterate`, and the commands that do it. */
+export interface WorkflowStage {
+  /** The verb, in lower case, e.g. `orient`. */
+  stage: string;
+  rungs: WorkflowRung[];
+}
+
+/**
+ * The loop this CLI exists to drive, as the top-level help states it.
+ *
+ * @ref llp/0024-cli-ui.rfc.md §The workflow map
+ * The listing below says which commands exist. It cannot say which one to run first, and that is
+ * the question an agent handed this CLI actually has [confirmed — Kudo, 2026-08-28: "should find
+ * help a way let agent to know the typical workflow"]. So the map comes before the listing and is
+ * six stages long, because six is how many decisions there are between an unopened project and a
+ * shipped one.
+ *
+ * Every rung resolves against the registry — a unit test checks it — so the map cannot come to name
+ * a command that has been renamed out from under it.
+ */
+export const workflow: WorkflowStage[] = [
+  {
+    stage: 'orient',
+    rungs: [{ run: 'status', gets: 'what this project is, and what to run next' }],
+  },
+  {
+    stage: 'run',
+    rungs: [
+      { run: 'dev --detach', gets: 'start the dev server, keep this terminal' },
+      { run: 'navigate /', gets: 'open a route in the app on a device' },
+    ],
+  },
+  {
+    stage: 'iterate',
+    rungs: [
+      { run: 'runtime:reload', gets: 'after your edit, run the code on disk' },
+      { run: 'runtime:errors', gets: 'what the app threw, over a time window' },
+      // `runtime:tree` earns its rung: the walk needed a testID before it could tap one, and a map
+      // that names `runtime:tap <testID>` without saying where a testID comes from is a map that
+      // sends the reader off to guess [found by the wave-34 naive-agent walk].
+      { run: 'runtime:tree', gets: 'what is on screen, and its testIDs' },
+      { run: 'runtime:tap <testID>', gets: 'tap it; --verify says what changed' },
+    ],
+  },
+  { stage: 'gate', rungs: [{ run: 'smoke', gets: 'bundle, type-check and boot, in one go' }] },
+  { stage: 'ship', rungs: [{ run: 'deploy', gets: 'publish the web app to EAS Hosting' }] },
+  {
+    stage: 'once',
+    rungs: [
+      { run: 'new <directory>', gets: 'create a project' },
+      { run: 'install <package>', gets: 'add it at the version this SDK wants' },
+      { run: 'agents:setup', gets: 'write AGENTS.md, link the agent skills' },
+    ],
+  },
+];
+
+/** One section of the top-level listing: a job an agent has, and the commands that do it. */
 export interface HelpSection {
   title: string;
   commands: string[];
+  /**
+   * Print the commands as one wrapped comma list instead of one line each.
+   *
+   * For the sections whose commands belong to another CLI: this registry has no summary to print
+   * beside them, and eleven names each followed by nothing is a third of the screen saying nothing.
+   */
+  wrapped?: boolean;
   /** One line under the commands, for a section that needs it. */
   note?: string;
 }
@@ -441,43 +613,39 @@ export interface HelpSection {
 export const helpSections: HelpSection[] = [
   {
     title: 'Develop',
-    commands: [
-      'dev',
-      'dev:logs',
-      'dev:stop',
-      'typecheck',
-      'start',
-      'install',
-      'status',
-    ],
+    commands: ['dev', 'dev:logs', 'dev:stop', 'start', 'install', 'typecheck'],
     note: 'dev blocks this terminal; dev --detach does not, and dev:logs reads what it printed.',
   },
   {
-    title: 'Inspect the project',
-    commands: [...actionNames('inspect'), 'doctor'],
-    note: 'inspect:build-log reads a log a build left behind; nothing here runs the project.',
+    title: 'Understand the project',
+    commands: ['status', 'doctor', ...actionNames('inspect')],
+    note: 'Nothing here runs the project.',
   },
-  { title: 'Create', commands: ['new'] },
-  { title: 'Deployment', commands: ['deploy'] },
-  {
-    title: 'Debug a running app',
-    commands: ['smoke', ...actionNames('runtime'), 'navigate'],
-    note: 'smoke is the whole gate in one command; runtime:reload first after fixing a crash, because an app whose render threw keeps running the old code.',
-  },
+  { title: 'Check a running app', commands: ['smoke', 'navigate', ...actionNames('runtime')] },
+  { title: 'Create and ship', commands: ['new', 'deploy'] },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
+  { title: 'Learn', commands: ['help'] },
   {
     title: 'Account',
     commands: authCommands,
-    note: "No project needed: these act on the ~/.expo session, which the expo and eas CLIs share. In an Expo project they run the project's expo; anywhere else login, logout and whoami run the EAS CLI, and register runs npx expo, because the EAS CLI has no register. Their options are forwarded untouched, so an option this CLI does not know is reported by the CLI that ran — the one exception is whoami --json, which this CLI answers itself with one object.",
+    wrapped: true,
+    // The long version of this — which of the two CLIs runs where, and that `whoami --json` is
+    // answered here rather than forwarded — is in `src/passthrough/auth.ts`, next to the code that
+    // decides it. A listing is for finding the command, not for its edge cases.
+    note: 'No project needed: they act on the ~/.expo session the expo and eas CLIs share.',
   },
   {
     title: 'Expo CLI (fallback to npx expo <command>)',
     commands: forwardedCommands.filter((command) => !authCommands.includes(command)),
+    wrapped: true,
   },
 ];
 
 /** Width the help wraps a long command list at, so the Expo CLI section stays readable. */
 const HELP_WIDTH = 80;
+
+/** Column the one-line summaries start at, measured from the start of the command name. */
+const SUMMARY_COLUMN = 24;
 
 /** What an unstable command's line carries, and the sentence a section carrying one ends with. */
 const EXPERIMENTAL_TAG = '[experimental]';
@@ -502,9 +670,60 @@ export function isUnstableCommand(name: string): boolean {
   return topLevelCommands[name]?.unstable === true;
 }
 
-/** One command as the help prints it: the name, plus the tag when it has one. */
+/** One command as a wrapped list prints it: the name, plus the tag when it has one. */
 function helpName(command: string): string {
   return isUnstableCommand(command) ? `${command} ${EXPERIMENTAL_TAG}` : command;
+}
+
+/**
+ * One line per command: the name in a column, then what it is for.
+ *
+ * The prose that used to sit under a section — three sentences about what `dev` blocks, five about
+ * which CLI answers `whoami` — is gone from here. A listing answers "which command", and every
+ * command's own `--help` answers the rest in the same shape (`src/help/format.ts`). A wall of prose
+ * inside a list is the thing that made this screen unreadable [confirmed — Kudo, 2026-08-28].
+ */
+function commandLines(commands: string[], indent: string): string {
+  return commands
+    .flatMap((command) => {
+      const tag = isUnstableCommand(command) ? ` ${EXPERIMENTAL_TAG}` : '';
+      const head = `${indent}${color.command(command.padEnd(SUMMARY_COLUMN))}`;
+      const width = HELP_WIDTH - indent.length - SUMMARY_COLUMN;
+      const wrapped = wrapText(`${commandSummary(command)}${tag}`, width);
+      return wrapped.map((line, index) =>
+        index === 0 ? `${head}${line}` : `${indent}${' '.repeat(SUMMARY_COLUMN)}${line}`
+      );
+    })
+    .join('\n');
+}
+
+/** Break one sentence onto lines no longer than `width`, on spaces. */
+function wrapText(text: string, width: number): string[] {
+  const lines: string[] = [];
+  for (const word of text.split(' ')) {
+    const last = lines.length - 1;
+    if (lines.length && `${lines[last]} ${word}`.length <= width) {
+      lines[last] = `${lines[last]} ${word}`;
+    } else {
+      lines.push(word);
+    }
+  }
+  return lines.length ? lines : [''];
+}
+
+/** The workflow map: one line per rung, the stage named once on its first. */
+function workflowLines(): string {
+  // The rung column is sized to the longest rung, so the "what it gets you" column starts in one
+  // place whatever the map comes to hold.
+  const width = Math.max(...workflow.flatMap(({ rungs }) => rungs.map(({ run }) => run.length))) + 2;
+  return workflow
+    .flatMap(({ stage, rungs }) =>
+      rungs.map(
+        ({ run, gets }, index) =>
+          `    ${(index === 0 ? stage : '').padEnd(9)}${color.command(run.padEnd(width))}${color.muted(gets)}`
+      )
+    )
+    .join('\n');
 }
 
 /** One comma-separated list of commands, wrapped onto as many indented lines as it needs. */
@@ -526,36 +745,56 @@ function wrapCommands(commands: string[], indent: string): string {
   return lines.join('\n');
 }
 
-/** The `exagent --help` listing: every command, by the job it does. */
+/** What this CLI is for, in one line, at the head of the top-level help. */
+export const CLI_SUMMARY = 'get an Expo app running on a device, change it, check it, and ship it';
+
+/**
+ * The `exagent --help` screen: the loop first, then every command by the job it does.
+ *
+ * @ref llp/0024-cli-ui.rfc.md §The workflow map
+ * The order is the argument. A caller who does not know this CLI cannot use a listing — they do not
+ * know which of thirty names comes first — so the loop is above it, and the on-ramp that teaches
+ * the whole protocol is named twice: once under the map, and once at the foot of every command's
+ * own help.
+ */
 export function formatTopLevelHelp(): string {
   const sections = helpSections
-    .map(({ title, commands, note }) =>
+    .map(({ title, commands, note, wrapped }) =>
       [
-        chalk`    {bold ${title}}`,
-        wrapCommands(commands.map(helpName), '      '),
-        note ? chalk`      {dim ${note}}` : null,
+        `    ${color.heading(title)}`,
+        wrapped ? wrapCommands(commands.map(helpName), '      ') : commandLines(commands, '      '),
+        note ? `      ${color.muted(note)}` : null,
         // One footnote per section that has any, rather than one at the bottom of the listing: a
         // reader who took in the Inspect block and stopped reading has still been told.
-        commands.some(isUnstableCommand) ? chalk`      {dim ${EXPERIMENTAL_NOTE}}` : null,
+        commands.some(isUnstableCommand) ? `      ${color.muted(EXPERIMENTAL_NOTE)}` : null,
       ]
         .filter((line) => line != null)
         .join('\n')
     )
     .join('\n');
 
-  return chalk`
-  {bold Usage}
-    {dim $} npx exagent <command>
+  return `
+  ${color.command('exagent')} — ${CLI_SUMMARY}
 
-  {bold Commands}
+  ${color.heading('Usage')}
+    ${color.muted('$')} npx exagent <command> [options]
+
+  ${color.heading('The loop')}
+${workflowLines()}
+
+  ${color.heading('Learn the loop')}
+    ${color.muted('$')} npx exagent help how-to
+      ${color.muted('the loop, the exit codes and the --json contract, in one screen')}
+
+  ${color.heading('Commands')}
 ${sections}
 
-  {bold Options}
+  ${color.heading('Options')}
     --version, -v   Version number
     --help, -h      Usage info
 
-  For more info run a command with the {bold --help} flag
-    {dim $} npx exagent skills:sync --help
+  The options, examples and JSON keys of one command
+    ${color.muted('$')} npx exagent status --help
 `;
 }
 
@@ -567,15 +806,15 @@ export function formatGroupHelp(name: string): string {
   const actions = actionNames(name)
     .map((action, index) => {
       const summary = Object.values(group.actions)[index]!.summary;
-      const tag = isUnstableCommand(action) ? chalk` {dim ${EXPERIMENTAL_TAG}}` : '';
-      return chalk`    {bold ${action.padEnd(width)}}${summary}${tag}`;
+      const tag = isUnstableCommand(action) ? ` ${color.muted(EXPERIMENTAL_TAG)}` : '';
+      return `    ${color.command(action.padEnd(width))}${summary}${tag}`;
     })
     .join('\n');
   const experimental = actionNames(name).some(isUnstableCommand)
-    ? chalk`\n\n    {dim ${EXPERIMENTAL_NOTE}}`
+    ? `\n\n    ${color.muted(EXPERIMENTAL_NOTE)}`
     : '';
   const bare = group.defaultAction
-    ? chalk`\n\n    {bold npx exagent ${name}} runs {bold ${name}:${group.defaultAction}}, whose options are below.`
+    ? `\n\n    ${color.command(`npx exagent ${name}`)} runs ${color.command(`${name}:${group.defaultAction}`)}, whose options are below.`
     : '';
   // The example names an action the reader has *not* just been shown the options of: for a group
   // with a default action, `cli.ts` prints that action's own help right under this listing.
@@ -583,18 +822,19 @@ export function formatGroupHelp(name: string): string {
     actionNames(name).find((action) => action !== `${name}:${group.defaultAction}`) ??
     actionNames(name)[0];
 
-  return chalk`
-  {bold Info}
-    ${group.summary}
+  return `
+  ${color.command(name)} — ${group.summary}
 
-  {bold Usage}
-    {dim $} npx exagent ${name}:{dim <action> [options]}
+  ${color.heading('Usage')}
+    ${color.muted('$')} npx exagent ${name}:${color.muted('<action> [options]')}
 
-  {bold Actions}
+  ${color.heading('Actions')}
 ${actions}${experimental}${bare}
 
-  For the options of one action, run it with the {bold --help} flag
-    {dim $} npx exagent ${example} --help
+  For the options of one action, run it with the ${color.heading('--help')} flag
+    ${color.muted('$')} npx exagent ${example} --help
+
+  Learn the loop: npx exagent help how-to
 `;
 }
 
@@ -759,6 +999,20 @@ const absentCapabilities: {
 };
 // The singular is the same mistake, and the same answer.
 absentCapabilities.log = absentCapabilities.logs!;
+
+// @ref llp/0024-cli-ui.rfc.md §The on-ramp
+// The colon form of the on-ramp, which is the first thing an agent that has learned this CLI's
+// naming convention types [found by the wave-34 naive-agent walk]. `help` is a top-level command
+// with an argument rather than a group, so `help:how-to` is in none of the three maps and was
+// answered with the generic listing — which is the one answer that does not contain the line the
+// caller was one character away from.
+absentCapabilities['help:how-to'] = {
+  absent: `the on-ramp is a command with an argument, not a colon action`,
+  instead: `Run "npx exagent help how-to". "help" is a top-level command rather than a group, so it takes its topic as an argument — "npx exagent help <command>" reads one command's help the same way.`,
+  suggestedCommand: 'npx exagent help how-to',
+};
+// The bare word, for a caller that read "the how-to" somewhere and typed it as a verb.
+absentCapabilities['how-to'] = absentCapabilities['help:how-to'];
 
 /** The error for a name in none of the three maps. */
 export function unknownCommandMessage(command: string): string {

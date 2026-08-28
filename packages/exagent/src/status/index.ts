@@ -1,7 +1,73 @@
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const statusHelp: CommandHelp = {
+  command: 'status',
+  usage: 'npx exagent status',
+  options: [
+    `--json                    Print the whole report as JSON, raw project probe included`,
+    `--explain                 The deep dive: which sources changed, whether an update can\n` +
+      `                          ship over the air, and a fresh answer from EAS about builds\n` +
+      `                          for this fingerprint. Slower than the default report`,
+    `--assert <class>          Exit 20 when the change costs more than this class, and 22\n` +
+      `                          when no class could be established. Without it, always 0`,
+    `--build <id>              Compare against an EAS build instead of the local record.\n` +
+      `                          Needs --explain, because it asks the service`,
+    `--dev-server-url <url>    Dev server to probe (default: the project's own, then 8081-8085)`,
+    `--no-followups            Leave the suggested follow-up commands out of the report`,
+    `--no-fingerprint-cache    Hash the project again instead of revalidating the cached hash`,
+    `-h, --help                Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent status',
+      gets: 'the brief: what this project is, what is running, and the command to run next',
+    },
+    {
+      run: 'npx exagent status --json',
+      gets: 'the same as one object, with the raw project probe under probe',
+    },
+    {
+      run: 'npx exagent status --explain',
+      gets: 'the sources that changed, the OTA verdict, and what EAS already has built',
+    },
+    {
+      run: 'npx exagent status --assert js-only',
+      gets: 'exit 20 when the change needs more than a reload; a gate for a script',
+    },
+  ],
+  next: ['dev', 'smoke', 'doctor'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: [
+      'project',
+      'expoGo',
+      'freshness',
+      'builds',
+      'devServer',
+      'device',
+      'skills',
+      'auth',
+      'next',
+      'assertion',
+      'probe',
+      'errors',
+    ],
+  },
+  notes: [
+    `Read-only, like git status. Nothing is started, built or changed; the only writes are this`,
+    `command's own caches under .expo. It exits 0 unless --assert turned it into a gate.`,
+    `The impact line says what has changed since the last build this CLI made, and what that`,
+    `costs: js-only, dev-client-compatible, or needs-native-build. It is free and always there.`,
+    `--assert exit codes: 20 the change costs more than the class named · 22 no class could be`,
+    `established · 1 the command itself was wrong.`,
+    `The fingerprint is cached per platform and revalidated against the files that can move it.`,
+    `It cannot see inside ios/ or android/, so entries expire after ten minutes.`,
+  ],
+};
 
 export const exagentStatus: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -22,70 +88,7 @@ export const exagentStatus: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `Where the project is now and what would happen next`,
-      chalk`npx exagent status`,
-      [
-        `--json                    Print the whole report as JSON, raw project probe included`,
-        `--explain                 The deep dive: which sources changed, whether an update can`,
-        `                          ship over the air, and a fresh answer from EAS about builds`,
-        `                          for this fingerprint. Slower — it spawns "expo config" and`,
-        `                          calls EAS; the default report spawns neither.`,
-        `--assert <class>          Exit 20 when the change costs more than this class, and 22`,
-        `                          when no class could be established. Without it, always 0.`,
-        `--build <id>              Compare against an EAS build instead of the local record.`,
-        `                          Needs --explain, because it asks the service.`,
-        `--dev-server-url <url>    Dev server to probe (default: the project's own, then 8081-8085)`,
-        `--no-followups            Leave the suggested follow-up commands out of the report`,
-        `--no-fingerprint-cache    Hash the project again instead of revalidating the cached hash`,
-        `-h, --help                Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  A read-only overview, like {bold git status}: what the project is, whether Expo Go can`,
-        chalk`  run it, whether the last development build still matches, whether a dev server is`,
-        chalk`  running with an app connected, which agent skills are linked, and the command that`,
-        chalk`  would get the app onto a device.`,
-        '',
-        chalk`  Nothing is started or built, and nothing in the project is changed — the only thing this`,
-        chalk`  command writes is its own caches under {bold .expo}. It always exits 0, so a script can read`,
-        chalk`  the report without branching on the exit code.`,
-        '',
-        chalk`  The fingerprint is cached per platform, and revalidated against the size and modification`,
-        chalk`  time of the files that can move it — every lockfile, the app config, {bold eas.json},`,
-        chalk`  {bold package.json}, the fingerprint's own settings, and the assets they point at. A run answered`,
-        chalk`  from that record says so, with the check it used and how old the answer is;`,
-        chalk`  {bold --no-fingerprint-cache} hashes the project again instead.`,
-        '',
-        chalk`  It does not look inside {bold ios/} or {bold android/}, so a native edit is not something the record`,
-        chalk`  can see — nor is what a dynamic {bold app.config.js} evaluates to. Entries therefore expire after`,
-        chalk`  ten minutes, and {bold exagent dev} deletes the record after any step that changes the project.`,
-        '',
-        chalk`  The {bold impact} line says what has changed since the last build this CLI made, and what`,
-        chalk`  that costs: {bold js-only}, {bold dev-client-compatible}, or {bold needs-native-build}. It is computed`,
-        chalk`  from two fingerprints already in hand, so it costs nothing and is always there.`,
-        '',
-        chalk`  {bold --explain} pays for the rest: the sources that changed one by one, whether an update`,
-        chalk`  published now would reach the installed builds ({bold runtimeVersion}), and a fresh answer`,
-        chalk`  from EAS about whether it already has a build for this exact fingerprint — which can`,
-        chalk`  be downloaded with {bold eas build:download} instead of rebuilt.`,
-        '',
-        chalk`  {bold Exit codes} — {bold 0} always, because this is information rather than judgment, unless`,
-        chalk`  {bold --assert} was given and turned it into a gate:`,
-        '',
-        chalk`     {bold 0}   a report was produced (and the assertion held, if one was made)`,
-        chalk`    {bold 20}   {bold --assert} was given and the change costs more than the class named`,
-        chalk`    {bold 22}   {bold --assert} was given and no class could be established — nothing to gate on`,
-        chalk`     {bold 1}   this command could not do its job: a bad flag, an unusable value`,
-        '',
-        chalk`    {dim $} npx exagent status --assert js-only || echo "needs more than a reload"`,
-        '',
-        chalk`  {bold --json} carries the raw project probe too, under {bold probe}: the SDK version, the`,
-        chalk`  native state, the fingerprint, and every reason Expo Go cannot run the project, exactly`,
-        chalk`  as the probe read them. That is the project brief, so nothing needs a second command.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(statusHelp);
   }
 
   // Load modules after the help prompt so `npx exagent status -h` shows as fast as possible.

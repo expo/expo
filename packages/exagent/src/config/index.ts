@@ -6,10 +6,64 @@
 //
 // The directory stays `src/config/`, which is what it reads.
 
-import chalk from 'chalk';
-
+import { printCommandHelp } from '../help/format';
+import type { CommandHelp } from '../help/types';
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
+
+export const inspectConfigPluginsHelp: CommandHelp = {
+  command: 'inspect:config-plugins',
+  usage: 'npx exagent inspect:config-plugins',
+  options: [
+    `--platform <ios|android|all>  Platform to introspect (default: all)`,
+    `--file <name>                 Print one native file: infoPlist, entitlements, expoPlist,\n` +
+      `                              podfileProperties, manifest, gradleProperties, strings,\n` +
+      `                              colors, colorsNight, styles`,
+    `--json                        Print the whole report as JSON, every value included`,
+    `--no-followups                Leave the suggested follow-up commands out of the report`,
+    `-h, --help                    Usage info`,
+  ],
+  examples: [
+    {
+      run: 'npx exagent inspect:config-plugins',
+      gets: 'counts per platform: the native files produced, and the plugins that ran',
+    },
+    {
+      run: 'npx exagent inspect:config-plugins --file infoPlist',
+      gets: 'the Info.plist the plugins produced, in full',
+    },
+    {
+      run: 'npx exagent inspect:config-plugins --platform android --json',
+      gets: 'every value for one platform, as one object',
+    },
+  ],
+  next: ['status', 'doctor', 'install'],
+  json: {
+    stdout: 'one object, and nothing else',
+    stderr: 'progress and errors',
+    keys: [
+      'projectRoot',
+      'configuredSdkVersion',
+      'source',
+      'platforms',
+      'plugins',
+      'declaredNotApplied',
+      'expoAutolinkedModules',
+      'expoAutolinkedModulesNote',
+      'notAttributable',
+      'followups',
+    ],
+  },
+  notes: [
+    `Read-only: expo config --type introspect --json compiles the plugins in memory and writes`,
+    `nothing. A plugin that ran undeclared is auto-applied from an installed package.`,
+    `ios.xcodeproj and every dangerous mod are dropped first, so their absence means`,
+    `"not answered", never "unchanged".`,
+    `configuredSdkVersion is what the app config resolves to, which is not the sdkVersion of`,
+    `"npx exagent status" — that is the installed expo package. Both are right.`,
+    `"npx exagent config" is expo config, unchanged. Only the colon form is this command.`,
+  ],
+};
 
 export const exagentInspectConfigPlugins: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -27,47 +81,7 @@ export const exagentInspectConfigPlugins: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    printHelp(
-      `What the config plugins actually produced for each platform`,
-      chalk`npx exagent inspect:config-plugins {dim [options]}`,
-      [
-        `--platform <ios|android|all>  Platform to introspect (default: all)`,
-        `--file <name>                 Print one native file: infoPlist, entitlements, expoPlist,`,
-        `                              podfileProperties, manifest, gradleProperties, strings,`,
-        `                              colors, colorsNight, styles`,
-        `--json                        Print the whole report as JSON, every value included`,
-        `--no-followups                Leave the suggested follow-up commands out of the report`,
-        `-h, --help                    Usage info`,
-      ].join('\n'),
-      [
-        '',
-        chalk`  Read-only. It runs {bold expo config --type introspect --json} as a subprocess, which`,
-        chalk`  compiles the config plugins in memory and writes nothing to the project, then reports`,
-        chalk`  what came out: the native files per platform, the plugins that ran, and which of them`,
-        chalk`  the app config actually declared. A plugin that ran without being declared is`,
-        chalk`  auto-applied from an installed package, which is why it is in no {bold app.json}.`,
-        '',
-        chalk`  The default output is counts, because the values are kilobytes of plist and XML.`,
-        chalk`  {bold --file} prints one of them, and {bold --json} prints all of them.`,
-        '',
-        chalk`  Two mods are never covered: {bold ios.xcodeproj} and every dangerous mod are dropped`,
-        chalk`  before introspection runs, so their absence means "not answered", not "unchanged".`,
-        '',
-        chalk`  {bold expoAutolinkedModules} is Expo-module autolinking only: packages that ship an`,
-        chalk`  {bold expo-module.config.json}. A React Native community module autolinks separately and`,
-        chalk`  never appears there, however native it is — run {bold exagent install <package> --json}`,
-        chalk`  and read its impact entry for those.`,
-        '',
-        chalk`  The SDK this reports is {bold configuredSdkVersion} — the version the evaluated app`,
-        chalk`  config resolves to, e.g. {bold 57.0.0}. It is not the {bold sdkVersion} of`,
-        chalk`  {bold exagent status}, which is the version of the installed {bold expo} package, e.g.`,
-        chalk`  {bold 57.0.15}. Both are right; they answer different questions.`,
-        '',
-        chalk`  {bold npx exagent config} is {bold expo config}, unchanged. Only the colon form is this`,
-        chalk`  command.`,
-        '',
-      ].join('\n')
-    );
+    printCommandHelp(inspectConfigPluginsHelp);
   }
 
   // Load modules after the help prompt so `npx exagent inspect:config-plugins -h` shows as fast as

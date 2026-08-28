@@ -91,7 +91,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     skills: { agentIds: ['claude-code'], discovered: 3, linked: 3 },
     auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
     next: {
-      command: 'exagent dev',
+      command: 'npx exagent dev',
       rule: 'expo-go',
       target: 'expo-go',
       why: null,
@@ -259,6 +259,46 @@ describe(formatStatusReport, () => {
     expect(iosLine).toContain('local stale');
     expect(iosLine).toContain('eas fresh');
     expect(iosLine).toContain('simulator build 21d7d434');
+  });
+
+  // @ref llp/0024-cli-ui.rfc.md §`status` reads like the help
+  // "EAS was not asked — pass --explain" is a fact about the run, and it was on the ios row and
+  // again on the android row. A report whose whole shape is one fact per line cannot say the same
+  // sentence twice and still be scannable.
+  it(`should say a detail every platform shares once, under the rows`, () => {
+    const base = mockReport();
+    const asked = 'EAS was not asked — pass --explain';
+    const rendered = report(
+      mockReport({
+        freshness: {
+          ...base.freshness!,
+          platforms: (['ios', 'android'] as const).map((platform) => ({
+            platform,
+            backend: 'eas' as const,
+            state: 'unknown' as const,
+            detail: asked,
+            recordedHash: null,
+            buildId: null,
+            buildProfile: null,
+            impact: null,
+          })),
+        },
+      })
+    );
+
+    expect(rendered.split(asked)).toHaveLength(2);
+    const iosLine = rendered.split('\n').find((text) => text.includes('ios      '))!;
+    expect(iosLine).toContain('eas unknown');
+    expect(iosLine).not.toContain(asked);
+  });
+
+  // The other half of the rule: a detail one platform has is what tells the two apart, so it stays
+  // on that platform's row.
+  it(`should keep a detail only one platform has on that platform's row`, () => {
+    const rendered = report(mockReport());
+
+    expect(rendered).toContain('ios      local stale (no recorded build)');
+    expect(rendered).toContain('android  local fresh (matches abcdef01)');
   });
 
   // @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
@@ -573,7 +613,9 @@ describe(formatStatusReport, () => {
   });
 
   it(`should print the next action as the rule and the first step`, () => {
-    expect(line(mockReport(), 'next')).toBe('next        exagent dev → expo-go: expo start --go');
+    expect(line(mockReport(), 'next')).toBe(
+      'next        npx exagent dev → expo-go: expo start --go'
+    );
   });
 
   // The dev-server line three rows above said the server is up; a `next` that says to start one
@@ -581,7 +623,7 @@ describe(formatStatusReport, () => {
   it(`should print the reason instead of a plan when a dev server changed the answer`, () => {
     const report = mockReport({
       next: {
-        command: 'exagent smoke',
+        command: 'npx exagent smoke',
         rule: 'expo-go',
         target: 'expo-go',
         steps: [],
@@ -591,7 +633,7 @@ describe(formatStatusReport, () => {
     });
 
     const rendered = line(report, 'next');
-    expect(rendered).toContain('exagent smoke');
+    expect(rendered).toContain('npx exagent smoke');
     expect(rendered).toContain('a dev server is already running');
     expect(rendered).not.toContain('expo start --go');
   });
@@ -599,7 +641,7 @@ describe(formatStatusReport, () => {
   it(`should count the steps that follow the first one`, () => {
     const report = mockReport({
       next: {
-        command: 'exagent dev',
+        command: 'npx exagent dev',
         rule: 'dev-client-stale',
         target: 'dev-client',
         why: null,
@@ -1225,7 +1267,7 @@ describe('the build line', () => {
     const rendered = report(
       mockReport({
         next: {
-          command: 'exagent smoke',
+          command: 'npx exagent smoke',
           rule: 'dev-client-stale',
           target: 'dev-client',
           steps: [],

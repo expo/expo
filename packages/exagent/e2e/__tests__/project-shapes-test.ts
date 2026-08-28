@@ -66,7 +66,7 @@ describe('a project whose path holds a space', () => {
     expect(result.exitCode).toBe(0);
     const report = JSON.parse(result.stdout);
     expect(report.project.root).toBe(projectRoot);
-    expect(report.next.command).toBe('exagent dev');
+    expect(report.next.command).toBe('npx exagent dev');
   });
 
   // The dev-server lock is a unix socket **inside the project**, so the project path is part of an
@@ -414,7 +414,7 @@ describe('a package.json that is not an Expo app', () => {
     const report = JSON.parse(result.stdout);
     expect(report.project.isExpoApp).toBe(false);
     expect(report.next.rule).toBe('not-expo-app');
-    expect(report.next.command).not.toBe('exagent dev');
+    expect(report.next.command).not.toBe('npx exagent dev');
     expect(report.next.steps).toEqual([]);
     expect(report.followups.map((followup: { command: string }) => followup.command)).not.toContain(
       'npx exagent install expo-dev-client'

@@ -4,6 +4,26 @@ Agent-native CLI on top of the Expo CLI family. `exagent` gives coding agents (a
 
 Design documents: see `llp/0001-agentic-cli-on-expo-cli.rfc.md` and its child LLPs in this package.
 
+## Start here
+
+The loop this CLI drives, and the command for each step:
+
+| | | |
+| --- | --- | --- |
+| orient | `npx exagent status` | what this project is, and what to run next |
+| run | `npx exagent dev --detach` | the dev server starts, the terminal comes back |
+| | `npx exagent navigate /` | the app opens a route, on a device |
+| iterate | `npx exagent runtime:reload` | after your edit, the app runs the code on disk |
+| | `npx exagent runtime:errors` | what it threw, over a time window |
+| gate | `npx exagent smoke` | bundle, boot and error window, one exit code |
+| ship | `npx exagent deploy` | the web app to EAS Hosting |
+
+**`npx exagent help how-to`** is that loop in one screen, written for an agent that has never run
+this CLI, with the exit-code bands, the `--json` contract and the `Try:` convention beside it.
+`npx exagent -h` is the whole command listing, and every command's `--help` has the same shape: a
+one-line purpose, its options, two to four worked examples, what to run next, and the top-level
+keys of its `--json` object.
+
 ## Commands
 
 - `exagent new <directory>` — create a project with no TTY: run `create-expo` with every prompt answered, set the display name (`--name`), initialize a repository when there is none, and print what to run next (`--json`, `--no-install`, `--no-git`).
