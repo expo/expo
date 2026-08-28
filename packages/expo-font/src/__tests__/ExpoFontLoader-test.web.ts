@@ -172,6 +172,7 @@ describe('_createWebFontTemplate', () => {
     ['bold', 'bold'],
     [1, '1'],
     [1000, '1000'],
+    ['100 900', '100 900'],
   ])('includes font-weight %p', (weight, expected) => {
     expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight })).toBe(
       `@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-weight:${expected}}`

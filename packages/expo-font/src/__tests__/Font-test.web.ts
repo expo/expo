@@ -145,12 +145,6 @@ if (typeof window === 'undefined') {
       'Ghost',
     ],
     [
-      'an out-of-range weight',
-      () => [{ fontFamily: 'BadWeight', fontDefinitions: [{ path: 'regular.ttf', weight: 5000 }] }],
-      'Invalid font weight',
-      'BadWeight',
-    ],
-    [
       'an array element that is not a well-shaped FontFamilyDefinition',
       () => [null as any],
       'Expected an object with `fontFamily` and `fontDefinitions`',

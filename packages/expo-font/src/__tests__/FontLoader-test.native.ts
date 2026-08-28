@@ -35,9 +35,12 @@ describe('getNativeFontFaces', () => {
     ]);
   });
 
-  it.each(['not-a-weight', 1500, 0])('throws ERR_FONT_API for invalid weight %p', (weight) => {
-    expect(() => getNativeFontFaces([{ path: 'a.ttf', weight }])).toThrow('Invalid font weight');
-  });
+  it.each(['not-a-weight', '100 900'])(
+    'leaves a weight without a single numeric value (%p) undefined',
+    (weight) => {
+      expect(getNativeFontFaces([{ path: 'a.ttf', weight }])[0]!.weight).toBeUndefined();
+    }
+  );
 
   it('leaves an unset weight undefined', () => {
     expect(getNativeFontFaces([{ path: 'a.ttf' }])[0]!.weight).toBeUndefined();

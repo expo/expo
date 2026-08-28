@@ -3,29 +3,25 @@ import { CodedError } from 'expo-modules-core';
 
 import type { FontFaceDefinition, FontFamilyDefinition, FontResource } from './Font.types';
 
+// Converts a declared weight to the single number native face selection needs. A value that
+// doesn't map to one number — a web-only range like '100 900', or garbage — returns undefined,
+// so native falls back to the weight embedded in the font file.
 export function normalizeWeight(weight: FontFaceDefinition['weight']): number | undefined {
   if (weight == null) {
     return undefined;
   }
-
-  let numeric: number;
   if (typeof weight === 'number') {
-    numeric = weight;
-  } else if (weight === 'normal') {
-    numeric = 400;
-  } else if (weight === 'bold') {
-    numeric = 700;
-  } else {
-    numeric = parseInt(weight, 10);
+    return Number.isFinite(weight) ? weight : undefined;
   }
-
-  if (!Number.isInteger(numeric) || numeric < 1 || numeric > 1000) {
-    throw new CodedError(
-      `ERR_FONT_API`,
-      `Invalid font weight "${weight}". Set the face's \`weight\` to a whole number from 1 to 1000, "normal", or "bold".`
-    );
+  const lower = weight.trim().toLowerCase();
+  if (lower === 'normal') {
+    return 400;
   }
-  return numeric;
+  if (lower === 'bold') {
+    return 700;
+  }
+  const numeric = Number(lower);
+  return Number.isFinite(numeric) ? numeric : undefined;
 }
 
 export function normalizeStyle(
@@ -76,7 +72,6 @@ export function assertValidFontFaces(
         `A face of font family "${fontFamily}" has no \`path\`. Set the face's \`path\` to a \`FontSource\`.`
       );
     }
-    normalizeWeight(face.weight);
   }
 }
 
