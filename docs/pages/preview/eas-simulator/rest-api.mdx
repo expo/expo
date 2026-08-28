@@ -57,7 +57,7 @@ Creates a session and queues the remote device. The request returns before the d
 | `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go. When `true`, cannot be combined with `buildId` or `applicationArchiveUrl`.                                                                                                            |
 | `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"57"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                 |
 | `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                            |
-| `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source. Maximum 2,048 characters.                                                                                        |
+| `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source.                                                                                                                  |
 
 Automatic application setup applies to `agent-device`, `argent`, and `serve-sim`. For `appium`, install and launch the app through your Appium client.
 
