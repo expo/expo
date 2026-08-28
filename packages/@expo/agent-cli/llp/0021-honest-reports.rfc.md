@@ -596,7 +596,7 @@ there is no device here.
 
 ## The scheme in "Waiting on" is not the dev server's
 
-K8, and it is an upstream bug with an agent-cli-side consequence.
+K8, and it is an upstream bug with a consequence on this CLI's side.
 
 **What Kudo saw.** Metro's stdout on a tunnelled run printed
 `Waiting on exp+dailywords-grok://<host>.on.staging.expo.app`, a URL that opens the dev-client
