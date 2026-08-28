@@ -36,8 +36,8 @@
   "peerDependencies": {
     "@expo/metro-runtime": "workspace:^57.0.14",
     "expo": "*",
-    "expo-constants": "workspace:^57.0.15",
-    "expo-font": "workspace:^57.0.1",
+    "expo-constants": "workspace:^57.0.16",
+    "expo-font": "workspace:^57.0.2",
     "expo-router": "*",
     "expo-server": "workspace:^57.0.3",
     "react": "*",

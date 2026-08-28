@@ -8,12 +8,12 @@ PODS:
     - ExpoModulesCore
   - EXApplication (57.0.2):
     - ExpoModulesCore
-  - EXConstants (57.0.15):
+  - EXConstants (57.0.16):
     - ExpoModulesCore
   - EXJSONUtils (57.0.1)
   - EXManifests (57.0.1):
     - ExpoModulesCore
-  - Expo (57.0.17):
+  - Expo (57.0.18):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -86,7 +86,7 @@ PODS:
     - ExpoModulesCore
   - ExpoFileSystem (57.0.6):
     - ExpoModulesCore
-  - ExpoFont (57.0.1):
+  - ExpoFont (57.0.2):
     - ExpoModulesCore
   - ExpoGL (57.0.2):
     - ExpoModulesCore
@@ -242,7 +242,7 @@ PODS:
   - ExpoWebBrowser (57.0.2):
     - ExpoModulesCore
   - EXStructuredHeaders (57.0.0)
-  - EXUpdates (57.0.18):
+  - EXUpdates (57.0.19):
     - boost
     - DoubleConversion
     - EASClient
@@ -4553,10 +4553,10 @@ SPEC CHECKSUMS:
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 19dbd341708f694a526bdfe9e541fa54a7b8650b
   EXApplication: bbd517d50878ca1d121fb3843392beb210181e28
-  EXConstants: e05664c2e0470c274210b8d0857ac2c4cc5e963c
+  EXConstants: 736b7f1ed7235956785cb81e0ce37ab6a4f33fb4
   EXJSONUtils: 7a1683cfa2cbe6d11fca97097d51a496755b0287
   EXManifests: f9888c0bf5aaa6ddb7e3d4b224d6d54ac4ca84a4
-  Expo: 5255c4643c41706843a89860b907bff4691fbb96
+  Expo: 1f078621cee6dabbed40dc1ea60d338078791127
   ExpoAsset: ff225ee16cea2409800b20fe4945a7c720a24cee
   ExpoAudio: bd075db379c5a70b7f9a7b5b541d5c67f59b5dca
   ExpoBackgroundFetch: 480a140fdb6d3a1e09be316a70607b957fbc6f4d
@@ -4576,7 +4576,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 6fb67a6f39ba9beb53a4b4a3f2949e0b5e9bc3bf
   ExpoDomWebView: beaec034e51bd028428b98bb1f2633ab79c6d095
   ExpoFileSystem: cc500f33804065aacc7b3366007267b84deca8c8
-  ExpoFont: 59e1faf66ba9bcd232ae1e2ce58d202a48b6f65e
+  ExpoFont: 02ab7433c23831e76b98aa1e2de67b404eeebc4a
   ExpoGL: 4f9233cd8fcbbd4d4eab2665d1fa600362eeae09
   ExpoGlassEffect: 4b62afb489e6b84357701737ce002137c9d5fdbc
   ExpoHaptics: bc5461002fc97e53c213a1af6c88c8f95965b734
@@ -4618,7 +4618,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 0a7d37113fe51af5c302461ad0344dc529161316
   ExpoWebBrowser: 9b98d939d5f1c5dd8f523f0a0683056fb1204434
   EXStructuredHeaders: 1423c3602a30eb078e03b63b251ef912267dd4c0
-  EXUpdates: cb664efe6509a25a9bd199d859c3d6fbc90424f5
+  EXUpdates: 272a205b7f4bba1562b2f6155d0ed1a22f18c72c
   EXUpdatesInterface: 92d2aa5194b6fb93ca8ab749db75665cb28b2e60
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: d153c0a7ab3a2c865dd311cb3a5418cd66b658e6

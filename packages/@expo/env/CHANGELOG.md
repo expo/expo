@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Backport `setNodeEnv` to SDK 57 so Expo commands and tools can set `NODE_ENV` consistently. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.4.3 — 2026-08-28
+
+### 🎉 New features
+
+- Backport `setNodeEnv` to SDK 57 so Expo commands and tools can set `NODE_ENV` consistently. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
