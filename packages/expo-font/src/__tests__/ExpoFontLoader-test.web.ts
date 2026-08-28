@@ -208,6 +208,12 @@ describe('_createWebFontTemplate', () => {
       })
     ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}');
   });
+
+  it.each(['1001', '0400', '100 1001'])('omits the out-of-range string weight %p', (weight) => {
+    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight })).toBe(
+      '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}'
+    );
+  });
 });
 
 describe('_matchesFontFaceOptions', () => {
