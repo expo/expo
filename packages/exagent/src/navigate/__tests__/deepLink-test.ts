@@ -367,6 +367,50 @@ describe(resolveDeepLinkUrl, () => {
 
     expect(expectError(result)).toContain('nothing to navigate to');
   });
+
+  // @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — F58, S5, F103,
+  // and now **F142.** `navigate / --ios` against a dev server that had died recovered into
+  // `npx exagent dev --detach`, which on this machine plans for whatever platform the probe picks —
+  // so the one line the caller was told to run was a different run from the one they asked for, and
+  // the `--ios` they had typed was gone from the loop.
+  describe('the platform the caller named', () => {
+    const platforms = [['ios'], ['android']] as const;
+
+    it.each(platforms)(`survives into the recovery for a missing dev server (--%s)`, (platform) => {
+      const result = resolveDeepLinkUrl({
+        route: '/profile/42',
+        config: config(),
+        isExpoGo: true,
+        platform,
+      });
+
+      expect(expectError(result)).toContain(`npx exagent dev --detach --${platform}`);
+      expect(result.ok === false && result.suggestedCommand).toBe(
+        `npx exagent dev --detach --${platform}`
+      );
+    });
+
+    it.each(platforms)(`survives into the recovery for an empty route (--%s)`, (platform) => {
+      const result = resolveDeepLinkUrl({
+        route: '  ',
+        config: config(),
+        isExpoGo: true,
+        platform,
+      });
+
+      expect(result.ok === false && result.suggestedCommand).toBe(
+        `npx exagent navigate / --${platform}`
+      );
+    });
+
+    // A caller who named none is offered none: a flag nobody typed would claim they asked for it,
+    // which is the other half of the same rule (`buildStartPlanFollowUps`, F103).
+    it(`is absent when the caller named none`, () => {
+      const result = resolveDeepLinkUrl({ route: '/profile/42', config: config(), isExpoGo: true });
+
+      expect(result.ok === false && result.suggestedCommand).toBe('npx exagent dev --detach');
+    });
+  });
 });
 
 describe(buildOpenUrlCommand, () => {

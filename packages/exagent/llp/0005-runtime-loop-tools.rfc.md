@@ -309,10 +309,43 @@ unreachable dev server), and once around target selection inside `CdpClient`, wh
 dying target is skipped and the list has to be read again rather than the selector re-run. It is
 bounded at three seconds because an app that is genuinely closed must still be reported quickly.
 
-It is deliberately **not** given to `runtime:eval` and `runtime:network` [inferred]. The chain the
-CLI prints, and the one the friction run drove, is reload then errors, and a grace period costs every
-genuine "no app is connected" three seconds. It is one option away if a later run shows the same
-flake there.
+It was deliberately **not** given to `runtime:eval` or `runtime:tree` [inferred]: the chain the CLI
+prints, and the one friction run 4 drove, is reload then errors, and a grace period costs every
+genuine "no app is connected" three seconds. "It is one option away if a later run shows the same
+flake there" is what that paragraph said, and a later run did.
+
+#### Amended in wave 37: the window belongs to the question, not to the command
+
+[**F141**, friction run 9, 2026-08-28. Code in the `retryMs` default of `preflightRuntimeAsync`.]
+
+The walk drove reload then **tree**, five times. Four of the five exited `1` with "no app is
+connected", and every one recovered on a plain retry — then six retries in a row all succeeded. The
+reasoning above had the right mechanism and drew the boundary in the wrong place: the flake is not a
+property of `runtime:errors`' position in one printed chain, it is a property of *reading
+`/json/list` after a reload*, which every command in the family does through one function.
+
+**The decision.** The grace is the default for every command whose `need` is `debugger-target` —
+`eval`, `errors`, `tree`, `tap`, `type` — and for none whose need is weaker: `reload` can *start* the
+app it finds nothing of, and `stop` calls an app that is not running a success. The three-second cost
+is unchanged and is now paid by five commands instead of one; what it buys is that the loop an agent
+actually drives is deterministic. What is left after the window is exit `22`, not `1` — see
+[[0010-agent-conventions]] §An empty target list is inconclusive.
+
+#### And the reload's own count is read after that window too
+
+The other half of F141, and it is this section's own `appsConnected`. The two watches that prove a
+reload share one budget and the first to answer ends both, so a run the **bundle signal** proved
+aborts the target watch where it stands — which mid-reload is on an empty list. `Reloaded yes` over
+`Apps connected 0`, exit 0. The number was not wrong, it was early; and it was worse than a
+contradiction on the screen, because the commands this reload's own follow-ups name read that same
+list and were the ones that found it empty.
+
+So a **proved** reload whose last read was zero asks once more, for the length of the same reconnect
+window (`countConnectedAppsAsync`). Deliberately not a wait for a *fresh* target: whether it is new
+was already answered above, and the question here is the one every command after this reload will
+ask — is there a runtime on this dev server now. A zero that survives the window keeps its meaning,
+which is a real state a cloud session reaches (S11: `/json/list` empty for three minutes while the
+app ran).
 
 ### The device fallback, and the exit codes
 

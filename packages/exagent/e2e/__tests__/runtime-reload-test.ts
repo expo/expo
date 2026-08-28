@@ -453,6 +453,49 @@ describe('exagent runtime:reload', () => {
     }
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — **F141**, the reload half.
+  //
+  // The bundle signal and the fresh-target watch share one budget and the first to answer ends both,
+  // so a reload the *bundle* proved leaves `appsConnected` at whatever the target watch had last
+  // read — and inside the re-registration window that is zero. The walk got `Reloaded yes` over
+  // `Apps connected 0`, exit 0, and then `runtime:tree` refused on the same empty list four times in
+  // five [friction run 9]. Both halves are this one number being read too early.
+  it('does not report zero connected apps for a reload it proved', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    // The log a detached dev server writes, present before the reload because that is when the
+    // bundle watch takes its mark: a mark against a file that does not exist watches nothing.
+    const logPath = path.join(projectRoot, '.expo', 'dev', 'logs', 'dev-detached.log');
+    await fs.promises.mkdir(path.dirname(logPath), { recursive: true });
+    await fs.promises.writeFile(logPath, 'Starting Metro Bundler\n');
+    const stub = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      messageSocket: 'v2',
+      // The window itself: the runtime that was listed goes, and its replacement registers later.
+      reloadTargets: 'late-reconnect',
+      reloadReconnectDelayMs: 1200,
+      // Which makes the dev server's own `Bundled` line the signal that answers first, and so the
+      // one that stops the target watch mid-window.
+      bundleLogPath: logPath,
+    });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+    try {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
+        env: stubExpoEnv(projectRoot),
+      });
+
+      expect(result.exitCode).toBe(0);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(true);
+      // The app came back, and the report waited long enough to say so — which is also what makes
+      // the next command in the chain find a runtime rather than an empty list.
+      expect(report.appsConnected).toBe(1);
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
   it('falls back to stopping the app on the device when no app is connected', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({

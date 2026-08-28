@@ -132,11 +132,15 @@ describe('a dev server with no app connected', () => {
   });
 
   it.each(NEEDS_AN_APP)(
-    `%s exits 1 with NO_APP_CONNECTED and names the command that opens one`,
+    // 22 rather than 1, and the same 22 for all five: an empty target list is the one refusal of
+    // this family a second look can disagree with, because a reloading app is absent from it for
+    // about half a second (F141). The wait is inside the preflight, so the code says "asked for as
+    // long as it was worth asking" rather than "asked once".
+    `%s exits 22 with NO_APP_CONNECTED and names the command that opens one`,
     async (_name, argv) => {
       const result = await runAsync(argv, stub.url);
 
-      expect(result.exitCode).toBe(1);
+      expect(result.exitCode).toBe(22);
       const { error } = JSON.parse(result.stdout);
       expect(error.code).toBe('NO_APP_CONNECTED');
       // Which list is empty, and on which dev server.
@@ -153,19 +157,20 @@ describe('a dev server with no app connected', () => {
     }
   );
 
-  // The inconsistency this wave removes, at the process boundary. `runtime:tree` asked the bundle
+  // The inconsistency wave 23 removed, at the process boundary. `runtime:tree` asked the bundle
   // gate before it asked whether there was an app, so with nothing connected the exit code was
   // decided by whether the *project compiled*: `20` for a broken bundle and `1` for a clean one, for
   // one situation. Nothing can be read off a screen that is not there, whatever the code on disk
-  // says, so the connection is the first question now and `1` is the answer to it.
+  // says, so the connection is the first question and the answer to it is one code — `22` since
+  // F141 — whatever the bundle would have said.
   it.each(NEEDS_AN_APP)(
-    `%s answers no-app with 1 even when the project does not compile`,
+    `%s answers no-app with 22 even when the project does not compile`,
     async (_name, argv) => {
       const broken = await startStubDevServerAsync({ targets: [], bundle: 'broken' });
       try {
         const result = await runAsync(argv, broken.url);
 
-        expect(result.exitCode).toBe(1);
+        expect(result.exitCode).toBe(22);
         expect(JSON.parse(result.stdout).error.code).toBe('NO_APP_CONNECTED');
       } finally {
         await broken.close();
@@ -240,6 +245,38 @@ describe('a dev server with an app connected', () => {
     const payload = JSON.parse(result.stdout);
     expect(payload.error?.code).not.toBe('NO_APP_CONNECTED');
     expect(payload.error?.code).not.toBe('NO_DEV_SERVER');
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — **F141.** An app that is
+// re-registering holds no debugger target for about half a second, and the whole family reads that
+// list. The grace period that waits it out was `runtime:errors`' alone, because F39 was found on the
+// `reload → errors` chain — so `runtime:tree`, which asks the identical question, asked it once and
+// refused. Every command that needs a runtime now waits out the same window.
+describe('a dev server whose app is re-registering', () => {
+  it.each(NEEDS_AN_APP)(`%s waits for the app to come back`, async (_name, argv) => {
+    // Empty at first, and answering with the app once the file exists — which a timer creates
+    // inside the reconnect window, exactly as a reloading app registers inside it.
+    const appeared = path.join(projectRoot, `.reconnected-${argv[0]}`);
+    fs.rmSync(appeared, { force: true });
+    const reconnecting = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      targetsAppearWithFile: appeared,
+      inspectorEvaluate: () => undefined,
+    });
+    const timer = setTimeout(() => fs.writeFileSync(appeared, ''), 600);
+
+    try {
+      const result = await runAsync(argv, reconnecting.url);
+
+      // Not 22 and not 1: the list filled while this command was still asking, so there was an app
+      // to answer about. Which is the whole finding — the retry was always going to work.
+      expect(JSON.parse(result.stdout).error?.code).not.toBe('NO_APP_CONNECTED');
+    } finally {
+      clearTimeout(timer);
+      await reconnecting.close();
+      fs.rmSync(appeared, { force: true });
+    }
   });
 });
 

@@ -34,7 +34,7 @@ import {
   wrapperCrashDetail,
   type WrapperCrashTool,
 } from '../utils/wrapperCrash';
-import { classifyEasDeployFailure } from './easFailure';
+import { classifyEasDeployFailure, type EasDeployCause } from './easFailure';
 import { debugEvent, event } from './events';
 import { launchProjectAsync } from './launchAsync';
 import { resolveCreateLaunchCli } from './launchCli';
@@ -257,7 +257,10 @@ async function deployWebAsync(
   }
   const outputText = `${deployed.stdout}${deployed.stderr}`;
   if (deployed.exitCode !== 0 || deployed.promptHang) {
-    throw handoffOr(easDeployFailed(upload, output), deployed, 'eas', DEPLOY_COMMAND);
+    // Read once and used twice: the diagnosis and the handoff are the same conclusion about the same
+    // output, and a handoff that names something else is F143.
+    const cause = classifyEasDeployFailure(outputText);
+    throw handoffOr(easDeployFailed(upload, output, cause), deployed, 'eas', DEPLOY_COMMAND, cause);
   }
 
   const url = parseDeploymentUrl(outputText);
@@ -326,9 +329,12 @@ async function uploadToEasHostingAsync(
  * to the old guess when it did not — labelled as a guess (`easFailure.ts`, S2). The `Try:` never
  * names a binary this run has already concluded is not the CLI (F67).
  */
-function easDeployFailed(upload: EasUpload, output: CapturedOutput): CommandError {
+function easDeployFailed(
+  upload: EasUpload,
+  output: CapturedOutput,
+  cause: EasDeployCause | null
+): CommandError {
   const { result } = upload;
-  const cause = classifyEasDeployFailure(`${result.stdout}${result.stderr}`);
   // The invocation that actually ran, which is what a reader has to reproduce. It is already
   // written the way they would type it (`easCliLabel`), so it needs no quoting.
   const whoami = cause?.command ?? `${upload.label} whoami`;
@@ -412,14 +418,24 @@ function handoffOr(
   error: CommandError,
   result: { exitCode: number | null; stdout: string; stderr: string; promptHang?: string },
   tool: NeedsHumanTool,
-  invocation: string
+  invocation: string,
+  cause: EasDeployCause | null = null
 ): CommandError {
   const needsHuman = classifySubprocessFailure({ tool, invocation, ...result });
   if (!needsHuman) {
     return error;
   }
   const quoted = result.promptHang ? `\nWhat it was waiting for:\n${result.promptHang}` : '';
-  return needsHumanErrorFrom(needsHuman, { code: error.code, message: error.message + quoted });
+  return needsHumanErrorFrom(
+    // @ref llp/0021-honest-reports.rfc.md §Read the tool's own sentence before guessing — **F143.**
+    // A generic registry row names no command of its own, so the classifier fills in the invocation
+    // that stopped: right for a tool that went silent on a question, because running it in a
+    // terminal is what answers it. Wrong the moment the tool *said* what was missing — an unlinked
+    // project was handed `npx eas deploy`, the command that had just failed and would fail the same
+    // way again, while `eas init` sat two lines above it in this CLI's own `How:`.
+    cause?.command == null ? needsHuman : { ...needsHuman, command: cause.command },
+    { code: error.code, message: error.message + quoted }
+  );
 }
 
 /**

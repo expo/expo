@@ -568,6 +568,14 @@ one `/status` request open (`waitForBundlerReadyAsync`, shared with `dev:wait`),
 `true`, or the wait failed — never "unknown". Without the flag `ready` is `null`, which is the
 difference between not ready and not asked.
 
+**And a `--wait-ready` run whose step also opens the app holds its claim open for a moment
+afterwards** [added — wave 37, 2026-08-28, for F140]. `expo start --ios` is one subprocess that
+serves *and* drives Simulator.app, and the macOS Automation refusal that ends it arrives about a
+quarter of a second after `/status` answers — after the readiness wait and after the liveness recheck
+that F61 added. The design, the measurement and the reason a positive "the app opened" signal does not
+exist are in [[0021-honest-reports]] §The window after the claim; `dev --detach --wait-ready` without
+a platform flag is unaffected and pays nothing.
+
 **One detached dev server per project**, which is the rule the original design called for. The
 lock is read *before* anything is spawned, and a project that already has one gets the running
 server reported back with `alreadyRunning: true` and exit 0. That is idempotent rather than an error,

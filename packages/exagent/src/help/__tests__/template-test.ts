@@ -82,6 +82,28 @@ describe('the template', () => {
     }
   });
 
+  // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — **F144.** The keys list is a
+  // promise that a caller can write the branch without running the command once to find out what
+  // came back, and `status --json` and `runtime:errors --json` both printed a `followups` array that
+  // was in neither list [observed — friction run 9, the JSON key audit].
+  //
+  // `--no-followups` is the invariant to hang this on rather than a hand-kept list of commands:
+  // exactly the commands that emit the key offer the flag that suppresses it, and the flag is in the
+  // help block already. So a command that grows one and forgets the key fails here.
+  it.each(runnableNames().map((name) => [name]))(
+    '%s documents the followups key when it has the flag',
+    async (name) => {
+      const help = await helpOf(name);
+      const suppressible = help.options.some((option) =>
+        option.startsWith('--no-followups')
+      );
+
+      if (suppressible && help.json) {
+        expect(help.json.keys).toContain('followups');
+      }
+    }
+  );
+
   it.each(runnableNames().map((name) => [name]))('%s renders the section heads', async (name) => {
     const rendered = renderCommandHelp(name, await helpOf(name));
 

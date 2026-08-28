@@ -259,12 +259,33 @@ export async function devDetachAsync(
   // [observed — friction run 7, F61; live staging, S4]. `ready: true` is only ever printed for a
   // process that is alive and a `/status` that still answers, here, now.
   // @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now
-  const verdict = readChildVerdictSync(projectRoot);
-  const failure = resolveDetachFailure({
+  const phase = readChildPhaseSync(projectRoot);
+  let verdict = readChildVerdictSync(projectRoot);
+  let failure = resolveDetachFailure({
     exited: hasExited(),
     verdict,
     statusAnswering: ready === true ? await isBundlerAnsweringAsync(lock.url) : null,
   });
+
+  // …and "here, now" was still not enough for one shape of run. @ref
+  // llp/0021-honest-reports.rfc.md §The window after the claim — **F140**. A step that opens the app
+  // has work outstanding when the bundler answers, and the macOS Automation refusal that ends it
+  // arrives a quarter of a second later — after every check above has passed. So the claim is held
+  // open for a moment and the same three facts are asked again.
+  if (failure == null && needsOpenPlatformGrace({ ready, phase })) {
+    const grace = await watchOpenPlatformGraceAsync(projectRoot, lock.url, {
+      hasExited,
+      budgetMs: Math.min(
+        OPEN_PLATFORM_GRACE_MS,
+        // Bounded by the budget the caller gave the whole run, never beyond it: a `--wait-ready`
+        // that has already spent its timeout must not spend a second one here.
+        Math.max(0, options.detachTimeoutMs - (Date.now() - startedAt))
+      ),
+    });
+    failure = grace.failure;
+    verdict = grace.verdict ?? verdict;
+  }
+
   if (failure) {
     throw detachFailureError(failure, { projectRoot, lock, logFile, verdict, childExit });
   }
@@ -277,7 +298,88 @@ export async function devDetachAsync(
     startedAt,
     print,
     tunnelUrl,
+    phase,
   });
+}
+
+/**
+ * How long a readiness claim is held open when the plan's dev-server step also opens the app.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §The window after the claim — **F140.**
+ *
+ * The number is measured rather than chosen. `expo start --go --ios` against an unauthorized machine
+ * answered `/status` at 486ms, 448ms and 445ms and the process was gone at 701ms, 700ms and 708ms —
+ * a gap of 215ms, 252ms and 263ms [observed — 2026-08-28, three runs against
+ * `friction/run9/livecheck`, macOS Automation permission denied]. This is roughly six times the
+ * widest of those, which is the margin a cold simulator's slower `ensureExpoGoAsync` needs.
+ *
+ * **It narrows the window; it does not close it.** A rejection that lands after this has expired
+ * still leaves the caller with `Bundler ready`, because the Expo CLI emits no signal for "the app
+ * opened" and there is nothing further to wait *for*. What the grace buys is that the shape the
+ * walk hit three times in a row is now the shape that is caught.
+ */
+export const OPEN_PLATFORM_GRACE_MS = 1500;
+
+/** How often the child is asked again while that grace runs. */
+const OPEN_PLATFORM_POLL_MS = 100;
+
+/**
+ * Whether this run's readiness claim is re-checked before it is printed.
+ *
+ * Pure, and exported, for the same reason {@link resolveDetachFailure} is: the cost of the grace is
+ * paid by real seconds of a real caller's time, so which runs pay it has to be readable in one
+ * place and assertable without a second process.
+ *
+ * Three conditions, and each excludes runs the grace could only slow down. Readiness has to have
+ * been **claimed** — a run that asked for none claims nothing, and one whose bundler never answered
+ * has already failed. The plan has to be **serving** — a plan still compiling has started no dev
+ * server. And the dev-server step has to be one that opens the app, which is where the late
+ * rejection comes from.
+ */
+export function needsOpenPlatformGrace({
+  ready,
+  phase,
+}: {
+  ready: boolean | null;
+  phase: DetachedChildPhase;
+}): boolean {
+  return ready === true && phase.phase === 'serving' && phase.opensPlatform;
+}
+
+/**
+ * Ask the three facts again for a while, and report the worst answer the window held.
+ *
+ * The **first** failure is what the run is reported as, and the loop keeps going after it for one
+ * reason: the two processes fail in order. `expo start` dies first, so `/status` stops answering
+ * while the wrapper around it is still classifying the failure and writing its handoff — and a
+ * report that stopped at the first "not answering" would hand back "the dev server stopped
+ * answering" for a stop that has a named scenario, an "Ask the user" line and exit 7 waiting a
+ * hundred milliseconds behind it. So a needs-human verdict ends the wait and anything else does not.
+ */
+async function watchOpenPlatformGraceAsync(
+  projectRoot: string,
+  url: string,
+  { hasExited, budgetMs }: { hasExited: () => boolean; budgetMs: number }
+): Promise<{ failure: DetachFailureKind | null; verdict: DetachedChildVerdict | null }> {
+  const deadline = Date.now() + budgetMs;
+  let verdict = readChildVerdictSync(projectRoot);
+  let failure: DetachFailureKind | null = null;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.min(OPEN_PLATFORM_POLL_MS, deadline - Date.now()))
+    );
+    verdict = readChildVerdictSync(projectRoot);
+    const seen = resolveDetachFailure({
+      exited: hasExited(),
+      verdict,
+      statusAnswering: await isBundlerAnsweringAsync(url),
+    });
+    if (seen === 'needs-human') {
+      return { failure: seen, verdict };
+    }
+    failure ??= seen;
+  }
+  return { failure, verdict };
 }
 
 /** Why a detached run that had come up is not something this command may report success for. */
@@ -354,7 +456,9 @@ function readChildVerdictSync(projectRoot: string): DetachedChildVerdict | null 
  */
 function readChildPhaseSync(projectRoot: string): DetachedChildPhase {
   const read = readDetachedLogSync(projectRoot, PHASE_LOG_LINES);
-  return read == null ? { phase: 'serving', step: null } : parseDetachedChildPhase(read.lines);
+  return read == null
+    ? { phase: 'serving', step: null, opensPlatform: false }
+    : parseDetachedChildPhase(read.lines);
 }
 
 /**
@@ -502,6 +606,7 @@ function reportDetached(
     startedAt,
     print,
     tunnelUrl,
+    phase,
   }: {
     lock: DevServerLockInfo;
     alreadyRunning: boolean;
@@ -510,6 +615,14 @@ function reportDetached(
     startedAt: number;
     print: boolean;
     tunnelUrl: string | null;
+    /**
+     * The phase the caller already read, when it read one.
+     *
+     * The whole log is scanned for it (`PHASE_LOG_LINES`), so a run that has just asked the question
+     * to decide whether to hold its claim open (F140) hands the answer over rather than paying for
+     * a second scan of a log a compiler may have written thousands of lines into.
+     */
+    phase?: DetachedChildPhase;
   }
 ): number {
   const report: DevDetachResultJson = {
@@ -525,7 +638,7 @@ function reportDetached(
     // Read from the child's own log, which is the only channel it has to this process (F125 and
     // F48-4 both). The phase is read even for a run that started nothing: the question "is this
     // project's dev server listening" is the same question whoever started it.
-    phase: readChildPhaseSync(projectRoot).phase,
+    phase: (phase ?? readChildPhaseSync(projectRoot)).phase,
     portMoved: alreadyRunning ? null : readPortMoveSync(projectRoot),
     tunnelUrl,
     waitedMs: Date.now() - startedAt,
@@ -728,7 +841,7 @@ export function notReadyError(
   lock: DevServerLockInfo,
   logFile: string,
   result: BundlerReadyResult,
-  phase: DetachedChildPhase = { phase: 'serving', step: null }
+  phase: DetachedChildPhase = { phase: 'serving', step: null, opensPlatform: false }
 ): CommandError {
   // @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now — F125. A plan whose
   // dev-server step is `expo run:*` holds the lock while a compiler runs, so every sentence below

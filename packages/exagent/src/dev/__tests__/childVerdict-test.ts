@@ -1,4 +1,8 @@
-import { parseDetachedChildPhase, parseDetachedChildVerdict } from '../childVerdict';
+import {
+  parseDetachedChildPhase,
+  parseDetachedChildVerdict,
+  stepOpensPlatform,
+} from '../childVerdict';
 import { needsHumanError } from '../../needsHuman/error';
 import { formatStartPlan } from '../../plan/format';
 import type { StartPlan } from '../../project/types';
@@ -103,6 +107,10 @@ describe(parseDetachedChildPhase, () => {
   const RUN_ANDROID = { argv: ['expo', 'run:android'], reason: 'Builds and installs the app.' };
   const PREBUILD = { argv: ['expo', 'prebuild', '--platform', 'android'], reason: 'Generates it.' };
   const START = { argv: ['expo', 'start', '--dev-client'], reason: 'Starts the dev server.' };
+  const START_IOS = {
+    argv: ['expo', 'start', '--go', '--ios', '--port', '9201'],
+    reason: 'Serves the project and opens it on a booted iOS simulator.',
+  };
 
   // The whole of F125: the lock is taken at the *start* of the dev-server step, and for a `run:*`
   // step that step is a ten-minute Gradle build. So a published port is not a listening one.
@@ -110,6 +118,7 @@ describe(parseDetachedChildPhase, () => {
     expect(parseDetachedChildPhase(planLog([PREBUILD, RUN_ANDROID], 'Building app...'))).toEqual({
       phase: 'building',
       step: 'expo run:android',
+      opensPlatform: true,
     });
   });
 
@@ -120,13 +129,14 @@ describe(parseDetachedChildPhase, () => {
       parseDetachedChildPhase(
         planLog([PREBUILD, RUN_ANDROID], '› Installing /tmp/app.apk', 'Starting Metro Bundler')
       )
-    ).toEqual({ phase: 'serving', step: 'expo run:android' });
+    ).toEqual({ phase: 'serving', step: 'expo run:android', opensPlatform: true });
   });
 
   it(`reads a plan whose only step is the dev server as serving`, () => {
     expect(parseDetachedChildPhase(planLog([START]))).toEqual({
       phase: 'serving',
       step: 'expo start --dev-client',
+      opensPlatform: false,
     });
   });
 
@@ -136,6 +146,39 @@ describe(parseDetachedChildPhase, () => {
     expect(parseDetachedChildPhase(['Starting project at /project'])).toEqual({
       phase: 'serving',
       step: null,
+      opensPlatform: false,
     });
+  });
+
+  // @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now — F140. The step that
+  // opens the app is the step that can kill the dev server after it has answered `/status`, and it
+  // is named in the plan table like every other step.
+  it(`reads a dev-server step that also opens a platform`, () => {
+    expect(parseDetachedChildPhase(planLog([START_IOS]))).toEqual({
+      phase: 'serving',
+      step: 'expo start --go --ios --port 9201',
+      opensPlatform: true,
+    });
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §Readiness is a claim about now — F140. Which dev-server
+// steps carry work that can end the process *after* the bundler has answered.
+describe(stepOpensPlatform, () => {
+  it.each([
+    ['expo start --go --ios --port 9201', true],
+    ['expo start --android', true],
+    ['expo start --go -i', true],
+    ['expo start --web', true],
+    // Always: `run:*` builds, installs and launches, and the launch drives the same device tools.
+    ['expo run:ios', true],
+    ['expo run:android --device', true],
+    ['expo start', false],
+    ['expo start --dev-client', false],
+    ['expo start --go --tunnel', false],
+    // Not a dev-server step at all, so it holds no lock this question is about.
+    ['expo prebuild --platform ios', false],
+  ])('%s → %s', (step, opens) => {
+    expect(stepOpensPlatform(step)).toBe(opens);
   });
 });

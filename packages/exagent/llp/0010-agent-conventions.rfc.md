@@ -45,6 +45,36 @@ command take `21` for something that is not a cancellation. `src/__tests__/exitC
 the loadable source for `EXIT_OUTCOME_CANCELED` and fails when anything starts using it, so the
 sentence above cannot quietly stop being true.
 
+### An empty target list is inconclusive, not a call to fix
+
+[added — wave 37, 2026-08-28, for **F141**. Code in `noAppConnectedError` and the `retryMs` default
+of `preflightRuntimeAsync` (`src/runtime/preflight.ts`).]
+
+`1`'s whole promise is the sentence in the table above: **running the same line again changes
+nothing**. One refusal in this CLI broke it, and the acceptance walk measured how often. After a
+reload, `runtime:tree` exited `1` with "no app is connected" four times in five, and recovered on a
+plain retry every time — then six retries in a row all succeeded [observed — friction run 9, F141].
+A reloading app is absent from `/json/list` for about half a second, so the empty list the command
+read described a runtime on its way back.
+
+**The decision, in two halves.**
+
+1. **The wait belongs to the question, not to the command.** [[0005-runtime-loop-tools]] §What proves
+   a reload gave `runtime:errors` a reconnect grace for F39, because F39 was found on the
+   `reload → errors` chain this CLI's own follow-ups print. `runtime:tree`, `tap`, `type` and `eval`
+   ask the identical question and asked it once. Every command whose `need` is `debugger-target` now
+   waits out the same `APP_RECONNECT_GRACE_MS` window by default; no command that can work without a
+   runtime is made to wait for one.
+2. **What is left after the wait is `22`, not `1`.** The tool worked and could not *conclude* — which
+   is what `22` means — and the honest recovery is to look again, which is what `22` tells an agent to
+   do. It is reported only *after* the window, so the code says "asked for as long as it was worth
+   asking" rather than "asked once".
+
+**`1` keeps the two shapes a retry cannot answer**, and they are pinned next to the change so the
+three cannot merge: **no dev server** answered at all, and **apps that are all on another platform**.
+Neither becomes different within a second; the fix for the first is to start a dev server and for the
+second to change the flag, and "fix the call" is exactly what `1` says.
+
 Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are the only place a code is spelled, and there are two supported ways to leave the process with one. A **tool** error throws a `CommandError`, optionally carrying an `exitCode`; `logCmdError` prints it, puts it on the `cli:error` event with its `suggestedCommand`, then exits with `error.exitCode ?? EXIT_ERROR`. An **outcome** is not an error and has nothing to print that the command has not printed already, so it calls `exitWithCodeAsync(code)`. Both flush the event logger first: `process.exit` drops whatever the JSONL stream has buffered, which would lose the very events that explain the code the agent just read.
 
 ### The first command in the outcome band: `build:wait`
@@ -846,6 +876,34 @@ Decision [confirmed — Kudo, 2026-08-23]. The failure-signature rules that `bui
 Shipped [observed — 2026-08-24, `src/builds/explain/anchors.ts`]: 34 rules, a cap of 40 spelled as `MAX_SIGNATURES` with a unit test on it, and a fixture with an expectation for every rule that has one. [[0012-build-explain]] is the design, and it records which of the fixtures are logs captured on a real machine and which were written from a documented format.
 
 This does not reopen [[0001-agentic-cli-on-expo-cli]] §Scoped out, which rules out **the build-failure signature DB**: a hosted, growing, community-fed corpus with its own service, submission path and moderation. What is in scope is the opposite of that in every dimension that made it a scope-out. No service, no ingestion, no unbounded growth, no data to moderate. Rationale [inferred]: the value of the feature is concentrated in a small number of failures Expo itself causes and can name precisely, such as a missing pod, a mismatched SDK, or an unsupported New Architecture module. A table that stays small stays accurate, and the cap is what keeps a maintainer from answering every field report by appending a rule instead of fixing the cause.
+
+## Three names for the recovery, and the on-ramp has to say all three
+
+[added — wave 37, 2026-08-28, for **F145**. `help workflow`'s "Errors are prompts" block.]
+
+The acceptance walk probed for the `Try:` line across the bands and found it on exit `1` only. That
+is the **intended** behaviour and none of it changed; what was wrong was the one screen that promises
+it. `help workflow` said "a failing command ends with a `Try: <command>` line", and a driving agent
+that had read only that screen went looking for a line that was never coming on two of the three ways
+a command can fail. The recovery was on the screen both times, under a different heading.
+
+| Band | Where the recovery is | Under `--json` |
+| --- | --- | --- |
+| `1`, and any failure a command raises itself | `Try: <command>` | `error.suggestedCommand` |
+| `7` | `Ask the user <…>`, under `Needs a human <scenario>` | `error.needsHuman` |
+| `20`, `22` | the report's `Suggested next:` list | the report's `followups` |
+
+Two facts make this a documentation fix rather than an output one. `logCmdError` prints the
+needs-human block **instead of** `Try:`, deliberately: the block's second row *is* the command, and a
+`Try:` under it would say the same thing twice. And an outcome failure is not an error — it prints its
+report and calls `exitWithCodeAsync`, so there is no `CommandError` to hang a `Try:` on and the
+follow-ups are the report's own next actions. `smoke`'s own `How:` line already points at them by
+name. Note also that `Try:` is not gated on the band: a `20`-band failure a command *raises* carries
+one, `stillBuildingError` being the example.
+
+The `--json` column is why F144 mattered more than a missing word: an agent branching on the object
+rather than the prose reaches the third row through `followups`, which two commands emitted and
+neither documented.
 
 ## Suggestions are pasted, so they have to be runnable
 

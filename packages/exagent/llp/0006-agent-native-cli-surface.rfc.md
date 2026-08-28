@@ -39,6 +39,23 @@ Decision [confirmed — Kudo, 2026-08-22]: the default output stays **terse huma
 2. **`--json`**, for programmatic consumers: exactly one JSON object on stdout and nothing else, guaranteed on **every** command. Field names mirror the text labels, and top-level keys are stable per command and covered by shape tests, which is versioning in fact if not in name.
 3. **`LOG_EVENTS` JSONL**, the streaming and telemetry channel for long-running commands, on the same contract as the expo CLI family.
 
+**The keys a help block names are every key the object has** [added — wave 37, 2026-08-28, for
+**F144**]. Point 2 says top-level keys are stable and shape-tested, and `--help`'s `keys` line is
+where a caller reads them — the promise being that the branch can be written without running the
+command once to find out. `status --json` and `runtime:errors --json` both emitted a `followups`
+array that neither help block listed, and `status`' own e2e already pinned the key in the payload, so
+the two lists sat side by side in the same package and disagreed [observed — friction run 9, the JSON
+key audit].
+
+The key is not the mistake and was not removed: `followups` is the `Suggested next:` list in
+machine-readable form, which is the third of the three places a failure hands back a recovery
+([[0010-agent-conventions]] §Three names for the recovery). Two things keep the lists together now.
+`--no-followups` is the invariant the guard hangs on — exactly the commands that emit the key offer
+the flag that suppresses it, and the flag is in the help block already, so a command that grows one
+and forgets the key fails `src/help/__tests__/template-test.ts`. And `status`' documented keys are
+compared against its emitted keys through the process boundary, parsed back out of the rendered block
+(`documentedJsonKeys`), because that is the text a caller actually reads.
+
 Anti-rule: **no detection-based shape switching.** `agent-cli-detector` may gate extras such as skill context dumps and follow-up verbosity ([[0009-smart-followups]]), but it never changes the core shape. An agent transcript must show what a human terminal shows, for reproducibility, docs, and evals.
 
 ## The `exagent` launcher

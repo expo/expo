@@ -110,6 +110,21 @@ export interface DetachedChildPhase {
   phase: 'building' | 'serving';
   /** The plan's dev-server step, as it was printed (`expo run:android`), or null for no plan. */
   step: string | null;
+  /**
+   * Whether that step also asks the Expo CLI to open the app on a device.
+   *
+   * @ref llp/0021-honest-reports.rfc.md §The window after the claim — **F140.** The dev server and
+   * the app-opening are one subprocess, and the opening is the half that can end it: `expo start
+   * --ios` drives Simulator.app through AppleScript, and a macOS Automation refusal reaches the
+   * Expo CLI as an **unhandled rejection** — `AppleDeviceManager.activateWindowAsync` is called and
+   * not awaited [reference — `@expo/cli` `src/start/platforms/PlatformManager.ts`], so it lands
+   * whenever it lands and kills the process. Measured 215ms, 252ms and 263ms after `/status` first
+   * answered [observed — 2026-08-28, three runs against `friction/run9/livecheck`].
+   *
+   * So a run whose step carries this has risky work still outstanding when the bundler answers, and
+   * {@link DevDetachResultJson.ready} is a claim about a moment that may not survive the exit.
+   */
+  opensPlatform: boolean;
 }
 
 /**
@@ -126,6 +141,37 @@ const DEV_SERVER_COMMANDS = ['start', 'run:ios', 'run:android'];
 
 /** The dev-server steps that build the app first, and so hold the lock while a compiler runs. */
 const BUILDING_COMMANDS = ['run:ios', 'run:android'];
+
+/**
+ * The `expo start` flags that make the CLI open the app on a device as well as serve it.
+ *
+ * The short forms are the Expo CLI's own (`-i`, `-a`, `-w`), and the plan never emits them — but the
+ * plan appends whatever the caller typed after its own arguments (`src/dev/forwardedArgs.ts`), so
+ * they reach the step table exactly as typed.
+ */
+const PLATFORM_OPEN_FLAGS = ['--ios', '-i', '--android', '-a', '--web', '-w'];
+
+/**
+ * Whether a dev-server step also opens the app on a device.
+ *
+ * Pure, and exported for the test table, because it is the whole of the F140 decision: which runs
+ * have work outstanding that can kill the dev server after it has answered `/status`.
+ *
+ * `run:ios` and `run:android` always do — launching the app is the last thing they do, and they
+ * drive the same device tools. A plain `expo start` opens nothing until it is asked to.
+ *
+ * @param step the step as the plan table printed it, e.g. `expo start --go --ios --port 9201`.
+ */
+export function stepOpensPlatform(step: string): boolean {
+  const [, command, ...rest] = step.trim().split(/\s+/);
+  if (command == null) {
+    return false;
+  }
+  if (BUILDING_COMMANDS.includes(command)) {
+    return true;
+  }
+  return command === 'start' && rest.some((argument) => PLATFORM_OPEN_FLAGS.includes(argument));
+}
 
 /**
  * Read the plan out of the child's log and say which half of it is running.
@@ -150,12 +196,17 @@ export function parseDetachedChildPhase(rawLines: readonly string[]): DetachedCh
       step = command;
     }
   }
+  const opensPlatform = step != null && stepOpensPlatform(step);
   if (step == null || !BUILDING_COMMANDS.includes(step.split(/\s+/)[1] ?? '')) {
-    return { phase: 'serving', step };
+    return { phase: 'serving', step, opensPlatform };
   }
 
   // The install is what says the compiler finished: it is the next thing `expo run:*` does, and it
   // is the marker F121 already reads for exactly that reason. After it, the same step is starting a
   // dev server, and a bundler that has not answered yet is about the wait rather than about a build.
-  return { phase: appReachedDevice(lines.join('\n')) ? 'serving' : 'building', step };
+  return {
+    phase: appReachedDevice(lines.join('\n')) ? 'serving' : 'building',
+    step,
+    opensPlatform,
+  };
 }

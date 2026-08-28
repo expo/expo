@@ -524,9 +524,65 @@ describe('exagent deploy', () => {
         const { error } = JSON.parse(result.stdout);
         expect(error).toMatchObject({
           code: 'EAS_DEPLOY_FAILED',
-          suggestedCommand: 'npx eas init',
+          // The non-interactive form, because the run that failed had no terminal to prompt in
+          // either (F143).
+          suggestedCommand: 'npx eas init --account <account-name> --non-interactive',
         });
         expect(error.message).not.toContain('.stub-bin');
+      });
+
+      // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy — **F143.** The unlinked
+      // project reaches the person-shaped band, because linking is a decision only they can make.
+      // Exit 7 was right and the line under it was not: `Ask the user  npx eas deploy` named the
+      // command that had just failed, while the `How:` two lines above already said `eas init`
+      // [observed — friction run 9]. The generic registry row fills in the invocation that stopped,
+      // which is right for a tool that went silent and wrong for one that said what was missing.
+      it(`should hand the person the fix, not the command that just failed`, async () => {
+        const projectRoot = await setupAsync('go-app');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+          env: {
+            STUB_EAS_EXIT_CODE: '1',
+            // What the real CLI prints, accounts and all [observed — friction run 9].
+            STUB_EAS_STDERR: [
+              'EAS project not configured. This command cannot configure it in non-interactive mode. Run one of the following, then re-run this command:',
+              '  eas init --id <project-id> --non-interactive',
+              '  eas init --account <account-name> --non-interactive',
+              'Accounts you can create projects in: kudochien, kudo1',
+            ].join('\n'),
+          },
+          reject: false,
+        });
+
+        expect(result.exitCode).toBe(EXIT_NEEDS_HUMAN);
+        expect(lastLines(result.stderr, 2)).toEqual([
+          'Needs a human   eas-prompt',
+          'Ask the user    npx eas init --account <account-name> --non-interactive',
+        ]);
+        // The accounts the person has to choose between, quoted from the tool's own output.
+        expect(result.stderr).toContain('kudochien, kudo1');
+        // And never the line that produced this failure.
+        expect(result.stderr).not.toContain('Ask the user    npx eas deploy');
+      });
+
+      // One account is not a choice, so the same failure hands back a line that can be run as is.
+      it(`should fill the account in when the EAS CLI named only one`, async () => {
+        const projectRoot = await setupAsync('go-app');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+          env: {
+            STUB_EAS_EXIT_CODE: '1',
+            STUB_EAS_STDERR: [
+              'EAS project not configured. This command cannot configure it in non-interactive mode.',
+              'Accounts you can create projects in: kudo1',
+            ].join('\n'),
+          },
+          reject: false,
+        });
+
+        expect(lastLines(result.stderr, 1)).toEqual([
+          'Ask the user    npx eas init --account kudo1 --non-interactive',
+        ]);
       });
     });
 

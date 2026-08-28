@@ -20,15 +20,21 @@
 //   Why   no app is connected, **or** no dev server is running there — never the two conflated
 //   How   the ladder out, with `--cloud` kept on every command in it when the caller passed it
 //
-// **Exit codes are unchanged** (llp/0010 §Exit codes). Both refusals are tool errors, exit `1`:
-// nothing was attempted, so there is no outcome to report and nothing about the *subject* failed.
-// A gate-shaped flag (`--fail-on-error`) that never opened its window is the same story — `1` says
-// "fix the call", which is right when the fix is to start a dev server or open the app.
+// **Two exit codes, and the difference is whether asking again can help** (llp/0010 §Exit codes).
+// No dev server is `1`: nothing answered, and nothing this CLI can do in a second changes that, so
+// `1`'s promise — "running the same line again changes nothing" — holds. An empty *target* list is
+// `22`, and it is the one refusal here where that promise was false: a reloading app is absent from
+// `/json/list` for about half a second, and `runtime:tree` run straight after a reload reported "no
+// app" four times in five, recovering on a plain retry every time [friction run 9, F141]. So the
+// question is asked for the length of that window before it is answered, and a list that is still
+// empty afterwards is reported as inconclusive rather than as a call to fix.
 
+import { EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import type { NavigatePlatform } from '../navigate/device';
 import { CommandError } from '../utils/errors';
 import type { CdpTarget } from './cdpClient';
 import {
+  APP_RECONNECT_GRACE_MS,
   discoverDevServerAsync,
   howToNameTheDevServer,
   normalizeDevServerUrl,
@@ -130,8 +136,15 @@ export interface RuntimePreflightOptions {
   /**
    * How long to keep asking while the target list is empty, in milliseconds.
    *
-   * Zero — the default — reports the first answer. {@link APP_RECONNECT_GRACE_MS} is what a command
-   * that runs straight after a reload passes (llp/0005 §What proves a reload, F39).
+   * Unset is {@link APP_RECONNECT_GRACE_MS} for a command that needs a runtime and zero for one that
+   * does not, which is the default a caller almost never has reason to override.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — F39, and **F141.** The grace
+   * was `runtime:errors`' alone, because F39 was found on the `reload → errors` chain the CLI's own
+   * follow-ups print. `runtime:tree` asks the identical question and asked it once: run straight
+   * after a reload it read the list inside the app's re-registration window, found it empty, and
+   * reported "no app is connected" — four times in five, recovering on a plain retry every time
+   * [observed — friction run 9, F141]. The window belongs to the *question*, not to the command.
    */
   retryMs?: number;
   /**
@@ -159,11 +172,15 @@ export async function preflightRuntimeAsync(
     devServerUrl,
     platform,
     cloud = false,
-    retryMs = 0,
+    retryMs,
     deviceIndex: knownDeviceIndex,
   }: RuntimePreflightOptions,
   context: RuntimeContext = {}
 ): Promise<RuntimeConnection> {
+  // The default belongs to the `need`, not to the command (F141): every command that cannot work
+  // without a runtime waits out the window a reloading app is invisible in, and no command that can
+  // work without one is made to wait for it.
+  const retryBudgetMs = retryMs ?? (need === 'debugger-target' ? APP_RECONNECT_GRACE_MS : 0);
   const named = devServerUrl != null;
   const discovery = await discoverDevServerAsync(devServerUrl ?? undefined, {
     projectRoot: context.projectRoot ?? undefined,
@@ -176,8 +193,8 @@ export async function preflightRuntimeAsync(
 
   // Only an empty list is worth asking again about: an unreachable dev server does not become
   // reachable by re-reading it within three seconds, and a list with something in it is an answer.
-  if (reachable && targets.length === 0 && retryMs > 0) {
-    const deadline = Date.now() + retryMs;
+  if (reachable && targets.length === 0 && retryBudgetMs > 0) {
+    const deadline = Date.now() + retryBudgetMs;
     while (Date.now() < deadline) {
       await new Promise((resolve) => setTimeout(resolve, APP_RECONNECT_POLL_MS));
       const probe = await probeDevServerAsync(url);
@@ -241,7 +258,7 @@ export async function preflightRuntimeAsync(
   }
 
   if (targets.length === 0) {
-    throw noAppConnectedError({ devServerUrl: url, retryMs, cloud, platform });
+    throw noAppConnectedError({ devServerUrl: url, retryMs: retryBudgetMs, cloud, platform });
   }
 
   // Only a command that *requires* a runtime refuses on an empty scope. For `reload` an empty scope
@@ -275,9 +292,13 @@ export function reachTheAppLadder({
   const cloudFlag = cloud ? ' --cloud' : '';
   const platformFlag = platform == null ? '' : ` --${platform}`;
   const navigate = `npx exagent navigate /${platformFlag}${cloudFlag}`;
+  // `dev` takes the platform too, and dropping it here was F142's sibling: a bare `dev` asks the
+  // plan engine to pick a platform, and on a Mac it picks iOS — so the first rung of the ladder out
+  // of "no android app is connected" started a dev server for the other one.
+  const dev = `npx exagent dev --detach${cloud ? ' --tunnel' : ''}${platformFlag}`;
 
   if (state === 'no-dev-server') {
-    return `start one with "npx exagent dev --detach${cloud ? ' --tunnel' : ''}" in the project root and open the app with "${navigate}", then run this command again.`;
+    return `start one with "${dev}" in the project root and open the app with "${navigate}", then run this command again.`;
   }
   return `open the app on a device or simulator with "${navigate}" — or, when the device is a phone or a cloud simulator this machine cannot drive, get the URL to open on it with "npx exagent navigate /${platformFlag} --print-url". Then let "npx exagent smoke${cloudFlag}" wait for the bundle and the app together, and run this command again.`;
 }
@@ -334,11 +355,20 @@ export function noDevServerError({
   );
   // The same command the How: names. They disagreed — `npx expo start` in one and `npx exagent dev`
   // in the other — which is one failure telling a reader two things [observed — friction run 5].
-  error.suggestedCommand = `npx exagent dev --detach${cloud ? ' --tunnel' : ''}`;
+  error.suggestedCommand = `npx exagent dev --detach${cloud ? ' --tunnel' : ''}${platform == null ? '' : ` --${platform}`}`;
   return withData(error, { devServerUrl, devServerReachable: false, platform });
 }
 
-/** The dev server is running and nothing has attached a debugger to it. */
+/**
+ * The dev server is running and nothing has attached a debugger to it.
+ *
+ * **Exit 22, not 1** — @ref llp/0010-agent-conventions.rfc.md §An empty target list is
+ * inconclusive, F141. `1` promises that running the same line again changes nothing, and this is the
+ * one refusal of the family where that promise is false: a reloading app is absent from
+ * `/json/list` for about half a second, so an empty list can describe a runtime on its way back.
+ * The wait above is what makes the code honest either way — 22 is reported only once the reconnect
+ * window has been waited out, so it says "asked for as long as it was worth asking".
+ */
 export function noAppConnectedError({
   devServerUrl,
   retryMs = 0,
@@ -354,13 +384,15 @@ export function noAppConnectedError({
     'NO_APP_CONNECTED',
     [
       `The Expo dev server at ${devServerUrl} is running, but no app is connected to it.`,
-      `Why: its debugger target list (${devServerUrl}/json/list) is empty${retryMs > 0 ? `, and it was still empty ${retryMs}ms later` : ''}, so there is no JavaScript runtime to talk to.`,
+      `Why: its debugger target list (${devServerUrl}/json/list) is empty${retryMs > 0 ? `, and it was still empty ${retryMs}ms later` : ''}, so there is no JavaScript runtime to talk to. Either no app has been opened on it, or one is re-registering — a reloading app is absent from that list for about half a second, which is the window this wait was for.`,
       // Not "press i in the dev server's terminal": a dev server this CLI started with --detach has
       // no terminal to press a key in, and a driving agent has no keyboard for one that has
       // [friction run 5, F48-5]. `navigate` is the command that does the same thing.
-      `How: ${reachTheAppLadder({ state: 'no-app', cloud, platform })}`,
+      `How: ${reachTheAppLadder({ state: 'no-app', cloud, platform })} If the app was mid-reload, running this command again is the whole recovery.`,
     ].join('\n')
   );
+  // 22 rather than 1: the CLI worked and could not *conclude*, which is what this band is for.
+  error.exitCode = EXIT_OUTCOME_TIMEOUT;
   error.suggestedCommand = `npx exagent navigate /${platform == null ? '' : ` --${platform}`}${cloud ? ' --cloud' : ''}`;
   return withData(error, { devServerUrl, devServerReachable: true, platform });
 }

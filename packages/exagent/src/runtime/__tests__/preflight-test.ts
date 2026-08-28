@@ -2,7 +2,9 @@
 // The one place the `runtime:*` commands ask "is there anything to talk to", and the one refusal
 // they all print when there is not.
 
-import { preflightRuntimeAsync } from '../preflight';
+import { EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
+import { APP_RECONNECT_GRACE_MS } from '../devServer';
+import { preflightRuntimeAsync, reachTheAppLadder } from '../preflight';
 
 const TARGET = {
   id: '1',
@@ -224,6 +226,113 @@ describe(`${preflightRuntimeAsync.name} with no app connected`, () => {
 
     expect(connection.reachable).toBe(true);
     expect(connection.appTargets).toEqual([]);
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §An empty target list is inconclusive — **F141.** A
+  // `runtime:tree` run straight after a reload landed in the app's re-registration window and
+  // reported exit 1, "no target". It recovered on a plain retry, four times out of five — and `1`
+  // is the code that promises the opposite: running the same line again changes nothing.
+  it(`should answer an empty list with 22, because a retry may answer`, async () => {
+    mockDevServer([]);
+
+    const error = await preflightRuntimeAsync({ need: 'debugger-target', devServerUrl }).catch(
+      (e) => e
+    );
+
+    expect(error.exitCode).toBe(EXIT_OUTCOME_TIMEOUT);
+    expect(error.message).toContain('re-registering');
+  });
+
+  // The dev server itself is the other half, and it stays 1: nothing answered, and asking again
+  // inside a second does not start one. Pinned next to the case above so the two cannot merge.
+  it(`should keep 1 for a dev server that is not there`, async () => {
+    mockDevServer(null);
+
+    const error = await preflightRuntimeAsync({ need: 'debugger-target', devServerUrl }).catch(
+      (e) => e
+    );
+
+    expect(error.code).toBe('NO_DEV_SERVER');
+    expect(error.exitCode).toBeUndefined();
+  });
+
+  // And so does the wrong-platform refusal: apps *are* connected, they are on another platform, and
+  // that is a fact a second look reports identically. The fix is to change the line.
+  it(`should keep 1 for apps that are all on another platform`, async () => {
+    mockDevServer([TARGET]);
+
+    const error = await preflightRuntimeAsync({
+      need: 'debugger-target',
+      devServerUrl,
+      platform: 'android',
+    }).catch((e) => e);
+
+    expect(error.message).toContain('No android app is connected');
+    expect(error.exitCode).toBeUndefined();
+  });
+
+  // The grace was `runtime:errors`' alone, which is why `runtime:tree` was the command that hit the
+  // gap: it asked once and reported the answer. Every command that needs a runtime asks the same
+  // question, so every one of them now waits out the same window (F39's mechanism, F141's reach).
+  it(`should wait out the reconnect window without being asked to`, async () => {
+    let reconnected = false;
+    setTimeout(() => (reconnected = true), 60);
+    globalThis.fetch = (async () => ({
+      ok: true,
+      json: async () => (reconnected ? [TARGET] : []),
+    })) as unknown as typeof fetch;
+
+    const connection = await preflightRuntimeAsync({ need: 'debugger-target', devServerUrl });
+
+    expect(connection.appTargets).toEqual([TARGET]);
+  });
+
+  // A command that needs no runtime is not made to wait for one: `runtime:reload` can start the app
+  // it finds nothing of, and `runtime:stop` calls an app that is not running a success.
+  it.each([['dev-server'], ['optional']] as const)(
+    `should not wait out that window for a %s command`,
+    async (need) => {
+      mockDevServer([]);
+      const startedAt = Date.now();
+
+      await preflightRuntimeAsync({ need, devServerUrl });
+
+      expect(Date.now() - startedAt).toBeLessThan(APP_RECONNECT_GRACE_MS);
+    }
+  );
+});
+
+// @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — F58, S5, F103,
+// F142. The ladder already kept `--cloud` and the platform on `navigate`, and dropped the platform
+// from the `dev` that comes before it — and a bare `dev` plans for whichever platform this machine's
+// probe picks, so the first rung of the ladder out was a different run from the one asked for.
+describe(reachTheAppLadder, () => {
+  it.each([['ios'], ['android']] as const)(
+    `keeps --%s on every rung, dev included`,
+    (platform) => {
+      for (const state of ['no-dev-server', 'no-app'] as const) {
+        const ladder = reachTheAppLadder({ state, cloud: false, platform });
+
+        expect(ladder).toContain(`npx exagent navigate / --${platform}`);
+        if (state === 'no-dev-server') {
+          expect(ladder).toContain(`npx exagent dev --detach --${platform}`);
+        }
+      }
+    }
+  );
+
+  // `--cloud` is not `dev`'s flag; what a cloud session needs from a dev server is a tunnel. Both
+  // still have to be on the one line, in the order the CLI accepts them.
+  it(`keeps the tunnel next to the platform for a cloud session`, () => {
+    expect(reachTheAppLadder({ state: 'no-dev-server', cloud: true, platform: 'ios' })).toContain(
+      'npx exagent dev --detach --tunnel --ios'
+    );
+  });
+
+  it(`offers no platform flag when the caller named none`, () => {
+    expect(reachTheAppLadder({ state: 'no-dev-server', cloud: false })).toContain(
+      'npx exagent dev --detach"'
+    );
   });
 });
 

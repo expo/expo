@@ -7,7 +7,12 @@
 import { vol } from 'memfs';
 
 import type { BundlerReadyResult } from '../../runtime/waitReady';
-import { buildDetachSpawn, notReadyError, resolveDetachFailure } from '../detachAsync';
+import {
+  buildDetachSpawn,
+  needsOpenPlatformGrace,
+  notReadyError,
+  resolveDetachFailure,
+} from '../detachAsync';
 import { detachedLogPath, openDetachedLogSync, readDetachedLogSync } from '../logFile';
 import { resolveDevLogsOptions, DEFAULT_LOG_TAIL_LINES } from '../resolveLogsOptions';
 import { resolveDevOptions } from '../resolveOptions';
@@ -133,6 +138,50 @@ describe(resolveDetachFailure, () => {
 
   it(`should refuse a bundler that stopped answering under a live child`, () => {
     expect(resolveDetachFailure({ ...healthy, statusAnswering: false })).toBe('not-answering');
+  });
+});
+
+// @ref llp/0021-honest-reports.rfc.md §The window after the claim — F140. The verdict table above
+// is checked once, at the moment of return, and `expo start --ios` can die a quarter of a second
+// later. This decides which runs are re-checked for a while before the claim is printed.
+describe(needsOpenPlatformGrace, () => {
+  const serving = { phase: 'serving', step: 'expo start --go', opensPlatform: false } as const;
+  const openingIos = {
+    phase: 'serving',
+    step: 'expo start --go --ios',
+    opensPlatform: true,
+  } as const;
+
+  it(`re-checks a run whose dev-server step also opens the app`, () => {
+    expect(needsOpenPlatformGrace({ ready: true, phase: openingIos })).toBe(true);
+  });
+
+  // The whole cost of this is paid by the runs it is for: a plan that opens nothing has no late
+  // rejection on its way, so it pays nothing.
+  it(`does not re-check a run that opens nothing`, () => {
+    expect(needsOpenPlatformGrace({ ready: true, phase: serving })).toBe(false);
+  });
+
+  // Nothing was claimed, so there is no claim to defend — and a caller who did not ask for
+  // readiness must not be made to wait for one.
+  it(`does not re-check a run that claimed no readiness`, () => {
+    expect(needsOpenPlatformGrace({ ready: null, phase: openingIos })).toBe(false);
+  });
+
+  // The failure has already been raised by then; a grace period on top of it would only delay it.
+  it(`does not re-check a run whose bundler never answered`, () => {
+    expect(needsOpenPlatformGrace({ ready: false, phase: openingIos })).toBe(false);
+  });
+
+  // A plan still compiling has started no dev server, so `--wait-ready` has not returned true and
+  // this question does not arise — pinned so the two conditions cannot be conflated.
+  it(`does not re-check a plan that is still building`, () => {
+    expect(
+      needsOpenPlatformGrace({
+        ready: true,
+        phase: { phase: 'building', step: 'expo run:ios', opensPlatform: true },
+      })
+    ).toBe(false);
   });
 });
 
@@ -292,7 +341,11 @@ describe(notReadyError, () => {
   // was on 8081, and "the dev server is still running" described a compiler
   // [observed — wave 29, `evidence/10-dev-detach-android.json`].
   describe('a plan that is still building', () => {
-    const building = { phase: 'building', step: 'expo run:android' } as const;
+    const building = {
+      phase: 'building',
+      step: 'expo run:android',
+      opensPlatform: true,
+    } as const;
 
     it(`does not say a dev server started`, () => {
       const message = notReadyError(lock, '/project/.expo/dev.log', readyResult(), building).message;

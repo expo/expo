@@ -326,4 +326,27 @@ describe('exagent navigate', () => {
       await stub.close();
     }
   });
+
+  // @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — **F142.**
+  // The step the acceptance walk stalled on: the dev server it had asked for had died, so
+  // `navigate / --ios` could not build an Expo Go URL — and the one line it was handed to recover
+  // with was `npx exagent dev --detach`, with the `--ios` dropped. Following it would have started a
+  // dev server for whichever platform the plan engine picks, which is not what was asked for.
+  it('keeps the platform the caller named on the line it recovers with', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    await installStubXcrunAsync(projectRoot);
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      // No dev server anywhere: no lock, no log, and a named URL nothing answers on.
+      ['navigate', '/', '--ios', '--dev-server-url', 'http://127.0.0.1:1', '--json'],
+      { env: stubExpoEnv(projectRoot), reject: false }
+    );
+
+    expect(result.exitCode).not.toBe(0);
+    const { error } = JSON.parse(result.stdout);
+    expect(error.suggestedCommand).toContain('--ios');
+    // The `Try:` line is what an agent acts on, so the flag has to be on the stream too.
+    expect(result.stderr).toContain('--ios');
+  });
 });

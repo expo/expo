@@ -39,6 +39,41 @@ Two findings from that bundler error, neither of them this CLI's:
 
 Both are upstream asks rather than anything `deploy` can fix. What `deploy` owes is the accurate report it gave.
 
+### An unlinked project: exit 7 was right and the handoff line was not
+
+[added — wave 37, 2026-08-28, for **F143**. Code in `easFailure.ts` and `handoffOr`
+(`src/deploy/deployAsync.ts`).]
+
+Wave 17 fixed the *diagnosis* of an unlinked project (S2): the EAS CLI's own `EAS project not
+configured` sentence decides the `Why:` and the `How:`, instead of the old guess about accounts. The
+acceptance walk confirmed all of that and then read one line further down:
+
+```
+How: link it once with "npx eas init" …
+Needs a human   eas-prompt
+Ask the user    npx eas deploy
+```
+
+Two problems in one line. **The command named is the one that just failed** — the walk had to work
+the fix out of the `How:` two lines above the line whose whole job is to carry it. And the `How:`
+itself was half a fix: `npx eas init` **prompts**, for the account and for whether to create or link,
+and this failure exists precisely because the run had no terminal to prompt in.
+
+**The decision, two parts.**
+
+1. **The fix is the non-interactive form**, which is what the EAS CLI itself prints:
+   `eas init --account <name> --non-interactive` to create, `eas init --id <project-id>
+   --non-interactive` to link an existing one. Both are in the `How:`, because only the caller knows
+   which intention they have. The account is read out of the tool's own
+   `Accounts you can create projects in: …` line, and when it names exactly one there is no choice to
+   make, so the command is filled in and can be run as printed.
+2. **A generic needs-human row must not overwrite a fix the site already knows.** The classifier fills
+   a generic row's command with the invocation that stopped, which is right for a tool that went
+   *silent on a question* — running it in a terminal is what answers it — and wrong the moment the
+   tool said what was missing. `handoffOr` now prefers the diagnosis's own command when there is one,
+   and the classified cause is read once and used for both the prose and the handoff, so the two
+   cannot name different things again. The hang path is unchanged and still asks for `eas deploy`.
+
 ## Headless project creation
 
 [confirmed — Kudo seed, 2026-08-18] `exagent new "<one-line app description>"` covers template choice, `create-expo`, git init, EAS init and a first boot check, with every step flag- or JSON-driven and zero TTY. It depends on non-interactive parity ([[0006-agent-native-cli-surface]]).

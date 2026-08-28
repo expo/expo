@@ -109,6 +109,7 @@ export const runtimeErrorsHelp: CommandHelp = {
       'runtimeEvidence',
       'devServerLog',
       'untrusted',
+      'followups',
     ],
   },
   notes: [

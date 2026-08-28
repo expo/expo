@@ -110,7 +110,55 @@ the parent. The `--ios` reproduction of F61 is that case. `expo start --ios` pub
 answered `/status`, and only then was refused permission to control Simulator.app, eight seconds
 after the parent had exited. `dev:logs` reads that verdict correctly, and `navigate` fails honestly
 afterwards. Catching it at the source would need a signal for "the app opened" that the CLI family
-does not emit. Recorded here rather than left as a surprise.
+does not emit. The next section is how much of that gap turned out to be closeable.
+
+### The window after the claim
+
+[added — wave 37, 2026-08-28, for F141's sibling **F140**. Code in `needsOpenPlatformGrace` and
+`watchOpenPlatformGraceAsync` (`src/dev/detachAsync.ts`), and `stepOpensPlatform`
+(`src/dev/childVerdict.ts`).]
+
+The paragraph above called the `--ios` case unfixable and put the death "eight seconds after the
+parent had exited". The acceptance walk hit it three times in a row and then, on a fourth identical
+run, got the honest exit path — which is what says it is not a fact about the shape of the run but a
+**race**, and a race has a width. Measured: `expo start --go --ios` against a machine with no
+Automation grant answered `/status` at 486ms, 448ms and 445ms and the process was gone at 701ms,
+700ms and 708ms [observed — 2026-08-28, three runs against `friction/run9/livecheck`]. The gap is
+215–263ms, not eight seconds.
+
+**Why it is a gap at all**, exactly. `PlatformManager.openProjectInExpoGoAsync` calls
+`deviceManager.activateWindowAsync()` and does **not** await it
+[reference — `@expo/cli` `src/start/platforms/PlatformManager.ts`]. So the osascript rejection is a
+floating promise: `openPlatformsAsync` resolves, `Waiting on <url>` prints, and the rejection lands
+afterwards as an `uncaughtException` that the Expo CLI's own handler rethrows. That is why the log of
+a failed run has `Waiting on http://localhost:9201` *above* the stack trace, and why `Waiting on` —
+which is printed after the open in the non-interactive path — is not a usable "the app opened" marker.
+
+**The decision.** Two designs were on the table. **(a)** wait until the plan has no step left that
+can kill the dev server. Not available: the open is not a step, it is work inside the one `expo start`
+subprocess that also serves, and the CLI emits no marker for its completion — the floating promise
+above is the whole reason. **(b)** declare ready and hold the claim open for a bounded grace, asking
+the same three facts again. Taken.
+
+- **Who pays.** Only a run whose dev-server step opens the app: `expo start` with `--ios`,
+  `--android`, `--web` (or the short forms), and `expo run:ios` / `run:android`, which always
+  launch. `stepOpensPlatform` reads that off the plan table in the child's log — the same channel as
+  the verdict and the phase, for the same reason. A plain `expo start --detach --wait-ready` pays
+  nothing.
+- **How long.** `OPEN_PLATFORM_GRACE_MS = 1500`, about six times the widest measured gap; the margin
+  is for a cold simulator, where `ensureExpoGoAsync` runs before the rejection can happen.
+- **What ends it.** A needs-human verdict ends the wait immediately. Anything else does not, and the
+  reason is that the two processes fail in order: `expo start` dies first, so `/status` stops
+  answering while the wrapper around it is still classifying and writing its handoff. A report that
+  stopped at the first "not answering" would hand back prose for a stop that has a scenario, an
+  `Ask the user` line and exit 7 a hundred milliseconds behind it.
+
+**It narrows the window; it does not close it.** A rejection that lands after 1500ms still produces
+`Bundler ready`, and there is nothing further to wait *for*. What the grace buys is that the shape a
+walk hit three times running is the shape that is now caught. The deterministic reproduction is the
+e2e's, not a live run's: a stub `expo start` that binds the port, answers `/status`, and exits a fixed
+time **after that answer** — keyed on the request rather than on a clock, so the death is guaranteed
+to land after the claim instead of racing it.
 
 ### A detached child's own verdict
 
@@ -257,6 +305,27 @@ printed, so the plan object, the `cli:start_plan` event, the table and the subpr
 argv. `resolveStepArgs` still runs at execution time and is idempotent, so a flag the argv already
 holds is never added twice. `--tunnel`, `--lan` and `--localhost` are listed in `dev --help`'s
 options block as well as in its forwarded-flags paragraph, because the block is where a reader looks.
+
+### And into every suggestion, which is the same rule pointed outwards
+
+[F58, F103, S5, and **F142** — wave 37, 2026-08-28.]
+
+The rule above is about the argv a run executes. The same rule applies to the argv a run *hands
+back*, and it has been re-found four times because each site builds its own suggestion string. F142
+is the fourth: `navigate / --ios` against a dev server that had died recovered into
+`npx exagent dev --detach`, and a bare `dev` asks the plan engine to pick a platform — on a Mac it
+picks iOS, which happens to be right, and on the same project with `--android` it would be wrong. The
+line handed back was a different run from the one asked for either way.
+
+**The decision.** A site that has the caller's platform puts it on every command it names, `dev`
+included. `dev` takes `--ios`/`--android` and `reachTheAppLadder` had been keeping the flag on
+`navigate` and dropping it from the `dev` one rung earlier, which is the same hole in the middle of
+the one function written to close it. The three sites fixed here are `resolveDeepLinkUrl`'s two
+failures, `unreachableNamedDevServerError`, and that ladder. `--cloud` is unchanged and stays off
+`dev`, which has no such flag; what a cloud session needs from a dev server is `--tunnel`.
+
+The counter-rule holds too: a caller who named no platform is offered none. Printing a flag nobody
+typed claims they asked for it, which is `buildStartPlanFollowUps`' own rule from F103.
 
 ## One build is one platform
 

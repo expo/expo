@@ -63,6 +63,21 @@ describe('the on-ramp', () => {
     }
   );
 
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — **F145.** The screen said "a
+  // failing command ends with a Try: line", and `Try:` appears on exactly one of the three bands a
+  // command can fail in. The other two carry the same information under other names, deliberately:
+  // exit 7 prints the needs-human block, whose second row *is* the recovery, and an outcome failure
+  // prints the report and its `Suggested next:` list. An agent that had been promised `Try:` and got
+  // neither looked for a recovery that was on the screen under a different heading
+  // [observed — friction run 9, the `Try:` probe].
+  it('names all three ways a failure hands back the recovery', async () => {
+    const result = await executeExagentAsync(projectRoot, ['help', 'workflow']);
+
+    expect(result.stdout).toContain('Try:');
+    expect(result.stdout).toContain('Ask the user');
+    expect(result.stdout).toContain('Suggested next:');
+  });
+
   it('names the exit-code bands an agent branches on', async () => {
     const result = await executeExagentAsync(projectRoot, ['help', 'workflow']);
 

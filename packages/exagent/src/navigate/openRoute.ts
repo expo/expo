@@ -343,7 +343,7 @@ export async function resolveRouteUrlAsync(
   // URL a phase of this run found reaches discovery as `flag` too, and blaming a flag nobody passed
   // sends a reader to check an argument they never wrote (F96).
   if (devServer.source === 'flag' && isCallerNamedDevServer(options) && !devServer.reachable) {
-    throw unreachableNamedDevServerError(devServerUrl, devServer.reason);
+    throw unreachableNamedDevServerError(devServerUrl, devServer.reason, platform);
   }
 
   const usesDevClient = await isInstalledDependencyAsync(
@@ -384,6 +384,9 @@ export async function resolveRouteUrlAsync(
     isExpoGo: target.isExpoGo,
     devServerUrl: devServer.reachable ? devServerUrl : null,
     reachHost: tunnelHost,
+    // The flag the caller typed, so the commands this recovers into ask for the same platform
+    // this run was asked for (F142).
+    platform,
   });
   if (!resolved.ok) {
     const error = new CommandError('DEEP_LINK_UNRESOLVED', resolved.error);
@@ -1074,19 +1077,28 @@ async function resolveStuckAppIdAsync(
   }).appId;
 }
 
-/** The failure for a `--dev-server-url` that named a dev server nothing answers on. */
+/**
+ * The failure for a `--dev-server-url` that named a dev server nothing answers on.
+ *
+ * @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — F142. The
+ * platform the caller typed goes on the `dev` this recovers into, for the same reason it goes on
+ * every other suggestion: a bare `dev` asks the plan engine to choose a platform, and a caller who
+ * has already chosen one is not asking it to.
+ */
 function unreachableNamedDevServerError(
   devServerUrl: string,
-  reason: string | undefined
+  reason: string | undefined,
+  platform?: NavigatePlatform
 ): CommandError {
+  const platformFlag = platform == null ? '' : ` --${platform}`;
   const error = new CommandError(
     'DEEP_LINK_UNRESOLVED',
     [
       `No Expo dev server answered at ${devServerUrl}, which --dev-server-url named, so nothing was opened.`,
       `Why: the request for its debugger target list failed (${reason ?? 'no answer'}). Opening a route against a dev server that is not running loads the app onto the device with nothing to bundle for it, which looks like a crash rather than like a wrong URL.`,
-      `How: start the dev server ("npx exagent dev --detach"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
+      `How: start the dev server ("npx exagent dev --detach --wait-ready${platformFlag}"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev --detach --wait-ready';
+  error.suggestedCommand = `npx exagent dev --detach --wait-ready${platformFlag}`;
   return error;
 }

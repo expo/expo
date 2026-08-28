@@ -338,6 +338,89 @@ describe('exagent dev --detach', () => {
     }
   });
 
+  // @ref llp/0021-honest-reports.rfc.md §The window after the claim — **F140**, the hole the
+  // section above left open and this wave closes.
+  //
+  // The acceptance walk ran `dev --detach --wait-ready --ios` and was told `Bundler ready`, exit 0,
+  // for a dev server that was already on its way out — three times in a row, and then honestly on a
+  // fourth identical run, because it is a race. Both halves of it are true at once: the bundler
+  // *did* answer, and `expo start --ios` was *about* to be refused permission to drive
+  // Simulator.app. The rejection is an un-awaited promise inside the same process, so it lands after
+  // the dev server is up and after every check the parent makes [measured 215–263ms later].
+  //
+  // The stub reproduces exactly that ordering without a simulator, an AppleScript or a race: it
+  // binds the port, answers `/status` — which is the readiness probe itself — and dies a fixed time
+  // after that answer.
+  describe('a dev server that dies just after its bundler answered', () => {
+    /** Environment for a stub that comes up, answers `/status`, and then dies the way `--ios` does. */
+    function diesAfterReadyEnv(projectRoot: string, port: number): Record<string, string> {
+      return {
+        ...stubExpoEnv(projectRoot),
+        STUB_EXPO_DEV_SERVER_PORT: String(port),
+        STUB_EXPO_LISTEN: '1',
+        STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
+        // Comfortably inside the grace window, and after the readiness claim rather than racing it:
+        // the answer that starts this clock is the claim.
+        STUB_EXPO_DIE_AFTER_STATUS_MS: '400',
+      };
+    }
+
+    it('refuses to report ready for a child that is about to be gone', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['dev', '--detach', '--wait-ready', '--ios', '--yes', '--json'],
+          { env: diesAfterReadyEnv(projectRoot, 8393), reject: false }
+        );
+
+        // 7, not 0: the CLI worked, and the macOS Automation grant the stub's stderr names is a
+        // step only a person can complete. The child classified it and this parent relayed it.
+        expect(result.exitCode).toBe(7);
+        const { error } = JSON.parse(result.stdout);
+        expect(error.needsHuman).toMatchObject({
+          scenario: 'macos-automation',
+          detectedBy: 'detached-child-log',
+        });
+        // The two words the finding is about, on neither stream.
+        expect(result.stdout).not.toContain('"ready": true');
+        expect(result.all).not.toContain('Bundler      ready');
+      } finally {
+        await cleanUpAsync(projectRoot);
+      }
+    });
+
+    // The other half, and the one that keeps the grace honest: a `--ios` run whose dev server stays
+    // up still reports ready and still exits 0. A check that failed both would only have moved the
+    // dishonesty to the other side.
+    it('still reports ready for a child that stays up', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['dev', '--detach', '--wait-ready', '--ios', '--yes', '--json'],
+          {
+            env: {
+              ...diesAfterReadyEnv(projectRoot, 8392),
+              STUB_EXPO_DIE_AFTER_STATUS_MS: '0',
+            },
+          }
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout)).toMatchObject({
+          port: 8392,
+          ready: true,
+          phase: 'serving',
+        });
+      } finally {
+        await cleanUpAsync(projectRoot);
+      }
+    });
+  });
+
   it('rejects --wait-ready on its own, which would wait for nothing', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 

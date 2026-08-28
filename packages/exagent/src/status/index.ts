@@ -55,6 +55,7 @@ export const statusHelp: CommandHelp = {
       'assertion',
       'probe',
       'errors',
+      'followups',
     ],
   },
   notes: [

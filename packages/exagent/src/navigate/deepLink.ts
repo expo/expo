@@ -128,6 +128,17 @@ export interface ResolveDeepLinkUrlParams {
    * @see src/dev/advertisedUrl.ts, which reads the host out of what the dev server printed.
    */
   reachHost?: string | null;
+  /**
+   * The platform the caller named, so every command this file recovers into keeps it.
+   *
+   * @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — F58, S5, F103,
+   * and **F142.** It changes nothing about the URL: a link is the same link whichever device opens
+   * it. It changes the two failures, which name commands — `navigate / --ios` against a dev server
+   * that had died recovered into a bare `npx exagent dev --detach`, and a bare `dev` plans for
+   * whatever platform this machine's probe picks. So the one line the caller was handed was a
+   * different run from the one they had asked for [observed — friction run 9, F142].
+   */
+  platform?: 'ios' | 'android' | null;
 }
 
 export type ResolveDeepLinkUrlResult =
@@ -176,7 +187,11 @@ export function resolveDeepLinkUrl({
   isExpoGo,
   devServerUrl,
   reachHost,
+  platform,
 }: ResolveDeepLinkUrlParams): ResolveDeepLinkUrlResult {
+  // Carried onto every command the failures below name, and onto nothing else: the URL is the same
+  // URL whichever device opens it (F142).
+  const platformFlag = platform == null ? '' : ` --${platform}`;
   const trimmedRoute = route.trim();
   if (trimmedRoute.length === 0) {
     return {
@@ -186,7 +201,7 @@ export function resolveDeepLinkUrl({
         'Why: there is nothing to navigate to.',
         'How: pass a route path such as "/profile/42", or a full URL such as "myapp://profile/42".',
       ].join('\n'),
-      suggestedCommand: 'npx exagent navigate /',
+      suggestedCommand: `npx exagent navigate /${platformFlag}`,
     };
   }
 
@@ -222,11 +237,12 @@ export function resolveDeepLinkUrl({
         error: [
           'Cannot build an Expo Go URL because the dev server URL is unknown.',
           'Why: Expo Go deep links have the shape exp://<host>/--/<route>, so they need the running dev server host.',
-          'How: start the dev server with `npx exagent dev --detach` and run this command again, or pass --scheme to target a development build instead.',
+          `How: start the dev server with \`npx exagent dev --detach${platformFlag}\` and run this command again, or pass --scheme to target a development build instead.`,
         ].join('\n'),
         // The How: and the Try: named different commands here, which is a failure telling a reader
-        // two things [observed — friction run 5]. Both are the one action that fixes this.
-        suggestedCommand: 'npx exagent dev --detach',
+        // two things [observed — friction run 5]. Both are the one action that fixes this, and both
+        // keep the platform the caller named (F142).
+        suggestedCommand: `npx exagent dev --detach${platformFlag}`,
       };
     }
     const where = tunnelHost

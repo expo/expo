@@ -68,10 +68,11 @@ describe('exagent runtime:eval', () => {
     expect(report.error.needsHuman).toBeFalsy();
   });
 
-  // The other half of "nobody to talk to", and a different answer: the dev server is up, so the
-  // recovery is opening the app rather than starting a server. An agent that could not tell these
-  // apart would restart a healthy dev server.
-  it('exits 1 with a different code when the dev server has no app attached', async () => {
+  // The other half of "nobody to talk to", and a different answer in both the code and the band: the
+  // dev server is up, so the recovery is opening the app rather than starting a server, and a
+  // reloading app makes an empty list a thing a second look can disagree with (F141, exit 22). An
+  // agent that could not tell these apart would restart a healthy dev server.
+  it('exits 22 with a different code when the dev server has no app attached', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({ targets: [] });
     try {
@@ -81,7 +82,7 @@ describe('exagent runtime:eval', () => {
         { reject: false }
       );
 
-      expect(result.exitCode).toBe(1);
+      expect(result.exitCode).toBe(22);
       const report = JSON.parse(result.stdout);
       expect(report.error.code).toBe('NO_APP_CONNECTED');
     } finally {
@@ -165,7 +166,7 @@ describe('exagent runtime:errors', () => {
     expect(JSON.parse(result.stdout).error.code).toBe('NO_DEV_SERVER');
   });
 
-  it('exits 1 when the dev server is up and nothing is attached', async () => {
+  it('exits 22 when the dev server is up and nothing is attached', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({ targets: [] });
     try {
@@ -175,7 +176,7 @@ describe('exagent runtime:errors', () => {
         { reject: false }
       );
 
-      expect(result.exitCode).toBe(1);
+      expect(result.exitCode).toBe(22);
       expect(JSON.parse(result.stdout).error.code).toBe('NO_APP_CONNECTED');
     } finally {
       await stub.close();

@@ -13,6 +13,7 @@ import { WebSocketServer } from 'ws';
 
 import {
   clearStubFingerprintInvocations,
+  documentedJsonKeys,
   executeExagentAsync,
   holdDevLockAsync,
   installStubBinAsync,
@@ -488,6 +489,28 @@ describe('exagent status', () => {
       const report: StatusReport = JSON.parse(result.stdout);
       expect(report.followups).toEqual([]);
       expect(Object.keys(report)).toContain('followups');
+    });
+
+    // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — **F144.** The two lists were
+    // both here and disagreed: the e2e above pinned `followups` in the payload, and the help block's
+    // `keys` line did not name it, so a caller who read the documentation branched on a key set the
+    // command does not have. Compared at the process boundary, because that is where the promise is
+    // made — a caller reads `--help` and then reads the object.
+    it('documents exactly the keys it emits', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const devServerUrl = await getUnusedDevServerUrlAsync();
+
+      const help = await executeExagentAsync(projectRoot, ['status', '--help']);
+      const report = await executeExagentAsync(projectRoot, [
+        'status',
+        '--json',
+        '--dev-server-url',
+        devServerUrl,
+      ]);
+
+      expect(documentedJsonKeys(help.stdout).sort()).toEqual(
+        Object.keys(JSON.parse(report.stdout)).sort()
+      );
     });
   });
 

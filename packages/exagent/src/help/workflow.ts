@@ -74,14 +74,17 @@ ${stepLines(oneTimeSetup, null)}
 
   ${color.heading('--json')}
     Every command that produces a report takes --json, and its help block names the top-level
-    keys. One JSON object on stdout and nothing else. Progress, warnings and the Try: line go
-    to stderr, so never parse stderr.
+    keys. One JSON object on stdout and nothing else. Progress, warnings and the recovery
+    lines below go to stderr, so never parse stderr.
     A failure under --json is still one object on stdout, and always this shape:
       { "error": { "code", "message", "suggestedCommand", "needsHuman", "data" } }
 
-  ${color.heading('Errors are prompts')}
-    A failing command ends with a "Try: <command>" line on stderr. That is the recovery,
-    already worked out. Run it instead of searching for one.
+  ${color.heading('Errors are prompts — the recovery is on the last lines, under one of three names')}
+    Try: <command>        the tool did not work (1, and any failure it raised itself)
+    Ask the user <...>    a person has to finish it (7), under "Needs a human <scenario>"
+    Suggested next:       the tool worked and the outcome did not (20, 22) — under the report
+    ${color.muted('One of these is always there. It is the recovery, already worked out — run it')}
+    ${color.muted('instead of searching for one. Under --json all three are also in the object.')}
 
   ${color.heading('When you need an answer about EAS')}
     ${color.command('npx exagent status --explain')} asks the service: which sources changed, whether an

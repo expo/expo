@@ -510,6 +510,40 @@ export function readDevLockAsync(
   });
 }
 
+/**
+ * The top-level `--json` keys a rendered help block names, read back out of the block itself.
+ *
+ * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — **F144.** The `keys` line is a
+ * promise about the object the command prints, and a promise nothing compares against the object is
+ * one that drifts silently: `status --json` and `runtime:errors --json` both emitted a `followups`
+ * array that neither help block named [observed — friction run 9]. Parsing the *rendered* block
+ * rather than reading the help spec is the point — it is what a caller reads.
+ *
+ * The layout is `src/help/format.ts`'s: a `keys` label, then any wrapped rows under it in the same
+ * column.
+ */
+export function documentedJsonKeys(helpOutput: string): string[] {
+  const lines = stripVTControlCharacters(helpOutput).split('\n');
+  const start = lines.findIndex((line) => /^\s+keys\s{2,}\S/.test(line));
+  if (start < 0) {
+    return [];
+  }
+  const rows = [lines[start]!.replace(/^\s+keys\s+/, '')];
+  for (const line of lines.slice(start + 1)) {
+    // A wrapped row carries no label, so it is indented past the label column. Anything else — the
+    // blank line, the next section head — ends the list.
+    if (!/^\s{10,}\S/.test(line)) {
+      break;
+    }
+    rows.push(line.trim());
+  }
+  return rows
+    .join(' ')
+    .split(',')
+    .map((key) => key.trim())
+    .filter(Boolean);
+}
+
 /** Poll a project's dev-server lock until it answers, or the timeout expires. */
 export async function waitForDevLockAsync(
   projectRoot: string,
@@ -631,8 +665,25 @@ export type StubDevServerOptions = {
    * - `stale` — the peers churn and the same target stays listed, i.e. the runtime that answers is
    *   the one from before the reload (F39).
    * - `gone` — the app quits and the list empties (F45).
+   * - `late-reconnect` — the list empties *and then* the new page id appears, after
+   *   {@link reloadReconnectDelayMs}. This is what `reconnect` above compresses to nothing and what
+   *   a real app actually does: the runtime that was listed goes and the one that replaces it takes
+   *   about half a second to register [observed — 2026-08-23, live: 506ms then 761ms]. Anything that
+   *   reads the list inside that window sees an app that is not there, which is F39 for the command
+   *   after the reload and F141 for the reload's own report of `appsConnected`.
    */
-  reloadTargets?: 'reconnect' | 'stale' | 'gone';
+  reloadTargets?: 'reconnect' | 'stale' | 'gone' | 'late-reconnect';
+  /** How long `late-reconnect` leaves the list empty for. */
+  reloadReconnectDelayMs?: number;
+  /**
+   * File a `Bundled` line is appended to when a reload is asked for, or null for none.
+   *
+   * The dev server's own output, which a detached run captures — and the third proof of a reload
+   * (`src/runtime/reload/bundleSignal.ts`, S11). A test points this at the project's
+   * `.expo/dev/logs/dev-detached.log` to make the bundle the signal that answers **first**, which is
+   * the only way to reproduce a reload proved while the debugger target list is still empty.
+   */
+  bundleLogPath?: string | null;
   /**
    * Path of a file whose existence is what makes {@link targets} appear in `GET /json/list`.
    *
@@ -716,6 +767,8 @@ export async function startStubDevServerAsync({
   inspectorSocket = 'live',
   messagePeers = { 'socket#1': 'role=ios' },
   reloadTargets = 'reconnect',
+  reloadReconnectDelayMs = 700,
+  bundleLogPath = null,
   targetsAppearWithFile = null,
   inspectorEvaluate,
 }: StubDevServerOptions = {}): Promise<StubDevServer> {
@@ -838,15 +891,34 @@ export async function startStubDevServerAsync({
    * `expo.reloadAppAsync()` evaluate — because the app does the same thing either way.
    */
   const applyReloadTargets = (): void => {
+    if (bundleLogPath != null) {
+      fs.mkdirSync(path.dirname(bundleLogPath), { recursive: true });
+      fs.appendFileSync(
+        bundleLogPath,
+        'iOS Bundled 25ms node_modules/expo-router/entry.js (1 module)\n'
+      );
+    }
     if (reloadTargets === 'gone') {
       listedTargets = [];
     } else if (reloadTargets === 'reconnect') {
-      const pageId = nextPageId++;
-      listedTargets = listedTargets.map((target) => ({
-        ...(target as Record<string, unknown>),
-        id: `${(target as { id?: string }).id ?? 'device'}-reloaded-${pageId}`,
-      }));
+      listedTargets = reloadedTargets(listedTargets);
+    } else if (reloadTargets === 'late-reconnect') {
+      const coming = reloadedTargets(listedTargets);
+      listedTargets = [];
+      // Unreferenced, so a delay a test never waits out cannot hold the jest worker open.
+      setTimeout(() => {
+        listedTargets = coming;
+      }, reloadReconnectDelayMs).unref();
     }
+  };
+
+  /** The same targets under page ids the dev server has never used, which is what a reload does. */
+  const reloadedTargets = (current: unknown[]): unknown[] => {
+    const pageId = nextPageId++;
+    return current.map((target) => ({
+      ...(target as Record<string, unknown>),
+      id: `${(target as { id?: string }).id ?? 'device'}-reloaded-${pageId}`,
+    }));
   };
 
   let peers: Record<string, string | null> = { ...messagePeers };

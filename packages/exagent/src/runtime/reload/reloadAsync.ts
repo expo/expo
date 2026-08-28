@@ -49,7 +49,11 @@ import {
   type BundleCheckResult,
   type BundlePlatformSource,
 } from '../bundleCheck';
-import { probeDevServerAsync, type DevServerSource } from '../devServer';
+import {
+  APP_RECONNECT_GRACE_MS,
+  probeDevServerAsync,
+  type DevServerSource,
+} from '../devServer';
 import { preflightRuntimeAsync } from '../preflight';
 import {
   connectMessageSocketAsync,
@@ -194,7 +198,16 @@ export interface ReloadResultJson {
     | null;
   devServerUrl: string;
   devServerSource: DevServerSource;
-  /** Debugger targets the dev server reported after the reload: apps with a live JS runtime. */
+  /**
+   * Debugger targets the dev server reported after the reload: apps with a live JS runtime.
+   *
+   * **Asked again when a proved reload would otherwise report zero** (F141). The watches that prove
+   * a reload share one budget and the first to answer ends both, so a run the bundle signal proved
+   * left this at whatever the target list held at that instant — which mid-reload is nothing. A zero
+   * under `reloaded: true` therefore now means the app really did not register a runtime within the
+   * re-registration window, which is a state a cloud session genuinely reaches (S11), and not that
+   * this command stopped asking early.
+   */
   appsConnected: number;
   /**
    * Clients registered on the dev server's **client command socket**, or null when nothing asked.
@@ -567,6 +580,26 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   /** The app was seen to be back: the same question, answered the same way, on every rung. */
   const observed = connection.freshTargets > 0 || bundleObservation?.observed === true;
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — **F141.** `appsConnected` is
+  // the *last* read the wait above made, and the two watches share one budget: a run the bundle
+  // signal proved aborts the target watch where it stands, which inside the app's re-registration
+  // window is on an empty list. So a proved reload printed `Reloaded yes` over `Apps connected 0`,
+  // which reads as a contradiction — and was worse than a contradiction, because the commands this
+  // reload's own follow-ups name read that same list, and they were the ones that found it empty and
+  // refused [observed — friction run 9].
+  //
+  // The number is not wrong, it is early. Asked again for the length of the window that hides an app
+  // (`APP_RECONNECT_GRACE_MS`, F39's own), it either finds the runtime that came back — and the next
+  // command in the chain finds it too — or it does not, and then zero is a fact about an app that is
+  // genuinely not there and the report says so in words.
+  const appsConnected =
+    observed && connection.appsConnected === 0
+      ? await countConnectedAppsAsync(
+          devServerUrl,
+          Math.min(APP_RECONNECT_GRACE_MS, remainingMs())
+        )
+      : connection.appsConnected;
+
   // What the run may claim. The mechanism's own observation is the label when it has one, because
   // "the app's connection was replaced" and "the dev server served a bundle to somebody" are
   // different facts and the stronger one belongs in the report. With no mechanism proof, the
@@ -650,7 +683,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     verifiedBy,
     devServerUrl,
     devServerSource: devServer.devServerSource,
-    appsConnected: connection.appsConnected,
+    appsConnected,
     commandSocketClients,
     commandSocketChurn,
     appsReconnected: connection.freshTargets,
@@ -992,6 +1025,28 @@ async function waitForReloadEvidenceAsync(
   };
 }
 
+/**
+ * How many debugger targets the dev server lists, asked until one appears or the budget runs out.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — F141. Deliberately *not* a wait
+ * for a **fresh** target: the question here is only "is there a runtime on this dev server now",
+ * which is the question every command after this reload will ask. Whether it is a new one was
+ * already answered above, and answering it twice would make a report of the second answer.
+ */
+async function countConnectedAppsAsync(devServerUrl: string, budgetMs: number): Promise<number> {
+  const deadline = Date.now() + budgetMs;
+  for (;;) {
+    const probe = await probeDevServerAsync(devServerUrl);
+    if (probe.targets.length > 0 || Date.now() + APP_RECONNECT_POLL_MS >= deadline) {
+      return probe.targets.length;
+    }
+    await new Promise((resolve) => setTimeout(resolve, APP_RECONNECT_POLL_MS));
+  }
+}
+
+/** How often that question is asked again. */
+const APP_RECONNECT_POLL_MS = 200;
+
 /** The first line of a message, for a reason that has to fit on one. */
 function firstLine(text: string): string {
   return text.split('\n')[0]!.trim();
@@ -1323,6 +1378,7 @@ async function openRouteAsync(
     // Only a tunnel that is *current*, for the reason `resolveRouteUrlAsync` gives: a host read out
     // of a log whose dev server has since stopped is worse than the address of this machine.
     reachHost: reach && isTunnelCurrent(reach) ? (reach.advertised?.host ?? null) : null,
+    platform: options.platform ?? null,
   });
   if (!resolved.ok) {
     return null;
