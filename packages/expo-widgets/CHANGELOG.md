@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add `createContext`/`useContext` to the widget bundle React stub, so widget layouts using `@expo/ui` stop failing with `createContext is not a function`. ([#49507](https://github.com/expo/expo/pull/49507) by [@usmsam](https://github.com/usmsam))
-
 ### 💡 Others
+
+## 57.0.15 — 2026-08-28
+
+### 🐛 Bug fixes
+
+- Add `createContext`/`useContext` to the widget bundle React stub, so widget layouts using `@expo/ui` stop failing with `createContext is not a function`. ([#49507](https://github.com/expo/expo/pull/49507) by [@usmsam](https://github.com/usmsam))
 
 ## 57.0.14 — 2026-08-28
 

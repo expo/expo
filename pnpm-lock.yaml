@@ -3146,7 +3146,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-widgets:
-        specifier: workspace:^57.0.14
+        specifier: workspace:^57.0.15
         version: link:../expo-widgets
     devDependencies:
       '@babel/core':
@@ -18934,9 +18934,7 @@ snapshots:
       metro-runtime: 0.84.5
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
