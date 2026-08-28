@@ -589,6 +589,45 @@ the child never published a lock, and `1` when `--wait-ready` gave up — the se
 there, which the message says. `dev:logs` exits `0` for a log and `1` (`NO_DEV_LOG`) when the
 project has none.
 
+## What a development build costs the plan, and two ways it reports wrong
+
+[added 2026-08-28, wave 29, from the first live pass over `expo-dev-client`. Both open, both
+reported rather than fixed, and both are about a plan whose last step is a **build** rather than a
+dev server — which is the shape every dev-client plan has and no Expo Go plan does.]
+
+**F121 (MAJOR) — a build that succeeded and installed the app is not recorded, so the next plan
+builds again.** `recordBuildOf` runs only after a step exits 0, and `expo run:*` is one subprocess
+that builds, installs *and* serves. So a run whose compiler finished, whose app is on the device and
+whose launch step then failed leaves `.expo/exagent-last-build.json` untouched, and the next
+`exagent dev` plans another fifteen minutes for an app that is installed and current
+[observed — `05-dev-build-ios.log`: `Build Succeeded`, `Installing on iPhone 17 Pro`, then exit 7 on
+the Automation grant; `08-plan-after-successful-build.txt`: `rule: bare-stale`, one `expo run:ios`
+step, *"No development build recorded for ios, so a build is needed"*]. Two things sharpen it:
+
+- **The report's own follow-up is falsified by the run that just happened** — "a build made by
+  exagent is recorded, so the next plan skips it" — and it was.
+- **The needs-human recovery walks into it.** `macos-automation`'s `How:` says to drop `--ios` and
+  run `npx exagent dev --yes`, which on this rule is not a dev server: it is the same build again.
+
+The rule the fix needs is what "a build happened" may be read off, and none of the candidates is
+free: the artifact on disk, the app on the device (a probe the plan engine deliberately does not
+have — §Implemented in v1 as, item 1), or `Build Succeeded` in a subprocess's output. Deciding that
+is not a bug fix. What is *observed* and worth carrying either way: the record is written when the
+**dev server stops**, not when the compiler finishes, because the `run:*` step is the dev-server
+step — so `exagent dev --android` followed by `exagent dev:stop` does record the build, and that is
+the sequence that makes a second run cheap.
+
+**F125 (MODERATE) — `dev --detach --wait-ready` reports a dev server that is still compiling.** The
+lock is taken by the wrapper at the *start* of its step, and for a `run:*` step that step is a
+ten-minute Gradle build. So the lock answers a second in, publishing its fallback port, the parent
+stops waiting for it, and `--wait-ready` then fails against a port nothing listens on — and says
+`The dev server started on http://127.0.0.1:8081 (pid 29996), but --wait-ready gave up before its
+bundler answered … The dev server is still running — this is about the wait, not about the server.`
+Nothing is listening and nothing was started [observed — `10-dev-detach-android.json`]. The exit is
+1 and the child does keep building, so the *effect* is right and the report is not. The lock's
+published port is a fallback when the dev server has not named one yet, and "the lock is held" and
+"a dev server is listening" are two facts this path collapses into one.
+
 ## A busy port is not a step only a person can complete
 
 Decision [confirmed — friction run 4, 2026-08-24]. When the Expo CLI stops on `Use port 8181
@@ -667,6 +706,29 @@ can build and cannot run one shell command, so the SDK decides the status and `a
 toolchain the probe merely could not reach would be worse than the silence it replaced. Cached per
 process; a probe that throws is caught, because a plan that could not be made because a probe failed
 is worse than a plan that says it does not know.
+
+**Android needs a second answer, and it is a command** [F122, added 2026-08-27, wave 29]. The
+paragraph above is right that the *SDK* is a directory and was read as though the SDK were the whole
+question. `gradlew` is a Java program, so a machine with the entire SDK and no JVM cannot build —
+and the same machine is again the example: the SDK is where the installer put it, and
+`expo run:android` died in three seconds on `Unable to locate a Java Runtime` under a plan that had
+just printed *"Building on this machine: this machine has the Android SDK"*
+[observed — live, `wave29-devclient/evidence/10-dev-detach-android.json`]. macOS is what makes the
+file check useless in the one direction that matters: it ships a `/usr/bin/java` shim that exists,
+is on `PATH`, and exits 1 saying there is no runtime behind it, so **every** answer available from
+the disk says yes on a machine that cannot build. The probe is therefore one spawn —
+`$JAVA_HOME/bin/java -version` when `JAVA_HOME` names a `java` that is really there, `java -version`
+otherwise — and the three bands are the module's own: a spawn error or a non-zero exit is `missing`,
+a killed probe is `unknown`, and only exit 0 is `present`. The SDK question is settled **first**, so
+a host with neither is told about the SDK and pays for no subprocess.
+
+Two consequences worth stating, because both are about what the report *says* rather than what it
+found. The detail names the SDK it did find before it names the runtime it did not — "you have no
+Android SDK" would send somebody to install one that is on the disk. And `localTool('android')` is
+`the Android SDK and a JDK` rather than `the Android SDK`, because the sentences that string goes
+into are all of the form "this machine does not have X" (`src/toolchain/selectBackend.ts`,
+`src/followups/start.ts`, `src/followups/change.ts`, `warnUnbuildable`), and every one of them was
+false of exactly this machine.
 
 **The plan says it, and does not act on it** — **superseded for detection, 2026-08-26**. The
 paragraph below describes the first shipped version, where a machine with no toolchain got a local

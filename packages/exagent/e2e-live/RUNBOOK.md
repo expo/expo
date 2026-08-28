@@ -6,10 +6,10 @@ worth reading before you quote a green run at anybody — what green here does a
 
 ## What this tier is
 
-Four jest suites that run the **published surface** of `exagent` — `bin/exagent.js`, which loads the
+Five jest suites that run the **published surface** of `exagent` — `bin/exagent.js`, which loads the
 ncc bundle in `build/cli/` — against **real backends**: a real Metro, a real iOS simulator running
-Expo Go, a real Android emulator running the Expo Go APK, a real Hermes debugger connection, and the
-real EAS service on staging.
+Expo Go, a real Android emulator running the Expo Go APK, a real **development build** on that same
+emulator, a real Hermes debugger connection, and the real EAS service on staging.
 
 Nothing here is stubbed. The other two tiers are: `pnpm test` (unit) and `pnpm test:e2e`, which runs
 whole `exagent` processes against a **stub** `expo`, `eas` and dev server. This tier exists because a
@@ -32,6 +32,7 @@ Everything needs the bundle built first: **`pnpm build`**.
 | suite | needs |
 | --- | --- |
 | `live-local` | macOS; a **booted** iOS simulator with **Expo Go** installed; network (npm, for the scaffold's install) |
+| `live-devclient` | everything `live-android`'s `adb`/device half needs, **plus** `EXAGENT_LIVE_DEVCLIENT_PROJECT` naming a project that (a) depends on `expo-dev-client`, (b) declares an `expo.scheme`, (c) has its `android.package` **installed** on the attached device, and (d) has an android entry in its `.expo/exagent-last-build.json`. It **does not boot** and **does not build** — see below |
 | `live-android` | a runnable `adb` (`ANDROID_HOME`, `ANDROID_SDK_ROOT`, `PATH`, or the SDK's default location); an **attached device or a bootable AVD**; **Expo Go** on it; network. A booted iOS simulator with Expo Go is an *optional* extra that adds three tests — see below |
 | `live-eas` | `EXPO_STAGING=1`; a staging session in `~/.expo-staging/state.json`; `bunx` or `npx`; network to `staging.expo.dev`; an EAS-linked project on disk with finished builds and at least one ERRORED build (default `~/Developer/DailyWords-Grok`, override with `EXAGENT_LIVE_EAS_PROJECT`) |
 | `live-cloud` | everything `live-eas` needs, **plus** `EXAGENT_LIVE_CLOUD=1` and a way to publish a local port — `tuft host`, or an origin of your own in `EXAGENT_LIVE_PUBLIC_ORIGIN` |
@@ -70,12 +71,40 @@ The block terminates Expo Go on the simulator when it ends, which is worth knowi
 break-and-fix block reports `NO_APP_CONNECTED` at exit 1 if it starts inside that window. Run it twice
 or wait; it is not a finding.
 
-**`smoke --android` exits 22 on a working app, and the suite asserts that.** Not a defect and not a
+**`smoke --android` exits 22 on a working app *in Expo Go*, and the suite asserts that.** Not a defect and not a
 flake: the `runtime` phase cannot read a runtime with no debugger, and `llp/0010` §The sixth forbids a
 gate that cannot measure from passing. Four phases `ok`, two `inconclusive`. A green `live-android`
-therefore does **not** mean `smoke --android` passes anywhere — it means it refuses correctly. The one
+therefore does **not** mean `smoke --android` passes anywhere — it means it refuses correctly. It
+passes on a **development build**, which is `live-devclient`'s job to assert. The one
 Android gate that does return a verdict on the app is `runtime:errors --android --fail-on-error`, which
 reads the dev server's log.
+
+### Three things about `live-devclient`
+
+**Its prerequisite is an artifact, not a project.** Every other suite scaffolds; a development build
+costs about fifteen minutes of Gradle, and no suite here may spend that. So somebody runs
+`npx exagent dev --android --yes` in a project once, then `npx exagent dev:stop` — **both**, because
+the build record is written when the `expo run:android` step exits, which is when its dev server
+stops rather than when the compiler finishes (F121). The gate checks the installed package *and* the
+record, and a missing record is the difference between a 25-second suite and a fifteen-minute one.
+
+**It drives somebody else's project, in place.** It makes no EAS call, so the scratch-outside-git
+rule does not apply, and what it writes is what the CLI writes to any project it serves: `.expo/`.
+It runs `dev:stop` before it starts, because one detached dev server per project is the rule and
+this is the only suite whose project may already have one. `EXAGENT_LIVE_KEEP` has nothing to keep.
+
+**It is Android-only, and iOS is a wall rather than an omission.** On iOS 26.5 every
+`xcrun simctl openurl` of a **development build**'s scheme raises `Open in "<app>"?` — on every
+call, foregrounded or not — and nothing here can tap it. Expo Go's `exp://` does not. Measured
+minutes apart on one simulator: Expo Go attached inside 4 s, the dev launcher URL left 0 targets
+after 24 s [wave 29, `evidence/27-clean-connect-url.png`]. The iOS rows were filled by hand with the
+dialog answered and live in `llp/0019`; a suite that needed somebody at the screen would never run.
+
+**It carries one skipped test, and that is the finding.** `F123: opens the app it can see is not
+loaded` — `navigate` opens `<scheme>://<route>` at an app that is not loaded, while its own payload
+says nothing is connected and holds the launcher URL that would load it. Exit 22 after 90.6 s. Per
+§When a live test fails it is skipped with the evidence rather than asserted down to what the CLI
+does.
 
 ### Two things about `live-cloud` that cost somebody an hour each
 
@@ -148,6 +177,8 @@ pnpm build                                  # the tier tests this artifact, so i
 
 pnpm test:live:local                        # ~1 min, free
 pnpm test:live:android                      # ~2 min, free (includes an emulator boot)
+EXAGENT_LIVE_DEVCLIENT_PROJECT=~/dev/myapp \
+  pnpm test:live:devclient                  # ~25 s, free — needs a built dev client, see above
 EXPO_STAGING=1 pnpm test:live:eas           # ~1 min, one web deployment
 EXPO_STAGING=1 EXAGENT_LIVE_CLOUD=1 pnpm test:live:cloud   # bills a cloud session
 
@@ -166,6 +197,7 @@ Every suite prints a **cost line** in `afterAll`, whether it passed or failed:
 | --- | --- | --- | --- |
 | `live-local` | ~60 s (measured 58 s, 30 tests, 38 `exagent` runs) | none | nothing: the dev server is stopped, the app terminated, the scratch project deleted |
 | `live-android` | **~103 s measured** (24 tests, 36 `exagent` runs) — of which ~40 s is the emulator boot; ~80 s against an emulator that was already up | none | nothing, **unless the emulator was already booted**: an emulator this run started is killed, one it found is left as it was. The dev server is stopped, Expo Go force-stopped on the emulator and terminated on the simulator, the scratch project deleted |
+| `live-devclient` | **~25 s measured** (14 tests + 1 skipped, 25 `exagent` runs) against an emulator that is already up and an app that is already built | none | the named project's dev server is stopped and its development build is force-stopped; the project itself, its `.expo/` and the installed app are left as they were |
 | `live-eas` | ~50 s (measured, 9 tests) | one EAS Hosting preview deployment per run | one deployment under `@kudo1/livecheck`. Idempotent: EAS Hosting gives each deploy its own preview URL, so a re-run adds one and changes nothing that existed. No native build — no v1 command creates one |
 | `live-cloud` | **~4 min measured** (237 s, 7 tests) — and variable: one cloud reload took 18.5 s, another 48 s, and an unproved one spent its whole 180 s `--timeout` | one EAS Simulator session, billed from `eas simulator` to `eas simulator:stop` | nothing, if `afterAll` ran: the session is stopped (with `--id`, so only this run's), the `tuft host` name released, the dev server stopped, the scratch project deleted. The session stop is unconditional, including when this process never learned the id |
 
@@ -186,14 +218,18 @@ export produced, a log line that appeared inside a generous bound.
 
 - **Speed.** Nothing here asserts a timing. Bounds are generous on purpose, and an expiry is a
   failure; a bound met in a different number of milliseconds on a busy laptop is not a finding.
-- **Any platform but these two.** `live-local` is macOS and iOS and Expo Go; `live-android` is an
-  Android **emulator** and Expo Go. Not run anywhere: a **development build** on either platform — which
-  on Android is the one thing that would give it a debugger, so every refusal `live-android` asserts is
-  a property of Expo Go and not of Android — a **physical device**, and Windows (`tier0-windows` covers
-  the `.cmd` shim half at the stub tier).
-- **That any Android runtime read works.** It cannot: `runtime:eval`, `runtime:tree`, `runtime:tap` and
-  `runtime:type` are asserted to **refuse** there, `smoke --android` to be **22** on a working app, and
-  a green Android run is a run in which none of those five ever answered.
+- **Any platform but these two, and on iOS only Expo Go.** `live-local` is macOS and iOS and Expo
+  Go; `live-android` is an Android **emulator** and Expo Go; `live-devclient` is that same emulator
+  and a **development build**. Not run anywhere: a development build on **iOS** inside a suite (a
+  wall, not a gap — see §Three things about `live-devclient`), a **physical device**, and Windows
+  (`tier0-windows` covers the `.cmd` shim half at the stub tier).
+- **That any Android runtime read works *in Expo Go*.** It cannot: `runtime:eval`, `runtime:tree`,
+  `runtime:tap` and `runtime:type` are asserted by `live-android` to **refuse**, `smoke --android` to
+  be **22** on a working app, and a green `live-android` run is a run in which none of those five
+  ever answered. **`live-devclient` is where all five answer** [wave 29]: `runtime:eval "1+1"
+  --android` returns 2 and `smoke --android` exits 0 with eight phases `ok`, on the same emulator.
+  The two suites together are what make the refusal a fact about Expo Go's engine rather than about
+  Android.
 - **Native builds.** No v1 command creates an EAS build [observed — staging-live, 2026-08-26], so
   every claim about build *creation* is untested here and cannot be tested here.
 - **That an Android stop had taken effect when the command returned.** `am force-stop` is

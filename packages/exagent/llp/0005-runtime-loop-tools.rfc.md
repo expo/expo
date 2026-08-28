@@ -1750,6 +1750,14 @@ friction round [observed — friction run 6, 2026-08-24] found that four of the 
 granted are **properties of the iOS simulator**, not of the runtime loop, and the commands were
 reporting the iOS answer whatever they were pointed at. The findings and what they settled:
 
+> **Read §The wall was Expo Go's, not Android's before you quote anything below as "Android
+> cannot".** Every refusal in this section was measured against **Expo Go for Android**, and on
+> 2026-08-28 the same commands were run against an Android **development build** on the same
+> emulator: `runtime:eval` returns `2`, `runtime:tree` reads the screen, `runtime:tap --verify` sees
+> the diff, `runtime:type` types, `runtime:errors` reports `runtimeReadable: true`, and
+> `smoke --android` exits **0** with all eight phases `ok`. The sentences below are true and they
+> are about an app, not about a platform.
+
 ### The device's loopback is not this machine's
 
 `exp://127.0.0.1:<port>` names the loopback of whatever resolves it. On an emulator that is the
@@ -1826,7 +1834,9 @@ exit 20; `dev:wait` with no flag the same way.
 ### The CDP-less runtime, corrected
 
 The §Android pass note above is right that Expo Go for Android has no CDP debugger and wrong about
-what that looks like on the wire. Measured method by method [observed — 2026-08-25, Expo Go 57 on
+what that looks like on the wire. **Everything in this subsection is about Expo Go**, which was the
+only Android app anything had run against when it was written; §The wall was Expo Go's, not
+Android's is the same table for a development build, where every one of these methods answers. Measured method by method [observed — 2026-08-25, Expo Go 57 on
 `tuft-pixel`, against the same app on an iPhone 17 Pro simulator]:
 
 | method | Expo Go Android | Expo Go iOS |
@@ -2015,7 +2025,106 @@ whether a gate may fail on a record it cannot attribute to the platform it was a
 a dev server with two apps. Until that is answered, `smoke --android` cannot tell a healthy Android
 app from a crashing one and `runtime:errors --android --fail-on-error` can.
 
+### F123 — `navigate` opens the route link at an app that is not loaded
+
+[open, MAJOR, found 2026-08-28, wave 29. Reported rather than fixed: the recovery is a ladder, and
+which rung an exit code belongs to is a contract decision.]
+
+§Pointing an app at this dev server states the rule this breaks, in `connectUrl.ts`'s own header:
+**a connect URL is not a route link.** `<scheme>://<route>` navigates an app that is *already*
+loaded against a dev server; `<scheme>://expo-development-client/?url=<origin>` is what gets it
+loaded. `navigate` builds both — the second is in its own `connect` array, and it is printed — and
+it opens the first, whether or not anything is loaded.
+
+Measured on Android, where no dialog can be blamed [observed — `61-navigate-after-stop-android.json`]:
+
+```
+$ npx exagent navigate / --android --json          # after runtime:stop --android
+  target   "no app is connected to the dev server, and the project depends on expo-dev-client"
+  url      "dcapp://"
+  connect  [{ target: "dev-build", url: "dcapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081" }]
+  exitCode 0            # the `am start` delivered the intent
+  attached false        # after attachWaitedMs: 90576
+→ exit 22
+```
+
+Three things make it worth a number rather than a caveat:
+
+- **The command has the right URL in hand and prints it.** This is not a missing capability; it is
+  the wrong one of two being chosen, by a branch that already knows the answer — `target` says the
+  app is not connected and that the project depends on `expo-dev-client`, in the same payload.
+- **It is what every ladder recommends.** `runtime:stop`'s own follow-up is
+  `npx exagent navigate / --<platform>` "so this starts it again on the root route with a clean
+  JavaScript runtime", and on a development build it cannot. So does `dev`'s, and `dev:stop`'s.
+- **It costs the caller the whole attach budget**, 90.6 s on Android and 45.4 s on iOS, on an action
+  that could not have worked.
+
+What the fix has to decide, which is why it is not made here. The connect URL carries a dev server
+and no route, so a named route needs **two** opens with a wait between them — open the launcher URL,
+wait for the app to attach, then open `<scheme>://<route>`. That is the reload ladder's shape and it
+wants the same answers: what `attached` means when only the first rung ran, whether a route that was
+never reached is 20 or 22, and whether the second open is skipped for the root route (where the
+first is already complete). Expo Go needs none of it — `exp://<host>/--/<route>` loads *and*
+navigates in one URL, which is why nothing noticed.
+
+### The wall was Expo Go's, not Android's
+
+[added 2026-08-28, wave 29. Measured on `tuft-pixel`, one dev server, an Expo SDK 57 project with a
+development build made by `npx expo run:android`; evidence under `wave29-devclient/evidence/`.]
+
+§The CDP-less runtime, corrected measured **Expo Go for Android** and this section then wrote
+"Android" wherever it meant "that app". A development build of the same project, on the same
+emulator, answers everything Expo Go refuses:
+
+| command | Expo Go for Android | Android **development build** |
+| --- | --- | --- |
+| `runtime:eval "1+1"` | exit 1, `RUNTIME_EVALUATE_UNSUPPORTED` | **exit 0, `value: 2`** [`47-eval-android.json`] |
+| `runtime:tree` | exit 1, the same refusal | **exit 0**, 10 nodes off 372 fibers, `disabled`/`disabledOn` on both bands [`48-tree-android.json`] |
+| `runtime:tap inc-btn --verify` | unreachable | **exit 0**, and `counter-interp` *and* `counter-str` both in the diff — F63's pair, on Android for the first time [`50-tap-inc-android.json`] |
+| `runtime:tap` disabled / dup / plain | unreachable | **20 / 20 / 20**, `disabled` · `ambiguous` · `no-handler` |
+| `runtime:type` | exit 1 | **exit 0**; `editable={false}` → **20**, `disabledOn: "editable"` |
+| `runtime:errors` | `runtimeReadable: false`, dev-server-log fallback (F52) | **`runtimeReadable: true`**, and the fallback correctly **not** read |
+| `runtime:reload` | rung 1, verified with no CDP anywhere in it | exit 0 in 1.3–2.4 s, rung 1, `Android Bundled 29ms …` as the bundle proof |
+| `runtime:stop` | Expo Go's package | **the project's own package**, `bundleIdSource: "dev-server"`, `pidof` empty after |
+| `navigate /explore` | `exp://…/--/explore` | `dcapp://explore`, and `runtime:tree` reports `focusedScreen: "explore"` afterwards |
+| `smoke` | **22 on a working app** — the `runtime` phase cannot measure | **exit 0, `outcome: "passed"`, all eight phases `ok`** [`56-smoke-android-devclient.json`] |
+
+Two things this changes, and one it does not:
+
+- **`smoke --android` is a gate again.** §What `smoke --android` is says "not a green light, and it
+  never will be" — true of Expo Go, and the sentence should have named it. On a development build
+  the `runtime` phase measures, so llp/0010 §The sixth is satisfied and the gate returns a verdict.
+- **The `--android` refusal band is about an *app*.** `RUNTIME_EVALUATE_UNSUPPORTED` is the right
+  answer when the runtime says it carries no debugger, and it is reached by asking rather than by
+  knowing the platform — which is why nothing had to change for this to work. The measurement is
+  what was missing, not the code.
+- **F107 is unchanged**, and narrower than it looked: `smoke`'s error window has no dev-server-log
+  fallback, which matters only for a runtime that cannot answer. On a development build both phases
+  measure, so the gap is Expo-Go-on-Android's alone.
+
+**There is no automated iOS half of this, and the reason is a machine fact worth its own line.**
+Every way this CLI opens an app on a local iOS simulator is `xcrun simctl openurl`, and on iOS 26.5
+that raises a springboard confirmation — `Open in "<app>"?` — for a **development build**'s scheme,
+on every call rather than only the first, with the app foregrounded or not. Nothing launches until
+somebody taps Open. Measured against Expo Go on the same simulator minutes apart:
+`exp://127.0.0.1:8901` launched Expo Go and registered a debugger target inside 4 s;
+`dcapp://expo-development-client/?url=…` and `exp+dcapp://…` both left the simulator on the
+springboard with **0 targets after 24 s** [observed — `27-clean-connect-url.png`,
+`19-after-expgo-url.png`, 2026-08-28]. This is §The dialog nobody is there to answer, which wave 23
+recorded as a *cloud* fact, on a laptop. The four gates that let `navigate --cloud` answer the dialog
+start with "only on `--cloud`; a dialog on the machine at somebody's desk has somebody at it" — and
+a Tuft machine driving its own simulator is a desk with nobody at it. Whether that gate should be
+about the *device* rather than about the flag is the open question this leaves.
+
+With the dialog answered by hand, the iOS development build behaves like the Android one: `eval` →
+2, `tree` → 10 nodes, `tap --verify` → both texts, `type` → 0 and 20 on the read-only input,
+`errors` → `runtimeReadable: true`, `smoke --ios` → **0 with all eight phases `ok`**, and
+`runtime:stop --ios` → the project's own bundle id from `bundleIdSource: "dev-server"`.
+
 ### What `smoke --android` is, given all of that
+
+**On Expo Go**, and only there — §The wall was Expo Go's, not Android's measured the same command at
+exit **0** on a development build, and the sentence below was written before anything had run one.
 
 Not a green light, and it never will be on Expo Go: exit **22 on a working app**, because
 [[0010-agent-conventions]] §The sixth says a gate that cannot measure must not pass and the `runtime`

@@ -32,6 +32,7 @@ import { isCallerNamedDevServer } from '../../navigate/openRoute';
 import { isTunnelCurrent, resolveDevServerReachAsync } from '../../dev/advertisedUrl';
 import { checkRoute, routeNotFoundError, type RouteCheckJson } from '../../navigate/routeCheck';
 import { decideExpoGoTarget } from '../../navigate/target';
+import type { NativePlatform } from '../../plan/types';
 import { readProjectNativeDirsAsync } from '../../project/nativeCode';
 import {
   isInstalledDependencyAsync,
@@ -555,6 +556,9 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
           timeoutMs: remainingMs(),
           knownTargetIds,
           bundleMark,
+          // The flag the caller typed, never the resolved default: `null` here means "nobody said",
+          // and `waitForNewBundleAsync` counts every platform for it (F126).
+          platform: options.platform ?? null,
         })
       : { appsConnected: observedApps, freshTargets: 0, timedOut: false, waitedMs: 0 };
 
@@ -943,7 +947,14 @@ async function waitForReloadEvidenceAsync(
     timeoutMs,
     knownTargetIds,
     bundleMark,
-  }: { timeoutMs: number; knownTargetIds: readonly string[]; bundleMark: BundleSignalMark }
+    platform,
+  }: {
+    timeoutMs: number;
+    knownTargetIds: readonly string[];
+    bundleMark: BundleSignalMark;
+    /** The platform the caller named, so the other app's bundle is not this one's proof (F126). */
+    platform: NativePlatform | null;
+  }
 ): Promise<ReloadEvidence> {
   const startedAt = Date.now();
   // Whichever answers first ends both. Not a `Promise.race`: the loser is asked to stop and still
@@ -964,6 +975,7 @@ async function waitForReloadEvidenceAsync(
     before: bundleMark,
     timeoutMs,
     signal: settled.signal,
+    platform,
   }).then((result) => {
     if (result.observed) {
       settled.abort();

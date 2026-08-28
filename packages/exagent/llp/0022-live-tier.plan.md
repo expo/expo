@@ -9,6 +9,9 @@
 
 ## Summary
 
+**Five suites as of wave 29** — `live-local`, `live-android`, `live-devclient`, `live-eas`,
+`live-cloud`. The count in the prose below predates the fifth.
+
 [[0002-testing-and-evals]] already states the rule this document makes executable: **a flag is not
 shipped until it has run against the published binary.** It states it as a *manual* step, and a manual
 step that costs an hour is a step that gets skipped and then quoted as if it had not been.
@@ -51,8 +54,8 @@ the rule that covers the gap and the note that it is a manual step. This is that
 ## A jest project of its own, run by nothing else
 
 `e2e-live/jest.config.js` is a fourth jest project beside the unit config and `e2e/`. It is reachable
-only through `test:live`, `test:live:local`, `test:live:android`, `test:live:eas` and
-`test:live:cloud`. No `test`, no
+only through `test:live`, `test:live:local`, `test:live:android`, `test:live:devclient`,
+`test:live:eas` and `test:live:cloud`. No `test`, no
 `test:e2e`, no CI workflow names it, and none should: every suite spends a real simulator, a real
 account or a real deployment, and a tier that can bill money must be asked for by name.
 
@@ -214,6 +217,91 @@ with `bundlePlatformSource: "connected-app"`, which is the assertion.
 that a target is listed *and* that something is behind it, because a reload leaves the old page listed
 for a second with nothing there (F56) — and `waitForExpoGoStoppedAsync`, because **`am force-stop` is
 asynchronous** and `pidof` still answers for a beat after the `adb shell` exits.
+
+## live-devclient: the app the other four suites do not run
+
+The fifth suite [added 2026-08-28, wave 29]. **14 tests, 25 s, free**, plus one skipped that carries
+a finding. It runs the v1 runtime loop against a real **development build** on the emulator
+`live-android` uses — and it is the suite that answers a question this document had been asking of
+itself since §What this does not close was written: *"a development build on either platform — which
+on Android is the one thing that would give it a debugger, so every refusal `live-android` asserts is
+a property of Expo Go and not of Android."*
+
+**It is.** Same emulator, same dev server, same project, one minute apart: `runtime:eval "1+1"
+--android` is exit 1 `RUNTIME_EVALUATE_UNSUPPORTED` in Expo Go and **exit 0 with `value: 2`** in a
+development build, and `smoke --android` is **22 on a working app** in Expo Go and **0 with all eight
+phases `ok`** in a development build. [[0005-runtime-loop-tools]] §The wall was Expo Go's, not
+Android's has the command-by-command table. Nothing in the CLI changed for that: the refusal is
+reached by *asking* the runtime rather than by knowing the platform, which is the design being
+vindicated rather than a fix.
+
+**It does not scaffold, and that is the design.** Every other suite here makes its own project in
+`beforeAll` because `exagent new` costs seconds. A development build costs about **fifteen minutes**
+of Gradle or Xcode, and §What a live assertion is allowed to be's sibling rule — a suite must be
+runnable in a minute — makes that impossible. So the artifact is the *prerequisite*, the way
+`live-eas` treats an EAS-linked project: `EXAGENT_LIVE_DEVCLIENT_PROJECT` names a project somebody
+has already built, and the gate is two facts rather than one —
+
+- the project's `android.package` is installed on the attached device (`pm list packages`), and
+- `.expo/exagent-last-build.json` records an android build.
+
+The second half is not belt and braces. `exagent dev` plans a **build** for a platform with no
+recorded fingerprint, so a project whose app is installed and whose record is missing would send
+`beforeAll` into the fifteen minutes the gate exists to avoid. And the two really are separable:
+the record is written when the `expo run:android` step *exits*, which is when its dev server is
+stopped rather than when the compiler finishes (F121).
+
+**It uses the project in place.** The scratch-outside-git rule exists because `eas deploy` and
+`eas build` upload by walking to the git root, and this suite makes no EAS call at all. What it
+writes to somebody's project is what the CLI writes to any project it serves: `.expo/`. It also
+`dev:stop`s before it starts, because one detached dev server per project is the rule and this is
+the first suite whose project may already have one.
+
+**iOS is measured, by hand, and is deliberately not in the suite.** Every way this CLI opens an app
+on a local iOS simulator is `xcrun simctl openurl`, and on iOS 26.5 that raises `Open in "<app>"?`
+for a **development build**'s scheme — on every call, not only the first, foregrounded or not — and
+nothing in this tier can answer it. The contrast was measured on one simulator minutes apart:
+`exp://127.0.0.1:<port>` launched Expo Go and registered a target inside 4 s; the dev launcher URL
+left the springboard with **0 targets after 24 s**. A suite that needed somebody to tap Open would
+be a suite that never runs, so the iOS rows are filled by hand in [[0019-backend-parity-audit]] with
+their evidence, and the wall is recorded in [[0005-runtime-loop-tools]] §The wall was Expo Go's, not
+Android's. That is the same shape as `dev --tunnel`: a row this tier cannot reach on this machine,
+written down rather than left blank.
+
+### What it found
+
+Six findings, two fixed in the wave and four reported. The two fixed are the ones whose rule was
+already written down somewhere and simply not applied:
+
+- **F120 MODERATE, fixed** — `dev` warned `these options were not passed on: --port 8901` and then
+  printed a development-build connect URL naming **8901**, for a plan whose `expo run:ios` was about
+  to serve on 8081. The follow-ups read the caller's raw arguments; they read the plan's own last
+  step now, which is [[0015-backend-selection-and-config]] §The plan approved is the plan run applied
+  one call further out. Only a dev-client plan can see it: an Expo Go plan ends in `expo start`, and
+  there the two lists are the same.
+- **F122 MODERATE, fixed** — the Android toolchain probe answered `present` on a machine with the
+  whole SDK and **no JVM**, and `expo run:android` died in three seconds on `Unable to locate a Java
+  Runtime` under a plan that had just said "this machine has the Android SDK". macOS is what made
+  every file-level check useless: it ships a `/usr/bin/java` that exists, is on `PATH`, and exits 1.
+  [[0004-smart-start-and-project-state]] §Where a build runs.
+- **F126 MAJOR, fixed** — `runtime:reload --ios` exited 0 quoting `Android Bundled 42ms …`: the
+  bundle proof kept the reporter's platform tag and filtered on nothing, so the *other* app on the
+  same dev server proved this one's reload. F53 and F100's shape, one signal further out. With the
+  filter the same command is 22 with the reason naming what did bundle, which is the honest answer.
+- **F123 MAJOR, open** — `navigate` opens the *route* link at an app that is not loaded, having said
+  in the same payload that nothing is connected and having computed the launcher URL that would load
+  it. Exit 22 after 90.6 s on Android, where no dialog can be blamed. Reported rather than fixed
+  because the recovery is a two-open ladder with contract questions in it.
+- **F121 MAJOR, open** and **F125 MODERATE, open** — a build that succeeded and installed is not
+  recorded when the launch step fails, so the next plan rebuilds; and `dev --detach --wait-ready`
+  reports "the dev server started on <url>" while the plan is still compiling.
+  [[0004-smart-start-and-project-state]] §What a development build costs the plan.
+
+Three of the six are only reachable through a dev-client plan, and the reason is structural rather
+than incidental: **a development build makes the plan's last step a build rather than a dev server.**
+Every assumption the `dev` command makes about that step — that it forwards `expo start` options,
+that it publishes a usable lock in a second, that finishing it means an app exists — is an Expo Go
+assumption, and this is the first tier that ever ran one that is not.
 
 ## live-eas: the read side, and exactly one write
 
@@ -491,15 +579,20 @@ the label's own count, which is the claim the rung actually establishes.
   `npx <package>@latest` run in a project outside this repository before shipping, and this tier
   narrows what that run has to discover rather than replacing it. The `foreignFlags` snapshot is still
   the countable surface that says where a run is owed.
-- **Two platforms, both on this machine, both in Expo Go.** macOS with iOS and Android emulators
-  [narrowed 2026-08-27, wave 25 — it read "one platform" before `live-android` existed]. What is still
-  not run anywhere: a **development build** on either platform, a **physical device**, and Windows. The
-  first of those is the one that matters on Android, because a development build is what would give it a
-  debugger — every refusal `live-android` asserts is a property of Expo Go, not of the platform.
-- **Anything about Android that needs a runtime read.** `runtime:tap`'s three refusal bands, `--verify`
-  diffs and a successful `runtime:eval` are `unreachable` in the Android column rather than `open`, and
-  `smoke --android` is asserted to be **22 on a working app** rather than expected to pass. A reader
-  quoting "the live tier is green on Android" is quoting a suite in which the gate never passes.
+- **Two platforms and two apps, all on this machine.** macOS with iOS and Android emulators
+  [narrowed 2026-08-27, wave 25 — it read "one platform" before `live-android` existed; narrowed
+  again 2026-08-28, wave 29]. The paragraph here used to say a **development build** was not run
+  anywhere and that it was the one thing that would give Android a debugger. It is, and `live-devclient`
+  now runs one — so what is still not run anywhere is a **physical device**, Windows, and a
+  development build on **iOS** *inside a suite* (§live-devclient: measured by hand, blocked from
+  automation by an iOS confirmation dialog nothing here can answer).
+- **Anything about Android **in Expo Go** that needs a runtime read.** `runtime:tap`'s three refusal
+  bands, `--verify` diffs and a successful `runtime:eval` are `unreachable` in the `live-android`
+  column rather than `open`, and `smoke --android` is asserted there to be **22 on a working app**
+  rather than expected to pass. A reader quoting "the live tier is green on Android" from that suite
+  alone is quoting a suite in which the gate never passes. **`live-devclient` fills every one of
+  those cells** on the same emulator [wave 29] — which is what makes the `live-android` rows a claim
+  about Expo Go's engine rather than about the platform, and why both suites are worth keeping.
 - **Whether an Android app was really stopped, at the instant the command returned.** `am force-stop`
   is asynchronous: it exits as soon as ActivityManager takes the request. `runtime:stop --android`
   claims the stop ran and — since F102 — that the app *was* running; the suite checks the effect within

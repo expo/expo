@@ -21,7 +21,16 @@
 // dev server would produce the same line. That is weaker than a debugger target, and it is written
 // down rather than rounded up — `verifiedBy: dev-server-bundle` is its own value, and the human
 // report says what it means.
+//
+// **It is a fact about which platform, though, and that half was being thrown away** [F126, added
+// 2026-08-28]. The reporter prefixes the platform and `readBundleLines` has always kept it, so a
+// caller that named `--ios` was accepting `Android Bundled …` as proof that the iOS app came back.
+// Measured with a development build on each platform on one dev server: `runtime:reload --ios`
+// exited 0 quoting the Android line [observed — wave 29 live, 2026-08-28]. The unscoped weakness
+// above is real and stays; this is the part of it the line itself can answer, and it is the same
+// finding as F53 and F100 one signal further out.
 
+import type { NativePlatform } from '../../plan/types';
 import { readDetachedLogSync } from '../../dev/logFile';
 
 /** How many lines of the captured log one read looks at. */
@@ -56,6 +65,18 @@ export interface BundleLogLine {
  */
 const BUNDLED_LINE =
   /^\s*(?<platform>[A-Za-z][A-Za-z0-9_.-]*)\s+Bundled\s+[\d.]+\s*(?:ms|s)\s+(?<entry>\S+)(?:\s+\((?<modules>\d+)\s+modules?\))?\s*$/;
+
+/**
+ * Whether a reporter's platform tag is the platform a caller named.
+ *
+ * The tag is `iOS`, `Android`, `Web` — the reporter's own casing, which is kept verbatim so a report
+ * can quote it — and the flag is `ios` / `android`, so the compare is case-insensitive. An unknown
+ * tag never matches: this exists to keep two platforms apart, and a tag nothing recognises is not
+ * evidence about either of them.
+ */
+function bundleIsFor(line: BundleLogLine, platform: NativePlatform): boolean {
+  return line.platform.toLowerCase() === platform;
+}
 
 /** Every finished bundle build in a run of log lines, oldest first. */
 export function readBundleLines(lines: readonly string[]): BundleLogLine[] {
@@ -141,6 +162,7 @@ export async function waitForNewBundleAsync(
     intervalMs = BUNDLE_POLL_INTERVAL_MS,
     tail = BUNDLE_LOG_LINES,
     signal,
+    platform = null,
   }: {
     before: BundleSignalMark;
     timeoutMs: number;
@@ -148,6 +170,14 @@ export async function waitForNewBundleAsync(
     tail?: number;
     /** Stop the wait because the caller's other proof answered first. */
     signal?: AbortSignal;
+    /**
+     * The platform the caller named, or null when they named none (F126).
+     *
+     * `null` counts every platform's bundles, and that is deliberate rather than a gap: narrowing a
+     * run that named nothing would be this module choosing a default platform, which is exactly what
+     * F53 was. The report says which platform the line it quotes was for either way.
+     */
+    platform?: NativePlatform | null;
   }
 ): Promise<BundleSignalObservation> {
   const startedAt = Date.now();
@@ -201,7 +231,8 @@ export async function waitForNewBundleAsync(
     if (before.totalLines < firstIndex) {
       reason = `the dev server wrote more than ${tail} lines since this command read its log, so which of its bundles came after the relaunch cannot be told apart`;
     } else {
-      const bundles = readBundleLines(fresh);
+      const all = readBundleLines(fresh);
+      const bundles = platform ? all.filter((line) => bundleIsFor(line, platform)) : all;
       if (bundles.length > 0) {
         return {
           observed: true,
@@ -210,6 +241,14 @@ export async function waitForNewBundleAsync(
           reason: null,
           waitedMs: waited(),
         };
+      }
+      // Something was served and it was not for the platform this command is about. Said out loud,
+      // because "no bundle finished" and "a bundle finished for the other app on this dev server"
+      // send a reader to different places.
+      if (platform && all.length > 0) {
+        const others = [...new Set(all.map((line) => line.platform))].join(', ');
+        reason =
+          `the dev server finished ${all.length} bundle${all.length === 1 ? '' : 's'} in the ${timeoutMs}ms after the app was relaunched, and ${all.length === 1 ? 'it was not' : 'none of them was'} for ${platform} — ${others} asked, which is another app on this dev server rather than the one this command reloaded`;
       }
     }
 

@@ -11,7 +11,7 @@ import type { NativePlatform } from '../plan/types';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import { findExecutableOnPath } from '../utils/subprocess';
 import { localRequirement } from './runsOn';
-import type { ToolchainProbe } from './types';
+import type { ToolchainProbe, ToolchainStatus } from './types';
 
 /**
  * How long a probe may take before it is abandoned.
@@ -55,7 +55,7 @@ export function detectToolchainAsync(platform: NativePlatform): Promise<Toolchai
 
 async function runProbeAsync(platform: NativePlatform): Promise<ToolchainProbe> {
   try {
-    return platform === 'ios' ? await detectXcodeAsync() : detectAndroidSdk();
+    return platform === 'ios' ? await detectXcodeAsync() : await detectAndroidSdkAsync();
   } catch (error: any) {
     // Unknown, not missing. Nothing was learned about the machine, and saying otherwise would send
     // a caller to a cloud build over a toolchain this probe simply could not reach.
@@ -146,15 +146,22 @@ async function detectXcodeAsync(): Promise<ToolchainProbe> {
 }
 
 /**
- * The Android SDK, which is a directory rather than a command.
+ * The Android SDK, which is a directory, and the JVM, which is a command.
  *
  * Deliberately not "is `adb` on PATH?". A Gradle build finds the SDK through `ANDROID_HOME` or
  * `local.properties`, and this machine is the case that makes the difference concrete: the SDK is
  * where the installer put it, no environment variable names it, and `adb` is not on PATH. That is
- * a machine that can build and cannot run one shell command, so the SDK decides the status and the
- * rest is reported as a caveat.
+ * a machine that can build and cannot run one shell command, so the SDK decides that half of the
+ * status and the rest is reported as a caveat.
+ *
+ * **The other half is a JVM, and it cannot be answered from the disk** [F122, added 2026-08-27].
+ * `gradlew` is a Java program, so a machine with the whole SDK and no runtime cannot build — and
+ * macOS makes the file check useless in the direction that matters: it ships a `/usr/bin/java`
+ * shim that exists, is on `PATH`, and exits 1 printing "Unable to locate a Java Runtime". So this
+ * is one spawn, which is what it costs to tell those two machines apart, and the SDK question is
+ * settled first so that a host with neither is told about the SDK without paying for it.
  */
-function detectAndroidSdk(): ToolchainProbe {
+async function detectAndroidSdkAsync(): Promise<ToolchainProbe> {
   const requirement = localRequirement('android');
   const named = ANDROID_SDK_ENV_VARS.map((name) => ({ name, value: readEnv(name) })).find(
     (entry) => entry.value
@@ -192,14 +199,66 @@ function detectAndroidSdk(): ToolchainProbe {
     );
   }
 
+  const jvm = await detectJvmAsync();
+  if (jvm.status !== 'present') {
+    return {
+      platform: 'android',
+      // `unknown` when the probe was killed rather than answered, never rounded down to `missing`:
+      // the rule the whole module follows, and here it decides between building and the cloud.
+      status: jvm.status,
+      // The SDK is named first whatever the JVM said, because "you have no Android SDK" would send
+      // somebody to install one that is already on the disk.
+      detail: `Android SDK at ${sdkDir} (${from}), and Gradle has no Java runtime to run on: ${jvm.detail}`,
+      requirement,
+      caveats,
+      impossible: false,
+    };
+  }
+
   return {
     platform: 'android',
     status: 'present',
-    detail: `Android SDK at ${sdkDir} (${from}).`,
+    detail: `Android SDK at ${sdkDir} (${from})${jvm.detail ? `, with ${jvm.detail}` : ''}.`,
     requirement,
     caveats,
     impossible: false,
   };
+}
+
+/**
+ * Whether `gradlew` has a JVM to run on, in one spawn.
+ *
+ * `JAVA_HOME` is asked first because it is what Gradle itself reads before `PATH`, and only when
+ * it names a `java` that is really there — a stale `JAVA_HOME` is common and pointing the probe at
+ * a path with nothing on it would answer a question about the variable rather than the machine.
+ */
+async function detectJvmAsync(): Promise<{ status: ToolchainStatus; detail: string }> {
+  const home = readEnv('JAVA_HOME');
+  const named = home ? path.join(home, 'bin', 'java') : null;
+  const command = named && fileExistsSync(named) ? named : 'java';
+
+  const version = await spawnCaptureAsync(command, ['-version'], { timeoutMs: PROBE_TIMEOUT_MS });
+  if (version.spawnError) {
+    return {
+      status: 'missing',
+      detail: `no Java runtime is on PATH (${version.spawnError.code ?? version.spawnError.message}). Install a JDK, or set JAVA_HOME to one.`,
+    };
+  }
+  if (version.exitCode == null) {
+    // Killed or never answered. Nothing was established, so nothing is claimed.
+    return { status: 'unknown', detail: `"${command} -version" did not answer.` };
+  }
+  if (version.exitCode !== 0) {
+    // The macOS shim lands here: a file that exists, runs, and says there is no runtime behind it.
+    const said = firstLine(version.stderr) || firstLine(version.stdout);
+    return {
+      status: 'missing',
+      detail: `"${command} -version" exited ${version.exitCode}${said ? ` — ${said}` : ''} Install a JDK, or set JAVA_HOME to one.`,
+    };
+  }
+  // `java -version` writes to stderr, which is not a mistake to correct for: it is where the JDK
+  // has always put it, and reading stdout first would report an empty string for every JDK.
+  return { status: 'present', detail: firstLine(version.stderr) || firstLine(version.stdout) };
 }
 
 /** Where the Android Studio installer puts the SDK, per host. */
@@ -227,6 +286,14 @@ function readEnv(name: string): string | null {
 function directoryExistsSync(dir: string): boolean {
   try {
     return fs.statSync(dir).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+function fileExistsSync(file: string): boolean {
+  try {
+    return fs.statSync(file).isFile();
   } catch {
     return false;
   }

@@ -111,6 +111,74 @@ describe(waitForNewBundleAsync, () => {
     ).resolves.toMatchObject({ observed: false, newBundles: 0 });
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The platform default must not answer for the other
+  // platform — F126, the same shape as F53 and F100 one signal further out.
+  //
+  // The module header is right that this proof cannot say *which client* asked. What it can say is
+  // which **platform** the bundle was built for, because the reporter prefixes it and the parser
+  // already keeps it — and without that filter a bundle served to the Android app was accepted as
+  // evidence that the iOS app came back. Measured with a development build on each platform on one
+  // dev server [observed — wave 29 live, 2026-08-28: `runtime:reload --ios` exit 0 with
+  // `bundlesAfterReload.line: "Android Bundled 42ms node_modules/expo-router/entry.js (1 module)"`,
+  // `wave29-devclient/evidence/65-reload-ios-detached-1.json`].
+  describe('the platform the caller named', () => {
+    it(`does not accept the other platform's bundle as this one's evidence`, async () => {
+      writeLog(['Starting project at /project']);
+      const before = markBundleSignalSync(projectRoot);
+      setTimeout(() => appendLog(['Android Bundled 42ms node_modules/expo-router/entry.js (1 module)']), 40);
+
+      await expect(
+        waitForNewBundleAsync(projectRoot, {
+          before,
+          timeoutMs: 400,
+          intervalMs: 25,
+          platform: 'ios',
+        })
+      ).resolves.toMatchObject({
+        observed: false,
+        newBundles: 0,
+        // The reason has to say what *did* happen: "no bundle finished" and "a bundle finished for
+        // the other app on this dev server" send a reader to different places.
+        reason: expect.stringContaining('not for ios'),
+      });
+      await expect(
+        waitForNewBundleAsync(projectRoot, {
+          before,
+          timeoutMs: 100,
+          intervalMs: 25,
+          platform: 'ios',
+        })
+      ).resolves.toMatchObject({ reason: expect.stringContaining('Android') });
+    });
+
+    it(`accepts the named platform's own bundle, whatever case the reporter prints`, async () => {
+      writeLog(['Starting project at /project']);
+      const before = markBundleSignalSync(projectRoot);
+      setTimeout(() => appendLog(['iOS Bundled 88ms node_modules/expo-router/entry.js (943 modules)']), 40);
+
+      await expect(
+        waitForNewBundleAsync(projectRoot, {
+          before,
+          timeoutMs: 3000,
+          intervalMs: 25,
+          platform: 'ios',
+        })
+      ).resolves.toMatchObject({ observed: true, last: { platform: 'iOS' } });
+    });
+
+    // No flag, one connected app, and the report says which platform the bundle was for. Narrowing
+    // here would turn "nobody said" into "iOS", which is the default that F53 was.
+    it(`counts any platform when the caller named none`, async () => {
+      writeLog(['Starting project at /project']);
+      const before = markBundleSignalSync(projectRoot);
+      setTimeout(() => appendLog(['Android Bundled 42ms node_modules/expo-router/entry.js (1 module)']), 40);
+
+      await expect(
+        waitForNewBundleAsync(projectRoot, { before, timeoutMs: 3000, intervalMs: 25 })
+      ).resolves.toMatchObject({ observed: true, last: { platform: 'Android' } });
+    });
+  });
+
   it(`reports the wait as unusable when there is no log to watch`, async () => {
     const before = markBundleSignalSync(projectRoot);
 

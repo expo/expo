@@ -120,6 +120,7 @@ describe("the flags this CLI writes onto a command line", () => {
         "-s  src/runtime/appProcess.ts",
         "-sTCP:LISTEN  src/dev/portListener.ts",
         "-version  src/toolchain/detect.ts",
+        "-version  src/toolchain/detect.ts",
       ]
     `);
   });

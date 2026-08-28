@@ -134,14 +134,93 @@ describe('detectToolchainAsync — ios', () => {
 });
 
 describe('detectToolchainAsync — android', () => {
+  // Every case below is about the SDK, so the JVM answers yes unless the test is about the JVM.
+  beforeEach(() => {
+    delete process.env.JAVA_HOME;
+    machineWith({ java: ran('', 0, 'openjdk version "21.0.5" 2024-10-15\n') });
+  });
+
   it('reports present for an SDK at the default location, with no env var set', async () => {
     vol.fromJSON({ [`${MAC_SDK}/platform-tools/adb`]: '#!/bin/sh\n' });
 
     const probe = await detectToolchainAsync('android');
 
     expect(probe.status).toBe('present');
-    expect(probe.requirement).toBe('the Android SDK on this machine');
+    expect(probe.requirement).toBe('the Android SDK and a JDK on this machine');
     expect(probe.detail).toContain(MAC_SDK);
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+  // F122. "Android is a directory, not a command" is true of the *SDK* and was read as the whole
+  // question. Gradle is a Java program, and macOS ships a `/usr/bin/java` shim that exists, is on
+  // PATH, and exits 1 saying there is no runtime — so every file check this probe could make says
+  // yes on a machine where `gradlew` dies in three seconds. Measured [observed — wave 29 live,
+  // 2026-08-27]: the plan printed "Building on this machine: this machine has the Android SDK",
+  // and `expo run:android` answered "Unable to locate a Java Runtime".
+  describe('the JVM Gradle runs on', () => {
+    it('reports missing when no java runs, and says the SDK was found anyway', async () => {
+      vol.fromJSON({ [`${MAC_SDK}/platform-tools/adb`]: '#!/bin/sh\n' });
+      machineWith({
+        java: ran('', 1, 'The operation couldn’t be completed. Unable to locate a Java Runtime.\n'),
+      });
+
+      const probe = await detectToolchainAsync('android');
+
+      expect(probe.status).toBe('missing');
+      // Both halves, because "you have no Android SDK" would send someone to install one they have.
+      expect(probe.detail).toContain(MAC_SDK);
+      expect(probe.detail).toContain('Unable to locate a Java Runtime');
+      expect(probe.impossible).toBe(false);
+    });
+
+    it('reports missing when there is no java to spawn at all', async () => {
+      vol.fromJSON({ [`${MAC_SDK}/platform-tools/adb`]: '#!/bin/sh\n' });
+      machineWith({});
+
+      const probe = await detectToolchainAsync('android');
+
+      expect(probe.status).toBe('missing');
+      expect(probe.detail).toContain('Java');
+    });
+
+    it('runs the JDK JAVA_HOME names, when there is one there', async () => {
+      process.env.JAVA_HOME = '/opt/jdk';
+      vol.fromJSON({
+        [`${MAC_SDK}/platform-tools/adb`]: '#!/bin/sh\n',
+        '/opt/jdk/bin/java': '#!/bin/sh\n',
+      });
+      machineWith({ '/opt/jdk/bin/java': ran('', 0, 'openjdk version "21.0.5"\n') });
+
+      const probe = await detectToolchainAsync('android');
+
+      expect(probe.status).toBe('present');
+      expect(spawnCaptureAsync).toHaveBeenCalledWith(
+        '/opt/jdk/bin/java',
+        ['-version'],
+        expect.anything()
+      );
+    });
+
+    // The same rule the rest of this file is about: a probe that could not decide has shown
+    // nothing, and `missing` here would route a caller to the cloud over a JDK sitting on the disk.
+    it('reports unknown when the java probe was killed rather than answered', async () => {
+      vol.fromJSON({ [`${MAC_SDK}/platform-tools/adb`]: '#!/bin/sh\n' });
+      spawnCaptureAsync.mockResolvedValue({ stdout: '', stderr: '', exitCode: null });
+
+      const probe = await detectToolchainAsync('android');
+
+      expect(probe.status).toBe('unknown');
+    });
+
+    // The SDK question is settled before the JVM one, so a machine with neither is told about the
+    // SDK — the thing `expo run:android` needs first — and nothing is spawned to say it.
+    it('does not ask about java when there is no SDK to build with', async () => {
+      const probe = await detectToolchainAsync('android');
+
+      expect(probe.status).toBe('missing');
+      expect(probe.detail).toContain('ANDROID_HOME');
+      expect(spawnCaptureAsync).not.toHaveBeenCalled();
+    });
   });
 
   // This machine, exactly: the SDK is where the installer puts it, ANDROID_HOME is unset, and

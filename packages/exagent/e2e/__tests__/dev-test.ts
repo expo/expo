@@ -154,6 +154,32 @@ describe('exagent dev', () => {
       expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios']]);
     });
 
+    // @ref llp/0005-runtime-loop-tools.rfc.md §Pointing an app at this dev server
+    // F120. A plan that ends in `expo run:ios` cannot forward `--port`, and this command says so
+    // out loud — and then built the development build's connect URL out of the flag it had just
+    // announced it was dropping. One run, two answers about the same port, twenty lines apart
+    // [observed — wave 29, live, `wave29-devclient/evidence/05-dev-build-ios.log`: the warning
+    // named `--port 8901` and the follow-up printed
+    // `dcapp://expo-development-client/?url=http%3A%2F%2F192.168.1.233%3A8901`, while
+    // `expo run:ios` was about to serve on 8081]. The URL is the follow-up an agent acts on, so
+    // the wrong half is the dangerous half.
+    it('names the port the plan will really serve on, not one it dropped', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--port', '8901']);
+
+      // The flag reached nothing: the last step is `expo run:ios`, which this plan does not forward
+      // to. That warning is correct and stays.
+      expect(result.stderr).toContain('were not passed on: --port 8901');
+      expect(readStubExpoInvocations(projectRoot).at(-1)!.args).not.toContain('--port');
+      // So no line of the report may name 8901 as somewhere a device can reach this dev server.
+      const connectLine = result.all
+        .split('\n')
+        .find((line) => line.includes('expo-development-client'));
+      expect(connectLine).toBeDefined();
+      expect(connectLine).not.toContain('8901');
+      expect(connectLine).toContain('8081');
+    });
+
     it('records no build when the fingerprint is unavailable', async () => {
       const projectRoot = await setupAsync('dev-client-app');
       await executeExagentAsync(projectRoot, ['dev', '--ios']);

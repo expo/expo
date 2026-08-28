@@ -679,6 +679,14 @@ function planStepFailedError(
  * dev server nor the command line named one, and a URL built on that assumption is how this
  * command came to tell an agent to open a *different project's* app
  * [observed — friction run, 2026-08-23].
+ *
+ * The dev-server options a follow-up may quote are the **plan's last step**, never the caller's own
+ * arguments. They are the same list for a plan that ends in `expo start`, and they differ for every
+ * plan that does not: `--port` and `--tunnel` cannot be forwarded to `expo run:ios`, this command
+ * already says so out loud, and reading the raw arguments made it print a development-build URL
+ * naming the port it had just announced it was dropping — while the step was about to serve on 8081
+ * [F120, observed — wave 29 live, 2026-08-27]. The plan is the argv that will run (llp/0015 §The
+ * plan approved is the plan run), so it is the one thing a follow-up may read.
  */
 async function resolveRunFollowUpsAsync(
   projectRoot: string,
@@ -686,15 +694,16 @@ async function resolveRunFollowUpsAsync(
   options: DevOptions,
   devServer: DevServerRun | null
 ): Promise<FollowUp[]> {
+  const planArgs = plan.steps.at(-1)?.argv.slice(1) ?? [];
   const port = devServer
     ? // After the run: what the dev server reported, and nothing when it reported nothing.
       devServer.port && devServer.port.source !== 'default'
       ? devServer.port.port
       : null
-    : // Before it: the flag, or the port `expo start` uses when none is named.
-      resolveDevServerPort(options.expoArgs);
+    : // Before it: the port the plan's own last step carries, or the one the Expo CLI defaults to.
+      resolveDevServerPort(planArgs);
 
-  return await resolveStartFollowUpsAsync(projectRoot, options, {
+  return await resolveStartFollowUpsAsync(projectRoot, { ...options, expoArgs: planArgs }, {
     expoGo: plan.target === 'expo-go',
     web: plan.target === 'web',
     port,

@@ -39,12 +39,17 @@ export const RUNS_ON_LABELS: Record<RunsOn, string> = {
  *
  * The bare name is what composes: "this machine has no Xcode" and "without Xcode" both read, and
  * both break the moment the location is baked into the noun.
+ *
+ * **Android names two things, because it needs two** [F122, 2026-08-27]. `gradlew` is a Java
+ * program, so an SDK on the disk with no JVM to run it is a machine that cannot build — and the
+ * sentences this string goes into are "this machine does not have X", which was false of every
+ * such machine while X was the SDK alone.
  */
 export function localTool(platform: NativePlatform | null): string {
   if (platform == null) {
     return 'the platform toolchain';
   }
-  return platform === 'ios' ? 'Xcode' : 'the Android SDK';
+  return platform === 'ios' ? 'Xcode' : 'the Android SDK and a JDK';
 }
 
 /**

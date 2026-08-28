@@ -103,6 +103,27 @@ async function planTextInAsync(
   return result.stdout;
 }
 
+/**
+ * An Android toolchain this test controls, rather than whatever this laptop happens to have.
+ *
+ * @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+ * The probe asks two questions — is there an SDK directory, and does a `java` run — and the second
+ * is a **spawn**, so on a machine with the SDK installed and no JDK on `PATH` it answers `missing`
+ * and the backend selector correctly plans an `eas build` [F122, 2026-08-28; this test went red on
+ * exactly that machine]. A plan-shape assertion must not turn on either fact, so both are supplied:
+ * `ANDROID_HOME` names a directory that exists, and `JAVA_HOME` names one whose `bin/java` exits 0.
+ */
+async function androidToolchainEnvAsync(projectRoot: string): Promise<Record<string, string>> {
+  const sdk = path.join(projectRoot, '.stub-android-sdk');
+  await fs.promises.mkdir(path.join(sdk, 'platform-tools'), { recursive: true });
+  const jdk = path.join(projectRoot, '.stub-jdk');
+  await fs.promises.mkdir(path.join(jdk, 'bin'), { recursive: true });
+  const java = path.join(jdk, 'bin', 'java');
+  await fs.promises.writeFile(java, '#!/bin/sh\necho \'openjdk version "21.0.5"\' 1>&2\nexit 0\n');
+  await fs.promises.chmod(java, 0o755);
+  return { ANDROID_HOME: sdk, JAVA_HOME: jdk };
+}
+
 /** Ask for the plan of a fixture as text, and assert that asking executed nothing. */
 async function planTextAsync(
   fixtureName: string,
@@ -191,7 +212,12 @@ describe('exagent dev --plan', () => {
     });
 
     it('plans for Android when Android is requested', async () => {
-      const output = await planTextAsync('dev-client-app', ['--android']);
+      const projectRoot = await setupAsync('dev-client-app');
+      const output = await planTextInAsync(
+        projectRoot,
+        ['--android'],
+        await androidToolchainEnvAsync(projectRoot)
+      );
 
       expect(output).toContain('expo prebuild --platform android');
       expect(output).toContain('expo run:android');

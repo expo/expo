@@ -117,7 +117,7 @@ describe('where each row of the decision table runs', () => {
     expect(runsOnOf(plan)).toEqual([['run', 'local']]);
     expect(plan.buildLocation).toMatchObject({
       platform: 'android',
-      requirement: 'the Android SDK on this machine',
+      requirement: 'the Android SDK and a JDK on this machine',
       alternativeCommand: 'npx eas build --platform android --profile development',
     });
   });
@@ -191,7 +191,7 @@ describe('applyToolchainProbe', () => {
       plan,
       probe({
         platform: 'android',
-        requirement: 'the Android SDK on this machine',
+        requirement: 'the Android SDK and a JDK on this machine',
         detail: 'Android SDK at /home/dev/Library/Android/sdk (the default install location).',
         caveats: [
           'adb is not on PATH, though it is at /home/dev/Library/Android/sdk/platform-tools.',

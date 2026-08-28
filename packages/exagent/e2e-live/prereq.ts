@@ -341,6 +341,152 @@ export function androidDeviceGate(): { gate: Gate; device: AndroidDevice | null 
   return { gate: ok, device: { serial: '', adb, bootAvd: avd } };
 }
 
+/** What a project's static config says about the app a development build of it would be. */
+export type DevClientProject = {
+  /** The project root, used in place rather than copied. */
+  root: string;
+  /** `expo.scheme`, which is the dev launcher's URL scheme. */
+  scheme: string;
+  /** `expo.android.package`, or null when the config names none. */
+  androidPackage: string | null;
+  /** `expo.ios.bundleIdentifier`, or null when the config names none. */
+  iosBundleId: string | null;
+};
+
+/**
+ * A project with `expo-dev-client` and a **development build of it already installed** on a device.
+ *
+ * The gate is the installed app rather than the project, and that is the whole reason this suite is
+ * shaped unlike every other one in this tier. `live-local` and `live-android` scaffold their own
+ * project in `beforeAll` because `exagent new` costs seconds. A development build costs about
+ * **fifteen minutes** of Xcode or Gradle, and [[0022-live-tier]] §What green claims already says a
+ * suite may not spend that. So the artifact is the prerequisite: somebody ran `npx expo run:android`
+ * once, and this suite is what that buys.
+ *
+ * Consequences worth knowing before reading a skip:
+ *
+ * - **The project is named, not scaffolded** (`EXAGENT_LIVE_DEVCLIENT_PROJECT`), because the
+ *   installed app is bound to that project's `android.package` / `ios.bundleIdentifier` and its
+ *   `scheme`. A fresh scaffold would be a different app.
+ * - **It is used in place, not copied.** The scratch-outside-git rule exists because `eas deploy`
+ *   and `eas build` upload by walking to the git root, and this suite makes no EAS call at all. What
+ *   it writes to the project is what the CLI writes to any project it serves: `.expo/`.
+ * - **The device half is one `pm list packages` / `simctl listapps`**, per platform, so a machine
+ *   with the build on one platform and not the other gets the block it can run.
+ */
+export function devClientProjectGate(): {
+  gate: Gate;
+  project: DevClientProject | null;
+} {
+  const named = process.env.EXAGENT_LIVE_DEVCLIENT_PROJECT;
+  if (!named) {
+    return {
+      gate: missing(
+        'EXAGENT_LIVE_DEVCLIENT_PROJECT is not set. This suite drives a development build that is ' +
+          'already installed on a device, because making one costs about fifteen minutes and a live ' +
+          'suite may not spend that. Point it at a project you have run "npx expo run:android" or ' +
+          '"npx expo run:ios" in'
+      ),
+      project: null,
+    };
+  }
+  const root = path.resolve(named);
+  let config: any;
+  try {
+    config = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8'))?.expo;
+  } catch (error: any) {
+    return {
+      gate: missing(`${root} has no readable app.json: ${error.message}`),
+      project: null,
+    };
+  }
+  let dependencies: Record<string, string> = {};
+  try {
+    dependencies = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
+      ?.dependencies ?? {};
+  } catch (error: any) {
+    return { gate: missing(`${root} has no readable package.json: ${error.message}`), project: null };
+  }
+  if (!dependencies['expo-dev-client']) {
+    return {
+      gate: missing(
+        `${root} does not depend on expo-dev-client, so nothing there is a development build — run "npx exagent install expo-dev-client" in it, then "npx expo run:android"`
+      ),
+      project: null,
+    };
+  }
+  // A scheme is what the dev launcher's URL is addressed to, and a project without one has no URL
+  // this suite could open. `exp+<slug>` is the Expo CLI's fallback and is registered too, but the
+  // CLI under test reads `scheme` first, so a project that has none is a different test.
+  const scheme: string | null = config?.scheme ?? null;
+  if (!scheme) {
+    return {
+      gate: missing(
+        `${root}'s app.json names no expo.scheme, so its development build has no URL to open — add one and rebuild`
+      ),
+      project: null,
+    };
+  }
+  return {
+    gate: ok,
+    project: {
+      root,
+      scheme,
+      androidPackage: config?.android?.package ?? null,
+      iosBundleId: config?.ios?.bundleIdentifier ?? null,
+    },
+  };
+}
+
+/** Whether this project's development build is installed on `serial`, in one `adb` call. */
+export function androidDevBuildGate(project: DevClientProject | null, device: AndroidDevice | null): Gate {
+  if (!project) {
+    return missing('no development-build project was resolved, so nothing could be looked for');
+  }
+  if (!device || !device.serial) {
+    return missing(
+      'no Android device is attached. This suite does not boot one: the emulator it would boot ' +
+        'would not have this project’s development build on it, which is the prerequisite'
+    );
+  }
+  if (!project.androidPackage) {
+    return missing(`${project.root}'s app.json names no expo.android.package`);
+  }
+  try {
+    const packages = execFileSync(device.adb, ['-s', device.serial, 'shell', 'pm', 'list', 'packages'], {
+      encoding: 'utf8',
+      timeout: 120_000,
+    });
+    if (!packages.includes(`package:${project.androidPackage}`)) {
+      return missing(
+        `${project.androidPackage} is not installed on ${device.serial} — run "npx expo run:android" in ${project.root} once (about fifteen minutes), and this suite is what that buys`
+      );
+    }
+  } catch (error: any) {
+    return missing(`"${device.adb} -s ${device.serial} shell pm list packages" could not run: ${error.message}`);
+  }
+
+  // The second half, and it is what makes the suite cheap rather than merely possible: `exagent dev`
+  // plans a **build** for a platform with no recorded fingerprint, so a project whose app is
+  // installed and whose record is missing would send `beforeAll` into fifteen minutes of Gradle.
+  // The record is written when the `expo run:android` step exits — which is when its dev server is
+  // stopped, not when the compiler finishes [observed — wave 29, 2026-08-28] — so "installed" and
+  // "recorded" really are two facts and this gate needs both.
+  const record = path.join(project.root, '.expo', 'exagent-last-build.json');
+  try {
+    if (JSON.parse(fs.readFileSync(record, 'utf8'))?.android == null) {
+      return missing(
+        `${record} records no android build, so "exagent dev" would plan one rather than serve the app that is installed — run "npx expo run:android" through "npx exagent dev --android", and stop it with "npx exagent dev:stop", which is what writes the record`
+      );
+    }
+  } catch {
+    return missing(
+      `${project.root} has no ${path.join('.expo', 'exagent-last-build.json')}, so "exagent dev" would plan a native build rather than serve the app that is already installed`
+    );
+  }
+  return ok;
+}
+
 /** Where the Expo CLI family keeps the session, per {@link stagingGate}'s environment. */
 export const STAGING_SESSION_FILE = path.join(os.homedir(), '.expo-staging', 'state.json');
 
