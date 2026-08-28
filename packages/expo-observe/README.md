@@ -71,96 +71,55 @@ Then run `eas build`. Instrumentation ships with the binary, and metrics appear 
 
 Launch, bundle load and render metrics are automatic. The one explicit call exists because only your code knows when your app is genuinely ready for input. Automatic where it can be, explicit where accuracy matters.
 
-## What it measures
+## Startup metrics
 
-**Startup, automatically:**
+Cold launch, warm launch, bundle load and time to first render are collected automatically. Time to interactive comes from your `markInteractive()` call. Every TTI event also carries frame, thermal, battery and network params, and a summary of the requests made during launch, so you can tell a slow device from a slow network. Tools built for browsers do not collect these fields, because on the web they do not exist.
 
-| Metric | What it measures |
-| --- | --- |
-| Cold launch | Process creation to the end of runtime, resource and component initialization, before the UI renders |
-| Warm launch | Return to foreground from an already resident process |
-| Bundle load | Loading the JavaScript bytecode and evaluating it |
-| Time to first render (TTR) | Native launch finish to the root React component's first render |
-| Time to interactive (TTI) | Launch to when the user can actually tap and scroll |
+Every event carries app, release, device and route context, so you can group the results by version, model or screen.
 
-**Per screen:** on SDK 56 and later, the Expo Router and React Navigation integrations record per-route render metrics. They are opt-in. Enable one at module scope, before any screen mounts:
+See [Metrics reference](https://docs.expo.dev/eas/observe/reference/metrics/).
 
-```tsx
-Observe.configure({ integrations: { 'expo-router': true } });
-```
+## Per-screen metrics
 
-TTI per screen uses `markInteractive()`.
+On SDK 56 and later, the Expo Router and React Navigation integrations record per-route render and interactive timings. Both are opt-in.
 
-**Update downloads:** apps that use EAS Update also report how long each update bundle takes to download. This needs no instrumentation.
+See [Expo Router integration](https://docs.expo.dev/eas/observe/integrations/expo-router/) and [React Navigation integration](https://docs.expo.dev/eas/observe/integrations/react-navigation/).
 
-**Device state the web has no concept of.** TTI events carry frozen frames, slow frames, total delay, thermal state, low power mode, battery level and charging state, network type, and whether the connection is metered or constrained. They also summarize the requests the app made during launch: count, failures, bytes, throughput, and facts about the slowest one. Some params are platform-specific, and each is omitted when the OS reports no value. Tools built for browsers do not collect these fields, because on the web they do not exist.
+## Update downloads
 
-**Context, on every event:** app version and build number, environment, OS and OS version, device model and name, Expo SDK version, React Native version, language tag, app identifier and route. Sessions running an EAS build or an EAS Update also carry the build ID, the update ID and the channel.
+Apps that use EAS Update report how long each update bundle takes to download. This needs no instrumentation.
 
-Median, average, min, max, p80, p90 and p99 on every metric, alongside the event count. Sampling is off by default, so by default you get everything.
+See [EAS Update download performance](https://docs.expo.dev/eas/observe/eas-update/).
 
-**User-defined events.** Send your own events with any serializable attributes. They land on the same timeline as the startup metrics, so a business event sits next to the frame drop that happened around it.
+## User-defined events
 
-## Send the data somewhere else
+Log your own named events with `Observe.logEvent`. They land on the same timeline as the startup metrics, so a business event sits next to the frame drop that happened around it.
 
-`expo-observe` transmits over the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. Point it at your own collector:
+See [User-defined events](https://docs.expo.dev/eas/observe/events/).
 
-```json
-{
-  "expo": {
-    "extra": {
-      "eas": {
-        "observe": {
-          "endpointUrl": "https://your-collector.example.com"
-        }
-      }
-    }
-  }
-}
-```
+## Errors
 
-Metrics post to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`.
+On SDK 57 and later, unhandled JavaScript errors are recorded automatically. Wrap a subtree in `ObserveErrorBoundary` to catch render errors, and call `Observe.reportError` for the errors you handle yourself. This feature is in preview.
 
-The endpoint is baked into the native layer at build time. After you change it, run `npx expo prebuild` and create a new build.
+See [Error reporting](https://docs.expo.dev/eas/observe/errors/).
 
-The endpoint exists so that there is no lock-in. The reason to keep the default is attribution: EAS is the only collector that already knows which build and which update a session was running.
+## Custom endpoint
+
+`expo-observe` transmits over the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. Set `endpointUrl` in your app config to send the data to your own collector instead. The endpoint exists so that there is no lock-in. The reason to keep the default is attribution: EAS is the only collector that already knows which build and which update a session was running.
+
+See [Custom endpoint](https://docs.expo.dev/eas/observe/configuration/#custom-endpoint).
 
 ## Configuration
 
-```tsx
-import { Observe } from 'expo-observe';
+`Observe.configure()` sets the environment label, the sampling rate, dispatching behavior and integrations at runtime. `Observe.dispatchEvents()` flushes pending events manually.
 
-Observe.configure({
-  environment: 'production',
-  sampleRate: 0.25,
-});
-```
+See [Configuration](https://docs.expo.dev/eas/observe/configuration/).
 
-| Option | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `environment` | string | `process.env.NODE_ENV ?? 'production'` | Environment label on every event |
-| `dispatchingEnabled` | boolean | `true` | Whether collected events are sent |
-| `dispatchInDebug` | boolean | `false` | Whether metrics from debug builds are sent |
-| `sampleRate` | number | undefined | Fraction of installations that dispatch, in [0, 1] |
-| `errorHandlingEnabled` | boolean | `true` | Whether unhandled JavaScript errors are recorded |
-| `integrations` | object | undefined | Opt-in settings for EAS Observe integrations |
+## Command line and agents
 
-Sampling is deterministic per installation, so you get a stable slice of users rather than a scatter of partial sessions. Values outside [0, 1] are clamped. Percentiles are computed on the slice you keep and are not extrapolated.
+Everything the dashboard shows is also available from the terminal through the `eas observe:` commands. They all accept `--json --non-interactive`, so you can pipe them into a script or hand them to a coding agent. The `eas-observe` [Expo Skill](https://docs.expo.dev/skills/) teaches an agent to set the library up and query the results.
 
-`Observe.dispatchEvents()` flushes manually.
-
-## Reading the data from the command line, or from an agent
-
-```bash
-eas observe:versions
-eas observe:metrics-summary
-eas observe:metrics
-eas observe:routes
-eas observe:session
-eas observe:events
-```
-
-All six accept `--json --non-interactive`, so you can pipe them into a script or hand them to a coding agent. `--platform` filters every command except `observe:session`, which already targets one session. The `eas-observe` skill covers setup, metrics and queries: https://docs.expo.dev/skills/.
+See [Querying with EAS CLI](https://docs.expo.dev/eas/observe/eas-cli/).
 
 ## Documentation
 
