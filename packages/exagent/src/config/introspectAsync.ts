@@ -113,12 +113,36 @@ export function parseIntrospectedConfig(stdout: string): IntrospectedConfig | nu
   return null;
 }
 
-/** The last lines of a captured stream, which is where a CLI says what went wrong. */
+/** A line of a Node stack trace: `    at fn (file:1:2)`, and `    at async …`. */
+const STACK_FRAME = /^\s*at\s/;
+
+/**
+ * The last lines of a captured stream, which is where a CLI says what went wrong — except when it
+ * threw.
+ *
+ * A thrown Node error puts its **message first and its frames after it**, so the tail of such a
+ * stream is the part that says nothing: `inspect:config-plugins` answered a config with an
+ * unresolvable plugin in it by quoting ten `at resolvePluginForModule (…)` lines and dropping
+ * `Failed to resolve plugin for module "./plugins/withNothingHere"` (F133, live wave 31). Stack
+ * frames are therefore dropped before the tail is taken, and only kept when they are all the tool
+ * wrote — frames are a weak answer, and inventing "the CLI stopped without a message" over them
+ * would be a wrong one.
+ */
 function outputTail(output: string, maxLines = 10): string {
-  return output
+  const lines = output
     .split('\n')
     .map((line) => line.trimEnd())
-    .filter(Boolean)
+    .filter(Boolean);
+  const said = lines.filter((line) => !STACK_FRAME.test(line));
+  // Consecutive duplicates go too, because a thrown error is written twice — once as the message
+  // and once as the header of its own stack — and after the frames are dropped that is the whole
+  // reason, said twice in a row.
+  return dedupeAdjacent(said.length ? said : lines)
     .slice(-maxLines)
     .join('\n');
+}
+
+/** The list with runs of identical entries collapsed to one. */
+function dedupeAdjacent(lines: string[]): string[] {
+  return lines.filter((line, index) => line !== lines[index - 1]);
 }

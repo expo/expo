@@ -81,7 +81,7 @@ describe('syncSkillsAsync', () => {
       agents: [claudeAgent, cursorAgent, codexAgent],
       source: 'cache',
     });
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
@@ -99,7 +99,7 @@ describe('syncSkillsAsync', () => {
       agents: [claudeAgent],
       source: 'prompt',
     });
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
@@ -112,7 +112,7 @@ describe('syncSkillsAsync', () => {
       agents: [cursorAgent],
       source: 'flags',
     });
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: ['cursor'], dryRun: false });
 
@@ -125,7 +125,7 @@ describe('syncSkillsAsync', () => {
       agents: [claudeAgent],
       source: 'cache',
     });
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
@@ -139,7 +139,7 @@ describe('syncSkillsAsync', () => {
       source: 'cache',
     });
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent]);
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
@@ -156,7 +156,7 @@ describe('syncSkillsAsync', () => {
       agents: [claudeAgent],
       source: 'prompt',
     });
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: true });
 
@@ -183,7 +183,7 @@ describe('syncSkillsAsync', () => {
       agents: [claudeAgent],
       source: 'cache',
     });
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: ['stale'] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: ['stale'], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
@@ -200,7 +200,7 @@ describe('syncSkillsAsync', () => {
       jest
         .mocked(resolveAgentsAsync)
         .mockResolvedValueOnce({ agents: [claudeAgent], source: 'cache' });
-      jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+      jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
     }
 
     it('should offer the skill list', async () => {
@@ -388,7 +388,7 @@ describe('skills --json reports', () => {
     });
     jest
       .mocked(syncSkillLinksAsync)
-      .mockResolvedValueOnce({ created: ['.claude/skills/my-skill'], pruned: ['.claude/skills/x'] });
+      .mockResolvedValueOnce({ created: ['.claude/skills/my-skill'], pruned: ['.claude/skills/x'], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false, json: true });
 
@@ -407,6 +407,7 @@ describe('skills --json reports', () => {
       ],
       linked: ['.claude/skills/my-skill'],
       removed: ['.claude/skills/x'],
+      skipped: [],
       followups: [
         {
           id: 'skills-list',
@@ -415,6 +416,44 @@ describe('skills --json reports', () => {
         },
       ],
     });
+  });
+
+  // F131 [live, wave 31]: the guard that refuses to replace a directory the user created reported
+  // `linked: []`, `removed: []` and nothing else, so the object said "nothing to do" about a run
+  // in which a skill the project ships is not linked and only the user can unblock it
+  // [`wave31-open-cells/evidence/44-skills-sync-collision.out`].
+  it('should report a skill it could not link, and why', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
+      agents: [claudeAgent],
+      source: 'cache',
+    });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({
+      created: [],
+      pruned: [],
+      skipped: [
+        {
+          link: '.claude/skills/my-skill',
+          package: '@acme/tool',
+          skill: 'my-skill',
+          reason: 'occupied',
+        },
+      ],
+    });
+
+    await syncSkillsAsync('/root', { agents: [], dryRun: false, json: true });
+
+    expect(parsed().skipped).toEqual([
+      {
+        link: '.claude/skills/my-skill',
+        package: '@acme/tool',
+        skill: 'my-skill',
+        reason: 'occupied',
+      },
+    ]);
+    // And the two lists that used to be the whole answer still say what they said.
+    expect(parsed().linked).toEqual([]);
+    expect(parsed().removed).toEqual([]);
   });
 
   // The English this replaced: "No agent skills found in the project dependencies."
@@ -430,6 +469,7 @@ describe('skills --json reports', () => {
       discovered: [],
       linked: [],
       removed: [],
+      skipped: [],
       followups: [],
     });
   });
@@ -439,7 +479,7 @@ describe('skills --json reports', () => {
     jest
       .mocked(resolveAgentsAsync)
       .mockResolvedValueOnce({ agents: [claudeAgent], source: 'cache' });
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['a'], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['a'], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: true, json: true });
 
@@ -500,7 +540,7 @@ describe('autoSyncSkillsAsync', () => {
     jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
 
     await autoSyncSkillsAsync('/root');
 
@@ -518,7 +558,7 @@ describe('autoSyncSkillsAsync', () => {
     jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill, otherSkill]);
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [], skipped: [] });
 
     await autoSyncSkillsAsync('/root', { packages: ['@acme/tool'] });
 
@@ -531,7 +571,7 @@ describe('autoSyncSkillsAsync', () => {
     jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [], skipped: [] });
 
     await autoSyncSkillsAsync('/root', { packages: ['@acme/tool@~1.2.0'] });
 

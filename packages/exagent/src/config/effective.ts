@@ -115,6 +115,7 @@ export function buildEffectiveConfig(options: BuildEffectiveConfigOptions): Effe
     source: { command: options.command, durationMs: options.durationMs },
     platforms: selectPlatforms(modResults, options.platform, options.file),
     plugins: joinPlugins(internal.pluginHistory, options.declaredPluginIds),
+    declaredNotApplied: declaredNotApplied(internal.pluginHistory, options.declaredPluginIds),
     expoAutolinkedModules: Array.isArray(internal.autolinkedModules)
       ? [...internal.autolinkedModules].sort()
       : [],
@@ -195,11 +196,7 @@ function joinPlugins(
     return [];
   }
 
-  const declared = new Set<string>();
-  for (const id of declaredPluginIds) {
-    declared.add(id);
-    declared.add(id.split('/').pop() ?? id);
-  }
+  const declared = declaredNames(declaredPluginIds);
 
   return Object.entries(pluginHistory)
     .map(([key, entry]) => {
@@ -211,6 +208,59 @@ function joinPlugins(
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Plugin ids the app config names that {@link joinPlugins}'s list cannot account for.
+ *
+ * The gap §joinPlugins documents, said where the reader is (F132). `Plugins 10 (1 declared, 9
+ * auto)` for a config that declares three is not wrong — one declared plugin *did* record itself —
+ * and it is unreadable, because the two the count leaves out are exactly the ones the caller wrote
+ * down and is looking for. Naming them puts this in the same class as {@link NOT_ATTRIBUTABLE},
+ * which the report has always printed: what this command cannot see is part of its answer.
+ *
+ * A plugin here has not necessarily done nothing. `expo-router` modified the Info.plist of the
+ * scaffold this was found on and is still absent from the history [observed — 2026-08-28], so the
+ * honest reading is narrower than "it did not run": the history did not record it, and this command
+ * has nothing else to go on.
+ */
+function declaredNotApplied(
+  pluginHistory: IntrospectedInternal['pluginHistory'],
+  declaredPluginIds: string[]
+): string[] {
+  if (pluginHistory == null || typeof pluginHistory !== 'object') {
+    // Nothing was recorded at all, which the `plugins` list already reports as empty. Repeating
+    // every declared id here would restate the app config rather than name a gap.
+    return [];
+  }
+
+  const applied = new Set<string>();
+  for (const [key, entry] of Object.entries(pluginHistory)) {
+    applied.add(key);
+    if (typeof entry?.name === 'string' && entry.name) {
+      applied.add(entry.name);
+    }
+  }
+
+  return declaredPluginIds
+    .filter((id) => {
+      const names = declaredNames([id]);
+      return ![...names].some((name) => applied.has(name));
+    })
+    .sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * The names one declared id may be recorded under: the id itself and its last path segment,
+ * because a local plugin is declared by path (`./plugins/withThing`) and recorded by name.
+ */
+function declaredNames(declaredPluginIds: string[]): Set<string> {
+  const names = new Set<string>();
+  for (const id of declaredPluginIds) {
+    names.add(id);
+    names.add(id.split('/').pop() ?? id);
+  }
+  return names;
 }
 
 /**

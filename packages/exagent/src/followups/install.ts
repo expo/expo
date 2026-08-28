@@ -48,7 +48,7 @@ export function buildInstallFollowUps({
     followups.push({
       id: 'reload-app',
       command: 'npx exagent runtime:reload',
-      why: 'Only JavaScript changed, so reloading the app is enough to pick the package up — no rebuild.',
+      why: reloadReason(reports),
     });
   }
 
@@ -77,4 +77,30 @@ export function buildInstallFollowUps({
   });
 
   return capFollowUps(followups);
+}
+
+/**
+ * Why a reload is enough, in the words of what the classifier actually found.
+ *
+ * There are two reasons and they are not the same claim (F134, live wave 31). `install
+ * expo-haptics` used to answer "Only JavaScript changed" beside its own `impact: "native-module"`
+ * and `ships an ios/ directory` — a contradiction inside one object, and the wrong half is the
+ * sentence: the package ships native code, and what makes the reload enough is that **Expo Go
+ * already carries it**. That reason stops holding the moment the project builds a runtime of its
+ * own, which is what an agent needs to know and what the shorter sentence hid.
+ *
+ * A native package can only reach this rung by being bundled into the runtime the project targets
+ * (`resolveAction`: `expoGoBundled && targetsExpoGo`), so Expo Go can be named rather than hedged.
+ * A set that mixes both kinds says only what is true of the set.
+ */
+function reloadReason(reports: InstallImpactReport[]): string {
+  const bundled = reports.filter((report) => report.impact !== 'js-only');
+  if (!bundled.length) {
+    return 'Only JavaScript changed, so reloading the app is enough to pick the package up — no rebuild.';
+  }
+  const names = bundled.map((report) => report.packageName).join(', ');
+  const carried = `Expo Go already carries ${names}, so no rebuild is needed for it`;
+  return bundled.length === reports.length
+    ? `${carried}: reloading the app is enough to pick it up. A project that builds its own runtime would need a new build.`
+    : `${carried}, and the rest changed JavaScript only: reloading the app is enough to pick the packages up.`;
 }

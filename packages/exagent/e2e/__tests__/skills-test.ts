@@ -121,6 +121,63 @@ describe('exagent skills', () => {
       );
     });
 
+    // F131 [live, wave 31]: the guard that refuses to replace a directory the user created worked,
+    // and the run reported `linked: []`, `removed: []` and nothing else, so the object an agent
+    // parses said "there was nothing to do" about a run in which a skill this project ships is not
+    // linked and only the user can unblock it
+    // [`wave31-open-cells/evidence/44-skills-sync-collision.out`, beside the warning that went to
+    // stderr]. Read the two together and the report is worse than silence: it is reassuring.
+    it('reports a skill it could not link because the name is taken', async () => {
+      const own = path.join(projectRoot, CLAUDE_SKILLS_DIR, 'usage');
+      await fs.promises.mkdir(own, { recursive: true });
+      await fs.promises.writeFile(path.join(own, 'SKILL.md'), '# my own skill\n');
+
+      const result = await executeExagentAsync(projectRoot, [
+        'skills:sync',
+        '--agent',
+        'claude-code',
+        '--json',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      const payload = JSON.parse(result.stdout);
+      expect(payload.linked).toEqual([]);
+      expect(payload.removed).toEqual([]);
+      expect(payload.skipped).toEqual([
+        {
+          link: linkPath(CLAUDE_SKILLS_DIR),
+          package: 'fake-module-with-skills',
+          skill: 'usage',
+          reason: 'occupied',
+        },
+      ]);
+      // The user's file is what the guard exists for, and it is untouched.
+      expect(await fs.promises.readFile(path.join(own, 'SKILL.md'), 'utf8')).toBe(
+        '# my own skill\n'
+      );
+      // The reason is still on stderr for a person, which is where it always was.
+      expect(result.stderr).toContain('was not created by Expo');
+    });
+
+    it('says on the human summary that a skill was not linked', async () => {
+      const own = path.join(projectRoot, CLAUDE_SKILLS_DIR, 'usage');
+      await fs.promises.mkdir(own, { recursive: true });
+      await fs.promises.writeFile(path.join(own, 'SKILL.md'), '# my own skill\n');
+
+      const result = await executeExagentAsync(projectRoot, [
+        'skills:sync',
+        '--agent',
+        'claude-code',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      // The line above counts what the project ships and says "linked", which is untrue here, so
+      // the correction has to be beside it or the summary reads as "1 skill linked".
+      expect(result.stdout).toContain('1 skill(s) from 1 package(s) linked for');
+      expect(result.stdout).toContain('1 of those skill(s) is not linked');
+      expect(result.stdout).toContain('fake-module-with-skills/usage (occupied)');
+    });
+
     // @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills:sync`.
     it('ends with a Next section pointing at the skill list', async () => {
       const result = await executeExagentAsync(projectRoot, [

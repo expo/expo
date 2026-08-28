@@ -105,7 +105,17 @@ function formatSetting(value: unknown): string {
 function pluginsLine(report: EffectiveConfigReport): string {
   const declared = report.plugins.filter((plugin) => plugin.declared).length;
   const auto = report.plugins.length - declared;
-  return `${report.plugins.length} (${declared} declared, ${auto} auto)`;
+  const counts = `${report.plugins.length} (${declared} declared, ${auto} auto)`;
+  if (!report.declaredNotApplied.length) {
+    return counts;
+  }
+  // F132: `1 declared` on a config that declares three is the reader's only clue that two are
+  // missing, and it does not read as one. The gap goes on the same line as the count it qualifies.
+  return `${counts} ${chalk.yellow(
+    `— ${report.declaredNotApplied.length} declared not in the history: ${report.declaredNotApplied.join(
+      SEPARATOR
+    )}`
+  )}`;
 }
 
 /** The mods of one platform, each with the count that says how much it holds. */

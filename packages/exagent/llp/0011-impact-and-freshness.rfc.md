@@ -24,6 +24,42 @@ The word is now used twice in this package, deliberately. `src/project/impact.ts
 name from `install`, from the plan engine and from llp/0004, and a rename would cost every one of
 those a hop to buy a distinction the directory already makes.
 
+## `reload` has two reasons, and the follow-up used to give the wrong one
+
+[added 2026-08-28, wave 31 — **F134**, found by running `install` against the real registry for the
+first time ([[0019-backend-parity-audit]] §live-project).]
+
+`classifyInstallImpactAsync` reaches `action: 'reload'` down two different paths, and `resolveAction`
+in `src/project/impact.ts` says so in as many words:
+
+1. `impact === 'js-only'` — nothing native was added, so the native runtime is unchanged.
+2. `expoGoBundled && targetsExpoGo` — something native *was* added, and the runtime the project
+   targets already contains it.
+
+The classification was right both times. The **sentence beside it** was one string:
+*"Only JavaScript changed, so reloading the app is enough to pick the package up — no rebuild."*
+So `exagent install expo-haptics --json` on an Expo Go project printed one object holding
+`impact: "native-module"`, `"ships an ios/ directory"`, `"ships an expo-module.config.json"` — and,
+three keys later, a claim that only JavaScript changed [observed — 2026-08-28, an SDK 57 scaffold,
+`wave31-open-cells/evidence/03-install-haptics.out`].
+
+**Why it matters beyond being untrue.** Reason 2 is *conditional on the runtime*, and reason 1 is not.
+The moment that project gains `expo-dev-client` or a native directory, `targetsExpoGo` goes false and
+the same package needs a build — and the sentence that said "only JavaScript changed" gave an agent no
+reason to expect that. The one that names Expo Go does. This is §Two things called impact at the level
+of the prose: the classifier already distinguishes the two, and only the wording collapsed them.
+
+**The decision.** `reloadReason` in `src/followups/install.ts` reads the reports it was already given
+and words the rung from them: the js-only sentence when nothing native was added, and
+*"Expo Go already carries `<packages>`, so no rebuild is needed for it: reloading the app is enough to
+pick it up. A project that builds its own runtime would need a new build."* when something was. A set
+that mixes both says only what is true of the set. No new input — `impact` and `expoGoBundled` are on
+every report — which is what made the old sentence a wording bug rather than a missing fact.
+
+**And the fixture that hid it.** The unit test for this case asserted the follow-up **ids** and not the
+`why`, so the contradiction passed at every tier for as long as it existed. The test asserts the
+sentence now, in both directions.
+
 ## What the vocabulary actually is
 
 The classifier's entire input is the `reasons` array on a fingerprint source, so the first job was

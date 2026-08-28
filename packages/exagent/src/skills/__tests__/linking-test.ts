@@ -132,6 +132,11 @@ describe(syncSkillLinksAsync, () => {
     expect(asPosix(results.created)).toEqual(['.claude/skills/expo-ui']);
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# expo-ui');
     expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('other'));
+    // The other half of F131: which package lost the name is a fact about the project, and a
+    // caller reading the report rather than the terminal used to get no sign of it at all.
+    expect(results.skipped).toMatchObject([
+      { package: 'other', skill: 'expo-ui', reason: 'duplicate-name' },
+    ]);
   });
 
   it('should create nothing on a second run', async () => {
@@ -142,7 +147,7 @@ describe(syncSkillLinksAsync, () => {
       ['.claude/skills']
     );
 
-    expect(results).toEqual({ created: [], pruned: [] });
+    expect(results).toEqual({ created: [], pruned: [], skipped: [] });
   });
 
   it('should replace a managed link that points at the wrong target', async () => {
@@ -174,7 +179,7 @@ describe(syncSkillLinksAsync, () => {
       prune: false,
     });
 
-    expect(results).toEqual({ created: [], pruned: [] });
+    expect(results).toEqual({ created: [], pruned: [], skipped: [] });
     expect(vol.existsSync('/project/.claude/skills/routing')).toBe(true);
   });
 
@@ -212,12 +217,26 @@ describe(syncSkillLinksAsync, () => {
     expect(vol.lstatSync('/project/.claude/skills/local').isSymbolicLink()).toBe(true);
   });
 
+  // F131 [live, wave 31]: the guard held — the user's directory was untouched — and the run
+  // reported `linked: []`, `removed: []` and nothing else, so the one fact worth acting on lived
+  // only in a warning on stderr [`wave31-open-cells/evidence/44-skills-sync-collision.*`]. A
+  // `--json` caller reads "there was nothing to do" off an object that means "one skill of yours
+  // is not linked and only you can fix it".
   it('should keep a wanted name that is a real directory instead of a link', async () => {
     vol.fromJSON({ '.claude/skills/expo-ui/SKILL.md': '# not ours' }, projectRoot);
 
     const results = await syncSkillLinksAsync(projectRoot, [uiSkill], ['.claude/skills']);
 
-    expect(results).toEqual({ created: [], pruned: [] });
+    expect(results.created).toEqual([]);
+    expect(results.pruned).toEqual([]);
+    expect(results.skipped).toEqual([
+      {
+        link: path.join('.claude', 'skills', 'expo-ui'),
+        package: '@expo/ui',
+        skill: 'expo-ui',
+        reason: 'occupied',
+      },
+    ]);
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# not ours');
     expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining(path.join('.claude', 'skills', 'expo-ui'))
@@ -231,7 +250,9 @@ describe(syncSkillLinksAsync, () => {
 
     const results = await syncSkillLinksAsync(projectRoot, [uiSkill], ['.claude/skills']);
 
-    expect(results).toEqual({ created: [], pruned: [] });
+    expect(results.created).toEqual([]);
+    expect(results.pruned).toEqual([]);
+    expect(results.skipped).toMatchObject([{ package: '@expo/ui', reason: 'occupied' }]);
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# not ours');
     expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining(path.join('.claude', 'skills', 'expo-ui'))
@@ -241,7 +262,7 @@ describe(syncSkillLinksAsync, () => {
   it('should not create an agent directory when there are no skills', async () => {
     const results = await syncSkillLinksAsync(projectRoot, [], ['.claude/skills']);
 
-    expect(results).toEqual({ created: [], pruned: [] });
+    expect(results).toEqual({ created: [], pruned: [], skipped: [] });
     expect(vol.existsSync('/project/.claude')).toBe(false);
   });
 

@@ -9,8 +9,8 @@
 
 ## Summary
 
-**Five suites as of wave 29** — `live-local`, `live-android`, `live-devclient`, `live-eas`,
-`live-cloud`. The count in the prose below predates the fifth.
+**Six suites as of wave 31** — `live-project`, `live-local`, `live-android`, `live-devclient`,
+`live-eas`, `live-cloud`. The count in the prose below predates the fifth and the sixth.
 
 [[0002-testing-and-evals]] already states the rule this document makes executable: **a flag is not
 shipped until it has run against the published binary.** It states it as a *manual* step, and a manual
@@ -30,6 +30,12 @@ It has kept doing that as it has grown. Wave 25 added the fourth suite, `live-an
 platform to a tier that already had one found **six defects and one open gap** — three of them commands
 that were reading the iOS app while reporting about Android. §live-android, and
 [[0005-runtime-loop-tools]] §The second Android round for what each was.
+
+Wave 31 added the sixth, `live-project`, and it found **five** — F130 to F134 — in the commands
+[[0019-backend-parity-audit]] had written off as *"argv assembly or filesystem work with no second
+process boundary"*. §live-project has the measurements. The lesson generalises the one above: a
+"no second boundary" claim is about the *shape* of the call, and every one of those five defects is in
+**reading what came back**.
 
 ## Why the two tiers below it cannot do this
 
@@ -118,6 +124,61 @@ numbers that matter to them are the ones with a price.
 Evidence is kept per run, per invocation, gitignored. A stub failure is reproducible from the test
 file; a live failure is a fact about a moment, so the moment is written down. A failing assertion names
 its artifact rather than quoting kilobytes of a bundler's opinion into a jest message.
+
+## live-project: the commands whose backend is the project
+
+[added 2026-08-28, wave 31] **32 tests, 44 s, 49 `exagent` runs, one scaffold, free.** One project
+scaffolded by `exagent new`, and the commands that act on *it* rather than on a device: `install`
+adding a package, `agents:setup`, `skills:sync/list/show/clean`, `inspect:config-plugins`, `start`,
+and the forwarded `expo` set.
+
+**Its gate is the network, and that is why it is a suite.** `registryGate()` — `registry.npmjs.org`
+answers — and nothing else. Deliberately not `networkGate()`, which asks whether `staging.expo.dev`
+answers: that is a fact about an EAS account's environment, and this suite makes no EAS call. Nor is
+it rows inside `live-local`, whose gate demands **a booted iOS simulator with Expo Go on it**. Not one
+command here touches a device, so folding them in would have gated them on hardware they do not use,
+on the machines where "does the real registry still serve this" is the question being asked. §A suite
+that cannot run refuses, and says what is missing is the rule; this is the first suite whose gate a
+Linux box can pass.
+
+### What it found
+
+Five, all fixed in the wave, and the pattern is the point: **four are in reading what came back, and
+none is in the argv.** [[0019-backend-parity-audit]] §~~Still stub-only, by choice~~ has them one by
+one; the two that say something about this tier rather than about the CLI are:
+
+- **F130 is the cleanest case of a stub doubling the code instead of the tool.** The Expo CLI prints
+  the *passing* `--check` report on one line and the *failing* one pretty-printed
+  [`@expo/cli` `src/install/checkPackages.ts`, SDK 57]. The wrapper parsed one line at a time, so it
+  read the report that says nothing and dropped the only one with content — and the stub had been
+  handed a single-line report for **both** cases, because whoever wrote it wrote it from what the
+  parse accepted. Two tiers agreed with each other and neither had asked the tool.
+- **F133 is the same shape as this document's F93, one process further in.** A thrown Node error
+  writes its message *first* and its frames after it, and `outputTail` kept the last ten lines. So a
+  config with an unresolvable plugin was answered with ten frames and no cause, while the sentence
+  naming the plugin sat on line 1 of the same stream. F93's lesson was *the reason a lookup prints is
+  whatever the tool on the other side of the spawn last said*; F133's is that **"last" is the wrong
+  end of a stack.**
+
+And two facts about the world that no stub has: a real `expo install` of a config plugin **rewrites
+the caller's `app.json`**, which is the only way the impact classifier's `is listed in the app.json
+plugins` reason is reachable; and a real `bundledNativeModules.json`, which is what makes
+`expo-haptics` a `native-module` whose action is `reload` — the row that made F134's sentence a
+contradiction inside one payload.
+
+**It also found a feature with no reach.** Ten packages were probed for `skills/*/SKILL.md` — six
+installed in the scaffold, four straight off the registry — and none ships one, so every real
+`skills:list` today answers `{"skills": []}`. Not a defect: the producing half of
+[[0003-knowledge-tools-and-skills]] is unmerged by decision. The suite asserts the empty result first
+and then writes a `SKILL.md` into its own scratch `node_modules` the way a module author would, which
+is the only honest way to exercise the discovery — real autolinking over a real dependency graph, with
+the one synthetic part being the file a package would have shipped.
+
+**Two things about its environment are worth knowing before reading a run.** The package manager it
+scaffolds with comes from `npm_config_user_agent`, so a run launched through `npx pnpm` scaffolds a
+pnpm project and one launched through `npm run` scaffolds an npm project — free extra coverage, and
+the reason no assertion here may name a package manager's error codes. And `install --check` compares
+`node_modules` rather than `package.json`, so a mismatch has to be *installed* to exist.
 
 ## live-local: the whole loop, on a real simulator
 

@@ -296,6 +296,57 @@ describe(installAsync, () => {
       expect(jest.mocked(Log.error)).not.toHaveBeenCalled();
     });
 
+    // F130 [live, wave 31]: the Expo CLI prints the *passing* report on one line and the *failing*
+    // one pretty-printed — `JSON.stringify({dependencies: [], upToDate: true})` against
+    // `JSON.stringify({dependencies, upToDate: false}, null, 2)` [observed —
+    // `@expo/cli` `src/install/checkPackages.ts`, SDK 57]. A parse that reads one line at a time
+    // therefore carried the report that says nothing and dropped the only one with content in it:
+    // live on a project pinned to `expo-haptics@14.0.1`, `check.report` was null and the answer —
+    // which package, which version, which range — survived only as a string in `check.output`
+    // [`wave31-open-cells/evidence/10-install-check-mismatch.out`].
+    it(`should carry the Expo CLI's report when it is pretty-printed over several lines`, async () => {
+      const stdout = `${JSON.stringify(
+        {
+          dependencies: [
+            {
+              packageName: 'expo-haptics',
+              packageType: 'dependencies',
+              expectedVersionOrRange: '~57.0.2',
+              actualVersion: '14.0.1',
+            },
+          ],
+          upToDate: false,
+        },
+        null,
+        2
+      )}\n`;
+      jest.mocked(spawnExpoAsync).mockResolvedValue({
+        cli: { command: 'expo', args: [] },
+        result: { exitCode: 1, stdout, stderr: '' },
+      });
+
+      await expect(
+        installAsync(projectRoot, resolveInstallPlan(['--check', '--json']))
+      ).resolves.toBe(1);
+
+      const check = payload().check;
+      expect(check.ok).toBe(false);
+      expect(check.report).toEqual({
+        dependencies: [
+          {
+            packageName: 'expo-haptics',
+            packageType: 'dependencies',
+            expectedVersionOrRange: '~57.0.2',
+            actualVersion: '14.0.1',
+          },
+        ],
+        upToDate: false,
+      });
+      // A report that was carried is not also echoed as prose, the same as the passing case.
+      expect(check.output).toBeNull();
+      expect(jest.mocked(Log.error)).not.toHaveBeenCalled();
+    });
+
     // F29: the Expo CLI throws `PACKAGE_NOT_FOUND` before it prints its report, so stdout is empty
     // and the whole diagnosis is in what it wrote to stderr — which this command used to suppress,
     // leaving an agent with exit 1, a success-shaped object and zero bytes anywhere.
