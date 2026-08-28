@@ -270,6 +270,10 @@ private class TouchDispatchingRootViewGroup(
   // True if the sheet consumed scroll on the most recent drag frame; drives the settle decision.
   private var sheetMovingOnLastDragFrame = false
 
+  // True once a descendant asked us to stop ancestors from intercepting this gesture, so a later
+  // release from a different descendant doesn't reach Compose. See requestDisallowInterceptTouchEvent.
+  private var forwardedDisallowIntercept = false
+
   // True once a fling was dispatched this gesture, so the gentle-release settle doesn't double-fire.
   private var flingHandledThisGesture = false
 
@@ -336,6 +340,7 @@ private class TouchDispatchingRootViewGroup(
       trackingGestureOffset = true
       sheetMovingOnLastDragFrame = false
       flingHandledThisGesture = false
+      forwardedDisallowIntercept = false
     }
 
     // While a nested scroll is in flight the sheet may be sliding this whole view up/down. Re-express
@@ -440,6 +445,19 @@ private class TouchDispatchingRootViewGroup(
     // yields. But don't call super: setting our own FLAG_DISALLOW_INTERCEPT would skip
     // onInterceptTouchEvent, which must keep firing to dispatch touches to JS (the reason #43716
     // added this override).
+    //
+    // Never forward a release after a claim in the same gesture. Compose's `AndroidView` interop
+    // cancels this subtree when the flag goes true then false inside one move event: it dispatches
+    // the move and consumes it on the initial pass, then reads that same consumption on the final
+    // pass as "Compose claimed the gesture" and sends ACTION_CANCEL down here. `ReactEditText` makes
+    // exactly that flip — it claims on ACTION_DOWN and releases on the first ACTION_MOVE — so a drag
+    // that starts on a TextInput killed the hosted ScrollView. The release is meant for the React
+    // Native ancestors inside this wrapper, which still get it; Compose clears its own flag when the
+    // gesture ends.
+    if (!disallowIntercept && forwardedDisallowIntercept) {
+      return
+    }
+    forwardedDisallowIntercept = disallowIntercept
     parent?.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
