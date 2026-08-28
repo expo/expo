@@ -342,6 +342,27 @@ describe(collectStatusReportAsync, () => {
     expect(report.devServer?.reason).toMatch(/1ms/);
   });
 
+  it(`should cancel the dev-server probe it stopped waiting for`, async () => {
+    // Stopping the wait is not stopping the work, and the process cannot exit while the socket
+    // lives: against a dev server that accepted the connection and never answered, the report was
+    // complete at 3.07 s and `status` was still running at 45 s [observed — 2026-08-27]. Nothing
+    // reportable changes here — status has already decided it will not use this answer — so the
+    // only thing cancelling can affect is how long the command stays alive after printing.
+    let signal: AbortSignal | undefined;
+    jest.mocked(discoverDevServerAsync).mockImplementation((_url, discoverOptions) => {
+      signal = discoverOptions?.signal;
+      return new Promise(() => {});
+    });
+
+    const report = await collectStatusReportAsync(projectRoot, {
+      ...options,
+      devServerTimeoutMs: 1,
+    });
+
+    expect(report.devServer?.running).toBe(false);
+    expect(signal?.aborted).toBe(true);
+  });
+
   it(`should report an unknown freshness when there is no fingerprint tool`, async () => {
     mockState({ fingerprint: { hash: null, error: 'fingerprint CLI not found' } });
 

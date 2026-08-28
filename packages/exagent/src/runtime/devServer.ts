@@ -166,6 +166,8 @@ function foundBy(source: DevServerSource): { source: DevServerSource; discovered
   return { source, discovered: source === 'lock' || source === 'log' || source === 'scan' };
 }
 
+// @ref llp/0004-smart-start-and-project-state.rfc.md §The discovery ladder — the five steps, what
+// each one proves, and why none may be skipped on the strength of a faster one.
 /**
  * Probe for a dev server. An explicit URL is probed alone (the user named it, so no guessing);
  * without one, 8081 is tried first and, only when it does not answer, the next few ports
@@ -174,27 +176,63 @@ function foundBy(source: DevServerSource): { source: DevServerSource; discovered
  * Caveat (documented, accepted): the scan cannot prove the server belongs to *this* project —
  * on a machine running two Metros, the first answering port wins. `--dev-server-url` is the
  * precise spelling.
+ *
+ * @param signal the caller's own deadline, for a caller that has one. An **explicit** URL gets no
+ *   timeout from this function on purpose — a dev server on another host or behind a tunnel may
+ *   legitimately be slow, and cutting it off would report a running server as unreachable — so this
+ *   is the only thing that can stop that probe. The scan's own budget applies as well as it, never
+ *   instead of it.
  */
 export async function discoverDevServerAsync(
   explicitUrl?: string,
-  { timeoutMs = 800, projectRoot }: { timeoutMs?: number; projectRoot?: string } = {}
+  {
+    timeoutMs = 800,
+    projectRoot,
+    signal,
+  }: { timeoutMs?: number; projectRoot?: string; signal?: AbortSignal } = {}
 ): Promise<DevServerDiscovery> {
   if (explicitUrl != null) {
-    const probe = await probeDevServerAsync(explicitUrl);
+    const probe = await probeDevServerAsync(explicitUrl, { signal });
     return { ...probe, devServerUrl: normalizeDevServerUrl(explicitUrl), ...foundBy('flag') };
   }
 
   const withTimeout = async (url: string): Promise<DevServerProbe> => {
-    return await Promise.race([
-      probeDevServerAsync(url),
-      new Promise<DevServerProbe>((resolve) =>
-        setTimeout(
-          () =>
-            resolve({ reachable: false, targets: [], reason: `no answer within ${timeoutMs}ms` }),
-          timeoutMs
-        )
-      ),
-    ]);
+    const abort = new AbortController();
+    const probeSignal = signal == null ? abort.signal : AbortSignal.any([signal, abort.signal]);
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      return await Promise.race([
+        probeDevServerAsync(url, { signal: probeSignal }),
+        new Promise<DevServerProbe>((resolve) => {
+          timer = setTimeout(() => {
+            // The request this gave up on is cancelled, not merely stopped being waited for.
+            // Without it, `no answer within ${timeoutMs}ms` is a claim about the report and not
+            // about the socket, and the socket is what the process waits on before it exits: a dev
+            // server that accepted the connection and then never answered — a Metro mid-restart,
+            // from this side — held the process open for undici's 300 s header timeout. Report
+            // complete at 3.07 s, process still alive at 45 s; it now exits at 3.12 s
+            // [observed — 2026-08-27].
+            //
+            // The limit, measured rather than assumed: this frees a socket that has *connected*. A
+            // socket still in its TCP connect phase is not freed — `fetch` rejects at once and
+            // undici keeps the `ConnectWrap` until its own 10 s connect ceiling. That case cannot
+            // arise on this ladder, which only ever probes localhost, where a refusal is immediate.
+            abort.abort();
+            resolve({ reachable: false, targets: [], reason: `no answer within ${timeoutMs}ms` });
+          }, timeoutMs);
+          // Belt to the `clearTimeout` braces below: a timer this function somehow loses track of
+          // still cannot hold the process open on its own.
+          timer.unref?.();
+        }),
+      ]);
+    } finally {
+      // The probes below answer in about a millisecond — `ECONNREFUSED` on localhost is immediate —
+      // and each one used to leave its whole budget pending. A Node process exits when its event
+      // loop empties, so six probes' worth of unfired timers were paid at exit rather than in the
+      // answer: a default `status` whose report was complete at 263 ms exited at 1584 ms
+      // [observed — `friction/run7/tapapp`, 2026-08-27]. The scan was never slow; this was.
+      clearTimeout(timer);
+    }
   };
 
   // Step 0 — the project's dev-server lock (`src/devLock/`): a socket an `exagent`-started dev
@@ -260,14 +298,22 @@ export interface DevServerProbe {
  * Ask the dev server for its debugger targets.
  *
  * Never throws: an unreachable dev server is an answer, so callers that can work without one
- * (deep-link navigation to a development build) are not forced into a failure path.
+ * (deep-link navigation to a development build) are not forced into a failure path. An abort is one
+ * of those answers rather than an exception, for the same reason — the caller that aborted already
+ * has the answer it wanted.
+ *
+ * @param signal cancels the request. Callers that impose a deadline pass one, so the deadline
+ *   bounds the socket and not only the wait; callers without one leave the request to undici.
  */
-export async function probeDevServerAsync(devServerUrl: string): Promise<DevServerProbe> {
+export async function probeDevServerAsync(
+  devServerUrl: string,
+  { signal }: { signal?: AbortSignal } = {}
+): Promise<DevServerProbe> {
   const url = `${normalizeDevServerUrl(devServerUrl)}/json/list`;
 
   let response: Response;
   try {
-    response = await fetch(url);
+    response = await fetch(url, { signal });
   } catch (error: unknown) {
     return {
       reachable: false,
