@@ -36,7 +36,7 @@ The `--json` flag is optional. It prints a stable, machine-readable result for a
 
 ## `simulator:start`
 
-The session type determines which interface EAS provisions with the remote device. On iOS, every type includes a web preview. Choose agent-device, Argent, or Appium to add programmatic control, or choose `serve-sim` for the web preview only:
+The session type determines which interface EAS provisions with the remote device. On iOS, every type includes a web preview. Choose agent-device, Argent, or Appium to add programmatic control, or choose `web-preview-only` for the web preview only:
 
 <Tabs>
 
@@ -82,7 +82,7 @@ Use the iOS web preview without provisioning a programmatic controller.
 
 <Terminal
   cmd={[
-    '$ eas simulator:start --platform ios --type serve-sim --name "Design review" --non-interactive',
+    '$ eas simulator:start --platform ios --type web-preview-only --name "Design review" --non-interactive',
   ]}
 />
 
@@ -92,25 +92,25 @@ Use the iOS web preview without provisioning a programmatic controller.
 
 Important flags:
 
-| Flag                        | Description                                                                                                                                                             |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-p, --platform`            | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                                                           |
-| `--name`                    | Human-readable session name shown by `simulator:list`, `simulator:get`, and expo.dev                                                                                    |
-| `--device`                  | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted                             |
-| `--build-id`                | EAS Build to install and launch before the session is ready                                                                                                             |
-| `--application-archive-url` | Application archive to download, install, and launch before the session is ready                                                                                        |
-| `--expo-go`                 | Install and launch the Expo Go version that matches the current project's Expo SDK                                                                                      |
-| `--sdk-version`             | Expo SDK used to select Expo Go. Only valid with `--expo-go`; defaults to the current project SDK                                                                       |
-| `--launch-arg`              | Argument passed to the installed app when it launches. Repeat the flag for multiple arguments                                                                           |
-| `--open-url`                | Expo or development-client URL to open in the installed app after launch                                                                                                |
-| `--type`                    | Session type. On iOS, every type includes a web preview. Use `agent-device`, `appium`, or `argent` to add programmatic control, or `serve-sim` for the web preview only |
-| `--package-version`         | Controller package version. Defaults to the service's latest version                                                                                                    |
-| `--max-duration-minutes`    | Automatic session stop time. Custom values are available on paid plans; otherwise the default depends on job priority                                                   |
-| `--max-idle-time-minutes`   | Stop after this many minutes without session activity. When omitted, the session has no idle timeout and runs until its maximum duration                                |
-| `--out-config-type`         | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                                               |
-| `--[no-]force`              | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                                                 |
-| `--non-interactive`         | Return after the session is ready instead of staying attached                                                                                                           |
-| `--json`                    | Print machine-readable output and imply non-interactive mode                                                                                                            |
+| Flag                        | Description                                                                                                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-p, --platform`            | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                                                                  |
+| `--name`                    | Human-readable session name shown by `simulator:list`, `simulator:get`, and expo.dev                                                                                           |
+| `--device`                  | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted                                    |
+| `--build-id`                | EAS Build to install and launch before the session is ready                                                                                                                    |
+| `--application-archive-url` | Application archive to download, install, and launch before the session is ready                                                                                               |
+| `--expo-go`                 | Install and launch the Expo Go version that matches the current project's Expo SDK                                                                                             |
+| `--sdk-version`             | Expo SDK used to select Expo Go. Only valid with `--expo-go`; defaults to the current project SDK                                                                              |
+| `--launch-arg`              | Argument passed to the installed app when it launches. Repeat the flag for multiple arguments                                                                                  |
+| `--open-url`                | Expo or development-client URL to open in the installed app after launch                                                                                                       |
+| `--type`                    | Session type. On iOS, every type includes a web preview. Use `agent-device`, `appium`, or `argent` to add programmatic control, or `web-preview-only` for the web preview only |
+| `--package-version`         | Controller package version. Defaults to the service's latest version                                                                                                           |
+| `--max-duration-minutes`    | Automatic session stop time. Custom values are available on paid plans; otherwise the default depends on job priority                                                          |
+| `--max-idle-time-minutes`   | Stop after this many minutes without session activity. When omitted, the session has no idle timeout and runs until its maximum duration                                       |
+| `--out-config-type`         | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                                                      |
+| `--[no-]force`              | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                                                        |
+| `--non-interactive`         | Return after the session is ready instead of staying attached                                                                                                                  |
+| `--json`                    | Print machine-readable output and imply non-interactive mode                                                                                                                   |
 
 `--build-id`, `--application-archive-url`, and `--expo-go` are mutually exclusive application sources. `--launch-arg` and `--open-url` require one of those sources because the start command needs an installed application to launch.
 
@@ -212,12 +212,12 @@ The response includes:
 
 Filters can be repeated:
 
-| Filter       | Values                                          |
-| ------------ | ----------------------------------------------- |
-| `--platform` | `ios`, `android`                                |
-| `--type`     | `agent-device`, `appium`, `argent`, `serve-sim` |
-| `--status`   | `new`, `in-progress`, `stopped`, `errored`      |
-| `--name`     | Case-insensitive session name prefix            |
+| Filter       | Values                                                 |
+| ------------ | ------------------------------------------------------ |
+| `--platform` | `ios`, `android`                                       |
+| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only` |
+| `--status`   | `new`, `in-progress`, `stopped`, `errored`             |
+| `--name`     | Case-insensitive session name prefix                   |
 
 Use `--limit` to control page size and `--after` with the previous response's `endCursor` for pagination.
 

@@ -24,14 +24,14 @@ Choose the build type based on what you need:
 
 ## Choose a session type
 
-Choose how you plan to control the device before starting the session. Pass the session type explicitly. On iOS, agent-device, Appium, and Argent sessions include both the selected controller and a web preview. Use `serve-sim` when you only need the web preview without programmatic control.
+Choose how you plan to control the device before starting the session. Pass the session type explicitly. On iOS, agent-device, Appium, and Argent sessions include both the selected controller and a web preview. Use `web-preview-only` when you only need the web preview without programmatic control.
 
-| Session type     | Start option          | Use case                                                                            |
-| ---------------- | --------------------- | ----------------------------------------------------------------------------------- |
-| agent-device     | `--type agent-device` | [Agent-native device control and installation](/agents/agent-device/)               |
-| Appium           | `--type appium`       | Existing Appium clients and test suites                                             |
-| Argent           | `--type argent`       | [Argent device tools and Model Context Protocol (MCP) integration](/agents/argent/) |
-| Web preview only | `--type serve-sim`    | Interactive iOS stream without programmatic control                                 |
+| Session type     | Start option              | Use case                                                                            |
+| ---------------- | ------------------------- | ----------------------------------------------------------------------------------- |
+| agent-device     | `--type agent-device`     | [Agent-native device control and installation](/agents/agent-device/)               |
+| Appium           | `--type appium`           | Existing Appium clients and test suites                                             |
+| Argent           | `--type argent`           | [Argent device tools and Model Context Protocol (MCP) integration](/agents/argent/) |
+| Web preview only | `--type web-preview-only` | Interactive iOS stream without programmatic control                                 |
 
 ## Find the app identifier
 
