@@ -1693,8 +1693,8 @@ runtimes, a browser registers nothing in it whether or not the page is open, and
 to filter. Every phase of this command after the bundle check reads the app through that list.
 
 The two alternatives both lose, and for the reasons that section already gave. `passed` would be
-`dev:wait --platform web` wearing a name that promises a runtime check — the word "smoke" is a
-claim about the app running. `22` says "look again", and no amount of looking makes a browser
+`dev:wait --platform web` wearing a name that promises a runtime check, because the word "smoke" is
+a claim about the app running. `22` says "look again", and no amount of looking makes a browser
 answer a debugger, which is the argument that ruled out `22` for `--require-app`. `1` is the band
 for "the tool did not work: usage error … fix the call", and the recovery is one command the
 message names.
@@ -1711,8 +1711,8 @@ Amendment [observed — 2026-08-24, notesapp on SDK 57 in Expo Go, iPhone 17 Pro
 Live, with a `setInterval` throwing `Error('WAVE6_SMOKE_BOOM')` every 400 ms, the gate exited `0`
 reporting seventeen `console.error` calls. `Runtime.exceptionThrown` never fired once. React Native
 catches an uncaught throw and reports it through the console path, which §Implemented in v1 as
-already records for the error collector — the collector has both capture sources for exactly this
-reason — and the gate was reading the source rather than the record.
+already records for the error collector, and it is why the collector has both capture sources. The
+gate was reading the source rather than the record.
 
 Three cases measured side by side in one window settle what is decidable:
 
@@ -1722,43 +1722,44 @@ Three cases measured side by side in one window settle what is decidable:
 | `console.error(new Error(x))` | `console` | `Error: x` | the project's own frame |
 | `throw new Error(x)` | `console` | `Error: x` | the project's own frame |
 
-So the difference a gate can act on is not the channel, it is whether the record carries **the
-error's own stack**: React Native reports an Error through the console path as one string holding
+So the difference a gate can act on is not the channel. It is whether the record carries **the
+error's own stack**. React Native reports an Error through the console path as one string holding
 the message *and* its frames, and `splitTextStack` is what lifts them out. `RuntimeErrorRecord`
-gains `isError` for it, and the gate fails on `isError || source === 'exception'` — the second
-disjunct kept because a runtime that does use the exception channel exists, and reading only the
+gains `isError` for it, and the gate fails on `isError || source === 'exception'`. The second
+disjunct is kept because a runtime that does use the exception channel exists, and reading only the
 console path would be the same mistake pointed the other way.
 
 **The limit, stated because it decides behaviour:** a logged `Error` and an uncaught one are the
 same bytes here, so a gate built on this fails on `console.error(new Error(…))` too. That is the
-honest trade — the alternative is a gate that passes a crash — and the record is printed next to
-the verdict, so a reader sees which it was in one look. Live either way: seventeen throws →
-exit `20`, `failing: 17`; eight `console.error` lines of text → exit `0`, `failing: 0, logs: 8`.
+honest trade, because the alternative is a gate that passes a crash, and the record is printed next
+to the verdict so a reader sees which it was in one look. Live either way: seventeen throws gave
+exit `20` with `failing: 17`, and eight `console.error` lines of text gave exit `0` with
+`failing: 0, logs: 8`.
 
 ### The screenshot primitive
 
-`src/device/screenshot.ts`, and the first thing in this CLI that takes one rather than printing the
-command for one — `src/followups/navigate.ts` has suggested `xcrun simctl io <id> screenshot` since
-the first runtime round and nothing ever ran it.
+`src/device/screenshot.ts` is the first thing in this CLI that takes a screenshot rather than
+printing the command for one. `src/followups/navigate.ts` has suggested
+`xcrun simctl io <id> screenshot` since the first runtime round, and nothing ever ran it.
 
 `buildScreenshotCommand` is pure, for the reason `buildOpenUrlCommand` is: the argv is the whole of
-what the module decides and a wrong one fails only on a machine with a device attached. The two
-platforms differ in one way that shapes the module: `simctl` is *given* the path and writes the
+what the module decides, and a wrong one fails only on a machine with a device attached. The two
+platforms differ in one way that shapes the module. `simctl` is *given* the path and writes the
 file, while `adb exec-out screencap -p` writes the PNG to **stdout** and the caller has to redirect
-it — into a file descriptor, never through a string, because a PNG does not survive a JavaScript
+it, into a file descriptor and never through a string, because a PNG does not survive a JavaScript
 string round trip. `exec-out` rather than `shell` for the same reason: `adb shell` runs through a
 pty that rewrites `\n` as `\r\n` and corrupts every image it carries.
 
 **Success is not read from the exit code.** `adb exec-out` answers a device that is not ready by
 writing a sentence to stdout and exiting `0`, which leaves a file that exists, is not empty, and is
-not a picture — so the first eight bytes are checked against the PNG signature instead. That is the
+not a picture. So the first eight bytes are checked against the PNG signature instead. That is the
 difference between "the command ran" and "there is a screenshot".
 
 It **degrades and never decides**. A machine with no simulator reports `screenshot.ok: false` with
-a reason and the run answers the rest of the question anyway: a screenshot is evidence attached to
+a reason, and the run answers the rest of the question anyway. A screenshot is evidence attached to
 an answer, and a run that established the app does not throw has established that with or without
-one. The picture is of the *screen*, not of the app, which is said out loud in `--help` because it
-is the limit a reader would otherwise assume away.
+one. The picture is of the *screen* rather than of the app, which is said out loud in `--help`
+because it is the limit a reader would otherwise assume away.
 
 ### Two more things the live round changed
 
@@ -1768,10 +1769,10 @@ Both were found on the first `--start` run and neither was visible in any test [
 - **`--start` must not name a platform.** The first version ran `exagent dev --yes --detach
   --wait-ready --ios`, and `expo start --ios` drives Simulator.app through AppleScript. On a Mac
   that has granted no Automation permission the Expo CLI does not catch the refusal and the dev
-  server exits with it — llp/0010 §A failed plan step reports a failure, and the upstream ask
+  server exits with it, which is llp/0010 §A failed plan step reports a failure, and the upstream ask
   beside it. The run watched exactly that: the first three phases answered against a dev server
   that was already dying, and the fourth found nothing. The recovery llp/0004 records is the one
-  this command performs anyway — start the dev server without opening anything, then open the app
+  this command performs anyway: start the dev server without opening anything, then open the app
   with `navigate`, which needs no Automation grant. `START_DEV_SERVER_ARGV` is pinned by a test,
   because an absence is invisible in a diff.
 - **One dev server for the whole run.** `navigate` discovers its own, so a run that had settled on
@@ -1780,7 +1781,7 @@ Both were found on the first `--start` run and neither was visible in any test [
   answered. The URL the first phase settled on is threaded into every phase after it. A gate whose
   phases talk to two dev servers is a gate whose phases are about two different things.
 
-`--start` also carries `--port` through when the caller named a loopback one: a caller that passed
+`--start` also carries `--port` through when the caller named a loopback one. A caller that passed
 `--port 8210` named the dev server it means, and starting on 8081 would answer a question about a
 different port than the one it was asked about.
 
@@ -1818,22 +1819,22 @@ reporting the iOS answer whatever they were pointed at. The findings and what th
 ### The device's loopback is not this machine's
 
 `exp://127.0.0.1:<port>` names the loopback of whatever resolves it. On an emulator that is the
-emulator, so the manifest fetch reaches a port nothing listens on, Expo Go shows `ErrorActivity`,
-and `adb shell am start` still exits **0** — it delivered the intent, which is all it claims.
+emulator, so the manifest fetch reaches a port nothing listens on and Expo Go shows `ErrorActivity`.
+`adb shell am start` still exits **0**, because it delivered the intent, which is all it claims.
 `navigate --android` therefore reported success for an app showing an error screen [F50].
 
 `adb reverse tcp:<port> tcp:<port>` is the missing step, and it is what `expo start --android` runs
 before it opens anything [reference — `@expo/cli` `src/start/platforms/android/adbReverse.ts`;
 reimplemented as a subprocess in `src/navigate/adbReverse.ts`, per [[0001-agentic-cli-on-expo-cli]]
-§Constraints item 5]. It runs **before** the link, only for a loopback host — a dev server on the
-LAN or behind a tunnel is already reachable, and reversing its port would point the device at
-itself — and a refusal is reported rather than fatal, because the link that follows is what turns
+§Constraints item 5]. It runs **before** the link, and only for a loopback host, because a dev server
+on the LAN or behind a tunnel is already reachable and reversing its port would point the device at
+itself. A refusal is reported rather than fatal, because the link that follows is what turns
 "the reverse failed" into a failure a reader can see.
 
 **Which URL's port** [amended — wave 30, 2026-08-28, F123]. The rule above reads the loopback host
 *of the URL being opened*, and that is right for a route link. The dev launcher's URL carries the
 dev server inside its `url` parameter and is addressed to `expo-development-client`, which is not a
-loopback host — so on the run that opens it (§On a development build, `navigate` goes
+loopback host. So on the run that opens it (§On a development build, `navigate` goes
 launcher-first) the reverse reads the **dev server's own origin** instead. Without that, the
 launcher fetched its bundle from a port on the device: F50's shape, one URL further out.
 
@@ -1864,36 +1865,36 @@ committed at `src/runtime/__tests__/fixtures/json-list-ios-and-android.json`]:
 | `description` | `React Native Bridgeless [C++ connection]` | *identical* |
 | `type`, `reactNative.capabilities` | — | *identical* |
 
-So `--android` scoped the deep link and nothing else: `smoke --android` opened the app on the
+So `--android` scoped the deep link and nothing else. `smoke --android` opened the app on the
 emulator and then earned its verdict from the **simulator's** runtime [F51]. `src/runtime/
-targetPlatform.ts` infers the platform instead, strongest evidence first — a device name this
+targetPlatform.ts` infers the platform instead, strongest evidence first: a device name this
 machine's own device tools just reported (`simctl list devices booted`, `adb devices -l`), then
 React Native Android's `<model> - <release> - API <sdk>` device-name shape
 [`AndroidInfoHelpers.getFriendlyDeviceName`], then Expo Go's two app ids, which differ by one
-capital letter. **A target none of them place is `null` and is never counted as either**: a run that
-cannot tell what it is talking to says so.
+capital letter. **A target none of them place is `null` and is never counted as either**, because a
+run that cannot tell what it is talking to says so.
 
 The scoping reaches `requireConnectedAppAsync`, `waitForAppConnectionAsync` and the `CdpClient`'s
-target selection, so `runtime:eval`/`errors`/`network` (which now take `--ios`/`--android`/
-`--platform`), `dev:wait --require-app` and every phase of `smoke` read the platform they were told
-about. Live proof, one dev server, both apps attached, same route, same minute
-[observed — 2026-08-25]: `smoke --android` → `22 inconclusive, runtimeSupported: false`;
-`smoke --ios` → `0 passed, runtimeSupported: true`.
+target selection. So `runtime:eval`, `errors` and `network`, which now take `--ios`, `--android` and
+`--platform`, plus `dev:wait --require-app` and every phase of `smoke`, all read the platform they
+were told about. Live proof, one dev server, both apps attached, same route, same minute
+[observed — 2026-08-25]: `smoke --android` gave `22 inconclusive, runtimeSupported: false`, and
+`smoke --ios` gave `0 passed, runtimeSupported: true`.
 
 ### The platform default must not answer for the other platform
 
-`runtime:reload` and `dev:wait` built the entry bundle for a fixed default (iOS). With an
-Android-only break — a `.android.ts` file that does not parse beside an `.ios.ts` that does — a
+`runtime:reload` and `dev:wait` built the entry bundle for a fixed default, iOS. With an
+Android-only break, meaning a `.android.ts` file that does not parse beside an `.ios.ts` that does, a
 no-flag `runtime:reload` checked iOS, passed, and reloaded the **Android** app onto the bundle that
 does not compile, printing `Bundle compiles · for ios` while doing it [F53].
 
 The platform is now derived from the apps that are actually connected
-(`resolveBundleCheckPlatformsAsync`): a named `--platform` wins, one connected platform is that
-platform, **two are both**, and nothing connected leaves the fixed default with the report saying
+(`resolveBundleCheckPlatformsAsync`). A named `--platform` wins. One connected platform is that
+platform. **Two are both.** And nothing connected leaves the fixed default, with the report saying
 that it is a default. A broken bundle decides the run whichever platform it was found on. Live
 [observed — 2026-08-25, both apps attached, `src/lib/probe.android.ts` a syntax error]:
 `Bundle does not compile · for android · also checked ios · the platform the connected app is on`,
-exit 20; `dev:wait` with no flag the same way.
+exit 20, and `dev:wait` with no flag the same way.
 
 ### The CDP-less runtime, corrected
 
@@ -1914,35 +1915,35 @@ Android's is the same table for a development build, where every one of these me
 | `Log.entryAdded` | `Debugger integration: Android Bridgeless (ReactHostImpl)`, then `warning`: `The current JavaScript engine, HermesRuntime[RNBridgeless], does not support debugging over the Chrome DevTools Protocol.` | `Debugger integration: iOS Bridgeless` only |
 
 Two corrections to what this document said [F61]. It is **not** true that Android "answers every
-method" with `-32601` — four of the six above are acknowledged, and the ack is what made an empty
+method" with `-32601`. Four of the six above are acknowledged, and the ack is what made an empty
 window look like a healthy app. And `Network.enable` succeeding is the *normal* Android case, so
-`classifyNetworkDomainRefusal` never ran there at all: it only ever saw refusals. It now takes
-`null` for "nothing refused anything" plus what the runtime said about carrying a debugger, and has
-a name for the third case — `acknowledged-but-blind`.
+`classifyNetworkDomainRefusal` never ran there at all, because it only ever saw refusals. It now
+takes `null` for "nothing refused anything" plus what the runtime said about carrying a debugger, and
+it has a name for the third case: `acknowledged-but-blind`.
 
-Both collectors probe the runtime as they open their window: `Log.enable` for the announcement, and
-one `Runtime.evaluate` of `1` for the code. The verdict is a field on the collector
+Both collectors probe the runtime as they open their window, with `Log.enable` for the announcement
+and one `Runtime.evaluate` of `1` for the code. The verdict is a field on the collector
 (`RuntimeDebuggerCapability`), so a caller can qualify what it is about to print.
 
 ### Reading Android errors anyway
 
-The same round found that the information was never missing — only the channel was. The error the
+The same round found that the information was never missing. Only the channel was. The error the
 debugger could not report was in `dev:logs` the whole time, symbolicated, with a code frame [F52].
 So `runtime:errors` falls back to the detached dev server's own log when, and only when, the runtime
-announced that it cannot answer: the window is bounded by a line mark taken before it opens, the
+announced that it cannot answer. The window is bounded by a line mark taken before it opens, the
 records are labelled `source: 'dev-server-log'`, and the caveat sits **above** the count rather than
 after it.
 
-Its limits are stated in `src/dev/logErrors.ts` and printed with the result: the log does not name
-the platform (Expo's logger only prefixes when the app is not bridgeless, and every modern app is),
-and there is no structured stack behind a record — what there is, is the file and line the dev
-server already resolved. Errors that were in the log *before* the window are counted and named, not
-reported as this window's.
+Its limits are stated in `src/dev/logErrors.ts` and printed with the result. The log does not name
+the platform, because Expo's logger only prefixes when the app is not bridgeless and every modern app
+is. And there is no structured stack behind a record. What there is, is the file and line the dev
+server already resolved. Errors that were in the log *before* the window are counted and named rather
+than reported as this window's.
 
 Live [observed — 2026-08-25]: with `throw new Error('boom from HomeScreen — F52 live check')` and a
 `runtime:reload --android` inside the window, `runtime:errors --android --fail-on-error` exited
-**20** with the message, the code frame and `HomeScreen (src/app/index.tsx:33:18)` — the first time
-this CLI has reported an Android app's error at all.
+**20** with the message, the code frame and `HomeScreen (src/app/index.tsx:33:18)`. That is the first
+time this CLI has reported an Android app's error at all.
 
 ### `--fail-on-error` on a runtime that cannot answer: exit 22, not 0
 
@@ -1952,17 +1953,17 @@ Recorded here because it **changes** what §Implemented in v1 as says about `run
 cannot answer had been seen. On one, an empty window is not "nothing happened while I watched", it
 is *no observation*, and exiting 0 reports health that nothing established.
 
-So: when the runtime is blind **and** no dev server log could be read, `--fail-on-error` exits
-`22` — llp/0010's code for "nothing was shown to be wrong and nothing was proved right" — with the
+So when the runtime is blind **and** no dev server log could be read, `--fail-on-error` exits
+`22`, llp/0010's code for "nothing was shown to be wrong and nothing was proved right", with the
 what/why/how naming `dev --detach` as the thing that would give it a log to read. When a log *was*
 read, the window is a real observation and 0 stands. Without `--fail-on-error` the command still
-exits 0 and prints the caveat: the flag is what says a caller is gating on this.
+exits 0 and prints the caveat, because the flag is what says a caller is gating on this.
 
 ### `adb` is not on `PATH` on a normal machine
 
 Every Android step is `adb` in a subprocess, and all of them spawned the bare name. On a machine
 with the SDK installed the normal way and `platform-tools` never added to `PATH`, the first one to
-fail is the device probe — so the CLI reported **"no Android device or emulator is attached"** for a
+fail is the device probe, so the CLI reported **"no Android device or emulator is attached"** for a
 running emulator [F49]. `src/device/adb.ts` resolves `ANDROID_HOME`, then `ANDROID_SDK_ROOT`, then
 `PATH`, then this platform's default install location, and every `adb` call site takes the
 resolution the device probe made. `PATH` sits above the default location and below the environment
@@ -1976,24 +1977,24 @@ and the "no device" message is only reachable once `adb` has run and answered.
 ### Smaller things the same round settled
 
 - **Follow-ups keep the platform.** `smoke --android` failing suggested `npx exagent smoke`, which
-  on a Mac reads the simulator [F58]; every command a follow-up names now carries the flag the run
+  on a Mac reads the simulator [F58]. Every command a follow-up names now carries the flag the run
   had, and `navigate`'s screenshot line carries the `adb` that was actually run rather than a bare
   name this machine cannot execute [F54].
-- **`dev --plan` does not print a development build plan** for a project Expo Go can still serve —
-  the plan engine reaches those steps only when a native module makes Expo Go incompatible
-  (`src/plan/decide.ts`). Two messages claimed it did [F55]; they now name what actually helps.
+- **`dev --plan` does not print a development build plan** for a project Expo Go can still serve.
+  The plan engine reaches those steps only when a native module makes Expo Go incompatible
+  (`src/plan/decide.ts`). Two messages claimed it did [F55], and they now name what actually helps.
 - **`status` counts what can be talked to.** `/json/list` is a list of registrations, and a page an
-  app left behind stays in it — so `status` said `1 app connected` while every runtime command
+  app left behind stays in it, so `status` said `1 app connected` while every runtime command
   answered `No target found` [F56]. It opens one debugger socket per listed target and reports
-  `appsConnected`, `appsListed` and `appsStale`. (Verified by unit and e2e tests; the live emulator
-  dropped its stale target within about two seconds, so this session could not reproduce the window
-  the friction run hit.)
+  `appsConnected`, `appsListed` and `appsStale`. This is verified by unit and e2e tests. The live
+  emulator dropped its stale target within about two seconds, so this session could not reproduce the
+  window the friction run hit.
 - **`smoke` waits before it photographs.** A run that opened the app itself photographed it
   mid-load [F57]. Nothing over this protocol says "rendered", so what is waited for is the honest
   neighbouring fact: two reads of the target list that name the same ids, bounded, and only for a
   run that put the app there.
-- **`impact` and `checkpoint` agreed about git all along.** Both resolve the work tree the same way;
-  what differed was that a `git status` which *failed* borrowed the sentence written for a project
+- **`impact` and `checkpoint` agreed about git all along.** Both resolve the work tree the same way.
+  What differed was that a `git status` which *failed* borrowed the sentence written for a project
   with no repository [F60]. `listChangedFilesAsync` now returns which of the two happened.
 
 ### The second Android round, and where F51's fix had not reached
