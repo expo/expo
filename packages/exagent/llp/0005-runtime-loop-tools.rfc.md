@@ -542,20 +542,20 @@ that *started* an app cost nothing and says nothing.
 ### A broadcast that was delivered is a mechanism that ran
 
 Wave 23, F97 [observed — live cloud, 2026-08-27]. A broadcast has **three** outcomes and the code had
-two. The socket can refuse it — no connection, a protocol version the dev server does not speak, an
-empty peer list — or the frame can go out and the app be seen to come back, or the frame can go out
-and nothing be seen. The third was reported as the first: `ok: false`, no mechanism, exit `20`
-("nothing ran"), and the run then **skipped the two observations that exist for exactly this state**.
-The payload said so in as many words: `bundlesAfterReload.reason: "nothing watched the dev server
-output: no mechanism ran, so there was nothing to watch for"`, on a run with `commandSocketClients: 1`
-that had spent 8.9 s of a 180 s budget.
+two. The socket can refuse it, whether from no connection, a protocol version the dev server does not
+speak, or an empty peer list. Or the frame can go out and the app be seen to come back. Or the frame
+can go out and nothing be seen. The third was reported as the first: `ok: false`, no mechanism, exit
+`20` meaning "nothing ran", and the run then **skipped the two observations that exist for exactly
+this state**. The payload said so in as many words: `bundlesAfterReload.reason: "nothing watched the
+dev server output: no mechanism ran, so there was nothing to watch for"`, on a run with
+`commandSocketClients: 1` that had spent 8.9 s of a 180 s budget.
 
-So an attempt carries **`delivered`** beside `ok`: whether the action reached the app, which is not
-whether it worked. A delivered-and-unproved broadcast is a mechanism whose own proof is missing —
-`method: 'dev-server'`, `mechanismProof: null` — and the shared observations decide, which is `22`
-rather than `20` and matches the exit-code rule this document already stated. `delivered` is null for
-every rung where delivery is not a separate question: `simctl terminate` naming a process that is not
-there fails, and there is no "delivered but unproved" for it.
+So an attempt carries **`delivered`** beside `ok`, meaning whether the action reached the app, which
+is not whether it worked. A delivered-and-unproved broadcast is a mechanism whose own proof is
+missing (`method: 'dev-server'`, `mechanismProof: null`), and the shared observations decide. That is
+`22` rather than `20`, and it matches the exit-code rule this document already stated. `delivered` is
+null for every rung where delivery is not a separate question: `simctl terminate` naming a process
+that is not there fails, and there is no "delivered but unproved" for it.
 
 ### The ladder climbs
 
@@ -567,25 +567,25 @@ artifacts 005 and 006 of `live-cloud-…T19-17-35-037Z`]:
 | `runtime:reload --cloud` | `commandSocketClients: 1` | 1 only | exit **22** after the whole 180 s: no fresh debugger target, no bundle |
 | `runtime:reload --cloud --route /lab`, seconds later | `commandSocketClients: 0` | 1 then 2 | exit **0** in 18.5 s, `verifiedBy: dev-server-bundle`, `iOS Bundled 42ms` |
 
-Read together those two rows say one thing: the broadcast took the app's client off the command socket
-and did not reload it, and the relaunch — the rung the *next* command reached because the socket was
-then empty — worked. `auto` stopping at a rung it had already tried made the command fail on a state
-its own second rung handled.
+Read together those two rows say one thing. The broadcast took the app's client off the command socket
+and did not reload it, and the relaunch worked. That relaunch is the rung the *next* command reached,
+because the socket was then empty. `auto` stopping at a rung it had already tried made the command
+fail on a state its own second rung handled.
 
-**So `auto` climbs.** Rung 2 is now reached from two states, not one: the socket held no client, or the
-broadcast was delivered and proved nothing. The second is this document's own rule applied honestly —
-the app's state is spent "when nothing cheaper can reach the app", and a frame nobody acted on inside
-its window is exactly that. Three things bound it:
+**So `auto` climbs.** Rung 2 is now reached from two states rather than one: the socket held no
+client, or the broadcast was delivered and proved nothing. The second is this document's own rule
+applied honestly. The app's state is spent "when nothing cheaper can reach the app", and a frame
+nobody acted on inside its window is exactly that. Three things bound it:
 
 - **A pinned `--method` never climbs.** A caller who named one rung excluded the others, cost and all.
 - **Only an unproved rung climbs.** A broadcast whose churn *was* observed is a reload, and nothing
   follows it.
 - **The attempt says which of the two states it was reached for.** The first cut printed `no client was
   registered on the dev server's command socket` over a payload whose own `commandSocketClients` was
-  `1` — a report arguing with itself, which is what llp/0021 exists to remove.
+  `1`, which is a report arguing with itself, and that is what llp/0021 exists to remove.
 
 **What stays upstream.** That the `/message` broadcast does not reload Expo Go on an EAS cloud
-simulator over a proxied origin is not this CLI's to fix, and it is not S11: the app registers a
+simulator over a proxied origin is not this CLI's to fix, and it is not S11. The app registers a
 debugger target *and* a command-socket client there, both of which S11 said it would not. What this
 CLI owes that state is the rung that works, which is now what it takes.
 
@@ -593,13 +593,13 @@ CLI owes that state is the rung that works, which is now what it takes.
 
 Wave 23, from S10 and the first two live runs of the cloud tier. An `exp://` URL handed to the
 **system** on an iOS simulator raises "Open in 'Expo Go'?", and on an EAS Simulator session nobody is
-in front of the screen. The link is delivered — the `open` verb exits 0 — and nothing loads:
-`navigate --cloud` exit 22 after 60.9 s, then two 180 s reloads that served no bundle
+in front of the screen. The link is delivered, because the `open` verb exits 0, and nothing loads.
+`navigate --cloud` exited 22 after 60.9 s, then two 180 s reloads served no bundle
 [observed — 2026-08-27; and staging, 2026-08-26, S10, where `agent-device alert accept` proved the
 causality].
 
 **Two layers, and the cheaper one is the session's own start.** `eas simulator … --expo-go` installs
-and launches Expo Go; nothing has opened the *project* in it, so the first `exp://` URL still goes to
+and launches Expo Go. Nothing has opened the *project* in it, so the first `exp://` URL still goes to
 the system. `--open-url exp://<host>` is the runner opening the URL in the app it just launched
 [observed — `eas simulator --help`, eas-cli@latest, 2026-08-27: "URL to open in the installed
 application after it launches"], and that is the state wave 19's working session was in before any
@@ -607,56 +607,56 @@ exagent command touched it (`wave19-live/12-open-session.json`, `open host.exp.E
 suite starts its session that way, and `navigate --cloud` went from exit 22 in 60.9 s to exit 0 in
 17.1 s with `attached: true` in 206 ms.
 
-**And `navigate --cloud` answers the dialog itself.** The decision, and it is a decision about
-llp/0008 rather than about iOS: the caller ran `--cloud <route>`, which *is* the instruction "open this
-route on the cloud simulator". iOS then asked whether it may do the thing that was just asked for.
-Answering completes the requested action and authorises nothing beyond it. The precedent is in the same
-function: the Android stuck-app recovery is automatic rather than suggested, "because the state it
-clears is one this command caused" — and this state is one this command caused too. Four gates keep it
-to the one dialog:
+**And `navigate --cloud` answers the dialog itself.** This is a decision about llp/0008 rather than
+about iOS. The caller ran `--cloud <route>`, which *is* the instruction "open this route on the cloud
+simulator". iOS then asked whether it may do the thing that was just asked for. Answering completes
+the requested action and authorises nothing beyond it. The precedent is in the same function: the
+Android stuck-app recovery is automatic rather than suggested, "because the state it clears is one
+this command caused", and this state is one this command caused too. Four gates keep it to the one
+dialog:
 
-1. only on `--cloud`; a dialog on the machine at somebody's desk has somebody at it;
+1. only on `--cloud`, because a dialog on the machine at somebody's desk has somebody at it;
 2. only after **this run's own** open exited 0;
 3. only when nothing attached inside the caller's budget, so the happy path spends no verb;
-4. the alert is **read before it is answered** — `alert get` — and accepted only when it names the app
-   the URL was for. Anything else is reported and left on the screen.
+4. the alert is **read before it is answered**, with `alert get`, and accepted only when it names the
+   app the URL was for. Anything else is reported and left on the screen.
 
 The fourth gate is what keeps this from being "answer any prompt", and it is read as **text** rather
-than parsed: what `alert get` prints for a *present* alert has not been seen by anything in this
+than parsed. What `alert get` prints for a *present* alert has not been seen by anything in this
 package, so a parser for it would be a shape invented here and then trusted. What has been seen is the
-empty answer — exit **1**, `Error (COMMAND_FAILED): alert not found` [observed —
-`agent-device@latest alert get`, 2026-08-27] — which is what makes the read safe to run speculatively:
-it costs a refusal rather than an action.
+empty answer: exit **1**, `Error (COMMAND_FAILED): alert not found` [observed —
+`agent-device@latest alert get`, 2026-08-27]. That is what makes the read safe to run speculatively,
+because it costs a refusal rather than an action.
 
-`attachAlert` carries the three states — answered, some other alert, none — and the what/why/how names
-the dialog and the two verbs by hand when nothing attaches anyway. A report that left the dialog
-unmentioned sent readers to debug a bundle that was never fetched.
+`attachAlert` carries the three states, which are answered, some other alert, and none. The
+what/why/how names the dialog and the two verbs by hand when nothing attaches anyway. A report that
+left the dialog unmentioned sent readers to debug a bundle that was never fetched.
 
 **The verification is identical on every rung**, which is the other half of "one ladder". Two
 observations, watched on one budget, either of which is a reload:
 
-1. a debugger target the dev server had not listed before — the stronger one, and what tells an app
-   that came back from one that quit;
+1. a debugger target the dev server had not listed before, which is the stronger one, and what tells
+   an app that came back from one that quit;
 2. a `Bundled` line in the dev server's captured output that was not there before (`bundleSignal.ts`).
 
-`verifiedBy` keeps the *mechanism's* own observation as its label when it has one —
-`message-socket-peers` for peer churn, `app-relaunch` for a local relaunch — because "the app's
-connection was replaced" is a stronger fact than "the dev server served a bundle to somebody", and
-flattening the two would lose it. The exit code is decided by the observations alone: `0` with either,
-`22` with neither, `20` when no rung ran at all. So the F45 hold is unchanged — peer churn alone is
-still `reloaded: true` with exit `22` — and the second observation is now available to the local rungs
-too, which is what makes the ladder one ladder rather than two with a shared name.
+`verifiedBy` keeps the *mechanism's* own observation as its label when it has one, meaning
+`message-socket-peers` for peer churn and `app-relaunch` for a local relaunch. "The app's connection
+was replaced" is a stronger fact than "the dev server served a bundle to somebody", and flattening the
+two would lose it. The exit code is decided by the observations alone: `0` with either, `22` with
+neither, and `20` when no rung ran at all. So the F45 hold is unchanged, with peer churn alone still
+`reloaded: true` at exit `22`. The second observation is now available to the local rungs too, which
+is what makes the ladder one ladder rather than two with a shared name.
 
 **The consequence to know about, and it is a real cost.** A relaunched app re-registers under the page
 id it had before (§Reloading a cloud session, observed live), so on a project with **no captured dev
 server log** rung 2 has nothing left to observe and exits `22` after spending the whole `--timeout`.
-That is honest — the app was relaunched and whether it came back is unknown — and the fix is the first
-rung of the preflight's own ladder: `npx exagent dev --detach` captures the output that makes the
-second observation possible. It is not a regression; the local relaunch path had exactly this hold
-before, reached from a different direction.
+That is honest, because the app was relaunched and whether it came back is unknown. The fix is the
+first rung of the preflight's own ladder: `npx exagent dev --detach` captures the output that makes
+the second observation possible. It is not a regression, because the local relaunch path had exactly
+this hold before, reached from a different direction.
 
-**Not attempted, and why.** A third observation is available in principle — a target that *vanished*
-from `/json/list` and came back is a new connection even under an id it used before — and it is
+**Not attempted, and why.** A third observation is available in principle, since a target that
+*vanished* from `/json/list` and came back is a new connection even under an id it used before. It is
 [inferred] until something watches a live relaunch closely enough to say so. It is written down here
 rather than built, because a proof this command reports as `reloaded` has to be one that was seen.
 
@@ -672,11 +672,11 @@ rather than built, because a proof this command reports as `reloaded` has to be 
 | `runtime:stop --ios` | exit **0**, `wasRunning: true`, `connectedAppIds: ["host.exp.Exponent"]` |
 
 Two things in that table are the wave's own result. The three rounds with `appsReconnected: 0` **were
-exit 22 before it** — the local path never read the log, so a reload the dev server had just served a
-bundle for was reported as inconclusive — and the printed `reload` → `runtime:errors` chain stayed
-green across all four, which is the F39 risk the abort could have reintroduced answered by
-measurement rather than by argument (`runtime:errors` retries target selection for
-`APP_RECONNECT_GRACE_MS`, which is what absorbs it).
+exit 22 before it**, because the local path never read the log, so a reload the dev server had just
+served a bundle for was reported as inconclusive. And the printed `reload` then `runtime:errors` chain
+stayed green across all four, which answers the F39 risk the abort could have reintroduced by
+measurement rather than by argument. `runtime:errors` retries target selection for
+`APP_RECONNECT_GRACE_MS`, which is what absorbs it.
 
 ### Live evidence
 
@@ -697,8 +697,8 @@ routes **before** it opens anything, and a route the project has not got is exit
 
 The finding [observed — friction run 3, F32]: `navigate /totally-bogus-route-xyz` exited 0, and so
 did `runtime:errors --fail-on-error` and `dev:wait --require-app` after it, with the simulator on
-Expo Router's **Unmatched Route** screen. No runtime gate can ever catch this: an unmatched route is
-not an error the app reports, it is a screen the router renders on purpose. The check has to happen
+Expo Router's **Unmatched Route** screen. No runtime gate can ever catch this. An unmatched route is
+not an error the app reports. It is a screen the router renders on purpose. So the check has to happen
 before the link, or not at all.
 
 ### Where the route table comes from, and why not the dev server
@@ -718,16 +718,16 @@ whether the dev server can answer it. It cannot, for a native target [observed �
   produced from the same file scan.
 
 So the table is read from the files, against expo-router's own conventions
-(`expo-router/src/matchers.tsx`, `getRoutesCore.ts`): the router root is `extra.router.root`, else
-`src/app`, else `app`; group segments are stripped from the URL and accepted in it; `index`
-collapses onto its parent; `_layout` and any file with a `+` in its last segment are left out;
-platform variants collapse onto one route; `_sitemap` is added because the router generates it.
-`+not-found` is left out **deliberately** — it is the screen an unmatched path already lands on, so
+(`expo-router/src/matchers.tsx`, `getRoutesCore.ts`). The router root is `extra.router.root`, else
+`src/app`, else `app`. Group segments are stripped from the URL and accepted in it. `index`
+collapses onto its parent. `_layout` and any file with a `+` in its last segment are left out.
+Platform variants collapse onto one route. `_sitemap` is added because the router generates it.
+`+not-found` is left out **deliberately**: it is the screen an unmatched path already lands on, so
 counting it as a destination would make every route resolve, which is the bug this exists to catch.
 
 **Cross-validated live** [observed — 2026-08-23]: the scanner reported `/`, `/_sitemap`,
-`/explore`, `/notes`, `/users/[id]`, and the app's own `_sitemap` screen listed `index.tsx`,
-`notes.tsx`, `explore.tsx`, `users/[id].tsx` — the same set, from the router's own reading of the
+`/explore`, `/notes` and `/users/[id]`, while the app's own `_sitemap` screen listed `index.tsx`,
+`notes.tsx`, `explore.tsx` and `users/[id].tsx`. The same set, from the router's own reading of the
 same project.
 
 ### Three properties of the check
@@ -736,28 +736,29 @@ same project.
   because a dynamic segment does not swallow a slash. `[...rest]` matches the rest of the path. A
   literal route wins over a dynamic one that also matches, so `/users/me` reaches its own file.
 - **It fails open.** `--no-route-check`, a route that is already a full URL, and a project with no
-  router directory are all reported `checked: false, ok: null` with a reason, and opened. Same
-  reasoning as the bundle check of llp/0010: a false red stops a command that would have worked and
-  names no fix, which is worse than the false green it replaces.
+  router directory are all reported `checked: false, ok: null` with a reason, and opened. That is the
+  same reasoning as the bundle check of llp/0010: a false red stops a command that would have worked
+  and names no fix, which is worse than the false green it replaces.
 - **The last line is a paste, not a list.** A route within a third of its length of a real one is
-  named in `Try:` — live, `navigate /note` answers `Try: npx exagent navigate /notes`. Nothing close
+  named in `Try:`. Live, `navigate /note` answers `Try: npx exagent navigate /notes`. Nothing close
   enough falls back to `navigate /`.
 
 **The limit, stated because it is easy to over-read.** The check answers whether the *project* has a
 route, not whether the *app's navigator* can display it. Live [observed — 2026-08-23]: the notesapp
-uses `NativeTabs` with three declared triggers, and `navigate /users/42` — a route the project
-genuinely has, listed by the app's own sitemap — was accepted, opened, and left the app on the tab
-it was already on. That is the navigator's answer, not the check's, and no file scan can predict it.
+uses `NativeTabs` with three declared triggers, and `navigate /users/42`, a route the project
+genuinely has and one the app's own sitemap lists, was accepted, opened, and left the app on the tab
+it was already on. That is the navigator's answer rather than the check's, and no file scan can
+predict it.
 
 ## The root route needs a query marker
 
 Decision [confirmed — Kudo, 2026-08-23]. `navigate /` opens `exp://<host>:<port>/--/?` for Expo Go.
 
 The finding [observed — friction run 3, F33]: `navigate /` produced `exp://<host>:<port>`, which is
-a no-op for an app that is already loaded — as is `exp://<host>:<port>/--/`. Every other route
+a no-op for an app that is already loaded, as is `exp://<host>:<port>/--/`. Every other route
 worked. `/` is what the CLI's own `status.next`, `dev` plan reason and run banner suggest.
 
-The cause is in **expo-router**, not in Expo Go [observed — `expo-router/src/link/linking.ts`]:
+The cause is in **expo-router** rather than in Expo Go [observed — `expo-router/src/link/linking.ts`].
 `subscribe`'s Expo Go branch runs every incoming URL through `parseExpoGoUrlFromListener`, which
 replaces a link whose path is empty or `/` with `getRootURL() + queryString`. `getRootURL()` in
 Expo Go is `parsePathFromExpoGoLink(Linking.createURL('/'))`, which is the **empty string**. The
@@ -771,8 +772,8 @@ the root route, screenshot-confirmed each time.
 
 A reload is **not** the fix for this, which was the other candidate. Expo Go re-loads the URL it was
 launched with, so an app deep-linked to `/notes` returns to `/notes` after a reload [observed —
-2026-08-23, screenshot]. A development build never had the problem: its listener passes the URL
-through whatever the path is, so `<scheme>://` already means the index route, and it is unchanged.
+2026-08-23, screenshot]. A development build never had the problem, because its listener passes the
+URL through whatever the path is, so `<scheme>://` already means the index route. It is unchanged.
 
 ## Where a device reaches the dev server
 
@@ -791,65 +792,65 @@ The dev-server lock (`src/devLock/`) answers where the dev server listens **on t
 is the right answer for every command that talks to it over HTTP and the wrong one for a link a
 device opens. Four candidates were considered; only the last two survive.
 
-- **The lock.** Records `http://127.0.0.1:<port>` and nothing else. Extending its wire protocol
-  would work and was rejected for now: the lock is taken before the tunnel is up, so it would have
+- **The lock.** It records `http://127.0.0.1:<port>` and nothing else. Extending its wire protocol
+  would work and was rejected for now. The lock is taken before the tunnel is up, so it would have
   to be revised after the fact, and a fact that can go stale inside a live socket is the property
   the lock exists to *not* have.
 - **The manifest endpoint.** `ExpoGoManifestHandlerMiddleware` builds `hostUri` through the same
   `UrlCreator` that produces the tunnel host, so a `GET /` with an `expo-platform` header carries
-  it. Rejected as the primary source: it needs a live, correctly-headed request per call, and the
-  answer is wanted in places that must not make one — a start banner, a status line.
+  it. Rejected as the primary source, because it needs a live, correctly-headed request per call, and
+  the answer is wanted in places that must not make one, such as a start banner or a status line.
 - **The `devserver:url` JSONL event.** `BundlerDevServer.startAsync` emits it with `url`,
   `runtimeUrl`, `hostType` and `port` [observed — `@expo/cli` on `main`, 2026-08-25]. Exactly the
   right shape, and **not in any released SDK**: expo 57.0.17 writes `metro:instantiate` and
   `devserver:start` into `.expo/dev/logs/start.log` and no `devserver:url` [observed — live,
-  2026-08-25]. Worth reading when it ships; useless today.
+  2026-08-25]. Worth reading when it ships, and useless today.
 - **The line the dev server prints.** `Waiting on <url>`, from `startAsync`, and that URL *is* the
-  tunnel origin whenever a `AsyncWsTunnel` is running — `getDevServerUrl` returns
+  tunnel origin whenever an `AsyncWsTunnel` is running, because `getDevServerUrl` returns
   `constructUrl()` in that case rather than the listen address. A detached run captures it in
   `.expo/dev/logs/dev-detached.log`, so it is readable afterwards by anything. **Verified live**
   [observed — 2026-08-25, notesapp on SDK 57.0.17 with a ws tunnel: `Waiting on
   http://znakdiwe5j2n5o0.boltexpo.dev`, and `navigate / --print-url` answered
   `exp://znakdiwe5j2n5o0.boltexpo.dev/--/?`].
 
-So `src/dev/advertisedUrl.ts` reads the printed line, classifies the host (`localhost` / `lan` /
-`tunnel`), and every device-facing URL prefers a current tunnel host over the listen address. A dev
+So `src/dev/advertisedUrl.ts` reads the printed line and classifies the host as `localhost`, `lan` or
+`tunnel`, and every device-facing URL prefers a current tunnel host over the listen address. A dev
 server started **attached** writes that line to somebody's terminal, so it is honestly reported as
 unknown rather than guessed at.
 
 One guard, because the line outlives the run that printed it: the log has to belong to the dev
 server that is up. `dev --detach` truncates the log per run and refuses a second detached server
-while the lock is held, so a live detached run always has a log written after its lock was taken; a
+while the lock is held, so a live detached run always has a log written after its lock was taken. A
 dev server started attached leaves the previous detached log untouched, and that is exactly where a
 tunnel host from days ago would come from. The comparison is the log's mtime against the lock's
 `startedAt`.
 
 **Deliberately not asked: whether the tunnel is healthy.** A tunnel's lifetime belongs to
 `@expo/ws-tunnel` and its reporting to the Expo CLI [decided — Kudo, 2026-08-26]. This document owns
-*which URL exagent prints*, and nothing more: a wrapper that also read the transport's prose for
+*which URL exagent prints* and nothing more. A wrapper that also read the transport's prose for
 failure signatures would be diagnosing a system it does not manage. The consequence is stated
-plainly rather than hidden — a dev server whose tunnel has died still advertises the tunnel host,
+plainly rather than hidden: a dev server whose tunnel has died still advertises the tunnel host,
 because from here that is indistinguishable from one that is fine.
 
 ### The tunnel comes up after the bundler does
 
-`--wait-ready` returning is not the same as the tunnel being up: the bundler answers `/status`
+`--wait-ready` returning is not the same as the tunnel being up. The bundler answers `/status`
 first, and the tunnel is established after it. So a scripted `dev --detach --tunnel --wait-ready`
 followed immediately by `navigate --print-url` landed in that gap and got `exp://127.0.0.1:8081`
-with nothing saying a tunnel was on its way [observed — live, 2026-08-25] — the same wrong answer
-this section exists to prevent, arrived at a different way.
+with nothing saying a tunnel was on its way [observed — live, 2026-08-25]. That is the same wrong
+answer this section exists to prevent, arrived at a different way.
 
 `dev --detach` therefore **waits for the host** when, and only when, the run asked for a tunnel
 (`requestsTunnel` over the forwarded arguments), for up to 20 s, and reports it: a `Tunnel` line
-under the listen address it is not, and `tunnelUrl` in `--json` and on `cli:dev_detach`. Bounded,
-because a tunnel that never comes up must not hold up a dev server that did — the run reports
+under the listen address it is not, plus `tunnelUrl` in `--json` and on `cli:dev_detach`. It is
+bounded, because a tunnel that never comes up must not hold up a dev server that did. The run reports
 `tunnelUrl: null` and the log says why. A run with no `--tunnel` waits for nothing and pays nothing.
 
 ### `hostType` describes the URL, not the log
 
 `navigate --print-url` reports the kind of host **the URL it printed carries**, classified from that
 URL rather than from what the log advertised. The two can differ whenever the tunnel host is not the
-one that ended up in the link — a `127.0.0.1` URL under `tunnel · reachable from any network` is an
+one that ended up in the link. A `127.0.0.1` URL under `tunnel · reachable from any network` is an
 instruction to open a local address on a device somewhere else [observed — live, 2026-08-25]. One
 fact, read off the thing it describes.
 
@@ -859,12 +860,12 @@ Decision [confirmed — Kudo, 2026-08-26]. `exp://<host>` is the **Expo Go** for
 Every URL this CLI prints resolves which application is meant first, and a development build gets
 its own scheme.
 
-The gap. `resolveDeepLinkUrl` already refused to build an `exp://` link for a development build —
-it produced `<scheme>://<route>` — so no wrong URL was ever printed. What was missing is the other
-half: `<scheme>://<route>` navigates an app that is **already loaded against a dev server**, and
+The gap. `resolveDeepLinkUrl` already refused to build an `exp://` link for a development build,
+producing `<scheme>://<route>` instead, so no wrong URL was ever printed. What was missing is the
+other half. `<scheme>://<route>` navigates an app that is **already loaded against a dev server**, and
 nothing this CLI printed said how to get it loaded. `status.next` on a machine with no device
-deferred to `navigate / --print-url`, and that answered `myapp://` — an app opening on whatever it
-last loaded, which is not this dev server.
+deferred to `navigate / --print-url`, and that answered `myapp://`, which opens an app on whatever it
+last loaded, and that is not this dev server.
 
 **The shape, pinned against the launcher that parses it** [observed —
 `packages/expo-dev-launcher`, 2026-08-26]:
@@ -873,14 +874,14 @@ last loaded, which is not this dev server.
 <scheme>://expo-development-client/?url=<url-encoded dev server origin>
 ```
 
-`EXDevLauncherURLHelper.isDevLauncherURL` is exactly `url.host == "expo-development-client"`; the
-dev server URL rides in the `url` query parameter and `exp://` inside it is rewritten to `http`;
-`DevLauncherURLHelper.kt` reads it identically on Android; and the launcher's own Swift test spells
+`EXDevLauncherURLHelper.isDevLauncherURL` is exactly `url.host == "expo-development-client"`. The
+dev server URL rides in the `url` query parameter, and `exp://` inside it is rewritten to `http`.
+`DevLauncherURLHelper.kt` reads it identically on Android, and the launcher's own Swift test spells
 one out as `scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081`. `@expo/cli` builds
-the same string in `UrlCreator.constructDevClientUrl`, and from it comes one detail worth copying:
-the origin inside `url` is **https** when the dev server's host type is a tunnel, because a tunnel
-terminates TLS — the plain-HTTP origin the dev server prints for itself is not what a device off the
-network should be given.
+the same string in `UrlCreator.constructDevClientUrl`, and from it comes one detail worth copying.
+The origin inside `url` is **https** when the dev server's host type is a tunnel, because a tunnel
+terminates TLS, and the plain-HTTP origin the dev server prints for itself is not what a device off
+the network should be given.
 
 The scheme is the deep link's own precedence: `--scheme`, then the `scheme` field of the static app
 config, then the `exp+<slug>` default a managed development build registers. A project that declares
@@ -900,9 +901,9 @@ reached**, because a guess between two applications must not be printed as one U
 `certain` is false in exactly one branch: nothing connected, no `--app-id`, no `expo-dev-client`
 dependency, and a native directory checked in. Such a project has a build of its own *and* can still
 be opened in Expo Go, and nothing here can tell which happened. Every other branch has something
-that settles it — the flag, the connected app, the dependency, or the absence of any dev-build
-machinery at all. That branch prints both forms, labelled, Expo Go first because it needs nothing
-installed.
+that settles it: the flag, the connected app, the dependency, or the absence of any dev-build
+machinery at all. That branch prints both forms, labelled, with Expo Go first because it needs
+nothing installed.
 
 `status.next` cannot carry a labelled pair on one line, so where it would have to it names
 `exagent navigate / --print-url` instead, which prints both.
@@ -912,11 +913,11 @@ installed.
 Decision [decided — wave 30, 2026-08-28; the finding is F123, from the wave-29 live pass]. The
 section above got the *printing* right and left the *acting* wrong. `navigate` computed the launcher
 URL into its own `connect` array and then opened `<scheme>://<route>` at an app it had just reported
-was not there — `target: "no app is connected to the dev server, and the project depends on
-expo-dev-client"` — spent its whole attach budget, and exited `22` after **90.6 s** on Android with
-no dialog anywhere in it [observed — wave 29, `evidence/61-navigate-after-stop-android.json`]. It is
-the command every follow-up in this CLI names as the way to open the app, including `runtime:stop`'s
-own.
+was not there, with `target: "no app is connected to the dev server, and the project depends on
+expo-dev-client"`. It spent its whole attach budget and exited `22` after **90.6 s** on Android with
+no dialog anywhere in it [observed — wave 29, `evidence/61-navigate-after-stop-android.json`]. This
+is the command every follow-up in this CLI names as the way to open the app, including
+`runtime:stop`'s own.
 
 The contract now: **when the target is a development build and no app is attached, the launcher URL
 is opened first, the existing attach budget is spent waiting for the app, and then the route link is
@@ -925,12 +926,12 @@ summary — because two links were delivered and naming one of them describes ha
 app **is** attached, nothing changes: it understands the route link, and reloading it would throw
 away the state the caller is navigating within.
 
-Four conditions gate it, and each rules out a case where loading first would be wrong: a development
-build (Expo Go's `exp://<host>` already carries the dev server); nothing attached; a launcher URL
-exists (`buildConnectUrls` returns none without a dev server *and* a scheme); and a budget to wait
-with. The last one is why `smoke` and `--no-wait-attach` keep exactly the behaviour they had — the
-launcher fetches a bundle, and a route link delivered into that gap reaches an app that has not
-finished loading.
+Four conditions gate it, and each rules out a case where loading first would be wrong. The target is
+a development build, because Expo Go's `exp://<host>` already carries the dev server. Nothing is
+attached. A launcher URL exists, and `buildConnectUrls` returns none without a dev server *and* a
+scheme. And there is a budget to wait with. The last one is why `smoke` and `--no-wait-attach` keep
+exactly the behaviour they had: the launcher fetches a bundle, and a route link delivered into that
+gap reaches an app that has not finished loading.
 
 **Two things on Android that no choice of URL can express**, and the fix is incomplete without
 either [both observed — 2026-08-28, `live-devclient`'s emulator, with the dev server and app of the
@@ -938,17 +939,17 @@ suite]:
 
 1. **The launcher URL goes to `MainActivity` by component, not as a link.** A BROWSABLE
    `ACTION_VIEW` intent carrying it reaches `DevLauncherController.handleIntent`, and on an app that
-   is *not running* that path throws — `java.lang.NullPointerException … createAppIntent` — and
-   leaves the app on `DevLauncherErrorActivity` with `am start` having exited 0. The same URL sent as
+   is *not running* that path throws `java.lang.NullPointerException … createAppIntent` and
+   leaves the app on `DevLauncherErrorActivity`, with `am start` having exited 0. The same URL sent as
    `am start -f 0x20000000 -n <package>/.MainActivity -d <url>` loads the bundle and attaches in
    about three seconds, on the same device in the same minute. That is what
    `expo start --dev-client --android` does [reference — `@expo/cli`
    `src/start/platforms/android/adb.ts` §launchActivityAsync], and it is why the route link stays a
    link while the launcher URL does not. The activity is `<app id>/.MainActivity`, from `--app-id` or
-   the app config; a project whose application id cannot be read falls back to the link.
+   the app config, and a project whose application id cannot be read falls back to the link.
 2. **The port that is forwarded is the dev server's, not the route link's.** §The device's loopback
    is not this machine's reverses the loopback port *of the URL being opened*, and
-   `<scheme>://expo-development-client/?url=…` has no loopback host of its own — so nothing was
+   `<scheme>://expo-development-client/?url=…` has no loopback host of its own. So nothing was
    forwarded and the launcher fetched its bundle from a port on the device. When this ladder fires,
    the reverse reads the dev server's origin instead.
 
@@ -962,26 +963,26 @@ Decision [confirmed — Kudo, 2026-08-25]. `exagent navigate <route> --print-url
 and opens nothing.
 
 The device this CLI can drive and the device the app runs on are not always the same one. A cloud
-simulator, a phone, and a teammate's laptop all need the identical thing — the URL — and none of
+simulator, a phone, and a teammate's laptop all need the identical thing, the URL, and none of
 them is reachable with `simctl` or `adb`. Before this, the URL was resolved one step before
 `resolveDeviceAsync` and thrown away with its failure.
 
-`resolveRouteUrlAsync` is `openRouteAsync` with the device half removed: the route check against the
-project's route table, the dev-server discovery, the Expo Go vs development build decision, the
-scheme, the `/--/?` root marker, and the tunnel host. `openRouteAsync` is now that function plus the
-device. One composition, two modes — which is the same reason `openRoute.ts` was split out of
-`navigateAsync` for `smoke` in the first place: a second composition is a second place for the
-findings of this document to be forgotten.
+`resolveRouteUrlAsync` is `openRouteAsync` with the device half removed. It keeps the route check
+against the project's route table, the dev-server discovery, the Expo Go versus development build
+decision, the scheme, the `/--/?` root marker, and the tunnel host. `openRouteAsync` is now that
+function plus the device. One composition, two modes, which is the same reason `openRoute.ts` was
+split out of `navigateAsync` for `smoke` in the first place: a second composition is a second place
+for the findings of this document to be forgotten.
 
 Exit `0` on a resolvable URL. Whether anything then opens it is not this command's to know, and a
 non-zero code for "nobody opened it" would make the mode useless to the caller it exists for. The
 route check still fails the run, because a URL for a route the project has not got is not an answer.
 
-`--json` carries the URL, plus `hostType` — the fact that decides whether the URL is usable
-anywhere but here — and the four device keys as `null`, so a parser reads one shape either way.
+`--json` carries the URL, plus `hostType`, the fact that decides whether the URL is usable
+anywhere but here, and the four device keys as `null`, so a parser reads one shape either way.
 
 And `navigate` **without** the flag, on a machine with no device, now names that URL in its failure
-and names the flag: the resolution had already happened, and "no device found" was the whole truth
+and names the flag. The resolution had already happened, and "no device found" was the whole truth
 and less than half the answer.
 
 ## The cloud simulator backend
