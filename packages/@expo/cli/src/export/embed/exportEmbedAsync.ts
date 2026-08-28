@@ -254,7 +254,11 @@ export async function exportEmbedBundleAndAssetsAsync(
             dev: options.dev,
             devServer,
             isHermes,
-            includeSourceMaps: !!sourceMapUrl,
+            // `--sourcemap-output` asks for a source map of the *native* bundle, which the build
+            // writes outside the app binary. DOM component source maps are written next to the
+            // DOM JS bundle inside the binary, so they ship to users and expose the app source.
+            // Never emit them here. Use `npx expo export --source-maps` to get DOM source maps.
+            includeSourceMaps: false,
             exp,
             files,
           });
