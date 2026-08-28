@@ -1,7 +1,7 @@
 // The git commands this CLI runs, and the two questions every caller starts from: can git run here,
 // and what work tree is this project in.
 //
-// One identity for every invocation — `exagent`, not the user — because what this CLI writes through
+// One identity for every invocation — `@expo/agent-cli`, not the user — because what this CLI writes through
 // git is a machine artifact, and a project whose `user.email` is unset must still be able to make
 // one. Hooks and pagers belong to the user's own git commands, so they are turned off here.
 //
@@ -47,7 +47,7 @@ interface RunGitOptions {
 /**
  * Run one git command and return its stdout.
  *
- * The identity of a snapshot commit is `exagent`, not the user: the commit is a machine artifact,
+ * The identity of a snapshot commit is `@expo/agent-cli`, not the user: the commit is a machine artifact,
  * and a project whose `user.email` is unset must still be able to make one.
  *
  * @throws {GitError} when git exits non-zero or cannot be started.
@@ -64,10 +64,10 @@ export async function runGitAsync(args: string[], options: RunGitOptions): Promi
       env: {
         ...process.env,
         ...(options.indexFile ? { GIT_INDEX_FILE: options.indexFile } : null),
-        GIT_AUTHOR_NAME: 'exagent',
-        GIT_AUTHOR_EMAIL: 'exagent@expo.dev',
-        GIT_COMMITTER_NAME: 'exagent',
-        GIT_COMMITTER_EMAIL: 'exagent@expo.dev',
+        GIT_AUTHOR_NAME: 'expo-agent-cli',
+        GIT_AUTHOR_EMAIL: 'agent-cli@expo.dev',
+        GIT_COMMITTER_NAME: 'expo-agent-cli',
+        GIT_COMMITTER_EMAIL: 'agent-cli@expo.dev',
         // Hooks and pagers belong to the user's own git commands, not to a snapshot.
         GIT_PAGER: 'cat',
       },

@@ -3,7 +3,7 @@
 //
 // "Who is this machine signed in as" is the precondition behind most of the registry, and it costs
 // one short subprocess to answer. Asking it first turns a failure that arrives after minutes of
-// exporting into one that arrives before anything was spent — and it is the fact `exagent status`
+// exporting into one that arrives before anything was spent — and it is the fact `@expo/agent-cli status`
 // reports, so a driving agent can find out what will need its user before it starts.
 //
 // Nothing here ever throws. A preflight that cannot run is not an answer of "no": it is no answer,
@@ -25,7 +25,7 @@ export interface AuthPreflight {
    *
    * `expo whoami` is the second rung, and it exists because the first one can be a stranger: on a
    * machine whose `eas` was a broken shim, `status` reported `auth unknown (nothing could answer)`
-   * while `exagent whoami` printed the account name in the same directory [observed — friction run
+   * while `@expo/agent-cli whoami` printed the account name in the same directory [observed — friction run
    * 7, F65]. Both CLIs read the same `~/.expo/state.json`, so the second question is the same
    * question asked of the CLI the project actually installed.
    */
@@ -77,7 +77,7 @@ async function probeAsync(projectRoot: string, timeoutMs: number): Promise<AuthP
     return fromEas;
   }
   // The EAS CLI could not be asked, or what answered was not the EAS CLI. The project's own Expo
-  // CLI reads the same session file, and it is the rung `exagent whoami` uses (`passthrough/auth.ts`
+  // CLI reads the same session file, and it is the rung `@expo/agent-cli whoami` uses (`passthrough/auth.ts`
   // §resolveAuthCliAsync), so the two commands stop disagreeing about who this machine is (F65).
   const fromExpo = await askProjectExpoAsync(projectRoot, timeoutMs);
   return fromExpo ?? fromTokenAlone();
@@ -136,7 +136,7 @@ async function askEasAsync(
  *
  * "The project's own" is the walk of `src/utils/projectBin.ts`, which is what makes this rung reach
  * a workspace: npm installs a package's dependencies at the workspace root, so this used to decline
- * a free answer and report auth as unknown in a repository where `exagent whoami` names the user
+ * a free answer and report auth as unknown in a repository where `@expo/agent-cli whoami` names the user
  * [observed — 2026-08-27, F113].
  */
 async function askProjectExpoAsync(

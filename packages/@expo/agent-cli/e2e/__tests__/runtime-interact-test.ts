@@ -14,7 +14,7 @@
 // own suite, which runs it against fibers.
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
   stubExpoEnv,
@@ -126,14 +126,14 @@ beforeAll(async () => {
   projectRoot = await setupFixtureAsync('go-app');
 });
 
-describe('exagent runtime:tree', () => {
+describe('@expo/agent-cli runtime:tree', () => {
   it(`prints one JSON object naming the screen it read, and exits 0`, async () => {
     const devServer = await startStubDevServerAsync({
       targets: [EXPO_GO_TARGET],
       inspectorEvaluate: responder({ tree: treeAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:tree', '--dev-server-url', devServer.url, '--json'],
         { env: stubExpoEnv(projectRoot) }
@@ -167,7 +167,7 @@ describe('exagent runtime:tree', () => {
       inspectorEvaluate: responder({ tree: treeAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:tree',
         '--dev-server-url',
         devServer.url,
@@ -189,7 +189,7 @@ describe('exagent runtime:tree', () => {
       }),
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:tree', '--testID', 'nope', '--dev-server-url', devServer.url, '--json'],
         { reject: false }
@@ -210,7 +210,7 @@ describe('exagent runtime:tree', () => {
       inspectorEvaluate: responder({ tree: { supported: false, reason: 'no-devtools-hook' } }),
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:tree', '--dev-server-url', devServer.url, '--json'],
         { reject: false }
@@ -221,7 +221,7 @@ describe('exagent runtime:tree', () => {
         error: {
           code: 'RUNTIME_TREE_UNSUPPORTED',
           message: expect.stringContaining('DevTools'),
-          suggestedCommand: expect.stringContaining('npx exagent runtime:eval'),
+          suggestedCommand: expect.stringContaining('npx @expo/agent-cli runtime:eval'),
           needsHuman: null,
         },
       });
@@ -236,7 +236,7 @@ describe('exagent runtime:tree', () => {
       inspectorEvaluate: responder({ tree: treeAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime',
         'tree',
         '--dev-server-url',
@@ -252,14 +252,14 @@ describe('exagent runtime:tree', () => {
   });
 });
 
-describe('exagent runtime:tap', () => {
+describe('@expo/agent-cli runtime:tap', () => {
   it(`reports the tap it made, and exits 0`, async () => {
     const devServer = await startStubDevServerAsync({
       targets: [EXPO_GO_TARGET],
       inspectorEvaluate: responder({ tap: callAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:tap',
         'add-note',
         '--dev-server-url',
@@ -305,7 +305,7 @@ describe('exagent runtime:tap', () => {
       }),
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:tap', 'row', '--dev-server-url', devServer.url, '--json'],
         { reject: false }
@@ -319,7 +319,7 @@ describe('exagent runtime:tap', () => {
         ok: false,
       });
       expect(result.stderr).toContain('--index');
-      expect(result.stderr).toContain('Try: npx exagent runtime:tap add-note --index 0');
+      expect(result.stderr).toContain('Try: npx @expo/agent-cli runtime:tap add-note --index 0');
     } finally {
       await devServer.close();
     }
@@ -349,7 +349,7 @@ describe('exagent runtime:tap', () => {
       },
     });
     try {
-      const refused = await executeExagentAsync(
+      const refused = await executeAgentCliAsync(
         projectRoot,
         ['runtime:tap', 'disabled-btn', '--dev-server-url', devServer.url, '--json'],
         { reject: false }
@@ -358,7 +358,7 @@ describe('exagent runtime:tap', () => {
       expect(JSON.parse(refused.stdout)).toMatchObject({ called: false, reason: 'disabled' });
       expect(refused.stderr).toContain('--force');
 
-      const forced = await executeExagentAsync(projectRoot, [
+      const forced = await executeAgentCliAsync(projectRoot, [
         'runtime:tap',
         'disabled-btn',
         '--force',
@@ -399,7 +399,7 @@ describe('exagent runtime:tap', () => {
       },
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:tap',
         'add-note',
         '--verify',
@@ -419,7 +419,7 @@ describe('exagent runtime:tap', () => {
   });
 
   it(`refuses a run that names no testID`, async () => {
-    const result = await executeExagentAsync(projectRoot, ['runtime:tap', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['runtime:tap', '--json'], {
       reject: false,
     });
 
@@ -428,7 +428,7 @@ describe('exagent runtime:tap', () => {
   });
 });
 
-describe('exagent runtime:type', () => {
+describe('@expo/agent-cli runtime:type', () => {
   it(`reports the text it typed, and exits 0`, async () => {
     const devServer = await startStubDevServerAsync({
       targets: [EXPO_GO_TARGET],
@@ -444,7 +444,7 @@ describe('exagent runtime:type', () => {
       }),
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:type',
         'a new note',
         '--testID',
@@ -483,7 +483,7 @@ describe('exagent runtime:type', () => {
           : undefined,
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:type',
         'hello',
         '--testID',
@@ -506,7 +506,7 @@ describe('exagent runtime:type', () => {
   });
 
   it(`refuses a run with no --testID, naming the flag`, async () => {
-    const result = await executeExagentAsync(projectRoot, ['runtime:type', 'hello', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['runtime:type', 'hello', '--json'], {
       reject: false,
     });
 
@@ -523,7 +523,7 @@ describe('the three commands in the help', () => {
   // is what an agent reads before it decides whether to build a loop on a command, and these three
   // are rungs 3 and 4 of the workflow map that same help prints.
   it(`are listed as ordinary actions of the runtime group`, async () => {
-    const result = await executeExagentAsync(projectRoot, ['runtime', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['runtime', '--help']);
 
     for (const action of ['runtime:tree', 'runtime:tap', 'runtime:type']) {
       expect(result.stdout).toContain(action);
@@ -533,16 +533,16 @@ describe('the three commands in the help', () => {
   });
 
   it(`say in their own help what they do not do`, async () => {
-    const tap = await executeExagentAsync(projectRoot, ['runtime:tap', '--help']);
+    const tap = await executeAgentCliAsync(projectRoot, ['runtime:tap', '--help']);
     expect(tap.stdout).toContain('calls a prop');
     expect(tap.stdout).toContain('synthetic event');
     expect(tap.stdout).toMatch(/invisible button/i);
     expect(tap.stdout).toContain('Expo Go for Android');
 
-    const type = await executeExagentAsync(projectRoot, ['runtime:type', '--help']);
+    const type = await executeAgentCliAsync(projectRoot, ['runtime:type', '--help']);
     expect(type.stdout).toContain('never focused');
 
-    const tree = await executeExagentAsync(projectRoot, ['runtime:tree', '--help']);
+    const tree = await executeAgentCliAsync(projectRoot, ['runtime:tree', '--help']);
     expect(tree.stdout).toContain('--all-screens');
     expect(tree.stdout).toContain('geometry');
   });
@@ -565,7 +565,7 @@ describe('the entry bundle gate', () => {
       },
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:tree', '--dev-server-url', devServer.url, '--json'],
         { reject: false, env: stubExpoEnv(projectRoot) }
@@ -594,7 +594,7 @@ describe('the entry bundle gate', () => {
       inspectorEvaluate: responder({ tap: callAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:tap', 'add-note', '--verify', '--dev-server-url', devServer.url, '--json'],
         { reject: false, env: stubExpoEnv(projectRoot) }
@@ -607,7 +607,7 @@ describe('the entry bundle gate', () => {
         reason: 'bundle-broken',
         verify: null,
       });
-      expect(result.stderr).toContain('Try: npx exagent runtime:reload');
+      expect(result.stderr).toContain('Try: npx @expo/agent-cli runtime:reload');
     } finally {
       await devServer.close();
     }
@@ -620,7 +620,7 @@ describe('the entry bundle gate', () => {
       inspectorEvaluate: responder({ type: callAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         [
           'runtime:type',
@@ -648,7 +648,7 @@ describe('the entry bundle gate', () => {
       inspectorEvaluate: responder({ tree: treeAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:tree',
         '--no-bundle-check',
         '--dev-server-url',
@@ -675,14 +675,14 @@ describe('the follow-ups of the three commands', () => {
       inspectorEvaluate: responder({ tree: treeAnswer() }),
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:tree',
         '--dev-server-url',
         devServer.url,
       ]);
 
       expect(result.stdout).toContain('Suggested next:');
-      expect(result.stdout).toContain('npx exagent runtime:tap add-note --verify');
+      expect(result.stdout).toContain('npx @expo/agent-cli runtime:tap add-note --verify');
     } finally {
       await devServer.close();
     }
@@ -694,7 +694,7 @@ describe('the follow-ups of the three commands', () => {
       inspectorEvaluate: responder({ tap: callAnswer() }),
     });
     try {
-      const quiet = await executeExagentAsync(projectRoot, [
+      const quiet = await executeAgentCliAsync(projectRoot, [
         'runtime:tap',
         'add-note',
         '--no-followups',
@@ -703,7 +703,7 @@ describe('the follow-ups of the three commands', () => {
       ]);
       expect(quiet.stdout).not.toContain('Suggested next:');
 
-      const json = await executeExagentAsync(projectRoot, [
+      const json = await executeAgentCliAsync(projectRoot, [
         'runtime:tap',
         'add-note',
         '--dev-server-url',
@@ -722,7 +722,7 @@ describe('the follow-ups of the three commands', () => {
 // @ref llp/0018-interaction-commands.rfc.md §Negative numbers — friction run 7, F73.
 describe('a negative --index', () => {
   it(`is refused for what it is, not as a flag with nothing after it`, async () => {
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['runtime:tap', 'dup-btn', '--index', '-1', '--json'],
       { reject: false }

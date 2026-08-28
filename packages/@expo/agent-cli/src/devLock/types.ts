@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 
 /**
  * What the dev-server lock answers with: where the dev server of this project listens, and who
@@ -13,7 +13,7 @@ export interface DevServerLockInfo {
   url: string;
   /** Port of {@link url}, split out so a caller does not have to parse it back. */
   port: number;
-  /** PID of the `exagent` process holding the lock, for a report that names the owner. */
+  /** PID of the `@expo/agent-cli` process holding the lock, for a report that names the owner. */
   pid: number;
   /** When the lock was taken, as an ISO 8601 timestamp. */
   startedAt: string;

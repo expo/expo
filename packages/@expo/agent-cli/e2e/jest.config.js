@@ -8,7 +8,7 @@ module.exports = {
   testEnvironment: 'node',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
   rootDir: path.resolve(__dirname),
-  displayName: 'exagent-e2e',
+  displayName: 'agent-cli-e2e',
   roots: ['__tests__'],
   // The fixtures ship committed `node_modules` directories as test data. Jest must never treat
   // them as modules of this project, or it reports duplicate package name collisions.

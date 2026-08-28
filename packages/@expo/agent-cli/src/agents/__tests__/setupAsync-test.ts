@@ -80,7 +80,7 @@ describe(runSetupAsync, () => {
       notes: [],
     });
     expect(vol.readFileSync('/project/AGENTS.md', 'utf8')).toContain(
-      '<!-- BEGIN EXAGENT MANAGED BLOCK -->'
+      '<!-- BEGIN EXPO AGENT CLI MANAGED BLOCK -->'
     );
   });
 

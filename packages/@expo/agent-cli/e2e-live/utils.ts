@@ -39,13 +39,13 @@ export const fixturesDir = path.resolve(__dirname, 'fixtures');
  * every machine this runs on, and the suites assert it.
  */
 export const liveTempRoot = path.join(
-  process.env.EXAGENT_LIVE_TEMP_DIR ? path.resolve(process.env.EXAGENT_LIVE_TEMP_DIR) : os.tmpdir(),
-  'exagent-live'
+  process.env.AGENT_CLI_LIVE_TEMP_DIR ? path.resolve(process.env.AGENT_CLI_LIVE_TEMP_DIR) : os.tmpdir(),
+  'agent-cli-live'
 );
 
 /** First dev-server port this tier tries. Above the Expo CLI's own 8081-8085 sweep, and above 8500
  * so a live run never collides with the ports a human or another suite is using. */
-export const LIVE_PORT_BASE = Number(process.env.EXAGENT_LIVE_PORT ?? 8500);
+export const LIVE_PORT_BASE = Number(process.env.AGENT_CLI_LIVE_PORT ?? 8500);
 
 /**
  * The first free port at or above `from`, checked by binding it.
@@ -138,7 +138,7 @@ export class LiveRun {
         throw new Error(
           `Refusing to run: the live scratch directory ${this.tempDir} is inside the git repository at ${dir}. ` +
             `EAS uploads walk up to the git root, so a deploy from here would upload that repository. ` +
-            `Point EXAGENT_LIVE_TEMP_DIR at a directory outside every checkout.`
+            `Point AGENT_CLI_LIVE_TEMP_DIR at a directory outside every checkout.`
         );
       }
       const parent = path.dirname(dir);
@@ -182,7 +182,7 @@ export class LiveRun {
     const seconds = Math.round((Date.now() - this.startedAt) / 1000);
     const spent = [
       `${seconds}s wall`,
-      `${this.spend.commands} exagent runs`,
+      `${this.spend.commands} @expo/agent-cli runs`,
       `${this.spend.scaffolds} scaffolds`,
       `${this.spend.deploys} deploys`,
       `${this.spend.cloudSessions} cloud sessions`,
@@ -221,7 +221,7 @@ export type LiveOptions = {
 let sequence = 0;
 
 /**
- * Run the built `exagent` bin against a real project, and keep the evidence.
+ * Run the built `@expo/agent-cli` bin against a real project, and keep the evidence.
  *
  * Never rejects on a non-zero exit: in this tier the exit code is usually the assertion, and a
  * helper that threw on 20 would make every gate test write a try/catch. `reject` is the stub tier's
@@ -286,7 +286,7 @@ export async function runLiveAsync(
   const artifact = run.writeArtifact(
     name,
     [
-      `$ exagent ${argv.join(' ')}`,
+      `$ @expo/agent-cli ${argv.join(' ')}`,
       `cwd: ${cwd}`,
       `exit: ${exitCode} signal: ${signal} in ${durationMs}ms`,
       '',
@@ -309,7 +309,7 @@ export async function runLiveEasAsync(
   argv: string[],
   options: LiveOptions = {}
 ): Promise<LiveResult> {
-  assertStaging(`exagent ${argv.join(' ')}`);
+  assertStaging(`@expo/agent-cli ${argv.join(' ')}`);
   return runLiveAsync(run, cwd, argv, {
     ...options,
     env: { ...options.env, EXPO_STAGING: '1' },
@@ -327,7 +327,7 @@ export function parseJson<T = any>(result: LiveResult): T {
     return JSON.parse(result.stdout) as T;
   } catch (error: any) {
     throw new Error(
-      `"exagent ${result.argv.join(' ')}" did not print JSON on stdout (exit ${result.exitCode}): ` +
+      `"@expo/agent-cli ${result.argv.join(' ')}" did not print JSON on stdout (exit ${result.exitCode}): ` +
         `${error.message}. Full output: ${result.artifact}`
     );
   }
@@ -375,13 +375,13 @@ export function expectExit(result: LiveResult, code: number, why?: string): void
           'the real failure.'
         : '';
     throw new Error(
-      `"exagent ${result.argv.join(' ')}" exited ${result.exitCode}, expected ${code}` +
+      `"@expo/agent-cli ${result.argv.join(' ')}" exited ${result.exitCode}, expected ${code}` +
         `${why ? ` (${why})` : ''}.${crashed} Full output: ${result.artifact}`
     );
   }
 }
 
-/** Spawn a command that is not `exagent` — a package manager, `curl`, `xcrun`. */
+/** Spawn a command that is not `@expo/agent-cli` — a package manager, `curl`, `xcrun`. */
 export async function execAsync(
   command: string,
   args: string[],

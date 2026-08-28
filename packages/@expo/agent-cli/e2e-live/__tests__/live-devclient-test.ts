@@ -15,10 +15,10 @@
 // stops being a column of refusals, and `live-android`'s refusals keep meaning exactly what they say
 // — about Expo Go.
 //
-// **Why it is shaped unlike every other suite here.** It does not scaffold. `exagent new` costs
+// **Why it is shaped unlike every other suite here.** It does not scaffold. `@expo/agent-cli new` costs
 // seconds and a development build costs about fifteen minutes of Gradle, and a live suite may not
 // spend that ([[0022-live-tier]] §Every suite cleans up after itself). So the *artifact* is the
-// prerequisite: `EXAGENT_LIVE_DEVCLIENT_PROJECT` names a project somebody has already run
+// prerequisite: `AGENT_CLI_LIVE_DEVCLIENT_PROJECT` names a project somebody has already run
 // `npx expo run:android` in, the gate checks that its package is installed **and** that the build is
 // recorded, and the project is used in place rather than copied. Nothing here makes an EAS call, so
 // the scratch-outside-git rule that forces every other suite to copy does not apply.

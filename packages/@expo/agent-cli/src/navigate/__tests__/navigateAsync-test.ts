@@ -382,7 +382,7 @@ describe(navigateAsync, () => {
         },
         {
           id: 'runtime-errors',
-          command: 'npx exagent runtime:errors --ios',
+          command: 'npx @expo/agent-cli runtime:errors --ios',
           why: expect.any(String),
         },
       ],
@@ -447,7 +447,7 @@ describe(navigateAsync, () => {
 
       expect(printed()).toContain('Suggested next:');
       expect(printed()).toContain('xcrun simctl io IOS-1 screenshot screen.png');
-      expect(printed()).toContain('npx exagent runtime:errors');
+      expect(printed()).toContain('npx @expo/agent-cli runtime:errors');
     });
 
     it(`should offer the adb screenshot for an Android device`, async () => {
@@ -531,7 +531,7 @@ describe(navigateAsync, () => {
     const error = await navigateAsync(projectRoot, options({ devServerUrl: null })).catch((e) => e);
 
     expect(error.code).toBe('DEEP_LINK_UNRESOLVED');
-    expect(error.message).toContain('npx exagent dev --detach');
+    expect(error.message).toContain('npx @expo/agent-cli dev --detach');
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §Verifying the route. The friction this pins:
@@ -574,7 +574,7 @@ describe(navigateAsync, () => {
 
       const error = await navigateAsync(projectRoot, options({ route: '/note' })).catch((e) => e);
 
-      expect(error.suggestedCommand).toBe('npx exagent navigate /notes');
+      expect(error.suggestedCommand).toBe('npx @expo/agent-cli navigate /notes');
     });
 
     it(`should open a route the project has`, async () => {
@@ -950,7 +950,7 @@ describe(navigateAsync, () => {
       await expect(navigateAsync(projectRoot, options())).rejects.toMatchObject({
         code: 'NO_DEVICE',
         message: expect.stringContaining('exp://127.0.0.1:8081/--/profile/42'),
-        suggestedCommand: 'npx exagent navigate / --print-url',
+        suggestedCommand: 'npx @expo/agent-cli navigate / --print-url',
       });
     });
   });

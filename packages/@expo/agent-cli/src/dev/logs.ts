@@ -6,7 +6,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const devLogsHelp: CommandHelp = {
   command: 'dev:logs',
-  usage: 'npx exagent dev:logs',
+  usage: 'npx @expo/agent-cli dev:logs',
   options: [
     `--tail <lines>    How many lines from the end to print (default: 100)`,
     `--json            Print the read as JSON: the file, the lines, and the dev server`,
@@ -15,10 +15,10 @@ export const devLogsHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent dev:logs',
+      run: 'npx @expo/agent-cli dev:logs',
       gets: 'the last 100 lines the detached dev server printed, escape codes stripped',
     },
-    { run: 'npx exagent dev:logs --tail 30 --json', gets: 'the same 30 lines as one object' },
+    { run: 'npx @expo/agent-cli dev:logs --tail 30 --json', gets: 'the same 30 lines as one object' },
   ],
   next: ['dev', 'runtime:errors', 'dev:stop'],
   json: {
@@ -27,7 +27,7 @@ export const devLogsHelp: CommandHelp = {
     keys: ['logFile', 'lines', 'totalLines', 'truncated', 'devServer', 'advertised', 'followups'],
   },
   notes: [
-    `The counterpart of "npx exagent dev --detach", which writes to .expo/dev/logs/ instead of`,
+    `The counterpart of "npx @expo/agent-cli dev --detach", which writes to .expo/dev/logs/ instead of`,
     `to a terminal. A dev server started without --detach has no log, and this says so.`,
     `There is no --follow: a stream with no end is what --detach exists to avoid. Run it again.`,
     `The lines are fenced as untrusted content — a bundler quotes code this CLI did not write.`,
@@ -35,7 +35,7 @@ export const devLogsHelp: CommandHelp = {
   ],
 };
 
-export const exagentDevLogs: Command = async (argv) => {
+export const agentCliDevLogs: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -58,7 +58,7 @@ export const exagentDevLogs: Command = async (argv) => {
     printCommandHelp(devLogsHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent dev:logs -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli dev:logs -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');

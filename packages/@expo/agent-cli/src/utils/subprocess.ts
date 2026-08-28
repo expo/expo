@@ -1,6 +1,6 @@
 // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — every other CLI of the Expo family
 // is reached across a process boundary. `expoCli.ts` covers the project's `expo` bin; this module
-// covers the ones `exagent` has to find for itself (`create-expo`, `eas`) and the two output modes
+// covers the ones `@expo/agent-cli` has to find for itself (`create-expo`, `eas`) and the two output modes
 // a command needs: hand the terminal over, or capture what the tool printed.
 import { spawn } from 'child_process';
 import path from 'path';
@@ -41,7 +41,7 @@ export interface SubprocessOptions {
    *
    * The one thing it is for is saying "nobody can answer you" in the way each tool understands —
    * `CI=1` for the Expo CLI (llp/0010 §Needs-human protocol, layer 2). Everything else a tool
-   * reads it inherits, because a subprocess of `exagent` is meant to behave like the same command
+   * reads it inherits, because a subprocess of `@expo/agent-cli` is meant to behave like the same command
    * run by hand.
    */
   env?: NodeJS.ProcessEnv;
@@ -106,7 +106,7 @@ const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
  * hanging a pipe an agent is waiting on.
  *
  * Terminal signals are forwarded while the child runs, the same way `runExpoAsync` does it, so
- * killing `exagent` stops the cloud build or the deploy it is waiting for rather than orphaning
+ * killing `@expo/agent-cli` stops the cloud build or the deploy it is waiting for rather than orphaning
  * it. An interrupt resolves as a clean exit, because the stop was asked for.
  *
  * **A package runner waits its turn** (`./runnerLock.ts`, F93): two spawns of one package spec share
@@ -208,7 +208,7 @@ function spawnNowAsync(
     const guard =
       promptGuard && output !== 'inherit'
         ? startPromptGuard({
-            idleMs: env.EXAGENT_PROMPT_TIMEOUT_MS,
+            idleMs: env.AGENT_CLI_PROMPT_TIMEOUT_MS,
             lastOutput: () => stderr || stdout,
             onHang: (line) => {
               promptHang = line;
@@ -333,7 +333,7 @@ function printerFor(
  * Both halves are required. Silence on its own is a long build or a slow upload, and killing that
  * would be worse than the hang it prevents; a question on its own is a tool that asked and moved
  * on. Together they are the one thing a subprocess with no stdin can never recover from — and
- * because the window is the whole risk, `EXAGENT_PROMPT_TIMEOUT_MS` can widen it.
+ * because the window is the whole risk, `AGENT_CLI_PROMPT_TIMEOUT_MS` can widen it.
  */
 function startPromptGuard({
   idleMs,
@@ -387,7 +387,7 @@ function executableNames(name: string): string[] {
  * Find a command on `PATH` without spawning anything.
  *
  * `which`/`where` would be a subprocess for a question two `stat` calls answer, and a command
- * that has to *report* which binary it is about to run (`exagent deploy` names the `eas` it
+ * that has to *report* which binary it is about to run (`@expo/agent-cli deploy` names the `eas` it
  * found) needs the path, not just a yes.
  *
  * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes — a forwarded code is handed back verbatim.
 //
-// `exagent doctor:check` is a wrapper around `expo-doctor`, which has no `--json` and exits 1 when
+// `@expo/agent-cli doctor:check` is a wrapper around `expo-doctor`, which has no `--json` and exits 1 when
 // any check fails. These tests drive the published CLI against a stub `expo-doctor` installed into
 // the fixture's `node_modules/.bin` — the first place the resolver looks — so the mirrored exit
 // code and the best-effort parse are asserted without running 21 real checks over the network.
@@ -11,7 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, installStubBinAsync, setupFixtureAsync } from '../utils';
+import { executeAgentCliAsync, installStubBinAsync, setupFixtureAsync } from '../utils';
 
 /** The shape `doctor:check --json` prints, per `src/doctor/types.ts`. */
 type DoctorPayload = {
@@ -127,7 +127,7 @@ function readEvents(eventsFile: string): any[] {
     .map((line) => JSON.parse(line));
 }
 
-describe('exagent doctor:check', () => {
+describe('@expo/agent-cli doctor:check', () => {
   // @ref llp/0016-v1-scope.rfc.md §doctor's exit code belongs to the protocol — friction run 7,
   // F68. This command used to mirror expo-doctor's `1`, which is the code llp/0010 reserves for "the
   // tool did not work". A failed check is an outcome, so it is `20`, like `typecheck` and `smoke`;
@@ -135,7 +135,7 @@ describe('exagent doctor:check', () => {
   it('exits 20 for a failed check, and keeps expo-doctor’s own code in the payload', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check', '--json'], {
       reject: false,
     });
 
@@ -151,7 +151,7 @@ describe('exagent doctor:check', () => {
   it('reads the checks back out of the prose, issues and advice apart', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check', '--json'], {
       reject: false,
     });
     const payload: DoctorPayload = JSON.parse(result.stdout);
@@ -176,7 +176,7 @@ describe('exagent doctor:check', () => {
   it('carries the full expo-doctor output under raw', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check', '--json'], {
       reject: false,
     });
     const payload: DoctorPayload = JSON.parse(result.stdout);
@@ -190,7 +190,7 @@ describe('exagent doctor:check', () => {
   it('exits 0 when every check passed', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check', '--json'], {
       env: { STUB_DOCTOR_MODE: 'passing' },
     });
 
@@ -203,7 +203,7 @@ describe('exagent doctor:check', () => {
   it('prints a terse report with the failures and their advice', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check'], { reject: false });
 
     expect(result.exitCode).toBe(20);
     expect(result.stdout).toContain('Checks       1/3 passed');
@@ -220,7 +220,7 @@ describe('exagent doctor:check', () => {
   it('suggests what the failing checks advised', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check'], { reject: false });
 
     // This CLI's own command, not the Expo CLI's: it runs the same check and adds the structured
     // `check` object the rest of the surface expects (F78).
@@ -228,7 +228,7 @@ describe('exagent doctor:check', () => {
     // rewriting them would be putting a sentence in another tool's mouth. What changes is the
     // command this CLI offers to run.
     const suggested = result.stdout.slice(result.stdout.indexOf('Suggested next:'));
-    expect(suggested).toContain('npx exagent install --check');
+    expect(suggested).toContain('npx @expo/agent-cli install --check');
     expect(suggested).not.toContain('npx expo install --check');
     expect(result.stdout).not.toContain('doctor:fix');
   });
@@ -237,7 +237,7 @@ describe('exagent doctor:check', () => {
     const projectRoot = await setupAsync('go-app');
     const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-    await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
+    await executeAgentCliAsync(projectRoot, ['doctor:check', '--json'], {
       env: { LOG_EVENTS: eventsFile },
       reject: false,
     });
@@ -250,7 +250,7 @@ describe('exagent doctor:check', () => {
   it('admits a failed parse, keeps raw, and still reports the failed outcome', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check', '--json'], {
       env: { STUB_DOCTOR_MODE: 'garbage' },
       reject: false,
     });
@@ -266,7 +266,7 @@ describe('exagent doctor:check', () => {
   it('reports a machine where expo-doctor could not run at all, and exits 1', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check'], {
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check'], {
       env: { STUB_DOCTOR_MODE: 'not-found' },
       reject: false,
     });
@@ -280,7 +280,7 @@ describe('exagent doctor:check', () => {
   it('runs doctor:check for the bare group name', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor'], {
+    const result = await executeAgentCliAsync(projectRoot, ['doctor'], {
       env: { STUB_DOCTOR_MODE: 'passing' },
     });
 
@@ -291,10 +291,10 @@ describe('exagent doctor:check', () => {
   it('prints its own help without running expo-doctor', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor:check', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['doctor:check', '--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('npx exagent doctor:check');
+    expect(result.stdout).toContain('npx @expo/agent-cli doctor:check');
     expect(result.stdout).toContain('--json');
     expect(readInvocations(projectRoot)).toEqual([]);
   });
@@ -303,7 +303,7 @@ describe('exagent doctor:check', () => {
   it('lists the actions with `doctor --help`, then the default action’s options', async () => {
     const projectRoot = await setupAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['doctor', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['doctor', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('doctor:check');

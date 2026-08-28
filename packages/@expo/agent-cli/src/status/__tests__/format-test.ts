@@ -37,7 +37,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: {
-      comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
+      comparison: { kind: 'last-build' as const, label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
       changedFiles: null,
       hashSource: COMPUTED_FINGERPRINT,
       hash: 'abcdef0123456789',
@@ -91,7 +91,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     skills: { agentIds: ['claude-code'], discovered: 3, linked: 3 },
     auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
     next: {
-      command: 'npx exagent dev',
+      command: 'npx @expo/agent-cli dev',
       rule: 'expo-go',
       target: 'expo-go',
       why: null,
@@ -310,7 +310,7 @@ describe(formatStatusReport, () => {
           freshness: {
             comparison: {
               kind: 'last-build' as const,
-              label: 'last build recorded by exagent',
+              label: 'last build recorded by @expo/agent-cli',
               buildId: null,
               platform: null,
             },
@@ -428,7 +428,7 @@ describe(formatStatusReport, () => {
   it(`should print the fingerprint error under the freshness block`, () => {
     const value = mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
         changedFiles: null,
         hashSource: COMPUTED_FINGERPRINT,
         hash: null,
@@ -470,7 +470,7 @@ describe(formatStatusReport, () => {
     const error = `The @expo/fingerprint CLI is not installed in this project, so the native surface cannot be hashed. Install it with "npx expo install @expo/fingerprint".`;
     const value = mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
         changedFiles: null,
         hashSource: COMPUTED_FINGERPRINT,
         hash: null,
@@ -614,7 +614,7 @@ describe(formatStatusReport, () => {
 
   it(`should print the next action as the rule and the first step`, () => {
     expect(line(mockReport(), 'next')).toBe(
-      'next        npx exagent dev → expo-go: expo start --go'
+      'next        npx @expo/agent-cli dev → expo-go: expo start --go'
     );
   });
 
@@ -623,7 +623,7 @@ describe(formatStatusReport, () => {
   it(`should print the reason instead of a plan when a dev server changed the answer`, () => {
     const report = mockReport({
       next: {
-        command: 'npx exagent smoke',
+        command: 'npx @expo/agent-cli smoke',
         rule: 'expo-go',
         target: 'expo-go',
         steps: [],
@@ -633,7 +633,7 @@ describe(formatStatusReport, () => {
     });
 
     const rendered = line(report, 'next');
-    expect(rendered).toContain('npx exagent smoke');
+    expect(rendered).toContain('npx @expo/agent-cli smoke');
     expect(rendered).toContain('a dev server is already running');
     expect(rendered).not.toContain('expo start --go');
   });
@@ -641,7 +641,7 @@ describe(formatStatusReport, () => {
   it(`should count the steps that follow the first one`, () => {
     const report = mockReport({
       next: {
-        command: 'npx exagent dev',
+        command: 'npx @expo/agent-cli dev',
         rule: 'dev-client-stale',
         target: 'dev-client',
         why: null,
@@ -687,7 +687,7 @@ describe(formatStatusReport, () => {
     expect(line(report, 'dev server')).toContain('unavailable');
   });
 
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
   describe('the skills line', () => {
     it(`is left out when there is no agent and no skill to report`, () => {
       const value = mockReport({ skills: { agentIds: null, discovered: 0, linked: 0 } });
@@ -870,7 +870,7 @@ describe('the impact line', () => {
       };
     return mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
         changedFiles: null,
         hashSource: COMPUTED_FINGERPRINT,
         hash: 'abcdef0123456789',
@@ -954,7 +954,7 @@ describe('the --explain detail', () => {
   function withSources(count: number): StatusReport {
     return mockReport({
       freshness: {
-        comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
+        comparison: { kind: 'last-build' as const, label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
         changedFiles: null,
         hashSource: COMPUTED_FINGERPRINT,
         hash: 'abcdef0123456789',
@@ -1019,7 +1019,7 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
-          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
           changedFiles: null,
           hashSource: COMPUTED_FINGERPRINT,
           hash: 'abcdef0123456789',
@@ -1043,7 +1043,7 @@ describe('the --explain detail', () => {
     const rendered = report(
       mockReport({
         freshness: {
-          comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
+          comparison: { kind: 'last-build' as const, label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
           changedFiles: null,
           hashSource: COMPUTED_FINGERPRINT,
           hash: 'abcdef0123456789',
@@ -1267,7 +1267,7 @@ describe('the build line', () => {
     const rendered = report(
       mockReport({
         next: {
-          command: 'npx exagent smoke',
+          command: 'npx @expo/agent-cli smoke',
           rule: 'dev-client-stale',
           target: 'dev-client',
           steps: [],

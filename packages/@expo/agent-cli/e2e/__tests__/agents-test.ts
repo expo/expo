@@ -1,16 +1,16 @@
 /* eslint-env jest */
 // @ref llp/0006-agent-native-cli-surface.rfc.md §AGENTS.md generation
 //
-// `exagent agents:setup` links the agent skills and maintains one managed block in the project's
+// `@expo/agent-cli agents:setup` links the agent skills and maintains one managed block in the project's
 // AGENTS.md. These tests run it through the CLI it is published as, on a copy of the
 // `skills-app` fixture.
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, readProjectFile, setupFixtureAsync } from '../utils';
+import { executeAgentCliAsync, readProjectFile, setupFixtureAsync } from '../utils';
 
-const BLOCK_START = '<!-- BEGIN EXAGENT MANAGED BLOCK -->';
-const BLOCK_END = '<!-- END EXAGENT MANAGED BLOCK -->';
+const BLOCK_START = '<!-- BEGIN EXPO AGENT CLI MANAGED BLOCK -->';
+const BLOCK_END = '<!-- END EXPO AGENT CLI MANAGED BLOCK -->';
 
 /** The shape `agents:setup --json` prints, per `src/agents/types.ts`. */
 type SetupReport = {
@@ -27,7 +27,7 @@ type SetupReport = {
   notes: string[];
 };
 
-describe('exagent agents:setup', () => {
+describe('@expo/agent-cli agents:setup', () => {
   let projectRoot: string;
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('exagent agents:setup', () => {
   });
 
   it('prints usage with `agents:setup --help`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['agents:setup', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['agents:setup', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--agent');
@@ -45,7 +45,7 @@ describe('exagent agents:setup', () => {
   });
 
   it('links the skills and creates AGENTS.md with the managed block', async () => {
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'agents:setup',
       '--agent',
       'claude-code',
@@ -66,22 +66,22 @@ describe('exagent agents:setup', () => {
     expect(agentsMd).toContain('54.0.0');
     expect(agentsMd).toContain('Expo Go');
     // The command cheat sheet.
-    expect(agentsMd).toContain('exagent status');
-    expect(agentsMd).toContain('exagent status --json');
-    expect(agentsMd).toContain('exagent dev --plan');
-    expect(agentsMd).toContain('exagent install');
-    expect(agentsMd).toContain('exagent runtime:eval');
-    expect(agentsMd).toContain('exagent navigate');
-    expect(agentsMd).toContain('exagent skills:list');
+    expect(agentsMd).toContain('@expo/agent-cli status');
+    expect(agentsMd).toContain('@expo/agent-cli status --json');
+    expect(agentsMd).toContain('@expo/agent-cli dev --plan');
+    expect(agentsMd).toContain('@expo/agent-cli install');
+    expect(agentsMd).toContain('@expo/agent-cli runtime:eval');
+    expect(agentsMd).toContain('@expo/agent-cli navigate');
+    expect(agentsMd).toContain('@expo/agent-cli skills:list');
     // The linked skills location.
     expect(agentsMd).toContain('.claude/skills');
   });
 
   it('writes a byte-identical AGENTS.md on a rerun', async () => {
-    await executeExagentAsync(projectRoot, ['agents:setup', '--agent', 'claude-code']);
+    await executeAgentCliAsync(projectRoot, ['agents:setup', '--agent', 'claude-code']);
     const first = readProjectFile(projectRoot, 'AGENTS.md')!;
 
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'agents:setup',
       '--agent',
       'claude-code',
@@ -96,14 +96,14 @@ describe('exagent agents:setup', () => {
     const before = ['# House rules', '', 'Never force push.', ''].join('\n');
     await fs.promises.writeFile(path.join(projectRoot, 'AGENTS.md'), before);
 
-    await executeExagentAsync(projectRoot, ['agents:setup', '--agent', 'claude-code']);
+    await executeAgentCliAsync(projectRoot, ['agents:setup', '--agent', 'claude-code']);
     const withBlock = readProjectFile(projectRoot, 'AGENTS.md')!;
 
     expect(withBlock.startsWith(before)).toBe(true);
     expect(withBlock).toContain(BLOCK_START);
 
     // A second run rewrites only the block, so the user content stays byte for byte.
-    await executeExagentAsync(projectRoot, ['agents:setup', '--agent', 'claude-code']);
+    await executeAgentCliAsync(projectRoot, ['agents:setup', '--agent', 'claude-code']);
     expect(readProjectFile(projectRoot, 'AGENTS.md')).toBe(withBlock);
   });
 
@@ -111,7 +111,7 @@ describe('exagent agents:setup', () => {
     const claudeMd = '# Rules for this project\n';
     await fs.promises.writeFile(path.join(projectRoot, 'CLAUDE.md'), claudeMd);
 
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'agents:setup',
       '--agent',
       'claude-code',
@@ -122,7 +122,7 @@ describe('exagent agents:setup', () => {
   });
 
   it('writes only AGENTS.md with `--no-agent-skills`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['agents:setup', '--no-agent-skills']);
+    const result = await executeAgentCliAsync(projectRoot, ['agents:setup', '--no-agent-skills']);
 
     expect(result.exitCode).toBe(0);
     expect(readProjectFile(projectRoot, 'AGENTS.md')).toContain(BLOCK_START);
@@ -130,7 +130,7 @@ describe('exagent agents:setup', () => {
   });
 
   it('links only the skills with `--no-agents-md`', async () => {
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'agents:setup',
       '--agent',
       'claude-code',
@@ -143,7 +143,7 @@ describe('exagent agents:setup', () => {
   });
 
   it('prints exactly one JSON object with `--json`', async () => {
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'agents:setup',
       '--agent',
       'claude-code',
@@ -172,7 +172,7 @@ describe('exagent agents:setup', () => {
   });
 
   it('reports an unknown agent', async () => {
-    const result = await executeExagentAsync(projectRoot, ['agents:setup', '--agent', 'nope'], {
+    const result = await executeAgentCliAsync(projectRoot, ['agents:setup', '--agent', 'nope'], {
       reject: false,
     });
 

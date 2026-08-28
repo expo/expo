@@ -1,5 +1,5 @@
 // @ref llp/0024-cli-ui.rfc.md §The template
-// The one shape every `npx exagent <command> --help` comes out in.
+// The one shape every `npx @expo/agent-cli <command> --help` comes out in.
 //
 // One function, so there is one answer to "what does a help block look like". Before this, each
 // command formatted its own: the sections were whatever that command's author reached for, the

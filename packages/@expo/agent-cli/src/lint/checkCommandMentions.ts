@@ -30,7 +30,7 @@ import {
 /**
  * Options that belong to the launcher rather than to any command.
  *
- * `npx exagent --help` is a correct command line with no command in it, so the resolution rules
+ * `npx @expo/agent-cli --help` is a correct command line with no command in it, so the resolution rules
  * never see it.
  */
 const LAUNCHER_OPTIONS = new Set(['--help', '-h', '--version', '-v']);
@@ -56,7 +56,7 @@ export const ALLOWED_PLACEHOLDER_COMMANDS: readonly {
   why: string;
 }[] = [
   {
-    command: 'npx exagent inspect:build-log --file <path>',
+    command: 'npx @expo/agent-cli inspect:build-log --file <path>',
     why: "eas-cli has no `build:logs` (llp/0010 §Upstream asks), so nothing here can download the log this reads — the path exists only once a person has saved it, and the follow-up's own `why` says so.",
   },
 ];
@@ -105,7 +105,7 @@ export interface MentionCheckResult {
 /**
  * Check every command string a sweep found.
  *
- * @param mentions the `npx exagent …` occurrences, which the registry can answer for.
+ * @param mentions the `npx @expo/agent-cli …` occurrences, which the registry can answer for.
  * @param suggestions the whole `Try:` lines and `Next:` rungs, whichever CLI they name.
  * @param flagSpecs the option list of each command, by the name a caller types.
  */
@@ -147,7 +147,7 @@ export function checkCommandMentions(
         subject,
         rule: 'unknown-command',
         why: `"${command}" is not one of the options the launcher itself takes (${[...LAUNCHER_OPTIONS].join(', ')}), and nothing before it names a command, so this line runs nothing.`,
-        how: 'Name the command the option belongs to, as in "npx exagent dev:stop --json".',
+        how: 'Name the command the option belongs to, as in "npx @expo/agent-cli dev:stop --json".',
       });
       continue;
     }
@@ -211,7 +211,7 @@ function checkResolution(
         subject,
         rule: 'unknown-command',
         why: `"${resolution.group}" is a group with no default action, so options with no action named exit 1 (llp/0010 §Registry rules (a)).`,
-        how: `Name the action those options belong to, as in "npx exagent ${resolution.group}:<action> ${resolution.flags.join(' ')}".`,
+        how: `Name the action those options belong to, as in "npx @expo/agent-cli ${resolution.group}:<action> ${resolution.flags.join(' ')}".`,
       };
     default:
       return null;
@@ -241,7 +241,7 @@ function checkOptions(
       problems.push({
         subject,
         rule: 'unknown-option',
-        why: `"exagent ${command}" has no ${option}: its parse accepts ${[...accepted].sort().join(', ')}, so running this line exits 1 with BAD_ARGS.`,
+        why: `"@expo/agent-cli ${command}" has no ${option}: its parse accepts ${[...accepted].sort().join(', ')}, so running this line exits 1 with BAD_ARGS.`,
         how: `Use an option this command has, or move the suggestion to the command that owns ${option}.`,
       });
     }
@@ -284,7 +284,7 @@ function checkPositionals(
     return {
       subject,
       rule: 'stray-argument',
-      why: `"exagent ${command}" reads no positional arguments, so "${word}" would be reported as BAD_ARGS and nothing would run (llp/0010 §Registry rules (d)).`,
+      why: `"@expo/agent-cli ${command}" reads no positional arguments, so "${word}" would be reported as BAD_ARGS and nothing would run (llp/0010 §Registry rules (d)).`,
       how: `Pass the value on the option that carries it, or suggest a command that takes an argument here.`,
     };
   }

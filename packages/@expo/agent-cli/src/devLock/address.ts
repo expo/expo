@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // Where the dev-server lock of a project listens.
 //
 // The address is the entire agreement between the process that holds the lock and the process
@@ -12,10 +12,10 @@ import os from 'os';
 import path from 'path';
 
 /** Name of the socket file the lock listens on inside a project's `.expo`. */
-export const DEV_LOCK_SOCKET_NAME = 'exagent-dev-server.sock';
+export const DEV_LOCK_SOCKET_NAME = 'agent-cli-dev-server.sock';
 
 /** Prefix of the Windows named pipe, and of the fallback socket file, the lock listens on. */
-export const DEV_LOCK_PIPE_PREFIX = 'exagent-dev-server-';
+export const DEV_LOCK_PIPE_PREFIX = 'agent-cli-dev-server-';
 
 /** How much of the project-root digest goes into a derived name. */
 const PIPE_HASH_LENGTH = 16;

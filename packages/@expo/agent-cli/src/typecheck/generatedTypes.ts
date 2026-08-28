@@ -1,7 +1,7 @@
 // @ref llp/0021-honest-reports.rfc.md §A generated file is not a mistake in the code
 // The type declarations an Expo app has before anything has generated them.
 //
-// A brand-new `exagent new` project fails `exagent typecheck` [observed — friction run 7, F64]:
+// A brand-new `@expo/agent-cli new` project fails `@expo/agent-cli typecheck` [observed — friction run 7, F64]:
 // `tsconfig.json` includes `expo-env.d.ts`, that file does not exist yet, and the two diagnostics
 // that follow are about CSS-module imports whose types live in the `expo/types` reference the file
 // carries. Nothing about either error is a mistake in either file, and the follow-up — "fix the
@@ -58,7 +58,7 @@ export function findMissingGeneratedTypesSync(projectRoot: string): MissingGener
   return {
     file: EXPO_ENV_DTS,
     referencedBy: 'tsconfig.json',
-    command: 'npx exagent dev --detach --wait-ready',
+    command: 'npx @expo/agent-cli dev --detach --wait-ready',
   };
 }
 

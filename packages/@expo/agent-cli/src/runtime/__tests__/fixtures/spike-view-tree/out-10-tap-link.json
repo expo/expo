@@ -1,5 +1,5 @@
 {
-  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/exagent/src/runtime/__tests__/fixtures/spike-view-tree/expr-10-tap-template.js",
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-10-tap-template.js",
   "exprBytes": 4425,
   "cdpResponseBytes": 248,
   "roundTripMs": 9,

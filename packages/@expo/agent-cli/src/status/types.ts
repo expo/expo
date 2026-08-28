@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // The shape of the status report: one object with a section per question the command answers.
 // Pure data, so the human formatter and the `--json` output describe exactly the same facts.
 
@@ -93,7 +93,7 @@ export interface FreshnessImpact {
  * @ref llp/0021-honest-reports.rfc.md §Freshness has two axes
  */
 export type FreshnessBackend =
-  /** What `exagent` built on this machine, from the project's own record. */
+  /** What `@expo/agent-cli` built on this machine, from the project's own record. */
   | 'local'
   /** What EAS has, from the build lookup keyed on this exact fingerprint. */
   | 'eas';
@@ -108,7 +108,7 @@ export interface PlatformFreshness {
   /**
    * Fingerprint of the build this entry compared against.
    *
-   * The last build `exagent` recorded, on the `local` axis. Null on the `eas` axis: the lookup is
+   * The last build `@expo/agent-cli` recorded, on the `local` axis. Null on the `eas` axis: the lookup is
    * *keyed* on the working tree's own hash, so a build it found has that hash by construction and
    * there is no second fingerprint to report.
    */
@@ -131,7 +131,7 @@ export interface PlatformFreshness {
 export interface FreshnessComparison {
   /** `last-build` for the project's own record, `eas-build` for `--explain --build <id>`. */
   kind: 'last-build' | 'eas-build';
-  /** What a person would call the base: `last build recorded by exagent`, `EAS build <id>`. */
+  /** What a person would call the base: `last build recorded by @expo/agent-cli`, `EAS build <id>`. */
   label: string;
   /**
    * The build id, for `eas-build`. Null otherwise.
@@ -295,7 +295,7 @@ export interface DevServerStatus {
    * Null when it could not be decided in the moment status allows itself: nothing answered, or
    * the dev server was still bundling when the short probe expired. Status reports where the
    * project is *now* and never waits, so "still working" is reported as unknown rather than as
-   * not ready — `npx exagent smoke` is the command that waits for the answer.
+   * not ready — `npx @expo/agent-cli smoke` is the command that waits for the answer.
    */
   ready: boolean | null;
   /**
@@ -377,7 +377,7 @@ export interface LocalDeviceStatus {
 }
 
 export interface SkillsStatus {
-  /** Agents selected by a previous `exagent skills` run, or null when none is cached. */
+  /** Agents selected by a previous `@expo/agent-cli skills` run, or null when none is cached. */
   agentIds: string[] | null;
   /** Skills the project's dependencies ship. */
   discovered: number;
@@ -402,7 +402,7 @@ export interface AuthStatus {
    *
    * Both CLIs are asked, in that order, because they read the same session file and only the first
    * one can be a stranger: a machine whose `eas` was a broken shim reported "nothing could answer"
-   * while `exagent whoami` printed the name (F65). The source is reported so a reader knows which
+   * while `@expo/agent-cli whoami` printed the name (F65). The source is reported so a reader knows which
    * CLI the answer came from.
    */
   source: 'eas whoami' | 'expo whoami' | 'EXPO_TOKEN' | null;
@@ -414,12 +414,12 @@ export interface NextActionStatus {
   /**
    * Decision-table row that would fire to get the app onto a device, e.g. `expo-go`.
    *
-   * Always the plan's row, even when {@link command} is not `exagent dev`: it is the project's
+   * Always the plan's row, even when {@link command} is not `@expo/agent-cli dev`: it is the project's
    * shape, and a reader that wants it does not stop wanting it because a dev server is up.
    */
   rule: string;
   target: ProjectTarget;
-  /** The steps {@link command} would run. Empty for a command that is not `exagent dev`. */
+  /** The steps {@link command} would run. Empty for a command that is not `@expo/agent-cli dev`. */
   steps: PlanStep[];
   /**
    * Why this command rather than the plan's own. Null when it *is* the plan's own.
@@ -478,7 +478,7 @@ export type StatusSectionName =
   | 'next';
 
 /**
- * Everything `exagent status` answers, in one object.
+ * Everything `@expo/agent-cli status` answers, in one object.
  *
  * A section is `null` when it could not be read, and never missing: status always prints what it
  * can, so a broken probe costs one section instead of the whole command.
@@ -501,7 +501,7 @@ export interface StatusReport {
    *
    * The fact every "open the app" suggestion assumed and none of them checked: a dogfood session
    * drove Expo Go on a **cloud** simulator from a laptop with no local one, and `next` kept
-   * offering `exagent navigate /` [observed — 2026-08-24].
+   * offering `@expo/agent-cli navigate /` [observed — 2026-08-24].
    */
   device: LocalDeviceStatus | null;
   skills: SkillsStatus | null;
@@ -512,7 +512,7 @@ export interface StatusReport {
   /**
    * The raw project probe the sections above are summarized from, verbatim.
    *
-   * This is the project brief the former `exagent context` printed: the sections answer "where is
+   * This is the project brief the former `@expo/agent-cli context` printed: the sections answer "where is
    * this project", and every fact they round off — the Expo Go reasons, the fingerprint error —
    * is readable here, so no caller needs a second command. Null exactly when `project` is.
    */

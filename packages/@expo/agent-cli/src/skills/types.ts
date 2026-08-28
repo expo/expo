@@ -80,7 +80,7 @@ export interface SkippedSkillLink {
 }
 
 /**
- * Machine shape of `exagent skills:sync --json`.
+ * Machine shape of `@expo/agent-cli skills:sync --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout, with
  * every key always present. The four lists answer the four questions a caller has after a sync:
@@ -101,7 +101,7 @@ export interface SkillsSyncJson {
   skipped: SkippedSkillLink[];
 }
 
-/** Machine shape of `exagent skills:clean --json`. */
+/** Machine shape of `@expo/agent-cli skills:clean --json`. */
 export interface SkillsCleanJson {
   /** Nothing was written, because `--dry-run` was passed. */
   dryRun: boolean;

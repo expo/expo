@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0005
 //
 // @ref llp/0005-runtime-loop-tools.rfc.md
-// Argument resolution for `exagent runtime:network`, lifted out of `src/runtime/resolveOptions.ts`
+// Argument resolution for `@expo/agent-cli runtime:network`, lifted out of `src/runtime/resolveOptions.ts`
 // when the command left the v1 surface.
 //
 // The action shared `src/runtime/resolveOptions.ts` with `eval` and `errors` rather than having a
@@ -60,13 +60,13 @@ const NETWORK_ARGS = {
  */
 const DEFAULT_NETWORK_WINDOW_MS = 5000;
 
-/** Resolve the arguments of `exagent runtime:network`, with the action already stripped. */
+/** Resolve the arguments of `@expo/agent-cli runtime:network`, with the action already stripped. */
 export function resolveRuntimeNetworkCommand(argv: string[]): RuntimeNetworkOptions {
   const args = parseArgsOrThrow(NETWORK_ARGS, argv, 'runtime:network');
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw strayArgumentError('runtime:network', positional, {
-      hint: `this command listens over a window and takes no target. Usage: npx exagent runtime:network [--duration ${DURATION_METAVAR}]`,
+      hint: `this command listens over a window and takes no target. Usage: npx @expo/agent-cli runtime:network [--duration ${DURATION_METAVAR}]`,
     });
   }
 

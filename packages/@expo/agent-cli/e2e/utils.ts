@@ -10,8 +10,8 @@ import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
 import { WebSocketServer, type WebSocket } from 'ws';
 
-/** The `exagent` bin, spawned as a subprocess in every e2e test. Requires `pnpm build` first. */
-export const bin = path.resolve(__dirname, '../bin/exagent.js');
+/** The `@expo/agent-cli` bin, spawned as a subprocess in every e2e test. Requires `pnpm build` first. */
+export const bin = path.resolve(__dirname, '../bin/cli.js');
 
 /** Directory holding the committed fixture projects. */
 export const fixturesDir = path.resolve(__dirname, 'fixtures');
@@ -26,7 +26,7 @@ export const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
 
 /** Generate a random temporary directory path. */
 export function getTemporaryPath(): string {
-  return path.join(TEMP_DIR, `exagent-e2e-${Math.random().toString(36).substring(2)}`);
+  return path.join(TEMP_DIR, `agent-cli-e2e-${Math.random().toString(36).substring(2)}`);
 }
 
 /** Log the full output of child processes, enabled through `EXPO_E2E_VERBOSE`. */
@@ -287,34 +287,34 @@ export type ExecuteOptions = {
 };
 
 /**
- * Execute `node bin/exagent.js <args>` inside a project, and wait for the process to exit.
+ * Execute `node bin/cli.js <args>` inside a project, and wait for the process to exit.
  * Output is stripped of ANSI escape codes, so assertions never depend on color support.
  */
-export async function executeExagentAsync(
+export async function executeAgentCliAsync(
   cwd: string,
   args: string[] = [],
   { env, reject = true, verbose = verboseDefault }: ExecuteOptions = {}
 ): Promise<ExecuteResult> {
-  const child = spawnExagent(cwd, args, { env });
+  const child = spawnAgentCli(cwd, args, { env });
   const output = collectOutput(
     child,
-    verbose ? (chunk) => console.log(`[exagent] ${chunk}`) : undefined
+    verbose ? (chunk) => console.log(`[@expo/agent-cli] ${chunk}`) : undefined
   );
   const result = await waitForExitAsync(child, output);
 
   if (reject && result.exitCode !== 0) {
     throw new Error(
-      `\`exagent ${args.join(' ')}\` exited with ${result.exitCode ?? result.signal}:\n${result.all}`
+      `\`@expo/agent-cli ${args.join(' ')}\` exited with ${result.exitCode ?? result.signal}:\n${result.all}`
     );
   }
   return result;
 }
 
 /**
- * Spawn `node bin/exagent.js <args>` without waiting for it to exit, for long-running commands
- * like `exagent start`. Callers are responsible for killing the process.
+ * Spawn `node bin/cli.js <args>` without waiting for it to exit, for long-running commands
+ * like `@expo/agent-cli start`. Callers are responsible for killing the process.
  */
-export function spawnExagent(
+export function spawnAgentCli(
   cwd: string,
   args: string[] = [],
   { env }: Pick<ExecuteOptions, 'env'> = {}
@@ -419,7 +419,7 @@ export async function waitForAsync(
 export const AGENT_SELECTION_FILE = path.join('.expo', 'agent-skill-links.json');
 
 /**
- * Pre-seed the agent selection a previous `exagent skills` run would have cached. The automatic
+ * Pre-seed the agent selection a previous `@expo/agent-cli skills` run would have cached. The automatic
  * sync of `install` and `start` only runs when this selection exists.
  */
 export async function writeAgentSelectionAsync(
@@ -463,13 +463,13 @@ export function devLockAddress(projectRoot: string): string {
     .slice(0, 16);
 
   if (process.platform === 'win32') {
-    return `\\\\.\\pipe\\exagent-dev-server-${digest}`;
+    return `\\\\.\\pipe\\agent-cli-dev-server-${digest}`;
   }
-  const inProject = path.join(canonical, '.expo', 'exagent-dev-server.sock');
+  const inProject = path.join(canonical, '.expo', 'agent-cli-dev-server.sock');
   // Over the kernel's ~104-byte cap on a socket path, the lock moves to the temporary directory.
   return inProject.length <= 100
     ? inProject
-    : path.join(os.tmpdir(), `exagent-dev-server-${digest}.sock`);
+    : path.join(os.tmpdir(), `agent-cli-dev-server-${digest}.sock`);
 }
 
 /**
@@ -605,7 +605,7 @@ export type StubDevServerOptions = {
   /** Delay before the entry bundle answers, standing in for a cold first build. */
   bundleDelayMs?: number;
   /**
-   * How the stub answers on `/message`, the client command socket `exagent runtime:reload` broadcasts on.
+   * How the stub answers on `/message`, the client command socket `@expo/agent-cli runtime:reload` broadcasts on.
    *
    * - `v2` — the real protocol: every frame carries `version: 2`, `getpeers` is answered, and a
    *   `reload` broadcast replaces the reported peer ids, which is what a reloading app does.
@@ -621,7 +621,7 @@ export type StubDevServerOptions = {
    *
    * `live` (the default) is a connected app. `none` is a **stale** target: the dev server still
    * lists the page and nothing is behind it, which is what an app that was force-stopped leaves
-   * behind, and what `exagent status` used to count as a connected app [friction run 6, F56].
+   * behind, and what `@expo/agent-cli status` used to count as a connected app [friction run 6, F56].
    *
    * `no-debugger` is the third real state, and the one the exit-code contract turns on: the socket
    * is open and every CDP method is answered `-32601 Method not found`. That is not a double for a
@@ -747,7 +747,7 @@ export type StubDevServer = {
 };
 
 /**
- * Start an HTTP server that answers the two requests `exagent` uses to recognize a dev server:
+ * Start an HTTP server that answers the two requests `@expo/agent-cli` uses to recognize a dev server:
  * `GET /status`, which a real Metro answers with `packager-status:running` and the project root in
  * a header, and `GET /json/list`, the debugger target list.
  *
@@ -856,7 +856,7 @@ export async function startStubDevServerAsync({
       response.writeHead(200, { 'Content-Type': 'application/json' });
       // Rewritten onto this stub's own port, the way a real dev server publishes its debugger URLs
       // — a fixture URL naming 8081 or no port at all is one nothing can connect to, and
-      // `exagent status` now opens each of them to tell a live target from a page an app left
+      // `@expo/agent-cli status` now opens each of them to tell a live target from a page an app left
       // behind (llp/0005 §Android, F56).
       response.end(JSON.stringify(started ? listedTargets.map(onThisPort) : []));
       return;
@@ -1065,7 +1065,7 @@ export async function startStubDevServerAsync({
 }
 
 /**
- * Hold a dev-server lock for a project the way `exagent start` does, so a command under test can
+ * Hold a dev-server lock for a project the way `@expo/agent-cli start` does, so a command under test can
  * read one without a dev server existing.
  *
  * @returns a callback that releases the lock

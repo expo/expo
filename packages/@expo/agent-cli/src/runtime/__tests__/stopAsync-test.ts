@@ -173,7 +173,7 @@ describe(runtimeStopAsync, () => {
     );
 
     const followups = JSON.parse(printed()).followups;
-    expect(followups[0].command).toBe('npx exagent runtime:stop --app-id host.exp.Exponent');
+    expect(followups[0].command).toBe('npx @expo/agent-cli runtime:stop --app-id host.exp.Exponent');
     // The old list led with `navigate /`, which starts an app while another one is still running.
     expect(followups.map((followup: { id: string }) => followup.id)).not.toContain('navigate');
   });
@@ -343,7 +343,7 @@ describe(runtimeStopAsync, () => {
 
     expect(JSON.parse(printed()).followups).toEqual([
       // The platform is carried: this stop was on the iOS simulator, so the way back is too (F103).
-      { id: 'navigate', command: 'npx exagent navigate / --ios', why: expect.any(String) },
+      { id: 'navigate', command: 'npx @expo/agent-cli navigate / --ios', why: expect.any(String) },
     ]);
   });
 });
@@ -396,10 +396,10 @@ describe(buildStopFollowUps, () => {
   it(`still carries --cloud into the command it suggests`, () => {
     expect(
       buildStopFollowUps(report({ wasRunning: null, deviceBackend: 'cloud' }))[0]!.command
-    ).toBe('npx exagent navigate / --cloud');
+    ).toBe('npx @expo/agent-cli navigate / --cloud');
   });
 
-  // F103 — found live on 2026-08-27: `runtime:stop --android` suggested `npx exagent navigate /`,
+  // F103 — found live on 2026-08-27: `runtime:stop --android` suggested `npx @expo/agent-cli navigate /`,
   // which on this Mac opens the app on the **iOS simulator**. The app that was just stopped is on
   // the emulator, so the one command offered as the way back goes to a different device.
   //
@@ -409,7 +409,7 @@ describe(buildStopFollowUps, () => {
     expect(
       buildStopFollowUps(report({ platform: 'android', deviceBackend: 'local-android' }))[0]!
         .command
-    ).toBe('npx exagent navigate / --android');
-    expect(buildStopFollowUps(report())[0]!.command).toBe('npx exagent navigate / --ios');
+    ).toBe('npx @expo/agent-cli navigate / --android');
+    expect(buildStopFollowUps(report())[0]!.command).toBe('npx @expo/agent-cli navigate / --ios');
   });
 });

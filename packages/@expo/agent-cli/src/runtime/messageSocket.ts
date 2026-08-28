@@ -110,7 +110,7 @@ export class DevServerMessageSocket {
    * @returns the peers, or null when the dev server did not answer in time.
    */
   async getPeersAsync({ timeoutMs = 2000 }: GetPeersOptions = {}): Promise<MessageSocketPeers | null> {
-    const id = `exagent#${this.nextRequestId++}`;
+    const id = `@expo/agent-cli#${this.nextRequestId++}`;
     return await new Promise<MessageSocketPeers | null>((resolve) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);

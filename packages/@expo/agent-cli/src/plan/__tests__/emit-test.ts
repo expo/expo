@@ -80,7 +80,7 @@ describe(emitStartPlan, () => {
 
   // @ref llp/0009-smart-followups.rfc.md §Design — "also embedded in `--json` payloads".
   it(`should embed the follow-ups in the JSON plan`, () => {
-    const followups = [{ id: 'dev', command: 'npx exagent dev', why: 'Runs the plan.' }];
+    const followups = [{ id: 'dev', command: 'npx @expo/agent-cli dev', why: 'Runs the plan.' }];
 
     emitStartPlan(plan, { mode: 'plan', json: true, followups });
 
@@ -90,7 +90,7 @@ describe(emitStartPlan, () => {
   it(`should keep the follow-ups out of the plan table, which the caller prints itself`, () => {
     emitStartPlan(plan, {
       mode: 'plan',
-      followups: [{ id: 'dev', command: 'npx exagent dev', why: 'Runs it.' }],
+      followups: [{ id: 'dev', command: 'npx @expo/agent-cli dev', why: 'Runs it.' }],
     });
 
     expect(Log.log).toHaveBeenCalledTimes(1);

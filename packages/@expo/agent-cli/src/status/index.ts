@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const statusHelp: CommandHelp = {
   command: 'status',
-  usage: 'npx exagent status',
+  usage: 'npx @expo/agent-cli status',
   options: [
     `--json                    Print the whole report as JSON, raw project probe included`,
     `--explain                 The deep dive: which sources changed, whether an update can\n` +
@@ -22,19 +22,19 @@ export const statusHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent status',
+      run: 'npx @expo/agent-cli status',
       gets: 'the brief: what this project is, what is running, and the command to run next',
     },
     {
-      run: 'npx exagent status --json',
+      run: 'npx @expo/agent-cli status --json',
       gets: 'the same as one object, with the raw project probe under probe',
     },
     {
-      run: 'npx exagent status --explain',
+      run: 'npx @expo/agent-cli status --explain',
       gets: 'the sources that changed, the OTA verdict, and what EAS already has built',
     },
     {
-      run: 'npx exagent status --assert js-only',
+      run: 'npx @expo/agent-cli status --assert js-only',
       gets: 'exit 20 when the change needs more than a reload; a gate for a script',
     },
   ],
@@ -70,7 +70,7 @@ export const statusHelp: CommandHelp = {
   ],
 };
 
-export const exagentStatus: Command = async (argv) => {
+export const agentCliStatus: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -92,7 +92,7 @@ export const exagentStatus: Command = async (argv) => {
     printCommandHelp(statusHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent status -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli status -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
@@ -119,7 +119,7 @@ export const exagentStatus: Command = async (argv) => {
       assert: assertClass,
       buildId,
       followups: !args['--no-followups'],
-      // Undefined rather than `true` when the flag is absent, so `EXAGENT_NO_FINGERPRINT_CACHE`
+      // Undefined rather than `true` when the flag is absent, so `AGENT_CLI_NO_FINGERPRINT_CACHE`
       // still decides: a flag that was not passed states nothing.
       fingerprintCache: args['--no-fingerprint-cache'] ? false : undefined,
     });

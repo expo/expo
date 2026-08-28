@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Contract
 //
-// `exagent dev` emits the plan and then runs its steps as subprocesses. `plan-test.ts` covers
+// `@expo/agent-cli dev` emits the plan and then runs its steps as subprocesses. `plan-test.ts` covers
 // which plan each fixture state produces; this file covers what actually runs: the order of the
 // `expo` invocations, the stop on the first failing step, and the build record written after a
 // successful native build.
@@ -9,18 +9,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubFingerprintAsync,
   killAsync,
   readDevLockAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
-  spawnExagent,
+  spawnAgentCli,
   waitForDevLockAsync,
 } from '../utils';
 
 /** The record `src/plan/lastBuild.ts` writes, relative to the project root. */
-const LAST_BUILD_FILE = path.join('.expo', 'exagent-last-build.json');
+const LAST_BUILD_FILE = path.join('.expo', 'agent-cli-last-build.json');
 
 /** The hash the stub `@expo/fingerprint` bin of `dev-client-fresh-app` prints by default. */
 const RECORDED_HASH = '0f1e2d3c4b5a69788796a5b4c3d2e1f001234567';
@@ -46,16 +46,16 @@ function readLastBuildRecord(projectRoot: string): Record<string, string> | null
   return fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : null;
 }
 
-describe('exagent dev', () => {
+describe('@expo/agent-cli dev', () => {
   it('documents the plan flags in `dev:run --help`', async () => {
     const projectRoot = await setupAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:run', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--plan');
     expect(result.all).toContain('--yes');
     // The plain `expo start` wrapper is a command of its own now, and is named here.
-    expect(result.all).toContain('npx exagent start');
+    expect(result.all).toContain('npx @expo/agent-cli start');
   });
 
   // `dev` became a group so `dev:stop` and `dev:logs` could join it, and a group asked for help lists its actions
@@ -64,12 +64,12 @@ describe('exagent dev', () => {
   // learn that `--plan` exists.
   it('lists the actions of the group for `dev --help`, then the default action’s options', async () => {
     const projectRoot = await setupAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('dev:run');
     expect(result.all).toContain('dev:logs');
-    expect(result.all).toContain('npx exagent dev runs dev:run');
+    expect(result.all).toContain('npx @expo/agent-cli dev runs dev:run');
     // The options of the action the bare name runs, in the listing's own output.
     expect(result.all).toContain('--plan');
     expect(result.all).toContain('--yes');
@@ -82,7 +82,7 @@ describe('exagent dev', () => {
     // `--smart` and `--passthrough` are gone: this command is the plan engine, and `expo start`
     // rejects the flags it does not know, from the step the plan ends with.
     const projectRoot = await setupAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:run', '--help']);
 
     expect(result.all).not.toContain('--smart');
     expect(result.all).not.toContain('--passthrough');
@@ -93,7 +93,7 @@ describe('exagent dev', () => {
     // An agent and a CI job get the plan and its execution, never a prompt; the guardrail of
     // llp/0008 is for a person watching a terminal.
     const projectRoot = await setupAsync('dev-client-app');
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
 
     expect(result.all).not.toContain('Run this plan?');
   });
@@ -101,7 +101,7 @@ describe('exagent dev', () => {
   describe('dev-client-app — a plan of two steps', () => {
     it('runs prebuild and the native build, in that order', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
@@ -117,7 +117,7 @@ describe('exagent dev', () => {
       const projectRoot = await setupAsync('dev-client-app');
 
       // `CI` unset for this run only, so what the wrapper sets is told apart from what it inherits.
-      await executeExagentAsync(projectRoot, ['dev', '--ios'], { env: { CI: undefined } });
+      await executeAgentCliAsync(projectRoot, ['dev', '--ios'], { env: { CI: undefined } });
 
       const [prebuild, run] = readStubExpoInvocations(projectRoot);
       expect(prebuild!.args).toEqual(['prebuild', '--platform', 'ios']);
@@ -132,7 +132,7 @@ describe('exagent dev', () => {
 
     it('emits the plan before the first step runs', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
 
       // The stub `expo` bin announces itself on stdout, and the plan shares that stream, so the
       // plan-first contract is observable in the output order.
@@ -144,7 +144,7 @@ describe('exagent dev', () => {
 
     it('stops at the first failing step and forwards its exit code', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios'], {
         env: { STUB_EXPO_EXIT_CODE: '3' },
         reject: false,
       });
@@ -165,7 +165,7 @@ describe('exagent dev', () => {
     // the wrong half is the dangerous half.
     it('names the port the plan will really serve on, not one it dropped', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--port', '8901']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--port', '8901']);
 
       // The flag reached nothing: the last step is `expo run:ios`, which this plan does not forward
       // to. That warning is correct and stays.
@@ -182,7 +182,7 @@ describe('exagent dev', () => {
 
     it('records no build when the fingerprint is unavailable', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      await executeExagentAsync(projectRoot, ['dev', '--ios']);
+      await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
 
       // This fixture ships no fingerprint CLI, so there is no hash to record the build against,
       // and an unrecorded build is planned again next time.
@@ -193,14 +193,14 @@ describe('exagent dev', () => {
   describe('dev-client-fresh-app — a rebuild after the native surface changed', () => {
     it('records the built fingerprint, keeping the other platform', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios'], {
         env: { STUB_FINGERPRINT_HASH: CHANGED_HASH },
       });
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
       // Only the platform that was built is updated, and it is recorded in the v2 shape: the
-      // whole fingerprint, so a later `exagent impact` can diff against it and say *what* changed
+      // whole fingerprint, so a later `@expo/agent-cli impact` can diff against it and say *what* changed
       // rather than only that something did (llp/0011 §The record has to hold the sources). The
       // other platform is rewritten in the v2 spelling with the same meaning it had: a bare
       // string said "only a hash was recorded", and `sources: null` says exactly that. Reading
@@ -220,7 +220,7 @@ describe('exagent dev', () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
       const env = { STUB_FINGERPRINT_HASH: CHANGED_HASH, STUB_EXPO_RUN_LAUNCH_FAILS: '1' };
 
-      const built = await executeExagentAsync(projectRoot, ['dev', '--ios'], {
+      const built = await executeAgentCliAsync(projectRoot, ['dev', '--ios'], {
         env,
         reject: false,
       });
@@ -233,7 +233,7 @@ describe('exagent dev', () => {
         ios: { hash: CHANGED_HASH },
       });
 
-      const next = await executeExagentAsync(projectRoot, ['dev', '--plan', '--ios', '--json'], {
+      const next = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--ios', '--json'], {
         env,
       });
       expect(next.exitCode).toBe(0);
@@ -246,7 +246,7 @@ describe('exagent dev', () => {
 
     it('runs only the dev server when the recorded build still matches', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
 
       expect(result.exitCode).toBe(0);
       // Exactly once, not twice: the flag is in the plan's own argv now, and the passthrough that
@@ -261,7 +261,7 @@ describe('exagent dev', () => {
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope, §Needs-human protocol
-  // `exagent dev --yes` is the documented non-interactive entry point. On a busy port it started
+  // `@expo/agent-cli dev --yes` is the documented non-interactive entry point. On a busy port it started
   // nothing, appended the subprocess log to its own JSON, exited 1, and told its caller to open a
   // dev server it had not started [observed — friction run, 2026-08-23].
   describe('a run with no terminal', () => {
@@ -277,7 +277,7 @@ describe('exagent dev', () => {
     it('prints exactly one JSON object, with no subprocess output after it', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--yes', '--json']);
 
       expect(result.exitCode).toBe(0);
       // The property, checked as the property: the stub writes its own lines on stdout, and this
@@ -290,7 +290,7 @@ describe('exagent dev', () => {
       const projectRoot = await setupAsync('go-app');
       const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--yes', '--json'], {
         env: { STUB_EXPO_EXIT_CODE: '1', STUB_EXPO_STDERR: NEEDS_INPUT, LOG_EVENTS: eventsFile },
         reject: false,
       });
@@ -320,7 +320,7 @@ describe('exagent dev', () => {
     it('starts on a free port it picks when the port is busy and none was named', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--yes', '--json'], {
         env: { STUB_EXPO_PORT_BUSY: '8180' },
         reject: false,
       });
@@ -342,7 +342,7 @@ describe('exagent dev', () => {
     it('exits 20 when the port the caller demanded is taken', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--yes', '--json', '--port', '8180'],
         { env: { STUB_EXPO_PORT_BUSY: '8180' }, reject: false }
@@ -361,7 +361,7 @@ describe('exagent dev', () => {
     it('exits 7 in human mode too, where the output is still captured', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--yes'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--yes'], {
         env: { STUB_EXPO_EXIT_CODE: '1', STUB_EXPO_STDERR: NEEDS_INPUT },
         reject: false,
       });
@@ -379,7 +379,7 @@ describe('exagent dev', () => {
     it('reports a failed step as a failure, and names no dev server', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--yes', '--json'], {
         env: { STUB_EXPO_EXIT_CODE: '9' },
         reject: false,
       });
@@ -405,7 +405,7 @@ describe('exagent dev', () => {
     it('is refused before anything runs, with the --json envelope', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json', '--bogus'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--yes', '--json', '--bogus'], {
         reject: false,
       });
 
@@ -413,7 +413,7 @@ describe('exagent dev', () => {
       const { error } = JSON.parse(result.stdout);
       expect(error.code).toBe('BAD_ARGS');
       expect(error.message).toContain('--bogus');
-      expect(error.suggestedCommand).toBe('npx exagent dev --help');
+      expect(error.suggestedCommand).toBe('npx @expo/agent-cli dev --help');
       // Nothing was planned and nothing was spawned: the point of checking before the plan.
       expect(invocationArgs(projectRoot)).toEqual([]);
     });
@@ -421,7 +421,7 @@ describe('exagent dev', () => {
     it('still accepts the options expo start owns', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--yes', '--json', '--go', '--offline', '--clear'],
         { reject: false }
@@ -443,7 +443,7 @@ describe('exagent dev', () => {
     it('forwards --tunnel to the expo start step', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--tunnel', '--go'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--json', '--tunnel', '--go'], {
         env: { STUB_EXPO_DEV_SERVER_PORT: '8081' },
       });
 
@@ -456,7 +456,7 @@ describe('exagent dev', () => {
     it('forwards --host tunnel too, which is the option --tunnel sets', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--host', 'tunnel'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--json', '--host', 'tunnel'], {
         env: { STUB_EXPO_DEV_SERVER_PORT: '8081' },
       });
 
@@ -469,7 +469,7 @@ describe('exagent dev', () => {
     it('never names the LAN URL in the follow-ups of a tunnelled run', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--tunnel'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--json', '--tunnel'], {
         env: { STUB_EXPO_DEV_SERVER_PORT: '8081' },
       });
 
@@ -483,7 +483,7 @@ describe('exagent dev', () => {
     it('forwards the port to the dev server and names it in the follow-ups', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--port', '8124'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--json', '--port', '8124'], {
         env: { STUB_EXPO_DEV_SERVER_PORT: '8124' },
       });
 
@@ -500,7 +500,7 @@ describe('exagent dev', () => {
     it('leads a web run with the site URL and the check that proves it compiles', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--json', '--web', '--port', '8124'],
         {
@@ -522,7 +522,7 @@ describe('exagent dev', () => {
     it('rejects a value that is not a port, before anything runs', async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--port', 'abc'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--port', 'abc'], {
         reject: false,
       });
 
@@ -535,21 +535,21 @@ describe('exagent dev', () => {
   describe('go-app — a plan of one step', () => {
     it('starts the dev server for Expo Go', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['dev']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev']);
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['start', '--go']]);
-      // The dev server step runs through the same wrapper as `exagent start`, whose skill sync is
+      // The dev server step runs through the same wrapper as `@expo/agent-cli start`, whose skill sync is
       // covered by `wrapper-test.ts`.
       expect(result.stdout).toContain('stub_expo_dev_server_ready');
     });
 
-    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
     it('publishes the dev server it started on the project lock', async () => {
-      // The dev-server step of a plan is the same wrapper `exagent start` uses, so it takes the
+      // The dev-server step of a plan is the same wrapper `@expo/agent-cli start` uses, so it takes the
       // same lock — a `dev` run has to be findable exactly like a `start` run.
       const projectRoot = await setupAsync('go-app');
-      const child = spawnExagent(projectRoot, ['dev'], {
+      const child = spawnAgentCli(projectRoot, ['dev'], {
         env: { STUB_EXPO_DELAY_MS: '30000', STUB_EXPO_DEV_SERVER_PORT: '8088' },
       });
       try {

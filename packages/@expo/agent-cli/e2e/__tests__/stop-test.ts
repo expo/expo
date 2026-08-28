@@ -11,7 +11,7 @@ import net from 'node:net';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   holdDevLockAsync,
   installStubBinAsync,
   setupFixtureAsync,
@@ -106,7 +106,7 @@ async function startSignalRecorderAsync(
   };
 }
 
-describe('exagent dev:stop', () => {
+describe('@expo/agent-cli dev:stop', () => {
   // The whole command in one assertion: the lock names a pid, that pid is signalled, and the
   // report says it stopped. No port was guessed at and no `lsof` was composed.
   it('signals the process the lock names', async () => {
@@ -125,7 +125,7 @@ describe('exagent dev:stop', () => {
       // The lock has to stop answering for the wait to end, and this test holds it rather than a
       // dev server, so it is released the moment the signal has landed.
       setTimeout(() => releaseLock(), 500);
-      const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
         env: stubExpoEnv(projectRoot),
       });
 
@@ -150,7 +150,7 @@ describe('exagent dev:stop', () => {
   it('prints one JSON object with a stable set of keys', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:stop', '--json']);
 
     expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
       'detail',
@@ -179,7 +179,7 @@ describe('exagent dev:stop', () => {
   it('exits 0 when nothing was running', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:stop', '--json']);
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({
@@ -197,7 +197,7 @@ describe('exagent dev:stop', () => {
     const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev:stop', '--port', String(stub.port), '--json'],
         { reject: false }
@@ -234,7 +234,7 @@ describe('exagent dev:stop', () => {
     const stranger = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev:stop', '--port', String(stranger.port), '--json'],
         { env: stubExpoEnv(projectRoot), reject: false }
@@ -268,7 +268,7 @@ describe('exagent dev:stop', () => {
     const port = (server.address() as net.AddressInfo).port;
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev:stop', '--port', String(port), '--json'],
         { reject: false }
@@ -288,7 +288,7 @@ describe('exagent dev:stop', () => {
   it('refuses a bare port and names the flag that takes one', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev:stop', '8081', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev:stop', '8081', '--json'], {
       reject: false,
     });
 
@@ -299,14 +299,14 @@ describe('exagent dev:stop', () => {
   });
 });
 
-describe('exagent runtime:stop', () => {
+describe('@expo/agent-cli runtime:stop', () => {
   it('terminates the connected app on the booted simulator', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const readXcrun = await installStubXcrunAsync(projectRoot);
     const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:stop', '--ios', '--json', '--dev-server-url', stub.url],
         { env: stubExpoEnv(projectRoot) }
@@ -339,7 +339,7 @@ describe('exagent runtime:stop', () => {
     const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:stop', '--ios', '--json', '--dev-server-url', stub.url],
         { env: stubExpoEnv(projectRoot) }
@@ -378,7 +378,7 @@ describe('exagent runtime:stop', () => {
     const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         [
           'runtime:stop',
@@ -421,7 +421,7 @@ describe('exagent runtime:stop', () => {
     const stub = await startStubDevServerAsync({ targets: [] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:stop', '--ios', '--json', '--dev-server-url', stub.url],
         { env: stubExpoEnv(projectRoot) }
@@ -445,7 +445,7 @@ describe('exagent runtime:stop', () => {
     const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
 
     try {
-      await executeExagentAsync(
+      await executeAgentCliAsync(
         projectRoot,
         ['runtime:stop', '--ios', '--app-id', 'com.example.other', '--dev-server-url', stub.url],
         { env: stubExpoEnv(projectRoot) }
@@ -465,7 +465,7 @@ describe('exagent runtime:stop', () => {
   it('refuses a bare application id and names the flag that takes one', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['runtime:stop', 'com.example.demo', '--json'],
       { reject: false }
@@ -478,7 +478,7 @@ describe('exagent runtime:stop', () => {
   it('advertises both stop commands in the top-level help', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.all).toContain('runtime:stop');
     expect(result.all).toContain('dev:stop');

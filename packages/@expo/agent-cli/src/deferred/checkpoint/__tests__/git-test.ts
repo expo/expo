@@ -56,7 +56,7 @@ describe(writeSnapshotTreeAsync, () => {
 
     await writeSnapshotTreeAsync(worktree, projectRoot);
 
-    // Restoring a snapshot that held `.expo/exagent-checkpoints.json` would put back an older
+    // Restoring a snapshot that held `.expo/agent-cli-checkpoints.json` would put back an older
     // list of checkpoints than the one the undo just read.
     expect(gitCalls()[1]!.args).toEqual([
       'rm',

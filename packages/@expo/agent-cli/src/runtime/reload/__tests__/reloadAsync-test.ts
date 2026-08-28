@@ -865,7 +865,7 @@ describe(explainReloadFailure, () => {
 
     expect(explained).toContain('host.exp.Exponent');
     expect(explained).not.toContain('eas simulator:exec');
-    expect(explained).toContain('npx exagent navigate /');
+    expect(explained).toContain('npx @expo/agent-cli navigate /');
   });
 
   it(`says nothing about a stopped app when the fallback never stopped one`, () => {

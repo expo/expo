@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const newHelp: CommandHelp = {
   command: 'new',
-  usage: 'npx exagent new <directory>',
+  usage: 'npx @expo/agent-cli new <directory>',
   options: [
     `--name <name>   Display name of the app, written into app.json`,
     `--no-install    Skip installing the dependencies`,
@@ -16,12 +16,12 @@ export const newHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent new my-app',
+      run: 'npx @expo/agent-cli new my-app',
       gets: 'a project in ./my-app, dependencies installed, git initialized',
     },
-    { run: 'npx exagent new my-app --name "My App"', gets: 'the same, with a display name set' },
+    { run: 'npx @expo/agent-cli new my-app --name "My App"', gets: 'the same, with a display name set' },
     {
-      run: 'npx exagent new my-app --json --no-install',
+      run: 'npx @expo/agent-cli new my-app --json --no-install',
       gets: 'one object, and the scaffold without the dependency install',
     },
   ],
@@ -37,7 +37,7 @@ export const newHelp: CommandHelp = {
   ],
 };
 
-export const exagentNew: Command = async (argv) => {
+export const agentCliNew: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -61,7 +61,7 @@ export const exagentNew: Command = async (argv) => {
     printCommandHelp(newHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent new -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli new -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { resolveNewOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
   const { createNewProjectAsync } = require('./newAsync') as typeof import('./newAsync');

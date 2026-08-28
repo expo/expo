@@ -13,13 +13,13 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
   // Before every rung below, and instead of them: this directory is not this CLI's subject, so the
   // only honest action is to go and find the one that is. The rung this replaces was
-  // `npx exagent install expo-dev-client` — the trap, spelled as a follow-up, aimed at whatever
+  // `npx @expo/agent-cli install expo-dev-client` — the trap, spelled as a follow-up, aimed at whatever
   // repository the caller was standing in.
   if (report.project?.isExpoApp === false) {
     return [
       {
         id: 'not-expo-app',
-        command: 'npx exagent new my-app',
+        command: 'npx @expo/agent-cli new my-app',
         why: 'This package declares no "expo" dependency, so it is not an Expo app: change to the app\'s own directory, or create one here.',
       },
     ];
@@ -41,7 +41,7 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   }
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free
-  // What the class implies, which is the ladder the removed `exagent impact` used to print. Only its **head**: this report has four other things to suggest and a budget
+  // What the class implies, which is the ladder the removed `@expo/agent-cli impact` used to print. Only its **head**: this report has four other things to suggest and a budget
   // of three, so the class contributes its single best next command rather than a ladder of its
   // own. Skipped entirely when a download is already offered above, because that *is* the answer
   // for the class that would otherwise lead here.
@@ -63,7 +63,7 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   if (report.devServer?.running && report.devServer.appsConnected > 0) {
     followups.push({
       id: 'runtime-errors',
-      command: 'npx exagent runtime:errors',
+      command: 'npx @expo/agent-cli runtime:errors',
       why: 'An app is connected to the dev server, so what it throws can be read from here.',
     });
   }
@@ -71,7 +71,7 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   if (report.skills && report.skills.discovered > report.skills.linked) {
     followups.push({
       id: 'skills-sync',
-      command: 'npx exagent skills:sync',
+      command: 'npx @expo/agent-cli skills:sync',
       why: `Only ${report.skills.linked} of ${report.skills.discovered} discovered skills are linked, so the rest are invisible to the agent.`,
     });
   }
@@ -81,7 +81,7 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   if (report.expoGo?.compatible === false && report.project?.usesDevClient === false) {
     followups.push({
       id: 'install-dev-client',
-      command: 'npx exagent install expo-dev-client',
+      command: 'npx @expo/agent-cli install expo-dev-client',
       why: 'Expo Go cannot run this project and expo-dev-client is not a dependency, so no development build can be made yet.',
     });
   }

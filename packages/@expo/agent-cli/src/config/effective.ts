@@ -55,7 +55,7 @@ export const NOT_ATTRIBUTABLE: string[] = ['ios.xcodeproj', '*.dangerous'];
  * What the autolinked list covers, printed next to it on every channel.
  *
  * The list is Expo-module autolinking only, which is a defensible scope and was an undocumented
- * one: `exagent install` classified `@react-native-async-storage/async-storage` as a native module
+ * one: `@expo/agent-cli install` classified `@react-native-async-storage/async-storage` as a native module
  * and `inspect:config-plugins` then left it out, so two commands of one CLI disagreed about one package
  * with nothing on screen to reconcile them [observed — friction run 3, F35]. The field name says
  * the scope now; this says what to run for the packages outside it.
@@ -63,7 +63,7 @@ export const NOT_ATTRIBUTABLE: string[] = ['ios.xcodeproj', '*.dangerous'];
 export const EXPO_AUTOLINKED_NOTE =
   'Expo modules only — packages that ship an expo-module.config.json. ' +
   'React Native community modules autolink separately and never appear here; ' +
-  'run "npx exagent install <package> --json" and read its impact entry for those.';
+  'run "npx @expo/agent-cli install <package> --json" and read its impact entry for those.';
 
 /** The `_internal` block of an introspected config, as far as this module reads it. */
 interface IntrospectedInternal {

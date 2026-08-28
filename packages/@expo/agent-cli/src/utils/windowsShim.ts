@@ -44,7 +44,7 @@ export function resolveSpawnTarget(command: string, args: string[]): SpawnTarget
  * Quote one part of a `cmd.exe` command line.
  *
  * Quotes are what keeps a path with spaces (`C:\Users\Ada Lovelace\app`) one argument, and what
- * keeps `&`, `^` and `|` in a forwarded argument from being read as syntax — `exagent install`
+ * keeps `&`, `^` and `|` in a forwarded argument from being read as syntax — `@expo/agent-cli install`
  * passes on whatever the caller typed.
  */
 function quoteForCmd(value: string): string {

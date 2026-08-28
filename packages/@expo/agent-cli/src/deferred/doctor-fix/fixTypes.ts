@@ -5,7 +5,7 @@
 //
 // The step reuses `PlanStep`'s `{ id, reason, timeClass }` triple and its `TimeClass` verbatim
 // (llp/0004, `src/project/types.ts`), because a driving agent already reads that shape from
-// `exagent dev --plan` and a second spelling of "what will run and how long it costs" would make
+// `@expo/agent-cli dev --plan` and a second spelling of "what will run and how long it costs" would make
 // it read two. What it adds is what a reset has and a start plan does not: the paths a step
 // deletes, the scope those paths belong to, and what comes back afterwards.
 

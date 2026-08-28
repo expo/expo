@@ -22,9 +22,9 @@ function created(): CheckpointResult {
   return {
     record: {
       id: 'c0ffee1234567890',
-      label: 'exagent install',
+      label: '@expo/agent-cli install',
       createdAt: '2026-08-22T10:00:00.000Z',
-      argv: ['exagent', 'install'],
+      argv: ['@expo/agent-cli', 'install'],
       path: '',
     },
     files: 12,
@@ -44,7 +44,7 @@ function warned(): string {
 }
 
 beforeEach(() => {
-  delete process.env.EXAGENT_NO_CHECKPOINT;
+  delete process.env.AGENT_CLI_NO_CHECKPOINT;
   jest.mocked(createCheckpointAsync).mockResolvedValue(created());
 });
 
@@ -58,8 +58,8 @@ describe(checkpointsEnabled, () => {
     expect(checkpointsEnabled(false)).toBe(false);
   });
 
-  it(`should be off for EXAGENT_NO_CHECKPOINT`, () => {
-    process.env.EXAGENT_NO_CHECKPOINT = '1';
+  it(`should be off for AGENT_CLI_NO_CHECKPOINT`, () => {
+    process.env.AGENT_CLI_NO_CHECKPOINT = '1';
 
     expect(checkpointsEnabled(undefined)).toBe(false);
   });
@@ -67,17 +67,17 @@ describe(checkpointsEnabled, () => {
 
 describe(checkpointBeforeAsync, () => {
   it(`should snapshot the project and print the id`, async () => {
-    const result = await checkpointBeforeAsync(projectRoot, { label: 'exagent install' });
+    const result = await checkpointBeforeAsync(projectRoot, { label: '@expo/agent-cli install' });
 
     expect(result.record?.id).toBe('c0ffee1234567890');
-    expect(createCheckpointAsync).toHaveBeenCalledWith(projectRoot, { label: 'exagent install' });
+    expect(createCheckpointAsync).toHaveBeenCalledWith(projectRoot, { label: '@expo/agent-cli install' });
     expect(printed()).toContain('c0ffee1');
-    expect(printed()).toContain('npx exagent checkpoint:undo');
+    expect(printed()).toContain('npx @expo/agent-cli checkpoint:undo');
   });
 
   it(`should snapshot without printing when the caller owns stdout`, async () => {
     const result = await checkpointBeforeAsync(projectRoot, {
-      label: 'exagent dev',
+      label: '@expo/agent-cli dev',
       silent: true,
     });
 
@@ -87,7 +87,7 @@ describe(checkpointBeforeAsync, () => {
 
   it(`should not snapshot when the run turned checkpoints off`, async () => {
     const result = await checkpointBeforeAsync(projectRoot, {
-      label: 'exagent install',
+      label: '@expo/agent-cli install',
       enabled: false,
     });
 
@@ -95,7 +95,7 @@ describe(checkpointBeforeAsync, () => {
     expect(createCheckpointAsync).not.toHaveBeenCalled();
     expect(printed()).toBe('');
     expect(event).toHaveBeenCalledWith('skipped', {
-      label: 'exagent install',
+      label: '@expo/agent-cli install',
       reason: 'suppressed',
     });
   });
@@ -108,7 +108,7 @@ describe(checkpointBeforeAsync, () => {
       detail: 'This project is not inside a git repository.',
     });
 
-    const result = await checkpointBeforeAsync(projectRoot, { label: 'exagent install' });
+    const result = await checkpointBeforeAsync(projectRoot, { label: '@expo/agent-cli install' });
 
     expect(result.skipped).toBe('not-a-git-repo');
     expect(printed()).toBe('');
@@ -123,7 +123,7 @@ describe(checkpointBeforeAsync, () => {
       detail: 'Git could not snapshot the project: index lock exists.',
     });
 
-    const result = await checkpointBeforeAsync(projectRoot, { label: 'exagent install' });
+    const result = await checkpointBeforeAsync(projectRoot, { label: '@expo/agent-cli install' });
 
     expect(result.skipped).toBe('git-failed');
     expect(warned()).toContain('index lock exists');

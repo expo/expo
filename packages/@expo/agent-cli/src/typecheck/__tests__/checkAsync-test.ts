@@ -155,7 +155,7 @@ describe(runTypeCheckAsync, () => {
 
     await expect(runTypeCheckAsync(projectRoot)).rejects.toMatchObject({
       code: 'TYPECHECK_CLI_MISSING',
-      suggestedCommand: 'npx exagent install typescript --dev',
+      suggestedCommand: 'npx @expo/agent-cli install typescript --dev',
     });
     expect(spawn).not.toHaveBeenCalled();
   });
@@ -178,7 +178,7 @@ describe(runTypeCheckAsync, () => {
     expect(error.message).toContain('nothing was type-checked');
     expect(error.message).toContain('Why:');
     expect(error.message).toContain('How:');
-    expect(error.suggestedCommand).toBe('npx exagent install typescript --dev');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli install typescript --dev');
   });
 
   // Evidence from the sources alone: a project can lose its `tsconfig.json` and still be one.
@@ -276,7 +276,7 @@ describe('a declaration file the project expects and does not have', () => {
     expect(report.generatedTypes).toEqual({
       file: 'expo-env.d.ts',
       referencedBy: 'tsconfig.json',
-      command: 'npx exagent dev --detach --wait-ready',
+      command: 'npx @expo/agent-cli dev --detach --wait-ready',
     });
   });
 

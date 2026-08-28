@@ -64,12 +64,12 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
     windowMs: 3_000,
     errors: [],
     screenshot: {
-      path: '/project/.expo/exagent/smoke.png',
+      path: '/project/.expo/agent-cli/smoke.png',
       ok: true,
       reason: null,
       platform: 'ios',
       deviceId: 'SIM-1',
-      command: 'xcrun simctl io SIM-1 screenshot /project/.expo/exagent/smoke.png',
+      command: 'xcrun simctl io SIM-1 screenshot /project/.expo/agent-cli/smoke.png',
       bytes: 2048,
     },
     durationMs: 7800,
@@ -230,7 +230,7 @@ describe(formatSmokeResult, () => {
   });
 
   it(`says where the picture is when there is one, and nothing when there is not`, () => {
-    expect(formatSmokeResult(run(), options())).toContain('/project/.expo/exagent/smoke.png');
+    expect(formatSmokeResult(run(), options())).toContain('/project/.expo/agent-cli/smoke.png');
     expect(
       formatSmokeResult(run({ screenshot: noScreenshot('no device') }), options())
     ).not.toContain('screenshot  /');

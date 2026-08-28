@@ -1,8 +1,8 @@
 import { boolish, int } from 'getenv';
 
 /**
- * Environment variables `exagent` reads. This is a deliberately small subset of the
- * `@expo/cli` `Env` class: the process boundary means `exagent` forwards the rest to
+ * Environment variables `@expo/agent-cli` reads. This is a deliberately small subset of the
+ * `@expo/cli` `Env` class: the process boundary means `@expo/agent-cli` forwards the rest to
  * the `expo` subprocess instead of interpreting them.
  *
  * @see llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints
@@ -29,8 +29,8 @@ class Env {
    *
    * @see llp/0009-smart-followups.rfc.md §Design
    */
-  get EXAGENT_NO_FOLLOWUPS() {
-    return boolish('EXAGENT_NO_FOLLOWUPS', false);
+  get AGENT_CLI_NO_FOLLOWUPS() {
+    return boolish('AGENT_CLI_NO_FOLLOWUPS', false);
   }
 
   /**
@@ -43,8 +43,8 @@ class Env {
    *
    * @see llp/0023-fingerprint-caching.rfc.md §The dynamic config caveat
    */
-  get EXAGENT_NO_FINGERPRINT_CACHE() {
-    return boolish('EXAGENT_NO_FINGERPRINT_CACHE', false);
+  get AGENT_CLI_NO_FINGERPRINT_CACHE() {
+    return boolish('AGENT_CLI_NO_FINGERPRINT_CACHE', false);
   }
 
   /**
@@ -53,8 +53,8 @@ class Env {
    *
    * @see llp/0010-agent-conventions.rfc.md §Needs-human protocol
    */
-  get EXAGENT_PROMPT_TIMEOUT_MS() {
-    return int('EXAGENT_PROMPT_TIMEOUT_MS', 20_000);
+  get AGENT_CLI_PROMPT_TIMEOUT_MS() {
+    return int('AGENT_CLI_PROMPT_TIMEOUT_MS', 20_000);
   }
 
   /** @internal Force the webcontainer environment checks to pass */

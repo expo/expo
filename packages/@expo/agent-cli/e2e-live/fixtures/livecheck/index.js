@@ -1,4 +1,4 @@
-// The smallest thing `exagent deploy --web` can ship, and the only reason it is small.
+// The smallest thing `@expo/agent-cli deploy --web` can ship, and the only reason it is small.
 //
 // A web deploy is the one live write this tier makes, so what gets exported has to be a project
 // whose export is seconds rather than a minute: five dependencies, one component, no router. That
@@ -15,7 +15,7 @@ import { Text, View } from 'react-native';
 function App() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>exagent live-eas deploy marker</Text>
+      <Text>@expo/agent-cli live-eas deploy marker</Text>
     </View>
   );
 }

@@ -94,7 +94,7 @@ export function buildAssertStatus(
       actual: null,
       ok: false,
       exitCode: EXIT_OUTCOME_TIMEOUT,
-      reason: `No class could be established, so "${asserted}" was not verified — ${undecidedCause(freshness)}. A gate that passed on an answer nothing measured would not be a gate; run "npx exagent status --explain" to see what is missing, or "npx exagent dev" once to record a build to compare against.`,
+      reason: `No class could be established, so "${asserted}" was not verified — ${undecidedCause(freshness)}. A gate that passed on an answer nothing measured would not be a gate; run "npx @expo/agent-cli status --explain" to see what is missing, or "npx @expo/agent-cli dev" once to record a build to compare against.`,
     };
   }
 

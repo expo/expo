@@ -290,7 +290,7 @@ describe('planFixAsync', () => {
 
       await expect(planFixAsync(PROJECT, { ...OPTIONS, tier: 'moderate' })).rejects.toMatchObject({
         code: 'DOCTOR_FIX_DIRTY_NATIVE',
-        suggestedCommand: 'npx exagent doctor:fix --tier safe',
+        suggestedCommand: 'npx @expo/agent-cli doctor:fix --tier safe',
       });
     });
 

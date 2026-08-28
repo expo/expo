@@ -73,16 +73,16 @@ export function unknownOptionError(command: string, option: string | null): Comm
   const error = new CommandError(
     'BAD_ARGS',
     [
-      `Unknown option ${named} for "exagent ${command}", so nothing ran.`,
+      `Unknown option ${named} for "@expo/agent-cli ${command}", so nothing ran.`,
       siblings.length
-        ? `Why: ${named} is an option of ${siblings.map((name) => `"npx exagent ${name}"`).join(', ')}, not of this command — the two are easy to mix up, and a command that accepted an option it does not act on would report success for a run that ignored it.`
+        ? `Why: ${named} is an option of ${siblings.map((name) => `"npx @expo/agent-cli ${name}"`).join(', ')}, not of this command — the two are easy to mix up, and a command that accepted an option it does not act on would report success for a run that ignored it.`
         : `Why: this command acts on the options in its own --help and on nothing else, so accepting ${named} would mean reporting success for a run that ignored it.`,
-      `How: run "npx exagent ${command} --help" for the options this command takes${
-        siblings.length ? `, or run ${siblings.map((name) => `"npx exagent ${name}"`).join(' or ')} if that is the command you meant` : ''
+      `How: run "npx @expo/agent-cli ${command} --help" for the options this command takes${
+        siblings.length ? `, or run ${siblings.map((name) => `"npx @expo/agent-cli ${name}"`).join(' or ')} if that is the command you meant` : ''
       }.`,
     ].join('\n')
   );
-  error.suggestedCommand = `npx exagent ${command} --help`;
+  error.suggestedCommand = `npx @expo/agent-cli ${command} --help`;
   return error;
 }
 
@@ -92,12 +92,12 @@ export function missingOptionValueError(command: string, option: string | null):
   const error = new CommandError(
     'BAD_ARGS',
     [
-      `${named} was passed to "exagent ${command}" with nothing after it, so nothing ran.`,
+      `${named} was passed to "@expo/agent-cli ${command}" with nothing after it, so nothing ran.`,
       `Why: this option carries a value, and the next argument is the value — there was no next argument, so there is nothing to act on.`,
-      `How: give it one, as in "npx exagent ${command} ${named} <value>". Run "npx exagent ${command} --help" for what this option accepts.`,
+      `How: give it one, as in "npx @expo/agent-cli ${command} ${named} <value>". Run "npx @expo/agent-cli ${command} --help" for what this option accepts.`,
     ].join('\n')
   );
-  error.suggestedCommand = `npx exagent ${command} --help`;
+  error.suggestedCommand = `npx @expo/agent-cli ${command} --help`;
   return error;
 }
 

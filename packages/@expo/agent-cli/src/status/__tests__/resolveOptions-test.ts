@@ -1,5 +1,5 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
-// The flags `status` grew when it absorbed `exagent impact`. Pure, so every combination is here
+// The flags `status` grew when it absorbed `@expo/agent-cli impact`. Pure, so every combination is here
 // rather than in an end-to-end run.
 
 import { IMPACT_CLASS_ORDER } from '../../impact/types';
@@ -49,7 +49,7 @@ describe(resolveBuildId, () => {
       expect(commandError).toBeInstanceOf(CommandError);
       expect(commandError.message).toContain('--build needs --explain');
       expect(commandError.suggestedCommand).toBe(
-        'npx exagent status --explain --build build-1'
+        'npx @expo/agent-cli status --explain --build build-1'
       );
     }
   });

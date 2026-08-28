@@ -21,17 +21,17 @@ const LABEL_WIDTH = 12;
 /**
  * Whether an automatic checkpoint should be made at all.
  *
- * `exagent checkpoint` does not ask: a snapshot the user typed the command for is never
+ * `@expo/agent-cli checkpoint` does not ask: a snapshot the user typed the command for is never
  * suppressed by a setting that is there to keep the automatic ones out of the way.
  *
  * @param flag `false` when `--no-checkpoint` was passed, `undefined` when the command has no flag.
  */
 export function checkpointsEnabled(flag: boolean | undefined): boolean {
-  return flag !== false && !env.EXAGENT_NO_CHECKPOINT;
+  return flag !== false && !env.AGENT_CLI_NO_CHECKPOINT;
 }
 
 export interface CheckpointBeforeOptions {
-  /** The command the snapshot is taken for, e.g. `exagent install`. */
+  /** The command the snapshot is taken for, e.g. `@expo/agent-cli install`. */
   label: string;
   /** `false` when `--no-checkpoint` was passed. */
   enabled?: boolean;
@@ -68,7 +68,7 @@ export async function checkpointBeforeAsync(
   if (result.record && !options.silent) {
     Log.log(
       `${chalk.dim('Checkpoint'.padEnd(LABEL_WIDTH))}${chalk.bold(shortId(result.record.id))}  ${chalk.dim(
-        `${result.files} ${result.files === 1 ? 'file' : 'files'} — restore with "npx exagent checkpoint:undo"`
+        `${result.files} ${result.files === 1 ? 'file' : 'files'} — restore with "npx @expo/agent-cli checkpoint:undo"`
       )}`
     );
   } else if (result.skipped === 'git-failed') {

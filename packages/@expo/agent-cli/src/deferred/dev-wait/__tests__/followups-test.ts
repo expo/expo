@@ -29,7 +29,7 @@ describe(buildDevWaitFollowUps, () => {
     const followups = buildDevWaitFollowUps(input({ appsConnected: 0 }));
 
     expect(ids(followups)).toEqual(['dev-wait-open-app', 'dev-wait-require-app']);
-    expect(followups[0]!.command).toBe('npx exagent navigate /');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli navigate /');
     // The gate is the step *after* the open, so it is second and never on its own.
     expect(followups[1]!.command).toContain('--require-app');
   });
@@ -40,7 +40,7 @@ describe(buildDevWaitFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['dev-wait-longer', 'dev-wait-status']);
-    expect(followups[0]!.command).toBe('npx exagent dev:wait --timeout 60000');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli dev:wait --timeout 60000');
   });
 
   // Every other suggestion would confirm something about another app's bundle, so this one wins
@@ -87,7 +87,7 @@ describe(buildDevWaitFollowUps, () => {
       expect(ids(followups)).toEqual(['dev-wait-bundle-broken']);
       expect(followups[0]!.why).toContain('src/app/index.tsx:101');
       // Re-running the gate is the check, not a restart: the dev server rebuilds on save.
-      expect(followups[0]!.command).toBe('npx exagent dev:wait');
+      expect(followups[0]!.command).toBe('npx @expo/agent-cli dev:wait');
     });
 
     it(`should still be usable when the bundler named no file`, () => {
@@ -187,7 +187,7 @@ describe(buildDevWaitFollowUps, () => {
     );
     const openApp = followups.find((followup) => followup.id === 'dev-wait-open-app');
 
-    expect(openApp?.command).toBe('npx exagent navigate / --cloud');
+    expect(openApp?.command).toBe('npx @expo/agent-cli navigate / --cloud');
     expect(openApp?.why).toContain('EAS Simulator session');
     expect(openApp?.why).toContain('bills until');
   });
@@ -196,7 +196,7 @@ describe(buildDevWaitFollowUps, () => {
     const followups = buildDevWaitFollowUps(input({ ready: true, appsConnected: 0 }));
 
     expect(followups.find((followup) => followup.id === 'dev-wait-open-app')?.command).toBe(
-      'npx exagent navigate /'
+      'npx @expo/agent-cli navigate /'
     );
   });
 });

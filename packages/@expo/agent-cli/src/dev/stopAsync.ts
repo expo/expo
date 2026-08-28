@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 // Stop this project's dev server.
 //
@@ -8,7 +8,7 @@
 // the caller did not mean to.
 //
 // The lock already answers all of it. `src/devLock/` holds a socket for as long as an
-// `exagent`-started dev server runs, and the line it answers with carries the wrapper's `pid`
+// `@expo/agent-cli`-started dev server runs, and the line it answers with carries the wrapper's `pid`
 // alongside the URL and port. Signalling that pid is enough for the whole tree: both spawn paths
 // install forwarders for `SIGINT`/`SIGTERM` and pass them to the `expo start` child
 // [observed — `src/utils/subprocess.ts`, `src/utils/expoCli.ts` `runExpoAsync`], so the wrapper
@@ -79,7 +79,7 @@ export type DevStopForceRefusal =
   | 'foreign-process';
 
 /**
- * Machine shape of `exagent dev:stop --json`.
+ * Machine shape of `@expo/agent-cli dev:stop --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout,
  * every key always present, and a fact the run does not have is null.
@@ -516,13 +516,13 @@ function buildFollowUps(report: DevStopResultJson): FollowUp[] {
     if (report.portStillAnswering && report.port != null) {
       followups.push({
         id: 'dev-stop-port',
-        command: `npx exagent dev:stop --port ${report.port}`,
+        command: `npx @expo/agent-cli dev:stop --port ${report.port}`,
         why: `Port ${report.port} still answers, and it is not the process that was just stopped. This asks what is on it and names the pid.`,
       });
     }
     followups.push({
       id: 'dev',
-      command: 'npx exagent dev --yes',
+      command: 'npx @expo/agent-cli dev --yes',
       why: 'The dev server is stopped, so this is what starts one again when the app is needed.',
     });
     return followups;
@@ -531,7 +531,7 @@ function buildFollowUps(report: DevStopResultJson): FollowUp[] {
     return [
       {
         id: 'status',
-        command: 'npx exagent status --json',
+        command: 'npx @expo/agent-cli status --json',
         why: 'Reports which dev server this project would talk to, so the one on that port can be told apart from this project’s.',
       },
     ];
@@ -596,7 +596,7 @@ function explainFailure(report: DevStopResultJson, options: DevStopOptions): str
         ? forceRefusedHow(report, report.forceRefusedBy)
         : answeredAsDevServer
           ? `How: stop it where it was started, or run this command again with --force, which stops it only when the port answers as an Expo dev server ${report.pid != null ? `and pid ${report.pid} looks like one` : 'and its process can be identified'}.`
-          : `How: stop whatever holds that port where it was started, or name the port your dev server is really on with --port. --force would be declined here for the same reason, and "npx exagent status --json" reports which dev server this project would talk to.`,
+          : `How: stop whatever holds that port where it was started, or name the port your dev server is really on with --port. --force would be declined here for the same reason, and "npx @expo/agent-cli status --json" reports which dev server this project would talk to.`,
     ].join('\n');
   }
   // Two failures wear this reason, and only one of them is answered by a bigger hammer. Sending
@@ -606,7 +606,7 @@ function explainFailure(report: DevStopResultJson, options: DevStopOptions): str
     return [
       chalk.red(`This project's dev-server lock is still answering.`),
       `Why: ${report.detail}. The signal did its job — pid ${report.pid} is gone — so what is left is a second holder of the lock, which is what happens when this project has two dev servers running and only one of them was this one.`,
-      `How: run "npx exagent status --json" to see which dev server this project would now talk to, and stop that one where it was started. Nothing here is waiting on a longer --timeout, and --signal SIGKILL has nothing left to signal.`,
+      `How: run "npx @expo/agent-cli status --json" to see which dev server this project would now talk to, and stop that one where it was started. Nothing here is waiting on a longer --timeout, and --signal SIGKILL has nothing left to signal.`,
     ].join('\n');
   }
   return [

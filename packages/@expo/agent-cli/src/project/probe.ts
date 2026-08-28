@@ -16,7 +16,7 @@ export interface ProbeOptions {
   /**
    * Whether the fingerprint may be answered out of the project's `.expo` record.
    *
-   * Undefined leaves the decision to `EXAGENT_NO_FINGERPRINT_CACHE`; false is what
+   * Undefined leaves the decision to `AGENT_CLI_NO_FINGERPRINT_CACHE`; false is what
    * `--no-fingerprint-cache` sets, and makes this probe spawn the fingerprint CLI.
    *
    * @see llp/0023-fingerprint-caching.rfc.md

@@ -338,7 +338,7 @@ describe(runtimeTapAsync, () => {
 
     expect(await runtimeTapAsync(tapOptions)).toBe(EXIT_OUTCOME_FAILED);
     expect(json()).toMatchObject({ ok: false, called: false, reason });
-    expect(stderr()).toContain('npx exagent');
+    expect(stderr()).toContain('npx @expo/agent-cli');
   });
 
   // The tap landed and the app's own code raised, which is an outcome of the app rather than a
@@ -567,7 +567,7 @@ describe('the follow-ups of the three commands', () => {
     expect(await runtimeTreeAsync({ ...treeOptions, followups: true })).toBe(EXIT_OK);
     expect(json().followups[0]).toMatchObject({
       id: 'tap-element',
-      command: 'npx exagent runtime:tap add-note --verify',
+      command: 'npx @expo/agent-cli runtime:tap add-note --verify',
     });
   });
 

@@ -3,7 +3,7 @@
 // @ref llp/0017-deferred-commands.reference.md §doctor:fix
 // The whole of one `doctor:fix` run: plan, print, ask, snapshot, apply, report.
 //
-// Dry run is the default and `--apply` is what executes, which is the opposite of `exagent dev`.
+// Dry run is the default and `--apply` is what executes, which is the opposite of `@expo/agent-cli dev`.
 // The reason is one sentence: `dev` adds things and this deletes them, so the cheap mistake here
 // is running a plan nobody read, and the cheap mistake there is a prompt nobody can answer.
 
@@ -99,7 +99,7 @@ export async function printDoctorFixAsync(
     Log.log(formatFixPlan(payload));
     if ((await confirmAsync({ message: `Run this ${plan.tier} reset?` })) !== true) {
       Log.log(
-        chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx exagent doctor:fix --tier ${plan.tier}} to print it again.`
+        chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx @expo/agent-cli doctor:fix --tier ${plan.tier}} to print it again.`
       );
       return EXIT_OK;
     }
@@ -142,7 +142,7 @@ async function takeCheckpointAsync(
     return null;
   }
   const result = await checkpointBeforeAsync(projectRoot, {
-    label: `exagent doctor:fix --tier ${options.tier}`,
+    label: `@expo/agent-cli doctor:fix --tier ${options.tier}`,
     enabled: options.checkpoint,
     silent: options.json,
   });

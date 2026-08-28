@@ -5,7 +5,7 @@ declare module '2g' {
     /** The `create-expo` subprocess that was resolved and spawned, for debugging a bad scaffold. */
     'new:create_expo': { command: string; args: string[] };
     /**
-     * The project that now exists on disk. The whole result of `exagent new`, so an agent reading
+     * The project that now exists on disk. The whole result of `@expo/agent-cli new`, so an agent reading
      * only the event stream learns the same as one reading stdout.
      */
     'new:created': {

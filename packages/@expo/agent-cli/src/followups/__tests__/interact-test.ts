@@ -29,7 +29,7 @@ describe(buildTreeFollowUps, () => {
   it(`names a testID the walk actually found, not a placeholder`, () => {
     const followups = buildTreeFollowUps({ nodes: screenNodes, testID: null, platform: null });
 
-    expect(commands(followups)[0]).toBe('npx exagent runtime:tap inc-btn --verify');
+    expect(commands(followups)[0]).toBe('npx @expo/agent-cli runtime:tap inc-btn --verify');
     expect(ids(followups)).toContain('tap-element');
   });
 
@@ -47,7 +47,7 @@ describe(buildTreeFollowUps, () => {
     const followups = buildTreeFollowUps({ nodes: screenNodes, testID: null, platform: null });
 
     expect(commands(followups)).toContain(
-      'npx exagent runtime:type "hello" --testID name-input'
+      'npx @expo/agent-cli runtime:type "hello" --testID name-input'
     );
   });
 
@@ -63,7 +63,7 @@ describe(buildTreeFollowUps, () => {
     const followups = buildTreeFollowUps({ nodes: [], testID: null, platform: null });
 
     expect(ids(followups)).toEqual(['tree-all']);
-    expect(commands(followups)[0]).toBe('npx exagent runtime:tree --all');
+    expect(commands(followups)[0]).toBe('npx @expo/agent-cli runtime:tree --all');
   });
 
   it(`taps the element a --testID run was about`, () => {
@@ -73,7 +73,7 @@ describe(buildTreeFollowUps, () => {
       platform: null,
     });
 
-    expect(commands(followups)[0]).toBe('npx exagent runtime:tap inc-btn --verify');
+    expect(commands(followups)[0]).toBe('npx @expo/agent-cli runtime:tap inc-btn --verify');
   });
 
   it(`quotes a testID a shell would split`, () => {
@@ -83,7 +83,7 @@ describe(buildTreeFollowUps, () => {
       platform: null,
     });
 
-    expect(commands(followups)[0]).toBe('npx exagent runtime:tap "add note" --verify');
+    expect(commands(followups)[0]).toBe('npx @expo/agent-cli runtime:tap "add note" --verify');
   });
 });
 
@@ -96,7 +96,7 @@ describe(buildTapFollowUps, () => {
       platform: null,
     });
 
-    expect(commands(followups)[0]).toBe('npx exagent runtime:tap inc-btn --verify');
+    expect(commands(followups)[0]).toBe('npx @expo/agent-cli runtime:tap inc-btn --verify');
     expect(followups[0]!.why).toMatch(/proof|changed/i);
   });
 
@@ -109,7 +109,7 @@ describe(buildTapFollowUps, () => {
     });
 
     expect(ids(followups)[0]).toBe('runtime-errors');
-    expect(commands(followups)[0]).toBe('npx exagent runtime:errors --fail-on-error');
+    expect(commands(followups)[0]).toBe('npx @expo/agent-cli runtime:errors --fail-on-error');
   });
 
   it(`reads the screen it changed when the diff saw something`, () => {
@@ -121,7 +121,7 @@ describe(buildTapFollowUps, () => {
     });
 
     expect(ids(followups)).toContain('read-screen');
-    expect(commands(followups)).toContain('npx exagent runtime:tree --ios');
+    expect(commands(followups)).toContain('npx @expo/agent-cli runtime:tree --ios');
   });
 });
 
@@ -136,7 +136,7 @@ describe(buildTypeFollowUps, () => {
     });
 
     expect(commands(followups)[0]).toBe(
-      'npx exagent runtime:type "kudo" --testID name-input --submit'
+      'npx @expo/agent-cli runtime:type "kudo" --testID name-input --submit'
     );
   });
 
@@ -162,7 +162,7 @@ describe(buildTypeFollowUps, () => {
     });
 
     expect(ids(followups)).toContain('find-button');
-    expect(commands(followups)).toContain('npx exagent runtime:tree');
+    expect(commands(followups)).toContain('npx @expo/agent-cli runtime:tree');
   });
 
   it(`carries text that would break a shell line through JSON quoting`, () => {

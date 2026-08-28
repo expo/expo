@@ -2,7 +2,7 @@
 // a `--json` caller has committed to parsing stdout, so an object that parses and says nothing is
 // worse than no object at all.
 //
-// `exagent install --check --json <package>` on a package the project does not have exited **1**
+// `@expo/agent-cli install --check --json <package>` on a package the project does not have exited **1**
 // with the success-shaped report — `installed: false`, `check: null`, `exitCode: 1` buried in the
 // body, no `error` key — and **zero bytes on stderr** [observed — friction run 3, F29]. The verdict
 // was in the exit code and nowhere else, and `--check` is the natural first move for an agent
@@ -32,7 +32,7 @@ import {
   resolvePackageRootAsync,
 } from '../project/nodeModules';
 
-/** What `exagent install --check` amounts to, under the `check` key of the JSON report. */
+/** What `@expo/agent-cli install --check` amounts to, under the `check` key of the JSON report. */
 export interface InstallCheckReport {
   /** Whether the dependency check passed. The verdict, without parsing anything. */
   ok: boolean;
@@ -86,7 +86,7 @@ export async function diagnoseCheckedPackagesAsync(
       notes.push(
         `"${name}" is not in this project's package.json — neither dependencies nor devDependencies — so there is no installed version for --check to compare against. ` +
           `The Expo CLI's message says it "is added as a dependency in your project's package.json", which is not the case here. ` +
-          `Run "npx exagent install ${name}" to add it.`
+          `Run "npx @expo/agent-cli install ${name}" to add it.`
       );
       continue;
     }

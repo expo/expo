@@ -7,7 +7,7 @@ import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../
 
 export const devStopHelp: CommandHelp = {
   command: 'dev:stop',
-  usage: 'npx exagent dev:stop',
+  usage: 'npx @expo/agent-cli dev:stop',
   options: [
     `--port <port>         Look at this port when no lock answers for the project`,
     `--signal <signal>     SIGTERM (default), SIGINT, or SIGKILL`,
@@ -19,12 +19,12 @@ export const devStopHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent dev:stop',
+      run: 'npx @expo/agent-cli dev:stop',
       gets: 'this project’s dev server is signalled and gone; exit 0 if none was running',
     },
-    { run: 'npx exagent dev:stop --json', gets: 'the same as one object: pid, port, url, stopped' },
+    { run: 'npx @expo/agent-cli dev:stop --json', gets: 'the same as one object: pid, port, url, stopped' },
     {
-      run: 'npx exagent dev:stop --port 8081 --force',
+      run: 'npx @expo/agent-cli dev:stop --port 8081 --force',
       gets: 'stops a dev server on that port that this CLI did not start',
     },
   ],
@@ -58,7 +58,7 @@ export const devStopHelp: CommandHelp = {
   ],
 };
 
-export const exagentDevStop: Command = async (argv) => {
+export const agentCliDevStop: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -81,7 +81,7 @@ export const exagentDevStop: Command = async (argv) => {
     printCommandHelp(devStopHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent dev:stop -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli dev:stop -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');

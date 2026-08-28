@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const typecheckHelp: CommandHelp = {
   command: 'typecheck',
-  usage: 'npx exagent typecheck',
+  usage: 'npx @expo/agent-cli typecheck',
   options: [
     `--json            Print the whole report as JSON, every diagnostic included`,
     `--no-followups    Leave the suggested follow-up commands out of the report`,
@@ -13,11 +13,11 @@ export const typecheckHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent typecheck',
+      run: 'npx @expo/agent-cli typecheck',
       gets: 'one line per type error, and exit 20 when there is one',
     },
     {
-      run: 'npx exagent typecheck --json',
+      run: 'npx @expo/agent-cli typecheck --json',
       gets: 'every diagnostic as data: file, line, column, code, message',
     },
   ],
@@ -47,7 +47,7 @@ export const typecheckHelp: CommandHelp = {
   ],
 };
 
-export const exagentTypecheck: Command = async (argv) => {
+export const agentCliTypecheck: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -64,7 +64,7 @@ export const exagentTypecheck: Command = async (argv) => {
     printCommandHelp(typecheckHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent typecheck -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli typecheck -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
   const { findUpProjectRootOrAssert } =

@@ -5,12 +5,12 @@
 //
 // v1 cannot ask a device what it has installed, and it does not query remote build caches.
 // What it can know is which fingerprint the last build *it ran* was made from, so it records
-// that per platform in `.expo/exagent-last-build.json`. The file is advisory: a missing,
+// that per platform in `.expo/agent-cli-last-build.json`. The file is advisory: a missing,
 // corrupt, or unwritable record only makes a plan include a build it may not have needed.
 //
 // **v2 stores the whole fingerprint, not only its hash.** A hash answers "is the last build
 // stale" and nothing else; `fingerprint:diff` needs both sides' `sources` to say *what* changed,
-// which is the question the impact headline of `exagent status` exists to answer. The read is backwards compatible in
+// which is the question the impact headline of `@expo/agent-cli status` exists to answer. The read is backwards compatible in
 // the one direction that matters — a v1 value is a bare string, and it reads as a record whose
 // `sources` are `null`, which every consumer already has to handle for a failed fingerprint.
 
@@ -23,7 +23,7 @@ import { debugEvent } from './events';
 import type { LastBuildFingerprints, NativePlatform } from './types';
 
 /** Name of the record inside the project's `.expo` directory. */
-export const LAST_BUILD_FILE_NAME = 'exagent-last-build.json';
+export const LAST_BUILD_FILE_NAME = 'agent-cli-last-build.json';
 
 const PLATFORMS: NativePlatform[] = ['ios', 'android'];
 

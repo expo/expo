@@ -12,7 +12,7 @@ declare module '2g' {
       /** The `create-launch` invocation of the native rail, or null when it is not shipping. */
       launchCli: string | null;
     };
-    /** The target a bare `exagent deploy` decided on from the project state. */
+    /** The target a bare `@expo/agent-cli deploy` decided on from the project state. */
     'deploy:target_defaulted': { target: DeployTarget };
     /** The `expo export` subprocess of the web deploy. */
     'deploy:export': { command: string; args: string[] };

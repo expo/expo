@@ -7,7 +7,7 @@ import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../
 
 export const runtimeReloadHelp: CommandHelp = {
   command: 'runtime:reload',
-  usage: 'npx exagent runtime:reload',
+  usage: 'npx @expo/agent-cli runtime:reload',
   options: [
     `--route <route>         Open this route once the app is back`,
     `--method <method>       auto (default), dev-server, runtime, or device`,
@@ -27,15 +27,15 @@ export const runtimeReloadHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent runtime:reload',
+      run: 'npx @expo/agent-cli runtime:reload',
       gets: 'the app runs the code on disk now, and the report says what proved it',
     },
     {
-      run: 'npx exagent runtime:reload --route /notes',
+      run: 'npx @expo/agent-cli runtime:reload --route /notes',
       gets: 'the same, then that route opened in the app that came back',
     },
     {
-      run: 'npx exagent runtime:reload --json --timeout 60s',
+      run: 'npx @expo/agent-cli runtime:reload --json --timeout 60s',
       gets: 'the same as one object, waiting a minute for the app to come back',
     },
   ],
@@ -85,7 +85,7 @@ export const runtimeReloadHelp: CommandHelp = {
   ],
 };
 
-export const exagentReload: Command = async (argv) => {
+export const agentCliReload: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -108,7 +108,7 @@ export const exagentReload: Command = async (argv) => {
     printCommandHelp(runtimeReloadHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent runtime:reload -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli runtime:reload -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');

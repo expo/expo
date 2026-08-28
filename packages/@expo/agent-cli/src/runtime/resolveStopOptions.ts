@@ -1,5 +1,5 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the app
-// Argument resolution for `exagent runtime:stop`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `@expo/agent-cli runtime:stop`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
 import type { NavigatePlatform } from '../navigate/device';
@@ -46,7 +46,7 @@ const RUNTIME_STOP_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent runtime:stop`.
+ * Resolve the arguments of `@expo/agent-cli runtime:stop`.
  *
  * @throws {CommandError} `BAD_ARGS` for two platforms at once, an unusable dev server URL or port,
  * or a positional argument this command has no place for.
@@ -59,7 +59,7 @@ export function resolveRuntimeStopOptions(argv: string[]): RuntimeStopOptions {
   // its own while reporting the id it stopped — which reads like it obeyed.
   if (args._.length > 0) {
     throw strayArgumentError('runtime:stop', args._, {
-      hint: `to stop a particular app, pass its id as a flag: npx exagent runtime:stop --app-id ${args._[0]}`,
+      hint: `to stop a particular app, pass its id as a flag: npx @expo/agent-cli runtime:stop --app-id ${args._[0]}`,
     });
   }
 

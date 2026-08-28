@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0017 §doctor:fix
 //
 // @ref llp/0009-smart-followups.rfc.md §Examples per command
-// The `Next:` rungs of `exagent doctor:fix`, lifted out of `src/followups/doctor.ts` when the
+// The `Next:` rungs of `@expo/agent-cli doctor:fix`, lifted out of `src/followups/doctor.ts` when the
 // command left the v1 surface. `doctor:check`'s own builder stayed there and never named this
 // command, so nothing else moved with it.
 
@@ -22,13 +22,13 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
     if (payload.steps.length) {
       followups.push({
         id: 'doctor-fix-apply',
-        command: `npx exagent doctor:fix --tier ${payload.tier} --apply`,
+        command: `npx @expo/agent-cli doctor:fix --tier ${payload.tier} --apply`,
         why: `Nothing was deleted. This runs the ${payload.steps.length} ${payload.steps.length === 1 ? 'step' : 'steps'} above.`,
       });
     } else {
       followups.push({
         id: 'doctor-check',
-        command: 'npx exagent doctor:check',
+        command: 'npx @expo/agent-cli doctor:check',
         why: 'This tier found nothing stale, so whatever is wrong is not a cache.',
       });
     }
@@ -39,7 +39,7 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
     if (next && !payload.steps.length) {
       followups.push({
         id: 'doctor-fix-next-tier',
-        command: `npx exagent doctor:fix --tier ${next}`,
+        command: `npx @expo/agent-cli doctor:fix --tier ${next}`,
         why: `The ${next} tier also resets ${next === 'moderate' ? 'the installed packages' : 'the generated native projects'}.`,
       });
     }
@@ -50,7 +50,7 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
   if (failed) {
     followups.push({
       id: 'doctor-fix-retry-step',
-      command: `npx exagent doctor:fix --tier ${payload.tier} --apply`,
+      command: `npx @expo/agent-cli doctor:fix --tier ${payload.tier} --apply`,
       why: `The "${failed.id}" step failed and the steps after it did not run. Fix what it reported, then run the rest.`,
     });
     return capFollowUps(followups);
@@ -60,13 +60,13 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
   // find out whether it helped. `dev` is what decides whether a rebuild is needed first.
   followups.push({
     id: 'dev',
-    command: 'npx exagent dev',
+    command: 'npx @expo/agent-cli dev',
     why: 'The caches are gone; this rebuilds what the app needs and starts the dev server.',
   });
   if (payload.steps.some((step) => step.id === 'node-modules')) {
     followups.push({
       id: 'doctor-check',
-      command: 'npx exagent doctor:check',
+      command: 'npx @expo/agent-cli doctor:check',
       why: 'The packages were reinstalled, so this is the moment to check them against the SDK.',
     });
   }

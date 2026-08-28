@@ -14,7 +14,7 @@ installs the stub `expo` bin into it, so no test mutates the checked-in files.
 ## What a stub proves, and what it cannot
 
 A stub accepts whatever it was written to accept, so a passing e2e test proves the **shape** of an
-invocation — that `exagent` sends these arguments, in this order, and reads the answer — and never
+invocation — that `@expo/agent-cli` sends these arguments, in this order, and reads the answer — and never
 its **availability** in the CLI a user's project actually resolves. The two look identical in a
 green test and are not the same question.
 
@@ -23,7 +23,7 @@ binary** (`npx <package>@latest`, in a project outside this repository) before i
 monorepo is ahead of the registry, and `--preset` is what that costs — an option of
 `@expo/fingerprint`'s CLI here and not in the 0.20.9 a real SDK 57 project installs, which answered
 `unknown or unexpected option: --preset` and exited non-zero [observed — live, 2026-08-24]. Every
-`exagent impact` test passed throughout. `llp/0002` §A flag is not shipped until it has run against
+`@expo/agent-cli impact` test passed throughout. `llp/0002` §A flag is not shipped until it has run against
 the published binary is the rule; `src/lint/foreignFlags.ts` pins the list of flags it applies to,
 so adding one is a visible diff.
 
@@ -71,7 +71,7 @@ Only `dev-client-fresh-app` ships one, as a stub `@expo/fingerprint` package. Ev
 probe finds no `fingerprint` bin and reports `fingerprint.hash === null` without throwing, which is
 what the tests assert.
 
-The stub prints one fixed hash, and `.expo/exagent-last-build.json` in that fixture records the
+The stub prints one fixed hash, and `.expo/agent-cli-last-build.json` in that fixture records the
 same hash — that pair is what makes the project look freshly built. Two environment variables let a
 test steer it without editing the fixture: `STUB_FINGERPRINT_HASH` prints a different hash, which
 simulates a changed native surface, and `STUB_FINGERPRINT_EXIT_CODE` makes the tool fail.
@@ -83,7 +83,7 @@ differ only in how many subprocesses ran.
 
 **`STUB_FINGERPRINT_HASH` is not a way to move the fingerprint of a cached project.** An environment
 variable is not a file, and the cross-run cache is revalidated against files — so a run that only
-sets it is answered out of `.expo/exagent-fingerprint.json` with the old hash. A test that needs the
+sets it is answered out of `.expo/agent-cli-fingerprint.json` with the old hash. A test that needs the
 hash to move has to change something the pinned set covers as well, `app.json` being the smallest,
 which is also how a real project moves its hash.
 

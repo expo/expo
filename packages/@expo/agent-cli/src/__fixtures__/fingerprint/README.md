@@ -1,7 +1,7 @@
 # Recorded `@expo/fingerprint` payloads
 
 Ground truth for `src/project/localDiff.ts`, which reproduces `fingerprint:diff` **in process** so
-that `exagent status` can classify a change without spawning anything (llp/0004 §The impact headline
+that `@expo/agent-cli status` can classify a change without spawning anything (llp/0004 §The impact headline
 is free, the explanation is not).
 
 **Provenance.** Recorded 2026-08-26 against `apps/observe-tester` with the project's own
@@ -18,6 +18,6 @@ reads it — the diff compares `hash`, and the identity of a `contents` source i
 
 | File | What it pins |
 | --- | --- |
-| `diff-base.json` | One side of the comparison, in the `{hash, sources}` shape `fingerprint:generate` prints and `.expo/exagent-last-build.json` stores. |
+| `diff-base.json` | One side of the comparison, in the `{hash, sources}` shape `fingerprint:generate` prints and `.expo/agent-cli-last-build.json` stores. |
 | `diff-head.json` | The other side. |
 | `diff-items.json` | The five items the real CLI produced. **A `package` whose version moved is `removed` + `added`, not `changed`** — a package's identity is `name@version` — which is the one rule a local reimplementation would most plausibly get wrong. |

@@ -1,7 +1,7 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Contract
 // The one place that maps `expo start`'s platform flags onto the plan engine's platforms. Both
-// commands that forward arguments to `expo start` read it: `exagent dev` to know what to plan for,
-// and `exagent start` to know whether the run only serves a web bundle.
+// commands that forward arguments to `expo start` read it: `@expo/agent-cli dev` to know what to plan for,
+// and `@expo/agent-cli start` to know whether the run only serves a web bundle.
 
 import type { PlanPlatform } from './types';
 

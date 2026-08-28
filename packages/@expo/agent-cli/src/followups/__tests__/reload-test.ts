@@ -10,8 +10,8 @@ describe(`${buildReloadFollowUps.name} and the session's platform`, () => {
     const followups = buildReloadFollowUps({ platform: 'android', deviceId: null, route: null });
 
     expect(followups.map((followup) => followup.command)).toEqual([
-      'npx exagent runtime:errors --android --fail-on-error',
-      'npx exagent navigate / --android',
+      'npx @expo/agent-cli runtime:errors --android --fail-on-error',
+      'npx @expo/agent-cli navigate / --android',
     ]);
   });
 
@@ -45,6 +45,6 @@ describe(`${buildReloadFollowUps.name} and the session's platform`, () => {
       'npx eas simulator:exec npx agent-device@latest screenshot screen.png'
     );
     // The backend is carried on: `navigate /` alone looks for a device on this machine.
-    expect(commands).toContain('npx exagent navigate / --ios --cloud');
+    expect(commands).toContain('npx @expo/agent-cli navigate / --ios --cloud');
   });
 });

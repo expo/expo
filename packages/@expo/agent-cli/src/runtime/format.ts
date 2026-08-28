@@ -7,7 +7,7 @@ import { stringifyCdpValue } from './cdpFormat';
 import type { RuntimeErrorRecord } from './runtimeErrorCollector';
 import { wrapUntrustedAppOutput } from './untrusted';
 
-/** Machine shape of `exagent runtime:eval --json`. */
+/** Machine shape of `@expo/agent-cli runtime:eval --json`. */
 export interface EvaluateResultJson {
   devServerUrl: string;
   expression: string;
@@ -34,7 +34,7 @@ export interface EvaluateResultJson {
   untrusted: string[];
 }
 
-/** Machine shape of `exagent runtime:errors --json`. */
+/** Machine shape of `@expo/agent-cli runtime:errors --json`. */
 export interface RuntimeErrorsJson {
   devServerUrl: string;
   durationMs: number;

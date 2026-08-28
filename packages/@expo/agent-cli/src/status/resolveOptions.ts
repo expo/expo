@@ -1,5 +1,5 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §An explicit flag turns the report into a gate
-// Argument resolution for the flags `status` grew when it absorbed `exagent impact`. Pure: values
+// Argument resolution for the flags `status` grew when it absorbed `@expo/agent-cli impact`. Pure: values
 // in, options out, `CommandError` for anything a caller can get wrong, so every combination is
 // unit-testable without a project.
 
@@ -59,10 +59,10 @@ export function resolveBuildId(value: unknown, { explain }: { explain: boolean }
       [
         `--build needs --explain.`,
         `Why: comparing against an EAS build fetches a fingerprint from the service, and --explain is what says this run may make a network call. The default report is built from what is already on this machine, and a flag that spent a round trip without being asked would take that promise away.`,
-        `How: run "npx exagent status --explain --build ${buildId}".`,
+        `How: run "npx @expo/agent-cli status --explain --build ${buildId}".`,
       ].join('\n')
     );
-    error.suggestedCommand = `npx exagent status --explain --build ${buildId}`;
+    error.suggestedCommand = `npx @expo/agent-cli status --explain --build ${buildId}`;
     throw error;
   }
   return buildId;

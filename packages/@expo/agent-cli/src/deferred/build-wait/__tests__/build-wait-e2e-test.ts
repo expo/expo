@@ -3,7 +3,7 @@
 /* eslint-env jest */
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 //
-// `exagent build:wait` is a loop around `eas build:view --json`, and its answer is the exit code.
+// `@expo/agent-cli build:wait` is a loop around `eas build:view --json`, and its answer is the exit code.
 // These tests drive the published CLI against a stub `eas` bin that walks a scripted status
 // sequence from a counter file, so every outcome — finished, errored, canceled, timed out — is
 // asserted at the process boundary, without an EAS account, a login, or a network.
@@ -14,7 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   getTemporaryPath,
   installStubBinAsync,
   setupFixtureAsync,
@@ -206,13 +206,13 @@ const FAST = ['--interval', '50ms', '--timeout', '30s'];
  */
 const EXIT_NEEDS_HUMAN = 7;
 
-describe('exagent build:wait', () => {
+describe('@expo/agent-cli build:wait', () => {
   // Each exit code is the contract for one outcome, so each one gets its own test.
   describe('the exit code', () => {
     it('exits 0 when the build finishes', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
         env: { STUB_EAS_STATUSES: 'IN_QUEUE,IN_QUEUE,IN_PROGRESS,FINISHED' },
       });
 
@@ -231,7 +231,7 @@ describe('exagent build:wait', () => {
     it('exits 20 when the build fails', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
         env: { STUB_EAS_STATUSES: 'IN_PROGRESS,ERRORED' },
         reject: false,
       });
@@ -245,7 +245,7 @@ describe('exagent build:wait', () => {
       const projectRoot = await setupAsync();
 
       // PENDING_CANCEL is not an outcome: the wait polls through it to the one that is.
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
         env: { STUB_EAS_STATUSES: 'IN_PROGRESS,PENDING_CANCEL,CANCELED' },
         reject: false,
       });
@@ -258,7 +258,7 @@ describe('exagent build:wait', () => {
     it('exits 22 when the timeout expires and the build is still running', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['build:wait', BUILD_ID, '--interval', '50ms', '--timeout', '1s'],
         { env: { STUB_EAS_STATUSES: 'IN_PROGRESS' }, reject: false }
@@ -281,7 +281,7 @@ describe('exagent build:wait', () => {
       const projectRoot = await setupAsync();
       const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['build:wait', BUILD_ID, ...FAST, '--json'],
         {
@@ -364,7 +364,7 @@ describe('exagent build:wait', () => {
     it('prints one object for a failed build too, with the exit code in the payload’s outcome', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['build:wait', BUILD_ID, ...FAST, '--json'],
         { env: { STUB_EAS_STATUSES: 'ERRORED' }, reject: false }
@@ -386,7 +386,7 @@ describe('exagent build:wait', () => {
     it('prints one labelled fact per line, and the next actions', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
         env: { STUB_EAS_STATUSES: 'FINISHED' },
       });
 
@@ -401,7 +401,7 @@ describe('exagent build:wait', () => {
     it('leaves the next actions out when they are turned off', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['build:wait', BUILD_ID, ...FAST, '--no-followups'],
         { env: { STUB_EAS_STATUSES: 'FINISHED' } }
@@ -416,7 +416,7 @@ describe('exagent build:wait', () => {
     it('exits 1 when the id is rejected, and names the command that waits on a workflow', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
         env: { STUB_EAS_EXIT_CODE: '1' },
         reject: false,
       });
@@ -440,7 +440,7 @@ describe('exagent build:wait', () => {
     it('exits 7 without polling when nobody is signed in', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
         env: { STUB_EAS_WHOAMI_EXIT_CODE: '1' },
         reject: false,
       });
@@ -454,7 +454,7 @@ describe('exagent build:wait', () => {
     it('polls as usual when the preflight could not answer', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID, ...FAST], {
         env: {
           STUB_EAS_STATUSES: 'FINISHED',
           STUB_EAS_WHOAMI_EXIT_CODE: '101',
@@ -469,7 +469,7 @@ describe('exagent build:wait', () => {
     it('exits 1 and spends nothing when no id was given', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait'], { reject: false });
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait'], { reject: false });
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('Missing build id');
@@ -480,7 +480,7 @@ describe('exagent build:wait', () => {
     it('exits 1 and spends nothing on an unusable duration', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['build:wait', BUILD_ID, '--timeout', '45min'],
         { reject: false }
@@ -499,7 +499,7 @@ describe('exagent build:wait', () => {
       const emptyDir = getTemporaryPath();
       await fs.promises.mkdir(emptyDir, { recursive: true });
 
-      const result = await executeExagentAsync(projectRoot, ['build:wait', BUILD_ID], {
+      const result = await executeAgentCliAsync(projectRoot, ['build:wait', BUILD_ID], {
         env: process.platform === 'win32' ? { PATH: emptyDir, Path: emptyDir } : { PATH: emptyDir },
         reject: false,
       });
@@ -511,13 +511,13 @@ describe('exagent build:wait', () => {
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — the group is named after a verb of
-  // another CLI, and answering `exagent build --platform ios` with a listing and exit 0 would tell
+  // another CLI, and answering `@expo/agent-cli build --platform ios` with a listing and exit 0 would tell
   // a driving agent it had started a build.
   describe('the bare group name', () => {
     it('fails on options with no action, and names the command that does start a build', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build', '--platform', 'ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['build', '--platform', 'ios'], {
         reject: false,
       });
 
@@ -531,7 +531,7 @@ describe('exagent build:wait', () => {
     it('still lists the actions for the bare name, and exits 0', async () => {
       const projectRoot = await setupAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['build']);
+      const result = await executeAgentCliAsync(projectRoot, ['build']);
 
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('build:wait');

@@ -3,7 +3,7 @@
 // a different question with a different answer: a change can be free to run and unsafe to publish.
 //
 // The ids are spelled `change-*` rather than `impact-*`: they name what a *change* costs, which is
-// a section of `exagent status` now that `exagent impact` is gone. An id that named a command
+// a section of `@expo/agent-cli status` now that `@expo/agent-cli impact` is gone. An id that named a command
 // nobody can run is exactly the stale string the suggested-command lint exists to catch, one level
 // up.
 
@@ -62,14 +62,14 @@ export function buildChangeFollowUps({
       // Expo account, and which is right depends on what the caller has and what they need out of
       // it. Naming only the local one told a developer with no Xcode to do something impossible.
       // @ref llp/0015-backend-selection-and-config.rfc.md §The follow-ups of a chosen backend
-      // `exagent dev` is first whichever backend was chosen, because it is the command that
+      // `@expo/agent-cli dev` is first whichever backend was chosen, because it is the command that
       // *makes a plan* — and on a machine that cannot build here, the plan it makes is the cloud
       // one. What the choice changes is the sentence, which now says which route that plan takes
       // and why, rather than offering a local build to a host that has no toolchain for it.
       const runsOnEas = buildBackend?.runsOn === 'eas';
       followups.push({
         id: 'change-native-build',
-        command: `npx exagent dev${platformFlag ? ` --${platform}` : ''}`,
+        command: `npx @expo/agent-cli dev${platformFlag ? ` --${platform}` : ''}`,
         why: runsOnEas
           ? `The native surface changed, so the installed app cannot run this code. This plans the rebuild ${EAS_WHERE} — ${buildBackend!.because} — and prints the plan before it starts anything.`
           : `The native surface changed, so the installed app cannot run this code. This rebuilds it ${LOCAL_WHERE} — the fast route when this machine has ${localTool(platform)}, because the plan engine prebuilds and rebuilds only what has to be.`,
@@ -77,7 +77,7 @@ export function buildChangeFollowUps({
       followups.push({
         id: runsOnEas ? 'change-local-build' : 'change-eas-build',
         command: runsOnEas
-          ? `npx exagent dev${platformFlag ? ` --${platform}` : ''} --local`
+          ? `npx @expo/agent-cli dev${platformFlag ? ` --${platform}` : ''} --local`
           : platform
             ? easBuildCommand(platform)
             : `npx eas build --profile ${EAS_DEVELOPMENT_PROFILE}`,
@@ -89,13 +89,13 @@ export function buildChangeFollowUps({
   } else if (impactClass === 'dev-client-compatible') {
     followups.push({
       id: 'change-restart-metro',
-      command: 'npx exagent dev:stop && npx exagent dev --detach',
+      command: 'npx @expo/agent-cli dev:stop && npx @expo/agent-cli dev --detach',
       why: 'The installed app is still the right one; what changed is a file the dev server read once at start-up, so only Metro has to come back.',
     });
   } else {
     followups.push({
       id: 'change-reload',
-      command: 'npx exagent runtime:reload',
+      command: 'npx @expo/agent-cli runtime:reload',
       why: 'Nothing native changed, so the running app only has to fetch the new bundle. This also reports whether the entry bundle compiles before it broadcasts anything.',
     });
   }
@@ -103,7 +103,7 @@ export function buildChangeFollowUps({
   if (otaSafe === false) {
     followups.push({
       id: 'change-ota-unsafe',
-      command: `npx exagent status --explain --json`,
+      command: `npx @expo/agent-cli status --explain --json`,
       why: 'An update published now would reach installed builds that cannot run it — read the "ota" section for the runtimeVersion policy that decides this, before running eas update.',
     });
   } else if (otaSafe === true && impactClass !== 'needs-native-build') {
@@ -116,7 +116,7 @@ export function buildChangeFollowUps({
 
   followups.push({
     id: 'change-typecheck',
-    command: 'npx exagent typecheck',
+    command: 'npx @expo/agent-cli typecheck',
     why: 'This classifies what a change costs to run, not whether it is correct: a type error compiles and bundles perfectly.',
   });
 

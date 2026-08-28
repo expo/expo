@@ -163,7 +163,7 @@ describe(decideStartPlan, () => {
 
       expect(reason).not.toMatch(/^Opens/);
       expect(reason).toContain('opens nothing on its own');
-      expect(reason).toContain('exagent navigate /');
+      expect(reason).toContain('@expo/agent-cli navigate /');
     });
 
     it.each([
@@ -471,7 +471,7 @@ describe(decideStartPlan, () => {
 
       expect(plan.steps[0]!.argv).toEqual(['expo', 'start', '--go']);
       expect(plan.reasons).toContain(
-        'No platform was named; this host suggests ios, and the plan opens nothing on it — pass --ios or --android, or run "exagent navigate /" once the dev server is up.'
+        'No platform was named; this host suggests ios, and the plan opens nothing on it — pass --ios or --android, or run "@expo/agent-cli navigate /" once the dev server is up.'
       );
     });
 

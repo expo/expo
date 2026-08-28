@@ -12,7 +12,7 @@
 // and the exit code each leaves the process with — and those are precisely the states a driving
 // agent hits most often and the ones the contract is about.
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   holdDevLockAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
@@ -37,7 +37,7 @@ const EXPO_GO_TARGET = {
   webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=1&page=1',
 };
 
-/** Point the project's dev-server lock at the stub, the way an `exagent`-started server does. */
+/** Point the project's dev-server lock at the stub, the way an `@expo/agent-cli`-started server does. */
 async function holdLockForAsync(projectRoot: string, stub: StubDevServer): Promise<() => void> {
   return await holdDevLockAsync(projectRoot, {
     url: stub.url,
@@ -51,11 +51,11 @@ async function holdLockForAsync(projectRoot: string, stub: StubDevServer): Promi
 /** A port nothing listens on, for the "no dev server" cases. */
 const DEAD_URL = 'http://127.0.0.1:1';
 
-describe('exagent runtime:eval', () => {
+describe('@expo/agent-cli runtime:eval', () => {
   it('exits 1 and names the command that starts one when no dev server answers', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['runtime:eval', '1 + 1', '--dev-server-url', DEAD_URL, '--json'],
       { reject: false }
@@ -64,7 +64,7 @@ describe('exagent runtime:eval', () => {
     expect(result.exitCode).toBe(1);
     const report = JSON.parse(result.stdout);
     expect(report.error.code).toBe('NO_DEV_SERVER');
-    expect(report.error.suggestedCommand).toBe('npx exagent dev --detach');
+    expect(report.error.suggestedCommand).toBe('npx @expo/agent-cli dev --detach');
     expect(report.error.needsHuman).toBeFalsy();
   });
 
@@ -76,7 +76,7 @@ describe('exagent runtime:eval', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({ targets: [] });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:eval', '1 + 1', '--dev-server-url', stub.url, '--json'],
         { reject: false }
@@ -95,7 +95,7 @@ describe('exagent runtime:eval', () => {
     const stub = await startStubDevServerAsync({ targets: [] });
     const release = await holdLockForAsync(projectRoot, stub);
     try {
-      const result = await executeExagentAsync(projectRoot, ['runtime:eval', '1 + 1', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['runtime:eval', '1 + 1', '--json'], {
         reject: false,
       });
 
@@ -112,7 +112,7 @@ describe('exagent runtime:eval', () => {
   it('refuses an invocation with no expression, before it opens a connection', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['runtime:eval', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['runtime:eval', '--json'], {
       reject: false,
     });
 
@@ -126,7 +126,7 @@ describe('exagent runtime:eval', () => {
   it('reports an unknown flag rather than passing it through as an expression', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['runtime:eval', '1', '--nope'], {
+    const result = await executeAgentCliAsync(projectRoot, ['runtime:eval', '1', '--nope'], {
       reject: false,
     });
 
@@ -144,18 +144,18 @@ describe('exagent runtime:eval', () => {
       ['runtime:errors', '--dev-server-url', DEAD_URL, '--json'],
       ['runtime:eval', '--json'],
     ]) {
-      const result = await executeExagentAsync(projectRoot, argv, { reject: false });
+      const result = await executeAgentCliAsync(projectRoot, argv, { reject: false });
       expect(() => JSON.parse(result.stdout)).not.toThrow();
       expect(Object.keys(JSON.parse(result.stdout))).toEqual(['error']);
     }
   });
 });
 
-describe('exagent runtime:errors', () => {
+describe('@expo/agent-cli runtime:errors', () => {
   it('exits 1 when no dev server answers, whatever --fail-on-error says', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['runtime:errors', '--dev-server-url', DEAD_URL, '--fail-on-error', '--json'],
       { reject: false }
@@ -170,7 +170,7 @@ describe('exagent runtime:errors', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({ targets: [] });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:errors', '--dev-server-url', stub.url, '--fail-on-error', '--json'],
         { reject: false }
@@ -195,7 +195,7 @@ describe('exagent runtime:errors', () => {
       inspectorSocket: 'no-debugger',
     });
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         [
           'runtime:errors',
@@ -223,7 +223,7 @@ describe('exagent runtime:errors', () => {
       inspectorSocket: 'no-debugger',
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:errors',
         '--dev-server-url',
         stub.url,
@@ -244,7 +244,7 @@ describe('exagent runtime:errors', () => {
   it('rejects a duration that is not one, before it connects to anything', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['runtime:errors', '--duration', 'soon', '--json'],
       { reject: false }
@@ -261,7 +261,7 @@ describe('exagent runtime:errors', () => {
       inspectorSocket: 'no-debugger',
     });
     try {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'runtime:errors',
         '--dev-server-url',
         stub.url,
@@ -281,12 +281,12 @@ describe('the runtime group at the process boundary', () => {
   it('resolves the space form to the same command as the colon form', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const colon = await executeExagentAsync(
+    const colon = await executeAgentCliAsync(
       projectRoot,
       ['runtime:errors', '--dev-server-url', DEAD_URL, '--json'],
       { reject: false }
     );
-    const space = await executeExagentAsync(
+    const space = await executeAgentCliAsync(
       projectRoot,
       ['runtime', 'errors', '--dev-server-url', DEAD_URL, '--json'],
       { reject: false }
@@ -299,7 +299,7 @@ describe('the runtime group at the process boundary', () => {
   it('names the actions of the group for an action it does not have', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['runtime:evaluate', '1'], {
+    const result = await executeAgentCliAsync(projectRoot, ['runtime:evaluate', '1'], {
       reject: false,
     });
 
@@ -318,20 +318,20 @@ describe('what runtime:eval says about the runtime it evaluates in', () => {
   it('documents the Hermes idioms, so the expo global is not a discovery', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['runtime:eval', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['runtime:eval', '--help']);
 
     expect(result.stdout).toContain('Hermes');
     expect(result.stdout).toMatch(/no require/i);
     expect(result.stdout).toContain('Object.keys(expo)');
     expect(result.stdout).toContain('expo.reloadAppAsync()');
     // And the command that makes the manual call unnecessary.
-    expect(result.stdout).toContain('npx exagent runtime:reload');
+    expect(result.stdout).toContain('npx @expo/agent-cli runtime:reload');
   });
 
   it('names the three reload mechanisms in runtime:reload --help', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['runtime:reload', '--help']);
 
     expect(result.stdout).toContain('auto (default), dev-server, runtime, or device');
     expect(result.stdout).toContain('expo.reloadAppAsync()');

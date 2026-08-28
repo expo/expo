@@ -49,14 +49,14 @@ describe('buildDoctorFixFollowUps', () => {
     const followups = buildDoctorFixFollowUps(payload({ tier: 'moderate' }));
 
     expect(ids(followups)).toEqual(['doctor-fix-apply']);
-    expect(followups[0]!.command).toBe('npx exagent doctor:fix --tier moderate --apply');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli doctor:fix --tier moderate --apply');
   });
 
   it('offers the next tier up when this one found nothing', () => {
     const followups = buildDoctorFixFollowUps(payload({ steps: [] }));
 
     expect(ids(followups)).toEqual(['doctor-check', 'doctor-fix-next-tier']);
-    expect(followups[1]!.command).toBe('npx exagent doctor:fix --tier moderate');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli doctor:fix --tier moderate');
   });
 
   it('has no tier left to offer above aggressive', () => {

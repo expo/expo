@@ -1,7 +1,7 @@
 import { CommandError } from '../utils/errors';
 
-/** Flags that `exagent install` handles itself and does not forward to `expo install`. */
-const EXAGENT_ONLY_FLAGS = [
+/** Flags that `@expo/agent-cli install` handles itself and does not forward to `expo install`. */
+const AGENT_CLI_ONLY_FLAGS = [
   '--no-agent-skills',
   '--no-skill-context',
   '--no-impact',
@@ -60,7 +60,7 @@ export interface InstallPlan {
 }
 
 /**
- * Split `exagent install` arguments into the `expo install` passthrough and the
+ * Split `@expo/agent-cli install` arguments into the `expo install` passthrough and the
  * skill-sync decisions.
  *
  * `expo install` takes no flags with a separate value, so every argument that does not
@@ -85,7 +85,7 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
   if (check && own.includes('--fix')) {
     throw badArgs(
       `--check and --fix cannot both apply, so nothing ran. Why: --check only reports what is out of date, and --fix rewrites it. How: pass one of them.`,
-      'npx exagent install --check'
+      'npx @expo/agent-cli install --check'
     );
   }
 
@@ -94,7 +94,7 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
   // `--json` is this command's own flag now, so it is stripped from the forwarded arguments —
   // except in a `--check` run, where the answer *is* the Expo CLI's report and this command has
   // to be given it to embed.
-  const expoArgs = argv.filter((arg) => !EXAGENT_ONLY_FLAGS.includes(arg));
+  const expoArgs = argv.filter((arg) => !AGENT_CLI_ONLY_FLAGS.includes(arg));
   if (check && json) {
     expoArgs.push('--json');
   }
@@ -129,7 +129,7 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
  * ours to enumerate.
  */
 function assertKnownFlags(own: string[]): void {
-  const known = [...EXAGENT_ONLY_FLAGS, ...EXPO_INSTALL_FLAGS];
+  const known = [...AGENT_CLI_ONLY_FLAGS, ...EXPO_INSTALL_FLAGS];
   const unknown = own.find((arg) => arg.startsWith('-') && !known.includes(arg));
   if (!unknown) {
     return;
@@ -137,11 +137,11 @@ function assertKnownFlags(own: string[]): void {
   const forwarded = EXPO_INSTALL_FLAGS.filter((flag) => flag.startsWith('--') && flag !== '--help');
   throw badArgs(
     [
-      `"${unknown}" is not an option of "exagent install", so nothing ran.`,
-      `Why: this command forwards to "expo install", which takes ${forwarded.join(', ')}; the wrapper adds ${EXAGENT_ONLY_FLAGS.join(', ')}. "${unknown}" is in neither set.`,
-      `How: drop it, or hand it to the package manager instead — everything after a "--" separator is forwarded untouched, as in "npx exagent install react -- ${unknown}".`,
+      `"${unknown}" is not an option of "@expo/agent-cli install", so nothing ran.`,
+      `Why: this command forwards to "expo install", which takes ${forwarded.join(', ')}; the wrapper adds ${AGENT_CLI_ONLY_FLAGS.join(', ')}. "${unknown}" is in neither set.`,
+      `How: drop it, or hand it to the package manager instead — everything after a "--" separator is forwarded untouched, as in "npx @expo/agent-cli install react -- ${unknown}".`,
     ].join('\n'),
-    'npx exagent install --help'
+    'npx @expo/agent-cli install --help'
   );
 }
 

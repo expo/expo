@@ -1,5 +1,5 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md
-// Argument resolution for the `exagent runtime:<action>` commands. Pure: argv in, options out,
+// Argument resolution for the `@expo/agent-cli runtime:<action>` commands. Pure: argv in, options out,
 // `CommandError` for anything a user can get wrong, so every flag combination is unit-testable.
 
 import {
@@ -103,7 +103,7 @@ const ERRORS_ARGS = {
 const DEFAULT_ERRORS_WINDOW_MS = 2000;
 
 /**
- * Resolve the arguments of `exagent runtime:<action>`.
+ * Resolve the arguments of `@expo/agent-cli runtime:<action>`.
  *
  * The action arrives as the first argument, whichever spelling the caller used: the command
  * registry hands `runtime:eval` and `runtime eval` over the same way.
@@ -118,7 +118,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   if (action == null) {
     throw new CommandError(
       'BAD_ARGS',
-      `Missing action. Usage: npx exagent runtime:<${RUNTIME_ACTIONS.join('|')}>`
+      `Missing action. Usage: npx @expo/agent-cli runtime:<${RUNTIME_ACTIONS.join('|')}>`
     );
   }
   if (!RUNTIME_ACTIONS.includes(action as RuntimeAction)) {
@@ -134,13 +134,13 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     if (positional.length === 0) {
       throw new CommandError(
         'BAD_ARGS',
-        `Missing expression. Usage: npx exagent runtime:eval "<expression>"`
+        `Missing expression. Usage: npx @expo/agent-cli runtime:eval "<expression>"`
       );
     }
     if (positional.length > 1) {
       throw new CommandError(
         'BAD_ARGS',
-        `Expected one expression, but got ${positional.length} arguments (${positional.join(' ')}). Quote the expression so the shell passes it as one argument: npx exagent runtime:eval "${positional.join(' ')}"`
+        `Expected one expression, but got ${positional.length} arguments (${positional.join(' ')}). Quote the expression so the shell passes it as one argument: npx @expo/agent-cli runtime:eval "${positional.join(' ')}"`
       );
     }
 
@@ -164,7 +164,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw strayArgumentError('runtime:errors', positional, {
-      hint: `this command listens over a window and takes no target. Usage: npx exagent runtime:errors [--duration ${DURATION_METAVAR}]`,
+      hint: `this command listens over a window and takes no target. Usage: npx @expo/agent-cli runtime:errors [--duration ${DURATION_METAVAR}]`,
     });
   }
 

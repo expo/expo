@@ -6,7 +6,7 @@ import { CommandError } from '../utils/errors';
 import {
   EMPTY_SETTINGS,
   type BuildBackend,
-  type ExagentSettings,
+  type AgentCliSettings,
   type PlatformSettings,
   type RunTarget,
 } from './types';
@@ -34,15 +34,15 @@ const KEY_HELP: Record<string, string> = {
  * **Unknown keys are an error, not a warning** [decided — llp/0015 §Validation]. Every key here
  * exists to change what a build does; a key that was meant to change it and silently did not is a
  * wrong plan approved as a right one, which is the one failure this whole feature exists to
- * prevent. The cost is real and is paid on purpose: a project that names a key a newer `exagent`
+ * prevent. The cost is real and is paid on purpose: a project that names a key a newer `@expo/agent-cli`
  * added cannot be read by an older one, and the error says exactly that and which keys this
  * version knows.
  *
  * @param raw The value found at {@link where}, `undefined` when the key is absent.
- * @param where How to name the location in an error, e.g. `"expo.exagent" in package.json`.
- * @throws {CommandError} `BAD_EXAGENT_CONFIG` with what / why / how.
+ * @param where How to name the location in an error, e.g. `"expo.agentCli" in package.json`.
+ * @throws {CommandError} `BAD_AGENT_CLI_CONFIG` with what / why / how.
  */
-export function parseExagentSettings(raw: unknown, where: string): ExagentSettings {
+export function parseAgentCliSettings(raw: unknown, where: string): AgentCliSettings {
   if (raw == null) {
     return EMPTY_SETTINGS;
   }
@@ -66,14 +66,14 @@ export function parseExagentSettings(raw: unknown, where: string): ExagentSettin
 
 /** The backend configured for one platform: the platform's own answer, else the shared one. */
 export function settingsBuildBackend(
-  settings: ExagentSettings,
+  settings: AgentCliSettings,
   platform: 'ios' | 'android'
 ): BuildBackend | null {
   return settings[platform]?.buildBackend ?? settings.buildBackend;
 }
 
 /** Whether anything at all was configured, for a surface that only speaks up when something was. */
-export function settingsAreEmpty(settings: ExagentSettings): boolean {
+export function settingsAreEmpty(settings: AgentCliSettings): boolean {
   return (
     settings.target == null &&
     settings.buildBackend == null &&
@@ -117,7 +117,7 @@ function readEnum<T extends string>(
     throw reject(
       `${where} › ${key} is ${describe(value)}, and the only values it takes are ${quoteList(allowed)}.`,
       `Why: ${KEY_HELP[key] ?? 'it names one of a fixed set of choices'}`,
-      `How: change it to one of ${quoteList(allowed)}, or remove the key to let this CLI decide for itself — "npx exagent dev --plan" prints what it decides and why.`
+      `How: change it to one of ${quoteList(allowed)}, or remove the key to let this CLI decide for itself — "npx @expo/agent-cli dev --plan" prints what it decides and why.`
     );
   }
   return value as T;
@@ -136,11 +136,11 @@ function assertKnownKeys(
     .map((key) => ({ key, match: closestKey(key, allowed) }))
     .filter((entry) => entry.match);
   throw reject(
-    `${where} names ${unknown.length > 1 ? 'keys' : 'a key'} this version of exagent does not know: ${quoteList(unknown)}.`,
+    `${where} names ${unknown.length > 1 ? 'keys' : 'a key'} this version of @expo/agent-cli does not know: ${quoteList(unknown)}.`,
     `Why: every key of this config changes what a plan does, so an unrecognised one is refused rather than ignored — a preference that was silently dropped would leave you approving a plan you did not ask for.`,
     near.length
       ? `How: ${near.map((entry) => `"${entry.key}" looks like "${entry.match}"`).join(', ')}. The keys this version takes are ${quoteList(allowed)}.`
-      : `How: remove ${unknown.length > 1 ? 'them' : 'it'}, or upgrade exagent if a newer version added ${unknown.length > 1 ? 'them' : 'it'}. The keys this version takes are ${quoteList(allowed)}.`
+      : `How: remove ${unknown.length > 1 ? 'them' : 'it'}, or upgrade @expo/agent-cli if a newer version added ${unknown.length > 1 ? 'them' : 'it'}. The keys this version takes are ${quoteList(allowed)}.`
   );
 }
 
@@ -158,7 +158,7 @@ function closestKey(key: string, allowed: readonly string[]): string | null {
  * would be suggesting the command that just failed.
  */
 function reject(what: string, why: string, how: string): CommandError {
-  return new CommandError('BAD_EXAGENT_CONFIG', [what, why, how].join('\n'));
+  return new CommandError('BAD_AGENT_CLI_CONFIG', [what, why, how].join('\n'));
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

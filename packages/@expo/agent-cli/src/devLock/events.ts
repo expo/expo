@@ -7,7 +7,7 @@ declare module '2g' {
      * The dev server of this project is published at `address`: connecting to it answers with
      * `url`. Emitted once the dev server has reported the port it actually listens on.
      *
-     * @see llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+     * @see llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
      */
     'cli:dev_lock_acquired': {
       address: string;
@@ -19,7 +19,7 @@ declare module '2g' {
     };
     /**
      * No lock was taken, and the dev server ran anyway. The lock is a convenience, so this is
-     * never an error: `in-use` means another `exagent` already publishes this project's dev
+     * never an error: `in-use` means another `@expo/agent-cli` already publishes this project's dev
      * server, and the other reasons mean the address could not be taken at all.
      */
     'cli:dev_lock_skipped': {

@@ -18,7 +18,7 @@
 export const ON_RAMP_TOPIC = 'workflow';
 
 /** The whole command, as every pointer prints it. */
-export const ON_RAMP_POINTER = `npx exagent help ${ON_RAMP_TOPIC}`;
+export const ON_RAMP_POINTER = `npx @expo/agent-cli help ${ON_RAMP_TOPIC}`;
 
 /**
  * The line that offers it, wherever a reader who does not know this CLI might be.

@@ -2,7 +2,7 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reading the detached dev server's output
 //
-// `exagent dev --detach` through the published bin. Everything worth pinning here is what a unit
+// `@expo/agent-cli dev --detach` through the published bin. Everything worth pinning here is what a unit
 // test cannot see: the parent process **returns** while a dev server it started is still running,
 // that server survives the parent's exit, its output lands in a file, and `dev:stop` takes the
 // whole tree down again.
@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubFingerprintAsync,
   readDevLockAsync,
   setupFixtureAsync,
@@ -48,19 +48,19 @@ function isAlive(pid: number): boolean {
 
 /** Stop whatever the test started, so a failed assertion never leaves a process behind. */
 async function cleanUpAsync(projectRoot: string): Promise<void> {
-  await executeExagentAsync(projectRoot, ['dev:stop', '--json'], {
+  await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
     env: stubExpoEnv(projectRoot),
     reject: false,
   });
 }
 
-describe('exagent dev --detach', () => {
+describe('@expo/agent-cli dev --detach', () => {
   // The whole finding, in one assertion: the command returns, and a dev server is running.
   it('returns while the dev server it started keeps running', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--detach', '--yes', '--json'],
         { env: detachEnv(projectRoot, 8399) }
@@ -90,7 +90,7 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--detach', '--yes', '--json'],
         { env: detachEnv(projectRoot, 8398) }
@@ -130,7 +130,7 @@ describe('exagent dev --detach', () => {
     await installStubFingerprintAsync(projectRoot);
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--detach', '--yes', '--ios', '--json'],
         {
@@ -159,7 +159,7 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--detach', '--yes', '--json'],
         { env: detachEnv(projectRoot, 8397) }
@@ -179,7 +179,7 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--detach', '--yes', '--json'],
         {
@@ -208,7 +208,7 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const result = await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes'], {
         env: {
           ...stubExpoEnv(projectRoot),
           STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
@@ -227,7 +227,7 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--detach', '--yes', '--json'],
         { env: detachEnv(projectRoot, 8393) }
@@ -245,12 +245,12 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const first = await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+      const first = await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
         env: detachEnv(projectRoot, 8397),
       });
       const firstPid = JSON.parse(first.stdout).pid;
 
-      const second = await executeExagentAsync(
+      const second = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--detach', '--yes', '--json'],
         { env: detachEnv(projectRoot, 8396) }
@@ -271,12 +271,12 @@ describe('exagent dev --detach', () => {
   // The counterpart of the finding: `dev:stop` has to reach a process this shell never owned.
   it('is stopped by dev:stop, which takes the whole tree with it', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const started = await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+    const started = await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
       env: detachEnv(projectRoot, 8395),
     });
     const { pid } = JSON.parse(started.stdout);
 
-    const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
       env: stubExpoEnv(projectRoot),
     });
 
@@ -303,7 +303,7 @@ describe('exagent dev --detach', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         // `--tunnel`, because that is the wait the child died inside of: the parent is still
         // waiting for a tunnel host when the process that would print one exits.
@@ -369,7 +369,7 @@ describe('exagent dev --detach', () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['dev', '--detach', '--wait-ready', '--ios', '--yes', '--json'],
           { env: diesAfterReadyEnv(projectRoot, 8393), reject: false }
@@ -398,7 +398,7 @@ describe('exagent dev --detach', () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['dev', '--detach', '--wait-ready', '--ios', '--yes', '--json'],
           {
@@ -424,7 +424,7 @@ describe('exagent dev --detach', () => {
   it('rejects --wait-ready on its own, which would wait for nothing', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--wait-ready', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--wait-ready', '--json'], {
       reject: false,
     });
 
@@ -435,19 +435,19 @@ describe('exagent dev --detach', () => {
   it('says in --help that the plain command blocks and --detach does not', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:run', '--help']);
 
     expect(result.all).toContain('This command blocks');
     expect(result.all).toContain('--detach');
   });
 });
 
-describe('exagent dev:logs', () => {
+describe('@expo/agent-cli dev:logs', () => {
   it('reads what the detached dev server printed', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+      await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
         env: detachEnv(projectRoot, 8394),
       });
       // The stub prints its start line as soon as it runs; the file is written by the child.
@@ -459,7 +459,7 @@ describe('exagent dev:logs', () => {
         5000
       );
 
-      const result = await executeExagentAsync(projectRoot, ['dev:logs', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json'], {
         env: stubExpoEnv(projectRoot),
       });
 
@@ -477,12 +477,12 @@ describe('exagent dev:logs', () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     try {
-      await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+      await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
         env: detachEnv(projectRoot, 8393),
       });
       await waitForAsync(() => fs.existsSync(path.join(projectRoot, LOG_PATH)), 5000);
 
-      const result = await executeExagentAsync(projectRoot, ['dev:logs'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs'], {
         env: stubExpoEnv(projectRoot),
       });
 
@@ -502,7 +502,7 @@ describe('exagent dev:logs', () => {
       Array.from({ length: 40 }, (_, index) => `line ${index + 1}`).join('\n') + '\n'
     );
 
-    const result = await executeExagentAsync(projectRoot, ['dev:logs', '--tail', '3', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--tail', '3', '--json']);
 
     expect(JSON.parse(result.stdout)).toMatchObject({
       lines: ['line 38', 'line 39', 'line 40'],
@@ -532,7 +532,7 @@ describe('exagent dev:logs', () => {
         'Waiting on http://znakdiwe5j2n5o0.boltexpo.dev',
       ]);
 
-      const result = await executeExagentAsync(projectRoot, ['dev:logs', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json']);
 
       expect(JSON.parse(result.stdout).advertised).toEqual({
         url: 'http://znakdiwe5j2n5o0.boltexpo.dev',
@@ -549,7 +549,7 @@ describe('exagent dev:logs', () => {
         ...Array.from({ length: 30 }, (_, index) => `line ${index + 1}`),
       ]);
 
-      const result = await executeExagentAsync(projectRoot, ['dev:logs', '--tail', '3', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--tail', '3', '--json']);
 
       const report = JSON.parse(result.stdout);
       expect(report.lines).toEqual(['line 28', 'line 29', 'line 30']);
@@ -560,7 +560,7 @@ describe('exagent dev:logs', () => {
       const projectRoot = await setupFixtureAsync('go-app');
       await writeLogAsync(projectRoot, ['Waiting on http://localhost:8081']);
 
-      const result = await executeExagentAsync(projectRoot, ['dev:logs', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json']);
 
       expect(JSON.parse(result.stdout).advertised).toEqual({
         url: 'http://localhost:8081',
@@ -572,20 +572,20 @@ describe('exagent dev:logs', () => {
   it('exits 1 and says how to get one when the project has no log', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev:logs', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev:logs', '--json'], {
       reject: false,
     });
 
     expect(result.exitCode).toBe(1);
     const { error } = JSON.parse(result.stdout);
     expect(error.code).toBe('NO_DEV_LOG');
-    expect(error.suggestedCommand).toBe('npx exagent dev --detach --wait-ready');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli dev --detach --wait-ready');
   });
 
   it('appears in the top-level help, next to the command that writes it', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.all).toContain('dev:logs');
     expect(result.all).toContain('dev blocks this terminal');

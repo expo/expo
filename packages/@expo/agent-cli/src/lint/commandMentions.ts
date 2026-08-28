@@ -1,6 +1,6 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts
 // @ref llp/0009-smart-followups.rfc.md §Design
-// Every `npx exagent …` this CLI hands a caller, found in the source that produces it.
+// Every `npx @expo/agent-cli …` this CLI hands a caller, found in the source that produces it.
 //
 // The drift this exists to catch: a `Try:` line, a follow-up `command`, or a `How:` sentence names
 // a command that used to exist. Nothing fails when that happens — the string is data, not a call —
@@ -19,12 +19,12 @@
 import ts from 'typescript';
 
 /** The prefix a runnable mention of this CLI starts with. */
-export const MENTION_PREFIX = 'npx exagent';
+export const MENTION_PREFIX = 'npx @expo/agent-cli';
 
 /**
  * What an interpolation is printed as in the text of a mention.
  *
- * A `${…}` is a real argument the lint cannot read — `npx exagent skills:show ${pkg}` is a correct
+ * A `${…}` is a real argument the lint cannot read — `npx @expo/agent-cli skills:show ${pkg}` is a correct
  * command whose last word is only knowable at runtime — so it is kept as one opaque token rather
  * than dropped. Angle brackets would collide with the placeholder rule, and a bare `?` would be
  * indistinguishable from a literal one.
@@ -36,7 +36,7 @@ export const INTERPOLATION_TOKEN = '${…}';
  *
  * A private-use code point rather than {@link INTERPOLATION_TOKEN} itself, because the printed
  * form contains braces and braces end a mention — a `chalk` template delimits with them. Scanning
- * on the printed form would cut `npx exagent skills:show ${pkg}` at the interpolation.
+ * on the printed form would cut `npx @expo/agent-cli skills:show ${pkg}` at the interpolation.
  */
 const INTERPOLATION_MARK = '\uE000';
 
@@ -56,7 +56,7 @@ export type MentionRole =
   /** Anywhere else: a `How:` sentence, a `--help` usage line, a summary. */
   | 'message';
 
-/** One `npx exagent …` occurrence, and where it came from. */
+/** One `npx @expo/agent-cli …` occurrence, and where it came from. */
 export interface CommandMention {
   /** Path as the sweep was given it, e.g. `src/dev/stopAsync.ts`. */
   file: string;
@@ -79,7 +79,7 @@ export interface CommandMention {
  * Characters that end a mention, because prose resumes at them.
  *
  * The codebase delimits a command inside a sentence with quotes or backticks
- * (`Run "npx exagent dev:stop" for …`), and `chalk` templates delimit with braces, so those are
+ * (`Run "npx @expo/agent-cli dev:stop" for …`), and `chalk` templates delimit with braces, so those are
  * the boundaries. The shell operators are boundaries too: a suggestion may be two commands joined
  * by `&&`, and each half is a command of its own to check rather than a long argument list for the
  * first of them.
@@ -100,11 +100,11 @@ const MENTION_TERMINATORS = new Set([
   '\\',
 ]);
 
-/** Punctuation a mention may end on because a sentence did, e.g. `"npx exagent status".` */
+/** Punctuation a mention may end on because a sentence did, e.g. `"npx @expo/agent-cli status".` */
 const TRAILING_PUNCTUATION = /[.,;:!?\s]+$/;
 
 /**
- * Every `npx exagent …` in the string literals of one TypeScript source.
+ * Every `npx @expo/agent-cli …` in the string literals of one TypeScript source.
  *
  * Only string literals: a mention in a comment is documentation for the next reader of this file,
  * and holding a comment to the same standard as a printed `Try:` line would make the lint an
@@ -145,8 +145,8 @@ export function extractCommandMentions(file: string, source: string): CommandMen
  * One whole string a command hands its caller as the thing to run next.
  *
  * The commands are not all this CLI's: a `Try:` line is `npx eas login` as often as it is
- * `npx exagent status`, and `npx eas build --profile <profile>` is exactly as unrunnable as
- * `npx exagent navigate <route>` would be. So the placeholder rule is checked over these — every
+ * `npx @expo/agent-cli status`, and `npx eas build --profile <profile>` is exactly as unrunnable as
+ * `npx @expo/agent-cli navigate <route>` would be. So the placeholder rule is checked over these — every
  * suggestion, whatever CLI it names — while the registry rules are checked over the
  * {@link CommandMention}s, which are only the ones this CLI can resolve.
  */
@@ -192,7 +192,7 @@ export function extractSuggestions(file: string, source: string): SuggestedComma
 }
 
 /**
- * Every `npx exagent …` in a plain-text file, e.g. the README.
+ * Every `npx @expo/agent-cli …` in a plain-text file, e.g. the README.
  *
  * The same cut as in a string literal, one line at a time — a markdown file has no literals to
  * find, and its command lines are delimited by backticks and newlines exactly as the CLI's own are.

@@ -37,7 +37,7 @@ export interface Comparison {
 }
 
 /**
- * Compare the working tree against what `exagent` recorded after its last native build.
+ * Compare the working tree against what `@expo/agent-cli` recorded after its last native build.
  *
  * The default mode, and the one that answers the question an agent asks most: I changed some
  * files, do I need to build again?
@@ -56,7 +56,7 @@ export async function compareWithLastBuildAsync(
 
   const headSide: ComparisonSide = { label: 'working tree', hash: head.hash };
   const baseSide: ComparisonSide = {
-    label: 'last build recorded by exagent',
+    label: 'last build recorded by @expo/agent-cli',
     hash: recorded?.hash ?? null,
   };
 
@@ -76,11 +76,11 @@ export async function compareWithLastBuildAsync(
       base: baseSide,
       head: headSide,
       items: null,
-      // Nothing recorded is not "unchanged". `exagent dev` writes the record after a native build
+      // Nothing recorded is not "unchanged". `@expo/agent-cli dev` writes the record after a native build
       // it ran; a build made by EAS, by Xcode, or by another machine leaves nothing here.
       fingerprintChanged: null,
       caveats: [
-        `No build is recorded for ${platform}, so there is nothing to compare against. "exagent dev" writes this record after a native build it runs; for a cloud build, compare against it directly with --build <id>.`,
+        `No build is recorded for ${platform}, so there is nothing to compare against. "@expo/agent-cli dev" writes this record after a native build it runs; for a cloud build, compare against it directly with --build <id>.`,
       ],
       error: null,
     };

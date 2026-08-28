@@ -368,7 +368,7 @@ describe('the native directories', () => {
     vol.fromJSON({ [`${projectRoot}/android/build.gradle`]: 'gradle' });
     const after = await buildFingerprintKeyManifestAsync(projectRoot);
 
-    // `exagent dev` drops the whole record after a plan step for exactly this reason
+    // `@expo/agent-cli dev` drops the whole record after a plan step for exactly this reason
     // (`src/dev/devAsync.ts`); a prebuild run some other way rides on the expiry.
     expect(manifestsMatch(before, after)).toBe(true);
   });

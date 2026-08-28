@@ -76,10 +76,10 @@ describe(assertExpoAppSync, () => {
     expect(thrown?.message).toContain('is not an Expo app');
     expect(thrown?.message).toContain('Why:');
     expect(thrown?.message).toContain('How:');
-    expect(thrown?.suggestedCommand).toBe('npx exagent new my-app');
+    expect(thrown?.suggestedCommand).toBe('npx @expo/agent-cli new my-app');
     // The `Try:` line is the recovery that changes nothing that is already here. Adding Expo to
     // this package is the mutation this guard exists to prevent, so it stays in the prose.
-    expect(thrown?.message).toContain('npx exagent install expo');
+    expect(thrown?.message).toContain('npx @expo/agent-cli install expo');
   });
 
   // The default band, exactly as `NO_PROJECT`: the tool did not work, and running it again

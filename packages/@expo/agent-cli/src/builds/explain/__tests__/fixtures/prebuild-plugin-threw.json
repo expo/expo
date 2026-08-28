@@ -19,7 +19,7 @@
     "line": 3,
     "matchedLine": "    at brokenPlugin (/private/tmp/wave6-explain-scratch/prebuild-throw/plugins/broken-plugin.js:2:9)",
     "confidence": "high",
-    "suggestedCommand": "npx exagent inspect:config-plugins"
+    "suggestedCommand": "npx @expo/agent-cli inspect:config-plugins"
   },
   "otherSignatures": []
 }

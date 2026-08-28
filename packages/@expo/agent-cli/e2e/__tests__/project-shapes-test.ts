@@ -14,7 +14,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubBinAsync,
   readDevLockAsync,
   setupFixtureAsync,
@@ -24,7 +24,7 @@ import {
 /** A fresh temporary directory whose own name holds a space. */
 async function temporaryDirWithSpaceAsync(): Promise<string> {
   return await fs.promises.realpath(
-    await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent e2e '))
+    await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli e2e '))
   );
 }
 
@@ -61,12 +61,12 @@ describe('a project whose path holds a space', () => {
       path.join(await temporaryDirWithSpaceAsync(), 'my app')
     );
 
-    const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['status', '--json']);
 
     expect(result.exitCode).toBe(0);
     const report = JSON.parse(result.stdout);
     expect(report.project.root).toBe(projectRoot);
-    expect(report.next.command).toBe('npx exagent dev');
+    expect(report.next.command).toBe('npx @expo/agent-cli dev');
   });
 
   // The dev-server lock is a unix socket **inside the project**, so the project path is part of an
@@ -78,7 +78,7 @@ describe('a project whose path holds a space', () => {
       path.join(await temporaryDirWithSpaceAsync(), 'my app')
     );
 
-    const detached = await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
+    const detached = await executeAgentCliAsync(projectRoot, ['dev', '--detach', '--yes', '--json'], {
       env: { STUB_EXPO_DEV_SERVER_PORT: '8099', STUB_EXPO_DELAY_MS: '15000' },
     });
     expect(detached.exitCode).toBe(0);
@@ -87,12 +87,12 @@ describe('a project whose path holds a space', () => {
       const lock = await waitForDevLockAsync(projectRoot, 5_000);
       expect(lock).toMatchObject({ port: 8099, projectRoot });
 
-      const logs = await executeExagentAsync(projectRoot, ['dev:logs', '--tail', '3']);
+      const logs = await executeAgentCliAsync(projectRoot, ['dev:logs', '--tail', '3']);
       expect(logs.exitCode).toBe(0);
       // The log path is inside the project, so it carries the space too.
       expect(logs.all).toContain('my app');
     } finally {
-      const stopped = await executeExagentAsync(projectRoot, ['dev:stop', '--json'], {
+      const stopped = await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
         reject: false,
       });
       expect(stopped.exitCode).toBe(0);
@@ -109,7 +109,7 @@ describe('a project inside a workspace', () => {
   // after it would be about the wrong thing.
   it('resolves the app rather than the workspace root', async () => {
     const workspace = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-workspace-'))
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-workspace-'))
     );
     await fs.promises.writeFile(
       path.join(workspace, 'package.json'),
@@ -124,7 +124,7 @@ describe('a project inside a workspace', () => {
       path.join(workspace, 'apps', 'mobile')
     );
 
-    const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['status', '--json']);
 
     expect(result.exitCode).toBe(0);
     const report = JSON.parse(result.stdout);
@@ -149,7 +149,7 @@ describe('a project inside a workspace', () => {
      */
     async function hoistedWorkspaceAsync(): Promise<{ workspace: string; projectRoot: string }> {
       const workspace = await fs.promises.realpath(
-        await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-hoisted-'))
+        await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-hoisted-'))
       );
       await fs.promises.writeFile(
         path.join(workspace, 'package.json'),
@@ -174,7 +174,7 @@ describe('a project inside a workspace', () => {
         'fingerprint',
         path.join(hoisted, '@expo', 'fingerprint', 'bin', 'cli')
       );
-      // The PATH stub stays beside the app, because `spawnExagent` builds it from the `cwd`.
+      // The PATH stub stays beside the app, because `spawnAgentCli` builds it from the `cwd`.
       await installStubBinAsync(
         path.join(projectRoot, '.stub-bin'),
         'expo',
@@ -199,7 +199,7 @@ describe('a project inside a workspace', () => {
       await fs.promises.writeFile(path.join(projectRoot, 'tsconfig.json'), '{}');
       await fs.promises.writeFile(path.join(projectRoot, 'app.ts'), 'export const a = 1;\n');
 
-      const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
         reject: false,
       });
 
@@ -215,7 +215,7 @@ describe('a project inside a workspace', () => {
       const { projectRoot } = await hoistedWorkspaceAsync();
       await fs.promises.writeFile(path.join(projectRoot, 'tsconfig.json'), '{}');
 
-      const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
         reject: false,
       });
 
@@ -229,7 +229,7 @@ describe('a project inside a workspace', () => {
     it('hashes the native surface with the fingerprint CLI the workspace installed', async () => {
       const { projectRoot } = await hoistedWorkspaceAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['status', '--json']);
 
       expect(result.exitCode).toBe(0);
       const report = JSON.parse(result.stdout);
@@ -238,12 +238,12 @@ describe('a project inside a workspace', () => {
       expect(result.all).not.toContain('no fingerprint tool');
     });
 
-    // `status` reported `auth unknown (nothing could answer)` in a directory where `exagent whoami`
+    // `status` reported `auth unknown (nothing could answer)` in a directory where `@expo/agent-cli whoami`
     // answers, because the project's own `expo` was one directory up (F113).
     it('answers the auth section from the expo the workspace installed', async () => {
       const { projectRoot } = await hoistedWorkspaceAsync();
 
-      const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['status', '--json']);
 
       expect(result.exitCode).toBe(0);
       expect(JSON.parse(result.stdout).auth).toMatchObject({
@@ -260,7 +260,7 @@ describe('a project inside a workspace', () => {
     const nested = path.join(projectRoot, 'src', 'components');
     await fs.promises.mkdir(nested, { recursive: true });
 
-    const result = await executeExagentAsync(nested, ['status', '--json']);
+    const result = await executeAgentCliAsync(nested, ['status', '--json']);
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout).project.root).toBe(
@@ -276,22 +276,22 @@ describe('a directory with no project in it', () => {
   // wrong place got a dead end on the one line it reads for a recovery.
   it('says what, why and how, and puts a command on the Try line', async () => {
     const empty = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-empty-'))
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-empty-'))
     );
 
-    const result = await executeExagentAsync(empty, ['status', '--json'], { reject: false });
+    const result = await executeAgentCliAsync(empty, ['status', '--json'], { reject: false });
 
     expect(result.exitCode).toBe(1);
     const report = JSON.parse(result.stdout);
     expect(report.error.code).toBe('NO_PROJECT');
     expect(report.error.message).toContain('Why:');
     expect(report.error.message).toContain('How:');
-    expect(report.error.suggestedCommand).toBe('npx exagent new my-app');
+    expect(report.error.suggestedCommand).toBe('npx @expo/agent-cli new my-app');
   });
 
   it('answers the same way for every command that needs a project', async () => {
     const empty = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-empty-'))
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-empty-'))
     );
 
     for (const argv of [
@@ -300,7 +300,7 @@ describe('a directory with no project in it', () => {
       ['typecheck', '--json'],
       ['smoke', '--json'],
     ]) {
-      const result = await executeExagentAsync(empty, argv, { reject: false });
+      const result = await executeAgentCliAsync(empty, argv, { reject: false });
       expect(result.exitCode).toBe(1);
       expect(JSON.parse(result.stdout).error.code).toBe('NO_PROJECT');
     }
@@ -310,10 +310,10 @@ describe('a directory with no project in it', () => {
   // whether or not this directory has an app in it (`src/passthrough/auth.ts`).
   it('does not refuse the commands that act on the machine rather than the project', async () => {
     const empty = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-empty-'))
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-empty-'))
     );
 
-    const result = await executeExagentAsync(empty, ['whoami', '--help'], { reject: false });
+    const result = await executeAgentCliAsync(empty, ['whoami', '--help'], { reject: false });
 
     // Whatever it answers, it is not "there is no project here".
     expect(result.all).not.toContain('NO_PROJECT');
@@ -329,7 +329,7 @@ describe('a package.json that is not an Expo app', () => {
   /** A plain Node package: a `package.json`, and nothing that makes it an Expo project. */
   async function plainPackageAsync(): Promise<string> {
     const directory = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-plain-'))
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-plain-'))
     );
     await fs.promises.writeFile(
       path.join(directory, 'package.json'),
@@ -342,7 +342,7 @@ describe('a package.json that is not an Expo app', () => {
   it('reports a null SDK version rather than failing', async () => {
     const directory = await plainPackageAsync();
 
-    const result = await executeExagentAsync(directory, ['status', '--json']);
+    const result = await executeAgentCliAsync(directory, ['status', '--json']);
 
     expect(result.exitCode).toBe(0);
     const report = JSON.parse(result.stdout);
@@ -352,7 +352,7 @@ describe('a package.json that is not an Expo app', () => {
   it('says there is nothing to type-check rather than inventing a result', async () => {
     const directory = await plainPackageAsync();
 
-    const result = await executeExagentAsync(directory, ['typecheck', '--json']);
+    const result = await executeAgentCliAsync(directory, ['typecheck', '--json']);
 
     expect(result.exitCode).toBe(0);
     const report = JSON.parse(result.stdout);
@@ -367,7 +367,7 @@ describe('a package.json that is not an Expo app', () => {
   it('refuses to plan a build for a directory that is not an Expo app', async () => {
     const directory = await plainPackageAsync();
 
-    const result = await executeExagentAsync(directory, ['dev', '--plan', '--json'], {
+    const result = await executeAgentCliAsync(directory, ['dev', '--plan', '--json'], {
       reject: false,
     });
 
@@ -377,7 +377,7 @@ describe('a package.json that is not an Expo app', () => {
     expect(report.error.code).toBe('NOT_EXPO_APP');
     expect(report.error.message).toContain('Why:');
     expect(report.error.message).toContain('How:');
-    expect(report.error.suggestedCommand).toBe('npx exagent new my-app');
+    expect(report.error.suggestedCommand).toBe('npx @expo/agent-cli new my-app');
   });
 
   // One answer for every command that acts on the app, because an agent that learns the answer
@@ -393,7 +393,7 @@ describe('a package.json that is not an Expo app', () => {
       ['deploy', '--web', '--json'],
       ['doctor', '--json'],
     ]) {
-      const result = await executeExagentAsync(directory, argv, { reject: false });
+      const result = await executeAgentCliAsync(directory, argv, { reject: false });
       expect({ argv, exitCode: result.exitCode }).toEqual({ argv, exitCode: 1 });
       expect({ argv, code: JSON.parse(result.stdout).error.code }).toEqual({
         argv,
@@ -403,21 +403,21 @@ describe('a package.json that is not an Expo app', () => {
   });
 
   // `status` is how a caller *finds out* it is in the wrong place, so refusing it would take away
-  // the answer. It reports instead — and stops naming `exagent dev`, which is the same trap one
+  // the answer. It reports instead — and stops naming `@expo/agent-cli dev`, which is the same trap one
   // hop later.
   it('lets status report, and stops it recommending a build here', async () => {
     const directory = await plainPackageAsync();
 
-    const result = await executeExagentAsync(directory, ['status', '--json']);
+    const result = await executeAgentCliAsync(directory, ['status', '--json']);
 
     expect(result.exitCode).toBe(0);
     const report = JSON.parse(result.stdout);
     expect(report.project.isExpoApp).toBe(false);
     expect(report.next.rule).toBe('not-expo-app');
-    expect(report.next.command).not.toBe('npx exagent dev');
+    expect(report.next.command).not.toBe('npx @expo/agent-cli dev');
     expect(report.next.steps).toEqual([]);
     expect(report.followups.map((followup: { command: string }) => followup.command)).not.toContain(
-      'npx exagent install expo-dev-client'
+      'npx @expo/agent-cli install expo-dev-client'
     );
     expect(result.all).not.toContain('expo install expo-dev-client');
   });
@@ -425,7 +425,7 @@ describe('a package.json that is not an Expo app', () => {
   it('says so on the project line of the text report', async () => {
     const directory = await plainPackageAsync();
 
-    const result = await executeExagentAsync(directory, ['status']);
+    const result = await executeAgentCliAsync(directory, ['status']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('not an Expo app');
@@ -437,7 +437,7 @@ describe('a package.json that is not an Expo app', () => {
     const directory = await plainPackageAsync();
 
     for (const argv of [['install', 'expo', '--check'], ['new', '--help']]) {
-      const result = await executeExagentAsync(directory, argv, { reject: false });
+      const result = await executeAgentCliAsync(directory, argv, { reject: false });
       expect({ argv, all: result.all.includes('NOT_EXPO_APP') }).toEqual({ argv, all: false });
     }
   });
@@ -453,7 +453,7 @@ describe('a package.json that is not an Expo app', () => {
       ['skills:sync', '--json'],
       ['skills:list', '--json'],
     ]) {
-      const result = await executeExagentAsync(directory, argv, { reject: false });
+      const result = await executeAgentCliAsync(directory, argv, { reject: false });
       expect({ argv, exitCode: result.exitCode }).toEqual({ argv, exitCode: 1 });
       expect({ argv, code: JSON.parse(result.stdout).error.code }).toEqual({
         argv,
@@ -468,7 +468,7 @@ describe('a package.json that is not an Expo app', () => {
   it('does not refuse skills:clean, which removes what an earlier run left', async () => {
     const directory = await plainPackageAsync();
 
-    const result = await executeExagentAsync(directory, ['skills:clean', '--json']);
+    const result = await executeAgentCliAsync(directory, ['skills:clean', '--json']);
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout).removed).toEqual([]);
@@ -483,7 +483,7 @@ describe('a package.json that is not an Expo app', () => {
       ['dev:stop', '--json'],
       ['dev:logs', '--json'],
     ]) {
-      const result = await executeExagentAsync(directory, argv, { reject: false });
+      const result = await executeAgentCliAsync(directory, argv, { reject: false });
       expect({ argv, all: result.all.includes('NOT_EXPO_APP') }).toEqual({ argv, all: false });
     }
   });
@@ -495,7 +495,7 @@ describe('an Expo app whose dependencies are not installed', () => {
   // the installed package instead would have refused every one of them.
   it('is planned for, rather than refused as not an Expo app', async () => {
     const directory = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-uninstalled-'))
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-uninstalled-'))
     );
     await fs.promises.writeFile(
       path.join(directory, 'package.json'),
@@ -506,7 +506,7 @@ describe('an Expo app whose dependencies are not installed', () => {
       )
     );
 
-    const result = await executeExagentAsync(directory, ['dev', '--plan', '--json'], {
+    const result = await executeAgentCliAsync(directory, ['dev', '--plan', '--json'], {
       reject: false,
     });
 

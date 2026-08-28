@@ -1,7 +1,7 @@
 // @ref llp/0009-smart-followups.rfc.md §Device-aware ladders
 // Does this machine have a device to open an app on?
 //
-// Every rung of the CLI's ladders that reaches a screen — `exagent navigate /`, the screenshot
+// Every rung of the CLI's ladders that reaches a screen — `@expo/agent-cli navigate /`, the screenshot
 // follow-up, `status`'s own `next` line — needs a *local* device: a booted iOS simulator, or an
 // Android device `adb` can see. A dogfood session drove Expo Go on a **cloud** simulator through a
 // tunnel, from a machine with neither, and every one of those suggestions was an instruction to run

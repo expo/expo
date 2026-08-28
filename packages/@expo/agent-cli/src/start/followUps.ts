@@ -1,6 +1,6 @@
 // @ref llp/0009-smart-followups.rfc.md §Examples per command — `start`.
-// The follow-ups of a run that starts a dev server, shared by `exagent start` (the `expo start`
-// wrapper) and `exagent dev` (the plan executor). Both know which app the URL is for, which is the
+// The follow-ups of a run that starts a dev server, shared by `@expo/agent-cli start` (the `expo start`
+// wrapper) and `@expo/agent-cli dev` (the plan executor). Both know which app the URL is for, which is the
 // one fact the builder cannot guess.
 
 import { readCloudSessionIdSync } from '../device/cloudSimulator';
@@ -25,7 +25,7 @@ export interface StartTargetHint {
   web: boolean;
   /**
    * The port to name in a URL, `null` when none can be vouched for, and absent to read it off the
-   * arguments the way `exagent start` does.
+   * arguments the way `@expo/agent-cli start` does.
    *
    * `null` is the case this exists for: a dev server that never started, or one that never said
    * which port it took. Assuming the default there is how this CLI came to hand an agent the URL

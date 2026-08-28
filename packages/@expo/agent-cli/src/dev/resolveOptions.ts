@@ -6,12 +6,12 @@ import { DEFAULT_DETACH_TIMEOUT_MS } from './detachAsync';
 import { assertKnownDevFlags } from './knownFlags';
 
 /**
- * Flags that `exagent dev` handles itself and does not forward to the `expo` CLI.
+ * Flags that `@expo/agent-cli dev` handles itself and does not forward to the `expo` CLI.
  *
  * The same list `DEV_OWN_FLAGS` names, minus `--help`/`-h`, which never reach this resolver: the
  * command module answers them and exits before it is called.
  */
-const EXAGENT_ONLY_FLAGS = [
+const AGENT_CLI_ONLY_FLAGS = [
   '--eas',
   '--local',
   '--no-agent-skills',
@@ -25,7 +25,7 @@ const EXAGENT_ONLY_FLAGS = [
 ];
 
 /**
- * What `exagent dev` does with the project.
+ * What `@expo/agent-cli dev` does with the project.
  *
  * @see llp/0004-smart-start-and-project-state.rfc.md §Contract
  */
@@ -46,7 +46,7 @@ export interface DevOptions {
   /**
    * Where the caller asked the native build to run (`--eas`, `--local`), or null when neither.
    *
-   * The top of the precedence ladder: a flag beats the project's `exagent` config, which beats
+   * The top of the precedence ladder: a flag beats the project's `@expo/agent-cli` config, which beats
    * what the toolchain probe found (llp/0015 §The selection).
    */
   buildBackend: BuildBackend | null;
@@ -103,11 +103,11 @@ export interface DevOptions {
 }
 
 /**
- * Split `exagent dev` arguments into the `expo start` passthrough, the skill-sync decision, and
+ * Split `@expo/agent-cli dev` arguments into the `expo start` passthrough, the skill-sync decision, and
  * the plan-engine inputs.
  *
  * Running the plan is the default; `--plan` is the escape hatch that runs nothing at all. The
- * plain `expo start` wrapper is a command of its own now (`exagent start`), so this resolver has
+ * plain `expo start` wrapper is a command of its own now (`@expo/agent-cli start`), so this resolver has
  * no passthrough mode to pick.
  *
  * @see llp/0003-knowledge-tools-and-skills.rfc.md §Migration
@@ -135,7 +135,7 @@ export function resolveDevOptions(argv: string[]): DevOptions {
     mode: argv.includes('--plan') ? 'plan' : 'run',
     // `--port` is *not* stripped: it is an `expo start` flag and the plan's last step is the one
     // that acts on it. Reading it here only records what was asked for.
-    expoArgs: argv.filter((arg) => !EXAGENT_ONLY_FLAGS.includes(arg)),
+    expoArgs: argv.filter((arg) => !AGENT_CLI_ONLY_FLAGS.includes(arg)),
     agentSkills: !argv.includes('--no-agent-skills'),
     platform: resolvePlatformFlag(argv),
     buildBackend: resolveBuildBackend(argv),
@@ -167,7 +167,7 @@ function resolveBuildBackend(argv: readonly string[]): BuildBackend | null {
       '--eas and --local name two different places for one build, so this run has no build to plan.',
       'Why: --eas builds in the cloud on EAS, which needs an Expo account; --local builds on this machine, which needs Xcode or the Android SDK. A plan contains one build, and it happens in one place.',
       'How: pass whichever you meant. Passing neither lets this command choose — the plan says which place it picked and why, before anything runs.',
-      'npx exagent dev --plan --eas'
+      'npx @expo/agent-cli dev --plan --eas'
     );
   }
   return eas ? 'eas' : local ? 'local' : null;
@@ -190,7 +190,7 @@ function resolveRunTarget(argv: readonly string[]): RunTarget | null {
       '--go and --dev-client name two different apps to run the project in, so this run has no target to plan for.',
       'Why: --go runs the project inside Expo Go, which needs no native build; --dev-client runs it inside a development build of this project, which needs one. A plan aims at one of them.',
       'How: pass whichever you meant. Passing neither lets this command choose — Expo Go when it can run the project, a development build when it cannot.',
-      'npx exagent dev --plan --dev-client'
+      'npx @expo/agent-cli dev --plan --dev-client'
     );
   }
   return go ? 'expo-go' : devClient ? 'dev-build' : null;
@@ -215,10 +215,10 @@ function waitReadyWithoutDetach(): CommandError {
     [
       `--wait-ready only means something with --detach, and --detach was not passed.`,
       `Why: without --detach this command runs the dev server in the foreground and does not return until it stops, so there is no moment at which it could report that the bundler is ready.`,
-      `How: pass both ("npx exagent dev --detach --wait-ready"), or check a dev server that is already running with "npx exagent smoke".`,
+      `How: pass both ("npx @expo/agent-cli dev --detach --wait-ready"), or check a dev server that is already running with "npx @expo/agent-cli smoke".`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev --detach --wait-ready';
+  error.suggestedCommand = 'npx @expo/agent-cli dev --detach --wait-ready';
   return error;
 }
 
@@ -229,10 +229,10 @@ function detachWithPlan(): CommandError {
     [
       `--plan and --detach ask for opposite things, so this run would do nothing.`,
       `Why: --plan prints what would run and exits without running it, and --detach is about where the run goes. There is no plan-shaped thing to put in the background.`,
-      `How: run "npx exagent dev --plan" to see the plan, then "npx exagent dev --detach --yes" to run it in the background.`,
+      `How: run "npx @expo/agent-cli dev --plan" to see the plan, then "npx @expo/agent-cli dev --detach --yes" to run it in the background.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev --plan';
+  error.suggestedCommand = 'npx @expo/agent-cli dev --plan';
   return error;
 }
 
@@ -277,9 +277,9 @@ function badPort(raw: string): CommandError {
     [
       `--port must be a port number from 1 to 65535, but got ${raw || '(nothing)'}.`,
       `Why: the value is handed to "expo start", which listens on it.`,
-      `How: pass one, as in "npx exagent dev --port 8082". Leaving --port out lets the Expo CLI pick, which works when 8081 is free.`,
+      `How: pass one, as in "npx @expo/agent-cli dev --port 8082". Leaving --port out lets the Expo CLI pick, which works when 8081 is free.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev --port 8082';
+  error.suggestedCommand = 'npx @expo/agent-cli dev --port 8082';
   return error;
 }

@@ -10,16 +10,16 @@ describe(unknownOptionError, () => {
     const error = unknownOptionError('typecheck', '--bogus');
 
     expect(error.code).toBe('BAD_ARGS');
-    expect(error.message).toContain('Unknown option --bogus for "exagent typecheck"');
+    expect(error.message).toContain('Unknown option --bogus for "@expo/agent-cli typecheck"');
     expect(error.message).toContain('Why:');
     expect(error.message).toContain('How:');
-    expect(error.suggestedCommand).toBe('npx exagent typecheck --help');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli typecheck --help');
   });
 
   it('names the sibling command that does take the option', () => {
     const error = unknownOptionError('dev:stop', '--route');
 
-    expect(error.message).toContain('"npx exagent runtime:reload"');
+    expect(error.message).toContain('"npx @expo/agent-cli runtime:reload"');
   });
 
   it('never names the command that failed as its own sibling', () => {
@@ -31,7 +31,7 @@ describe(unknownOptionError, () => {
     const error = unknownOptionError('status', '--nonsense');
 
     expect(error.message).toContain('this command acts on the options in its own --help');
-    expect(error.message).not.toContain('npx exagent --nonsense');
+    expect(error.message).not.toContain('npx @expo/agent-cli --nonsense');
   });
 });
 
@@ -53,8 +53,8 @@ describe(argParseError, () => {
       'ARG_MISSING_REQUIRED_LONGARG'
     );
 
-    expect(error.message).toContain('was passed to "exagent dev:stop" with nothing after it');
-    expect(error.message).toContain('npx exagent dev:stop --timeout <value>');
+    expect(error.message).toContain('was passed to "@expo/agent-cli dev:stop" with nothing after it');
+    expect(error.message).toContain('npx @expo/agent-cli dev:stop --timeout <value>');
   });
 });
 
@@ -84,6 +84,6 @@ describe('OPTION_OWNERS', () => {
   it('points a caller who asked dev:stop for a window at runtime:errors', () => {
     const error = unknownOptionError('dev:stop', '--duration');
 
-    expect(error.message).toContain('"npx exagent runtime:errors"');
+    expect(error.message).toContain('"npx @expo/agent-cli runtime:errors"');
   });
 });

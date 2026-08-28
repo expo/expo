@@ -67,7 +67,7 @@ describe(resolveDevWaitOptions, () => {
   });
 });
 
-// @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts — `exagent dev --port 8195`
+// @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts — `@expo/agent-cli dev --port 8195`
 // is the command that started the server, so the port is what a caller has in hand next.
 describe('resolveDevWaitOptions --port', () => {
   it('reads --port as the dev server on that port of this machine', () => {

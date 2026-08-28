@@ -185,7 +185,7 @@ describe(devAsync, () => {
     });
   });
 
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — Default change
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status` — Default change
   describe('no flag (running the plan is the default)', () => {
     it(`should emit the plan and run it`, async () => {
       mockProjectState();
@@ -391,7 +391,7 @@ describe(devAsync, () => {
 
       // Exit 7, because that is what the observed run was: the launch step is `osascript`, and the
       // Automation refusal is a stop only a person can clear. The record is written **before** that
-      // handoff is thrown — its own `How:` sends the reader to `npx exagent dev --yes`, which used
+      // handoff is thrown — its own `How:` sends the reader to `npx @expo/agent-cli dev --yes`, which used
       // to be the same fifteen minutes over again.
       await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).rejects.toMatchObject({
         exitCode: 7,
@@ -519,7 +519,7 @@ describe(devAsync, () => {
       await devAsync(projectRoot, resolveDevOptions(['--plan']));
 
       expect(emittedFollowUpIds()).toEqual(['dev']);
-      expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('npx exagent dev'));
+      expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('npx @expo/agent-cli dev'));
     });
 
     it(`should explain the build a stale plan includes`, async () => {
@@ -538,7 +538,7 @@ describe(devAsync, () => {
       await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(emittedFollowUpIds()).toEqual(['open-app', 'real-device', 'runtime-errors']);
-      expect(emittedFollowUps()[0]!.command).toBe('npx exagent navigate /');
+      expect(emittedFollowUps()[0]!.command).toBe('npx @expo/agent-cli navigate /');
       expect(emittedFollowUps()[1]!.command).toBe('exp://192.168.1.5:8081');
     });
 
@@ -618,7 +618,7 @@ describe(devAsync, () => {
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope, §Needs-human protocol
-  // The run nobody is watching. `exagent dev --yes` is the documented non-interactive entry point,
+  // The run nobody is watching. `@expo/agent-cli dev --yes` is the documented non-interactive entry point,
   // and on a busy port it used to start nothing, print unparseable stdout, and tell its caller to
   // open another project's app [observed — friction run, 2026-08-23].
   describe('a run with no terminal', () => {
@@ -812,7 +812,7 @@ describe(devAsync, () => {
       // What actually happened: the process exited, so the dev server it started is gone.
       expect(error.message).toMatch(/nothing is listening for this project now/);
       // The route that needs no Automation grant, which is the one an agent can take.
-      expect(error.message).toMatch(/npx exagent navigate \//);
+      expect(error.message).toMatch(/npx @expo\/agent-cli navigate \//);
       expect(Log.log).not.toHaveBeenCalled();
     });
 

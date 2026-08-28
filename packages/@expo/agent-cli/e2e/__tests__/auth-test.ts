@@ -10,7 +10,7 @@ import os from 'os';
 import path from 'path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   getTemporaryPath,
   installStubBinAsync,
   setupFixtureAsync,
@@ -128,7 +128,7 @@ describe('auth commands outside an Expo project', () => {
   it(`should answer whoami with the EAS CLI through the package runner when there is no expo`, async () => {
     const dir = await setupBareDirAsync([]);
 
-    const result = await executeExagentAsync(dir, ['whoami'], { env: isolatedEnv(dir) });
+    const result = await executeAgentCliAsync(dir, ['whoami'], { env: isolatedEnv(dir) });
 
     // `--yes` and the spec ahead of the verb. `@latest` because a bare directory declares nothing.
     expect(readInvocations(dir)).toEqual([
@@ -149,7 +149,7 @@ describe('auth commands outside an Expo project', () => {
   it(`should name the staging session file under EXPO_STAGING`, async () => {
     const dir = await setupBareDirAsync(['eas']);
 
-    const result = await executeExagentAsync(dir, ['whoami'], {
+    const result = await executeAgentCliAsync(dir, ['whoami'], {
       env: { ...isolatedEnv(dir), EXPO_STAGING: '1' },
     });
 
@@ -163,7 +163,7 @@ describe('auth commands outside an Expo project', () => {
   it(`should answer whoami --json with one object`, async () => {
     const dir = await setupBareDirAsync(['eas']);
 
-    const result = await executeExagentAsync(dir, ['whoami', '--json'], {
+    const result = await executeAgentCliAsync(dir, ['whoami', '--json'], {
       env: isolatedEnv(dir),
     });
 
@@ -181,7 +181,7 @@ describe('auth commands outside an Expo project', () => {
   it(`should forward the arguments it was given`, async () => {
     const dir = await setupBareDirAsync([]);
 
-    await executeExagentAsync(dir, ['login', '--help'], { env: isolatedEnv(dir) });
+    await executeAgentCliAsync(dir, ['login', '--help'], { env: isolatedEnv(dir) });
 
     expect(readInvocations(dir)[0]?.args).toEqual([
       '--yes',
@@ -201,7 +201,7 @@ describe('auth commands outside an Expo project', () => {
     const dir = await setupBareDirAsync(['eas']);
 
     const eventsFile = path.join(dir, 'events.jsonl');
-    const result = await executeExagentAsync(dir, ['register'], {
+    const result = await executeAgentCliAsync(dir, ['register'], {
       env: { ...isolatedEnv(dir), LOG_EVENTS: eventsFile },
     });
 
@@ -216,7 +216,7 @@ describe('auth commands outside an Expo project', () => {
   it(`should say which CLI runs register, on stderr, and warn about the download`, async () => {
     const dir = await setupBareDirAsync(['eas']);
 
-    const result = await executeExagentAsync(dir, ['register'], {
+    const result = await executeAgentCliAsync(dir, ['register'], {
       env: isolatedEnv(dir),
     });
 
@@ -229,7 +229,7 @@ describe('auth commands outside an Expo project', () => {
   it(`should use the project's own expo for register when there is one`, async () => {
     const dir = await setupBareDirAsync(['expo', 'eas']);
 
-    const result = await executeExagentAsync(dir, ['register'], { env: isolatedEnv(dir) });
+    const result = await executeAgentCliAsync(dir, ['register'], { env: isolatedEnv(dir) });
 
     expect(readInvocations(dir)).toEqual([
       { bin: 'expo', args: ['register'], cwd: expect.any(String) },
@@ -250,7 +250,7 @@ describe('auth commands outside an Expo project', () => {
     await fs.promises.writeFile(script, stubScriptFor('eas'));
     await installStubBinAsync(easOnPath, 'eas', script);
 
-    await executeExagentAsync(dir, ['whoami'], { env: isolatedEnv(dir) });
+    await executeAgentCliAsync(dir, ['whoami'], { env: isolatedEnv(dir) });
 
     // One invocation, and it is the runner's. Nothing recorded a `--version`, because nothing asked.
     expect(readInvocations(dir)).toEqual([
@@ -266,7 +266,7 @@ describe('auth commands inside an Expo project', () => {
     await fs.promises.writeFile(script, stubScriptFor('expo'));
     await installStubBinAsync(path.join(projectRoot, 'node_modules', '.bin'), 'expo', script);
 
-    const result = await executeExagentAsync(projectRoot, ['whoami'], {
+    const result = await executeAgentCliAsync(projectRoot, ['whoami'], {
       env: isolatedEnv(projectRoot),
     });
 
@@ -286,7 +286,7 @@ describe('auth commands inside an Expo project', () => {
       await installStubBinAsync(binDir, bin, script);
     }
 
-    await executeExagentAsync(projectRoot, ['logout'], { env: isolatedEnv(projectRoot) });
+    await executeAgentCliAsync(projectRoot, ['logout'], { env: isolatedEnv(projectRoot) });
 
     expect(readInvocations(projectRoot).map((run) => run.bin)).toEqual(['expo']);
   });
@@ -294,7 +294,7 @@ describe('auth commands inside an Expo project', () => {
 
 // @ref src/utils/packageRunner.ts
 // The last rung of the chain, which downloads the CLI. Which runner does that downloading is the
-// caller's choice, and it used to be npm's regardless: `bunx exagent whoami` spawned `npm exec
+// caller's choice, and it used to be npm's regardless: `bunx @expo/agent-cli whoami` spawned `npm exec
 // eas-cli` [observed — 2026-08-26]. The stub is a `bunx` rather than the real one, so the
 // assertion is about the argv this CLI builds and no package is fetched.
 describe('the runner that downloads a CLI this machine does not have', () => {
@@ -317,7 +317,7 @@ describe('the runner that downloads a CLI this machine does not have', () => {
   it(`should hand the package to bunx when bun started this CLI`, async () => {
     const { dir, pathEnv } = await setupWithStubBunxAsync();
 
-    const result = await executeExagentAsync(dir, ['whoami'], {
+    const result = await executeAgentCliAsync(dir, ['whoami'], {
       env: { ...isolatedEnv(dir), ...BUN_AGENT, PATH: pathEnv },
     });
 
@@ -330,7 +330,7 @@ describe('the runner that downloads a CLI this machine does not have', () => {
   it(`should leave an npm-started CLI on npx, even with bunx sitting on PATH`, async () => {
     const { dir, pathEnv } = await setupWithStubBunxAsync();
 
-    const result = await executeExagentAsync(dir, ['whoami'], {
+    const result = await executeAgentCliAsync(dir, ['whoami'], {
       // No bun user agent: this is the npm case, and the stub bunx must not be reached for it.
       env: { ...isolatedEnv(dir), PATH: pathEnv },
       reject: false,

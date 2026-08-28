@@ -7,7 +7,7 @@ import { assertWithOptionsArgs } from '../../utils/args';
 
 export const runtimeTypeHelp: CommandHelp = {
   command: 'runtime:type',
-  usage: 'npx exagent runtime:type <text> --testID <id>',
+  usage: 'npx @expo/agent-cli runtime:type <text> --testID <id>',
   options: [
     `--testID <id>             The input the text goes into (required)`,
     `--submit                  Call onSubmitEditing after the text`,
@@ -25,15 +25,15 @@ export const runtimeTypeHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent runtime:type "a new note" --testID note-input',
+      run: 'npx @expo/agent-cli runtime:type "a new note" --testID note-input',
       gets: 'the app’s own onChangeText is called with that string',
     },
     {
-      run: 'npx exagent runtime:type "kudo@expo.dev" --testID email --submit',
+      run: 'npx @expo/agent-cli runtime:type "kudo@expo.dev" --testID email --submit',
       gets: 'the same, then onSubmitEditing with the text on nativeEvent.text',
     },
     {
-      run: 'npx exagent runtime:type "" --testID search',
+      run: 'npx @expo/agent-cli runtime:type "" --testID search',
       gets: 'the input is cleared — that is what "delete what is in there" means here',
     },
   ],
@@ -84,7 +84,7 @@ export const runtimeTypeHelp: CommandHelp = {
   ],
 };
 
-export const exagentRuntimeType: Command = async (argv) => {
+export const agentCliRuntimeType: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -105,7 +105,7 @@ export const exagentRuntimeType: Command = async (argv) => {
     printCommandHelp(runtimeTypeHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent runtime:type -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli runtime:type -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrCwd } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');

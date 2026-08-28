@@ -1,5 +1,5 @@
 // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints, item 5 — the project's own `expo` CLI
-// evaluates the config; `exagent` never imports `@expo/config-plugins` to do it here.
+// evaluates the config; `@expo/agent-cli` never imports `@expo/config-plugins` to do it here.
 //
 // `expo config --type introspect --json` runs the prebuild config and compiles every introspective
 // mod in memory [observed — `packages/@expo/cli/src/config/configAsync.ts`], writing nothing to the

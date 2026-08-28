@@ -16,7 +16,7 @@ import type { CheckpointResult, CheckpointSkipReason } from './types';
 /** Label of a checkpoint the user asked for without naming one. */
 export const DEFAULT_LABEL = 'manual';
 
-/** Width of the label column of the text output, matching `exagent agents:setup` and `exagent status`. */
+/** Width of the label column of the text output, matching `@expo/agent-cli agents:setup` and `@expo/agent-cli status`. */
 const LABEL_WIDTH = 12;
 
 export interface CreateCheckpointOptions {
@@ -27,7 +27,7 @@ export interface CreateCheckpointOptions {
 }
 
 /**
- * Snapshot the project, and remember the snapshot in `.expo/exagent-checkpoints.json`.
+ * Snapshot the project, and remember the snapshot in `.expo/agent-cli-checkpoints.json`.
  *
  * Never throws. Every way a snapshot can fail to happen — no git repository, no tracked file, a
  * git command that failed — comes back as a skip with a reason, because the caller is usually a
@@ -58,7 +58,7 @@ export async function createCheckpointAsync(
       );
     }
 
-    const id = await commitSnapshotTreeAsync(worktree, tree, `exagent checkpoint: ${label}`);
+    const id = await commitSnapshotTreeAsync(worktree, tree, `@expo/agent-cli checkpoint: ${label}`);
     const record = {
       id,
       label,
@@ -88,7 +88,7 @@ export interface PrintCheckpointOptions {
 }
 
 /**
- * The `exagent checkpoint` command: snapshot the project now, and say what the snapshot covers.
+ * The `@expo/agent-cli checkpoint` command: snapshot the project now, and say what the snapshot covers.
  *
  * A snapshot the user asked for explicitly cannot be skipped quietly — an agent that reads
  * "checkpoint made" and then acts would be acting on a promise that was not kept — so every skip
@@ -132,7 +132,7 @@ export async function printCheckpointAsync(
   row('Checkpoint', chalk.bold(shortId(record.id)));
   row('Label', record.label);
   row('Covers', result.detail);
-  row('Undo', chalk.bold(`npx exagent checkpoint:undo --id ${shortId(record.id)}`));
+  row('Undo', chalk.bold(`npx @expo/agent-cli checkpoint:undo --id ${shortId(record.id)}`));
 }
 
 /** Turn a skip into the error and the next action that fit it. */

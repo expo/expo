@@ -41,7 +41,7 @@ describe(findUpProjectRootOrAssert, () => {
     expect(thrown!.message).toContain('Why:');
     expect(thrown!.message).toContain('How:');
     // A `Try:` line an agent can run, rather than a dead end.
-    expect(thrown!.suggestedCommand).toBe('npx exagent new my-app');
+    expect(thrown!.suggestedCommand).toBe('npx @expo/agent-cli new my-app');
   });
 });
 

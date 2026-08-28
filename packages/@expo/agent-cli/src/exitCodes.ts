@@ -1,5 +1,5 @@
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// The exit codes of every `exagent` command, in one place.
+// The exit codes of every `@expo/agent-cli` command, in one place.
 //
 // A driving agent reads the exit code before it reads a word of the output, so the code has to
 // answer one question the output cannot answer cheaply: did the tool work, and did the thing the

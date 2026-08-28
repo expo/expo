@@ -25,7 +25,7 @@ export interface TerminalStatus {
 /**
  * The code the process leaves with, per outcome.
  *
- * This is the command: an agent running `exagent build:wait $ID` branches on the code before it
+ * This is the command: an agent running `@expo/agent-cli build:wait $ID` branches on the code before it
  * reads a byte of the payload, and the four outcomes are four branches it can take.
  */
 const OUTCOME_EXIT_CODES: Record<BuildWaitOutcome, number> = {

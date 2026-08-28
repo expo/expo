@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // Step 0 of dev-server discovery: the project's own lock. Against a real lock server, because the
 // property under test is that the lock answers only while it is held.
 

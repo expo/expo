@@ -156,7 +156,7 @@ describe(logCmdError, () => {
     it('prints one object with the stable key set', async () => {
       setJsonRequested(true);
       const error = new CommandError('PROJECT_NOT_FOUND', 'Project root directory not found.');
-      error.suggestedCommand = 'npx exagent new my-app';
+      error.suggestedCommand = 'npx @expo/agent-cli new my-app';
 
       await exitCodeOfAsync(error);
 
@@ -164,7 +164,7 @@ describe(logCmdError, () => {
         error: {
           code: 'PROJECT_NOT_FOUND',
           message: 'Project root directory not found.',
-          suggestedCommand: 'npx exagent new my-app',
+          suggestedCommand: 'npx @expo/agent-cli new my-app',
           needsHuman: null,
           data: null,
         },

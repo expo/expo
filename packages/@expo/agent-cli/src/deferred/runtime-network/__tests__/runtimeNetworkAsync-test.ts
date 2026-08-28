@@ -115,7 +115,7 @@ describe(runtimeNetworkAsync, () => {
       followups: [
         {
           id: 'runtime-network-clean',
-          command: 'npx exagent runtime:errors --duration 5000',
+          command: 'npx @expo/agent-cli runtime:errors --duration 5000',
           why: expect.stringContaining('answered'),
         },
       ],
@@ -149,7 +149,7 @@ describe(runtimeNetworkAsync, () => {
 
     expect(printed()).toContain('1 of them failed');
     expect(printed()).toContain('Suggested next:');
-    expect(printed()).toContain('npx exagent runtime:errors --duration 5000');
+    expect(printed()).toContain('npx @expo/agent-cli runtime:errors --duration 5000');
   });
 
   // Live behavior: a `fetch` to a closed port is reported as a request the runtime never answered,
@@ -160,7 +160,7 @@ describe(runtimeNetworkAsync, () => {
     await runtimeNetworkAsync(networkOptions);
 
     expect(printed()).toContain('1 of them never answered');
-    expect(printed()).toContain('npx exagent runtime:errors --duration 5000');
+    expect(printed()).toContain('npx @expo/agent-cli runtime:errors --duration 5000');
     expect(printed()).not.toContain('Every request answered');
   });
 
@@ -185,7 +185,7 @@ describe(runtimeNetworkAsync, () => {
     expect(error.message).toContain('Network.enable');
     expect(error.message).toContain(`'Network.enable' wasn't found`);
     expect(error.message).toContain('carries no handler for the method');
-    expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli runtime:errors');
     expect(printed()).not.toContain('No network requests were reported');
   });
 

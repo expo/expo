@@ -1,6 +1,6 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reading the detached dev server's output
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// `exagent dev:logs`: what this project's detached dev server has printed.
+// `@expo/agent-cli dev:logs`: what this project's detached dev server has printed.
 //
 // The counterpart of `dev --detach`. Detaching moves the bundler's output off the terminal, and
 // this is where it goes instead — so the answer to "why is the app not loading" is still one
@@ -31,7 +31,7 @@ import { detachedLogPath, readDetachedLogSync } from './logFile';
 import type { DevLogsOptions } from './resolveLogsOptions';
 
 /**
- * Machine shape of `exagent dev:logs --json`.
+ * Machine shape of `@expo/agent-cli dev:logs --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
  */
@@ -146,7 +146,7 @@ function buildFollowUps(report: DevLogsResultJson): FollowUp[] {
     return [
       {
         id: 'dev-detach',
-        command: 'npx exagent dev --detach --wait-ready',
+        command: 'npx @expo/agent-cli dev --detach --wait-ready',
         why: 'These lines are from a dev server that is no longer running, so nothing is serving this project now.',
       },
     ];
@@ -154,7 +154,7 @@ function buildFollowUps(report: DevLogsResultJson): FollowUp[] {
   return [
     {
       id: 'smoke',
-      command: 'npx exagent smoke',
+      command: 'npx @expo/agent-cli smoke',
       why: 'The log says what the bundler printed; this says whether it finished, whether this project still compiles, and whether the app comes up on it.',
     },
   ];
@@ -175,17 +175,17 @@ function noLogError(projectRoot: string, serverRunning: boolean): CommandError {
     serverRunning
       ? [
           `This project has a dev server running, but no log to read: it was started attached.`,
-          `Why: only "npx exagent dev --detach" writes to ${logFile}. A dev server started in a terminal writes to that terminal, and nothing captured it — so its output is there and nowhere else.`,
-          `How: read it in the terminal it is running in. To get a log next time, stop it with "npx exagent dev:stop" and start it again with "npx exagent dev --detach". For what the bundler is doing right now, "npx exagent smoke" answers without a log.`,
+          `Why: only "npx @expo/agent-cli dev --detach" writes to ${logFile}. A dev server started in a terminal writes to that terminal, and nothing captured it — so its output is there and nowhere else.`,
+          `How: read it in the terminal it is running in. To get a log next time, stop it with "npx @expo/agent-cli dev:stop" and start it again with "npx @expo/agent-cli dev --detach". For what the bundler is doing right now, "npx @expo/agent-cli smoke" answers without a log.`,
         ].join('\n')
       : [
           `This project has no detached dev server log, so there is nothing to read.`,
-          `Why: nothing has been written to ${logFile}, which means no "npx exagent dev --detach" has run in this project.`,
-          `How: start one with "npx exagent dev --detach --wait-ready", then run this command again.`,
+          `Why: nothing has been written to ${logFile}, which means no "npx @expo/agent-cli dev --detach" has run in this project.`,
+          `How: start one with "npx @expo/agent-cli dev --detach --wait-ready", then run this command again.`,
         ].join('\n')
   );
   error.suggestedCommand = serverRunning
-    ? 'npx exagent smoke'
-    : 'npx exagent dev --detach --wait-ready';
+    ? 'npx @expo/agent-cli smoke'
+    : 'npx @expo/agent-cli dev --detach --wait-ready';
   return error;
 }

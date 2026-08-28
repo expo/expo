@@ -1,5 +1,5 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
-// The two channels of `exagent smoke`: labelled lines for a terminal, and one JSON object whose
+// The two channels of `@expo/agent-cli smoke`: labelled lines for a terminal, and one JSON object whose
 // keys mirror those labels. Pure over one `SmokeRun`, so both shapes are testable without a dev
 // server, a device, or a clock.
 

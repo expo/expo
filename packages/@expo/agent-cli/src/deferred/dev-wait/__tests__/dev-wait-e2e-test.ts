@@ -3,14 +3,14 @@
 /* eslint-env jest */
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 //
-// `exagent dev:wait` through the process boundary, which is where its contract actually lives: an
+// `@expo/agent-cli dev:wait` through the process boundary, which is where its contract actually lives: an
 // agent reads the exit code of a subprocess, not a return value. Every case runs against the stub
 // dev server of `e2e/utils.ts`, so a wait that expires costs 300ms instead of a real cold bundle.
 import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
   type StubDevServer,
@@ -42,10 +42,10 @@ afterEach(async () => {
   }
 });
 
-describe('exagent dev:wait', () => {
+describe('@expo/agent-cli dev:wait', () => {
   it('documents its options and its exit codes in `--help`', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev:wait', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:wait', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--timeout');
@@ -59,7 +59,7 @@ describe('exagent dev:wait', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
 
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'dev:wait',
       '--dev-server-url',
       server.url,
@@ -73,7 +73,7 @@ describe('exagent dev:wait', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
 
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'dev:wait',
       '--dev-server-url',
       server.url,
@@ -101,7 +101,7 @@ describe('exagent dev:wait', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const server = await startStubAsync({ projectRoot, statusDelayMs: 30_000 });
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['dev:wait', '--dev-server-url', server.url, '--timeout', '300'],
       { reject: false }
@@ -110,13 +110,13 @@ describe('exagent dev:wait', () => {
     expect(result.exitCode).toBe(22);
     expect(result.stdout).toContain('timed out');
     // Errors are prompts: the way out is the last thing printed.
-    expect(result.all).toContain('npx exagent dev:wait --timeout 600');
+    expect(result.all).toContain('npx @expo/agent-cli dev:wait --timeout 600');
   });
 
   it('exits 1 when there is no dev server to wait on', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['dev:wait', '--dev-server-url', 'http://127.0.0.1:1', '--timeout', '300'],
       { reject: false }
@@ -124,13 +124,13 @@ describe('exagent dev:wait', () => {
 
     // A tool error, not an outcome: there was nothing to wait on, so waiting again is pointless.
     expect(result.exitCode).toBe(1);
-    expect(result.all).toContain('Try: npx exagent dev');
+    expect(result.all).toContain('Try: npx @expo/agent-cli dev');
   });
 
   it('exits 1 on a bad argument, without touching the network', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['dev:wait', '--timeout', 'soon'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev:wait', '--timeout', 'soon'], {
       reject: false,
     });
 
@@ -144,7 +144,7 @@ describe('exagent dev:wait', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const server = await startStubAsync({ projectRoot: '/somewhere/else', targets: [{ id: '1' }] });
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['dev:wait', '--dev-server-url', server.url, '--json'],
       { reject: false }
@@ -164,7 +164,7 @@ describe('exagent dev:wait', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const server = await startStubAsync({ projectRoot: '/somewhere/else', targets: [{ id: '1' }] });
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['dev:wait', '--dev-server-url', server.url],
       { reject: false }
@@ -180,7 +180,7 @@ describe('exagent dev:wait', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const server = await startStubAsync({ projectRoot: null, targets: [{ id: '1' }] });
 
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'dev:wait',
       '--dev-server-url',
       server.url,
@@ -203,7 +203,7 @@ describe('exagent dev:wait', () => {
         bundle: 'broken',
       });
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev:wait', '--dev-server-url', server.url, '--json'],
         { reject: false }
@@ -237,7 +237,7 @@ describe('exagent dev:wait', () => {
         bundle: 'broken',
       });
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev:wait', '--dev-server-url', server.url],
         { reject: false }
@@ -253,7 +253,7 @@ describe('exagent dev:wait', () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev:wait',
         '--dev-server-url',
         server.url,
@@ -279,7 +279,7 @@ describe('exagent dev:wait', () => {
         const projectRoot = await setupFixtureAsync('go-app');
         const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
 
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'dev:wait',
           '--platform',
           'web',
@@ -306,7 +306,7 @@ describe('exagent dev:wait', () => {
           bundle: 'broken',
         });
 
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['dev:wait', '--platform', 'web', '--dev-server-url', server.url, '--json'],
           { reject: false }
@@ -334,7 +334,7 @@ describe('exagent dev:wait', () => {
         const projectRoot = await setupFixtureAsync('go-app');
         const server = await startStubAsync({ projectRoot, targets: [{ id: 'ios-1' }] });
 
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'dev:wait',
           '--platform',
           'web',
@@ -354,7 +354,7 @@ describe('exagent dev:wait', () => {
       it('refuses --require-app for web, and names what to do instead', async () => {
         const projectRoot = await setupFixtureAsync('go-app');
 
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['dev:wait', '--platform', 'web', '--require-app', '--json'],
           { reject: false }
@@ -377,13 +377,13 @@ describe('exagent dev:wait', () => {
           bundle: 'broken',
         });
 
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['dev:wait', '--platform', 'web', '--dev-server-url', server.url],
           { reject: false }
         );
 
-        expect(result.all).toContain('npx exagent dev:wait --platform web');
+        expect(result.all).toContain('npx @expo/agent-cli dev:wait --platform web');
         // `runtime:errors` reads the app through the debugger, which on this dev server is the
         // iOS runtime — a different app on a different platform than the one that was waited on.
         expect(result.all).not.toContain('runtime:errors');
@@ -394,7 +394,7 @@ describe('exagent dev:wait', () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev:wait',
         '--dev-server-url',
         server.url,
@@ -415,7 +415,7 @@ describe('exagent dev:wait', () => {
         bundle: 'broken',
       });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev:wait',
         '--dev-server-url',
         server.url,
@@ -446,7 +446,7 @@ describe('exagent dev:wait', () => {
         bundle: 'no-manifest',
       });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev:wait',
         '--dev-server-url',
         server.url,
@@ -469,7 +469,7 @@ describe('exagent dev:wait', () => {
         bundleDelayMs: 30_000,
       });
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev:wait', '--dev-server-url', server.url, '--timeout', '600ms', '--json'],
         { reject: false }
@@ -486,7 +486,7 @@ describe('exagent dev:wait', () => {
     it('rejects a platform the dev server does not bundle for', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['dev:wait', '--platform', 'windows'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev:wait', '--platform', 'windows'], {
         reject: false,
       });
 
@@ -501,7 +501,7 @@ describe('exagent dev:wait', () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev:wait',
         '--dev-server-url',
         server.url,
@@ -515,7 +515,7 @@ describe('exagent dev:wait', () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const server = await startStubAsync({ projectRoot, targets: [] });
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev:wait', '--dev-server-url', server.url, '--require-app', '--timeout', '500'],
         { reject: false }
@@ -530,7 +530,7 @@ describe('exagent dev:wait', () => {
     const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
     const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-    await executeExagentAsync(projectRoot, ['dev:wait', '--dev-server-url', server.url], {
+    await executeAgentCliAsync(projectRoot, ['dev:wait', '--dev-server-url', server.url], {
       env: { LOG_EVENTS: eventsFile },
     });
 
@@ -553,7 +553,7 @@ describe('exagent dev:wait', () => {
     const server = await startStubAsync({ projectRoot, statusDelayMs: 30_000 });
     const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['dev:wait', '--dev-server-url', server.url, '--timeout', '300'],
       { env: { LOG_EVENTS: eventsFile }, reject: false }
@@ -577,7 +577,7 @@ describe('exagent dev:wait', () => {
       `${JSON.stringify({ _e: 'metro:instantiate', port: server.port })}\n`
     );
 
-    const result = await executeExagentAsync(projectRoot, ['dev:wait', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:wait', '--json']);
 
     expect(JSON.parse(result.stdout)).toMatchObject({
       ok: true,

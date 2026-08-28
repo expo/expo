@@ -28,7 +28,7 @@
   "appVersion": "1.0.0",
   "appBuildVersion": "1",
   "gitCommitHash": "f1634a84a2532cc74982fd6d7bfcd15f4dfbc2f4",
-  "gitCommitMessage": "[exagent] Record the gate exit-code rule as a convention for every future gate",
+  "gitCommitMessage": "[@expo/agent-cli] Record the gate exit-code rule as a convention for every future gate",
   "priority": "HIGH",
   "createdAt": "2026-08-26T15:17:25.603Z",
   "updatedAt": "2026-08-26T15:17:31.750Z",

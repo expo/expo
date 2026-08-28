@@ -9,7 +9,7 @@ import chalk from 'chalk';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
-export const exagentCheckpointCreate: Command = async (argv) => {
+export const agentCliCheckpointCreate: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -25,9 +25,9 @@ export const exagentCheckpointCreate: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Snapshot the project, so a later change can be undone`,
-      chalk`npx exagent checkpoint`,
+      chalk`npx @expo/agent-cli checkpoint`,
       [
-        `--label <label>   Why the snapshot exists, printed by "exagent checkpoint:list"`,
+        `--label <label>   Why the snapshot exists, printed by "@expo/agent-cli checkpoint:list"`,
         `--json            Print the result as JSON`,
         `-h, --help        Usage info`,
       ].join('\n'),
@@ -37,18 +37,18 @@ export const exagentCheckpointCreate: Command = async (argv) => {
         chalk`  without touching your index, your branches, or {bold HEAD}: nothing is committed, and`,
         chalk`  {bold git status} and {bold git log} do not change.`,
         '',
-        chalk`  {bold exagent install}, {bold exagent agents:setup} and {bold exagent dev} take one`,
-        chalk`  before they change anything. Pass {bold --no-checkpoint}, or set {bold EXAGENT_NO_CHECKPOINT},`,
+        chalk`  {bold @expo/agent-cli install}, {bold @expo/agent-cli agents:setup} and {bold @expo/agent-cli dev} take one`,
+        chalk`  before they change anything. Pass {bold --no-checkpoint}, or set {bold AGENT_CLI_NO_CHECKPOINT},`,
         chalk`  to turn that off.`,
         '',
-        chalk`  Restore the newest one with {bold npx exagent checkpoint:undo}, and see the recorded ones`,
-        chalk`  with {bold npx exagent checkpoint:list}.`,
+        chalk`  Restore the newest one with {bold npx @expo/agent-cli checkpoint:undo}, and see the recorded ones`,
+        chalk`  with {bold npx @expo/agent-cli checkpoint:list}.`,
         '',
       ].join('\n')
     );
   }
 
-  // Load modules after the help prompt so `npx exagent checkpoint -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli checkpoint -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');
@@ -63,7 +63,7 @@ export const exagentCheckpointCreate: Command = async (argv) => {
   })().catch(logCmdError);
 };
 
-export const exagentCheckpointList: Command = async (argv) => {
+export const agentCliCheckpointList: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -78,19 +78,19 @@ export const exagentCheckpointList: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `List the checkpoints recorded for this project`,
-      chalk`npx exagent checkpoint:list`,
+      chalk`npx @expo/agent-cli checkpoint:list`,
       [`--json            Print the result as JSON`, `-h, --help        Usage info`].join('\n'),
       [
         '',
-        chalk`  Reads the record in {bold .expo/exagent-checkpoints.json} only: it answers in a project`,
+        chalk`  Reads the record in {bold .expo/agent-cli-checkpoints.json} only: it answers in a project`,
         chalk`  whose repository is gone, and never spawns git. One line per checkpoint, newest first,`,
-        chalk`  with the id {bold npx exagent checkpoint:undo --id <id>} takes.`,
+        chalk`  with the id {bold npx @expo/agent-cli checkpoint:undo --id <id>} takes.`,
         '',
       ].join('\n')
     );
   }
 
-  // Load modules after the help prompt so `npx exagent checkpoint:list -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli checkpoint:list -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');
@@ -102,7 +102,7 @@ export const exagentCheckpointList: Command = async (argv) => {
   })().catch(logCmdError);
 };
 
-export const exagentCheckpointUndo: Command = async (argv) => {
+export const agentCliCheckpointUndo: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -120,8 +120,8 @@ export const exagentCheckpointUndo: Command = async (argv) => {
       // The one destructive command in the set, and the one an agent guesses the argument of:
       // `checkpoint:list` prints ids, so `checkpoint:undo <id>` is the natural next line to type.
       strayHint:
-        'name the checkpoint with --id, as "npx exagent checkpoint:undo --id ' +
-        '<id>", or run "npx exagent checkpoint:list" for the ids. With no --id this command ' +
+        'name the checkpoint with --id, as "npx @expo/agent-cli checkpoint:undo --id ' +
+        '<id>", or run "npx @expo/agent-cli checkpoint:list" for the ids. With no --id this command ' +
         'restores the most recent checkpoint over your working tree, which is what a dropped ' +
         'argument would have done here.',
     }
@@ -130,7 +130,7 @@ export const exagentCheckpointUndo: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Restore the project to a checkpoint`,
-      chalk`npx exagent checkpoint:undo`,
+      chalk`npx @expo/agent-cli checkpoint:undo`,
       [
         `--id <id>         Checkpoint to restore (default: the most recent one)`,
         `--json            Print the result as JSON`,
@@ -146,13 +146,13 @@ export const exagentCheckpointUndo: Command = async (argv) => {
         chalk`  Files git ignores — {bold node_modules}, {bold ios/Pods}, {bold .env} — are in no checkpoint,`,
         chalk`  so a restored {bold package.json} needs an install afterwards.`,
         '',
-        chalk`  The recorded checkpoints and their ids are listed by {bold npx exagent checkpoint:list}.`,
+        chalk`  The recorded checkpoints and their ids are listed by {bold npx @expo/agent-cli checkpoint:list}.`,
         '',
       ].join('\n')
     );
   }
 
-  // Load modules after the help prompt so `npx exagent checkpoint:undo -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli checkpoint:undo -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');

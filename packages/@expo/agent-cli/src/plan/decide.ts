@@ -33,8 +33,8 @@ const HASH_DISPLAY_LENGTH = 8;
  *   state is unknown. `expo start` prompts to install Expo Go, and `expo run:*` installs the
  *   development build it just made, so both paths still converge on a running app.
  * - "Build cache hit for current fingerprint": v1 does not query remote build-cache providers.
- *   Instead, freshness is decided against the fingerprint of the last build `exagent` itself
- *   ran, recorded in `.expo/exagent-last-build.json` (see `./lastBuild.ts`). An unrecorded
+ *   Instead, freshness is decided against the fingerprint of the last build `@expo/agent-cli` itself
+ *   ran, recorded in `.expo/agent-cli-last-build.json` (see `./lastBuild.ts`). An unrecorded
  *   project is therefore planned as stale, which over-plans a build at worst, never under-plans.
  *
  * @param state Facts gathered by the project-state probe.
@@ -54,7 +54,7 @@ export function decideStartPlan(
   if (!state.isExpoApp) {
     return plan('not-expo-app', 'none', [], [
       `This directory is not an Expo app: its package.json declares no "expo" dependency.`,
-      `There is nothing here to get onto a device, so the plan is empty. The app is most likely one directory down, or "npx exagent new my-app" would create one here.`,
+      `There is nothing here to get onto a device, so the plan is empty. The app is most likely one directory down, or "npx @expo/agent-cli new my-app" would create one here.`,
     ]);
   }
 
@@ -229,7 +229,7 @@ function startExpoGoStep(options: DecideStartPlanOptions): PlanStep {
     'seconds',
     opensOn
       ? `Serves the project to Expo Go and opens it on ${deviceNoun(opensOn)}, booting one and installing Expo Go if it has to. No native build is needed.`
-      : `Serves the project to Expo Go, which needs no native build. It opens nothing on its own — run "exagent navigate /" once it is up, or pass --ios or --android.`
+      : `Serves the project to Expo Go, which needs no native build. It opens nothing on its own — run "@expo/agent-cli navigate /" once it is up, or pass --ios or --android.`
   );
 }
 
@@ -241,7 +241,7 @@ function startDevClientStep(reason: string, options: DecideStartPlanOptions = {}
     'seconds',
     opensOn
       ? `Starts the dev server and opens the development build on ${deviceNoun(opensOn)}. ${reason}`
-      : `Starts the dev server for the existing development build. It opens nothing on its own — run "exagent navigate /" once it is up, or pass --ios or --android. ${reason}`
+      : `Starts the dev server for the existing development build. It opens nothing on its own — run "@expo/agent-cli navigate /" once it is up, or pass --ios or --android. ${reason}`
   );
 }
 
@@ -439,7 +439,7 @@ function describeTargetPlatform(
   }
   return actsOnPlatform
     ? `No platform was named; this host suggests ${platform}, and the plan builds for it.`
-    : `No platform was named; this host suggests ${platform}, and the plan opens nothing on it — pass --ios or --android, or run "exagent navigate /" once the dev server is up.`;
+    : `No platform was named; this host suggests ${platform}, and the plan opens nothing on it — pass --ios or --android, or run "@expo/agent-cli navigate /" once the dev server is up.`;
 }
 
 function describeSdk(state: ProjectState): string {
@@ -482,7 +482,7 @@ interface Freshness {
 }
 
 /**
- * Compare the project fingerprint against the last build `exagent` recorded for the platform.
+ * Compare the project fingerprint against the last build `@expo/agent-cli` recorded for the platform.
  *
  * Anything short of a proven match is planned as a build. A missing fingerprint (the
  * `fingerprint` CLI is unavailable or failed) and a missing record both mean "cannot prove the

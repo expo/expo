@@ -1,7 +1,7 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Verifying the route
 // Opening a route on a device, with none of the reporting.
 //
-// This is `exagent navigate` with its output removed, extracted so `exagent smoke` can perform the
+// This is `@expo/agent-cli navigate` with its output removed, extracted so `@expo/agent-cli smoke` can perform the
 // same act as part of a larger answer. The alternative was for `smoke` to compose the same six
 // steps itself — the route check, the scheme resolution, the Expo Go decision, the device probe,
 // the deep link, the exit code — and a second composition of those steps is a second place for the
@@ -1096,9 +1096,9 @@ function unreachableNamedDevServerError(
     [
       `No Expo dev server answered at ${devServerUrl}, which --dev-server-url named, so nothing was opened.`,
       `Why: the request for its debugger target list failed (${reason ?? 'no answer'}). Opening a route against a dev server that is not running loads the app onto the device with nothing to bundle for it, which looks like a crash rather than like a wrong URL.`,
-      `How: start the dev server ("npx exagent dev --detach --wait-ready${platformFlag}"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
+      `How: start the dev server ("npx @expo/agent-cli dev --detach --wait-ready${platformFlag}"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
     ].join('\n')
   );
-  error.suggestedCommand = `npx exagent dev --detach --wait-ready${platformFlag}`;
+  error.suggestedCommand = `npx @expo/agent-cli dev --detach --wait-ready${platformFlag}`;
   return error;
 }

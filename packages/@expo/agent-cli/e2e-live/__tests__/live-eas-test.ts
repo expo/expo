@@ -79,7 +79,7 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
     await installDependenciesAsync(run, deployProjectRoot);
 
     run.onCleanup('scratch projects', () => {
-      if (!process.env.EXAGENT_LIVE_KEEP) {
+      if (!process.env.AGENT_CLI_LIVE_KEEP) {
         fs.rmSync(run.tempDir, { recursive: true, force: true });
       }
     });
@@ -200,12 +200,12 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
   // (`looksLikeRunnerNoise`). This test asserts both halves against the real runner.
   it("F93: a build lookup never reports the package runner's progress line as EAS's answer", async () => {
     // **The cache has to go first**, and this is the whole reason the test says so out loud: by the
-    // time this runs, the tests above have written `.expo/exagent-eas-builds.json`, and a cache hit
+    // time this runs, the tests above have written `.expo/agent-cli-eas-builds.json`, and a cache hit
     // costs one `readFileSync` — so iOS answers without a spawn and the concurrent pair the defect
     // needs never exists [observed — 2026-08-27: `source: "cache"` for ios, `"eas"` for android, so
     // this test was asserting one lookup]. Deleting it puts both platforms back on the network path,
     // started milliseconds apart, which is the state F93 was found in.
-    fs.rmSync(path.join(readProjectRoot, '.expo', 'exagent-eas-builds.json'), { force: true });
+    fs.rmSync(path.join(readProjectRoot, '.expo', 'agent-cli-eas-builds.json'), { force: true });
 
     const result = await runLiveEasAsync(run, readProjectRoot, ['status', '--explain', '--json'], {
       label: 'f93-status-explain',
@@ -345,6 +345,6 @@ describeLive('live-eas', gate)('live-eas: the real service, on staging', () => {
     expect(bundleSrc).toBeTruthy();
     const bundleUrl = new URL(bundleSrc as string, report.web.url).toString();
     expect(await httpStatusAsync(bundleUrl)).toBe(200);
-    expect(await httpBodyAsync(bundleUrl)).toContain('exagent live-eas deploy marker');
+    expect(await httpBodyAsync(bundleUrl)).toContain('@expo/agent-cli live-eas deploy marker');
   });
 });

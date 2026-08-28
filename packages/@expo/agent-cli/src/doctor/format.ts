@@ -6,7 +6,7 @@ import chalk from 'chalk';
 
 import type { DoctorReport } from './types';
 
-/** Width of the label column, matching `exagent status`. */
+/** Width of the label column, matching `@expo/agent-cli status`. */
 const LABEL_WIDTH = 13;
 
 /** The report: the counts, how well the output was understood, and every failure with its advice. */

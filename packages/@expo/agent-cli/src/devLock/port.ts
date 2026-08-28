@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // Which port the dev server actually listens on.
 //
 // The wrapper cannot know: `expo start` walks past a taken port, and `expo run:ios` starts a dev

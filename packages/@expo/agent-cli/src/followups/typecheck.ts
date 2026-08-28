@@ -30,7 +30,7 @@ export function buildTypeCheckFollowUps({
     return capFollowUps([
       {
         id: 'typecheck-not-run',
-        command: 'npx exagent smoke',
+        command: 'npx @expo/agent-cli smoke',
         why: 'Nothing was type-checked, so this proves nothing about the code: the bundle check inside the smoke gate is what still applies to a project without TypeScript.',
       },
     ]);
@@ -49,7 +49,7 @@ export function buildTypeCheckFollowUps({
         : []),
       {
         id: 'typecheck-rerun',
-        command: 'npx exagent typecheck',
+        command: 'npx @expo/agent-cli typecheck',
         why: generatedTypesCommand
           ? 'Run this again once that file exists: whatever is still reported is about the code.'
           : 'Fix the diagnostics above and run this again — a type error the bundler is happy to compile is one nothing else in this CLI can see.',
@@ -60,12 +60,12 @@ export function buildTypeCheckFollowUps({
   return capFollowUps([
     {
       id: 'typecheck-smoke',
-      command: 'npx exagent smoke',
+      command: 'npx @expo/agent-cli smoke',
       why: 'The types are consistent, which is not the same as the project bundling and running: this builds the entry bundle, opens the app and reports where it stops.',
     },
     {
       id: 'typecheck-runtime-errors',
-      command: 'npx exagent runtime:errors --fail-on-error',
+      command: 'npx @expo/agent-cli runtime:errors --fail-on-error',
       why: 'Types and a bundle both being fine still says nothing about what the running app throws, which is the last of the three.',
     },
   ]);

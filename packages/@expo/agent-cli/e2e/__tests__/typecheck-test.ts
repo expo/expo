@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes — the outcome band.
 //
-// `exagent typecheck` is the gate F34 was written for: a friction run finished a feature with
+// `@expo/agent-cli typecheck` is the gate F34 was written for: a friction run finished a feature with
 // `dev:wait` at 0, `runtime:errors --fail-on-error` at 0 and `doctor` at 21/21, then found seven
 // type errors — one of them `Spacing.md` on a constant with no `md`, which is `undefined` at
 // runtime, so the screen rendered with no padding and nothing threw anywhere.
@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, installStubBinAsync, setupFixtureAsync } from '../utils';
+import { executeAgentCliAsync, installStubBinAsync, setupFixtureAsync } from '../utils';
 
 const STUB_LOG_NAME = 'stub-tsc-invocations.jsonl';
 
@@ -92,11 +92,11 @@ function invocations(projectRoot: string): { args: string[]; cwd: string }[] {
     .map((line) => JSON.parse(line));
 }
 
-describe('exagent typecheck', () => {
+describe('@expo/agent-cli typecheck', () => {
   it(`should exit 20 with the parsed diagnostics when the project does not type-check`, async () => {
     const projectRoot = await setupTypeScriptProjectAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
       reject: false,
     });
 
@@ -126,7 +126,7 @@ describe('exagent typecheck', () => {
   });
 
   // @ref llp/0021-honest-reports.rfc.md §A generated file is not a mistake in the code
-  // Friction run 7, F64: the first gate an agent runs after `exagent new` was red, and the only
+  // Friction run 7, F64: the first gate an agent runs after `@expo/agent-cli new` was red, and the only
   // next action offered was to fix two files that were both correct.
   it(`should name the generated file the project is missing, and the command that writes it`, async () => {
     const projectRoot = await setupTypeScriptProjectAsync();
@@ -136,7 +136,7 @@ describe('exagent typecheck', () => {
       JSON.stringify({ include: ['**/*.ts', '**/*.tsx', 'expo-env.d.ts'] })
     );
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
       reject: false,
     });
 
@@ -145,7 +145,7 @@ describe('exagent typecheck', () => {
     expect(payload.generatedTypes).toEqual({
       file: 'expo-env.d.ts',
       referencedBy: 'tsconfig.json',
-      command: 'npx exagent dev --detach --wait-ready',
+      command: 'npx @expo/agent-cli dev --detach --wait-ready',
     });
     // The rung that can work comes first, and the one that says "fix the diagnostics" is gone.
     expect(payload.followups.map((followup: any) => followup.id)).toEqual([
@@ -161,14 +161,14 @@ describe('exagent typecheck', () => {
       JSON.stringify({ include: ['**/*.ts', 'expo-env.d.ts'] })
     );
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck'], { reject: false });
 
     expect(result.stdout).toContain('expo-env.d.ts is missing');
     expect(result.stdout.indexOf('expo-env.d.ts is missing')).toBeLessThan(
       result.stdout.indexOf('src/app/notes.tsx')
     );
     // The `Suggested next:` section goes to stdout in text mode, like the report above it.
-    expect(result.stdout).toContain('npx exagent dev --detach --wait-ready');
+    expect(result.stdout).toContain('npx @expo/agent-cli dev --detach --wait-ready');
   });
 
   it(`should say nothing about it once that file exists`, async () => {
@@ -182,7 +182,7 @@ describe('exagent typecheck', () => {
       '/// <reference types="expo/types" />'
     );
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
       reject: false,
     });
 
@@ -192,7 +192,7 @@ describe('exagent typecheck', () => {
   it(`should exit 0 when the project type-checks`, async () => {
     const projectRoot = await setupTypeScriptProjectAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
       env: { STUB_TSC_MODE: 'clean' },
     });
 
@@ -210,7 +210,7 @@ describe('exagent typecheck', () => {
   it(`should read the pretty form to the same answer`, async () => {
     const projectRoot = await setupTypeScriptProjectAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
       reject: false,
       env: { STUB_TSC_MODE: 'pretty' },
     });
@@ -232,7 +232,7 @@ describe('exagent typecheck', () => {
   it(`should exit 0 and check nothing in a project without TypeScript`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json']);
 
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
@@ -249,14 +249,14 @@ describe('exagent typecheck', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     await fs.promises.writeFile(path.join(projectRoot, 'tsconfig.json'), '{}');
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
       reject: false,
     });
 
     expect(result.exitCode).toBe(1);
     const { error } = JSON.parse(result.stdout);
     expect(error.code).toBe('TYPECHECK_CLI_MISSING');
-    expect(error.suggestedCommand).toBe('npx exagent install typescript --dev');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli install typescript --dev');
     // The two reasons must not read the same: that is the whole finding.
     expect(error.message).not.toContain('nothing to type-check');
   });
@@ -266,7 +266,7 @@ describe('exagent typecheck', () => {
   it(`should exit 1 when the compiler failed without reporting anything`, async () => {
     const projectRoot = await setupTypeScriptProjectAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json'], {
       reject: false,
       env: { STUB_TSC_MODE: 'unreadable' },
     });
@@ -279,7 +279,7 @@ describe('exagent typecheck', () => {
   it(`should print the human report as labelled lines`, async () => {
     const projectRoot = await setupTypeScriptProjectAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck'], { reject: false });
 
     expect(result.exitCode).toBe(20);
     expect(result.stdout).toContain('Typecheck');
@@ -291,7 +291,7 @@ describe('exagent typecheck', () => {
   it(`should appear in the top-level help`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.stdout).toContain('typecheck');
   });
@@ -302,7 +302,7 @@ describe('exagent typecheck', () => {
   it(`should print the JSON error envelope for an option it does not have`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json', '--bogus'], {
+    const result = await executeAgentCliAsync(projectRoot, ['typecheck', '--json', '--bogus'], {
       reject: false,
     });
 
@@ -310,7 +310,7 @@ describe('exagent typecheck', () => {
     const { error } = JSON.parse(result.stdout);
     expect(error.code).toBe('BAD_ARGS');
     expect(error.message).toContain('--bogus');
-    expect(error.suggestedCommand).toBe('npx exagent typecheck --help');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli typecheck --help');
     expect(result.stderr).toContain('CommandError');
   });
 });
@@ -321,19 +321,19 @@ describe('unknown options across commands', () => {
   it(`should name the command own help when smoke is given an option it has not`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['smoke', '--bogus', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['smoke', '--bogus', '--json'], {
       reject: false,
     });
 
     expect(result.exitCode).toBe(1);
-    expect(JSON.parse(result.stdout).error.suggestedCommand).toBe('npx exagent smoke --help');
+    expect(JSON.parse(result.stdout).error.suggestedCommand).toBe('npx @expo/agent-cli smoke --help');
   });
 
-  // The sugar itself: `--port` is what the caller has in hand after `exagent dev --port`.
+  // The sugar itself: `--port` is what the caller has in hand after `@expo/agent-cli dev --port`.
   it(`should accept smoke --port as the dev server on that port`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['smoke', '--port', '65533', '--timeout', '1s', '--json'],
       { reject: false }
@@ -351,7 +351,7 @@ describe('unknown options across commands', () => {
   it(`should tell runtime:stop --platform ios apart from an unknown option`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['runtime:stop', '--platform', 'ios', '--port', '65533', '--json'],
       { reject: false }

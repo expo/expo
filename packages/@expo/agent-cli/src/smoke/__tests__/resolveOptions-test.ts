@@ -84,7 +84,7 @@ describe(resolveSmokeOptions, () => {
 
     expect(error.code).toBe('BAD_ARGS');
     expect(error.message).toContain('cannot be smoke-tested');
-    expect(error.suggestedCommand).toBe('npx exagent typecheck');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli typecheck');
   });
 
   it(`refuses a platform neither device tool covers`, () => {

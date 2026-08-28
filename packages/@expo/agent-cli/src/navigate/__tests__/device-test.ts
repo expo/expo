@@ -194,7 +194,7 @@ describe(resolveDeviceAsync, () => {
     const error = await resolveDeviceAsync('ios').catch((e) => e);
 
     expect(error.code).toBe('NO_IOS_DEVICE');
-    expect(error.message).toContain('npx exagent dev --detach');
+    expect(error.message).toContain('npx @expo/agent-cli dev --detach');
   });
 
   it(`should explain how to start an emulator when --android finds none`, async () => {

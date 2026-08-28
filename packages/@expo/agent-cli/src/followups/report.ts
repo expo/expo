@@ -12,8 +12,8 @@ export interface ReportFollowUpsOptions {
   /** The command prints one JSON object on stdout, so the `Suggested next:` section is left out. */
   json?: boolean;
   /**
-   * Never print the section, even in text mode. `exagent status` uses this: its own `next` line
-   * already names the command a follow-up would repeat (llp/0004 §`exagent status`).
+   * Never print the section, even in text mode. `@expo/agent-cli status` uses this: its own `next` line
+   * already names the command a follow-up would repeat (llp/0004 §`@expo/agent-cli status`).
    */
   silent?: boolean;
 }
@@ -27,7 +27,7 @@ export interface ReportFollowUpsOptions {
  * @param flag `false` when `--no-followups` was passed, `undefined` when the command has no flag.
  */
 export function followUpsEnabled(flag: boolean | undefined): boolean {
-  return flag !== false && !env.EXAGENT_NO_FOLLOWUPS;
+  return flag !== false && !env.AGENT_CLI_NO_FOLLOWUPS;
 }
 
 /**

@@ -44,28 +44,28 @@ beforeEach(() => {
 describe(createCheckpointAsync, () => {
   it(`should snapshot the project and store the record`, async () => {
     const result = await createCheckpointAsync(projectRoot, {
-      label: 'exagent install',
-      argv: ['exagent', 'install', 'expo-sqlite'],
+      label: '@expo/agent-cli install',
+      argv: ['@expo/agent-cli', 'install', 'expo-sqlite'],
     });
 
     expect(result.skipped).toBeNull();
     expect(result.files).toBe(12);
     expect(result.record).toEqual({
       id: 'c0ffee1234567890abcdef',
-      label: 'exagent install',
+      label: '@expo/agent-cli install',
       createdAt: expect.any(String),
-      argv: ['exagent', 'install', 'expo-sqlite'],
+      argv: ['@expo/agent-cli', 'install', 'expo-sqlite'],
       path: 'apps/app',
     });
     expect(readCheckpoints(projectRoot)).toEqual([result.record]);
     expect(commitSnapshotTreeAsync).toHaveBeenCalledWith(
       worktree,
       'tree-oid',
-      expect.stringContaining('exagent install')
+      expect.stringContaining('@expo/agent-cli install')
     );
     expect(event).toHaveBeenCalledWith('created', {
       id: 'c0ffee1234567890abcdef',
-      label: 'exagent install',
+      label: '@expo/agent-cli install',
       files: 12,
       path: 'apps/app',
     });
@@ -74,14 +74,14 @@ describe(createCheckpointAsync, () => {
   it(`should skip a project that is not in a git work tree`, async () => {
     jest.mocked(resolveWorkTreeAsync).mockResolvedValue(null);
 
-    const result = await createCheckpointAsync(projectRoot, { label: 'exagent install' });
+    const result = await createCheckpointAsync(projectRoot, { label: '@expo/agent-cli install' });
 
     expect(result.record).toBeNull();
     expect(result.skipped).toBe('not-a-git-repo');
     expect(writeSnapshotTreeAsync).not.toHaveBeenCalled();
     expect(readCheckpoints(projectRoot)).toEqual([]);
     expect(event).toHaveBeenCalledWith('skipped', {
-      label: 'exagent install',
+      label: '@expo/agent-cli install',
       reason: 'not-a-git-repo',
     });
   });
@@ -89,7 +89,7 @@ describe(createCheckpointAsync, () => {
   it(`should skip a project where git tracks no file`, async () => {
     jest.mocked(writeSnapshotTreeAsync).mockResolvedValue({ tree: 'empty-tree', files: 0 });
 
-    const result = await createCheckpointAsync(projectRoot, { label: 'exagent agents:setup' });
+    const result = await createCheckpointAsync(projectRoot, { label: '@expo/agent-cli agents:setup' });
 
     expect(result.skipped).toBe('no-files');
     expect(commitSnapshotTreeAsync).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe(createCheckpointAsync, () => {
       .mocked(writeSnapshotTreeAsync)
       .mockRejectedValue(new GitError(['add', '-A', '.'], 'fatal: index lock exists', 128));
 
-    const result = await createCheckpointAsync(projectRoot, { label: 'exagent install' });
+    const result = await createCheckpointAsync(projectRoot, { label: '@expo/agent-cli install' });
 
     expect(result.skipped).toBe('git-failed');
     expect(result.detail).toContain('index lock exists');
@@ -116,7 +116,7 @@ describe(printCheckpointAsync, () => {
     expect(printed()).toContain('c0ffee1');
     expect(printed()).toContain('before refactor');
     expect(printed()).toContain('12 files');
-    expect(printed()).toContain('npx exagent checkpoint:undo');
+    expect(printed()).toContain('npx @expo/agent-cli checkpoint:undo');
   });
 
   it(`should print one JSON object with a stable key set`, async () => {

@@ -82,7 +82,7 @@ export function buildCacheArgs(platform: 'ios' | 'android', hash: string): strin
  * @ref llp/0011-impact-and-freshness.rfc.md §The build-cache lookup answers in three states
  * "EAS has no finished build for this fingerprint" and "nobody could ask" are different facts, and
  * only the first is an answer. `impact` folds them together on purpose — it is *decorating* a
- * report that is complete without them — but `exagent status` reports the difference, because the
+ * report that is complete without them — but `@expo/agent-cli status` reports the difference, because the
  * reader of a status line has to know whether a missing build was established or merely assumed.
  */
 export type BuildLookupOutcome =

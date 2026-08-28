@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // Reading the dev-server lock.
 //
 // The read is a connection, not a file read, and that is the whole point: a record of a dev

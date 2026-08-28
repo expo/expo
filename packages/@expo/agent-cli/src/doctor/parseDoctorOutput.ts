@@ -14,7 +14,7 @@
 //   5 checks failed, indicating possible issues with the project.   (on stderr, then exit 1)
 //
 // The parse is best-effort by construction and says so in its answer. Two facts make it tractable:
-// `exagent` always passes `--verbose`, so every check is named whether it passed or failed, and the
+// `@expo/agent-cli` always passes `--verbose`, so every check is named whether it passed or failed, and the
 // summary line is a hard boundary — above it is the check list, below it are the failure details.
 
 import type { DoctorCheck, ParsedDoctorOutput } from './types';

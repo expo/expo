@@ -2,7 +2,7 @@
 // The three situations in which this CLI prints no escape sequence at all.
 //
 // The rule that matters is the `--json` one, and it is the one a terminal cannot show you: a
-// person running `exagent status --json` in a real terminal has a TTY, so chalk's own detection
+// person running `@expo/agent-cli status --json` in a real terminal has a TTY, so chalk's own detection
 // says "colour is fine" — and an escape sequence inside a JSON object breaks the parse of a run
 // that was otherwise complete. So the launcher decides, once, before any command builds a string.
 

@@ -293,7 +293,7 @@ function runScreenshotAsync(
   filePath: string,
   timeoutMs: number
 ): Promise<{ exitCode: number | null; stderr: string; spawnError?: string }> {
-  // Required lazily so `exagent --help` never pays for the child-process module.
+  // Required lazily so `@expo/agent-cli --help` never pays for the child-process module.
   const { spawn } = require('child_process') as typeof import('child_process');
 
   return new Promise((resolve) => {
@@ -358,5 +358,5 @@ function firstLine(text: string): string {
  */
 export function defaultScreenshotPath(projectRoot: string, at: Date = new Date()): string {
   const stamp = at.toISOString().replace(/[:.]/g, '-');
-  return path.join(projectRoot, '.expo', 'exagent', `smoke-${stamp}.png`);
+  return path.join(projectRoot, '.expo', 'agent-cli', `smoke-${stamp}.png`);
 }

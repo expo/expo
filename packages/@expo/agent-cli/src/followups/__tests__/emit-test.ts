@@ -9,12 +9,12 @@ jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 
 const followups: FollowUp[] = [
-  { id: 'runtime-errors', command: 'npx exagent runtime:errors', why: 'Reads the app errors.' },
+  { id: 'runtime-errors', command: 'npx @expo/agent-cli runtime:errors', why: 'Reads the app errors.' },
   { id: 'eas-build', command: 'npx eas build', why: 'Ships the app.' },
 ];
 
 afterEach(() => {
-  delete process.env.EXAGENT_NO_FOLLOWUPS;
+  delete process.env.AGENT_CLI_NO_FOLLOWUPS;
 });
 
 describe(followUpsEnabled, () => {
@@ -27,8 +27,8 @@ describe(followUpsEnabled, () => {
     expect(followUpsEnabled(false)).toBe(false);
   });
 
-  it(`should be off for EXAGENT_NO_FOLLOWUPS`, () => {
-    process.env.EXAGENT_NO_FOLLOWUPS = '1';
+  it(`should be off for AGENT_CLI_NO_FOLLOWUPS`, () => {
+    process.env.AGENT_CLI_NO_FOLLOWUPS = '1';
 
     expect(followUpsEnabled(true)).toBe(false);
     expect(followUpsEnabled(undefined)).toBe(false);
@@ -89,7 +89,7 @@ describe(formatFollowUps, () => {
     // The section trails whatever the command printed, so it opens with a blank line.
     expect(lines[0]).toBe('');
     expect(lines[1]).toContain('Suggested next:');
-    expect(lines[2]).toContain('npx exagent runtime:errors');
+    expect(lines[2]).toContain('npx @expo/agent-cli runtime:errors');
     expect(lines[2]).toContain('— Reads the app errors.');
     expect(lines[3]).toContain('npx eas build');
   });
@@ -118,13 +118,13 @@ describe(`${formatFollowUps.name} — the runner in use`, () => {
 
     const printed = formatFollowUps(followups);
 
-    expect(printed).toContain('bunx exagent runtime:errors');
-    expect(printed).not.toContain('npx exagent');
+    expect(printed).toContain('bunx @expo/agent-cli runtime:errors');
+    expect(printed).not.toContain('npx @expo/agent-cli');
     // `npx eas` names a different package under Bun, so it is not this substitution's to change.
     expect(printed).toContain('npx eas build');
   });
 
-  // The machine channel does not move with the shell: `npx exagent` runs in a Bun project too, and
+  // The machine channel does not move with the shell: `npx @expo/agent-cli` runs in a Bun project too, and
   // the `--json` payload is a contract rather than a line somebody pastes.
   it(`leaves the follow-up objects themselves unchanged`, () => {
     process.env.npm_config_user_agent = 'bun/1.3.14 npm/? node/v24.3.0 darwin arm64';
@@ -132,13 +132,13 @@ describe(`${formatFollowUps.name} — the runner in use`, () => {
 
     formatFollowUps(followups);
 
-    expect(followups[0]!.command).toBe('npx exagent runtime:errors');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:errors');
   });
 
   it(`prints the written form under npx`, () => {
     process.env.npm_config_user_agent = 'npm/11.17.0 node/v26.5.0 darwin arm64';
     resetInvokerCache();
 
-    expect(formatFollowUps(followups)).toContain('npx exagent runtime:errors');
+    expect(formatFollowUps(followups)).toContain('npx @expo/agent-cli runtime:errors');
   });
 });

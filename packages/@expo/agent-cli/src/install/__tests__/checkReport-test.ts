@@ -40,7 +40,7 @@ describe(diagnoseCheckedPackagesAsync, () => {
     expect(notes[0]).toContain(
       `"@react-native-async-storage/async-storage" is not in this project's package.json`
     );
-    expect(notes[0]).toContain('npx exagent install @react-native-async-storage/async-storage');
+    expect(notes[0]).toContain('npx @expo/agent-cli install @react-native-async-storage/async-storage');
   });
 
   // The state the message *does* describe. Nothing to correct, so the note only says what to run.

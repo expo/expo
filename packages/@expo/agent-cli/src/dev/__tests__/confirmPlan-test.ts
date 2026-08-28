@@ -52,8 +52,8 @@ describe(confirmPlanAsync, () => {
     await expect(confirmPlanAsync(mockPlan('many-minutes'), options())).resolves.toBe(false);
 
     const printed = jest.mocked(Log.log).mock.calls.flat().join('\n');
-    expect(printed).toContain('npx exagent dev --plan');
-    expect(printed).toContain('npx exagent start');
+    expect(printed).toContain('npx @expo/agent-cli dev --plan');
+    expect(printed).toContain('npx @expo/agent-cli start');
   });
 
   it(`should treat a cancelled prompt as a decline`, async () => {

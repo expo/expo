@@ -22,9 +22,9 @@ describe(strayArgumentError, () => {
     expect(error).toBeInstanceOf(CommandError);
     expect(error.code).toBe('BAD_ARGS');
     expect(error.message).toContain('Unexpected argument: abc123');
-    expect(error.message).toContain('"exagent checkpoint:undo" reads no positional arguments');
+    expect(error.message).toContain('"@expo/agent-cli checkpoint:undo" reads no positional arguments');
     expect(error.message).toContain('dropped');
-    expect(error.suggestedCommand).toBe('npx exagent checkpoint:undo --help');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli checkpoint:undo --help');
   });
 
   it(`counts them when more than one arrived`, () => {
@@ -71,8 +71,8 @@ describe(assertWithOptionsArgs, () => {
       });
 
     expect(run).toThrow(CommandError);
-    expect(run).toThrow(/Unknown option --bogus for "exagent checkpoint:undo"/);
-    expect(run).toThrow(/How: run "npx exagent checkpoint:undo --help"/);
+    expect(run).toThrow(/Unknown option --bogus for "@expo\/agent-cli checkpoint:undo"/);
+    expect(run).toThrow(/How: run "npx @expo\/agent-cli checkpoint:undo --help"/);
   });
 
   it(`accepts a run with only options`, () => {

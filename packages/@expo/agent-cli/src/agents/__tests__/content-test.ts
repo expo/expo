@@ -85,17 +85,17 @@ describe(generateAgentsMdBlock, () => {
     });
 
     for (const command of [
-      'exagent status',
-      'exagent status --json',
-      '`npx exagent dev` — get the app onto a device',
-      'exagent dev --plan',
-      '`npx exagent start` — `expo start` and nothing else',
-      'exagent install',
-      'exagent typecheck',
-      'exagent runtime:eval',
-      'exagent runtime:errors',
-      'exagent navigate',
-      'exagent skills:list',
+      '@expo/agent-cli status',
+      '@expo/agent-cli status --json',
+      '`npx @expo/agent-cli dev` — get the app onto a device',
+      '@expo/agent-cli dev --plan',
+      '`npx @expo/agent-cli start` — `expo start` and nothing else',
+      '@expo/agent-cli install',
+      '@expo/agent-cli typecheck',
+      '@expo/agent-cli runtime:eval',
+      '@expo/agent-cli runtime:errors',
+      '@expo/agent-cli navigate',
+      '@expo/agent-cli skills:list',
     ]) {
       expect(block).toContain(command);
     }
@@ -108,7 +108,7 @@ describe(generateAgentsMdBlock, () => {
       skillsDirs: [],
     });
 
-    expect(block).toContain('exagent agents:setup');
+    expect(block).toContain('@expo/agent-cli agents:setup');
     expect(block).not.toContain('.claude/skills');
   });
 

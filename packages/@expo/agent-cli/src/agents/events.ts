@@ -3,7 +3,7 @@ import { events } from '2g';
 declare module '2g' {
   interface EventRegistry {
     /**
-     * The whole `exagent agents:setup` run, as the summary an agent can branch on.
+     * The whole `@expo/agent-cli agents:setup` run, as the summary an agent can branch on.
      *
      * @see llp/0006-agent-native-cli-surface.rfc.md §AGENTS.md generation
      */

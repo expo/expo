@@ -37,7 +37,7 @@ export function buildInstallFollowUps({
     const names = rebuild.map((report) => report.packageName).join(', ');
     followups.push({
       id: 'dev',
-      command: 'npx exagent dev',
+      command: 'npx @expo/agent-cli dev',
       why: `The app that is running now cannot load ${names}, which changed the native surface: this plans and makes the development build that can.`,
     });
   } else {
@@ -47,7 +47,7 @@ export function buildInstallFollowUps({
     // follow-ups lead to the error window afterwards.
     followups.push({
       id: 'reload-app',
-      command: 'npx exagent runtime:reload',
+      command: 'npx @expo/agent-cli runtime:reload',
       why: reloadReason(reports),
     });
   }
@@ -55,13 +55,13 @@ export function buildInstallFollowUps({
   if (packagesWithSkills.length === 1) {
     followups.push({
       id: 'skills-show',
-      command: `npx exagent skills:show ${packagesWithSkills[0]}`,
+      command: `npx @expo/agent-cli skills:show ${packagesWithSkills[0]}`,
       why: `${packagesWithSkills[0]} ships an agent skill: read it before writing code against the package.`,
     });
   } else if (packagesWithSkills.length > 1) {
     followups.push({
       id: 'skills-list',
-      command: 'npx exagent skills:list',
+      command: 'npx @expo/agent-cli skills:list',
       why: `${packagesWithSkills.length} of the installed packages ship agent skills: read them before writing code against the packages.`,
     });
   }
@@ -72,7 +72,7 @@ export function buildInstallFollowUps({
   // whether the code compiles against the types the new package brought with it.
   followups.push({
     id: 'typecheck',
-    command: 'npx exagent typecheck',
+    command: 'npx @expo/agent-cli typecheck',
     why: 'A new package brings its own types with it: this is the gate that sees a call that does not match them, which neither the bundler nor the running app reports.',
   });
 

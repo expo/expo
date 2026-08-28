@@ -48,7 +48,7 @@ const EXPORT_DIR = 'dist';
 /** How much of the tool output travels in the payload next to a parsed URL. */
 const OUTPUT_TAIL_LINES = 10;
 
-/** Width of the label column of the human readable summary, as in `exagent status`. */
+/** Width of the label column of the human readable summary, as in `@expo/agent-cli status`. */
 const LABEL_WIDTH = 12;
 
 /** The two commands of the web rail, as a person would run them without this wrapper. */
@@ -153,7 +153,7 @@ function resolveUploadPaths(
         `How: point --upload-root at a parent directory of the project, for example "--upload-root .." from an app in a monorepo, or leave it out to upload the project itself.`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent deploy --native';
+    error.suggestedCommand = 'npx @expo/agent-cli deploy --native';
     throw error;
   }
 
@@ -199,7 +199,7 @@ async function resolveTargetsAsync(
       `How: pass --native to launch the native app, or add web support with "npx expo install react-native-web react-dom" and pass --web.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent deploy --native';
+  error.suggestedCommand = 'npx @expo/agent-cli deploy --native';
   throw error;
 }
 

@@ -86,7 +86,7 @@ export interface PortMove {
 }
 
 /**
- * The sentence `exagent dev` prints when it moved the dev server off a busy port.
+ * The sentence `@expo/agent-cli dev` prints when it moved the dev server off a busy port.
  *
  * Built here rather than written inline because it is read back by another *process* of this CLI:
  * a `--detach` run does the retry in the child, whose output goes to a log file, and the parent

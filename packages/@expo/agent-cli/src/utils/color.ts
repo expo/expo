@@ -52,7 +52,7 @@ export function configureColor({ json, isTty }: { json: boolean; isTty: boolean 
 export const color = {
   /** A section head: `Usage`, `Options`, `dev server`. */
   heading: (text: string): string => chalk.bold(text),
-  /** A command a reader may copy, e.g. `npx exagent smoke`. */
+  /** A command a reader may copy, e.g. `npx @expo/agent-cli smoke`. */
   command: (text: string): string => chalk.cyan(text),
   /** An outcome that is fine. */
   ok: (text: string): string => chalk.green(text),

@@ -1,7 +1,7 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — the `--json` keys mirror the
 // text labels, and they are the stable half of the contract.
 //
-// What `exagent typecheck` reports: the project's own TypeScript compiler run for its verdict, and
+// What `@expo/agent-cli typecheck` reports: the project's own TypeScript compiler run for its verdict, and
 // its diagnostics read back as data.
 
 import type { FollowUp } from '../followups/types';

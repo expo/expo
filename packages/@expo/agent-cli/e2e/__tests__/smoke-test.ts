@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   holdDevLockAsync,
   installStubBinAsync,
   setupFixtureAsync,
@@ -114,7 +114,7 @@ async function writeRoutesAsync(projectRoot: string, files: string[]): Promise<v
   }
 }
 
-/** Point the project's dev-server lock at the stub, the way an `exagent`-started server does. */
+/** Point the project's dev-server lock at the stub, the way an `@expo/agent-cli`-started server does. */
 async function holdLockForAsync(projectRoot: string, stub: StubDevServer): Promise<() => void> {
   return await holdDevLockAsync(projectRoot, {
     url: stub.url,
@@ -125,12 +125,12 @@ async function holdLockForAsync(projectRoot: string, stub: StubDevServer): Promi
   });
 }
 
-describe('exagent smoke', () => {
+describe('@expo/agent-cli smoke', () => {
   describe('--help', () => {
     it('names the eight phases and the three exit codes', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['smoke', '--help']);
+      const result = await executeAgentCliAsync(projectRoot, ['smoke', '--help']);
 
       expect(result.exitCode).toBe(0);
       expect(result.all).toContain('--route');
@@ -146,7 +146,7 @@ describe('exagent smoke', () => {
     it('says a runtime with no debugger never passes, and that the window is a window', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['smoke', '--help']);
+      const result = await executeAgentCliAsync(projectRoot, ['smoke', '--help']);
 
       expect(result.all).toContain('never passes');
       expect(result.all).toContain('before it opened is not in it');
@@ -155,7 +155,7 @@ describe('exagent smoke', () => {
     it('appears in the top-level help, next to the commands it composes', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['--help']);
+      const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
       expect(result.all).toContain('smoke');
       // Renamed twice: wave 34 tried "Check a running app", and Kudo picked the familiar dev
@@ -170,7 +170,7 @@ describe('exagent smoke', () => {
     it('exits 20 and never starts one without --start', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         // A port nothing is on, named explicitly so no scan can find another project's server.
         ['smoke', '--json', '--port', '59117'],
@@ -192,7 +192,7 @@ describe('exagent smoke', () => {
     it('says what to run, on stderr, for a person', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['smoke', '--port', '59118'], {
+      const result = await executeAgentCliAsync(projectRoot, ['smoke', '--port', '59118'], {
         env: stubExpoEnv(projectRoot),
         reject: false,
       });
@@ -200,7 +200,7 @@ describe('exagent smoke', () => {
       expect(result.exitCode).toBe(20);
       expect(result.stderr).toContain('Why:');
       expect(result.stderr).toContain('How:');
-      expect(result.all).toContain('npx exagent dev --detach');
+      expect(result.all).toContain('npx @expo/agent-cli dev --detach');
     });
   });
 
@@ -222,7 +222,7 @@ describe('exagent smoke', () => {
       stub = await startStubDevServerAsync({ projectRoot, targets: [] });
       release = await holdLockForAsync(projectRoot, stub);
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['smoke', '--json', '--timeout', '4s'],
         {
@@ -249,7 +249,7 @@ describe('exagent smoke', () => {
       stub = await startStubDevServerAsync({ projectRoot, targets: [] });
       release = await holdLockForAsync(projectRoot, stub);
 
-      await executeExagentAsync(projectRoot, ['smoke', '--ios', '--json', '--timeout', '4s'], {
+      await executeAgentCliAsync(projectRoot, ['smoke', '--ios', '--json', '--timeout', '4s'], {
         env: stubExpoEnv(projectRoot),
         reject: false,
       });
@@ -276,7 +276,7 @@ describe('exagent smoke', () => {
       const release = await holdLockForAsync(projectRoot, stub);
 
       try {
-        const result = await executeExagentAsync(projectRoot, ['smoke', '--ios', '--json'], {
+        const result = await executeAgentCliAsync(projectRoot, ['smoke', '--ios', '--json'], {
           env: stubExpoEnv(projectRoot),
           reject: false,
         });
@@ -307,7 +307,7 @@ describe('exagent smoke', () => {
     });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['smoke', '--json', '--dev-server-url', stub.url],
         { env: stubExpoEnv(projectRoot), reject: false }
@@ -335,7 +335,7 @@ describe('exagent smoke', () => {
       const release = await holdLockForAsync(projectRoot, stub);
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['smoke', '--ios', '--json', '--route', '/note'],
           { env: stubExpoEnv(projectRoot), reject: false }
@@ -347,7 +347,7 @@ describe('exagent smoke', () => {
         const { error } = JSON.parse(result.stdout);
         expect(error.code).toBe('ROUTE_NOT_FOUND');
         // And the suggestion keeps the command the caller was running (friction run 5).
-        expect(error.suggestedCommand).toBe('npx exagent smoke --route /notes');
+        expect(error.suggestedCommand).toBe('npx @expo/agent-cli smoke --route /notes');
         expect(readXcrun().filter((argv) => argv.includes('openurl'))).toEqual([]);
       } finally {
         release();
@@ -367,7 +367,7 @@ describe('exagent smoke', () => {
       const shotPath = path.join(projectRoot, 'shot.png');
 
       try {
-        await executeExagentAsync(
+        await executeAgentCliAsync(
           projectRoot,
           ['smoke', '--ios', '--json', '--timeout', '4s', '--screenshot', shotPath],
           { env: stubExpoEnv(projectRoot), reject: false }
@@ -401,7 +401,7 @@ describe('exagent smoke', () => {
       const shotPath = path.join(projectRoot, 'android.png');
 
       try {
-        await executeExagentAsync(
+        await executeAgentCliAsync(
           projectRoot,
           ['smoke', '--android', '--json', '--timeout', '4s', '--screenshot', shotPath],
           { env: stubExpoEnv(projectRoot), reject: false }
@@ -424,7 +424,7 @@ describe('exagent smoke', () => {
       const release = await holdLockForAsync(projectRoot, stub);
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['smoke', '--ios', '--json', '--no-screenshot', '--timeout', '6s'],
           { env: stubExpoEnv(projectRoot), reject: false }
@@ -447,7 +447,7 @@ describe('exagent smoke', () => {
     it('prints exactly one parseable object, whatever the outcome', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['smoke', '--json', '--port', '59119'],
         { env: stubExpoEnv(projectRoot), reject: false }
@@ -481,21 +481,21 @@ describe('exagent smoke', () => {
     it('prints the error envelope for a command that was wrong', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['smoke', '--json', '--bogus'], {
+      const result = await executeAgentCliAsync(projectRoot, ['smoke', '--json', '--bogus'], {
         reject: false,
       });
 
       expect(result.exitCode).toBe(1);
       const { error } = JSON.parse(result.stdout);
       expect(error.code).toBe('BAD_ARGS');
-      expect(error.suggestedCommand).toBe('npx exagent smoke --help');
+      expect(error.suggestedCommand).toBe('npx @expo/agent-cli smoke --help');
     });
 
     // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see.
     it('refuses --platform web and names the command that answers for web', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['smoke', '--json', '--platform', 'web'],
         { reject: false }
@@ -504,7 +504,7 @@ describe('exagent smoke', () => {
       expect(result.exitCode).toBe(1);
       const { error } = JSON.parse(result.stdout);
       expect(error.code).toBe('BAD_ARGS');
-      expect(error.suggestedCommand).toBe('npx exagent typecheck');
+      expect(error.suggestedCommand).toBe('npx @expo/agent-cli typecheck');
     });
   });
 
@@ -512,7 +512,7 @@ describe('exagent smoke', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const eventsPath = path.join(projectRoot, 'events.jsonl');
 
-    await executeExagentAsync(projectRoot, ['smoke', '--json', '--port', '59120'], {
+    await executeAgentCliAsync(projectRoot, ['smoke', '--json', '--port', '59120'], {
       env: { ...stubExpoEnv(projectRoot), LOG_EVENTS: eventsPath },
       reject: false,
     });

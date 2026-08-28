@@ -1,4 +1,4 @@
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher
 // Which runner spawns a *published package* this CLI does not have installed — `eas-cli` for an
 // auth command outside a project, `expo-doctor`, `create-expo`, `create-launch`, and the `expo`
 // fallback for a project that has none.
@@ -10,7 +10,7 @@
 // suggestion is rewritten only for this CLI's own name, because `npx <other-package>` is a line
 // that may not run under Bun; a spawn resolves the runner outright, because the runner is not text.
 //
-// Why it matters: `bunx exagent whoami` used to spawn `npm exec eas-cli` [observed — 2026-08-26,
+// Why it matters: `bunx @expo/agent-cli whoami` used to spawn `npm exec eas-cli` [observed — 2026-08-26,
 // reported by Kudo], so a Bun user got npm's exec — a different runner, a different cache, and a
 // slower first run — from a CLI they had reached through Bun.
 
@@ -128,7 +128,7 @@ export function projectUsesBun(projectRoot: string): boolean {
  *
  * Two signals, and either one is enough. {@link resolvePackageRunner} answers "which runner started
  * this process", which is the right question for a package this CLI spawns on its own behalf. It is
- * not the whole question for a package spawned **into a project**: `exagent status` in a bun app run
+ * not the whole question for a package spawned **into a project**: `@expo/agent-cli status` in a bun app run
  * from a plain shell was started by neither runner, and downloading `eas-cli` with npm's exec there
  * puts a second cache and a second copy beside the one bun already manages [confirmed — Kudo,
  * 2026-08-26: `bunx eas-cli` is what a bun project should get].

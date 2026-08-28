@@ -10,9 +10,9 @@ declare module '2g' {
     'cli:expo_exit': { code: number; signal?: string };
     'cli:expo_spawn_failed': { command: string; error: SerializedError };
     /**
-     * A command `exagent` does not implement was forwarded to the project's `expo` CLI verbatim.
+     * A command `@expo/agent-cli` does not implement was forwarded to the project's `expo` CLI verbatim.
      *
-     * @see llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
+     * @see llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher
      */
     'cli:expo_passthrough': { command: string; args: string[] };
     /**
@@ -62,7 +62,7 @@ declare module '2g' {
       detectedBy: string;
     };
     /**
-     * One `exagent dev:wait` run: whether the bundler finished, whose bundle it is, and how long
+     * One `@expo/agent-cli dev:wait` run: whether the bundler finished, whose bundle it is, and how long
      * the wait took. The command's exit code is the same answer, and this is where the detail is.
      *
      * Deferred from v1 (2026-08-26): the command is on the reference shelf
@@ -117,7 +117,7 @@ declare module '2g' {
       symbolicated: number;
     };
     /**
-     * One `exagent runtime:tree` run: what the walk was scoped to, and how much it kept.
+     * One `@expo/agent-cli runtime:tree` run: what the walk was scoped to, and how much it kept.
      *
      * `focusedScreen` is null when focus could not be established, which is not a failure — it is
      * the honest answer for an app whose navigator does not expose it, and the run reports the
@@ -142,7 +142,7 @@ declare module '2g' {
       matched: number;
     };
     /**
-     * One `exagent runtime:tap` run: which element, whose handler, and whether it was called.
+     * One `@expo/agent-cli runtime:tap` run: which element, whose handler, and whether it was called.
      *
      * `handlerOutsideMatch` is the field to watch: true means the handler came from an ancestor of
      * the element that was named, which is what a real touch would reach and not what was asked
@@ -171,7 +171,7 @@ declare module '2g' {
       changed: boolean | null;
     };
     /**
-     * One `exagent runtime:type` run: which input, and whether the submit was made.
+     * One `@expo/agent-cli runtime:type` run: which input, and whether the submit was made.
      *
      * The text itself is not on the event: it is the caller's own, and a value typed into an app is
      * as likely to be a credential as it is to be a note.
@@ -207,10 +207,10 @@ declare module '2g' {
       pendingCount: number;
     };
     /**
-     * The whole `exagent status` report, as the summary an agent can branch on. The command
+     * The whole `@expo/agent-cli status` report, as the summary an agent can branch on. The command
      * always exits 0, so this event is where the answer lives.
      *
-     * @see llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+     * @see llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
      */
     'cli:status': {
       /** Decision-table row that would fire, or null when the project could not be probed. */
@@ -297,7 +297,7 @@ declare module '2g' {
       sectionErrors: string[];
     };
     /**
-     * One poll of `exagent build:wait`, while the wait is still running.
+     * One poll of `@expo/agent-cli build:wait`, while the wait is still running.
      *
      * Deferred from v1 (2026-08-26) with the two events below: the command is on the reference shelf
      * (`src/deferred/build-wait/`), so nothing emits these now. The declarations stay as the schema
@@ -379,7 +379,7 @@ declare module '2g' {
       otherFailures: number;
     };
     /**
-     * One `exagent inspect:config-plugins` run, as counts.
+     * One `@expo/agent-cli inspect:config-plugins` run, as counts.
      *
      * Counts only, deliberately: an effective config carries bundle identifiers, URL schemes and
      * permission strings, which belong in the answer the caller asked for and not on a stream that
@@ -407,7 +407,7 @@ declare module '2g' {
       durationMs: number;
     };
     /**
-     * One `exagent doctor:check` run. `parse` says how much of expo-doctor's prose was understood,
+     * One `@expo/agent-cli doctor:check` run. `parse` says how much of expo-doctor's prose was understood,
      * because the counts are only as good as the parse that produced them.
      */
     'cli:doctor_check': {
@@ -418,7 +418,7 @@ declare module '2g' {
       exitCode: number | null;
     };
     /**
-     * The plan one `exagent doctor:fix` run built, emitted before anything is applied.
+     * The plan one `@expo/agent-cli doctor:fix` run built, emitted before anything is applied.
      *
      * Deferred from v1 (2026-08-26): the fix half of `doctor` is on the reference shelf
      * (`src/deferred/doctor-fix/`), so nothing emits this now. The declaration stays as the schema
@@ -458,15 +458,15 @@ declare module '2g' {
       durationMs: number;
     };
     /**
-     * One `exagent typecheck` run. Counts only: a diagnostic quotes the project's own identifiers
+     * One `@expo/agent-cli typecheck` run. Counts only: a diagnostic quotes the project's own identifiers
      * and types, which is not something to put on a telemetry stream.
      */
     /**
-     * What installing one or more **packages** costs, from `exagent install`.
+     * What installing one or more **packages** costs, from `@expo/agent-cli install`.
      *
      * The *other* thing called impact (llp/0011 §Two things called impact): this classifies a
      * package, and the change classifier — what a working-tree diff costs — is on `cli:status`
-     * under `impact` and `assertion`. `exagent impact` used to emit this name with a different
+     * under `impact` and `assertion`. `@expo/agent-cli impact` used to emit this name with a different
      * payload; the command was folded into `status` on 2026-08-26 and `install` is the only
      * producer left, so the schema is now what it actually sends.
      *
@@ -492,7 +492,7 @@ declare module '2g' {
       durationMs: number;
     };
     /**
-     * One `exagent runtime:reload` run: whether the app was reloaded, by which method, and how
+     * One `@expo/agent-cli runtime:reload` run: whether the app was reloaded, by which method, and how
      * many apps were attached afterwards. The exit code is the same answer; this is where the
      * detail is.
      *
@@ -514,7 +514,7 @@ declare module '2g' {
       appsReconnected: number;
     };
     /**
-     * One `exagent dev:stop` run: whether a dev server was stopped, whose it was, and why not.
+     * One `@expo/agent-cli dev:stop` run: whether a dev server was stopped, whose it was, and why not.
      *
      * @see llp/0005-runtime-loop-tools.rfc.md §Stopping the dev server
      */
@@ -570,7 +570,7 @@ declare module '2g' {
       reason: string | null;
     };
     /**
-     * One `exagent runtime:stop` run: whether the app is stopped, and which app it was.
+     * One `@expo/agent-cli runtime:stop` run: whether the app is stopped, and which app it was.
      *
      * @see llp/0005-runtime-loop-tools.rfc.md §Stopping the app
      */
@@ -596,7 +596,7 @@ declare module '2g' {
       appIdMismatch: boolean;
     };
     /**
-     * One `exagent smoke` run: the verdict, and every phase that produced it.
+     * One `@expo/agent-cli smoke` run: the verdict, and every phase that produced it.
      *
      * The phases are on the stream as well as in the report because the report may be the human
      * one, and an agent watching a run it did not ask for `--json` from still needs to know which

@@ -13,7 +13,7 @@ import { fileExistsSync } from '../utils/dir';
  * `eas build` fails without one, so this decides between offering the build and offering the
  * configuration step that has to come first.
  *
- * Synchronous by design: `exagent start` computes its follow-ups on the last line before the dev
+ * Synchronous by design: `@expo/agent-cli start` computes its follow-ups on the last line before the dev
  * server takes over the terminal, and one `stat` there must not reorder anything.
  */
 export function easJsonExistsSync(projectRoot: string): boolean {
@@ -25,7 +25,7 @@ export function easJsonExistsSync(projectRoot: string): boolean {
  * running in Expo Go.
  *
  * This is the rule `expo start` itself applies when no `--go` or `--dev-client` flag is given, so
- * the follow-up names the URL shape the dev server will actually serve. The plain `exagent start`
+ * the follow-up names the URL shape the dev server will actually serve. The plain `@expo/agent-cli start`
  * wrapper runs no project probe by design, and this is one synchronous file read, so it can.
  * Declared rather than installed: a project that lists the dependency is not going to be opened in
  * Expo Go, whether `node_modules` is populated yet or not.

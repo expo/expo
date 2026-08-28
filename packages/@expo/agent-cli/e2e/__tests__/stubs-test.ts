@@ -1,10 +1,10 @@
 /* eslint-env jest */
 // The shared e2e doubles, tested on their own.
 //
-// Every other e2e file asserts what `exagent` does *given* one of these; if a double is wrong, that
+// Every other e2e file asserts what `@expo/agent-cli` does *given* one of these; if a double is wrong, that
 // file fails for a reason that has nothing to do with the command under test. So the doubles get
 // their own tests: the stub-bin installer against an arbitrary bin name, and the stub dev server
-// against the two requests `exagent` uses to recognize a real one.
+// against the two requests `@expo/agent-cli` uses to recognize a real one.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';

@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { exagentExpoPassthrough } from '..';
+import { agentCliExpoPassthrough } from '..';
 import { event } from '../../events';
 import { runExpoAsync } from '../../utils/expoCli';
 
@@ -26,15 +26,15 @@ afterEach(() => {
   process.exitCode = undefined;
 });
 
-describe(exagentExpoPassthrough, () => {
+describe(agentCliExpoPassthrough, () => {
   it(`should forward the command and its arguments to the expo CLI`, async () => {
-    await exagentExpoPassthrough('prebuild')(['--clean']);
+    await agentCliExpoPassthrough('prebuild')(['--clean']);
 
     expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--clean']);
   });
 
   it(`should forward a command with no arguments`, async () => {
-    await exagentExpoPassthrough('whoami')([]);
+    await agentCliExpoPassthrough('whoami')([]);
 
     expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['whoami']);
   });
@@ -42,13 +42,13 @@ describe(exagentExpoPassthrough, () => {
   it(`should forward the exit code of the expo CLI`, async () => {
     jest.mocked(runExpoAsync).mockResolvedValue(9);
 
-    await exagentExpoPassthrough('export')(['--platform', 'web']);
+    await agentCliExpoPassthrough('export')(['--platform', 'web']);
 
     expect(process.exitCode).toBe(9);
   });
 
   it(`should emit one event naming the forwarded command`, async () => {
-    await exagentExpoPassthrough('export')(['--platform', 'web']);
+    await agentCliExpoPassthrough('export')(['--platform', 'web']);
 
     expect(event).toHaveBeenCalledWith('expo_passthrough', {
       command: 'export',
@@ -60,7 +60,7 @@ describe(exagentExpoPassthrough, () => {
     vol.reset();
     jest.spyOn(process, 'cwd').mockReturnValue('/elsewhere');
 
-    await exagentExpoPassthrough('whoami')([]);
+    await agentCliExpoPassthrough('whoami')([]);
 
     expect(runExpoAsync).toHaveBeenCalledWith('/elsewhere', ['whoami']);
   });

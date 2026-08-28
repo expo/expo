@@ -5,7 +5,7 @@ import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../
 
 export const smokeHelp: CommandHelp = {
   command: 'smoke',
-  usage: 'npx exagent smoke',
+  usage: 'npx @expo/agent-cli smoke',
   options: [
     `--route <route>            Open this route before the error window`,
     `--ios, --android           Platform to drive; the host decides when none is named`,
@@ -14,7 +14,7 @@ export const smokeHelp: CommandHelp = {
     `--start                    Start a dev server when none is running`,
     `--window ${DURATION_METAVAR}        How long to watch for errors (default: 3s)`,
     `--timeout ${DURATION_METAVAR}       Total budget (default: 1m, 3m with --start)`,
-    `--screenshot <path>        Where to write the picture (default: under .expo/exagent/)`,
+    `--screenshot <path>        Where to write the picture (default: under .expo/agent-cli/)`,
     `--no-screenshot            Take no picture`,
     `--dev-server-url <url>     Dev server to use (default: the project's own, then 8081)`,
     `--port <number>            Dev server on this port, short for --dev-server-url`,
@@ -25,15 +25,15 @@ export const smokeHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent smoke',
+      run: 'npx @expo/agent-cli smoke',
       gets: 'the whole gate: bundle, boot, error window, screenshot, and one exit code',
     },
     {
-      run: 'npx exagent smoke --route /notes --json',
+      run: 'npx @expo/agent-cli smoke --route /notes --json',
       gets: 'the same on that route, as one object with a phase-by-phase record',
     },
     {
-      run: 'npx exagent smoke --start --window 5s',
+      run: 'npx @expo/agent-cli smoke --start --window 5s',
       gets: 'the same, starting a dev server first and watching five seconds for errors',
     },
   ],
@@ -78,7 +78,7 @@ export const smokeHelp: CommandHelp = {
   ],
 };
 
-export const exagentSmoke: Command = async (argv) => {
+export const agentCliSmoke: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -102,7 +102,7 @@ export const exagentSmoke: Command = async (argv) => {
     printCommandHelp(smokeHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent smoke -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli smoke -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
   // directory that holds no app rather than planning work against whatever is there.

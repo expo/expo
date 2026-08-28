@@ -16,7 +16,7 @@ export interface ExpoCliCommand {
 /**
  * Resolve the `expo` CLI to run for a project.
  *
- * `exagent` never imports `@expo/cli`; it drives the `expo` bin as a subprocess, so the
+ * `@expo/agent-cli` never imports `@expo/cli`; it drives the `expo` bin as a subprocess, so the
  * project keeps controlling which SDK version runs.
  *
  * The bin is looked for the way the package manager installed it — this `node_modules/.bin` and
@@ -106,7 +106,7 @@ export async function spawnExpoAsync(
  *
  * While the child runs, terminal signals are forwarded to it instead of ending this
  * process. The default action would kill the wrapper first, cutting off the child's
- * shutdown output and losing its exit code. Forwarding also makes `kill <exagent pid>`
+ * shutdown output and losing its exit code. Forwarding also makes `kill <@expo/agent-cli pid>`
  * stop the dev server, which matters for agents that drive the CLI programmatically.
  * An interrupt then resolves as a clean exit, because the stop was asked for.
  */

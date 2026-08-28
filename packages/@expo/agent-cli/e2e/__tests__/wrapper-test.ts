@@ -4,12 +4,12 @@ import path from 'node:path';
 
 import {
   collectOutput,
-  executeExagentAsync,
+  executeAgentCliAsync,
   killAsync,
   readDevLockAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
-  spawnExagent,
+  spawnAgentCli,
   waitForAsync,
   waitForDevLockAsync,
   waitForExitAsync,
@@ -24,7 +24,7 @@ import {
 
 const CLAUDE_SKILLS_DIR = path.join('.claude', 'skills');
 
-describe('exagent install', () => {
+describe('@expo/agent-cli install', () => {
   let projectRoot: string;
   let skillLink: string;
 
@@ -34,7 +34,7 @@ describe('exagent install', () => {
   });
 
   it('prints usage with `install --help`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['install', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['install', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('install');
@@ -49,7 +49,7 @@ describe('exagent install', () => {
   // `expo install` and the wrapper's own report existed only as prose.
   describe('--json', () => {
     it('prints one object with a stable key set, and nothing else', async () => {
-      const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['install', 'expo-camera', '--json']);
 
       expect(result.exitCode).toBe(0);
       const report = JSON.parse(result.stdout);
@@ -69,7 +69,7 @@ describe('exagent install', () => {
     });
 
     it('carries the impact classification the human output prints', async () => {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'install',
         'fake-module-plain',
         '--json',
@@ -81,7 +81,7 @@ describe('exagent install', () => {
     });
 
     it('prints one object for a failed install too, with the exit code forwarded', async () => {
-      const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['install', 'expo-camera', '--json'], {
         env: { STUB_EXPO_EXIT_CODE: '42' },
         reject: false,
       });
@@ -92,7 +92,7 @@ describe('exagent install', () => {
   });
 
   it('forwards the packages to the expo CLI', async () => {
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'install',
       'expo-camera',
       '--no-agent-skills',
@@ -113,7 +113,7 @@ describe('exagent install', () => {
   // own case because two things have to hold at once: the flag reaches `expo start` unchanged, and
   // the ladder printed above it stops naming a LAN URL that a device off this network cannot load.
   it('forwards --tunnel --go, and names no LAN URL above it', async () => {
-    const child = spawnExagent(projectRoot, ['start', '--tunnel', '--go'], {
+    const child = spawnAgentCli(projectRoot, ['start', '--tunnel', '--go'], {
       env: { STUB_EXPO_DELAY_MS: '15000' },
     });
     const output = collectOutput(child);
@@ -123,7 +123,7 @@ describe('exagent install', () => {
       ).toBe(true);
       expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['start', '--tunnel', '--go']);
       expect(output.all).toContain('Suggested next:');
-      expect(output.all).toContain('npx exagent navigate / --print-url');
+      expect(output.all).toContain('npx @expo/agent-cli navigate / --print-url');
       expect(output.all).not.toMatch(/exp:\/\/\d+\.\d+\.\d+\.\d+/);
     } finally {
       await killAsync(child);
@@ -133,7 +133,7 @@ describe('exagent install', () => {
   it('skips the skill sync with `--no-agent-skills`', async () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 
-    await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--no-agent-skills']);
+    await executeAgentCliAsync(projectRoot, ['install', 'expo-camera', '--no-agent-skills']);
 
     // The sync would run after the subprocess exits, give it time to wrongly happen.
     await waitForAsync(() => fs.existsSync(skillLink), 5000);
@@ -143,19 +143,19 @@ describe('exagent install', () => {
   it('syncs the skills of the project after installing', async () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 
-    await executeExagentAsync(projectRoot, ['install', 'fake-module-with-skills']);
+    await executeAgentCliAsync(projectRoot, ['install', 'fake-module-with-skills']);
 
     expect(fs.existsSync(skillLink)).toBe(true);
   });
 
   it('does not sync without a cached agent selection', async () => {
-    await executeExagentAsync(projectRoot, ['install', 'fake-module-with-skills']);
+    await executeAgentCliAsync(projectRoot, ['install', 'fake-module-with-skills']);
 
     expect(fs.existsSync(skillLink)).toBe(false);
   });
 
   it('forwards the exit code of the expo CLI', async () => {
-    const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera'], {
+    const result = await executeAgentCliAsync(projectRoot, ['install', 'expo-camera'], {
       env: { STUB_EXPO_EXIT_CODE: '42' },
       reject: false,
     });
@@ -163,12 +163,12 @@ describe('exagent install', () => {
     expect(result.exitCode).toBe(42);
   });
 
-  // `expo add` is `expo install`, so `exagent add` is this wrapper and not a bare forward: it
+  // `expo add` is `expo install`, so `@expo/agent-cli add` is this wrapper and not a bare forward: it
   // spawns `expo install` and syncs the skills of what it installed.
   it('runs `add` as the install wrapper, skill sync included', async () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 
-    const result = await executeExagentAsync(projectRoot, ['add', 'fake-module-with-skills']);
+    const result = await executeAgentCliAsync(projectRoot, ['add', 'fake-module-with-skills']);
 
     expect(result.exitCode).toBe(0);
     expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual([
@@ -179,9 +179,9 @@ describe('exagent install', () => {
   });
 });
 
-// `exagent start` is the wrapper around `expo start`: it plans nothing (that is `exagent dev`, see
+// `@expo/agent-cli start` is the wrapper around `expo start`: it plans nothing (that is `@expo/agent-cli dev`, see
 // `dev-test.ts`) and forwards every argument it does not own.
-describe('exagent start', () => {
+describe('@expo/agent-cli start', () => {
   let projectRoot: string;
   let skillLink: string;
 
@@ -191,13 +191,13 @@ describe('exagent start', () => {
   });
 
   it('prints usage with `start --help`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['start', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['start', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('start');
     expect(result.all).toContain('--no-agent-skills');
-    // The plan engine is `exagent dev` now, and this help text points at it.
-    expect(result.all).toContain('npx exagent dev');
+    // The plan engine is `@expo/agent-cli dev` now, and this help text points at it.
+    expect(result.all).toContain('npx @expo/agent-cli dev');
     expect(result.all).not.toContain('--passthrough');
     expect(result.all).not.toContain('--smart');
   });
@@ -206,7 +206,7 @@ describe('exagent start', () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 
     // The stub dev server stays alive, like `expo start` does.
-    const child = spawnExagent(projectRoot, ['start'], {
+    const child = spawnAgentCli(projectRoot, ['start'], {
       env: { STUB_EXPO_DELAY_MS: '15000' },
     });
     const output = collectOutput(child);
@@ -222,7 +222,7 @@ describe('exagent start', () => {
   });
 
   it('forwards every other argument to expo start, separator included', async () => {
-    const child = spawnExagent(projectRoot, ['start', '--port', '8082', '--', '--web'], {
+    const child = spawnAgentCli(projectRoot, ['start', '--port', '8082', '--', '--web'], {
       env: { STUB_EXPO_DELAY_MS: '15000' },
     });
     const output = collectOutput(child);
@@ -246,7 +246,7 @@ describe('exagent start', () => {
   it('skips the skill sync with `--no-agent-skills`', async () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 
-    const child = spawnExagent(projectRoot, ['start', '--no-agent-skills'], {
+    const child = spawnAgentCli(projectRoot, ['start', '--no-agent-skills'], {
       env: { STUB_EXPO_DELAY_MS: '15000' },
     });
     try {
@@ -260,7 +260,7 @@ describe('exagent start', () => {
   });
 
   it('forwards the exit code of the expo CLI', async () => {
-    const child = spawnExagent(projectRoot, ['start'], {
+    const child = spawnAgentCli(projectRoot, ['start'], {
       env: { STUB_EXPO_EXIT_CODE: '7' },
     });
     const result = await waitForExitAsync(child, collectOutput(child));
@@ -268,13 +268,13 @@ describe('exagent start', () => {
     expect(result.exitCode).toBe(7);
   });
 
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
   // While the dev server runs, the wrapper holds a socket that answers where it listens. The test
-  // connects to it from the outside, like another `exagent` command would.
+  // connects to it from the outside, like another `@expo/agent-cli` command would.
   describe('the dev server lock', () => {
     it('answers with the port the dev server reported, and stops when it exits', async () => {
       const eventsFile = path.join(projectRoot, 'events.jsonl');
-      const child = spawnExagent(projectRoot, ['start'], {
+      const child = spawnAgentCli(projectRoot, ['start'], {
         env: {
           STUB_EXPO_DELAY_MS: '30000',
           STUB_EXPO_DEV_SERVER_PORT: '8087',
@@ -313,7 +313,7 @@ describe('exagent start', () => {
     it('falls back to the requested port when the dev server logs none', async () => {
       // The stub writes no `metro:instantiate` event without `STUB_EXPO_DEV_SERVER_PORT`, which is
       // the case of an `expo` CLI too old to log one.
-      const child = spawnExagent(projectRoot, ['start', '--port', '8092'], {
+      const child = spawnAgentCli(projectRoot, ['start', '--port', '8092'], {
         env: { STUB_EXPO_DELAY_MS: '60000' },
       });
       try {
@@ -331,9 +331,9 @@ describe('exagent start', () => {
   });
 });
 
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher
 // A fixed set of `expo` commands is forwarded verbatim. Everything outside that set, and outside
-// exagent's own commands, is a command neither CLI has, and fails saying so.
+// @expo/agent-cli's own commands, is a command neither CLI has, and fails saying so.
 describe('expo passthrough', () => {
   let projectRoot: string;
 
@@ -342,7 +342,7 @@ describe('expo passthrough', () => {
   });
 
   it('forwards the command and its arguments to expo', async () => {
-    const result = await executeExagentAsync(projectRoot, ['export', '--platform', 'web']);
+    const result = await executeAgentCliAsync(projectRoot, ['export', '--platform', 'web']);
 
     expect(result.exitCode).toBe(0);
     expect(readStubExpoInvocations(projectRoot)).toHaveLength(1);
@@ -350,18 +350,18 @@ describe('expo passthrough', () => {
   });
 
   it('forwards a colon-named expo command of the set', async () => {
-    const result = await executeExagentAsync(projectRoot, ['export:web'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['export:web'], { reject: false });
 
     expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['export:web']);
     expect(result.all).not.toContain('not a command');
   });
 
   it('fails on a command neither CLI has, instead of forwarding it', async () => {
-    const result = await executeExagentAsync(projectRoot, ['totally-unknown'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['totally-unknown'], { reject: false });
 
     expect(result.exitCode).not.toBe(0);
-    expect(result.all).toContain('"exagent totally-unknown" is not a command');
-    expect(result.all).toContain('Try: npx exagent --help');
+    expect(result.all).toContain('"@expo/agent-cli totally-unknown" is not a command');
+    expect(result.all).toContain('Try: npx @expo/agent-cli --help');
     // The point of the fixed set: nothing was handed to `expo` to report for us.
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
@@ -369,24 +369,24 @@ describe('expo passthrough', () => {
   // A name that is only the *action* half is a caller that knows what it wants and not which
   // group owns it, so the error names every group that has an action by that name.
   it('names the closest commands for a name that is only an action', async () => {
-    const result = await executeExagentAsync(projectRoot, ['stop'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['stop'], { reject: false });
 
     expect(result.exitCode).toBe(1);
-    expect(result.all).toContain('npx exagent dev:stop');
-    expect(result.all).toContain('npx exagent runtime:stop');
+    expect(result.all).toContain('npx @expo/agent-cli dev:stop');
+    expect(result.all).toContain('npx @expo/agent-cli runtime:stop');
     // Two candidates are a choice, so the last line stays the full listing.
-    expect(result.all).toContain('Try: npx exagent --help');
+    expect(result.all).toContain('Try: npx @expo/agent-cli --help');
   });
 
   it('recovers into the one close command for a mistyped name', async () => {
-    const result = await executeExagentAsync(projectRoot, ['stauts'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['stauts'], { reject: false });
 
     expect(result.exitCode).toBe(1);
-    expect(result.all).toContain('Try: npx exagent status --help');
+    expect(result.all).toContain('Try: npx @expo/agent-cli status --help');
   });
 
   it('forwards the exit code of the expo CLI', async () => {
-    const result = await executeExagentAsync(projectRoot, ['prebuild', '--clean'], {
+    const result = await executeAgentCliAsync(projectRoot, ['prebuild', '--clean'], {
       env: { STUB_EXPO_EXIT_CODE: '17' },
       reject: false,
     });
@@ -397,7 +397,7 @@ describe('expo passthrough', () => {
 
   it('emits one cli:expo_passthrough event naming the forwarded command', async () => {
     const eventsFile = path.join(projectRoot, 'events.jsonl');
-    await executeExagentAsync(projectRoot, ['export', '--platform', 'web'], {
+    await executeAgentCliAsync(projectRoot, ['export', '--platform', 'web'], {
       env: { LOG_EVENTS: eventsFile },
     });
 
@@ -416,7 +416,7 @@ describe('expo passthrough', () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
     const skillLink = path.join(projectRoot, CLAUDE_SKILLS_DIR, 'usage');
 
-    const result = await executeExagentAsync(projectRoot, ['prebuild']);
+    const result = await executeAgentCliAsync(projectRoot, ['prebuild']);
 
     expect(result.all).not.toContain('Suggested next:');
     // The sync of `start` runs a few seconds in, give it time to wrongly happen here.
@@ -424,10 +424,10 @@ describe('expo passthrough', () => {
     expect(fs.existsSync(skillLink)).toBe(false);
   });
 
-  // An action of a group exagent owns is never forwarded, whether or not the group has it.
+  // An action of a group @expo/agent-cli owns is never forwarded, whether or not the group has it.
   it('never forwards an action of one of its own groups', async () => {
-    const known = await executeExagentAsync(projectRoot, ['skills:nope'], { reject: false });
-    const unknown = await executeExagentAsync(projectRoot, ['bogus:thing'], { reject: false });
+    const known = await executeAgentCliAsync(projectRoot, ['skills:nope'], { reject: false });
+    const unknown = await executeAgentCliAsync(projectRoot, ['bogus:thing'], { reject: false });
 
     expect(known.exitCode).not.toBe(0);
     expect(unknown.exitCode).not.toBe(0);
@@ -435,7 +435,7 @@ describe('expo passthrough', () => {
   });
 
   it('lists the forwarded expo commands in the top-level help', async () => {
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
@@ -453,7 +453,7 @@ describe('expo passthrough', () => {
   it.each([['smoke'], ['runtime:eval'], ['runtime:errors']])(
     'documents that %s durations take units, not only milliseconds',
     async (command) => {
-      const result = await executeExagentAsync(projectRoot, [command, '--help']);
+      const result = await executeAgentCliAsync(projectRoot, [command, '--help']);
 
       expect(result.exitCode).toBe(0);
       expect(result.all).toContain('<duration>');
@@ -473,7 +473,7 @@ describe('command registry', () => {
   });
 
   it('fails on a group given options but no action', async () => {
-    const result = await executeExagentAsync(projectRoot, ['runtime', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['runtime', '--json'], {
       reject: false,
     });
 
@@ -481,14 +481,14 @@ describe('command registry', () => {
     expect(result.all).toContain('names no action');
     // The listing comes first, so the actions those options belong to are on screen.
     expect(result.all).toContain('runtime:eval');
-    expect(result.all).toContain('Try: npx exagent runtime --help');
+    expect(result.all).toContain('Try: npx @expo/agent-cli runtime --help');
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 
   // The other half of the rule — a group *with* a default action still gets its options — is
-  // `exagent doctor --json`, which `doctor-test.ts` covers.
+  // `@expo/agent-cli doctor --json`, which `doctor-test.ts` covers.
   it('still lists the actions of a bare group, and exits 0', async () => {
-    const result = await executeExagentAsync(projectRoot, ['runtime']);
+    const result = await executeAgentCliAsync(projectRoot, ['runtime']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('runtime:eval');
@@ -508,7 +508,7 @@ describe('the --json error envelope', () => {
   });
 
   it('prints one parseable object for a bad invocation', async () => {
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['deploy', '--upload-root', '..', '--json'],
       { reject: false }
@@ -531,7 +531,7 @@ describe('the --json error envelope', () => {
   });
 
   it('prints one parseable object for a command neither CLI has', async () => {
-    const result = await executeExagentAsync(projectRoot, ['wait', '--json'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['wait', '--json'], { reject: false });
 
     expect(result.exitCode).toBe(1);
     expect(JSON.parse(result.stdout).error).toMatchObject({ code: 'UNKNOWN_COMMAND' });
@@ -540,7 +540,7 @@ describe('the --json error envelope', () => {
   // The listing that accompanies a group error is prose, so under `--json` it moves to stderr:
   // stdout has to hold the envelope and nothing else.
   it('keeps the group listing off stdout so the envelope stays parseable', async () => {
-    const result = await executeExagentAsync(projectRoot, ['runtime', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['runtime', '--json'], {
       reject: false,
     });
 
@@ -550,7 +550,7 @@ describe('the --json error envelope', () => {
   });
 
   it('prints nothing on stdout without the flag', async () => {
-    const result = await executeExagentAsync(projectRoot, ['deploy', '--upload-root', '..'], {
+    const result = await executeAgentCliAsync(projectRoot, ['deploy', '--upload-root', '..'], {
       reject: false,
     });
 

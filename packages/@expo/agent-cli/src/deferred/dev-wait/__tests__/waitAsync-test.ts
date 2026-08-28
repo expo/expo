@@ -147,7 +147,7 @@ describe(devWaitAsync, () => {
     // and `logCmdError` exits 1.
     await expect(devWaitAsync(projectRoot, options())).rejects.toMatchObject({
       code: 'NO_DEV_SERVER',
-      suggestedCommand: 'npx exagent dev',
+      suggestedCommand: 'npx @expo/agent-cli dev',
     });
     expect(jest.mocked(waitForBundlerReadyAsync)).not.toHaveBeenCalled();
   });

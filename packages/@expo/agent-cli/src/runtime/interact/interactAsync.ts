@@ -228,7 +228,7 @@ async function askAppAsync(
       [
         `Could not read the app's component tree (dev server ${devServerUrl}).`,
         `Why: ${error instanceof Error ? error.message : String(error)}`,
-        `How: make sure the app is open and connected to the dev server, then run this command again. "npx exagent status" says whether an app is attached.`,
+        `How: make sure the app is open and connected to the dev server, then run this command again. "npx @expo/agent-cli status" says whether an app is attached.`,
       ].join('\n')
     );
   }
@@ -241,7 +241,7 @@ async function askAppAsync(
       [
         `Reading the app's component tree threw inside the app (dev server ${devServerUrl}).`,
         `Why: ${result.exceptionText}`,
-        `How: this is a walk over React's own fibers, so a throw here means the app's React is a shape this command has not met. Report it with the React and React Native versions from "npx exagent status --json".`,
+        `How: this is a walk over React's own fibers, so a throw here means the app's React is a shape this command has not met. Report it with the React and React Native versions from "npx @expo/agent-cli status --json".`,
       ].join('\n')
     );
   }
@@ -253,7 +253,7 @@ async function askAppAsync(
       [
         `The app answered the component-tree walk with something this command cannot read (dev server ${devServerUrl}).`,
         `Why: the expression returns one object with a "supported" flag, and this answer has none.`,
-        `How: check that the connected target is the app rather than another page, with "npx exagent status --json".`,
+        `How: check that the connected target is the app rather than another page, with "npx @expo/agent-cli status --json".`,
       ].join('\n')
     );
   }
@@ -279,10 +279,10 @@ function treeUnsupportedError(devServerUrl: string, reason: string | null): Comm
           ? '__REACT_DEVTOOLS_GLOBAL_HOOK__ is installed and carries no getFiberRoots, so no renderer registered with it'
           : 'the app has no __REACT_DEVTOOLS_GLOBAL_HOOK__ at all'
       }. These commands walk React's own fiber tree through that hook — a development bundle installs it, and a production bundle is expected not to.`,
-      `How: open the app from a development bundle: "npx exagent dev" serves one, and "npx exagent runtime:reload" puts a running app back onto it. "npx exagent runtime:eval" still evaluates JavaScript in this runtime, which is how to read the app's state without the tree.`,
+      `How: open the app from a development bundle: "npx @expo/agent-cli dev" serves one, and "npx @expo/agent-cli runtime:reload" puts a running app back onto it. "npx @expo/agent-cli runtime:eval" still evaluates JavaScript in this runtime, which is how to read the app's state without the tree.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent runtime:eval "typeof __REACT_DEVTOOLS_GLOBAL_HOOK__"';
+  error.suggestedCommand = 'npx @expo/agent-cli runtime:eval "typeof __REACT_DEVTOOLS_GLOBAL_HOOK__"';
   return error;
 }
 
@@ -362,7 +362,7 @@ export async function runtimeTreeAsync(
     return refuseForBundle(unreadTreeReport(options, devServerUrl, bundle, refusal), {
       json: options.json,
       what: 'nothing on the screen was read',
-      rerun: 'npx exagent runtime:tree',
+      rerun: 'npx @expo/agent-cli runtime:tree',
     });
   }
   const answer = await askAppAsync(
@@ -439,7 +439,7 @@ export async function runtimeTreeAsync(
             ? ''
             : ' An app keeps its other screens mounted, and --all-screens looks at those too.'
         }`,
-        `How: run "npx exagent runtime:tree" for the testIDs this screen is carrying.`,
+        `How: run "npx @expo/agent-cli runtime:tree" for the testIDs this screen is carrying.`,
       ].join('\n')
     );
     return EXIT_OUTCOME_FAILED;
@@ -555,7 +555,7 @@ export async function runtimeTapAsync(
       {
         json: options.json,
         what: 'nothing was tapped',
-        rerun: `npx exagent runtime:tap ${options.testID}`,
+        rerun: `npx @expo/agent-cli runtime:tap ${options.testID}`,
       }
     );
   }
@@ -653,7 +653,7 @@ export async function runtimeTypeAsync(
       {
         json: options.json,
         what: 'nothing was typed',
-        rerun: `npx exagent runtime:type ${JSON.stringify(options.text)} --testID ${options.testID}`,
+        rerun: `npx @expo/agent-cli runtime:type ${JSON.stringify(options.text)} --testID ${options.testID}`,
       }
     );
   }

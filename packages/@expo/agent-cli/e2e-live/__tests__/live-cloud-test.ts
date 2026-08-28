@@ -38,7 +38,7 @@
 //     2026-08-27: `navigate --cloud` exit 22 after 60.9 s, then two 180 s reloads with zero bundles
 //     served]. So the session is started with `--open-url`, which is the runner opening the URL in
 //     the app it just launched. Wave 19's working session was in exactly that state before any
-//     exagent command touched it.
+//     @expo/agent-cli command touched it.
 //
 // **S11 is amended, and this is where it was amended.** It said a cloud simulator registers zero CDP
 // targets over both origins, so `navigate --cloud` could assert the link was opened and nothing more.
@@ -55,7 +55,7 @@
 // What this suite pins is that the CLI reaches the rung that works and is honest about what it saw.
 //
 // Cost: an EAS Simulator session bills from start to stop. Hence two opt-ins — `test:live:cloud` and
-// `EXAGENT_LIVE_CLOUD=1` — one session started in `beforeAll`, reused by every test, and stopped in
+// `AGENT_CLI_LIVE_CLOUD=1` — one session started in `beforeAll`, reused by every test, and stopped in
 // `afterAll` whatever happened.
 
 import fs from 'node:fs';
@@ -114,7 +114,7 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
   let port = 0;
   /** The `tuft host` name this run created, or the host of a caller-supplied origin. */
   let hostName = '';
-  /** The origin the dev server advertises, e.g. `https://exagent-live-8500.tuft.host`. */
+  /** The origin the dev server advertises, e.g. `https://agent-cli-live-8500.tuft.host`. */
   let origin = '';
   /** Host and port of {@link origin}, which is what an `exp://` link carries. */
   let publicHost = '';
@@ -199,14 +199,14 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     // Cleanups run newest-first, so these are registered cheapest-first: the session that bills is
     // registered last and therefore ends first, and the directory the others run in is deleted last.
     run.onCleanup('scratch project', () => {
-      if (!process.env.EXAGENT_LIVE_KEEP) {
+      if (!process.env.AGENT_CLI_LIVE_KEEP) {
         fs.rmSync(run.tempDir, { recursive: true, force: true });
       }
     });
     run.onCleanup('tuft host stop', async () => {
       // Only what this suite created. An origin the caller supplied is theirs, and taking it down would
       // be a cleanup acting outside its own run.
-      if (hostName && !process.env.EXAGENT_LIVE_PUBLIC_ORIGIN) {
+      if (hostName && !process.env.AGENT_CLI_LIVE_PUBLIC_ORIGIN) {
         const stopped = await execAsync('tuft', ['host', 'stop', hostName], { timeoutMs: 120_000 });
         run.writeArtifact('cleanup-host-stop.txt', stopped.stdout + stopped.stderr);
       }
@@ -227,14 +227,14 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     // A public origin. Either one the caller already has — a reverse proxy, a Cloudflare tunnel, an
     // ngrok that actually starts — or one from `tuft host`. `--force` because a re-run reuses the name,
     // and a name left pointing at a dead port by a crashed run must not stop this one.
-    if (process.env.EXAGENT_LIVE_PUBLIC_ORIGIN) {
-      origin = process.env.EXAGENT_LIVE_PUBLIC_ORIGIN.replace(/\/+$/, '');
+    if (process.env.AGENT_CLI_LIVE_PUBLIC_ORIGIN) {
+      origin = process.env.AGENT_CLI_LIVE_PUBLIC_ORIGIN.replace(/\/+$/, '');
       hostName = new URL(origin).host;
       console.log(
-        `[live] using EXAGENT_LIVE_PUBLIC_ORIGIN (${origin}); it has to already forward to port ${port}`
+        `[live] using AGENT_CLI_LIVE_PUBLIC_ORIGIN (${origin}); it has to already forward to port ${port}`
       );
     } else {
-      hostName = `exagent-live-${port}`;
+      hostName = `agent-cli-live-${port}`;
       const hosted = await execAsync(
         'tuft',
         ['host', 'add', String(port), '--name', hostName, '--force'],
@@ -311,7 +311,7 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
       `exp://${publicHost}`,
       '--non-interactive',
       '--name',
-      'exagent-live',
+      'agent-cli-live',
       '--json',
     ]);
     if (started.exitCode !== 0) {
@@ -474,7 +474,7 @@ describeLive('live-cloud', gate)('live-cloud: an EAS Simulator session, on stagi
     // "this is what opens one on a booted device" — to a host that reached for the cloud precisely
     // because it has no booted device. Every follow-up of a `--cloud` run stays off the local flags.
     for (const followup of report.followups ?? []) {
-      if (followup.command.includes('exagent')) {
+      if (followup.command.includes('@expo/agent-cli')) {
         expect(followup.command).not.toMatch(/--ios\b|--android\b/);
       }
     }

@@ -1,5 +1,5 @@
 // @ref llp/0011-impact-and-freshness.rfc.md §The classifier reads `reasons`
-// The pure core of `exagent impact`: a fingerprint diff in, a class out. No I/O, no subprocess,
+// The pure core of `@expo/agent-cli impact`: a fingerprint diff in, a class out. No I/O, no subprocess,
 // no network — which is what makes the vocabulary testable exhaustively and what keeps the answer
 // the same whether it came from the local CLI or from EAS.
 

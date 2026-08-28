@@ -37,9 +37,9 @@ const storeFile = `${projectRoot}/.expo/${CHECKPOINTS_FILE_NAME}`;
 function record(overrides: Partial<CheckpointRecord> = {}): CheckpointRecord {
   return {
     id: 'c0ffee1234567890',
-    label: 'exagent install',
+    label: '@expo/agent-cli install',
     createdAt: new Date().toISOString(),
-    argv: ['exagent', 'install', 'expo-sqlite'],
+    argv: ['@expo/agent-cli', 'install', 'expo-sqlite'],
     path: 'apps/app',
     ...overrides,
   };
@@ -82,7 +82,7 @@ describe(undoAsync, () => {
     expect(restoreTreeAsync).toHaveBeenCalledWith(worktree, 'newer');
     expect(event).toHaveBeenCalledWith('restored', {
       id: 'newer',
-      label: 'exagent install',
+      label: '@expo/agent-cli install',
       filesRestored: 2,
       filesKept: 1,
     });
@@ -109,7 +109,7 @@ describe(undoAsync, () => {
   it(`should suggest making a checkpoint when the project has none`, async () => {
     await expect(undoAsync(projectRoot, {})).rejects.toMatchObject({
       code: 'NO_CHECKPOINTS',
-      suggestedCommand: 'npx exagent checkpoint',
+      suggestedCommand: 'npx @expo/agent-cli checkpoint',
     });
     expect(restoreTreeAsync).not.toHaveBeenCalled();
   });
@@ -119,7 +119,7 @@ describe(undoAsync, () => {
 
     await expect(undoAsync(projectRoot, { id: 'nope' })).rejects.toMatchObject({
       code: 'CHECKPOINT_NOT_FOUND',
-      suggestedCommand: 'npx exagent checkpoint:list',
+      suggestedCommand: 'npx @expo/agent-cli checkpoint:list',
     });
   });
 
@@ -129,7 +129,7 @@ describe(undoAsync, () => {
 
     await expect(undoAsync(projectRoot, {})).rejects.toMatchObject({
       code: 'CHECKPOINT_OBJECT_MISSING',
-      suggestedCommand: 'npx exagent checkpoint:list',
+      suggestedCommand: 'npx @expo/agent-cli checkpoint:list',
     });
     expect(restoreTreeAsync).not.toHaveBeenCalled();
   });
@@ -160,7 +160,7 @@ describe(printUndoAsync, () => {
     await printUndoAsync(projectRoot, {});
 
     expect(printed()).toContain('c0ffee1');
-    expect(printed()).toContain('exagent install');
+    expect(printed()).toContain('@expo/agent-cli install');
     expect(printed()).toContain('2 files');
     expect(printed()).toContain('package.json');
     // The follow-up of a restored manifest.
@@ -197,15 +197,15 @@ describe(printUndoAsync, () => {
 describe(printCheckpointListAsync, () => {
   it(`should print the stored checkpoints without touching git`, async () => {
     seedCheckpoints([
-      record({ id: 'aaaaaaa111', label: 'exagent agents:setup' }),
-      record({ id: 'bbbbbbb222', label: 'manual', argv: ['exagent', 'checkpoint'] }),
+      record({ id: 'aaaaaaa111', label: '@expo/agent-cli agents:setup' }),
+      record({ id: 'bbbbbbb222', label: 'manual', argv: ['@expo/agent-cli', 'checkpoint'] }),
     ]);
 
     await printCheckpointListAsync(projectRoot, {});
 
     expect(printed()).toContain('aaaaaaa');
-    expect(printed()).toContain('exagent agents:setup');
-    expect(printed()).toContain('exagent checkpoint');
+    expect(printed()).toContain('@expo/agent-cli agents:setup');
+    expect(printed()).toContain('@expo/agent-cli checkpoint');
     expect(resolveWorkTreeAsync).not.toHaveBeenCalled();
   });
 
@@ -225,10 +225,10 @@ describe(printCheckpointListAsync, () => {
     expect(report.checkpoints).toEqual([
       {
         id: 'aaaaaaa111',
-        label: 'exagent install',
+        label: '@expo/agent-cli install',
         createdAt: expect.any(String),
         age: expect.any(String),
-        argv: ['exagent', 'install', 'expo-sqlite'],
+        argv: ['@expo/agent-cli', 'install', 'expo-sqlite'],
         path: 'apps/app',
       },
     ]);

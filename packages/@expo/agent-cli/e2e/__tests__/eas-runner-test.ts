@@ -15,7 +15,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubBinAsync,
   installStubFingerprintAsync,
   setupFixtureAsync,
@@ -207,7 +207,7 @@ describe('a machine with no eas-cli installed', () => {
   it('asks EAS about builds through npx --yes eas-cli@latest', async () => {
     const planted = await plantAsync({ runners: ['npx'] });
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       planted.projectRoot,
       ['status', '--explain', '--json'],
       { env: pathEnv(planted.binDir) }
@@ -241,7 +241,7 @@ describe('a machine with no eas-cli installed', () => {
     it('answers for both platforms, and quotes no progress line as EAS', async () => {
       const planted = await plantAsync({ runners: ['npx'], racing: true });
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         planted.projectRoot,
         ['status', '--explain', '--json'],
         { env: pathEnv(planted.binDir) }
@@ -274,7 +274,7 @@ describe('a machine with no eas-cli installed', () => {
       // The scratch directory the stub keys on, created behind its back and never released.
       await fs.promises.mkdir(path.join(planted.projectRoot, 'runner-eas-cli@latest'));
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         planted.projectRoot,
         ['status', '--explain', '--json'],
         { env: pathEnv(planted.binDir) }
@@ -294,7 +294,7 @@ describe('a machine with no eas-cli installed', () => {
   it('uses bunx in a project whose lockfile is bun\'s', async () => {
     const planted = await plantAsync({ runners: ['npx', 'bunx'], lockfile: 'bun.lock' });
 
-    await executeExagentAsync(planted.projectRoot, ['status', '--explain', '--json'], {
+    await executeAgentCliAsync(planted.projectRoot, ['status', '--explain', '--json'], {
       env: pathEnv(planted.binDir),
     });
 
@@ -310,7 +310,7 @@ describe('a machine with no eas-cli installed', () => {
       lockfile: 'package-lock.json',
     });
 
-    await executeExagentAsync(planted.projectRoot, ['status', '--explain', '--json'], {
+    await executeAgentCliAsync(planted.projectRoot, ['status', '--explain', '--json'], {
       env: pathEnv(planted.binDir),
     });
 
@@ -324,7 +324,7 @@ describe('a machine with no eas-cli installed', () => {
   // EAS-backed command rather than for the auth chain alone.
   it('skips a broken shim on PATH and reaches the runner instead', async () => {
     const directory = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'exagent-eas-runner-'))
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'agent-cli-eas-runner-'))
     );
     const binDir = path.join(directory, 'path-bin');
     const logFile = path.join(directory, 'runner-invocations.jsonl');
@@ -337,7 +337,7 @@ describe('a machine with no eas-cli installed', () => {
     await fs.promises.writeFile(runnerStub, stubRunnerScript(logFile));
     await installStubBinAsync(binDir, 'npx', runnerStub);
 
-    const result = await executeExagentAsync(directory, ['whoami'], {
+    const result = await executeAgentCliAsync(directory, ['whoami'], {
       env: pathEnv(binDir),
       reject: false,
     });
@@ -355,7 +355,7 @@ describe('a machine with no eas-cli installed', () => {
     const projectRoot = await setupFixtureAsync('dev-client-app');
     await installStubFingerprintAsync(projectRoot);
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
       // A `PATH` with neither an `eas` nor a runner on it. The fixture's own `.stub-bin` has no
       // `npx`, so this is the one machine shape where the ladder runs out.
       env: { PATH: path.join(projectRoot, '.stub-bin') },

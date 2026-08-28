@@ -29,7 +29,7 @@
 import { randomBytes } from 'crypto';
 
 /** The prefix of the key the wrapper marks a pending promise with. */
-const PENDING_MARKER_PREFIX = '__exagentPendingPromise_';
+const PENDING_MARKER_PREFIX = '__agentCliPendingPromise_';
 
 /** A run's nonce: what ties a marker and a parked outcome to this evaluation and no other. */
 export function createPromiseNonce(): string {
@@ -110,7 +110,7 @@ export function parseSettledPromiseSlot(value: unknown): SettledPromiseSlot | nu
 }
 
 /** Where the parked outcomes live in the app. One object, so one `delete` cleans a run up. */
-const SLOTS_GLOBAL = '__exagentPromiseSlots';
+const SLOTS_GLOBAL = '__agentCliPromiseSlots';
 
 /**
  * Wrap an expression so the app answers "here is the value" or "this is a promise, I am watching
@@ -138,63 +138,63 @@ export function wrapExpressionForPromises(
   // runtimes without it, and a ReferenceError here would read as a failure of the caller's code.
   const subscription = subscribe
     ? `
-  var __exagentGlobal = typeof globalThis !== 'undefined' ? globalThis : this;
-  var __exagentSlots = __exagentGlobal.${SLOTS_GLOBAL} || (__exagentGlobal.${SLOTS_GLOBAL} = {});
-  var __exagentSlot = { state: 'pending' };
-  __exagentSlots[${key}] = __exagentSlot;
-  var __exagentDescribe = function (__exagentReason) {
+  var __agentCliGlobal = typeof globalThis !== 'undefined' ? globalThis : this;
+  var __agentCliSlots = __agentCliGlobal.${SLOTS_GLOBAL} || (__agentCliGlobal.${SLOTS_GLOBAL} = {});
+  var __agentCliSlot = { state: 'pending' };
+  __agentCliSlots[${key}] = __agentCliSlot;
+  var __agentCliDescribe = function (__agentCliReason) {
     try {
-      if (__exagentReason instanceof Error) {
+      if (__agentCliReason instanceof Error) {
         return {
-          text: String(__exagentReason),
-          stack: __exagentReason.stack == null ? null : String(__exagentReason.stack),
+          text: String(__agentCliReason),
+          stack: __agentCliReason.stack == null ? null : String(__agentCliReason.stack),
         };
       }
-      if (typeof __exagentReason === 'string') {
-        return { text: __exagentReason, stack: null };
+      if (typeof __agentCliReason === 'string') {
+        return { text: __agentCliReason, stack: null };
       }
-      var __exagentJson;
+      var __agentCliJson;
       try {
-        __exagentJson = JSON.stringify(__exagentReason);
-      } catch (__exagentError) {}
+        __agentCliJson = JSON.stringify(__agentCliReason);
+      } catch (__agentCliError) {}
       return {
-        text: __exagentJson === undefined ? String(__exagentReason) : __exagentJson,
+        text: __agentCliJson === undefined ? String(__agentCliReason) : __agentCliJson,
         stack: null,
       };
-    } catch (__exagentError) {
+    } catch (__agentCliError) {
       return { text: 'The rejection reason could not be described.', stack: null };
     }
   };
   try {
-    __exagentValue.then(
-      function (__exagentSettled) {
-        __exagentSlot.state = 'fulfilled';
-        __exagentSlot.type = typeof __exagentSettled;
-        __exagentSlot.value = __exagentSettled;
+    __agentCliValue.then(
+      function (__agentCliSettled) {
+        __agentCliSlot.state = 'fulfilled';
+        __agentCliSlot.type = typeof __agentCliSettled;
+        __agentCliSlot.value = __agentCliSettled;
       },
-      function (__exagentReason) {
-        __exagentSlot.state = 'rejected';
-        __exagentSlot.reason = __exagentDescribe(__exagentReason);
+      function (__agentCliReason) {
+        __agentCliSlot.state = 'rejected';
+        __agentCliSlot.reason = __agentCliDescribe(__agentCliReason);
       }
     );
-  } catch (__exagentError) {
-    __exagentSlot.state = 'rejected';
-    __exagentSlot.reason = __exagentDescribe(__exagentError);
+  } catch (__agentCliError) {
+    __agentCliSlot.state = 'rejected';
+    __agentCliSlot.reason = __agentCliDescribe(__agentCliError);
   }`
     : '';
 
   return `(function () {
-  var __exagentValue = (${expression});
+  var __agentCliValue = (${expression});
   if (
-    __exagentValue == null ||
-    (typeof __exagentValue !== 'object' && typeof __exagentValue !== 'function') ||
-    typeof __exagentValue.then !== 'function'
+    __agentCliValue == null ||
+    (typeof __agentCliValue !== 'object' && typeof __agentCliValue !== 'function') ||
+    typeof __agentCliValue.then !== 'function'
   ) {
-    return __exagentValue;
+    return __agentCliValue;
   }${subscription}
-  var __exagentMarker = {};
-  __exagentMarker[${marker}] = ${key};
-  return __exagentMarker;
+  var __agentCliMarker = {};
+  __agentCliMarker[${marker}] = ${key};
+  return __agentCliMarker;
 })()`;
 }
 
@@ -208,34 +208,34 @@ export function wrapExpressionForPromises(
 export function buildPromisePollExpression(nonce: string): string {
   const key = JSON.stringify(nonce);
   return `(function () {
-  var __exagentGlobal = typeof globalThis !== 'undefined' ? globalThis : this;
-  var __exagentSlots = __exagentGlobal.${SLOTS_GLOBAL};
-  var __exagentSlot = __exagentSlots ? __exagentSlots[${key}] : undefined;
-  if (!__exagentSlot) {
+  var __agentCliGlobal = typeof globalThis !== 'undefined' ? globalThis : this;
+  var __agentCliSlots = __agentCliGlobal.${SLOTS_GLOBAL};
+  var __agentCliSlot = __agentCliSlots ? __agentCliSlots[${key}] : undefined;
+  if (!__agentCliSlot) {
     return { state: 'missing' };
   }
-  if (__exagentSlot.state === 'pending') {
+  if (__agentCliSlot.state === 'pending') {
     return { state: 'pending' };
   }
-  delete __exagentSlots[${key}];
-  if (__exagentSlot.state !== 'fulfilled') {
-    return { state: __exagentSlot.state, reason: __exagentSlot.reason };
+  delete __agentCliSlots[${key}];
+  if (__agentCliSlot.state !== 'fulfilled') {
+    return { state: __agentCliSlot.state, reason: __agentCliSlot.reason };
   }
-  var __exagentOut = { state: 'fulfilled', type: __exagentSlot.type };
-  var __exagentSerializable = false;
+  var __agentCliOut = { state: 'fulfilled', type: __agentCliSlot.type };
+  var __agentCliSerializable = false;
   try {
-    __exagentSerializable = JSON.stringify(__exagentSlot.value) !== undefined;
-  } catch (__exagentError) {}
-  if (__exagentSerializable) {
-    __exagentOut.value = __exagentSlot.value;
+    __agentCliSerializable = JSON.stringify(__agentCliSlot.value) !== undefined;
+  } catch (__agentCliError) {}
+  if (__agentCliSerializable) {
+    __agentCliOut.value = __agentCliSlot.value;
   } else {
     try {
-      __exagentOut.description = String(__exagentSlot.value);
-    } catch (__exagentError) {
-      __exagentOut.description = 'The settled value could not be described.';
+      __agentCliOut.description = String(__agentCliSlot.value);
+    } catch (__agentCliError) {
+      __agentCliOut.description = 'The settled value could not be described.';
     }
   }
-  return __exagentOut;
+  return __agentCliOut;
 })()`;
 }
 
@@ -248,9 +248,9 @@ export function buildPromisePollExpression(nonce: string): string {
 export function buildPromiseReleaseExpression(nonce: string): string {
   const key = JSON.stringify(nonce);
   return `(function () {
-  var __exagentGlobal = typeof globalThis !== 'undefined' ? globalThis : this;
-  if (__exagentGlobal.${SLOTS_GLOBAL}) {
-    delete __exagentGlobal.${SLOTS_GLOBAL}[${key}];
+  var __agentCliGlobal = typeof globalThis !== 'undefined' ? globalThis : this;
+  if (__agentCliGlobal.${SLOTS_GLOBAL}) {
+    delete __agentCliGlobal.${SLOTS_GLOBAL}[${key}];
   }
   return true;
 })()`;

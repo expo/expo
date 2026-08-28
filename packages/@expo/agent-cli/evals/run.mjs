@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ref llp/0002-testing-and-evals.plan.md
 //
-// Eval runner for the exagent scenario suite. Dependency-free on purpose: node built-ins only,
+// Eval runner for the @expo/agent-cli scenario suite. Dependency-free on purpose: node built-ins only,
 // so it runs on a bare GitHub runner right after checkout. See ./schema.md for the scenario and
 // grader format.
 //
@@ -10,7 +10,7 @@
 //   node evals/run.mjs --tier 0                   Run the tier 0 scenarios
 //   node evals/run.mjs --tier 0 --scenario <id>   Run one scenario
 //   node evals/run.mjs --tier 1                   Run the tier 1 scenarios with a local model
-//                                                 via Ollama (OLLAMA_HOST, EXAGENT_EVAL_MODEL)
+//                                                 via Ollama (OLLAMA_HOST, AGENT_CLI_EVAL_MODEL)
 //   node evals/run.mjs --tier 2                   Run the tier 2 scenarios with Claude Code
 //                                                 headless (ANTHROPIC_API_KEY required)
 
@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 const EVALS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(EVALS_DIR, '..');
 const SCENARIOS_DIR = path.join(EVALS_DIR, 'scenarios');
-const CLI_BIN = path.join(PACKAGE_ROOT, 'bin', 'exagent.js');
+const CLI_BIN = path.join(PACKAGE_ROOT, 'bin', 'cli.js');
 const CLI_BUILD = path.join(PACKAGE_ROOT, 'build', 'cli', 'index.js');
 
 const TIERS = [0, 1, 2];
@@ -40,18 +40,18 @@ const DEFAULT_TIMEOUT_MS = 120_000;
 // Tier 1: best-effort agent-in-the-loop with a local model (LLP 0002). The model is pinned and
 // decoding is greedy (temperature 0, fixed seed) so runs are as reproducible as inference gets.
 const OLLAMA_HOST = process.env.OLLAMA_HOST ?? 'http://127.0.0.1:11434';
-const TIER1_MODEL = process.env.EXAGENT_EVAL_MODEL ?? 'qwen3:4b';
+const TIER1_MODEL = process.env.AGENT_CLI_EVAL_MODEL ?? 'qwen3:4b';
 const TIER1_MAX_TURNS = 8;
 const TIER1_OUTPUT_LIMIT = 800;
 const TIER1_SEED = 42;
 
 // Tier 2: a frontier agent (Claude Code headless) drives the scenario for real. Runs from the
-// label-triggered EAS workflow (.eas/workflows/exagent-tier2-evals.yml); needs ANTHROPIC_API_KEY.
-const TIER2_AGENT_BIN = process.env.EXAGENT_TIER2_AGENT ?? 'claude';
+// label-triggered EAS workflow (.eas/workflows/agent-cli-tier2-evals.yml); needs ANTHROPIC_API_KEY.
+const TIER2_AGENT_BIN = process.env.AGENT_CLI_TIER2_AGENT ?? 'claude';
 const TIER2_MAX_TURNS = 12;
 const TIER2_TIMEOUT_MS = 600_000;
 
-const USAGE = `Run the exagent eval scenarios.
+const USAGE = `Run the @expo/agent-cli eval scenarios.
 
 Usage: node evals/run.mjs [options]
 
@@ -434,11 +434,11 @@ async function runTier0Scenario(scenario) {
   if (!fs.existsSync(fixtureDir)) {
     return {
       pass: false,
-      reason: `fixture not found: ${scenario.fixture}. Create it under packages/exagent/${scenario.fixture} or fix the scenario's "fixture" field.`,
+      reason: `fixture not found: ${scenario.fixture}. Create it under packages/@expo/agent-cli/${scenario.fixture} or fix the scenario's "fixture" field.`,
     };
   }
 
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `exagent-eval-${scenario.id}-`));
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `agent-cli-eval-${scenario.id}-`));
   const skipped = copyFixture(fixtureDir, workspace);
   for (const entry of skipped) {
     console.log(`    note: skipped unreadable fixture entry ${path.relative(fixtureDir, entry)}`);
@@ -451,7 +451,7 @@ async function runTier0Scenario(scenario) {
     timeoutMs: command.timeoutMs ?? DEFAULT_TIMEOUT_MS,
   });
 
-  console.log(`    ran: exagent ${command.argv.join(' ')} (exit ${result.exitCode})`);
+  console.log(`    ran: @expo/agent-cli ${command.argv.join(' ')} (exit ${result.exitCode})`);
 
   const grades = [];
   for (const grader of scenario.graders) {
@@ -492,28 +492,28 @@ function indent(text, prefix) {
 // `printHelp` block of each command's index.ts. Update this prompt and TIER2_COMMAND_SUMMARY
 // together when either changes.
 // The `--help` escape hatch keeps a stale list from being a dead end for the model.
-const TIER1_SYSTEM_PROMPT = `You are an autonomous agent completing a task in an Expo project using the \`exagent\` CLI.
+const TIER1_SYSTEM_PROMPT = `You are an autonomous agent completing a task in an Expo project using the \`@expo/agent-cli\` CLI.
 
 Available commands:
-  exagent status [--json]               Where the project is now and what would happen next; --json adds the raw project probe
-  exagent dev                           Print what must run to get the app running, then run it
-  exagent dev --plan                    Print what must run to get the app running, then exit without running it
-  exagent start                         Start the dev server with expo start, without planning anything
-  exagent skills:sync --agent <agent>   Link agent skills from installed packages
-  exagent skills:list [--json]          List discovered skills
-  exagent skills:show <package>         Print a package's skill
-  exagent skills:clean                  Remove managed skill links
-  exagent install <packages..>          Install packages with expo, then sync skills (exagent add is the same command)
+  @expo/agent-cli status [--json]               Where the project is now and what would happen next; --json adds the raw project probe
+  @expo/agent-cli dev                           Print what must run to get the app running, then run it
+  @expo/agent-cli dev --plan                    Print what must run to get the app running, then exit without running it
+  @expo/agent-cli start                         Start the dev server with expo start, without planning anything
+  @expo/agent-cli skills:sync --agent <agent>   Link agent skills from installed packages
+  @expo/agent-cli skills:list [--json]          List discovered skills
+  @expo/agent-cli skills:show <package>         Print a package's skill
+  @expo/agent-cli skills:clean                  Remove managed skill links
+  @expo/agent-cli install <packages..>          Install packages with expo, then sync skills (@expo/agent-cli add is the same command)
 
 A command with a colon is a group and an action, e.g. \`skills:list\` lists the skills of the \`skills\` group.
 
 Valid --agent values: claude-code, cursor, codex, opencode, windsurf, gemini-cli
 
 Respond with EXACTLY ONE JSON object and nothing else:
-  {"run": ["skills:sync", "--agent", "claude-code"]}      to execute an exagent command
+  {"run": ["skills:sync", "--agent", "claude-code"]}      to execute an @expo/agent-cli command
   {"done": true, "summary": "<what you accomplished>"}    when the task is complete
 
-These expo commands are forwarded to the project's \`expo\` CLI, e.g. \`exagent prebuild --clean\` runs \`expo prebuild --clean\`:
+These expo commands are forwarded to the project's \`expo\` CLI, e.g. \`@expo/agent-cli prebuild --clean\` runs \`expo prebuild --clean\`:
   run, run:ios, run:android, prebuild, config, export, export:web, export:embed, serve, customize, lint, login, logout, register, whoami
 
 Any name in neither list is not a command: it fails instead of running anything.
@@ -586,7 +586,7 @@ async function checkOllamaAsync() {
   if (!found) {
     return (
       `The pinned tier 1 model "${TIER1_MODEL}" is not available in Ollama (installed: ${models.join(', ') || 'none'}). ` +
-      `Pull it first with \`ollama pull ${TIER1_MODEL}\`, or override EXAGENT_EVAL_MODEL.`
+      `Pull it first with \`ollama pull ${TIER1_MODEL}\`, or override AGENT_CLI_EVAL_MODEL.`
     );
   }
   return undefined;
@@ -632,7 +632,7 @@ async function runTier1Scenario(scenario) {
     return { pass: false, reason: `fixture not found: ${scenario.fixture}` };
   }
 
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `exagent-eval1-${scenario.id}-`));
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `agent-cli-eval1-${scenario.id}-`));
   copyFixture(fixtureDir, workspace);
 
   const messages = [
@@ -687,7 +687,7 @@ async function runTier1Scenario(scenario) {
       timeoutMs: DEFAULT_TIMEOUT_MS,
     });
     lastResult = result;
-    console.log(`    turn ${turn}: exagent ${action.run.join(' ')} (exit ${result.exitCode})`);
+    console.log(`    turn ${turn}: @expo/agent-cli ${action.run.join(' ')} (exit ${result.exitCode})`);
     messages.push({
       role: 'user',
       content: JSON.stringify({
@@ -753,13 +753,13 @@ async function runTier2Scenario(scenario) {
     return { pass: false, reason: `fixture not found: ${scenario.fixture}` };
   }
 
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `exagent-eval2-${scenario.id}-`));
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `agent-cli-eval2-${scenario.id}-`));
   copyFixture(fixtureDir, workspace);
 
   const prompt =
     `You are working inside an Expo project (the current directory is the project root). ` +
     `Complete this task: ${scenario.taskPrompt}\n\n` +
-    `Use the exagent CLI by running it with node, for example:\n` +
+    `Use the @expo/agent-cli CLI by running it with node, for example:\n` +
     `  node ${CLI_BIN} skills --help\n` +
     `${TIER2_COMMAND_SUMMARY} ` +
     `Any command accepts --help; read the real flags from it rather than guessing. ` +
@@ -883,7 +883,7 @@ async function main() {
   }));
 
   if (options.dryRun) {
-    console.log(`exagent evals — plan (${scenarios.length} scenario file(s) validated)\n`);
+    console.log(`@expo/agent-cli evals — plan (${scenarios.length} scenario file(s) validated)\n`);
     for (const { tier, scenarios: tierScenarios } of plan) {
       console.log(`tier ${tier}: ${tierScenarios.length} scenario(s)`);
       for (const scenario of tierScenarios) {
@@ -892,7 +892,7 @@ async function main() {
         console.log(`    task:         ${scenario.taskPrompt}`);
         console.log(`    drivingAgent: ${scenario.drivingAgent}`);
         if (tier === 0 && scenario.command) {
-          console.log(`    command:      exagent ${scenario.command.argv.join(' ')}`);
+          console.log(`    command:      @expo/agent-cli ${scenario.command.argv.join(' ')}`);
         }
         for (const grader of scenario.graders) {
           console.log(`    grader:       ${describeGrader(grader)}`);
@@ -927,8 +927,8 @@ async function main() {
 
   if (!fs.existsSync(CLI_BUILD)) {
     console.error(
-      `The exagent CLI is not built, so the scenarios cannot run. ${path.relative(PACKAGE_ROOT, CLI_BUILD)} is missing. ` +
-        `Build it first with \`pnpm --filter exagent build\`.`
+      `The @expo/agent-cli CLI is not built, so the scenarios cannot run. ${path.relative(PACKAGE_ROOT, CLI_BUILD)} is missing. ` +
+        `Build it first with \`pnpm --filter @expo/agent-cli build\`.`
     );
     return 1;
   }
@@ -942,7 +942,7 @@ async function main() {
   }
 
   console.log(
-    `exagent evals — tier ${tier}, ${selected.length} scenario(s)` +
+    `@expo/agent-cli evals — tier ${tier}, ${selected.length} scenario(s)` +
       (tier === 1 ? ` — model ${TIER1_MODEL} via ${OLLAMA_HOST}` : '') +
       '\n'
   );

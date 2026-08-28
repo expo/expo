@@ -22,7 +22,7 @@ export interface NeedsHumanScenario {
   url: string | null;
   /** Environment variables that remove the need on a machine with no person. */
   unattendedEnv: string[];
-  /** Whether re-running the same `exagent` command works once the person is done. */
+  /** Whether re-running the same `@expo/agent-cli` command works once the person is done. */
   resumable: boolean;
   /** Which tools' captured output {@link signatures} may be matched against. */
   tools: NeedsHumanTool[];
@@ -203,11 +203,11 @@ export const needsHumanScenarios: NeedsHumanScenario[] = [
     id: 'agent-selection',
     code: 'NON_INTERACTIVE',
     need: 'Choose which coding agents to set up skills for.',
-    command: 'npx exagent skills --agent claude-code',
+    command: 'npx @expo/agent-cli skills --agent claude-code',
     url: null,
     unattendedEnv: [],
     resumable: true,
-    // `exagent`'s own prompt, not a subprocess: there is no captured output to match.
+    // `@expo/agent-cli`'s own prompt, not a subprocess: there is no captured output to match.
     tools: [],
     signatures: [],
   },
@@ -225,7 +225,7 @@ export const needsHumanScenarios: NeedsHumanScenario[] = [
     //
     // **One question of the family is deliberately not this scenario:** "Use port 8181 instead?".
     // It matches these signatures like every other prompt does, and it is the only one a machine
-    // can answer for itself, so `exagent dev` recognises it *before* the classifier runs and either
+    // can answer for itself, so `@expo/agent-cli dev` recognises it *before* the classifier runs and either
     // retries on a free port or reports the outcome (`src/dev/portCollision.ts`). The carve-out
     // lives there rather than as a negative signature here, because the recovery — pick a port, run
     // the step again — is the caller's to perform and cannot be expressed as a registry row.

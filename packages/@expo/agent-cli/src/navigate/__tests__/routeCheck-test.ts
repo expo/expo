@@ -63,7 +63,7 @@ describe(routeNotFoundError, () => {
 
   it(`should fall back to the root route when nothing is close`, () => {
     expect(routeNotFoundError('/zzzzzzzzzz', table(['/', '/notes'])).suggestedCommand).toBe(
-      'npx exagent navigate /'
+      'npx @expo/agent-cli navigate /'
     );
   });
 
@@ -75,7 +75,7 @@ describe(routeNotFoundError, () => {
       command: 'runtime:reload',
     });
 
-    expect(error.suggestedCommand).toBe('npx exagent runtime:reload --route /notes');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli runtime:reload --route /notes');
     expect(error.message).toContain('did you mean "/notes"?');
   });
 
@@ -84,7 +84,7 @@ describe(routeNotFoundError, () => {
       command: 'runtime:reload',
     });
 
-    expect(error.suggestedCommand).toBe('npx exagent runtime:reload --route /');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli runtime:reload --route /');
   });
 });
 

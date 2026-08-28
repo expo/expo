@@ -68,7 +68,7 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-other-project',
-        command: 'npx exagent dev',
+        command: 'npx @expo/agent-cli dev',
         why: 'The dev server that answered was started for another project, so start this one and pass --dev-server-url to wait on a specific dev server.',
       },
     ]);
@@ -84,7 +84,7 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-bundle-broken',
-        command: `npx exagent dev:wait${samePlatform}`,
+        command: `npx @expo/agent-cli dev:wait${samePlatform}`,
         why: `The dev server is healthy but this project's entry bundle does not compile: fix ${where}, then run this again — the dev server rebuilds on save, so no restart is needed.`,
       },
     ]);
@@ -94,12 +94,12 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-longer',
-        command: `npx exagent dev:wait --timeout ${timeoutMs * 2}${samePlatform}`,
+        command: `npx @expo/agent-cli dev:wait --timeout ${timeoutMs * 2}${samePlatform}`,
         why: 'The bundler was still working when the wait expired, and a first bundle of a large app often takes longer than the budget it was given.',
       },
       {
         id: 'dev-wait-status',
-        command: 'npx exagent status',
+        command: 'npx @expo/agent-cli status',
         why: 'Check that the dev server that answered is the one this project started before waiting on it again.',
       },
     ]);
@@ -118,7 +118,7 @@ export function buildDevWaitFollowUps({
       },
       {
         id: 'dev-wait-typecheck',
-        command: 'npx exagent typecheck',
+        command: 'npx @expo/agent-cli typecheck',
         why: 'The bundle compiling is not the code being right: a type error is neither a syntax error nor a throw, so this is the only gate that sees it.',
       },
     ]);
@@ -132,7 +132,7 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-open-app',
-        command: `npx exagent navigate /${openOn === 'cloud' ? ' --cloud' : ''}`,
+        command: `npx @expo/agent-cli navigate /${openOn === 'cloud' ? ' --cloud' : ''}`,
         why:
           openOn === 'cloud'
             ? 'The bundle is built but no app is attached. This machine has no booted simulator and no attached device, and this project has an EAS Simulator session on record — so this opens the app on that. It needs a tunnelled dev server, and the session bills until "npx eas simulator:stop".'
@@ -140,7 +140,7 @@ export function buildDevWaitFollowUps({
       },
       {
         id: 'dev-wait-require-app',
-        command: `npx exagent dev:wait --require-app --timeout ${timeoutMs}${samePlatform}`,
+        command: `npx @expo/agent-cli dev:wait --require-app --timeout ${timeoutMs}${samePlatform}`,
         why: 'Once the app has been opened, this waits for it to attach to the dev server before anything reads it.',
       },
     ]);
@@ -154,12 +154,12 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-runtime-errors',
-        command: 'npx exagent runtime:errors',
+        command: 'npx @expo/agent-cli runtime:errors',
         why: 'The bundle is loaded in a connected app, so an error window now says whether it is running or red-screening.',
       },
       {
         id: 'dev-wait-typecheck',
-        command: 'npx exagent typecheck',
+        command: 'npx @expo/agent-cli typecheck',
         why: 'The bundle compiling is not the code being right: a type error is neither a syntax error nor a throw, so this is the only gate that sees it.',
       },
     ]);
@@ -168,7 +168,7 @@ export function buildDevWaitFollowUps({
   return capFollowUps([
     {
       id: 'dev-wait-status',
-      command: 'npx exagent status',
+      command: 'npx @expo/agent-cli status',
       why: 'The dev server answered, but not as an Expo dev server does, so check which server is listening on that port.',
     },
   ]);

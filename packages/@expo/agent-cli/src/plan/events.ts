@@ -8,7 +8,7 @@ declare module '2g' {
   interface EventRegistry {
     /**
      * The plan-first contract of LLP 0004: emitted before any step runs, both for
-     * `exagent dev --plan` (which stops here) and for `exagent dev` (which executes the steps).
+     * `@expo/agent-cli dev --plan` (which stops here) and for `@expo/agent-cli dev` (which executes the steps).
      *
      * @see llp/0004-smart-start-and-project-state.rfc.md §Contract
      */

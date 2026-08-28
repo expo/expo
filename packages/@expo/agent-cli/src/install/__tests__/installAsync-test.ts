@@ -140,7 +140,7 @@ describe(installAsync, () => {
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
 
       expect(printed()).toContain('Suggested next:');
-      expect(printed()).toContain('npx exagent runtime:reload');
+      expect(printed()).toContain('npx @expo/agent-cli runtime:reload');
       expect(printed()).toContain('reload');
     });
 
@@ -155,7 +155,7 @@ describe(installAsync, () => {
 
       await installAsync(projectRoot, resolveInstallPlan(['react-native-fancy']));
 
-      expect(printed()).toContain('npx exagent dev');
+      expect(printed()).toContain('npx @expo/agent-cli dev');
       expect(printed()).toContain('react-native-fancy');
     });
 
@@ -165,7 +165,7 @@ describe(installAsync, () => {
       await installAsync(projectRoot, resolveInstallPlan(['@expo/ui@~1.0.0']));
 
       expect(listSkillPackagesAsync).toHaveBeenCalledWith(projectRoot, ['@expo/ui@~1.0.0']);
-      expect(printed()).toContain('npx exagent skills:show @expo/ui');
+      expect(printed()).toContain('npx @expo/agent-cli skills:show @expo/ui');
     });
 
     it(`should not look for skills when the skill sync is off`, async () => {
@@ -377,7 +377,7 @@ describe(installAsync, () => {
       expect(check.notes[0]).toContain(
         `"@react-native-async-storage/async-storage" is not in this project's package.json`
       );
-      expect(check.notes[0]).toContain('npx exagent install');
+      expect(check.notes[0]).toContain('npx @expo/agent-cli install');
       // The verdict is never only in a key the caller might not read.
       expect(jest.mocked(Log.error).mock.calls.flat().join('\n')).toContain(
         'doesn\'t seem to be installed'

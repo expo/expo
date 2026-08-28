@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // "Where is this project right now, and what would happen next" — one read-only pass over the
 // project state, the recorded builds, the dev server, and the linked skills.
 //
@@ -141,7 +141,7 @@ export interface StatusOptions {
    * This is the flag that pays for the report's promptness: a default `status` computes one
    * fingerprint and `--explain` computes three, at about a second each, and all three are the same
    * three the previous run computed unless one of the pinned files moved. Undefined leaves the
-   * decision to `EXAGENT_NO_FINGERPRINT_CACHE`.
+   * decision to `AGENT_CLI_NO_FINGERPRINT_CACHE`.
    */
   fingerprintCache?: boolean;
 }
@@ -244,7 +244,7 @@ export async function collectStatusReportAsync(
   }
 
   // Read before `next` too, and for the same reason: a machine with no device to open the app on
-  // makes `exagent navigate /` the wrong advice however healthy the dev server is
+  // makes `@expo/agent-cli navigate /` the wrong advice however healthy the dev server is
   // (`buildNextActionStatus`).
   if ('value' in device) {
     report.device = device.value;
@@ -269,7 +269,7 @@ export async function collectStatusReportAsync(
     // else. They are the list the hash was computed from — tens of thousands of bytes for a real
     // project [observed — ~25 KB for iOS on an SDK 57 Expo Router app, 2026-08-24] — and a caller
     // reading this report wants the answer, not the evidence. Dropping them keeps `status` the
-    // small report its contract promises (llp/0004 §`exagent status`).
+    // small report its contract promises (llp/0004 §`@expo/agent-cli status`).
     //
     // They are still *read*: the impact headline diffs them against the recorded build's, in
     // process and for free (llp/0004 §The impact headline is free, the explanation is not). What
@@ -315,7 +315,7 @@ export async function collectStatusReportAsync(
       // cloudSimulator.ts` §readCloudSessionIdSync).
       readCloudSessionIdSync(projectRoot) != null,
       // @ref llp/0015-backend-selection-and-config.rfc.md §What `status` reports
-      // The plan `exagent dev` would make *here* — the developer's config, this host and the
+      // The plan `@expo/agent-cli dev` would make *here* — the developer's config, this host and the
       // toolchain probe folded in — rather than the one the project's state alone implies. The two
       // differ on exactly the machines where it matters, and a `status` that reported
       // "expo run:ios" on a Linux box would be the report disagreeing with the command.
@@ -608,10 +608,10 @@ function devBuildSchemeSync(projectRoot: string): string | null {
 
 /** The probed project state, plus the name only the project's own `package.json` knows. */
 /**
- * The plan `exagent dev` would make, or null when it could not be made.
+ * The plan `@expo/agent-cli dev` would make, or null when it could not be made.
  *
  * Null rather than a throw: `status` exits 0 by contract and reports what it could not read, and a
- * project whose `exagent` config is invalid should still get every other line of the report. The
+ * project whose `@expo/agent-cli` config is invalid should still get every other line of the report. The
  * fallback is the plan the project's own state implies, which is what `buildNextActionStatus`
  * makes of a null.
  */
@@ -781,7 +781,7 @@ async function readSkillsStatusAsync(projectRoot: string): Promise<SkillsStatus>
  * Count the skills that are linked for every selected agent.
  *
  * A skill linked for one agent but not another is counted as not linked, so a selection that
- * changed since the last `exagent skills` run reads as out of sync instead of as done.
+ * changed since the last `@expo/agent-cli skills` run reads as out of sync instead of as done.
  */
 function countLinkedSkills(
   projectRoot: string,

@@ -16,7 +16,7 @@ export interface DependenciesLinker {
 /**
  * The slice of `expo-modules-autolinking/exports` that skill discovery uses. It is
  * declared here instead of imported, because the module is resolved from the user's
- * project at runtime and is not a dependency of `exagent`.
+ * project at runtime and is not a dependency of `@expo/agent-cli`.
  */
 export interface Autolinking {
   makeCachedDependenciesLinker(options: { projectRoot: string }): DependenciesLinker;
@@ -27,7 +27,7 @@ const AUTOLINKING_MODULE = 'expo/internal/unstable-autolinking-exports';
 /**
  * Load the autolinking exports from the `expo` package installed in the user's project.
  *
- * `exagent` runs from outside the project (`npx exagent`, a global install), so a plain
+ * `@expo/agent-cli` runs from outside the project (`npx @expo/agent-cli`, a global install), so a plain
  * `require` would resolve against the CLI's own dependencies and miss the project's SDK
  * version. Resolving from `projectRoot` also keeps the CLI on the same autolinking
  * implementation that `expo` itself uses.

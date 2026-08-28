@@ -15,7 +15,7 @@ export interface ExplainFollowUpInput {
    * How this run read its log, so a re-run rung is a command that actually runs.
    *
    * A follow-up is the next thing to *run* ([[0009-smart-followups]]), and
-   * `npx exagent inspect:build-log --all` with no source would be read from a terminal's stdin and
+   * `npx @expo/agent-cli inspect:build-log --all` with no source would be read from a terminal's stdin and
    * fail with `BAD_ARGS`. The `--file` form is re-runnable; a piped one is not, because the
    * bytes are gone — so a stdin run gets the rung with the pipe spelled back out.
    */
@@ -40,7 +40,7 @@ export function buildExplainFollowUps({
   source,
 }: ExplainFollowUpInput): FollowUp[] {
   const followups: FollowUp[] = [];
-  const rerun = `npx exagent inspect:build-log ${sourceArgs(source)}`;
+  const rerun = `npx @expo/agent-cli inspect:build-log ${sourceArgs(source)}`;
 
   if (!failure) {
     // Nothing was located, and the honest next step is the one that reads more of the log rather
@@ -74,13 +74,13 @@ export function buildExplainFollowUps({
   if (phase === 'bundle-js') {
     followups.push({
       id: 'typecheck',
-      command: 'npx exagent typecheck',
+      command: 'npx @expo/agent-cli typecheck',
       why: 'The bundle failed on a source file; this reports every other one before the next build.',
     });
   } else if (phase === 'prebuild') {
     followups.push({
       id: 'config-effective',
-      command: 'npx exagent inspect:config-plugins',
+      command: 'npx @expo/agent-cli inspect:config-plugins',
       why: 'Prebuild failed while resolving the app config; this prints what the plugins produced.',
     });
   }

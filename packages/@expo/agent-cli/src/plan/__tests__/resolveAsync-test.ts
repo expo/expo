@@ -169,17 +169,17 @@ describe('detection', () => {
 
 describe('the project config', () => {
   it(`moves a build to EAS on a machine that could do it here`, async () => {
-    writeProject({ 'package.json': { name: 'app', expo: { exagent: { buildBackend: 'eas' } } } });
+    writeProject({ 'package.json': { name: 'app', expo: { agentCli: { buildBackend: 'eas' } } } });
     const plan = await resolveStartPlanAsync(projectRoot, devClientState(), { platform: 'ios' });
 
     expect(plan.buildLocation).toMatchObject({ runsOn: 'eas', selection: { source: 'config' } });
     expect(plan.reasons).toContain(
-      'Building in the cloud on EAS: the exagent config asks for it — "expo.exagent" in package.json.'
+      'Building in the cloud on EAS: the @expo/agent-cli config asks for it — "expo.agentCli" in package.json.'
     );
   });
 
   it(`asks this machine nothing when it already said "the cloud"`, async () => {
-    writeProject({ 'package.json': { name: 'app', expo: { exagent: { buildBackend: 'eas' } } } });
+    writeProject({ 'package.json': { name: 'app', expo: { agentCli: { buildBackend: 'eas' } } } });
     await resolveStartPlanAsync(projectRoot, devClientState(), { platform: 'ios' });
 
     // Two subprocesses that cannot change the answer are two subprocesses not spawned.
@@ -190,7 +190,7 @@ describe('the project config', () => {
     writeProject({
       'package.json': {
         name: 'app',
-        expo: { exagent: { ios: { buildBackend: 'eas' } } },
+        expo: { agentCli: { ios: { buildBackend: 'eas' } } },
       },
     });
 
@@ -204,27 +204,27 @@ describe('the project config', () => {
   });
 
   it(`plans a development build for a project Expo Go could run`, async () => {
-    writeProject({ 'package.json': { name: 'app', expo: { exagent: { target: 'dev-build' } } } });
+    writeProject({ 'package.json': { name: 'app', expo: { agentCli: { target: 'dev-build' } } } });
     const plan = await resolveStartPlanAsync(projectRoot, expoGoState(), { platform: 'ios' });
 
     expect(plan.rule).toBe('needs-dev-client');
     expect(plan.reasons).toContain(
-      'The exagent config asks for a development build. Expo Go could run this project, and the plan builds one anyway.'
+      'The @expo/agent-cli config asks for a development build. Expo Go could run this project, and the plan builds one anyway.'
     );
   });
 
   it(`refuses a config it cannot read, rather than planning as though it were absent`, async () => {
-    writeProject({ 'package.json': { name: 'app', expo: { exagent: { buildBackend: 'cloud' } } } });
+    writeProject({ 'package.json': { name: 'app', expo: { agentCli: { buildBackend: 'cloud' } } } });
 
     await expect(
       resolveStartPlanAsync(projectRoot, devClientState(), { platform: 'ios' })
-    ).rejects.toThrow(/"expo.exagent" in package.json/);
+    ).rejects.toThrow(/"expo.agentCli" in package.json/);
   });
 });
 
 describe('a flag on the command line', () => {
   it(`beats a config that says the opposite`, async () => {
-    writeProject({ 'package.json': { name: 'app', expo: { exagent: { buildBackend: 'eas' } } } });
+    writeProject({ 'package.json': { name: 'app', expo: { agentCli: { buildBackend: 'eas' } } } });
     const plan = await resolveStartPlanAsync(projectRoot, devClientState(), {
       platform: 'ios',
       requestedBackend: 'local',
@@ -253,7 +253,7 @@ describe('a flag on the command line', () => {
   });
 
   it(`beats a config that asks for Expo Go`, async () => {
-    writeProject({ 'package.json': { name: 'app', expo: { exagent: { target: 'expo-go' } } } });
+    writeProject({ 'package.json': { name: 'app', expo: { agentCli: { target: 'expo-go' } } } });
     const plan = await resolveStartPlanAsync(projectRoot, expoGoState(), {
       platform: 'ios',
       requestedTarget: 'dev-build',

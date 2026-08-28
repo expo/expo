@@ -46,7 +46,7 @@ export async function startAsync(projectRoot: string, options: StartOptions): Pr
     })
   );
 
-  // `exagent start` hands the terminal over untouched, whatever this process' streams are: it is
+  // `@expo/agent-cli start` hands the terminal over untouched, whatever this process' streams are: it is
   // the "forward everything to `expo start`" command, and capturing its output would take the
   // bundler's interactive keypresses away from a person who has one.
   const run = await runDevServerAsync(projectRoot, ['start', ...options.expoArgs], {
@@ -62,7 +62,7 @@ export async function startAsync(projectRoot: string, options: StartOptions): Pr
  * The delay keeps the dependency scan away from the first bundle, and the timer is
  * cancelled when the dev server exits first, so a failed start syncs nothing.
  *
- * @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — the dev-server lock of
+ * @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status` — the dev-server lock of
  * `src/devLock/` is taken here, because this is the one place that knows a dev server is starting
  * and can wait for the port it ends up on. It is held for exactly as long as the subprocess runs.
  *

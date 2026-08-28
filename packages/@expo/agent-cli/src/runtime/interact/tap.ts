@@ -7,7 +7,7 @@ import { assertWithOptionsArgs } from '../../utils/args';
 
 export const runtimeTapHelp: CommandHelp = {
   command: 'runtime:tap',
-  usage: 'npx exagent runtime:tap <testID>',
+  usage: 'npx @expo/agent-cli runtime:tap <testID>',
   options: [
     `--index <n>               Which of several matched elements, from 0 (default: the only one)`,
     `--all-screens             Look on every mounted screen, not only the focused one`,
@@ -24,13 +24,13 @@ export const runtimeTapHelp: CommandHelp = {
     `-h, --help                Usage info`,
   ],
   examples: [
-    { run: 'npx exagent runtime:tap add-note', gets: 'the app’s own onPress for that testID is called' },
+    { run: 'npx @expo/agent-cli runtime:tap add-note', gets: 'the app’s own onPress for that testID is called' },
     {
-      run: 'npx exagent runtime:tap add-note --verify --json',
+      run: 'npx @expo/agent-cli runtime:tap add-note --verify --json',
       gets: 'the same, plus the nodes that appeared, vanished or changed text',
     },
     {
-      run: 'npx exagent runtime:tap row --index 2',
+      run: 'npx @expo/agent-cli runtime:tap row --index 2',
       gets: 'the third element carrying that testID, when several do',
     },
   ],
@@ -78,11 +78,11 @@ export const runtimeTapHelp: CommandHelp = {
     `Nothing works on Expo Go for Android, which ships no debugger: use a development build.`,
     `Exit codes: 0 the handler was called · 20 nothing was called, or the app's handler threw,`,
     `or the entry bundle does not compile · 1 the app could not be read at all.`,
-    `Run "npx exagent runtime:tree" for the testIDs this screen carries.`,
+    `Run "npx @expo/agent-cli runtime:tree" for the testIDs this screen carries.`,
   ],
 };
 
-export const exagentRuntimeTap: Command = async (argv) => {
+export const agentCliRuntimeTap: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -103,7 +103,7 @@ export const exagentRuntimeTap: Command = async (argv) => {
     printCommandHelp(runtimeTapHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent runtime:tap -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli runtime:tap -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrCwd } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');

@@ -1,5 +1,5 @@
 // @ref llp/0007-deploy-and-headless.rfc.md §Headless project creation
-// Argument resolution for `exagent new`. Pure: argv in, options out, `CommandError` for anything a
+// Argument resolution for `@expo/agent-cli new`. Pure: argv in, options out, `CommandError` for anything a
 // user can get wrong. Every step of the creation is flag-driven, because the point of the command
 // is that nothing about it prompts.
 
@@ -30,7 +30,7 @@ const NEW_ARGS = {
 };
 
 /** The usage line, which is the recovery path for every argument error of this command. */
-const USAGE_COMMAND = 'npx exagent new <directory>';
+const USAGE_COMMAND = 'npx @expo/agent-cli new <directory>';
 
 function badArgs(message: string, suggestedCommand = USAGE_COMMAND): CommandError {
   const error = new CommandError('BAD_ARGS', message);
@@ -40,7 +40,7 @@ function badArgs(message: string, suggestedCommand = USAGE_COMMAND): CommandErro
 }
 
 /**
- * Resolve the arguments of `exagent new <directory>`.
+ * Resolve the arguments of `@expo/agent-cli new <directory>`.
  *
  * @throws {CommandError} `BAD_ARGS` for a missing or repeated directory, an empty `--name`, an
  * unknown flag, or an unusable value.
@@ -59,7 +59,7 @@ export function resolveNewOptions(argv: string[]): NewOptions {
   const positional = args._;
   if (positional.length === 0) {
     throw badArgs(
-      `Missing directory. The directory is what makes this command headless, so it is never prompted for. Usage: ${USAGE_COMMAND}, for example: npx exagent new my-app`
+      `Missing directory. The directory is what makes this command headless, so it is never prompted for. Usage: ${USAGE_COMMAND}, for example: npx @expo/agent-cli new my-app`
     );
   }
   if (positional.length > 1) {

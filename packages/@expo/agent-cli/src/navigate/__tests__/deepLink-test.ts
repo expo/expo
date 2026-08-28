@@ -286,7 +286,7 @@ describe(resolveDeepLinkUrl, () => {
 
     const error = expectError(result);
     expect(error).toContain('the dev server URL is unknown');
-    expect(error).toContain('npx exagent dev --detach');
+    expect(error).toContain('npx @expo/agent-cli dev --detach');
   });
 
   it(`should use the config scheme for a development build`, () => {
@@ -370,7 +370,7 @@ describe(resolveDeepLinkUrl, () => {
 
   // @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — F58, S5, F103,
   // and now **F142.** `navigate / --ios` against a dev server that had died recovered into
-  // `npx exagent dev --detach`, which on this machine plans for whatever platform the probe picks —
+  // `npx @expo/agent-cli dev --detach`, which on this machine plans for whatever platform the probe picks —
   // so the one line the caller was told to run was a different run from the one they asked for, and
   // the `--ios` they had typed was gone from the loop.
   describe('the platform the caller named', () => {
@@ -384,9 +384,9 @@ describe(resolveDeepLinkUrl, () => {
         platform,
       });
 
-      expect(expectError(result)).toContain(`npx exagent dev --detach --${platform}`);
+      expect(expectError(result)).toContain(`npx @expo/agent-cli dev --detach --${platform}`);
       expect(result.ok === false && result.suggestedCommand).toBe(
-        `npx exagent dev --detach --${platform}`
+        `npx @expo/agent-cli dev --detach --${platform}`
       );
     });
 
@@ -399,7 +399,7 @@ describe(resolveDeepLinkUrl, () => {
       });
 
       expect(result.ok === false && result.suggestedCommand).toBe(
-        `npx exagent navigate / --${platform}`
+        `npx @expo/agent-cli navigate / --${platform}`
       );
     });
 
@@ -408,7 +408,7 @@ describe(resolveDeepLinkUrl, () => {
     it(`is absent when the caller named none`, () => {
       const result = resolveDeepLinkUrl({ route: '/profile/42', config: config(), isExpoGo: true });
 
-      expect(result.ok === false && result.suggestedCommand).toBe('npx exagent dev --detach');
+      expect(result.ok === false && result.suggestedCommand).toBe('npx @expo/agent-cli dev --detach');
     });
   });
 });
@@ -479,7 +479,7 @@ describe(quoteForDeviceShell, () => {
 
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts — friction run 5. The last
 // line of a failure is what a driving agent runs, and one `Try:` served all three of these:
-// `npx exagent navigate <route> --scheme <your-app-scheme>`, which has two holes in it and so is
+// `npx @expo/agent-cli navigate <route> --scheme <your-app-scheme>`, which has two holes in it and so is
 // not a command at all. Each failure carries the command that answers *it* now.
 describe('the Try: line of a URL that could not be resolved', () => {
   const config = { scheme: null, slug: null, configFile: 'app.json', dynamicConfigFile: null };
@@ -496,9 +496,9 @@ describe('the Try: line of a URL that could not be resolved', () => {
     if (result.ok) {
       return;
     }
-    expect(result.suggestedCommand).toBe('npx exagent dev --detach');
+    expect(result.suggestedCommand).toBe('npx @expo/agent-cli dev --detach');
     // The How: and the Try: name the same action, which they did not.
-    expect(result.error).toContain('npx exagent dev --detach');
+    expect(result.error).toContain('npx @expo/agent-cli dev --detach');
   });
 
   // The one case where a person has to supply a value this CLI cannot know, so the runnable

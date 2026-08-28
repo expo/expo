@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
 //
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// What `exagent dev:wait` does: find the dev server, hold one request open until its bundler
+// What `@expo/agent-cli dev:wait` does: find the dev server, hold one request open until its bundler
 // finishes, and answer four questions an agent cannot otherwise ask — is the bundler done, is it
 // this project's dev server, does this project's own code compile, and is an app running it.
 //
@@ -237,10 +237,10 @@ function noDevServerError(
           ? ''
           : ` The project's dev-server lock, the port in its start.log, 8081 and the ports "expo start" falls back to were all tried.`
       }`,
-      `How: start a dev server with "npx exagent dev" and run this command again. ${howToNameTheDevServer(explicit)}`,
+      `How: start a dev server with "npx @expo/agent-cli dev" and run this command again. ${howToNameTheDevServer(explicit)}`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev';
+  error.suggestedCommand = 'npx @expo/agent-cli dev';
   return error;
 }
 

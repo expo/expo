@@ -31,7 +31,7 @@ const COMPUTED_FINGERPRINT: FingerprintHashSource = {
 function freshness(...classes: (ImpactClass | null)[]): FreshnessStatus {
   return {
     hash: 'abc',
-    comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null, platform: null },
+    comparison: { kind: 'last-build', label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
     changedFiles: null,
     hashSource: COMPUTED_FINGERPRINT,
     ota: null,

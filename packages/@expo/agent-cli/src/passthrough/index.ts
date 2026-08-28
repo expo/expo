@@ -1,5 +1,5 @@
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
-// An `expo` command `exagent` does not wrap is forwarded there verbatim: `exagent prebuild --clean`
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher
+// An `expo` command `@expo/agent-cli` does not wrap is forwarded there verbatim: `@expo/agent-cli prebuild --clean`
 // is `expo prebuild --clean`. Nothing is added — no probe, no skill sync, no follow-ups — and
 // nothing is interpreted, so the arguments, the output, the errors and the exit code all stay the
 // Expo CLI's. Which commands reach here is `forwardedCommands` in `src/commandRegistry.ts`, a fixed
@@ -8,7 +8,7 @@
 import { event } from '../events';
 import type { Command } from '../types';
 import { authCommands } from '../commandRegistry';
-import { exagentAuthPassthrough } from './auth';
+import { agentCliAuthPassthrough } from './auth';
 
 /**
  * The command that answers a forwarded name, whichever CLI ends up answering it.
@@ -19,10 +19,10 @@ import { exagentAuthPassthrough } from './auth';
  * directory with no Expo app in it still has — so they get the fallback chain in `./auth`, and
  * every other forwarded command keeps failing honestly when there is no project CLI to run it.
  */
-export function exagentPassthrough(command: string): Command {
+export function agentCliPassthrough(command: string): Command {
   return authCommands.includes(command)
-    ? exagentAuthPassthrough(command)
-    : exagentExpoPassthrough(command);
+    ? agentCliAuthPassthrough(command)
+    : agentCliExpoPassthrough(command);
 }
 
 /**
@@ -30,7 +30,7 @@ export function exagentPassthrough(command: string): Command {
  *
  * @param command One of the forwarded `expo` commands, e.g. `prebuild`.
  */
-export function exagentExpoPassthrough(command: string): Command {
+export function agentCliExpoPassthrough(command: string): Command {
   return async (argv) => {
     const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
     const { runExpoAsync } = require('../utils/expoCli') as typeof import('../utils/expoCli');

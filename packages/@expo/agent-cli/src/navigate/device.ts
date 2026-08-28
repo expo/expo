@@ -313,7 +313,7 @@ export async function resolveDeviceAsync(
       [
         'No booted iOS simulator was found, so there is no device to open the deep link on.',
         `Why: ${probe.reason}.`,
-        'How: boot a simulator (from Xcode, or with "xcrun simctl boot"), start the dev server with "npx exagent dev --detach", then run this command again.',
+        'How: boot a simulator (from Xcode, or with "xcrun simctl boot"), start the dev server with "npx @expo/agent-cli dev --detach", then run this command again.',
       ],
       context,
       cloud.probe
@@ -501,7 +501,7 @@ function noDeviceError(
         ...lines,
         `Or: this is the URL for that route — ${context.url}${
           context.devServerRunning ? '' : ' (no dev server answered, so it may not load yet)'
-        }. Open it on a phone, a cloud simulator, or anywhere else that can reach the dev server; "npx exagent navigate <route> --print-url" prints it without looking for a device.`,
+        }. Open it on a phone, a cloud simulator, or anywhere else that can reach the dev server; "npx @expo/agent-cli navigate <route> --print-url" prints it without looking for a device.`,
       ]
     : lines;
 
@@ -513,7 +513,7 @@ function noDeviceError(
   const error = new CommandError(code, [...withUrl, ...(cloudLine ? [cloudLine] : [])].join('\n'));
   // A caller that has no device does not get one by running the same command again, so the `Try:`
   // is the mode that answers without one.
-  error.suggestedCommand = context.url ? 'npx exagent navigate / --print-url' : undefined;
+  error.suggestedCommand = context.url ? 'npx @expo/agent-cli navigate / --print-url' : undefined;
   return error;
 }
 

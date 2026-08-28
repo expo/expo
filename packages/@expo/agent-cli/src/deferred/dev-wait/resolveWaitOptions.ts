@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
 //
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
-// Argument resolution for `exagent dev:wait`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `@expo/agent-cli dev:wait`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong, so every flag combination is unit-testable without a dev server.
 
 import {
@@ -63,7 +63,7 @@ export interface DevWaitOptions {
 
 const WAIT_ARGS = {
   '--dev-server-url': String,
-  // Sugar for the URL above, because the port is what `exagent dev --port` was just given.
+  // Sugar for the URL above, because the port is what `@expo/agent-cli dev --port` was just given.
   '--port': String,
   // Read as a string so an unusable value is reported as the user typed it, instead of as the
   // `NaN` a numeric handler would produce.
@@ -76,7 +76,7 @@ const WAIT_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent dev:wait`.
+ * Resolve the arguments of `@expo/agent-cli dev:wait`.
  *
  * @throws {CommandError} `BAD_ARGS` for an unknown flag, an unusable value, or a stray argument.
  */
@@ -84,7 +84,7 @@ export function resolveDevWaitOptions(argv: string[]): DevWaitOptions {
   const args = parseArgsOrThrow(WAIT_ARGS, argv, 'dev:wait');
   if (args._.length > 0) {
     throw strayArgumentError('dev:wait', args._, {
-      hint: `this command waits on the project's own dev server and takes no target. Usage: npx exagent dev:wait [--timeout ${DURATION_METAVAR}] [--require-app], or --dev-server-url <url> to wait on another one.`,
+      hint: `this command waits on the project's own dev server and takes no target. Usage: npx @expo/agent-cli dev:wait [--timeout ${DURATION_METAVAR}] [--require-app], or --dev-server-url <url> to wait on another one.`,
     });
   }
 

@@ -7,7 +7,7 @@ import { assertWithOptionsArgs } from '../../utils/args';
 
 export const runtimeTreeHelp: CommandHelp = {
   command: 'runtime:tree',
-  usage: 'npx exagent runtime:tree',
+  usage: 'npx @expo/agent-cli runtime:tree',
   options: [
     `--testID <id>             Report this element and its subtree, instead of the screen`,
     `--all                     Every node with a testID, a label, a role, a handler or text`,
@@ -24,12 +24,12 @@ export const runtimeTreeHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent runtime:tree',
+      run: 'npx @expo/agent-cli runtime:tree',
       gets: 'the focused screen’s testIDs and handlers — what a tap could find',
     },
-    { run: 'npx exagent runtime:tree --all --json', gets: 'the full projection of that screen' },
+    { run: 'npx @expo/agent-cli runtime:tree --all --json', gets: 'the full projection of that screen' },
     {
-      run: 'npx exagent runtime:tree --testID add-note',
+      run: 'npx @expo/agent-cli runtime:tree --testID add-note',
       gets: 'that element, its subtree, and the handler a tap on it would call',
     },
   ],
@@ -71,7 +71,7 @@ export const runtimeTreeHelp: CommandHelp = {
   ],
 };
 
-export const exagentRuntimeTree: Command = async (argv) => {
+export const agentCliRuntimeTree: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -94,7 +94,7 @@ export const exagentRuntimeTree: Command = async (argv) => {
     printCommandHelp(runtimeTreeHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent runtime:tree -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli runtime:tree -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrCwd } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');

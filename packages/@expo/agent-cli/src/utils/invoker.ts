@@ -1,7 +1,7 @@
 // @ref llp/0010-agent-conventions.rfc.md §Suggestions are pasted, so they have to be runnable
 // Which runner the caller reached this CLI through, so a suggested command can be pasted as-is.
 //
-// Every suggestion this CLI prints is written `npx exagent …`, and in a Bun project that is a line
+// Every suggestion this CLI prints is written `npx @expo/agent-cli …`, and in a Bun project that is a line
 // a person or an agent has to translate before running it — the project's own instructions say to
 // use `bunx` [observed — the `AGENTS.md` of the dogfood project, 2026-08-24]. `npx` still *works*
 // there, which is why this is a courtesy rather than a fix, and why it is a **render-time
@@ -10,7 +10,7 @@
 //
 // **The machine channels keep `npx`.** The `--json` payloads and the `cli:followups` event carry
 // the command a driving agent runs, and that contract does not change with the shell a human
-// happens to be in — `npx exagent` runs in a Bun project exactly as it does anywhere else. The
+// happens to be in — `npx @expo/agent-cli` runs in a Bun project exactly as it does anywhere else. The
 // substitution is for the terminal, which is the one place the mismatch is read as an instruction.
 
 /** How the caller reached this CLI, in the spelling their project uses. */
@@ -31,7 +31,7 @@ export type Invoker = 'npx' | 'bunx';
  *   user agent.
  *
  * `BUN_INSTALL` is deliberately **not** a signal: it says Bun is installed on the machine, not that
- * it started this process, and a Mac with Bun in `~/.bun` running `npx exagent` would be told to
+ * it started this process, and a Mac with Bun in `~/.bun` running `npx @expo/agent-cli` would be told to
  * paste `bunx`.
  */
 export function detectInvoker(env: NodeJS.ProcessEnv = process.env): Invoker {
@@ -69,16 +69,16 @@ export function currentInvoker(): Invoker {
 }
 
 /** What every suggestion in this CLI is written as. */
-const WRITTEN_AS = /\bnpx exagent\b/g;
+const WRITTEN_AS = /\bnpx @expo\/agent-cli\b/g;
 
 /**
  * Rewrite the suggested commands in a line for the runner that is actually in use.
  *
- * Scoped to `npx exagent` and nothing else, on purpose. `npx eas-cli` is a **different package
+ * Scoped to `npx @expo/agent-cli` and nothing else, on purpose. `npx eas-cli` is a **different package
  * name** under Bun — projects run it as `bunx eas-cli` — and `npx expo` may or may not be, so a
  * blanket `npx` → `bunx` swap would produce lines that do not run. This CLI's own name is the one
  * case where the two spellings name the same thing.
  */
 export function renderForInvoker(text: string, invoker: Invoker = currentInvoker()): string {
-  return invoker === 'npx' ? text : text.replace(WRITTEN_AS, 'bunx exagent');
+  return invoker === 'npx' ? text : text.replace(WRITTEN_AS, 'bunx @expo/agent-cli');
 }

@@ -1,7 +1,7 @@
 // @ref llp/0011-impact-and-freshness.rfc.md §Two commands, one classifier
 //
-// The headline `exagent status` prints for free. The tests that matter are the ones about what it
-// refuses to say: this answers `null` wherever `exagent impact` answers `needs-native-build`,
+// The headline `@expo/agent-cli status` prints for free. The tests that matter are the ones about what it
+// refuses to say: this answers `null` wherever `@expo/agent-cli impact` answers `needs-native-build`,
 // because a gate has to name a class and a report does not.
 
 import type { LastBuildFingerprint } from '../../plan/lastBuild';
@@ -91,7 +91,7 @@ describe(classifyAgainstRecordedBuild, () => {
       expect(impact.reason).toContain('could not be fingerprinted');
     });
 
-    // The case `exagent impact` calls `needs-native-build`. Nothing was compared, so nothing was
+    // The case `@expo/agent-cli impact` calls `needs-native-build`. Nothing was compared, so nothing was
     // established, and the freshness line beside this already says "no recorded build".
     it(`should answer null when nothing is recorded for the platform`, () => {
       const impact = classifyAgainstRecordedBuild('ios', null, {

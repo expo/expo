@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
 //
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// The `exagent build:wait` command, lifted out of `src/builds/index.ts` when it left the v1
+// The `@expo/agent-cli build:wait` command, lifted out of `src/builds/index.ts` when it left the v1
 // surface. It shared that module with `build:explain`, which stayed and was then renamed to
 // `inspect:build-log`; nothing else moved with this.
 
@@ -15,7 +15,7 @@ import {
   printHelp,
 } from '../../utils/args';
 
-export const exagentBuildWait: Command = async (argv) => {
+export const agentCliBuildWait: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -39,7 +39,7 @@ export const exagentBuildWait: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Wait for an EAS cloud build to finish, and exit with what it did`,
-      chalk`npx exagent build:wait {dim <build-id> [options]}`,
+      chalk`npx @expo/agent-cli build:wait {dim <build-id> [options]}`,
       [
         `--timeout ${DURATION_METAVAR}   Give up after this long. Default: 45m`,
         `--interval ${DURATION_METAVAR}  How often to poll. Default: 10s, backing off to 30s after 5m`,
@@ -61,7 +61,7 @@ export const exagentBuildWait: Command = async (argv) => {
         chalk`     {bold 7}   nobody is signed in, so no build is visible: a person has to log in`,
         chalk`     {bold 1}   this command could not do its job: bad id, no eas, no answer`,
         '',
-        chalk`    {dim $} npx exagent build:wait $BUILD_ID --json || handle_by_code $?`,
+        chalk`    {dim $} npx @expo/agent-cli build:wait $BUILD_ID --json || handle_by_code $?`,
         '',
         chalk`  Progress goes to the {bold LOG_EVENTS} JSONL stream as {bold cli:build_wait_poll}, so`,
         chalk`  {bold --json} still prints exactly one object on stdout.`,
@@ -72,7 +72,7 @@ export const exagentBuildWait: Command = async (argv) => {
         chalk`  in the same command, use {bold npx eas build --wait}. For a workflow run, use`,
         chalk`  {bold npx eas workflow:status <id> --wait}.`,
         '',
-        chalk`  It waits on nothing that runs here. A build on this machine — {bold npx exagent dev},`,
+        chalk`  It waits on nothing that runs here. A build on this machine — {bold npx @expo/agent-cli dev},`,
         chalk`  {bold npx expo run:ios} — is a foreground process you already have; there is no id to wait on`,
         chalk`  and no queue it is in.`,
         '',
@@ -80,7 +80,7 @@ export const exagentBuildWait: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent build:wait -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli build:wait -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../../utils/findUp') as typeof import('../../utils/findUp');

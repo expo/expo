@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // The lock roundtrip, against the real socket implementation of the host platform. `node:net` is
 // not mockable in any way that would still prove the property under test — that liveness is the
 // connection — so these tests bind a real address in a real temporary project.

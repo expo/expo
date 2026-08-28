@@ -1,6 +1,6 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0005
 //
-// The `--help` block `exagent runtime:network` had, lifted out of `src/runtime/index.ts` when the
+// The `--help` block `@expo/agent-cli runtime:network` had, lifted out of `src/runtime/index.ts` when the
 // command left the v1 surface. The `runtime` group shares one help block across its actions, so
 // these lines were spliced into three places in it: the action's own option list, the examples, and
 // the caveat paragraph. Restoring the command means putting each back where the marker says.
@@ -18,7 +18,7 @@ export const NETWORK_OPTION_LINES = [
 ];
 
 /** The action's line in the `Examples` block, printed after the `runtime:errors` example. */
-export const NETWORK_EXAMPLE_LINE = chalk`  {dim $} npx exagent runtime:network --duration 10s --json`;
+export const NETWORK_EXAMPLE_LINE = chalk`  {dim $} npx @expo/agent-cli runtime:network --duration 10s --json`;
 
 /**
  * The paragraph that told a reader why an empty report is not an answer.

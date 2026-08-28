@@ -1,5 +1,5 @@
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher, §AGENTS.md generation
-// `exagent agents:setup` is the one command a project runs once: it links the agent skills the
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher, §AGENTS.md generation
+// `@expo/agent-cli agents:setup` is the one command a project runs once: it links the agent skills the
 // installed packages ship, and maintains the managed block in the project's AGENTS.md that orients
 // every agent — including the ones that never call a tool.
 import chalk from 'chalk';
@@ -22,7 +22,7 @@ import { event } from './events';
 import { withStdoutRedirectedAsync } from './stdout';
 import type { SetupOptions, SetupReport, SetupSkillsResult } from './types';
 
-/** Width of the label column of the text summary, matching `exagent status`. */
+/** Width of the label column of the text summary, matching `@expo/agent-cli status`. */
 const LABEL_WIDTH = 12;
 
 /** Run the setup, emit the summary event, and print the report. */
@@ -70,7 +70,7 @@ export async function runSetupAsync(
     agents = resolved.agents;
 
     const discovered = await discoverSkillsAsync(projectRoot);
-    // The sync itself is `exagent skills:sync`: composed, never reimplemented. Its text summary
+    // The sync itself is `@expo/agent-cli skills:sync`: composed, never reimplemented. Its text summary
     // is moved to stderr under `--json`, where it cannot break the one-object contract.
     const syncAsync = () =>
       syncSkillsAsync(projectRoot, { agents: agents.map((agent) => agent.id), dryRun: false });
@@ -150,7 +150,7 @@ function summaryLines(report: SetupReport): string[] {
     row('AGENTS.md', chalk.dim('skipped (--no-agents-md)'));
   }
 
-  row('Next', chalk.bold('npx exagent status'));
+  row('Next', chalk.bold('npx @expo/agent-cli status'));
 
   return lines;
 }

@@ -100,7 +100,7 @@ export interface TreeMatchJson {
   disabledOn: string | null;
 }
 
-/** Machine shape of `exagent runtime:tree --json`. */
+/** Machine shape of `@expo/agent-cli runtime:tree --json`. */
 export interface RuntimeTreeJson {
   devServerUrl: string;
   /** The `--testID` the caller named, or null when they asked about the whole screen. */
@@ -229,13 +229,13 @@ interface InteractCallJson {
   untrusted: string[];
 }
 
-/** Machine shape of `exagent runtime:tap --json`. */
+/** Machine shape of `@expo/agent-cli runtime:tap --json`. */
 export interface RuntimeTapJson extends InteractCallJson {
   /** What changed after the tap, or null when `--verify` was not passed. */
   verify: TapVerifyJson | null;
 }
 
-/** Machine shape of `exagent runtime:type --json`. */
+/** Machine shape of `@expo/agent-cli runtime:type --json`. */
 export interface RuntimeTypeJson extends InteractCallJson {
   /** The text that was typed. The caller's own, so it is not app-originated. */
   text: string;

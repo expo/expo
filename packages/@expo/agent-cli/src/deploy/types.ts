@@ -37,7 +37,7 @@ export interface LaunchDeployResult extends LaunchResult {
   expiresInHours: number;
 }
 
-/** The shape `exagent deploy --json` prints. Top-level keys are the stable contract (llp/0006). */
+/** The shape `@expo/agent-cli deploy --json` prints. Top-level keys are the stable contract (llp/0006). */
 export interface DeployReport {
   projectRoot: string;
   /** Targets this run shipped, in the order they ran. */

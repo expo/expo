@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // The dev-server wrapper's half of the lock: resolve the port, publish it, hold it, report it.
 
 import * as Log from '../log';
@@ -79,7 +79,7 @@ export async function holdDevServerLockAsync(
           error: debugEvent.error(result.error),
         });
         Log.warn(
-          `Could not publish the dev server port for this project (${result.error.message}). The dev server is unaffected; other exagent commands may have to scan for its port. Pass --dev-server-url to name it instead.`
+          `Could not publish the dev server port for this project (${result.error.message}). The dev server is unaffected; other @expo/agent-cli commands may have to scan for its port. Pass --dev-server-url to name it instead.`
         );
         return null;
     }

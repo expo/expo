@@ -1,6 +1,6 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate
 // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d)
-// Argument resolution for `exagent smoke`. Pure: argv in, options out, `CommandError` for anything
+// Argument resolution for `@expo/agent-cli smoke`. Pure: argv in, options out, `CommandError` for anything
 // a user can get wrong, so every flag combination is testable without a dev server or a device.
 
 import type { CloudPreference } from '../navigate/device';
@@ -87,7 +87,7 @@ const SMOKE_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent smoke`.
+ * Resolve the arguments of `@expo/agent-cli smoke`.
  *
  * @throws {CommandError} `BAD_ARGS` for two platforms at once, a platform with no runtime to read,
  * a screenshot both asked for and refused, an unusable duration or port, or a stray argument.
@@ -99,7 +99,7 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
   // positional: this command's subject is the app, and a bare word is a caller who meant --route.
   if (args._.length > 0) {
     throw strayArgumentError('smoke', args._, {
-      hint: `to open a route before the error window, pass it as a flag: npx exagent smoke --route ${args._[0]}`,
+      hint: `to open a route before the error window, pass it as a flag: npx @expo/agent-cli smoke --route ${args._[0]}`,
     });
   }
 
@@ -172,10 +172,10 @@ function resolveSmokePlatform(args: { [flag: string]: unknown }): SmokePlatform 
       [
         `--platform web cannot be smoke-tested, so nothing ran.`,
         `Why: every phase of this command after the bundle check reads the running app through the dev server's debugger, and that list holds React Native runtimes only — a browser running the web bundle never registers one, whether or not the page is open. A pass here would mean "the web bundle compiles" while the word "smoke" promises that the app runs.`,
-        `How: run "npx exagent typecheck", which is the part of this that web can answer without a device — it proves this project's own compiler is happy with it. For a runtime gate, run this command with --ios or --android.`,
+        `How: run "npx @expo/agent-cli typecheck", which is the part of this that web can answer without a device — it proves this project's own compiler is happy with it. For a runtime gate, run this command with --ios or --android.`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent typecheck';
+    error.suggestedCommand = 'npx @expo/agent-cli typecheck';
     throw error;
   }
 

@@ -10,7 +10,7 @@ import type { FollowUp } from './types';
  * Render the trailing `Suggested next:` section: one line per follow-up, commands in one column.
  *
  * The commands are rewritten for the runner in use as they go out (`src/utils/invoker.ts`), which
- * is why every builder can go on writing `npx exagent …` and a Bun project still gets a line it can
+ * is why every builder can go on writing `npx @expo/agent-cli …` and a Bun project still gets a line it can
  * paste. The `--json` payload and the `cli:followups` event carry the written form unchanged — see
  * that file for why the machine contract does not move with the shell.
  */

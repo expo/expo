@@ -304,11 +304,11 @@ describe(formatTap, () => {
 
 describe(explainTapFailure, () => {
   it.each([
-    ['no-match', /no element/i, 'npx exagent runtime:tree'],
-    ['ambiguous', /--index/, 'npx exagent runtime:tap row --index 0'],
-    ['index-out-of-range', /--index/, 'npx exagent runtime:tree --testID row'],
-    ['disabled', /--force/, 'npx exagent runtime:tap row --force'],
-    ['no-handler', /handler/i, 'npx exagent runtime:tree --testID row'],
+    ['no-match', /no element/i, 'npx @expo/agent-cli runtime:tree'],
+    ['ambiguous', /--index/, 'npx @expo/agent-cli runtime:tap row --index 0'],
+    ['index-out-of-range', /--index/, 'npx @expo/agent-cli runtime:tree --testID row'],
+    ['disabled', /--force/, 'npx @expo/agent-cli runtime:tap row --force'],
+    ['no-handler', /handler/i, 'npx @expo/agent-cli runtime:tree --testID row'],
   ])(`explains %p and names a command that recovers it`, (reason, matcher, suggestion) => {
     const failure = explainTapFailure(
       tap({ testID: 'row', reason, called: false, matched: reason === 'no-match' ? 0 : 2, ok: false })
@@ -322,7 +322,7 @@ describe(explainTapFailure, () => {
     expect(
       explainTapFailure(tap({ testID: 'a row', reason: 'ambiguous', matched: 2, ok: false }))
         .suggestedCommand
-    ).toBe('npx exagent runtime:tap "a row" --index 0');
+    ).toBe('npx @expo/agent-cli runtime:tap "a row" --index 0');
   });
 
   it(`points a run that found nothing on the focused screen at --all-screens`, () => {
@@ -358,7 +358,7 @@ describe(explainTypeFailure, () => {
     );
 
     expect(failure.message).toMatch(/onChangeText/);
-    expect(failure.suggestedCommand).toBe('npx exagent runtime:tree --testID note-input');
+    expect(failure.suggestedCommand).toBe('npx @expo/agent-cli runtime:tree --testID note-input');
   });
 
   it(`says the text went in even when --submit found nothing to call`, () => {
@@ -441,7 +441,7 @@ describe(explainTypeFailure, () => {
     expect(failure.message).toMatch(/onChangeText/);
     // Both facts: there are two of them, and none of them is an input.
     expect(failure.message).toContain('2');
-    expect(failure.suggestedCommand).toBe('npx exagent runtime:tree --testID shared-id');
+    expect(failure.suggestedCommand).toBe('npx @expo/agent-cli runtime:tree --testID shared-id');
   });
 });
 
@@ -530,7 +530,7 @@ describe(explainBundleRefusal, () => {
   it(`names the file and line the bundler stopped on, and does not claim the app was read`, () => {
     const failure = explainBundleRefusal(broken(), {
       what: 'nothing was tapped',
-      rerun: 'npx exagent runtime:tap inc-btn',
+      rerun: 'npx @expo/agent-cli runtime:tap inc-btn',
     });
 
     expect(failure.message).toContain('does not compile');
@@ -544,19 +544,19 @@ describe(explainBundleRefusal, () => {
   it(`says why a projection of a stale bundle is worse than no projection`, () => {
     const failure = explainBundleRefusal(broken(), {
       what: 'nothing was read',
-      rerun: 'npx exagent runtime:tree',
+      rerun: 'npx @expo/agent-cli runtime:tree',
     });
 
     // The whole point: the app is running the code from *before* the edit, so a green answer here
     // is a green answer about code that no longer exists.
     expect(failure.message).toMatch(/before|stale|no longer/i);
-    expect(failure.suggestedCommand).toBe('npx exagent runtime:reload');
+    expect(failure.suggestedCommand).toBe('npx @expo/agent-cli runtime:reload');
   });
 
   it(`reports a build that never finished as inconclusive rather than broken`, () => {
     const failure = explainBundleRefusal(
       broken({ ok: null, error: null, checked: false, reason: 'the bundler did not finish' }),
-      { what: 'nothing was tapped', rerun: 'npx exagent runtime:tap inc-btn' }
+      { what: 'nothing was tapped', rerun: 'npx @expo/agent-cli runtime:tap inc-btn' }
     );
 
     expect(failure.message).toMatch(/still building|did not finish/i);

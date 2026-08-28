@@ -293,7 +293,7 @@ describe('CdpClient.evaluateAsync, settling promises', () => {
 
   /** The nonce the client generated, read back out of the expression it sent. */
   function nonceOf(request: any): string {
-    const match = /__exagentPendingPromise_([0-9a-f]+)__/.exec(request.params.expression);
+    const match = /__agentCliPendingPromise_([0-9a-f]+)__/.exec(request.params.expression);
     if (!match) {
       throw new Error(`No nonce in: ${request.params.expression}`);
     }
@@ -310,10 +310,10 @@ describe('CdpClient.evaluateAsync, settling promises', () => {
     let poll = 0;
     const client = createClient((request, socket) => {
       requests.push(request);
-      // Only the wrapper declares `__exagentValue`; the poll and the release read the slots.
-      const isWrapper = String(request.params.expression).includes('__exagentValue');
+      // Only the wrapper declares `__agentCliValue`; the poll and the release read the slots.
+      const isWrapper = String(request.params.expression).includes('__agentCliValue');
       const value = isWrapper
-        ? { [`__exagentPendingPromise_${nonceOf(requests[0])}__`]: nonceOf(requests[0]) }
+        ? { [`__agentCliPendingPromise_${nonceOf(requests[0])}__`]: nonceOf(requests[0]) }
         : (answers[Math.min(poll++, answers.length - 1)] ?? { state: 'pending' });
       socket.emit(
         'message',
@@ -409,7 +409,7 @@ describe('CdpClient.evaluateAsync, settling promises', () => {
     expect(result).toEqual({ type: 'promise', promise: { state: 'pending', awaited: false } });
     // Nothing was polled, and the app was never asked to hold anything.
     expect(requests).toHaveLength(1);
-    expect(requests[0].params.expression).not.toContain('__exagentPromiseSlots');
+    expect(requests[0].params.expression).not.toContain('__agentCliPromiseSlots');
   });
 
   // `var x = 1` is a statement, which the wrapper's assignment cannot hold. It used to evaluate.
@@ -417,7 +417,7 @@ describe('CdpClient.evaluateAsync, settling promises', () => {
     const requests: any[] = [];
     const client = createClient((request, socket) => {
       requests.push(request);
-      const wrapped = String(request.params.expression).includes('__exagentValue');
+      const wrapped = String(request.params.expression).includes('__agentCliValue');
       socket.emit(
         'message',
         JSON.stringify(

@@ -13,7 +13,7 @@
 
 /** One `$` line of the Examples block, and what running it gets you. */
 export interface HelpExample {
-  /** The command line as a caller would type it, e.g. `npx exagent dev --detach`. */
+  /** The command line as a caller would type it, e.g. `npx @expo/agent-cli dev --detach`. */
   run: string;
   /**
    * One line, in the present tense, saying what comes back.
@@ -52,7 +52,7 @@ export interface CommandHelp {
    * cannot end up documenting the command it was copied from.
    */
   command: string;
-  /** The usage line, without the `$`, e.g. `npx exagent dev [options]`. */
+  /** The usage line, without the `$`, e.g. `npx @expo/agent-cli dev [options]`. */
   usage: string;
   /** One entry per option, starting at the flag, aligned by hand as the block prints them. */
   options: string[];

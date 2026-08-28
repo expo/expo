@@ -21,7 +21,7 @@ import { preflightRuntimeAsync } from './preflight';
 import type { RuntimeStopOptions } from './resolveStopOptions';
 
 /**
- * Machine shape of `exagent runtime:stop --json`.
+ * Machine shape of `@expo/agent-cli runtime:stop --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout,
  * every key always present, and a fact the run does not have is null.
@@ -224,7 +224,7 @@ export async function runtimeStopAsync(
           `Nothing was stopped: ${resolved.appId} was not running, and ${connected} is.`
         ),
         `Why: --app-id names the app to stop and outranks every other piece of evidence, so it was used as given — and ${result.command} found no process under it. Meanwhile the dev server at ${devServer.devServerUrl} reports ${connectedAppIds.length === 1 ? 'a debugger target' : `${connectedAppIds.length} debugger targets`} for ${connected}, which ${connectedAppIds.length === 1 ? 'is' : 'are'} still running. This is exit 20 rather than 0 because the app you can see on the device is untouched: the requested state holds only for an id nothing was using.`,
-        `How: run "npx exagent runtime:stop --app-id ${connectedAppIds[0]}" to stop what is actually running, or leave --app-id out entirely — without it this command reads the id off the dev server. If you did mean ${resolved.appId}, it is already not running and there is nothing to do.`,
+        `How: run "npx @expo/agent-cli runtime:stop --app-id ${connectedAppIds[0]}" to stop what is actually running, or leave --app-id out entirely — without it this command reads the id off the dev server. If you did mean ${resolved.appId}, it is already not running and there is nothing to do.`,
       ].join('\n')
     );
     reportFollowUps('runtime:stop', report.followups, { json: options.json });
@@ -252,7 +252,7 @@ export function buildStopFollowUps(report: RuntimeStopResultJson): FollowUp[] {
     return [
       {
         id: 'stop-connected-app',
-        command: `npx exagent runtime:stop --app-id ${report.connectedAppIds[0]}`,
+        command: `npx @expo/agent-cli runtime:stop --app-id ${report.connectedAppIds[0]}`,
         why: `${report.bundleId} was not running, so nothing was stopped. ${report.connectedAppIds[0]} is the app connected to the dev server, and this is the same command aimed at it.`,
       },
     ];
@@ -269,7 +269,7 @@ export function buildStopFollowUps(report: RuntimeStopResultJson): FollowUp[] {
   return [
     {
       id: 'navigate',
-      command: `npx exagent navigate /${flag}`,
+      command: `npx @expo/agent-cli navigate /${flag}`,
       // Three arms, not two. `wasRunning: null` is the cloud case — the controller closes the app
       // in front and says nothing about which id that was — and a falsy check read it as `false`,
       // so the follow-up asserted "The app was not running" about an app that was [live staging,

@@ -1,14 +1,14 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0005
 //
 // @ref llp/0005-runtime-loop-tools.rfc.md
-// Rendering for `exagent runtime:network`, lifted out of `src/runtime/format.ts` when the
+// Rendering for `@expo/agent-cli runtime:network`, lifted out of `src/runtime/format.ts` when the
 // command left the v1 surface. Everything the app produced is fenced as untrusted output
 // (llp/0008 §Untrusted content).
 
 import { wrapUntrustedAppOutput } from '../../runtime/untrusted';
 import type { NetworkRequestRecord } from './networkCollector';
 
-/** Machine shape of `exagent runtime:network --json`. */
+/** Machine shape of `@expo/agent-cli runtime:network --json`. */
 export interface NetworkRequestsJson {
   devServerUrl: string;
   durationMs: number;

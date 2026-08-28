@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubBinAsync,
   installStubEasRunnerAsync,
   installStubFingerprintAsync,
@@ -136,7 +136,7 @@ describe('a binary under the name `eas` that was never the EAS CLI', () => {
   it('is left alone by the EAS build lookup of status --explain, which uses the runner', async () => {
     const projectRoot = await setupWithBrokenEasAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['status', '--explain', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['status', '--explain', '--json']);
 
     expect(result.exitCode).toBe(0);
     // The point: the wrapper was never given the chance to say anything.
@@ -153,7 +153,7 @@ describe('a binary under the name `eas` that was never the EAS CLI', () => {
   it('is left alone by status --explain --build', async () => {
     const projectRoot = await setupWithBrokenEasAsync();
 
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'status',
       '--explain',
       '--build',
@@ -173,7 +173,7 @@ describe('a binary under the name `eas` that was never the EAS CLI', () => {
       runnerScript: STUB_EAS_WRAPPER_CRASH,
     });
 
-    const result = await executeExagentAsync(projectRoot, ['status', '--explain', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['status', '--explain', '--json']);
 
     expect(result.exitCode).toBe(0);
     const report = JSON.parse(result.stdout);
@@ -192,7 +192,7 @@ describe('a binary under the name `eas` that was never the EAS CLI', () => {
   // the Expo side of that chain.
   it('is not a candidate for the auth chain, which uses the package runner', async () => {
     const directory = await fs.promises.realpath(
-      await fs.promises.mkdtemp(path.join(require('node:os').tmpdir(), 'exagent-eas-shim-'))
+      await fs.promises.mkdtemp(path.join(require('node:os').tmpdir(), 'agent-cli-eas-shim-'))
     );
     const logFile = path.join(directory, 'npx-invocations.jsonl');
     const binDir = path.join(directory, 'path-bin');
@@ -216,7 +216,7 @@ process.stdout.write('e2e-user\\n');
     );
     await installStubBinAsync(binDir, 'npx', npxStub);
 
-    const result = await executeExagentAsync(directory, ['whoami'], {
+    const result = await executeAgentCliAsync(directory, ['whoami'], {
       env: { PATH: [binDir, path.dirname(process.execPath), '/usr/bin', '/bin'].join(path.delimiter) },
       reject: false,
     });

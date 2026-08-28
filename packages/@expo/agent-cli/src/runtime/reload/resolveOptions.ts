@@ -1,6 +1,6 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app
 // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d)
-// Argument resolution for `exagent runtime:reload`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `@expo/agent-cli runtime:reload`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
 import type { NavigatePlatform } from '../../navigate/device';
@@ -105,7 +105,7 @@ const RELOAD_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent runtime:reload`.
+ * Resolve the arguments of `@expo/agent-cli runtime:reload`.
  *
  * @throws {CommandError} `BAD_ARGS` for two platforms at once, an unknown method, an unusable
  * timeout or port, or a positional argument this command has no place for.
@@ -118,7 +118,7 @@ export function resolveReloadOptions(argv: string[]): ReloadOptions {
   // a caller who meant `--route`, and dropping it would reload without landing anywhere.
   if (args._.length > 0) {
     throw strayArgumentError('runtime:reload', args._, {
-      hint: `to land on a route after the reload, pass it as a flag: npx exagent runtime:reload --route ${args._[0]}`,
+      hint: `to land on a route after the reload, pass it as a flag: npx @expo/agent-cli runtime:reload --route ${args._[0]}`,
     });
   }
 

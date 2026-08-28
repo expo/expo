@@ -54,7 +54,7 @@ export function resolveDevServerUrlFlag(value: unknown): string {
  * The dev server a caller named, through either of the two flags that name one, or null.
  *
  * `--port 8195` is `--dev-server-url http://127.0.0.1:8195` and nothing else. It exists because
- * `exagent dev --port 8195` is the command that started the server, and every command that then
+ * `@expo/agent-cli dev --port 8195` is the command that started the server, and every command that then
  * talks to it wanted the *other* spelling — so an agent that had just typed a port had to translate
  * it into a URL, and got `unknown or unexpected option: --port` when it did not
  * [observed — friction run 4, 2026-08-23]. One flag name across the group is cheaper than the
@@ -74,7 +74,7 @@ export function resolveDevServerTarget(
     throw new CommandError(
       'BAD_ARGS',
       [
-        `--dev-server-url and --port both name a dev server for "exagent ${command}", and they name different ones.`,
+        `--dev-server-url and --port both name a dev server for "@expo/agent-cli ${command}", and they name different ones.`,
         `Why: --port <n> is shorthand for --dev-server-url http://127.0.0.1:<n>, so passing both leaves two answers to one question and no rule for which wins.`,
         `How: pass one. Use --port ${port} for a dev server on this machine, or --dev-server-url ${url} for one anywhere else.`,
       ].join('\n')
@@ -99,7 +99,7 @@ export function resolvePortFlag(value: unknown, command: string): number {
       [
         `--port must be a port number from 1 to 65535, but got ${String(value) || '(nothing)'}.`,
         `Why: it names the port the dev server listens on, which is what this command connects to.`,
-        `How: pass one, as in "npx exagent ${command} --port 8081". Leaving it out lets this command find the dev server of this project on its own.`,
+        `How: pass one, as in "npx @expo/agent-cli ${command} --port 8081". Leaving it out lets this command find the dev server of this project on its own.`,
       ].join('\n')
     );
   }
@@ -119,7 +119,7 @@ export function resolvePortFlag(value: unknown, command: string): number {
  */
 export function howToNameTheDevServer(explicit: boolean): string {
   return explicit
-    ? `The URL above is the one you named, so nothing else was tried — check its host and port against the dev server you meant ("npx exagent status --json" reports this project's).`
+    ? `The URL above is the one you named, so nothing else was tried — check its host and port against the dev server you meant ("npx @expo/agent-cli status --json" reports this project's).`
     : `Pass --dev-server-url, or --port for one on this machine, to reach a dev server on another host or port.`;
 }
 
@@ -138,7 +138,7 @@ export const DEV_SERVER_SCAN_PORTS = [8081, 8082, 8083, 8084, 8085];
 export type DevServerSource =
   /** An explicit `--dev-server-url`. */
   | 'flag'
-  /** The project's dev-server lock, held by an `exagent`-started dev server. */
+  /** The project's dev-server lock, held by an `@expo/agent-cli`-started dev server. */
   | 'lock'
   /** The port the project's own `start.log` last recorded. */
   | 'log'
@@ -235,7 +235,7 @@ export async function discoverDevServerAsync(
     }
   };
 
-  // Step 0 — the project's dev-server lock (`src/devLock/`): a socket an `exagent`-started dev
+  // Step 0 — the project's dev-server lock (`src/devLock/`): a socket an `@expo/agent-cli`-started dev
   // server holds open for as long as it runs, which answers with the URL it listens on. Nothing
   // answers unless a process is alive, so this step has no stale case to guard against. The URL
   // is still probed, never trusted: the lock proves that the wrapper is alive, and the probe
@@ -254,7 +254,7 @@ export async function discoverDevServerAsync(
   // Step 1 — the project's own log: `expo start` logs a `metro:instantiate` event with the port
   // into `.expo/dev/logs/start.log`. Project-scoped, but the log outlives the server that wrote
   // it and names no PID, so the port is only a candidate until it answers a probe. This is what
-  // finds a dev server started by `expo start` directly, with no `exagent` wrapper to hold a lock.
+  // finds a dev server started by `expo start` directly, with no `@expo/agent-cli` wrapper to hold a lock.
   const loggedPort = projectRoot != null ? readLastLoggedDevServerPort(projectRoot) : null;
   if (loggedPort != null && loggedPort !== 8081) {
     const loggedUrl = `http://127.0.0.1:${loggedPort}`;

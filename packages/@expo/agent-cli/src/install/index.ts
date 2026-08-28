@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const installHelp: CommandHelp = {
   command: 'install',
-  usage: 'npx exagent install <package>...',
+  usage: 'npx @expo/agent-cli install <package>...',
   options: [
     `--check             Report which installed packages are out of date, and install nothing`,
     `--json              Print the result as JSON`,
@@ -17,19 +17,19 @@ export const installHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent install expo-sqlite',
+      run: 'npx @expo/agent-cli install expo-sqlite',
       gets: 'the version this SDK wants, installed, and any skills it ships linked',
     },
     {
-      run: 'npx exagent install --check',
+      run: 'npx @expo/agent-cli install --check',
       gets: 'which installed packages are out of date; nothing is installed',
     },
     {
-      run: 'npx exagent install expo-router --json',
+      run: 'npx @expo/agent-cli install expo-router --json',
       gets: 'one object: what was installed, what must rerun, which packages ship skills',
     },
     {
-      run: 'npx exagent install react -- --verbose',
+      run: 'npx @expo/agent-cli install react -- --verbose',
       gets: 'the same install, with everything after -- handed to the package manager',
     },
   ],
@@ -51,11 +51,11 @@ export const installHelp: CommandHelp = {
   notes: [
     `The expo install flags are forwarded to the project's Expo CLI: --check, --dev, --fix,`,
     `--npm, --pnpm, --yarn, --bun. Run "npx expo install --help" for what they do.`,
-    `npx exagent add is this same command, because expo add is expo install.`,
+    `npx @expo/agent-cli add is this same command, because expo add is expo install.`,
   ],
 };
 
-export const exagentInstall: Command = async (argv) => {
+export const agentCliInstall: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -79,7 +79,7 @@ export const exagentInstall: Command = async (argv) => {
     printCommandHelp(installHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent install -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli install -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');

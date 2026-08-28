@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubEasRunnerAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
@@ -24,7 +24,7 @@ import {
 const STUB_EAS_LOG_NAME = 'stub-eas-invocations.jsonl';
 
 /** The record `src/plan/lastBuild.ts` writes, relative to the project root. */
-const LAST_BUILD_FILE = path.join('.expo', 'exagent-last-build.json');
+const LAST_BUILD_FILE = path.join('.expo', 'agent-cli-last-build.json');
 
 /**
  * An `eas` bin standing in for the EAS CLI on the cloud route, recording every invocation.
@@ -119,15 +119,15 @@ function readLastBuildRecord(projectRoot: string): Record<string, string> | null
   return fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : null;
 }
 
-/** Write the developer config into a copied fixture, at `package.json` › `expo` › `exagent`. */
-async function writeExagentConfigAsync(projectRoot: string, config: unknown): Promise<void> {
+/** Write the developer config into a copied fixture, at `package.json` › `expo` › `@expo/agent-cli`. */
+async function writeAgentCliConfigAsync(projectRoot: string, config: unknown): Promise<void> {
   const file = path.join(projectRoot, 'package.json');
   const packageJson = JSON.parse(await fs.promises.readFile(file, 'utf8'));
-  packageJson.expo = { ...packageJson.expo, exagent: config };
+  packageJson.expo = { ...packageJson.expo, agentCli: config };
   await fs.promises.writeFile(file, JSON.stringify(packageJson, null, 2));
 }
 
-describe('exagent dev — the EAS route', () => {
+describe('@expo/agent-cli dev — the EAS route', () => {
   // @ref llp/0015-backend-selection-and-config.rfc.md §What the EAS route is made of
   // Three steps, two CLIs, one order. `dev-test.ts` asserts the same property of the local route
   // (`prebuild` then `run:ios`), and the reason it has to be asserted separately here is that the
@@ -135,7 +135,7 @@ describe('exagent dev — the EAS route', () => {
   it('runs build:configure, then the cloud build, then the dev server', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas']);
 
     expect(result.exitCode).toBe(0);
     expect(easInvocationArgs(projectRoot)).toEqual([
@@ -158,7 +158,7 @@ describe('exagent dev — the EAS route', () => {
       JSON.stringify({ build: { development: { developmentClient: true } } }, null, 2)
     );
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas']);
 
     expect(result.exitCode).toBe(0);
     expect(easInvocationArgs(projectRoot)).toEqual([
@@ -169,7 +169,7 @@ describe('exagent dev — the EAS route', () => {
   it('runs the android build for --android, and passes the platform through', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--android', '--eas']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--android', '--eas']);
 
     expect(result.exitCode).toBe(0);
     expect(easInvocationArgs(projectRoot)).toContainEqual([
@@ -188,7 +188,7 @@ describe('exagent dev — the EAS route', () => {
   it('records no build for a cloud build, which nothing installed', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas']);
 
     expect(result.exitCode).toBe(0);
     expect(readLastBuildRecord(projectRoot)).toBeNull();
@@ -197,7 +197,7 @@ describe('exagent dev — the EAS route', () => {
   it('stops at a failing cloud build, forwards its exit code, and names the EAS CLI', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas'], {
       env: { STUB_EAS_BUILD_EXIT: '3' },
       reject: false,
     });
@@ -213,7 +213,7 @@ describe('exagent dev — the EAS route', () => {
   it('stops at a failing build:configure without starting the build', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas'], {
       env: { STUB_EAS_CONFIGURE_EXIT: '1' },
       reject: false,
     });
@@ -229,7 +229,7 @@ describe('exagent dev — the EAS route', () => {
   it('exits 7 with the EAS login handoff when the cloud build cannot sign in', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
       env: {
         STUB_EAS_BUILD_EXIT: '1',
         STUB_EAS_BUILD_STDERR:
@@ -256,7 +256,7 @@ describe('exagent dev — the EAS route', () => {
   it('exits 7 and names the EAS CLI when the cloud build asks a question', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
       env: {
         STUB_EAS_BUILD_EXIT: '1',
         STUB_EAS_BUILD_STDERR: 'Input is required, but is in non-interactive mode.',
@@ -279,7 +279,7 @@ describe('exagent dev — the EAS route', () => {
     const projectRoot = await setupFixtureAsync('dev-client-app');
     await installStubFingerprintAsync(projectRoot);
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
       // An empty PATH addition is not enough: the machine's own `eas` would be found. The resolver
       // takes the `PATH` it is given, and the runner puts the project's `.stub-bin` first, so a
       // project with no `eas` in either place is the case under test only when `PATH` has none.
@@ -302,7 +302,7 @@ describe('exagent dev — the EAS route', () => {
       easScript: STUB_EAS_WRAPPER_CRASH,
     });
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas', '--json'], {
       reject: false,
     });
 
@@ -315,7 +315,7 @@ describe('exagent dev — the EAS route', () => {
   it('prints exactly one JSON object for a cloud run that succeeded', async () => {
     const projectRoot = await setupAsync();
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas', '--json']);
 
     expect(result.exitCode).toBe(0);
     // The report is the plan itself, exactly as the local route's own `--json` run prints it.
@@ -341,9 +341,9 @@ describe('exagent dev — the EAS route', () => {
   // machine where the SDK is. `plan-test.ts` pins the plan; this pins the run that follows it.
   it('follows a per-platform config into the cloud for that platform only', async () => {
     const projectRoot = await setupAsync();
-    await writeExagentConfigAsync(projectRoot, { ios: { buildBackend: 'eas' } });
+    await writeAgentCliConfigAsync(projectRoot, { ios: { buildBackend: 'eas' } });
 
-    const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
 
     expect(result.exitCode).toBe(0);
     expect(easInvocationArgs(projectRoot)).toContainEqual([
@@ -360,7 +360,7 @@ describe('exagent dev — the EAS route', () => {
   it('tells the cloud build it is CI, the way every captured step is told', async () => {
     const projectRoot = await setupAsync();
 
-    await executeExagentAsync(projectRoot, ['dev', '--ios', '--eas', '--json']);
+    await executeAgentCliAsync(projectRoot, ['dev', '--ios', '--eas', '--json']);
 
     const log = fs
       .readFileSync(path.join(projectRoot, STUB_EAS_LOG_NAME), 'utf8')

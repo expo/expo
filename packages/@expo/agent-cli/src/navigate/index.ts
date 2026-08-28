@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const navigateHelp: CommandHelp = {
   command: 'navigate',
-  usage: 'npx exagent navigate <route>',
+  usage: 'npx @expo/agent-cli navigate <route>',
   options: [
     `--scheme <scheme>       URL scheme of the app, instead of the one in app.json`,
     `--ios                   Open the link on the booted iOS simulator`,
@@ -22,17 +22,17 @@ export const navigateHelp: CommandHelp = {
     `-h, --help              Usage info`,
   ],
   examples: [
-    { run: 'npx exagent navigate /', gets: 'the app opens on a booted device, at the root route' },
+    { run: 'npx @expo/agent-cli navigate /', gets: 'the app opens on a booted device, at the root route' },
     {
-      run: 'npx exagent navigate /profile/42 --ios',
+      run: 'npx @expo/agent-cli navigate /profile/42 --ios',
       gets: 'that route opens on the booted iOS simulator',
     },
     {
-      run: 'npx exagent navigate "/search?q=shoes" --json',
+      run: 'npx @expo/agent-cli navigate "/search?q=shoes" --json',
       gets: 'the same as one object: the url, the device, and whether the app attached',
     },
     {
-      run: 'npx exagent navigate / --print-url',
+      run: 'npx @expo/agent-cli navigate / --print-url',
       gets: 'the resolved URL only. Nothing is opened, and no device is needed',
     },
   ],
@@ -69,7 +69,7 @@ export const navigateHelp: CommandHelp = {
   notes: [
     `The URL shape follows the app: Expo Go uses exp://<host>/--/<route>, a development build`,
     `uses <scheme>://<route>. Which one is running is read from the dev server, so start it with`,
-    `"npx exagent dev --detach" first.`,
+    `"npx @expo/agent-cli dev --detach" first.`,
     `--print-url resolves everything and opens nothing. Use it for a device this machine cannot`,
     `drive — a phone, a cloud simulator — and hand the URL to whatever opens it.`,
     `A tunnelled dev server changes the host in the URL, and that host is read from the log a`,
@@ -77,7 +77,7 @@ export const navigateHelp: CommandHelp = {
   ],
 };
 
-export const exagentNavigate: Command = async (argv) => {
+export const agentCliNavigate: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -101,7 +101,7 @@ export const exagentNavigate: Command = async (argv) => {
     printCommandHelp(navigateHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent navigate -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli navigate -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
   // directory that holds no app rather than planning work against whatever is there.

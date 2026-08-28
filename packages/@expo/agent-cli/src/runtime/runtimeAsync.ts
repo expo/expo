@@ -124,7 +124,7 @@ function promisePendingError(
       ? [
           `The promise the expression returned was lost before it settled (dev server ${devServerUrl}).`,
           `Why: the app reloaded during the wait, which clears the globals this command parks the outcome on, so the value it resolved to — if it ever did — cannot be read any more.`,
-          `How: run the expression again once the app has finished reloading ("npx exagent smoke" waits for the bundle and the app together).`,
+          `How: run the expression again once the app has finished reloading ("npx @expo/agent-cli smoke" waits for the bundle and the app together).`,
         ].join('\n')
       : [
           `The promise the expression returned had not settled after ${timeoutMs}ms (dev server ${devServerUrl}).`,
@@ -132,7 +132,7 @@ function promisePendingError(
           `How: give it longer with --timeout (for example --timeout 30s), or pass --no-await-promise to be told that a promise came back without waiting for it.`,
         ].join('\n')
   );
-  error.suggestedCommand = `npx exagent runtime:eval ${JSON.stringify(expression)} --timeout 30s`;
+  error.suggestedCommand = `npx @expo/agent-cli runtime:eval ${JSON.stringify(expression)} --timeout 30s`;
   return error;
 }
 
@@ -156,16 +156,16 @@ export function evaluateUnsupportedError(devServerUrl: string): CommandError {
     'RUNTIME_EVALUATE_UNSUPPORTED',
     [
       `The app connected to ${devServerUrl} cannot evaluate JavaScript.`,
-      `Why: its runtime answered Runtime.evaluate with "method not found". Expo Go for Android ships a JavaScript engine built without the Chrome DevTools Protocol debugger, so nothing can be evaluated in it, and "npx exagent runtime:errors" connects to it, is acknowledged, and reports an empty window. Expo Go on iOS answers both [observed — 2026-08-25].`,
-      // Not "npx exagent dev prints the plan" [friction run 6, F55]: for a project Expo Go can
+      `Why: its runtime answered Runtime.evaluate with "method not found". Expo Go for Android ships a JavaScript engine built without the Chrome DevTools Protocol debugger, so nothing can be evaluated in it, and "npx @expo/agent-cli runtime:errors" connects to it, is acknowledged, and reports an empty window. Expo Go on iOS answers both [observed — 2026-08-25].`,
+      // Not "npx @expo/agent-cli dev prints the plan" [friction run 6, F55]: for a project Expo Go can
       // still serve, `dev --plan` prints the **Expo Go** path, because the plan engine only reaches
       // the development-build steps when a native module makes Expo Go incompatible
       // (`src/plan/decide.ts`). So the sentence names what does help instead.
-      `How: run "npx exagent runtime:errors --android", which falls back to the dev server's own log when the runtime cannot answer — the app's errors are there, with a code frame. Expo Go on iOS answers this command directly. To leave Expo Go behind, "npx expo run:android" builds and installs this project's own Android app; "npx exagent dev --plan --android" prints the Expo Go path while Expo Go can still serve this project.`,
+      `How: run "npx @expo/agent-cli runtime:errors --android", which falls back to the dev server's own log when the runtime cannot answer — the app's errors are there, with a code frame. Expo Go on iOS answers this command directly. To leave Expo Go behind, "npx expo run:android" builds and installs this project's own Android app; "npx @expo/agent-cli dev --plan --android" prints the Expo Go path while Expo Go can still serve this project.`,
     ].join('\n')
   );
   // The platform is on it, so the command a driving agent runs next reads the same app (F54).
-  error.suggestedCommand = 'npx exagent runtime:errors --android';
+  error.suggestedCommand = 'npx @expo/agent-cli runtime:errors --android';
   return error;
 }
 
@@ -228,7 +228,7 @@ export async function runtimeErrorsAsync(
       [
         `Could not read runtime errors from the app (dev server ${devServerUrl}).`,
         `Why: ${error instanceof Error ? error.message : String(error)}`,
-        `How: make sure the app is open and connected to the dev server, then run this command again. If the app was reloading, "npx exagent runtime:reload" waits for it to come back and exits 0 only when it has.`,
+        `How: make sure the app is open and connected to the dev server, then run this command again. If the app was reloading, "npx @expo/agent-cli runtime:reload" waits for it to come back and exits 0 only when it has.`,
       ].join('\n')
     );
   }
@@ -334,7 +334,7 @@ function inconclusiveWindowError(
   return [
     `--fail-on-error has nothing to judge: the runtime connected to ${devServerUrl} reports no errors, whatever the app does.`,
     `Why: ${evidence ?? 'the runtime answered no debugger call'}. Expo Go for Android ships a JavaScript engine with no Chrome DevTools Protocol debugger, so it acknowledges the calls that open this window and then sends nothing. Exiting 0 here would report health that nothing observed. ${log.reason ?? ''}`.trim(),
-    `How: start the dev server detached ("npx exagent dev --detach"), which captures its log — this command reads the app's errors out of it when the runtime cannot answer. Or open the app in a development build, or on iOS, either of which carries a debuggable engine.`,
+    `How: start the dev server detached ("npx @expo/agent-cli dev --detach"), which captures its log — this command reads the app's errors out of it when the runtime cannot answer. Or open the app in a development build, or on iOS, either of which carries a debuggable engine.`,
   ].join('\n');
 }
 
@@ -369,7 +369,7 @@ function readDevServerLogWindow(
       json: {
         ...NO_DEV_SERVER_LOG,
         logFile: detachedLogPath(projectRoot),
-        reason: `this project has no detached dev server log (${detachedLogPath(projectRoot)}), so there was nowhere else to read the app's errors from — start the dev server with "npx exagent dev --detach" to get one`,
+        reason: `this project has no detached dev server log (${detachedLogPath(projectRoot)}), so there was nowhere else to read the app's errors from — start the dev server with "npx @expo/agent-cli dev --detach" to get one`,
       },
       entries: [],
     };

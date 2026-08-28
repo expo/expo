@@ -100,12 +100,12 @@ function opened(overrides: Partial<OpenRouteResult> = {}): OpenRouteResult {
 
 function screenshot(overrides: Partial<ScreenshotResult> = {}): ScreenshotResult {
   return {
-    path: '/project/.expo/exagent/smoke.png',
+    path: '/project/.expo/agent-cli/smoke.png',
     ok: true,
     reason: null,
     platform: 'ios',
     deviceId: 'SIM-1',
-    command: 'xcrun simctl io SIM-1 screenshot /project/.expo/exagent/smoke.png',
+    command: 'xcrun simctl io SIM-1 screenshot /project/.expo/agent-cli/smoke.png',
     bytes: 1024,
     ...overrides,
   };

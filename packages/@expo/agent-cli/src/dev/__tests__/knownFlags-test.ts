@@ -42,7 +42,7 @@ describe(assertKnownDevFlags, () => {
 
     expect(error.code).toBe('BAD_ARGS');
     expect(error.message).toContain('--bogus');
-    expect(error.suggestedCommand).toBe('npx exagent dev --help');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli dev --help');
   });
 
   // The payoff of the sibling table: `--tail` is a real option of a command a caller plausibly

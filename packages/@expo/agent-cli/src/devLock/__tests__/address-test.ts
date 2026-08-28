@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // The address is the whole contract of the lock: two processes that derive it differently never
 // meet. Both platform branches are asserted from every host, because CI runs this file on one
 // platform at a time and a branch nobody exercises is a branch nobody checks.

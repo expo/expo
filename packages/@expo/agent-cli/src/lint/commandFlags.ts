@@ -2,8 +2,8 @@
 // for is an error, and so is an option it has no place for.
 // Which options each command accepts, read out of the calls that parse them.
 //
-// The command name in a suggestion is only half of what can go stale. `npx exagent dev:stop
-// --force` is a command that resolves and an option that exists; `npx exagent dev:stop
+// The command name in a suggestion is only half of what can go stale. `npx @expo/agent-cli dev:stop
+// --force` is a command that resolves and an option that exists; `npx @expo/agent-cli dev:stop
 // --tail` is a command that resolves and an option that was moved to `dev:logs`, and the reader
 // finds that out by running it. Both `parseArgsOrThrow` and `assertWithOptionsArgs` take the
 // command's own `arg` schema and the command's own name in one call, so the pairing is in the

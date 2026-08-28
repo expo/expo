@@ -1,7 +1,7 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
 // @ref llp/0011-impact-and-freshness.rfc.md §The classifier reads `reasons`
 //
-// `fingerprint:diff` in process, so `exagent status` can classify a change without spawning
+// `fingerprint:diff` in process, so `@expo/agent-cli status` can classify a change without spawning
 // anything. The CLI's own diff is a subprocess over two temporary files
 // (`diffFingerprintsAsync`), which is the right price under `--explain --build <id>` — a caller who
 // asked for it — and the wrong one for a line on a report that promises to be instant.
@@ -65,8 +65,8 @@ export function sourceIdentity(source: FingerprintSource): string | null {
  * The difference between two fingerprints' sources, in the shape `fingerprint:diff` prints.
  *
  * Pure and synchronous: no subprocess, no temporary files, no `await`. That is the whole reason it
- * exists — the headline on `exagent status` is computed from two source lists the command already
- * holds in memory (the probe's, and the one `.expo/exagent-last-build.json` recorded), so it costs
+ * exists — the headline on `@expo/agent-cli status` is computed from two source lists the command already
+ * holds in memory (the probe's, and the one `.expo/agent-cli-last-build.json` recorded), so it costs
  * nothing beyond the walk.
  *
  * A source with no identity is left out of both sides rather than reported as added or removed:

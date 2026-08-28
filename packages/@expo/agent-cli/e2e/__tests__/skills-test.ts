@@ -2,12 +2,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, readProjectFile, setupFixtureAsync } from '../utils';
+import { executeAgentCliAsync, readProjectFile, setupFixtureAsync } from '../utils';
 
 const CLAUDE_SKILLS_DIR = path.join('.claude', 'skills');
 const AGENTS_SKILLS_DIR = path.join('.agents', 'skills');
 
-describe('exagent skills', () => {
+describe('@expo/agent-cli skills', () => {
   let projectRoot: string;
 
   beforeEach(async () => {
@@ -15,20 +15,20 @@ describe('exagent skills', () => {
   });
 
   it('lists the actions of the group with `skills --help`, then the default action’s options', async () => {
-    const result = await executeExagentAsync(projectRoot, ['skills', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['skills', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('skills:sync');
     expect(result.all).toContain('skills:list');
     expect(result.all).toContain('skills:show');
     expect(result.all).toContain('skills:clean');
-    // `exagent skills` runs `skills:sync`, so its options are documented here too.
+    // `@expo/agent-cli skills` runs `skills:sync`, so its options are documented here too.
     expect(result.all).toContain('--agent');
     expect(result.all).toContain('--dry-run');
   });
 
   it('prints the options of an action with `skills:sync --help`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['skills:sync', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['skills:sync', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--agent');
@@ -36,7 +36,7 @@ describe('exagent skills', () => {
   });
 
   it('reports the discovered skill with `skills:list`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['skills:list']);
+    const result = await executeAgentCliAsync(projectRoot, ['skills:list']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('fake-module-with-skills');
@@ -47,7 +47,7 @@ describe('exagent skills', () => {
   });
 
   it('reports skill metadata with `skills:list --json`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['skills:list', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['skills:list', '--json']);
 
     // One object on stdout, never a bare array (llp/0006 §Output contract).
     expect(JSON.parse(result.stdout)).toEqual({
@@ -65,7 +65,7 @@ describe('exagent skills', () => {
   });
 
   it('prints the SKILL.md contents with `skills:show`', async () => {
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'skills:show',
       'fake-module-with-skills',
     ]);
@@ -75,7 +75,7 @@ describe('exagent skills', () => {
   });
 
   it('fails `skills:show` for a package without skills', async () => {
-    const result = await executeExagentAsync(projectRoot, ['skills:show', 'fake-module-plain'], {
+    const result = await executeAgentCliAsync(projectRoot, ['skills:show', 'fake-module-plain'], {
       reject: false,
     });
 
@@ -84,7 +84,7 @@ describe('exagent skills', () => {
   });
 
   it('fails on an unknown action, after listing the ones there are', async () => {
-    const result = await executeExagentAsync(projectRoot, ['skills:nope'], {
+    const result = await executeAgentCliAsync(projectRoot, ['skills:nope'], {
       reject: false,
     });
 
@@ -92,14 +92,14 @@ describe('exagent skills', () => {
     expect(result.all).toContain('nope');
     // The listing first, the recovery command last: the last line is what an agent acts on.
     expect(result.all).toContain('skills:sync');
-    expect(result.all).toContain('Try: npx exagent skills --help');
+    expect(result.all).toContain('Try: npx @expo/agent-cli skills --help');
   });
 
   describe('sync', () => {
     const linkPath = (dir: string, name = 'usage') => path.join(dir, name);
 
     it('links skills with `skills:sync --agent claude-code`', async () => {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills:sync',
         '--agent',
         'claude-code',
@@ -132,7 +132,7 @@ describe('exagent skills', () => {
       await fs.promises.mkdir(own, { recursive: true });
       await fs.promises.writeFile(path.join(own, 'SKILL.md'), '# my own skill\n');
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills:sync',
         '--agent',
         'claude-code',
@@ -164,7 +164,7 @@ describe('exagent skills', () => {
       await fs.promises.mkdir(own, { recursive: true });
       await fs.promises.writeFile(path.join(own, 'SKILL.md'), '# my own skill\n');
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills:sync',
         '--agent',
         'claude-code',
@@ -180,7 +180,7 @@ describe('exagent skills', () => {
 
     // @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills:sync`.
     it('ends with a Next section pointing at the skill list', async () => {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills:sync',
         '--agent',
         'claude-code',
@@ -188,11 +188,11 @@ describe('exagent skills', () => {
 
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('Suggested next:');
-      expect(result.stdout).toContain('npx exagent skills:list');
+      expect(result.stdout).toContain('npx @expo/agent-cli skills:list');
     });
 
     it('leaves the Next section out with --no-followups', async () => {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills:sync',
         '--agent',
         'claude-code',
@@ -205,7 +205,7 @@ describe('exagent skills', () => {
 
     it('emits one cli:followups event for a driving agent', async () => {
       const eventsFile = path.join(projectRoot, 'skills-events.jsonl');
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['skills:sync', '--agent', 'claude-code'],
         { env: { LOG_EVENTS: eventsFile } }
@@ -224,16 +224,16 @@ describe('exagent skills', () => {
     });
 
     it('treats `skills` without an action as `skills:sync`', async () => {
-      const result = await executeExagentAsync(projectRoot, ['skills', '--agent', 'claude-code']);
+      const result = await executeAgentCliAsync(projectRoot, ['skills', '--agent', 'claude-code']);
 
       expect(result.exitCode).toBe(0);
       expect(fs.existsSync(path.join(projectRoot, CLAUDE_SKILLS_DIR, 'usage'))).toBe(true);
     });
 
     // The colon is canonical, the space form resolves to the same command: an agent that types
-    // `skills sync` is never wrong (llp/0006 §The `exagent` launcher).
+    // `skills sync` is never wrong (llp/0006 §The `@expo/agent-cli` launcher).
     it('resolves the space form `skills sync` to the same command', async () => {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills',
         'sync',
         '--agent',
@@ -242,11 +242,11 @@ describe('exagent skills', () => {
 
       expect(result.exitCode).toBe(0);
       expect(fs.existsSync(path.join(projectRoot, CLAUDE_SKILLS_DIR, 'usage'))).toBe(true);
-      expect(result.stdout).toContain('npx exagent skills:list');
+      expect(result.stdout).toContain('npx @expo/agent-cli skills:list');
     });
 
     it('maintains a generated .gitignore block', async () => {
-      await executeExagentAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
+      await executeAgentCliAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
 
       const gitIgnore = readProjectFile(projectRoot, '.gitignore');
       expect(gitIgnore).toContain('# @generated expo skills start');
@@ -255,7 +255,7 @@ describe('exagent skills', () => {
     });
 
     it('caches the explicit agent selection', async () => {
-      await executeExagentAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
+      await executeAgentCliAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
 
       expect(JSON.parse(readProjectFile(projectRoot, '.expo', 'agent-skill-links.json')!)).toEqual({
         agents: ['claude-code'],
@@ -263,14 +263,14 @@ describe('exagent skills', () => {
     });
 
     it('links into the shared agents directory with `--agent cursor`', async () => {
-      await executeExagentAsync(projectRoot, ['skills:sync', '--agent', 'cursor']);
+      await executeAgentCliAsync(projectRoot, ['skills:sync', '--agent', 'cursor']);
 
       expect(fs.existsSync(path.join(projectRoot, AGENTS_SKILLS_DIR, 'usage'))).toBe(true);
     });
 
     it('creates nothing on a repeated run', async () => {
-      await executeExagentAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
-      const result = await executeExagentAsync(projectRoot, [
+      await executeAgentCliAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills:sync',
         '--agent',
         'claude-code',
@@ -282,7 +282,7 @@ describe('exagent skills', () => {
     });
 
     it('changes nothing with `--dry-run`', async () => {
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills',
         '--agent',
         'claude-code',
@@ -295,13 +295,13 @@ describe('exagent skills', () => {
     });
 
     it('prunes the link of a removed skill', async () => {
-      await executeExagentAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
+      await executeAgentCliAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
       await fs.promises.rm(
         path.join(projectRoot, 'node_modules', 'fake-module-with-skills', 'skills', 'usage'),
         { recursive: true, force: true }
       );
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'skills:sync',
         '--agent',
         'claude-code',
@@ -315,11 +315,11 @@ describe('exagent skills', () => {
 
   describe('clean', () => {
     beforeEach(async () => {
-      await executeExagentAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
+      await executeAgentCliAsync(projectRoot, ['skills:sync', '--agent', 'claude-code']);
     });
 
     it('removes the managed links and their .gitignore entries', async () => {
-      const result = await executeExagentAsync(projectRoot, ['skills:clean']);
+      const result = await executeAgentCliAsync(projectRoot, ['skills:clean']);
 
       expect(result.exitCode).toBe(0);
       expect(fs.existsSync(path.join(projectRoot, CLAUDE_SKILLS_DIR, 'usage'))).toBe(false);
@@ -330,13 +330,13 @@ describe('exagent skills', () => {
       const userSkill = path.join(projectRoot, CLAUDE_SKILLS_DIR, 'my-own-skill');
       await fs.promises.mkdir(userSkill, { recursive: true });
 
-      await executeExagentAsync(projectRoot, ['skills:clean']);
+      await executeAgentCliAsync(projectRoot, ['skills:clean']);
 
       expect(fs.existsSync(userSkill)).toBe(true);
     });
 
     it('changes nothing with `--dry-run`', async () => {
-      const result = await executeExagentAsync(projectRoot, ['skills:clean', '--dry-run']);
+      const result = await executeAgentCliAsync(projectRoot, ['skills:clean', '--dry-run']);
 
       expect(result.stdout).toContain('[dry-run]');
       expect(fs.existsSync(path.join(projectRoot, CLAUDE_SKILLS_DIR, 'usage'))).toBe(true);
@@ -344,7 +344,7 @@ describe('exagent skills', () => {
   });
 });
 
-describe('exagent', () => {
+describe('@expo/agent-cli', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
@@ -352,14 +352,14 @@ describe('exagent', () => {
   });
 
   // The top-level listing is grouped by the job at hand, not alphabetically: an agent reading it
-  // has to be able to pick a command (llp/0006 §The `exagent` launcher).
+  // has to be able to pick a command (llp/0006 §The `@expo/agent-cli` launcher).
   //
   // @ref llp/0024-cli-ui.rfc.md §The workflow map
   // The sections were renamed and the commands are one line each with their summary, so the
   // assertion is on the section titles and on every command being present — which is what this
   // test was always for. The comma-joined line it used to pin was the rendering, not the rule.
   it('prints the sectioned command listing with `--help`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
     for (const title of [
@@ -402,13 +402,13 @@ describe('exagent', () => {
   // on-ramp under the map teaches the protocol. A caller who has never seen this CLI needs all
   // three, in that order, on the first screen they are given.
   it('puts the on-ramp above the listing, and leaves the steps to it', async () => {
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
     // The map lives in `help workflow` alone [confirmed — Kudo, 2026-08-28].
     expect(result.all).not.toContain('What to run, in order');
-    expect(result.all).toContain('New here? npx exagent help workflow');
-    const topic = await executeExagentAsync(projectRoot, ['help', 'workflow']);
+    expect(result.all).toContain('New here? npx @expo/agent-cli help workflow');
+    const topic = await executeAgentCliAsync(projectRoot, ['help', 'workflow']);
     for (const title of [
       'Check the project',
       'Start the app',
@@ -425,7 +425,7 @@ describe('exagent', () => {
   });
 
   it('prints the package version with `--version`', async () => {
-    const result = await executeExagentAsync(projectRoot, ['--version']);
+    const result = await executeAgentCliAsync(projectRoot, ['--version']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout.trim()).toBe(require('../../package.json').version);

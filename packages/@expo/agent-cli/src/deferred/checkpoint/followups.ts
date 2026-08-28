@@ -36,7 +36,7 @@ export function buildUndoFollowUps({ paths }: UndoFollowUpInput): FollowUp[] {
   if (paths.some((filePath) => NATIVE_PATH_PATTERN.test(filePath))) {
     followups.push({
       id: 'dev',
-      command: 'npx exagent dev',
+      command: 'npx @expo/agent-cli dev',
       why: 'Native project files were restored, so the app that is installed may no longer match the project: this plans and makes the build that does.',
     });
   }

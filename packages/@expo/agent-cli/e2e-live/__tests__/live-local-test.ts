@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0022-live-tier.plan.md §live-local: the whole loop, on a real simulator
 //
-// The local half of the live tier: one project scaffolded by `exagent new` into a scratch directory
+// The local half of the live tier: one project scaffolded by `@expo/agent-cli new` into a scratch directory
 // outside every git checkout, and the whole v1 local loop run against it on a booted iOS simulator
 // running Expo Go. Nothing here is stubbed. `expo` is the one the scaffold installed, the bundler is
 // Metro, the app is Expo Go, and the debugger connection is a real CDP session onto Hermes.
@@ -19,7 +19,7 @@
 //    agrees, that the served bundle is the one on disk, or that recovery needs no restart.
 //
 // One thing this suite deliberately does not do is break the bundle by adding a dead statement.
-// `exagent new` scaffolds `experiments.reactCompiler: true`, and the React Compiler deletes
+// `@expo/agent-cli new` scaffolds `experiments.reactCompiler: true`, and the React Compiler deletes
 // unreachable statements out of a render body, so `(undefined as any).boom` is compiled away and
 // every gate stays honestly green [observed — friction run 7 §5]. A syntax error is the break that
 // is a break.
@@ -78,7 +78,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
     run.prepare();
     PORT = await findFreePortAsync();
 
-    // `exagent new` is the first command under test and the setup for every command after it, so it
+    // `@expo/agent-cli new` is the first command under test and the setup for every command after it, so it
     // is asserted here rather than in an `it` of its own: a scaffold that failed makes the rest of
     // this file meaningless, and jest reports a failing `beforeAll` as the suite's failure.
     const created = await runLiveAsync(
@@ -90,7 +90,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
       }
     );
     run.spend.scaffolds += 1;
-    expectExit(created, 0, 'exagent new must create and install a project');
+    expectExit(created, 0, '@expo/agent-cli new must create and install a project');
     const report = parseJson(created);
     expect(report.created).toBe(true);
     expect(report.installed).toBe(true);
@@ -128,7 +128,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
     // run last — a live run whose cleanups fired in registration order reported
     // `spawn node ENOENT` for both of them [observed — 2026-08-27, the second run of this suite].
     run.onCleanup('scratch project', () => {
-      if (!process.env.EXAGENT_LIVE_KEEP) {
+      if (!process.env.AGENT_CLI_LIVE_KEEP) {
         fs.rmSync(run.tempDir, { recursive: true, force: true });
       }
     });
@@ -172,7 +172,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
    *     time. Whether a device still has the app open some seconds later is a fact about the device.
    *
    * So this is a **precondition**, not an assertion, and it recovers the way the CLI's own output says
-   * to: `runtime:tree`'s refusal ends in `Try: npx exagent navigate /`, and that is exactly what the
+   * to: `runtime:tree`'s refusal ends in `Try: npx @expo/agent-cli navigate /`, and that is exactly what the
    * second half does. It is logged when it fires, because a precondition that quietly repairs the world
    * is how a suite stops noticing that the world keeps breaking.
    */
@@ -191,7 +191,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
       return parseJson(tree).focusedScreen === 'lab';
     };
 
-    // Two seconds between polls, not the default half-second: each poll is a whole `exagent` process
+    // Two seconds between polls, not the default half-second: each poll is a whole `@expo/agent-cli` process
     // whose output is written to the evidence directory, and a 120-second wait at 500 ms left 159
     // near-identical artifacts to read past [observed — 2026-08-27].
     if (await waitForAsync(() => onLabScreen(label), BOUND_MS, 2_000)) {
@@ -284,7 +284,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
     // the follow-up has to be the command that generates it rather than "fix the diagnostics above".
     expect(report.generatedTypes).not.toBeNull();
     expect(report.generatedTypes.file).toBe('expo-env.d.ts');
-    expect(report.generatedTypes.command).toContain('exagent dev');
+    expect(report.generatedTypes.command).toContain('@expo/agent-cli dev');
     expect(report.followups.map((f: any) => f.id)).toContain('typecheck-generate-types');
   });
 
@@ -690,7 +690,7 @@ describeLive('live-local', gate)('live-local: the whole loop on a real simulator
   // `process.on('uncaughtException', handleTooManyOpenFileErrors)`, and that handler recognised macOS
   // `EMFILE` and **rethrew everything else**. Node's exit code for an exception thrown from inside an
   // `uncaughtException` handler is 7 — "Internal Exception Handler Run-Time Failure" — which collided
-  // exactly with this CLI's needs-human code. Provable on its own, no exagent involved:
+  // exactly with this CLI's needs-human code. Provable on its own, no @expo/agent-cli involved:
   //
   //     node -e "process.on('uncaughtException',(e)=>{throw e}); setImmediate(()=>{throw new Error('x')})"
   //     → exit 7

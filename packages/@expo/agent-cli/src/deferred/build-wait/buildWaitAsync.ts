@@ -1,9 +1,9 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
 //
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// `exagent build:wait <id>`: attach to a build that already exists, and turn it into an exit code.
+// `@expo/agent-cli build:wait <id>`: attach to a build that already exists, and turn it into an exit code.
 //
-// The command is the exit code. `exagent build:wait $ID || handle_by_code $?` is the contract a CI
+// The command is the exit code. `@expo/agent-cli build:wait $ID || handle_by_code $?` is the contract a CI
 // job and a driving agent both want, and it is the reason this is a command rather than a loop
 // pasted into a shell script: `0` finished, `20` errored, `21` canceled, `22` timed out, `1` the
 // tool could not do its job.

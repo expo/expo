@@ -1,8 +1,8 @@
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher, §AGENTS.md generation
-// Shared contract of `exagent agents:setup`: what the command was asked to do, and what it did.
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher, §AGENTS.md generation
+// Shared contract of `@expo/agent-cli agents:setup`: what the command was asked to do, and what it did.
 
 export interface SetupOptions {
-  /** Agent ids from `--agent`, resolved the same way `exagent skills:sync` resolves them. */
+  /** Agent ids from `--agent`, resolved the same way `@expo/agent-cli skills:sync` resolves them. */
   agents: string[];
   /** Maintain the managed block in the project's `AGENTS.md`. Disabled by `--no-agents-md`. */
   agentsMd: boolean;
@@ -34,7 +34,7 @@ export interface SetupSkillsResult {
   skillsDirs: string[];
 }
 
-/** The whole answer of one `exagent agents:setup` run, and the shape `--json` prints. */
+/** The whole answer of one `@expo/agent-cli agents:setup` run, and the shape `--json` prints. */
 export interface SetupReport {
   projectRoot: string;
   /** Null when `--no-agent-skills` skipped the sync. */

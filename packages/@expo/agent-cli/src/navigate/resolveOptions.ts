@@ -1,5 +1,5 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md
-// Argument resolution for `exagent navigate`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `@expo/agent-cli navigate`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
 import { resolveDevServerUrlFlag } from '../runtime/devServer';
@@ -98,7 +98,7 @@ const NAVIGATE_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent navigate <route>`.
+ * Resolve the arguments of `@expo/agent-cli navigate <route>`.
  *
  * @throws {CommandError} `BAD_ARGS` for a missing route, both platform flags at once, an unknown
  * flag, or an unusable value.
@@ -117,7 +117,7 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
   if (positional.length === 0) {
     throw new CommandError(
       'BAD_ARGS',
-      `Missing route. Usage: npx exagent navigate <route>, for example: npx exagent navigate /profile/42`
+      `Missing route. Usage: npx @expo/agent-cli navigate <route>, for example: npx @expo/agent-cli navigate /profile/42`
     );
   }
   if (positional.length > 1) {

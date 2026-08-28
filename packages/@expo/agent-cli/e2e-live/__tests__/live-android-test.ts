@@ -117,7 +117,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
       { label: 'new' }
     );
     run.spend.scaffolds += 1;
-    expectExit(created, 0, 'exagent new must create and install a project');
+    expectExit(created, 0, '@expo/agent-cli new must create and install a project');
     const report = parseJson(created);
     expect(report.created).toBe(true);
     projectRoot = report.projectRoot;
@@ -167,7 +167,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
     // @see LiveRun.onCleanup — a run whose cleanups fired in registration order reported
     // `spawn node ENOENT` for both of them.
     run.onCleanup('scratch project', () => {
-      if (!process.env.EXAGENT_LIVE_KEEP) {
+      if (!process.env.AGENT_CLI_LIVE_KEEP) {
         fs.rmSync(run.tempDir, { recursive: true, force: true });
       }
     });
@@ -279,7 +279,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
     // F103: the one follow-up whose promise is "runs the plan above" has to ask for the same plan.
     // Without the flag it plans for iOS on this host, which is a different plan than the one printed.
     const dev = report.followups.find((followup: any) => followup.id === 'dev');
-    expect(dev.command).toBe('npx exagent dev --android');
+    expect(dev.command).toBe('npx @expo/agent-cli dev --android');
   });
 
   it('dev --detach --wait-ready starts a server that is still there afterwards', async () => {
@@ -357,8 +357,8 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
     // F104: the screenshot follow-up may not tell an Android caller to wait on `runtime:tree`, which
     // needs the debugger this runtime has not got.
     const screenshot = report.followups.find((followup: any) => followup.id === 'screenshot');
-    expect(screenshot.why).not.toContain('run "npx exagent runtime:tree" first');
-    expect(screenshot.why).toContain('npx exagent smoke --android');
+    expect(screenshot.why).not.toContain('run "npx @expo/agent-cli runtime:tree" first');
+    expect(screenshot.why).toContain('npx @expo/agent-cli smoke --android');
   });
 
   it('dev:logs carries the Android bundle the emulator asked for', async () => {
@@ -398,7 +398,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
     expect(report.error.message).toContain('Chrome DevTools Protocol');
     expect(report.error.message).not.toMatch(/--timeout/);
     // The one command that does answer here, with the flag this run had.
-    expect(report.error.suggestedCommand).toBe('npx exagent runtime:errors --android');
+    expect(report.error.suggestedCommand).toBe('npx @expo/agent-cli runtime:errors --android');
   });
 
   it('runtime:errors reports the window as untrusted and falls back to the dev server log', async () => {
@@ -422,7 +422,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
     expect(fs.existsSync(report.devServerLog.logFile)).toBe(true);
     // F103: both commands named carry the platform this window was about.
     const commands = report.followups.map((followup: any) => followup.command);
-    expect(commands).toContain('npx exagent runtime:errors --android --duration 6000');
+    expect(commands).toContain('npx @expo/agent-cli runtime:errors --android --duration 6000');
   });
 
   it('runtime:errors --fail-on-error exits 20 for an error the log caught inside the window', async () => {
@@ -535,7 +535,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
 
     // F103: the follow-ups keep the platform, including the reading command that can answer here.
     const commands = report.followups.map((followup: any) => followup.command);
-    expect(commands).toContain('npx exagent runtime:errors --android --fail-on-error');
+    expect(commands).toContain('npx @expo/agent-cli runtime:errors --android --fail-on-error');
   });
 
   it('runtime:reload --route checks the route and opens it on the emulator', async () => {
@@ -602,7 +602,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
     // F58: every command the failure suggests carries the platform of the run — except the one whose
     // whole point is the other platform, which names it.
     for (const followup of report.followups) {
-      if (followup.command.startsWith('npx exagent smoke')) {
+      if (followup.command.startsWith('npx @expo/agent-cli smoke')) {
         expect(followup.command).toMatch(/--(android|ios)\b/);
       }
     }
@@ -795,7 +795,7 @@ describeAndroid('live-android: the loop on a real Android emulator', () => {
       expect(await waitForExpoGoStoppedAsync()).toBe(true);
 
       // F103: the way back is to the device this stop acted on.
-      expect(report.followups[0].command).toBe('npx exagent navigate / --android');
+      expect(report.followups[0].command).toBe('npx @expo/agent-cli navigate / --android');
     }, 120_000);
   });
 

@@ -17,7 +17,7 @@
 //  - `name-input` / `ro-input` — `runtime:type`'s two ends: a real `onChangeText`, and
 //    `editable={false}`, which must be exit 20 with `disabledOn: "editable"`.
 //
-// The file is copied into a scratch project scaffolded by `exagent new`, so it imports only what
+// The file is copied into a scratch project scaffolded by `@expo/agent-cli new`, so it imports only what
 // that scaffold already depends on.
 
 import { useState } from 'react';

@@ -34,7 +34,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['dev', 'typecheck']);
-    expect(followups[0]!.command).toBe('npx exagent dev');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli dev');
     expect(followups[0]!.why).toContain('react-native-fancy');
     expect(followups[0]!.why).toContain('development build');
   });
@@ -68,7 +68,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app', 'typecheck']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:reload');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:reload');
     expect(followups[0]!.why).toContain('reload');
   });
 
@@ -93,7 +93,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app', 'typecheck']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:reload');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:reload');
     expect(followups[0]!.why).toContain('expo-haptics');
     expect(followups[0]!.why).toContain('Expo Go');
     // The claim that has to go: this package ships native code, and the report says so.
@@ -137,7 +137,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app', 'skills-show', 'typecheck']);
-    expect(followups[1]!.command).toBe('npx exagent skills:show @expo/ui');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli skills:show @expo/ui');
   });
 
   it(`should list the skills when more than one package ships one`, () => {
@@ -147,7 +147,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app', 'skills-list', 'typecheck']);
-    expect(followups[1]!.command).toBe('npx exagent skills:list');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli skills:list');
   });
 
   it(`should keep the skill pointer next to the build warning`, () => {

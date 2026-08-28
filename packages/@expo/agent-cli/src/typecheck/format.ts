@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import { describeMissingGeneratedTypes } from './generatedTypes';
 import type { TypeCheckReport, TypeError } from './types';
 
-/** Width of the label column, matching `exagent status` and `inspect:config-plugins`. */
+/** Width of the label column, matching `@expo/agent-cli status` and `inspect:config-plugins`. */
 const LABEL_WIDTH = 13;
 
 /** How many diagnostics are printed before the rest are counted instead. */

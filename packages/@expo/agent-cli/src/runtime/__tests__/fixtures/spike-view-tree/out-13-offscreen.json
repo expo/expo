@@ -1,5 +1,5 @@
 {
-  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/exagent/src/runtime/__tests__/fixtures/spike-view-tree/expr-13-offscreen.js",
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-13-offscreen.js",
   "exprBytes": 2416,
   "cdpResponseBytes": 728,
   "roundTripMs": 11,

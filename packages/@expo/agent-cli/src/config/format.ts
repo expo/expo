@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import { CONFIG_PLATFORMS } from './effective';
 import type { EffectiveConfigReport, PlatformMods } from './types';
 
-/** Width of the label column, matching `exagent status`. */
+/** Width of the label column, matching `@expo/agent-cli status`. */
 const LABEL_WIDTH = 13;
 
 /** Separates the facts inside one line. */
@@ -17,7 +17,7 @@ const SEPARATOR = ', ';
 export function formatEffectiveConfig(report: EffectiveConfigReport): string {
   const lines = [
     row('Project', report.projectRoot),
-    // "per config", because `exagent status` prints an `SDK` of its own and it is the installed
+    // "per config", because `@expo/agent-cli status` prints an `SDK` of its own and it is the installed
     // `expo` version. Two numbers under one label is what made them look like a disagreement.
     row(
       'SDK',

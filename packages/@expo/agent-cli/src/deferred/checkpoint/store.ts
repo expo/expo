@@ -1,10 +1,10 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
 //
 // @ref llp/0017-deferred-commands.reference.md §The checkpoint system
-// The list of snapshots a project has, in `.expo/exagent-checkpoints.json`.
+// The list of snapshots a project has, in `.expo/agent-cli-checkpoints.json`.
 //
 // The store holds git object ids, not contents: it is an index over objects that live in the
-// project's own `.git` directory. It is advisory the same way `exagent-last-build.json` is — a
+// project's own `.git` directory. It is advisory the same way `agent-cli-last-build.json` is — a
 // missing, corrupt, or unwritable store costs the user an undo, never a command.
 
 import fs from 'fs';
@@ -14,7 +14,7 @@ import { debugEvent } from './events';
 import type { CheckpointRecord } from './types';
 
 /** Name of the store inside the project's `.expo` directory. */
-export const CHECKPOINTS_FILE_NAME = 'exagent-checkpoints.json';
+export const CHECKPOINTS_FILE_NAME = 'agent-cli-checkpoints.json';
 
 /**
  * How many snapshots one project keeps.
@@ -117,7 +117,7 @@ export function findCheckpoint(records: CheckpointRecord[], id?: string): Checkp
  * command name the user typed.
  */
 export function resolveCommandArgv(processArgv: string[]): string[] {
-  return ['exagent', ...processArgv.slice(2)];
+  return ['@expo/agent-cli', ...processArgv.slice(2)];
 }
 
 /** How long ago a checkpoint was made, in the largest whole unit, e.g. `3h`. */

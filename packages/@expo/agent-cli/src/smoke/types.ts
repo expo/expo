@@ -1,6 +1,6 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// What one `exagent smoke` run amounts to, as data.
+// What one `@expo/agent-cli smoke` run amounts to, as data.
 //
 // Kept apart from the phase runner so the shape of the answer can be read on its own, and so the
 // formatter and the follow-ups depend on the shape rather than on the machinery that fills it.
@@ -107,7 +107,7 @@ export interface SmokeErrorsJson {
 }
 
 /**
- * Machine shape of `exagent smoke --json`.
+ * Machine shape of `@expo/agent-cli smoke --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout,
  * every key always present, and a fact the run does not have is null.

@@ -60,7 +60,7 @@ function mockLongRunningStart(): (code: number) => void {
 /** A held lock whose `release` can be asserted on. */
 function mockHeldLock(): DevServerLockHandle {
   const lock: DevServerLockHandle = {
-    address: '/project/.expo/exagent-dev-server.sock',
+    address: '/project/.expo/agent-cli-dev-server.sock',
     replacedStale: false,
     release: jest.fn(),
   };
@@ -140,9 +140,9 @@ describe(startAsync, () => {
     // streaming survives in a terminal a person or an agent reads.
     expect(printed()).toContain('Suggested next:');
     // The step nothing else does: a dev server serves a bundle and opens no app.
-    expect(printed()).toContain('npx exagent navigate /');
+    expect(printed()).toContain('npx @expo/agent-cli navigate /');
     expect(printed()).toContain('exp://192.168.1.5:8081');
-    expect(printed()).toContain('npx exagent runtime:errors');
+    expect(printed()).toContain('npx @expo/agent-cli runtime:errors');
 
     end(0);
     await promise;
@@ -153,7 +153,7 @@ describe(startAsync, () => {
     const promise = startAsync(projectRoot, resolveStartOptions(['--dev-client']));
     await settleFollowUps();
 
-    expect(printed()).toContain('npx exagent start --tunnel');
+    expect(printed()).toContain('npx @expo/agent-cli start --tunnel');
     expect(printed()).not.toContain('exp://');
 
     end(0);
@@ -171,7 +171,7 @@ describe(startAsync, () => {
     const promise = startAsync(projectRoot, resolveStartOptions([]));
     await settleFollowUps();
 
-    expect(printed()).toContain('npx exagent start --tunnel');
+    expect(printed()).toContain('npx @expo/agent-cli start --tunnel');
     expect(printed()).not.toContain('exp://');
 
     end(0);
@@ -187,8 +187,8 @@ describe(startAsync, () => {
     await settleFollowUps();
 
     expect(printed()).toContain('http://localhost:8134');
-    expect(printed()).toContain('npx exagent typecheck');
-    expect(printed()).toContain('npx exagent deploy --web');
+    expect(printed()).toContain('npx @expo/agent-cli typecheck');
+    expect(printed()).toContain('npx @expo/agent-cli deploy --web');
     expect(printed()).not.toContain('npx eas build');
 
     end(0);
@@ -214,7 +214,7 @@ describe(startAsync, () => {
     await settleFollowUps();
 
     expect(Log.log).not.toHaveBeenCalled();
-    // The flag is exagent's own, so `expo start` never sees it.
+    // The flag is @expo/agent-cli's own, so `expo start` never sees it.
     expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['start']);
 
     end(0);
@@ -297,7 +297,7 @@ describe(runDevServerAsync, () => {
     );
   });
 
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
   describe('the dev server lock', () => {
     it(`should publish the dev server alongside the subprocess`, async () => {
       const end = mockLongRunningStart();

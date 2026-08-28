@@ -68,7 +68,7 @@ describe("the flags this CLI writes onto a command line", () => {
     // published binary).
     //
     // Two rows are this CLI re-invoking itself and need no such run: the `--help` `cli.ts`
-    // normalizes onto a command's own argv, and the three flags `smoke --start` gives `exagent
+    // normalizes onto a command's own argv, and the three flags `smoke --start` gives `@expo/agent-cli
     // dev`. They are here because leaving them out would mean keeping an exclusion list, which is
     // a place for a real one to hide.
     //

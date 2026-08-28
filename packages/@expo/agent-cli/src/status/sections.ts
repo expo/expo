@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // The sections of the status report, as pure functions over facts other modules gathered. No I/O
 // happens here, so every section is unit-testable without a project, a dev server, or a device.
 
@@ -39,14 +39,14 @@ const HASH_DISPLAY_LENGTH = 8;
  * The command the next action names: the one that decides a plan and runs it.
  *
  * @ref llp/0024-cli-ui.rfc.md §`status` reads like the help
- * Written `npx exagent …`, like every other command this CLI hands a caller — a `Try:` line, a
- * follow-up, an example in a `--help`. It used to be the bare `exagent dev`, which is the one
- * spelling that is not runnable: nothing puts `exagent` on the PATH of a project that installed it
+ * Written `npx @expo/agent-cli …`, like every other command this CLI hands a caller — a `Try:` line, a
+ * follow-up, an example in a `--help`. It used to be the bare `@expo/agent-cli dev`, which is the one
+ * spelling that is not runnable: nothing puts `@expo/agent-cli` on the PATH of a project that installed it
  * [found by the wave-34 naive-agent walk]. `src/status/format.ts` rewrites it for the runner in use
- * as it prints, so a Bun project reads `bunx exagent dev`; the `--json` value stays as written,
+ * as it prints, so a Bun project reads `bunx @expo/agent-cli dev`; the `--json` value stays as written,
  * exactly as a follow-up's does.
  */
-const NEXT_ACTION_COMMAND = 'npx exagent dev';
+const NEXT_ACTION_COMMAND = 'npx @expo/agent-cli dev';
 
 /**
  * The command the next action names when this directory is not an Expo app.
@@ -55,7 +55,7 @@ const NEXT_ACTION_COMMAND = 'npx exagent dev';
  * that is already here, where adding Expo to this package would write into a repository the caller
  * most likely only walked past (llp/0020 §The recovery is the safe one).
  */
-const NOT_AN_APP_COMMAND = 'npx exagent new my-app';
+const NOT_AN_APP_COMMAND = 'npx @expo/agent-cli new my-app';
 
 /**
  * The gate to put in front of anything that reads the app, once a dev server is up.
@@ -66,7 +66,7 @@ const NOT_AN_APP_COMMAND = 'npx exagent new my-app';
  * the `runtime-errors` follow-up already says it — `next` naming it too would be the duplication
  * that `status` keeps its follow-ups silent to avoid.
  */
-const VERIFY_COMMAND = 'npx exagent smoke';
+const VERIFY_COMMAND = 'npx @expo/agent-cli smoke';
 
 /**
  * The command to name when a dev server is up and nothing is attached to it.
@@ -77,7 +77,7 @@ const VERIFY_COMMAND = 'npx exagent smoke';
  * Nothing was going to do that, so the suggestion was a two-minute wait with one possible ending.
  * This is the command that changes the state the wait is waiting for.
  */
-const OPEN_APP_COMMAND = 'npx exagent navigate /';
+const OPEN_APP_COMMAND = 'npx @expo/agent-cli navigate /';
 
 /**
  * The command to name when there is no local device to open the app on and no URL to hand over.
@@ -85,7 +85,7 @@ const OPEN_APP_COMMAND = 'npx exagent navigate /';
  * It resolves the URL the way `navigate` would — the scheme of a development build, the Expo Go
  * host, the tunnel — and opens nothing, which is the only part of `navigate` that needs a device.
  */
-const PRINT_URL_COMMAND = 'npx exagent navigate / --print-url';
+const PRINT_URL_COMMAND = 'npx @expo/agent-cli navigate / --print-url';
 
 /** What the project is: name, SDK, and how its native side is produced. */
 export function buildProjectStatus(state: ProjectState, packageName: string | null): ProjectStatus {
@@ -110,7 +110,7 @@ export function buildExpoGoStatus(state: ProjectState): ExpoGoStatus {
 }
 
 /**
- * Compare the project fingerprint against the builds `exagent` recorded, per platform.
+ * Compare the project fingerprint against the builds `@expo/agent-cli` recorded, per platform.
  *
  * Unlike the plan engine, which only needs "can a match be proven", status separates the two
  * ways a match cannot be proven: `stale` (compared, and different) and `unknown` (nothing to
@@ -152,7 +152,7 @@ export function buildFreshnessStatus(
   // which is also where the network call that would need lives.
   const comparison: FreshnessComparison = {
     kind: 'last-build',
-    label: 'last build recorded by exagent',
+    label: 'last build recorded by @expo/agent-cli',
     buildId: null,
     // No `--build` was passed, so there is no build whose platform this could be about.
     platform: null,
@@ -466,7 +466,7 @@ export function buildLocalDeviceStatus(probe: LocalDeviceProbe): LocalDeviceStat
  * server has already made possible.
  *
  * The plan is only the next action while there is nothing to verify. A dev server that answers and
- * proved it serves this project makes `exagent dev` the wrong advice — it would start a second one,
+ * proved it serves this project makes `@expo/agent-cli dev` the wrong advice — it would start a second one,
  * three lines under a report that says the first is healthy — so the answer becomes the gate that
  * says whether the bundle and the app are actually working.
  *
@@ -492,7 +492,7 @@ export function buildNextActionStatus(
    */
   cloudSession: boolean = false,
   /**
-   * The plan `exagent dev` would make here, backend and all.
+   * The plan `@expo/agent-cli dev` would make here, backend and all.
    *
    * Passed in by `statusAsync`, which resolves it the way `dev` does — the developer's config,
    * this host, the toolchain probe — so the two commands never disagree about what would happen
@@ -505,7 +505,7 @@ export function buildNextActionStatus(
   // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
   // Above the verify branch, because it outranks every reason to name a command at all: a
   // directory that is not an Expo app has nothing to put on a device and nothing to verify, and
-  // `exagent dev` here is the very trap this report would otherwise send the reader into.
+  // `@expo/agent-cli dev` here is the very trap this report would otherwise send the reader into.
   if (!state.isExpoApp) {
     return {
       command: NOT_AN_APP_COMMAND,
@@ -677,7 +677,7 @@ function lanHostForPort(port: number | null): string | null {
 /**
  * The platform the next action targets when the command line names none.
  *
- * Mirrors the default of `exagent dev` (see `resolveDefaultPlatform` in
+ * Mirrors the default of `@expo/agent-cli dev` (see `resolveDefaultPlatform` in
  * `../dev/devAsync.ts`), so status reports the plan that command would run: a single
  * checked-in native directory is the project's own answer, otherwise only macOS can build for iOS.
  */

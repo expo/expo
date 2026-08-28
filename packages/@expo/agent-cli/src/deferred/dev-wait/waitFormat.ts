@@ -16,7 +16,7 @@ import type {
 } from '../../runtime/bundleCheck';
 import type { DevServerSource } from '../../runtime/devServer';
 
-/** Width of the label column, matching `exagent status`. */
+/** Width of the label column, matching `@expo/agent-cli status`. */
 const LABEL_WIDTH = 12;
 
 /** Separates the facts inside one line. */

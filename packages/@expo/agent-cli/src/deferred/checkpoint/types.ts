@@ -1,18 +1,18 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0008
 //
 // @ref llp/0017-deferred-commands.reference.md §The checkpoint system
-// The shared contract of `exagent checkpoint` and `exagent checkpoint:undo`: what one snapshot is, and what
+// The shared contract of `@expo/agent-cli checkpoint` and `@expo/agent-cli checkpoint:undo`: what one snapshot is, and what
 // creating or restoring one reports.
 
-/** One snapshot of the project, stored in `.expo/exagent-checkpoints.json`. */
+/** One snapshot of the project, stored in `.expo/agent-cli-checkpoints.json`. */
 export interface CheckpointRecord {
   /** Object id of the snapshot commit, which is reachable from no branch and no ref. */
   id: string;
-  /** Why the snapshot exists, e.g. `exagent install` or a `--label` the user passed. */
+  /** Why the snapshot exists, e.g. `@expo/agent-cli install` or a `--label` the user passed. */
   label: string;
   /** ISO 8601 timestamp of the moment the snapshot was written. */
   createdAt: string;
-  /** The command that made it, e.g. `["exagent", "install", "expo-sqlite"]`. */
+  /** The command that made it, e.g. `["@expo/agent-cli", "install", "expo-sqlite"]`. */
   argv: string[];
   /**
    * Repository-root-relative directory the snapshot covers, `""` for the repository root.
@@ -25,7 +25,7 @@ export interface CheckpointRecord {
 export type CheckpointSkipReason =
   /** The project is not inside a git work tree, so there is nothing to snapshot into. */
   | 'not-a-git-repo'
-  /** `--no-checkpoint` or `EXAGENT_NO_CHECKPOINT` turned checkpoints off. */
+  /** `--no-checkpoint` or `AGENT_CLI_NO_CHECKPOINT` turned checkpoints off. */
   | 'suppressed'
   /** Git tracks no file under the project, e.g. everything is ignored. */
   | 'no-files'
@@ -43,7 +43,7 @@ export interface CheckpointResult {
   detail: string;
 }
 
-/** What one `exagent checkpoint:undo` run put back. */
+/** What one `@expo/agent-cli checkpoint:undo` run put back. */
 export interface UndoResult {
   record: CheckpointRecord;
   /** Files whose contents the restore wrote, including the ones it recreated. */

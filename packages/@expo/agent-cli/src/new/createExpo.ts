@@ -1,5 +1,5 @@
 // @ref llp/0007-deploy-and-headless.rfc.md §Headless project creation
-// How `exagent new` reaches `create-expo`: as a subprocess, never as an import (llp/0001
+// How `@expo/agent-cli new` reaches `create-expo`: as a subprocess, never as an import (llp/0001
 // constraint 5), and with the arguments that make it answer its own prompts.
 
 import { findExecutableOnPath } from '../utils/subprocess';
@@ -35,7 +35,7 @@ export function resolveCreateExpoCli({ pathEnv }: { pathEnv?: string } = {}): Cr
  * The `create-expo` arguments for one headless creation.
  *
  * `--yes` is not optional here: without it `create-expo` asks which template and which SDK version
- * to use, and `exagent new` runs with no stdin at all (llp/0006 §Non-interactive parity), so a
+ * to use, and `@expo/agent-cli new` runs with no stdin at all (llp/0006 §Non-interactive parity), so a
  * prompt would be an EOF failure instead of a project.
  *
  * The directory is passed exactly as typed. `create-expo` derives the app name and the slug from

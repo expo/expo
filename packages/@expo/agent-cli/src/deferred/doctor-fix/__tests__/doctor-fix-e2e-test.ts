@@ -12,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, installStubBinAsync, setupFixtureAsync, stubExpoEnv } from '../../../../e2e/utils';
+import { executeAgentCliAsync, installStubBinAsync, setupFixtureAsync, stubExpoEnv } from '../../../../e2e/utils';
 
 /** The shape `doctor:fix --json` prints, per `src/doctor/fixTypes.ts`. */
 type FixPayload = {
@@ -180,12 +180,12 @@ function git(cwd: string, ...args: string[]): void {
   });
 }
 
-describe('exagent doctor:fix', () => {
+describe('@expo/agent-cli doctor:fix', () => {
   // The test that pins the default. Everything else about this command is a detail next to it.
   it('deletes nothing without --apply, and says so', async () => {
     const planted = await plantAsync('go-app');
 
-    const result = await executeExagentAsync(planted.projectRoot, ['doctor:fix', '--json'], {
+    const result = await executeAgentCliAsync(planted.projectRoot, ['doctor:fix', '--json'], {
       env: planted.env,
     });
 
@@ -209,7 +209,7 @@ describe('exagent doctor:fix', () => {
   it('names the caches, their size and what puts each one back', async () => {
     const planted = await plantAsync('go-app');
 
-    const result = await executeExagentAsync(planted.projectRoot, ['doctor:fix', '--json'], {
+    const result = await executeAgentCliAsync(planted.projectRoot, ['doctor:fix', '--json'], {
       env: planted.env,
     });
     const payload: FixPayload = JSON.parse(result.stdout);
@@ -229,7 +229,7 @@ describe('exagent doctor:fix', () => {
   it('deletes exactly the planned paths with --apply, and nothing else', async () => {
     const planted = await plantAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       planted.projectRoot,
       ['doctor:fix', '--apply', '--yes', '--tier', 'safe', '--json'],
       { env: planted.env }
@@ -258,7 +258,7 @@ describe('exagent doctor:fix', () => {
 
     const without: FixPayload = JSON.parse(
       (
-        await executeExagentAsync(
+        await executeAgentCliAsync(
           planted.projectRoot,
           ['doctor:fix', '--tier', 'moderate', '--json'],
           {
@@ -274,7 +274,7 @@ describe('exagent doctor:fix', () => {
 
     const withFlag: FixPayload = JSON.parse(
       (
-        await executeExagentAsync(
+        await executeAgentCliAsync(
           planted.projectRoot,
           ['doctor:fix', '--tier', 'moderate', '--allow-machine-wide', '--json'],
           { env: planted.env }
@@ -291,7 +291,7 @@ describe('exagent doctor:fix', () => {
     const planted = await plantAsync('go-app');
     await stubPackageManagerAsync(planted, 'npm');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       planted.projectRoot,
       ['doctor:fix', '--tier', 'moderate', '--apply', '--yes', '--json'],
       { env: planted.env }
@@ -313,7 +313,7 @@ describe('exagent doctor:fix', () => {
     const planted = await plantAsync('go-app');
     await stubPackageManagerAsync(planted, 'npm');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       planted.projectRoot,
       ['doctor:fix', '--tier', 'moderate', '--allow-machine-wide', '--apply', '--yes', '--json'],
       { env: { ...planted.env, STUB_PM_FAIL: '1' }, reject: false }
@@ -340,7 +340,7 @@ describe('exagent doctor:fix', () => {
 
     const safe: FixPayload = JSON.parse(
       (
-        await executeExagentAsync(
+        await executeAgentCliAsync(
           planted.projectRoot,
           ['doctor:fix', '--apply', '--yes', '--json'],
           { env: planted.env }
@@ -352,7 +352,7 @@ describe('exagent doctor:fix', () => {
 
     const moderate: FixPayload = JSON.parse(
       (
-        await executeExagentAsync(
+        await executeAgentCliAsync(
           planted.projectRoot,
           ['doctor:fix', '--tier', 'moderate', '--apply', '--yes', '--json'],
           { env: planted.env }
@@ -373,7 +373,7 @@ describe('exagent doctor:fix', () => {
 
     const payload: FixPayload = JSON.parse(
       (
-        await executeExagentAsync(
+        await executeAgentCliAsync(
           planted.projectRoot,
           ['doctor:fix', '--tier', 'moderate', '--apply', '--yes', '--no-checkpoint', '--json'],
           { env: planted.env }
@@ -391,7 +391,7 @@ describe('exagent doctor:fix', () => {
     git(planted.projectRoot, 'commit', '-qm', 'init');
     await fs.promises.appendFile(path.join(planted.projectRoot, 'ios', 'Podfile'), '\n# edited\n');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       planted.projectRoot,
       ['doctor:fix', '--tier', 'aggressive', '--json'],
       { env: planted.env, reject: false }
@@ -400,11 +400,11 @@ describe('exagent doctor:fix', () => {
     expect(result.exitCode).toBe(1);
     expect(JSON.parse(result.stdout).error).toMatchObject({
       code: 'DOCTOR_FIX_DIRTY_NATIVE',
-      suggestedCommand: 'npx exagent doctor:fix --tier safe',
+      suggestedCommand: 'npx @expo/agent-cli doctor:fix --tier safe',
     });
     expect(result.stderr).toContain('ios/Podfile');
     // The way out is a command, and it works on the same project.
-    const safe = await executeExagentAsync(planted.projectRoot, ['doctor:fix', '--tier', 'safe'], {
+    const safe = await executeAgentCliAsync(planted.projectRoot, ['doctor:fix', '--tier', 'safe'], {
       env: planted.env,
     });
     expect(safe.exitCode).toBe(0);
@@ -413,13 +413,13 @@ describe('exagent doctor:fix', () => {
   it('prints a terse plan a person can read', async () => {
     const planted = await plantAsync('go-app');
 
-    const result = await executeExagentAsync(planted.projectRoot, ['doctor:fix'], {
+    const result = await executeAgentCliAsync(planted.projectRoot, ['doctor:fix'], {
       env: planted.env,
     });
 
     expect(result.stdout).toContain('Tier         safe');
     expect(result.stdout).toContain('dry run — nothing was touched, pass --apply to run it');
-    expect(result.stdout).toContain('Nothing was deleted. Run npx exagent doctor:fix');
+    expect(result.stdout).toContain('Nothing was deleted. Run npx @expo/agent-cli doctor:fix');
     expect(result.stdout).toContain('back: rebuilt on the next web bundle');
   });
 
@@ -427,7 +427,7 @@ describe('exagent doctor:fix', () => {
     const planted = await plantAsync('go-app');
     const eventsFile = path.join(planted.projectRoot, 'events.jsonl');
 
-    await executeExagentAsync(planted.projectRoot, ['doctor:fix', '--apply', '--yes', '--json'], {
+    await executeAgentCliAsync(planted.projectRoot, ['doctor:fix', '--apply', '--yes', '--json'], {
       env: { ...planted.env, LOG_EVENTS: eventsFile },
     });
 
@@ -445,7 +445,7 @@ describe('exagent doctor:fix', () => {
   it('rejects a tier and a platform it does not know, without touching anything', async () => {
     const planted = await plantAsync('go-app');
 
-    const tier = await executeExagentAsync(
+    const tier = await executeAgentCliAsync(
       planted.projectRoot,
       ['doctor:fix', '--tier', 'nuclear', '--json'],
       { env: planted.env, reject: false }
@@ -454,7 +454,7 @@ describe('exagent doctor:fix', () => {
     expect(JSON.parse(tier.stdout).error.code).toBe('BAD_ARGS');
     expect(tier.stderr).toContain('safe, moderate, aggressive');
 
-    const platform = await executeExagentAsync(
+    const platform = await executeAgentCliAsync(
       planted.projectRoot,
       ['doctor:fix', '--platform', 'tvos'],
       { env: planted.env, reject: false }
@@ -471,7 +471,7 @@ describe('exagent doctor:fix', () => {
   it('rejects a positional argument instead of dropping it', async () => {
     const planted = await plantAsync('go-app');
 
-    const result = await executeExagentAsync(planted.projectRoot, ['doctor:fix', 'moderate'], {
+    const result = await executeAgentCliAsync(planted.projectRoot, ['doctor:fix', 'moderate'], {
       env: planted.env,
       reject: false,
     });
@@ -484,7 +484,7 @@ describe('exagent doctor:fix', () => {
   it('names the excluded steps and the exit codes in its help, without running', async () => {
     const planted = await plantAsync('go-app');
 
-    const result = await executeExagentAsync(planted.projectRoot, ['doctor:fix', '--help'], {
+    const result = await executeAgentCliAsync(planted.projectRoot, ['doctor:fix', '--help'], {
       env: planted.env,
     });
 
@@ -502,7 +502,7 @@ describe('exagent doctor:fix', () => {
   it('is listed under the doctor group', async () => {
     const planted = await plantAsync('go-app');
 
-    const result = await executeExagentAsync(planted.projectRoot, ['doctor', '--help'], {
+    const result = await executeAgentCliAsync(planted.projectRoot, ['doctor', '--help'], {
       env: planted.env,
     });
 

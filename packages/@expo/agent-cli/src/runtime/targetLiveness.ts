@@ -2,7 +2,7 @@
 // Which of the debugger targets the dev server lists can still be talked to.
 //
 // The dev server's `/json/list` is a list of *registrations*, not of live runtimes. When an app is
-// force-stopped and started again, the old page can stay in that list — so `exagent status` said
+// force-stopped and started again, the old page can stay in that list — so `@expo/agent-cli status` said
 // `1 app connected` while every runtime command answered `No target found`, one counting the
 // listing and the other counting what it could reach [observed — friction run 6 (Android),
 // 2026-08-24, F56]. Both numbers were right about different things, and a caller reading one and

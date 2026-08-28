@@ -1,6 +1,6 @@
 // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts
-// Which options `exagent dev` accepts, and which of them are the Expo CLI's.
+// Which options `@expo/agent-cli dev` accepts, and which of them are the Expo CLI's.
 //
 // `dev` parses permissively, because most of what it takes belongs to the `expo start` its plan
 // ends with. That is right for the flags below and wrong for everything else: an option neither
@@ -13,13 +13,13 @@
 // So the two lists below are the whole of what this command accepts, and `assertKnownDevFlags`
 // refuses anything else before a single step is decided. Keeping the Expo half as an explicit list
 // is the cost of the check: `expo start` owns those names, and a flag added to it upstream has to
-// be added here too or `exagent dev` will refuse it. That is a maintenance cost paid on purpose —
+// be added here too or `@expo/agent-cli dev` will refuse it. That is a maintenance cost paid on purpose —
 // the alternative is what shipped, where every typo was forwarded.
 
 import { unknownOptionError } from '../utils/unknownOption';
 
 /**
- * Options `exagent dev` acts on itself and never forwards.
+ * Options `@expo/agent-cli dev` acts on itself and never forwards.
  *
  * `--port` is deliberately *not* here: it is an `expo start` option that this command also reads
  * (`resolveDevOptions`), so it belongs to the list below and is forwarded as well as acted on.
@@ -45,7 +45,7 @@ export const DEV_OWN_FLAGS: readonly string[] = [
 ];
 
 /**
- * Options of `expo start` that `exagent dev` forwards to the step its plan ends with.
+ * Options of `expo start` that `@expo/agent-cli dev` forwards to the step its plan ends with.
  *
  * Transcribed from the `assertArgs` schema of `packages/@expo/cli/src/start/index.ts` [observed —
  * expo 57, 2026-08-24], long forms and aliases together, minus `--help`/`-h` which this command
@@ -81,7 +81,7 @@ export const EXPO_START_FLAGS: readonly string[] = [
   '-g',
 ];
 
-/** Every option `exagent dev` accepts, from either half. */
+/** Every option `@expo/agent-cli dev` accepts, from either half. */
 const KNOWN_DEV_FLAGS = new Set([...DEV_OWN_FLAGS, ...EXPO_START_FLAGS]);
 
 /**

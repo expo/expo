@@ -2,7 +2,7 @@
 // Open a route of the project in the app on a booted device, so a change can be verified on the
 // screen it belongs to instead of by hand.
 //
-// The act itself is `openRouteAsync` (`./openRoute.ts`), which `exagent smoke` performs too. What
+// The act itself is `openRouteAsync` (`./openRoute.ts`), which `@expo/agent-cli smoke` performs too. What
 // is left here is this command's own half: its two output channels, its follow-ups, and the exit
 // code it gives a device that refused the link.
 import chalk from 'chalk';
@@ -30,7 +30,7 @@ import type { NavigateOptions } from './resolveOptions';
 import type { RouteCheckJson } from './routeCheck';
 
 /**
- * Machine shape of `exagent navigate --json`.
+ * Machine shape of `@expo/agent-cli navigate --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout,
  * with field names mirroring the labels of the human summary. Every key is always present, and
@@ -517,8 +517,8 @@ function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): 
         ? ` On a cloud session the usual cause is a system dialog nothing answered — read it with "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} alert get" and answer it with "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} alert accept".`
         : '';
   const look = cloud
-    ? 'npx exagent smoke --cloud --no-route-check'
-    : `npx exagent smoke --platform ${opened.platform} --no-route-check`;
+    ? 'npx @expo/agent-cli smoke --cloud --no-route-check'
+    : `npx @expo/agent-cli smoke --platform ${opened.platform} --no-route-check`;
 
   return [
     chalk.red(
@@ -529,6 +529,6 @@ function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): 
         ? ' The app was stopped and the link opened a second time, and that did not attach either.'
         : ''
     }${alertClause}`,
-    `How: look at what the dev server was asked for with "npx exagent dev:logs", and at the screen with "${look}". A first bundle on a cold device can take longer than this wait — raise it with --attach-timeout 90s. Pass --no-wait-attach to report only what the device tool said, which is what this command used to do.${alertHow}`,
+    `How: look at what the dev server was asked for with "npx @expo/agent-cli dev:logs", and at the screen with "${look}". A first bundle on a cold device can take longer than this wait — raise it with --attach-timeout 90s. Pass --no-wait-attach to report only what the device tool said, which is what this command used to do.${alertHow}`,
   ].join('\n');
 }

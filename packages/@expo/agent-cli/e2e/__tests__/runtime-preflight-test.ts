@@ -15,7 +15,7 @@
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubBinAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
@@ -61,7 +61,7 @@ beforeAll(async () => {
 
 /** Run one of the family against a dev server, with `--json` so the envelope is readable. */
 async function runAsync(argv: string[], devServerUrl: string) {
-  return await executeExagentAsync(
+  return await executeAgentCliAsync(
     projectRoot,
     [...argv, '--dev-server-url', devServerUrl, '--json'],
     { reject: false, env: stubExpoEnv(projectRoot) }
@@ -79,9 +79,9 @@ describe('no dev server is running', () => {
     expect(error.code).toBe('NO_DEV_SERVER');
     // One ladder, in one order: start the dev server, then open the app.
     expect(error.message).toContain(DEAD_URL);
-    expect(error.message).toContain('npx exagent dev --detach');
-    expect(error.message).toContain('npx exagent navigate /');
-    expect(error.suggestedCommand).toBe('npx exagent dev --detach');
+    expect(error.message).toContain('npx @expo/agent-cli dev --detach');
+    expect(error.message).toContain('npx @expo/agent-cli navigate /');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli dev --detach');
     // And the counts the refusal observed, so an agent branches on numbers (llp/0010 §The `--json`
     // error envelope).
     expect(error.data).toEqual({
@@ -110,15 +110,15 @@ describe('no dev server is running', () => {
   // to a simulator they have not got, and one without `--tunnel` starts a dev server the session
   // cannot reach.
   it('keeps --cloud and --tunnel in the ladder when the caller passed --cloud', async () => {
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['runtime:reload', '--cloud', '--dev-server-url', DEAD_URL, '--json'],
       { reject: false, env: stubExpoEnv(projectRoot) }
     );
 
     const { error } = JSON.parse(result.stdout);
-    expect(error.message).toContain('npx exagent dev --detach --tunnel');
-    expect(error.message).toContain('npx exagent navigate / --cloud');
+    expect(error.message).toContain('npx @expo/agent-cli dev --detach --tunnel');
+    expect(error.message).toContain('npx @expo/agent-cli navigate / --cloud');
   });
 });
 
@@ -145,8 +145,8 @@ describe('a dev server with no app connected', () => {
       expect(error.code).toBe('NO_APP_CONNECTED');
       // Which list is empty, and on which dev server.
       expect(error.message).toContain(`${stub.url}/json/list`);
-      expect(error.message).toContain('npx exagent navigate /');
-      expect(error.suggestedCommand).toBe('npx exagent navigate /');
+      expect(error.message).toContain('npx @expo/agent-cli navigate /');
+      expect(error.suggestedCommand).toBe('npx @expo/agent-cli navigate /');
       expect(error.data).toEqual({
         devServerUrl: stub.url,
         devServerReachable: true,
@@ -189,7 +189,7 @@ describe('a dev server with no app connected', () => {
     });
     await installStubXcrunAsync(projectRoot, started);
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:reload', '--ios', '--dev-server-url', withApp.url, '--json'],
         { reject: false, env: stubExpoEnv(projectRoot) }
@@ -211,7 +211,7 @@ describe('a dev server with no app connected', () => {
     await installStubXcrunAsync(projectRoot, null);
 
     for (const devServerUrl of [stub.url, DEAD_URL]) {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['runtime:stop', '--ios', '--dev-server-url', devServerUrl, '--json'],
         { reject: false, env: stubExpoEnv(projectRoot) }

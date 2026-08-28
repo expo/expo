@@ -1,5 +1,5 @@
 // @ref llp/0024-cli-ui.rfc.md §The on-ramp
-// `exagent help`, `exagent help <topic>`, and `exagent help <command>`.
+// `@expo/agent-cli help`, `@expo/agent-cli help <topic>`, and `@expo/agent-cli help <command>`.
 //
 // `help` is the word somebody types when they have been handed a CLI and nothing else, so it is a
 // command rather than a flag, and it answers three questions under one name:
@@ -23,18 +23,18 @@ import type { CommandHelp } from './types';
 
 export const helpHelp: CommandHelp = {
   command: 'help',
-  usage: 'npx exagent help <topic | command>',
+  usage: 'npx @expo/agent-cli help <topic | command>',
   options: [`-h, --help   Usage info`],
   examples: [
     {
-      run: `npx exagent help ${helpTopics[0]!.name}`,
+      run: `npx @expo/agent-cli help ${helpTopics[0]!.name}`,
       gets: 'what to run in order, the exit codes and the --json contract, in one screen',
     },
     {
-      run: 'npx exagent help status',
+      run: 'npx @expo/agent-cli help status',
       gets: 'one command: its options, its examples and its JSON keys',
     },
-    { run: 'npx exagent help', gets: 'every command, grouped by the job it does' },
+    { run: 'npx @expo/agent-cli help', gets: 'every command, grouped by the job it does' },
   ],
   next: ['status', 'dev'],
   // Built from the topic list rather than written out, so a topic added there is documented here
@@ -46,7 +46,7 @@ export const helpHelp: CommandHelp = {
   ],
 };
 
-export const exagentHelp: Command = async (argv) => {
+export const agentCliHelp: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -61,7 +61,7 @@ export const exagentHelp: Command = async (argv) => {
     printCommandHelp(helpHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent help -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli help -h` shows as fast as possible.
   const Log = require('../log') as typeof import('../log');
   const { EXIT_OK } = require('../exitCodes') as typeof import('../exitCodes');
   const registry = require('../commandRegistry') as typeof import('../commandRegistry');
@@ -94,7 +94,7 @@ export const exagentHelp: Command = async (argv) => {
         await exec(resolution.argv);
         return;
       }
-      // A bare group is its listing, exactly as `exagent runtime --help` prints it, plus the
+      // A bare group is its listing, exactly as `@expo/agent-cli runtime --help` prints it, plus the
       // options of the action the bare name runs when it has one.
       case 'group-help': {
         Log.log(registry.formatGroupHelp(resolution.group));
@@ -108,8 +108,8 @@ export const exagentHelp: Command = async (argv) => {
       }
       // An `expo` command this CLI forwards: its help is that CLI's to print, so it prints it.
       case 'passthrough': {
-        const { exagentPassthrough } = require('../passthrough') as typeof import('../passthrough');
-        await exagentPassthrough(resolution.command)(['--help']);
+        const { agentCliPassthrough } = require('../passthrough') as typeof import('../passthrough');
+        await agentCliPassthrough(resolution.command)(['--help']);
         return;
       }
       // A group of ours asked about an action it does not have: the listing, then the error, the
@@ -122,7 +122,7 @@ export const exagentHelp: Command = async (argv) => {
           'UNKNOWN_ACTION',
           registry.unknownActionMessage(resolution.group, resolution.action)
         );
-        error.suggestedCommand = `npx exagent ${resolution.group} --help`;
+        error.suggestedCommand = `npx @expo/agent-cli ${resolution.group} --help`;
         throw error;
       }
       default: {

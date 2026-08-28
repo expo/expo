@@ -42,7 +42,7 @@ export function extractAdviceAction(check: DoctorCheck): string | null {
     const quoted = (match[1] ?? match[2] ?? match[3] ?? '').trim();
     const [tool] = quoted.split(/\s+/);
     if (tool && COMMAND_TOOLS.includes(tool) && quoted.includes(' ')) {
-      return preferExagent(quoted);
+      return preferAgentCli(quoted);
     }
   }
 
@@ -56,19 +56,19 @@ export function extractAdviceAction(check: DoctorCheck): string | null {
  *
  * expo-doctor's advice is written for a person, so it names the Expo CLI: `npx expo install --check`
  * [observed — friction run 7, F78]. The reader of a `Suggested next:` line here is usually an agent
- * driving *this* CLI, and `exagent install --check` runs the same check and adds the structured
+ * driving *this* CLI, and `@expo/agent-cli install --check` runs the same check and adds the structured
  * `check` object the rest of the surface expects. Nothing else is rewritten: a rewrite is a claim
  * that the two commands do the same thing, and this is the only pair where that has been verified
  * (`src/install/`).
  */
-const EXAGENT_EQUIVALENTS: readonly { advice: RegExp; command: string }[] = [
-  { advice: /^(?:npx\s+)?expo\s+install\s+--check$/, command: 'npx exagent install --check' },
-  { advice: /^(?:npx\s+)?expo\s+install\s+--fix$/, command: 'npx exagent install --fix' },
+const AGENT_CLI_EQUIVALENTS: readonly { advice: RegExp; command: string }[] = [
+  { advice: /^(?:npx\s+)?expo\s+install\s+--check$/, command: 'npx @expo/agent-cli install --check' },
+  { advice: /^(?:npx\s+)?expo\s+install\s+--fix$/, command: 'npx @expo/agent-cli install --fix' },
 ];
 
 /** The same action, spelled as this CLI's command when this CLI has one. */
-function preferExagent(action: string): string {
-  const equivalent = EXAGENT_EQUIVALENTS.find((entry) => entry.advice.test(action));
+function preferAgentCli(action: string): string {
+  const equivalent = AGENT_CLI_EQUIVALENTS.find((entry) => entry.advice.test(action));
   return equivalent?.command ?? action;
 }
 
@@ -102,11 +102,17 @@ export function buildDoctorCheckFollowUps(report: DoctorReport): FollowUp[] {
  * Derived from the action rather than from the check, because the check's only name is a sentence
  * and an id has to be short enough to assert on. Two checks that advise the same command collapse
  * to one follow-up, which is the behaviour that matters: running it twice fixes nothing twice.
+ *
+ * This CLI's own name is stripped along with the runner, so the id names the *command*. The slug
+ * keeps four segments, and `@expo/agent-cli` is three of them — left in, `install --fix` and
+ * `install --check` would slug to the same id and collapse into one follow-up, which is a real
+ * collision the short name never had.
  */
 function followUpId(action: string): string {
   const slug = action
     .replace(/^https?:\/\//, '')
     .replace(/^npx\s+/, '')
+    .replace(/^@expo\/agent-cli\s+/, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')

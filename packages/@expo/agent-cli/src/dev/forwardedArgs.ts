@@ -2,7 +2,7 @@
 // @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags
 // Folding the `expo start` options a caller typed into the plan that gets printed.
 //
-// `exagent dev` forwards what it does not own to the `expo start` its plan ends with, and it used to
+// `@expo/agent-cli dev` forwards what it does not own to the `expo start` its plan ends with, and it used to
 // do that *while running the step* — after the plan had been emitted. So `dev --plan --json
 // --tunnel` printed `argv: ["expo","start","--go"]` and the run executed
 // `expo start --go --port 8190 --tunnel` [observed — friction run 7, F71; live staging, S5]. A plan

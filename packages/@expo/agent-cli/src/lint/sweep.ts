@@ -48,7 +48,7 @@ const SKIPPED_DIRECTORIES = new Set([
  * Every `.ts` file under a root, excluding the tests, relative to that root and sorted.
  *
  * The tests are excluded because a test's fixtures are *supposed* to name commands that do not
- * exist — `src/__tests__/commandRegistry-test.ts` asserts what `exagent nonsense` answers — and a
+ * exist — `src/__tests__/commandRegistry-test.ts` asserts what `@expo/agent-cli nonsense` answers — and a
  * lint that could not tell the two apart would be answered by deleting its own coverage.
  */
 export function sourceFilesUnder(root: string): string[] {

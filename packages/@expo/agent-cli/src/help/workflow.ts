@@ -1,18 +1,18 @@
 // @ref llp/0024-cli-ui.rfc.md §The on-ramp
-// `npx exagent help workflow` — the one screen that teaches this CLI to an agent that has never
+// `npx @expo/agent-cli help workflow` — the one screen that teaches this CLI to an agent that has never
 // seen it.
 //
-// The listing in `exagent -h` says which commands exist. It cannot say the four things an agent has
+// The listing in `@expo/agent-cli -h` says which commands exist. It cannot say the four things an agent has
 // to know before the first command is worth running: what order they go in, what the exit code
 // means, what `--json` guarantees, and what to do with a failure. Those are the protocol, they are
 // the same for every command, and repeating them in twenty help blocks would be twenty places to
 // get them wrong. So they are here, once, and every help block ends with the line that points here.
 //
 // The steps themselves are **not** written here: they are `workflow` and `oneTimeSetup` in the
-// registry, which is what `exagent -h` prints too. Two screens that both claim to say what to run
+// registry, which is what `@expo/agent-cli -h` prints too. Two screens that both claim to say what to run
 // first are two screens that will one day disagree.
 //
-// The acceptance test for this file is a walk: an agent that has read `exagent -h` and this text,
+// The acceptance test for this file is a walk: an agent that has read `@expo/agent-cli -h` and this text,
 // and nothing else, gets a project from nothing to a checked, running app. Every place such an
 // agent had to guess is a defect in this text, not in the agent.
 
@@ -23,7 +23,7 @@ import { ON_RAMP_POINTER } from './onRamp';
 /** Width of the command column, sized to the longest command anywhere in the steps. */
 function commandWidth(): number {
   const runs = [...workflow, oneTimeSetup].flatMap(({ rungs }) =>
-    rungs.map(({ run }) => `npx exagent ${run}`.length)
+    rungs.map(({ run }) => `npx @expo/agent-cli ${run}`.length)
   );
   return Math.max(...runs) + 2;
 }
@@ -37,7 +37,7 @@ function stepLines(step: WorkflowStep, number: number | null): string {
     color.heading(head),
     ...step.rungs.map(
       ({ run, gets }) =>
-        `         ${color.command(`npx exagent ${run}`.padEnd(commandWidth()))}${color.muted(gets)}`
+        `         ${color.command(`npx @expo/agent-cli ${run}`.padEnd(commandWidth()))}${color.muted(gets)}`
     ),
   ].join('\n');
 }
@@ -87,13 +87,13 @@ ${stepLines(oneTimeSetup, null)}
     ${color.muted('instead of searching for one. Under --json all three are also in the object.')}
 
   ${color.heading('When you need an answer about EAS')}
-    ${color.command('npx exagent status --explain')} asks the service: which sources changed, whether an
+    ${color.command('npx @expo/agent-cli status --explain')} asks the service: which sources changed, whether an
     update published now would reach the installed builds, and whether EAS already has a
     build for this exact fingerprint. It is slower than status, and it is the one that asks.
 
   ${color.heading('Where the rest is')}
-    ${color.command('npx exagent -h')}                every command, grouped by the job it does
-    ${color.command('npx exagent help <command>')}    its options, two to four examples, and its JSON keys
+    ${color.command('npx @expo/agent-cli -h')}                every command, grouped by the job it does
+    ${color.command('npx @expo/agent-cli help <command>')}    its options, two to four examples, and its JSON keys
     ${color.muted('Every help block ends with the commands typically run after it.')}
 `;
 }

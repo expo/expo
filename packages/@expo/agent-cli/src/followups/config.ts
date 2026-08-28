@@ -31,7 +31,7 @@ export function buildConfigEffectiveFollowUps({
   if (report.platforms.ios?.infoPlist != null) {
     followups.push({
       id: 'config-effective-file',
-      command: 'npx exagent inspect:config-plugins --file infoPlist',
+      command: 'npx @expo/agent-cli inspect:config-plugins --file infoPlist',
       why: 'The summary counts the Info.plist keys; --file prints them with their values.',
     });
   }
@@ -39,7 +39,7 @@ export function buildConfigEffectiveFollowUps({
   if (!json) {
     followups.push({
       id: 'config-effective-json',
-      command: 'npx exagent inspect:config-plugins --json',
+      command: 'npx @expo/agent-cli inspect:config-plugins --json',
       why: 'The JSON report carries every introspected value, not just how many of them there are.',
     });
   }

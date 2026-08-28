@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // Which dev server a runtime command talks to. The commands used to assume 8081 whenever
 // `--dev-server-url` was absent, which missed every dev server that had to walk to another port.
 //

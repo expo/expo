@@ -156,7 +156,7 @@ describe('the payloads the service really sent', () => {
     expect(sessions).toEqual([
       {
         id: '01a03d80-0556-7d22-98df-f415d9392b98',
-        name: 'exagent wave11 discovery check',
+        name: '@expo/agent-cli wave11 discovery check',
         // The flag spelling, unlike `status` and `platform` next to it.
         type: 'agent-device',
         status: 'IN_PROGRESS',
@@ -274,14 +274,14 @@ describe('the argv of every eas simulator invocation', () => {
   // The controller downloads the image to a local path, so there is nothing to redirect — and no
   // `--platform`, which the documented verb table does not carry on this verb.
   it(`screenshots to a local path, with no redirect and no platform flag`, () => {
-    const args = buildCloudScreenshotArgs({ filePath: '/project/.expo/exagent/shot.png' });
+    const args = buildCloudScreenshotArgs({ filePath: '/project/.expo/agent-cli/shot.png' });
 
     expect(args).toEqual([
       'simulator:exec',
       'npx',
       AGENT_DEVICE_SPEC,
       'screenshot',
-      '/project/.expo/exagent/shot.png',
+      '/project/.expo/agent-cli/shot.png',
     ]);
     expect(args).not.toContain('--platform');
     expect(args.join(' ')).not.toContain('>');
@@ -832,7 +832,7 @@ describe(captureCloudScreenshotAsync, () => {
 
     await captureCloudScreenshotAsync({
       projectRoot: '/project',
-      filePath: '/project/.expo/exagent/shot.png',
+      filePath: '/project/.expo/agent-cli/shot.png',
       easCli: {
         command: 'npx',
         prefixArgs: EAS_PREFIX,
@@ -843,7 +843,7 @@ describe(captureCloudScreenshotAsync, () => {
     });
 
     expect(spawned[0]!.args).toEqual(
-      easArgv(buildCloudScreenshotArgs({ filePath: '/project/.expo/exagent/shot.png' }))
+      easArgv(buildCloudScreenshotArgs({ filePath: '/project/.expo/agent-cli/shot.png' }))
     );
   });
 });
@@ -881,7 +881,7 @@ describe(cloudSessionUnavailableError, () => {
 
     expect(error.code).toBe('CLOUD_SIMULATOR_UNAVAILABLE');
     expect(error.message).not.toContain('simulator:start');
-    expect(error.suggestedCommand).toBe('npx exagent navigate / --print-url');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli navigate / --print-url');
   });
 });
 
@@ -891,7 +891,7 @@ describe(cloudNeedsTunnelError, () => {
 
     expect(error.code).toBe('CLOUD_SIMULATOR_UNREACHABLE_DEV_SERVER');
     expect(error.message).toContain('exp://127.0.0.1:8081/--/?');
-    expect(error.suggestedCommand).toBe('npx exagent dev --detach --tunnel');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli dev --detach --tunnel');
   });
 
   it(`refuses a LAN URL too, because the session is not on this network`, () => {
@@ -1014,7 +1014,7 @@ describe(cloudVerbNotSupportedError, () => {
 
     expect(error.code).toBe('CLOUD_SIMULATOR_UNSUPPORTED');
     expect(error.message).toContain('ends the whole session');
-    expect(error.message).toContain('npx exagent navigate / --cloud');
+    expect(error.message).toContain('npx @expo/agent-cli navigate / --cloud');
   });
 });
 

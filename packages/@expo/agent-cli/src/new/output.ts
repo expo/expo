@@ -4,7 +4,7 @@
 // `create-expo` writes for a person at a TTY: a spinner that overwrites itself with a carriage
 // return, and a closing "what to do next" block. Neither survives the trip. With no cursor to move,
 // every spinner frame lands on one line — `⠋ Locating…⠙ Locating…⠹ Locating…` — and the next-steps
-// block arrives directly above `exagent new`'s own `Suggested next:`, so the reader ends up with
+// block arrives directly above `@expo/agent-cli new`'s own `Suggested next:`, so the reader ends up with
 // two differently worded sets of instructions for the same project.
 //
 // Both are presentation, so both are fixed here rather than by asking `create-expo` to print less:

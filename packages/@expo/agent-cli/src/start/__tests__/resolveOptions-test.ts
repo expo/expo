@@ -38,9 +38,9 @@ describe(resolveStartOptions, () => {
     expect(resolveStartOptions(['--', '--web']).expoArgs).toEqual(['--', '--web']);
   });
 
-  // The flags of the plan engine moved to `exagent dev`, and this command shares its name with an
+  // The flags of the plan engine moved to `@expo/agent-cli dev`, and this command shares its name with an
   // `expo` command, so it forwards them instead of acting on them: `expo start` is the one that
-  // decides whether an argument is its own (llp/0006 §The `exagent` launcher).
+  // decides whether an argument is its own (llp/0006 §The `@expo/agent-cli` launcher).
   it.each(['--plan', '--smart', '--passthrough', '--yes', '--json'])(
     `should forward %s to expo start instead of handling it`,
     (flag) => {

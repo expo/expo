@@ -60,7 +60,7 @@ export function emitStartPlan(
   if (print === 'none') {
     return;
   }
-  // In JSON mode the plan is the only thing on stdout, so `exagent dev --plan --json` can be
+  // In JSON mode the plan is the only thing on stdout, so `@expo/agent-cli dev --plan --json` can be
   // piped into a parser. Agents that read the JSONL events get the same plan either way.
   Log.log(
     print === 'json' ? JSON.stringify({ ...plan, followups }, null, 2) : formatStartPlan(plan)

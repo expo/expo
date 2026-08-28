@@ -37,7 +37,7 @@ describe(detectInvoker, () => {
     expect(detectInvoker({})).toBe('npx');
   });
 
-  // Bun being installed is not Bun being used: a Mac with `~/.bun` running `npx exagent` must not
+  // Bun being installed is not Bun being used: a Mac with `~/.bun` running `npx @expo/agent-cli` must not
   // be handed a line spelled for a runner it is not in.
   it(`ignores a machine that merely has Bun installed`, () => {
     expect(detectInvoker({ BUN_INSTALL: '/Users/me/.bun', ...NPX_ENV })).toBe('npx');
@@ -50,20 +50,20 @@ describe(detectInvoker, () => {
 
 describe(renderForInvoker, () => {
   it(`leaves every line alone under npx`, () => {
-    expect(renderForInvoker('Try: npx exagent dev --detach', 'npx')).toBe(
-      'Try: npx exagent dev --detach'
+    expect(renderForInvoker('Try: npx @expo/agent-cli dev --detach', 'npx')).toBe(
+      'Try: npx @expo/agent-cli dev --detach'
     );
   });
 
   it(`spells this CLI the way a Bun project runs it`, () => {
-    expect(renderForInvoker('Try: npx exagent dev --detach', 'bunx')).toBe(
-      'Try: bunx exagent dev --detach'
+    expect(renderForInvoker('Try: npx @expo/agent-cli dev --detach', 'bunx')).toBe(
+      'Try: bunx @expo/agent-cli dev --detach'
     );
   });
 
   it(`rewrites every occurrence in one line`, () => {
-    expect(renderForInvoker('Run npx exagent dev, then npx exagent smoke.', 'bunx')).toBe(
-      'Run bunx exagent dev, then bunx exagent smoke.'
+    expect(renderForInvoker('Run npx @expo/agent-cli dev, then npx @expo/agent-cli smoke.', 'bunx')).toBe(
+      'Run bunx @expo/agent-cli dev, then bunx @expo/agent-cli smoke.'
     );
   });
 
@@ -77,8 +77,8 @@ describe(renderForInvoker, () => {
   });
 
   it(`leaves a URL that happens to contain the words alone`, () => {
-    expect(renderForInvoker('exp://npx-exagent.example.com', 'bunx')).toBe(
-      'exp://npx-exagent.example.com'
+    expect(renderForInvoker('exp://npx-agent-cli.example.com', 'bunx')).toBe(
+      'exp://npx-agent-cli.example.com'
     );
   });
 });

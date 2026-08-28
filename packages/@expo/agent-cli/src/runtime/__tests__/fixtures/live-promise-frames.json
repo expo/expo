@@ -2,7 +2,7 @@
   "$comment": [
     "Chrome DevTools Protocol frames a live app sent back, captured verbatim.",
     "Source: an SDK 57.0.15 Expo Router app in Expo Go 57.0.9 on an iPhone 17 Pro simulator (iOS 26.5),",
-    "against `exagent start --go --port 8150`, on 2026-08-23. The `Runtime.evaluate` requests carried the",
+    "against `@expo/agent-cli start --go --port 8150`, on 2026-08-23. The `Runtime.evaluate` requests carried the",
     "expressions `wrapExpressionForPromises(...)` and `buildPromisePollExpression(...)` build, with the",
     "nonce fixed to `liveNonce` so the frames can be replayed.",
     "These exist because the F21 bug was invisible to a unit test: `awaitPromise: true` was being sent and",
@@ -28,7 +28,7 @@
         "className": "Object",
         "description": "Object",
         "type": "object",
-        "value": { "__exagentPendingPromise_liveNonce__": "liveNonce" }
+        "value": { "__agentCliPendingPromise_liveNonce__": "liveNonce" }
       }
     }
   },

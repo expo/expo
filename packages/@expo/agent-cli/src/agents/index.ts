@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const agentsSetupHelp: CommandHelp = {
   command: 'agents:setup',
-  usage: 'npx exagent agents:setup',
+  usage: 'npx @expo/agent-cli agents:setup',
   options: [
     `--agent <agent>     Set up for specific agents (can be used multiple times)`,
     `--no-agents-md      Do not create or update AGENTS.md`,
@@ -15,15 +15,15 @@ export const agentsSetupHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent agents:setup',
+      run: 'npx @expo/agent-cli agents:setup',
       gets: 'AGENTS.md gets a managed block, and the installed packages’ skills are linked',
     },
     {
-      run: 'npx exagent agents:setup --agent claude --json',
+      run: 'npx @expo/agent-cli agents:setup --agent claude --json',
       gets: 'the same for one agent, as one object',
     },
     {
-      run: 'npx exagent agents:setup --no-agents-md',
+      run: 'npx @expo/agent-cli agents:setup --no-agents-md',
       gets: 'the skill links only; AGENTS.md is left alone',
     },
   ],
@@ -39,7 +39,7 @@ export const agentsSetupHelp: CommandHelp = {
   ],
 };
 
-export const exagentAgentsSetup: Command = async (argv) => {
+export const agentCliAgentsSetup: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -58,7 +58,7 @@ export const exagentAgentsSetup: Command = async (argv) => {
     printCommandHelp(agentsSetupHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent agents:setup -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli agents:setup -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   // @ref llp/0020-not-an-expo-app.rfc.md — this command reads the skills the installed Expo
   // packages ship and writes links into the project, so it acts on the app. Without `expo` it used

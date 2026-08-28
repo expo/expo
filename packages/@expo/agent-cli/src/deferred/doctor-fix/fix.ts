@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
-export const exagentDoctorFix: Command = async (argv) => {
+export const agentCliDoctorFix: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -35,7 +35,7 @@ export const exagentDoctorFix: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Reset this project's caches and build state. Dry run by default`,
-      chalk`npx exagent doctor:fix {dim [options]}`,
+      chalk`npx @expo/agent-cli doctor:fix {dim [options]}`,
       [
         `--tier <name>          safe, moderate or aggressive. Tiers are cumulative. Default: safe`,
         `--apply                Actually do it. Without this, nothing is touched.`,
@@ -49,7 +49,7 @@ export const exagentDoctorFix: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  {bold The dry run is the default.} {bold exagent dev} executes what it plans; this does not,`,
+        chalk`  {bold The dry run is the default.} {bold @expo/agent-cli dev} executes what it plans; this does not,`,
         chalk`  because {bold dev} adds things and this deletes them. Read the plan, then pass {bold --apply}.`,
         '',
         chalk`  {bold safe}        .expo/web/cache, .expo/dev/logs, node_modules/.cache, this project's`,
@@ -79,7 +79,7 @@ export const exagentDoctorFix: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent doctor:fix -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli doctor:fix -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');
   const { findUpProjectRootOrAssert } =

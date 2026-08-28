@@ -5,10 +5,10 @@
 // a claim about the `ProjectState` contract in `src/project/types.ts`, checked against the fixture
 // matrix described in `e2e/fixtures/README.md`.
 //
-// The probe used to be its own command, `exagent context`. It is now the `probe` key of
-// `exagent status --json`, which is where these tests read it from — the fixture matrix is what
+// The probe used to be its own command, `@expo/agent-cli context`. It is now the `probe` key of
+// `@expo/agent-cli status --json`, which is where these tests read it from — the fixture matrix is what
 // this file is for, and the rest of the status report is covered in `status-test.ts`.
-import { executeExagentAsync, installStubFingerprintAsync, setupFixtureAsync } from '../utils';
+import { executeAgentCliAsync, installStubFingerprintAsync, setupFixtureAsync } from '../utils';
 
 /** The hash the stub `@expo/fingerprint` bin of `dev-client-fresh-app` prints. */
 const FIXTURE_FINGERPRINT_HASH = '0f1e2d3c4b5a69788796a5b4c3d2e1f001234567';
@@ -34,7 +34,7 @@ async function probeAsync(
 ): Promise<ProjectState> {
   const projectRoot = await setupFixtureAsync(fixtureName);
   await installStubFingerprintAsync(projectRoot);
-  const result = await executeExagentAsync(projectRoot, ['status', '--json'], { env });
+  const result = await executeAgentCliAsync(projectRoot, ['status', '--json'], { env });
 
   expect(result.exitCode).toBe(0);
   const probe = JSON.parse(result.stdout).probe;
@@ -44,7 +44,7 @@ async function probeAsync(
   return probe;
 }
 
-describe('the project probe of `exagent status --json`', () => {
+describe('the project probe of `@expo/agent-cli status --json`', () => {
   describe('go-app — an Expo Go compatible CNG project', () => {
     it('reports the project as Expo Go compatible', async () => {
       const state = await probeAsync('go-app');

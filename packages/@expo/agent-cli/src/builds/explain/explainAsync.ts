@@ -1,5 +1,5 @@
 // @ref llp/0012-build-explain.rfc.md
-// `exagent inspect:build-log --file <path>` / `--stdin`: read a build log and say what failed in it.
+// `@expo/agent-cli inspect:build-log --file <path>` / `--stdin`: read a build log and say what failed in it.
 //
 // Orchestration only. Every decision the command makes lives in a pure module next to this one —
 // `readLog` streams the bytes, `phases` cuts them into steps, `anchors` is the rule table,
@@ -133,7 +133,7 @@ function notALogError(options: ExplainOptions, controlRatio: number): CommandErr
     ].join('\n')
   );
   error.exitCode = EXIT_OUTCOME_TIMEOUT;
-  error.suggestedCommand = 'npx exagent inspect:build-log --help';
+  error.suggestedCommand = 'npx @expo/agent-cli inspect:build-log --help';
   return error;
 }
 
@@ -151,7 +151,7 @@ function emptyLogError(options: ExplainOptions): CommandError {
       ? [
           `Nothing arrived on stdin, so there is no log to explain.`,
           `Why: this run read stdin because it is not a terminal, and the stream closed without a byte on it. An empty log is not a log with no errors in it — nothing was read at all.`,
-          `How: check that the command on the left of the pipe wrote something, and that its errors are included: "npx expo run:ios 2>&1 | npx exagent inspect:build-log". Or read a saved log with "--file <path>".`,
+          `How: check that the command on the left of the pipe wrote something, and that its errors are included: "npx expo run:ios 2>&1 | npx @expo/agent-cli inspect:build-log". Or read a saved log with "--file <path>".`,
         ].join('\n')
       : [
           `The log at ${options.source.path} is empty, so there is nothing to explain.`,
@@ -159,6 +159,6 @@ function emptyLogError(options: ExplainOptions): CommandError {
           `How: check that the build actually wrote to this path, and that stderr was captured too: "npx expo run:ios > build.log 2>&1".`,
         ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent inspect:build-log --help';
+  error.suggestedCommand = 'npx @expo/agent-cli inspect:build-log --help';
   return error;
 }

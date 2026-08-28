@@ -11,13 +11,13 @@ validates it against the shape below, and runs the ones that belong to the reque
 ```jsonc
 {
   "id": "skills-sync", // required, unique, kebab-case; matches the file name
-  "fixture": "e2e/fixtures/...", // required, path relative to packages/exagent
+  "fixture": "e2e/fixtures/...", // required, path relative to packages/@expo/agent-cli
   "taskPrompt": "sync agent ...", // required, the natural-language task given to a model
   "drivingAgent": "deterministic", // required, see below
   "tiers": [0, 1], // required, non-empty, values from 0 | 1 | 2
   "command": {
     // required for tier 0, ignored by tiers 1 and 2
-    "argv": ["skills:sync"], //   argv passed to bin/exagent.js
+    "argv": ["skills:sync"], //   argv passed to bin/cli.js
     "env": { "CI": "1" }, //   optional extra environment variables
     "timeoutMs": 60000, //   optional, defaults to 120000
   },

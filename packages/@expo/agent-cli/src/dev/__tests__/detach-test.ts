@@ -23,22 +23,22 @@ afterEach(() => vol.reset());
 
 describe(buildDetachSpawn, () => {
   it(`runs this CLI again, on this process' own Node`, () => {
-    const spawn = buildDetachSpawn('/bin/exagent.js', ['--yes']);
+    const spawn = buildDetachSpawn('/bin/cli.js', ['--yes']);
 
     expect(spawn.command).toBe(process.execPath);
-    expect(spawn.args).toEqual(['/bin/exagent.js', 'dev', '--yes']);
+    expect(spawn.args).toEqual(['/bin/cli.js', 'dev', '--yes']);
   });
 
   // The one thing that must not survive: a child given `--detach` would detach a detached run.
   it(`strips --detach, so the child is the run`, () => {
-    expect(buildDetachSpawn('/bin/exagent.js', ['--detach', '--yes']).args).not.toContain(
+    expect(buildDetachSpawn('/bin/cli.js', ['--detach', '--yes']).args).not.toContain(
       '--detach'
     );
   });
 
   // The wait is the parent's, and the child has nobody to report it to.
   it(`strips --wait-ready`, () => {
-    expect(buildDetachSpawn('/bin/exagent.js', ['--detach', '--wait-ready']).args).not.toContain(
+    expect(buildDetachSpawn('/bin/cli.js', ['--detach', '--wait-ready']).args).not.toContain(
       '--wait-ready'
     );
   });
@@ -46,13 +46,13 @@ describe(buildDetachSpawn, () => {
   // `--json` in the child would switch the plan's subprocess output to `capture` — which is the
   // very output the log file exists to hold — and print an object nobody would ever read.
   it(`strips --json, because the parent owns stdout`, () => {
-    expect(buildDetachSpawn('/bin/exagent.js', ['--detach', '--json']).args).not.toContain(
+    expect(buildDetachSpawn('/bin/cli.js', ['--detach', '--json']).args).not.toContain(
       '--json'
     );
   });
 
   it(`keeps everything the dev server needs`, () => {
-    const { args } = buildDetachSpawn('/bin/exagent.js', [
+    const { args } = buildDetachSpawn('/bin/cli.js', [
       '--detach',
       '--yes',
       '--port',
@@ -62,7 +62,7 @@ describe(buildDetachSpawn, () => {
     ]);
 
     expect(args).toEqual([
-      '/bin/exagent.js',
+      '/bin/cli.js',
       'dev',
       '--yes',
       '--port',
@@ -77,8 +77,8 @@ describe(buildDetachSpawn, () => {
 
     expect(options.detach).toBe(true);
     expect(options.waitReady).toBe(true);
-    expect(buildDetachSpawn('/bin/exagent.js', options.detachArgv).args).toEqual([
-      '/bin/exagent.js',
+    expect(buildDetachSpawn('/bin/cli.js', options.detachArgv).args).toEqual([
+      '/bin/cli.js',
       'dev',
       '--yes',
       '--port',
@@ -330,7 +330,7 @@ describe(notReadyError, () => {
 
   it(`recovers into the command that reports what the bundler is doing`, () => {
     expect(notReadyError(lock, '/project/.expo/dev.log', readyResult()).suggestedCommand).toBe(
-      'npx exagent smoke'
+      'npx @expo/agent-cli smoke'
     );
   });
 
@@ -376,7 +376,7 @@ describe(notReadyError, () => {
     it(`recovers into the log the build is being written to`, () => {
       expect(
         notReadyError(lock, '/project/.expo/dev.log', readyResult(), building).suggestedCommand
-      ).toBe('npx exagent dev:logs');
+      ).toBe('npx @expo/agent-cli dev:logs');
     });
   });
 });

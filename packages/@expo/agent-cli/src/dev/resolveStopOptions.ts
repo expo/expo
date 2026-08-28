@@ -1,5 +1,5 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the dev server
-// Argument resolution for `exagent dev:stop`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `@expo/agent-cli dev:stop`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
 import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../utils/args';
@@ -49,7 +49,7 @@ const DEV_STOP_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent dev:stop`.
+ * Resolve the arguments of `@expo/agent-cli dev:stop`.
  *
  * @throws {CommandError} `BAD_ARGS` for an unusable port, a signal this command does not send, an
  * unusable timeout, or a positional argument it has no place for.
@@ -60,7 +60,7 @@ export function resolveDevStopOptions(argv: string[]): DevStopOptions {
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d).
   if (args._.length > 0) {
     throw strayArgumentError('dev:stop', args._, {
-      hint: `this command stops the dev server of the project it runs in. To name a port, pass it as a flag: npx exagent dev:stop --port ${args._[0]}`,
+      hint: `this command stops the dev server of the project it runs in. To name a port, pass it as a flag: npx @expo/agent-cli dev:stop --port ${args._[0]}`,
     });
   }
 

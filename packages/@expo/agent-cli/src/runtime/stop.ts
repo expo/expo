@@ -6,7 +6,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const runtimeStopHelp: CommandHelp = {
   command: 'runtime:stop',
-  usage: 'npx exagent runtime:stop',
+  usage: 'npx @expo/agent-cli runtime:stop',
   options: [
     `--ios, --platform ios   Stop the app on the booted iOS simulator`,
     `--android               Stop the app on the attached Android device`,
@@ -20,15 +20,15 @@ export const runtimeStopHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent runtime:stop',
+      run: 'npx @expo/agent-cli runtime:stop',
       gets: 'the app on the device stops; exit 0 also when it was not running',
     },
     {
-      run: 'npx exagent runtime:stop --ios --json',
+      run: 'npx @expo/agent-cli runtime:stop --ios --json',
       gets: 'the same on the booted simulator, as one object naming which app it stopped',
     },
     {
-      run: 'npx exagent runtime:stop --app-id com.example.myapp',
+      run: 'npx @expo/agent-cli runtime:stop --app-id com.example.myapp',
       gets: 'stops exactly that application id, whatever the dev server reports',
     },
   ],
@@ -64,7 +64,7 @@ export const runtimeStopHelp: CommandHelp = {
   ],
 };
 
-export const exagentRuntimeStop: Command = async (argv) => {
+export const agentCliRuntimeStop: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -87,7 +87,7 @@ export const exagentRuntimeStop: Command = async (argv) => {
     printCommandHelp(runtimeStopHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent runtime:stop -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli runtime:stop -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');

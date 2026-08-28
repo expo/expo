@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0007-deploy-and-headless.rfc.md §Headless project creation
 //
-// `exagent new` is the one command that runs before a project exists, so it has no fixture: it
+// `@expo/agent-cli new` is the one command that runs before a project exists, so it has no fixture: it
 // scaffolds into a fresh temporary directory through a stub `create-expo` on `PATH`. The stub
 // stands in for the real scaffolder the same way `node_modules/expo/bin/cli` stands in for the
 // Expo CLI (see `e2e/fixtures/README.md`) — no network, no template download, and every
@@ -10,7 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, getTemporaryPath, installStubBinAsync } from '../utils';
+import { executeAgentCliAsync, getTemporaryPath, installStubBinAsync } from '../utils';
 
 /** The shape `new --json` prints, per `src/new/newAsync.ts`. */
 type NewProjectReport = {
@@ -34,7 +34,7 @@ const STUB_LOG_NAME = 'stub-create-expo-invocations.jsonl';
 
 /**
  * Stub `create-expo` bin. It writes the few files the steps after the scaffold read, so
- * `exagent new` can be tested end to end without downloading a template.
+ * `@expo/agent-cli new` can be tested end to end without downloading a template.
  *
  * Environment variables the tests steer it with:
  * - STUB_CREATE_EXPO_EXIT_CODE: exit code to return (default 0), to test exit code forwarding
@@ -100,7 +100,7 @@ process.stdout.write('⚠️  Before running your app, make sure you have module
 `;
 
 /**
- * A fresh working directory with the stub `create-expo` on the `PATH` of every `exagent` run.
+ * A fresh working directory with the stub `create-expo` on the `PATH` of every `@expo/agent-cli` run.
  *
  * `.stub-bin` is the directory `stubExpoEnv()` prepends to `PATH`, and the stub is installed with
  * the same shim pair npm writes (see {@link installStubBinAsync}), so the bin the resolver looks
@@ -137,7 +137,7 @@ function readStubInvocations(workDir: string): StubInvocation[] {
  * Whether a directory sits inside a git repository.
  *
  * The temporary directory usually does not, but `EXPO_E2E_TEMP_DIR` can put it anywhere, and
- * `exagent new` deliberately does not nest a repository inside another one.
+ * `@expo/agent-cli new` deliberately does not nest a repository inside another one.
  */
 function isInsideGitRepo(dir: string): boolean {
   for (let current = dir; ; current = path.dirname(current)) {
@@ -150,11 +150,11 @@ function isInsideGitRepo(dir: string): boolean {
   }
 }
 
-describe('exagent new', () => {
+describe('@expo/agent-cli new', () => {
   it(`should create a project through create-expo and say what to do next`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app']);
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app']);
 
     // The scaffolder ran as a subprocess, in the working directory, with the prompts answered.
     expect(readStubInvocations(workDir)).toEqual([
@@ -163,7 +163,7 @@ describe('exagent new', () => {
     expect(fs.existsSync(path.join(workDir, 'my-app', 'app.json'))).toBe(true);
     expect(result.stdout).toContain(path.join(workDir, 'my-app'));
     expect(result.stdout).toContain('Suggested next:');
-    expect(result.stdout).toContain('cd my-app && npx exagent status');
+    expect(result.stdout).toContain('cd my-app && npx @expo/agent-cli status');
   });
 
   // The scaffolder writes for a person at a terminal, and this run has none: its spinner has no
@@ -171,7 +171,7 @@ describe('exagent new', () => {
   it(`should filter the scaffolder's terminal output when nobody is watching one`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app']);
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app']);
 
     // What the tool said stays.
     expect(result.stdout).toContain('Creating an Expo project using the expo-template-default');
@@ -188,7 +188,7 @@ describe('exagent new', () => {
   it(`should print one JSON object with a stable key set`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app', '--json']);
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app', '--json']);
     const report: NewProjectReport = JSON.parse(result.stdout);
 
     // The top-level key set is the contract of the command (llp/0006 §Output contract): a
@@ -217,7 +217,7 @@ describe('exagent new', () => {
   it(`should keep the repository create-expo initialized`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app'], {
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app'], {
       env: { STUB_CREATE_EXPO_GIT: '1' },
     });
 
@@ -227,7 +227,7 @@ describe('exagent new', () => {
   it(`should initialize a repository when the scaffolder left none`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app', '--json']);
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app', '--json']);
     const report: NewProjectReport = JSON.parse(result.stdout);
 
     if (isInsideGitRepo(workDir)) {
@@ -242,7 +242,7 @@ describe('exagent new', () => {
   it(`should forward every flag of a headless creation`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, [
+    const result = await executeAgentCliAsync(workDir, [
       'new',
       'my-app',
       '--name',
@@ -268,7 +268,7 @@ describe('exagent new', () => {
   it(`should warn, and still create the project, when the template has no app.json`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app', '--name', 'My App'], {
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app', '--name', 'My App'], {
       env: { STUB_CREATE_EXPO_NO_APP_JSON: '1' },
     });
 
@@ -279,7 +279,7 @@ describe('exagent new', () => {
   it(`should forward the exit code of a failed scaffold`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app', '--json'], {
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app', '--json'], {
       env: { STUB_CREATE_EXPO_EXIT_CODE: '3' },
       reject: false,
     });
@@ -293,21 +293,21 @@ describe('exagent new', () => {
   it(`should answer a missing directory with the command that works`, async () => {
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new'], { reject: false });
+    const result = await executeAgentCliAsync(workDir, ['new'], { reject: false });
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('Missing directory');
     // Errors are prompts (llp/0006): the last line is what an agent runs next.
-    expect(result.stderr).toContain('Try: npx exagent new <directory>');
+    expect(result.stderr).toContain('Try: npx @expo/agent-cli new <directory>');
     expect(readStubInvocations(workDir)).toEqual([]);
   });
 
   it(`should run with no TTY on any stream`, async () => {
-    // The e2e runner attaches no stdin at all (see `spawnExagent`), which is the shape an agent
+    // The e2e runner attaches no stdin at all (see `spawnAgentCli`), which is the shape an agent
     // runs the CLI in: a prompt would be an EOF failure, not a hang.
     const workDir = await setupWorkDirAsync();
 
-    const result = await executeExagentAsync(workDir, ['new', 'my-app']);
+    const result = await executeAgentCliAsync(workDir, ['new', 'my-app']);
 
     expect(result.exitCode).toBe(0);
     expect(readStubInvocations(workDir)[0]!.isTTY).toBe(false);

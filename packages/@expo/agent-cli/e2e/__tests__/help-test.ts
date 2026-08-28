@@ -9,9 +9,9 @@
 // is the rest of the contract: that a help request exits 0, that it is on stdout, that the on-ramp
 // is reachable by all three spellings a caller will try, and that a `--json` run in a pipe carries
 // no escape sequences into the object.
-import { executeExagentAsync, setupFixtureAsync } from '../utils';
+import { executeAgentCliAsync, setupFixtureAsync } from '../utils';
 
-describe('npx exagent --help', () => {
+describe('npx @expo/agent-cli --help', () => {
   let projectRoot: string;
 
   beforeEach(async () => {
@@ -19,12 +19,12 @@ describe('npx exagent --help', () => {
   });
 
   it('points at the on-ramp, and leaves the map to it', async () => {
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
     // The map lives in `help workflow` alone; the top level carries the pointer and the listing.
     expect(result.stdout).not.toContain('What to run, in order');
-    expect(result.stdout).toContain('New here? npx exagent help workflow');
+    expect(result.stdout).toContain('New here? npx @expo/agent-cli help workflow');
     expect(result.stdout).toContain('status');
     expect(result.stdout).toContain('smoke');
   });
@@ -40,7 +40,7 @@ describe('the on-ramp', () => {
   });
 
   it('answers `help workflow` with the whole protocol', async () => {
-    const result = await executeExagentAsync(projectRoot, ['help', 'workflow']);
+    const result = await executeAgentCliAsync(projectRoot, ['help', 'workflow']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('What to run, in order');
@@ -48,18 +48,18 @@ describe('the on-ramp', () => {
     expect(result.stdout).toContain('Exit codes');
     expect(result.stdout).toContain('--json');
     expect(result.stdout).toContain('Try:');
-    expect(result.stdout).toContain('npx exagent status --explain');
+    expect(result.stdout).toContain('npx @expo/agent-cli status --explain');
   });
 
   // A topic is a positional, so the wrong shapes are a colon, a bare verb, and the name this topic
   // had for one unpublished day. Each is one hop from the line that works.
   it.each([['help:workflow'], ['workflow'], ['help:how-to'], ['how-to'], ['--how-to']])(
-    'sends %s to `npx exagent help workflow`',
+    'sends %s to `npx @expo/agent-cli help workflow`',
     async (typed) => {
-      const result = await executeExagentAsync(projectRoot, [typed], { reject: false });
+      const result = await executeAgentCliAsync(projectRoot, [typed], { reject: false });
 
       expect(result.exitCode).not.toBe(0);
-      expect(result.all).toContain('Try: npx exagent help workflow');
+      expect(result.all).toContain('Try: npx @expo/agent-cli help workflow');
     }
   );
 
@@ -71,7 +71,7 @@ describe('the on-ramp', () => {
   // neither looked for a recovery that was on the screen under a different heading
   // [observed — friction run 9, the `Try:` probe].
   it('names all three ways a failure hands back the recovery', async () => {
-    const result = await executeExagentAsync(projectRoot, ['help', 'workflow']);
+    const result = await executeAgentCliAsync(projectRoot, ['help', 'workflow']);
 
     expect(result.stdout).toContain('Try:');
     expect(result.stdout).toContain('Ask the user');
@@ -79,7 +79,7 @@ describe('the on-ramp', () => {
   });
 
   it('names the exit-code bands an agent branches on', async () => {
-    const result = await executeExagentAsync(projectRoot, ['help', 'workflow']);
+    const result = await executeAgentCliAsync(projectRoot, ['help', 'workflow']);
 
     for (const code of ['0', '1', '7', '20', '22']) {
       expect(result.stdout).toContain(`  ${code}   `);
@@ -90,7 +90,7 @@ describe('the on-ramp', () => {
   // Two screens that each claim to say what to run first are two screens that will one day
   // disagree, so the topic states the steps and the top level points at the topic.
   it('states the steps, which the top-level screen leaves to it', async () => {
-    const topic = await executeExagentAsync(projectRoot, ['help', 'workflow']);
+    const topic = await executeAgentCliAsync(projectRoot, ['help', 'workflow']);
 
     for (const title of [
       'Check the project',
@@ -105,7 +105,7 @@ describe('the on-ramp', () => {
   });
 });
 
-describe('npx exagent help <command>', () => {
+describe('npx @expo/agent-cli help <command>', () => {
   let projectRoot: string;
 
   beforeEach(async () => {
@@ -115,8 +115,8 @@ describe('npx exagent help <command>', () => {
   // A delegation, not a copy: `help status` runs `status --help`, so there is one help block per
   // command and no second place for it to go stale.
   it('prints that command’s own help, in the template', async () => {
-    const viaCommand = await executeExagentAsync(projectRoot, ['help', 'status']);
-    const viaFlag = await executeExagentAsync(projectRoot, ['status', '--help']);
+    const viaCommand = await executeAgentCliAsync(projectRoot, ['help', 'status']);
+    const viaFlag = await executeAgentCliAsync(projectRoot, ['status', '--help']);
 
     expect(viaCommand.exitCode).toBe(0);
     expect(viaCommand.stdout).toBe(viaFlag.stdout);
@@ -126,7 +126,7 @@ describe('npx exagent help <command>', () => {
   });
 
   it('lists the actions of a group, then the options of the action its bare name runs', async () => {
-    const result = await executeExagentAsync(projectRoot, ['help', 'skills']);
+    const result = await executeAgentCliAsync(projectRoot, ['help', 'skills']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('skills:sync');
@@ -137,11 +137,11 @@ describe('npx exagent help <command>', () => {
   // A name in none of the registry's lists is the same error here as anywhere else: the message,
   // and a `Try:` line that is one hop rather than a search.
   it('fails on a name neither CLI has, with the nearest one', async () => {
-    const result = await executeExagentAsync(projectRoot, ['help', 'stauts'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['help', 'stauts'], { reject: false });
 
     expect(result.exitCode).toBe(1);
     expect(result.all).toContain('is not a command');
-    expect(result.all).toContain('Try: npx exagent status --help');
+    expect(result.all).toContain('Try: npx @expo/agent-cli status --help');
   });
 });
 
@@ -155,7 +155,7 @@ describe('colour', () => {
   it('puts no escape sequences in a piped help screen', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.stdout).not.toMatch(ESCAPE);
   });
@@ -163,7 +163,7 @@ describe('colour', () => {
   it('puts no escape sequences in a --json report, and stdout parses', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+    const result = await executeAgentCliAsync(projectRoot, ['status', '--json']);
 
     expect(result.stdout).not.toMatch(ESCAPE);
     expect(() => JSON.parse(result.stdout)).not.toThrow();

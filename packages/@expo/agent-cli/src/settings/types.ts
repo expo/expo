@@ -2,7 +2,7 @@
 // What a developer may tell this CLI about their own preferences, as pure data.
 //
 // Named `settings` rather than `config` because `src/config/` is already taken by
-// `exagent inspect:config-plugins`, which reports the **app** config — the thing `app.json` holds and
+// `@expo/agent-cli inspect:config-plugins`, which reports the **app** config — the thing `app.json` holds and
 // the config plugins compile. This is the opposite kind of file: a preference about how this
 // machine's developer wants their app run and built, which never reaches the app.
 
@@ -17,7 +17,7 @@ export type RunTarget =
 export type BuildBackend = 'local' | 'eas';
 
 /** Every key of the config, all optional, `null` for "the developer said nothing". */
-export interface ExagentSettings {
+export interface AgentCliSettings {
   /**
    * Which app the plan engine should aim for.
    *
@@ -39,8 +39,8 @@ export interface PlatformSettings {
   buildBackend: BuildBackend | null;
 }
 
-/** An `ExagentSettings` that says nothing, which is what every project without the key has. */
-export const EMPTY_SETTINGS: ExagentSettings = {
+/** An `AgentCliSettings` that says nothing, which is what every project without the key has. */
+export const EMPTY_SETTINGS: AgentCliSettings = {
   target: null,
   buildBackend: null,
   ios: null,
@@ -49,15 +49,15 @@ export const EMPTY_SETTINGS: ExagentSettings = {
 
 /** The config as it was found, so every surface can say where a preference came from. */
 export interface LoadedSettings {
-  settings: ExagentSettings;
+  settings: AgentCliSettings;
   /**
    * The file the config was read from, or `null` when no project file named one.
    *
-   * Absolute, so an error can be opened. A project with no `exagent` key loads
+   * Absolute, so an error can be opened. A project with no `@expo/agent-cli` key loads
    * {@link EMPTY_SETTINGS} from `null`, which is not an error: saying nothing is the default.
    */
   file: string | null;
-  /** Where in that file, e.g. `expo.exagent`, for an error that has to name the key. */
+  /** Where in that file, e.g. `expo.agentCli`, for an error that has to name the key. */
   keyPath: string | null;
 }
 

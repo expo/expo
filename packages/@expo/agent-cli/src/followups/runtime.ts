@@ -36,12 +36,12 @@ export function buildRuntimeErrorsFollowUps({
     return capFollowUps([
       {
         id: 'reload-app',
-        command: `npx exagent runtime:reload${flag}`,
+        command: `npx @expo/agent-cli runtime:reload${flag}`,
         why: 'Fix the errors above, then reload: an app whose render threw keeps running the code from before the fix, and this window would keep reporting it.',
       },
       {
         id: 'runtime-errors-rerun',
-        command: `npx exagent runtime:errors${flag} --duration ${durationMs}`,
+        command: `npx @expo/agent-cli runtime:errors${flag} --duration ${durationMs}`,
         why: 'Reproduce the same steps against the reloaded app, and confirm this window stays empty.',
       },
     ]);
@@ -54,12 +54,12 @@ export function buildRuntimeErrorsFollowUps({
   return capFollowUps([
     {
       id: 'runtime-errors-reproduce',
-      command: `npx exagent runtime:errors${flag} --duration ${durationMs * 2}`,
+      command: `npx @expo/agent-cli runtime:errors${flag} --duration ${durationMs * 2}`,
       why: 'Errors thrown before this window are not captured, so reproduce the problem while a longer window listens.',
     },
     {
       id: 'runtime-errors-typecheck',
-      command: 'npx exagent typecheck',
+      command: 'npx @expo/agent-cli typecheck',
       why: 'An empty window is not a healthy app: a property that does not exist is undefined rather than a throw, so the screen renders wrongly and nothing here reports it.',
     },
   ]);

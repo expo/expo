@@ -1,6 +1,6 @@
 // @ref llp/0023-fingerprint-caching.rfc.md §Layer 2 — the cross-run cache
 // The record of fingerprints this project already computed, in `.expo/` beside the other records
-// (`exagent-last-build.json`, `exagent-eas-builds.json`).
+// (`agent-cli-last-build.json`, `agent-cli-eas-builds.json`).
 //
 // The problem it solves is that `status --explain` computes three fingerprints — the whole project
 // for the freshness headline, then iOS and android for the EAS build lookup — and the same three,
@@ -30,7 +30,7 @@ import {
 } from './fingerprintKeys';
 
 /** Name of the record inside the project's `.expo` directory. */
-export const FINGERPRINT_CACHE_FILE_NAME = 'exagent-fingerprint.json';
+export const FINGERPRINT_CACHE_FILE_NAME = 'agent-cli-fingerprint.json';
 
 /**
  * Schema version of the record.
@@ -253,7 +253,7 @@ export function writeFingerprintCacheAsync(
 /**
  * One project's pending record writes, in order.
  *
- * Per process only. Two `exagent` processes writing at once are handled by the atomic rename
+ * Per process only. Two `@expo/agent-cli` processes writing at once are handled by the atomic rename
  * below: the loser's entry is dropped, which costs one recomputation, and neither can leave a
  * half-written file behind.
  */
@@ -293,7 +293,7 @@ async function writeEntryAsync(
     // running the same commands: a rename is atomic, and a plain write of tens of thousands of
     // bytes is a window in which the record parses as corrupt.
     //
-    // Not pretty-printed, for the reason `exagent-last-build.json` is not: the `sources` of a real
+    // Not pretty-printed, for the reason `agent-cli-last-build.json` is not: the `sources` of a real
     // project are tens of thousands of bytes and nobody reads this file by hand.
     await fs.promises.writeFile(
       temporaryPath,

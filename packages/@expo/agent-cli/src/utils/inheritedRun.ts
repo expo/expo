@@ -22,7 +22,7 @@ const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
  *
  * While the child runs, terminal signals are forwarded to it instead of ending this process. The
  * default action would kill the wrapper first, cutting off the child's shutdown output and losing
- * its exit code. Forwarding also makes `kill <exagent pid>` stop the child, which matters for
+ * its exit code. Forwarding also makes `kill <@expo/agent-cli pid>` stop the child, which matters for
  * agents that drive the CLI programmatically. An interrupt then resolves as a clean exit, because
  * the stop was asked for.
  *

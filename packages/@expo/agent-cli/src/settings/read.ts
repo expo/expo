@@ -7,13 +7,13 @@ import fs from 'fs';
 import path from 'path';
 
 import { CommandError } from '../utils/errors';
-import { parseExagentSettings } from './parse';
+import { parseAgentCliSettings } from './parse';
 import { NO_SETTINGS, type LoadedSettings } from './types';
 
 /**
  * Where the config lives.
  *
- * `package.json` › `expo` › `exagent`, which is where this repository already keeps every other
+ * `package.json` › `expo` › `@expo/agent-cli`, which is where this repository already keeps every other
  * piece of *tooling* configuration: `expo.install.exclude` (the Expo CLI's installer),
  * `expo.doctor` (expo-doctor) and `expo.autolinking` (expo-modules-autolinking) are all read from
  * exactly here [observed — `packages/@expo/cli/src/install/checkPackages.ts`,
@@ -24,7 +24,7 @@ import { NO_SETTINGS, type LoadedSettings } from './types';
 export const CONFIG_FILE_NAME = 'package.json';
 
 /** The key path inside that file, as a reader would type it. */
-export const CONFIG_KEY_PATH = 'expo.exagent';
+export const CONFIG_KEY_PATH = 'expo.agentCli';
 
 /** How an error names the location. */
 export const CONFIG_LOCATION = `"${CONFIG_KEY_PATH}" in ${CONFIG_FILE_NAME}`;
@@ -45,11 +45,11 @@ export function resetSettingsCache(): void {
  * an error here — every command that needs `package.json` for its own reasons reports that in its
  * own words, and a preference file is not the place to discover it.
  *
- * @throws {CommandError} `BAD_EXAGENT_CONFIG` when the key exists and says something invalid. That
+ * @throws {CommandError} `BAD_AGENT_CLI_CONFIG` when the key exists and says something invalid. That
  * one *is* fatal: the developer wrote it down to change what happens, so carrying on as though
  * they had not is the failure this refuses to commit.
  */
-export function readExagentSettings(projectRoot: string): LoadedSettings {
+export function readAgentCliSettings(projectRoot: string): LoadedSettings {
   const cached = cache.get(projectRoot);
   if (cached) {
     return cached;
@@ -76,7 +76,7 @@ function load(projectRoot: string): LoadedSettings {
     // cannot parse is a `package.json` whose preferences it cannot honour, and pretending none
     // were written is the silent-drop failure again.
     throw new CommandError(
-      'BAD_EXAGENT_CONFIG',
+      'BAD_AGENT_CLI_CONFIG',
       [
         `${file} is not valid JSON, so ${CONFIG_LOCATION} could not be read: ${error?.message ?? String(error)}`,
         `Why: this CLI reads its own settings out of that file, and a file it cannot parse may hold settings it is about to ignore.`,
@@ -86,13 +86,13 @@ function load(projectRoot: string): LoadedSettings {
   }
 
   const expo = (packageJson as any)?.expo;
-  const raw = expo == null ? undefined : (expo as any)?.exagent;
+  const raw = expo == null ? undefined : (expo as any)?.agentCli;
   if (raw == null) {
     return NO_SETTINGS;
   }
 
   return {
-    settings: parseExagentSettings(raw, CONFIG_LOCATION),
+    settings: parseAgentCliSettings(raw, CONFIG_LOCATION),
     file,
     keyPath: CONFIG_KEY_PATH,
   };

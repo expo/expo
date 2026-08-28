@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const devRunHelp: CommandHelp = {
   command: 'dev:run',
-  usage: 'npx exagent dev',
+  usage: 'npx @expo/agent-cli dev',
   options: [
     `--detach            Run the dev server in the background and give the terminal back`,
     `--wait-ready        With --detach, also wait for the bundler before reporting`,
@@ -24,19 +24,19 @@ export const devRunHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent dev --plan',
+      run: 'npx @expo/agent-cli dev --plan',
       gets: 'what would run to get this app on a device, and why. Nothing runs',
     },
     {
-      run: 'npx exagent dev --detach --wait-ready',
+      run: 'npx @expo/agent-cli dev --detach --wait-ready',
       gets: 'the dev server in the background; its url, pid and log file are printed',
     },
     {
-      run: 'npx exagent dev --yes --json --port 8082',
+      run: 'npx @expo/agent-cli dev --yes --json --port 8082',
       gets: 'the plan run without a confirmation, on that exact port, as one object',
     },
     {
-      run: 'npx exagent dev --eas --plan',
+      run: 'npx @expo/agent-cli dev --eas --plan',
       gets: 'the plan with the build forced into the cloud, whatever this machine has',
     },
   ],
@@ -66,14 +66,14 @@ export const devRunHelp: CommandHelp = {
     `(expo prebuild + expo run:ios/run:android) needs Xcode or the Android SDK on this machine.`,
     `A cloud build (eas build) happens on EAS and needs an Expo account instead. When this`,
     `machine cannot do the local one, the plan is the cloud one and its Build: line says why.`,
-    `The project can choose, in package.json under expo.exagent: buildBackend (local or eas,`,
+    `The project can choose, in package.json under expo.agentCli: buildBackend (local or eas,`,
     `optionally per platform) and target (expo-go or dev-build). A flag beats the config.`,
     `The options of expo start are accepted and passed on. For expo start with nothing decided`,
-    `for you, run "npx exagent start" instead.`,
+    `for you, run "npx @expo/agent-cli start" instead.`,
   ],
 };
 
-export const exagentDev: Command = async (argv) => {
+export const agentCliDev: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -97,7 +97,7 @@ export const exagentDev: Command = async (argv) => {
     printCommandHelp(devRunHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent dev -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli dev -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
   // directory that holds no app rather than planning work against whatever is there.
@@ -109,8 +109,8 @@ export const exagentDev: Command = async (argv) => {
     const projectRoot = findUpExpoAppRootOrAssert(process.cwd());
     const options = resolveDevOptions(argv ?? []);
 
-    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — Renamed: the
-    // plan-first engine is `exagent dev`, and `exagent start` is the plain `expo start` wrapper.
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status` — Renamed: the
+    // plan-first engine is `@expo/agent-cli dev`, and `@expo/agent-cli start` is the plain `expo start` wrapper.
     const { devAsync } = require('./devAsync') as typeof import('./devAsync');
     process.exitCode = await devAsync(projectRoot, options);
   })().catch(logCmdError);

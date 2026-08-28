@@ -1,6 +1,6 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// `exagent smoke`: the composite gate.
+// `@expo/agent-cli smoke`: the composite gate.
 //
 // This module is the wiring, and deliberately nothing else. The decisions are in `phases.ts`,
 // which is given the functions below rather than importing them, so the outcome table can be
@@ -53,7 +53,7 @@ const LIVENESS_TIMEOUT_MS = 5_000;
 const TARGET_SETTLE_POLL_MS = 500;
 
 /**
- * The command line `--start` runs `exagent dev` with.
+ * The command line `--start` runs `@expo/agent-cli dev` with.
  *
  * **The platform flag is deliberately absent**, and that is a correction rather than an omission
  * [observed live — 2026-08-24, on a Mac that had granted no Automation permission]. `--ios` makes
@@ -206,7 +206,7 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         projectRoot,
       }),
 
-    // The detach path of `exagent dev`, with the readiness wait on: a foreground start would never
+    // The detach path of `@expo/agent-cli dev`, with the readiness wait on: a foreground start would never
     // return, and this run has seven more phases to perform (llp/0004 §Daemonization).
     // The argv is `START_DEV_SERVER_ARGV`, whose documentation says why it carries no platform.
     startDevServer: async () => {

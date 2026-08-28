@@ -20,10 +20,10 @@ export function findUpProjectRootOrAssert(cwd: string): string {
       [
         `No project was found here, so this command has nothing to act on.`,
         `Why: neither ${cwd} nor any directory above it holds a package.json, which is what marks the root of a JavaScript project — so there is no app for this command to be about.`,
-        `How: change to the directory of an existing app and run this again, or create one here with "npx exagent new my-app".`,
+        `How: change to the directory of an existing app and run this again, or create one here with "npx @expo/agent-cli new my-app".`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent new my-app';
+    error.suggestedCommand = 'npx @expo/agent-cli new my-app';
     throw error;
   }
   return path.dirname(projectRoot);

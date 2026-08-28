@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // The human half of the status contract: one labelled line per section, like `git status` short
 // prose. Agents read the `--json` report or the `cli:status` event instead.
 
@@ -61,7 +61,7 @@ export function formatStatusReport(report: StatusReport): string {
     // Under the dev server it points at, because that is the address it was built from.
     ...(report.devServer ? openUrlLines(report.devServer) : []),
     row('device', report.device, deviceLine, report, 'device'),
-    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
     // The one section that can have nothing to say at all. A project whose dependencies ship no
     // skills, read by somebody who has selected no agent, produced `no agent selected · no skills
     // discovered` — a line about two things that are not there, on a report whose other six lines
@@ -115,7 +115,7 @@ function assertLine(assertion: AssertStatus): string {
  * The impact headline, one entry per platform that has one.
  *
  * Platforms that agree are printed once. They usually do, and for a reason worth knowing: the
- * probe fingerprints both platforms together (llp/0004 §`exagent status`), so `ios` and `android`
+ * probe fingerprints both platforms together (llp/0004 §`@expo/agent-cli status`), so `ios` and `android`
  * differ here only when their recorded builds were made at different times. Printing the identical
  * sentence twice would be the report padding itself.
  */
@@ -636,7 +636,7 @@ function deviceLine(device: LocalDeviceStatus): string {
  * What the short readiness probe found.
  *
  * `null` is "still bundling", not "not ready": status never waits for a bundle, so a dev server
- * that has not answered yet is unknown here and `npx exagent smoke` is what settles it.
+ * that has not answered yet is unknown here and `npx @expo/agent-cli smoke` is what settles it.
  */
 function bundlerFact(ready: boolean | null): string {
   if (ready == null) {
@@ -676,11 +676,11 @@ function authLine(auth: AuthStatus): string {
 function nextLine(next: NextActionStatus): string {
   const [first, ...rest] = next.steps;
   // Rewritten for the runner in use as it goes out, the way a follow-up is (`src/utils/invoker.ts`):
-  // the report is written `npx exagent …` and a Bun project reads `bunx exagent …`. The `--json`
+  // the report is written `npx @expo/agent-cli …` and a Bun project reads `bunx @expo/agent-cli …`. The `--json`
   // value is the written form, unchanged.
   const command = renderForInvoker(next.command);
   // A next action that is not the plan carries its own reason, and that reason is the whole of
-  // what it has to say: there is no step list to print, because it runs one exagent command.
+  // what it has to say: there is no step list to print, because it runs one @expo/agent-cli command.
   if (next.why) {
     return `${chalk.bold(command)}${SEPARATOR}${chalk.dim(next.why)}`;
   }

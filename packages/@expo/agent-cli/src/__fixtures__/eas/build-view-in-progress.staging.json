@@ -30,7 +30,7 @@
   "appVersion": "1.0.0",
   "appBuildVersion": "1",
   "gitCommitHash": "ea0a1bfd035f954ee3dc4f4deec6460d4c9b00bb",
-  "gitCommitMessage": "[exagent] Run `register` through `npx expo` instead of failing outside a project",
+  "gitCommitMessage": "[@expo/agent-cli] Run `register` through `npx expo` instead of failing outside a project",
   "priority": "HIGH",
   "createdAt": "2026-08-26T15:25:54.637Z",
   "updatedAt": "2026-08-26T15:26:06.001Z",

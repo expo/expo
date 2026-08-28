@@ -1,6 +1,6 @@
 // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy
-// Argument resolution for `exagent deploy`. Pure: argv in, options out, `CommandError` for anything
-// a user can get wrong. Which target a bare `exagent deploy` ships is decided from the project, not
+// Argument resolution for `@expo/agent-cli deploy`. Pure: argv in, options out, `CommandError` for anything
+// a user can get wrong. Which target a bare `@expo/agent-cli deploy` ships is decided from the project, not
 // here, because that needs a probe.
 
 import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
@@ -40,7 +40,7 @@ const DEPLOY_ARGS = {
 };
 
 /** The usage line, which is the recovery path for every argument error of this command. */
-const USAGE_COMMAND = 'npx exagent deploy';
+const USAGE_COMMAND = 'npx @expo/agent-cli deploy';
 
 function badArgs(message: string, suggestedCommand: string): CommandError {
   const error = new CommandError('BAD_ARGS', message);
@@ -50,7 +50,7 @@ function badArgs(message: string, suggestedCommand: string): CommandError {
 }
 
 /**
- * Resolve the arguments of `exagent deploy`.
+ * Resolve the arguments of `@expo/agent-cli deploy`.
  *
  * No target flag resolves to no target: an empty request is not an error, it is the default the
  * caller fills in from the project state.

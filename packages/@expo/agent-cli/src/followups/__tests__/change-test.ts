@@ -38,7 +38,7 @@ describe(buildChangeFollowUps, () => {
       const followups = buildChangeFollowUps(input());
 
       expect(ids(followups).slice(0, 2)).toEqual(['change-native-build', 'change-eas-build']);
-      expect(followups[0]!.command).toBe('npx exagent dev --ios');
+      expect(followups[0]!.command).toBe('npx @expo/agent-cli dev --ios');
       expect(followups[1]!.command).toBe('npx eas build --platform ios --profile development');
     });
 
@@ -47,9 +47,9 @@ describe(buildChangeFollowUps, () => {
       const followups = buildChangeFollowUps(input({ buildBackend: backend('eas') }));
 
       expect(ids(followups).slice(0, 2)).toEqual(['change-native-build', 'change-local-build']);
-      // Still `exagent dev` first: it is the command that makes a plan, and on this host the plan
+      // Still `@expo/agent-cli dev` first: it is the command that makes a plan, and on this host the plan
       // it makes is the cloud one.
-      expect(followups[0]!.command).toBe('npx exagent dev --ios');
+      expect(followups[0]!.command).toBe('npx @expo/agent-cli dev --ios');
       expect(followups[0]!.why).toContain('in the cloud on EAS');
       expect(followups[0]!.why).toContain('this host runs linux');
     });
@@ -57,7 +57,7 @@ describe(buildChangeFollowUps, () => {
     it(`should offer --local as the way past a choice the caller disagrees with`, () => {
       const [, forced] = buildChangeFollowUps(input({ buildBackend: backend('eas') }));
 
-      expect(forced!.command).toBe('npx exagent dev --ios --local');
+      expect(forced!.command).toBe('npx @expo/agent-cli dev --ios --local');
       expect(forced!.why).toContain('on this machine');
     });
 
@@ -88,7 +88,7 @@ describe(buildChangeFollowUps, () => {
     it(`should leave the platform out of both commands when the report named none`, () => {
       const [local, cloud] = buildChangeFollowUps(input({ platform: null }));
 
-      expect(local!.command).toBe('npx exagent dev');
+      expect(local!.command).toBe('npx @expo/agent-cli dev');
       expect(local!.why).toContain('the platform toolchain');
       expect(cloud!.command).toBe('npx eas build --profile development');
     });

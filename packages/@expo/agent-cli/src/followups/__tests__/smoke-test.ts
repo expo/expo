@@ -20,7 +20,7 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
     runtimeSupported: true,
     failing: 0,
     screenshotTaken: true,
-    screenshotPath: '/project/.expo/exagent/smoke.png',
+    screenshotPath: '/project/.expo/agent-cli/smoke.png',
     route: null,
     // Named, always: a re-run that drops the platform is a different run (F58).
     platform: 'ios',
@@ -58,20 +58,20 @@ describe(buildSmokeFollowUps, () => {
 
   it(`names the detached start when no dev server answered`, () => {
     expect(commands({ devServerFound: false })).toContain(
-      'npx exagent dev --detach --yes --wait-ready'
+      'npx @expo/agent-cli dev --detach --yes --wait-ready'
     );
   });
 
   it(`offers --start to a run that was attach-only`, () => {
     expect(commands({ devServerFound: false, start: false })).toContain(
-      'npx exagent smoke --start --ios'
+      'npx @expo/agent-cli smoke --start --ios'
     );
   });
 
   // Every other suggestion would be about a stranger's app, so it is alone. And it is never a
   // re-run: the same scan finds the same foreign dev server.
   it(`answers another project's dev server with the report that names this one's`, () => {
-    expect(commands({ foreignDevServer: true })).toEqual(['npx exagent status --json']);
+    expect(commands({ foreignDevServer: true })).toEqual(['npx @expo/agent-cli status --json']);
   });
 
   // A bundle that does not compile is the whole answer, and the compiler sees more of it than the
@@ -81,7 +81,7 @@ describe(buildSmokeFollowUps, () => {
       input({ bundleBroken: true, outcome: 'failed', bundleFile: 'src/app/notes.tsx' })
     );
 
-    expect(followups[0]!.command).toBe('npx exagent typecheck');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli typecheck');
     expect(followups[0]!.why).toContain('src/app/notes.tsx');
   });
 
@@ -89,10 +89,10 @@ describe(buildSmokeFollowUps, () => {
     // With the platform on it: `navigate` with no flag prefers a booted iOS simulator on a Mac,
     // which after `smoke --android` is the wrong device (F58).
     expect(commands({ appsConnected: 0, outcome: 'inconclusive' })[0]).toBe(
-      'npx exagent navigate / --ios'
+      'npx @expo/agent-cli navigate / --ios'
     );
     expect(commands({ appsConnected: 0, outcome: 'inconclusive', platform: 'android' })[0]).toBe(
-      'npx exagent navigate / --android'
+      'npx @expo/agent-cli navigate / --android'
     );
   });
 
@@ -105,12 +105,12 @@ describe(buildSmokeFollowUps, () => {
       platform: 'android',
     });
 
-    expect(suggested).not.toContain('npx exagent smoke');
+    expect(suggested).not.toContain('npx @expo/agent-cli smoke');
     // The other platform, which was measured to answer — not the same one again.
     expect(suggested.some((command) => command.includes('smoke --ios'))).toBe(true);
   });
 
-  // @ref ../smoke — friction run 6, F55. This used to suggest `npx exagent dev --plan --android`
+  // @ref ../smoke — friction run 6, F55. This used to suggest `npx @expo/agent-cli dev --plan --android`
   // under "this prints what a development build would take". For a project Expo Go can still
   // serve, that command prints the **Expo Go** path: the plan engine only reaches the
   // development-build steps when a native module makes Expo Go incompatible (`src/plan/decide.ts`).
@@ -120,7 +120,7 @@ describe(buildSmokeFollowUps, () => {
     );
 
     expect(followups.map((followup) => followup.command)).not.toContain(
-      'npx exagent dev --plan --android'
+      'npx @expo/agent-cli dev --plan --android'
     );
     expect(followups.map((followup) => followup.why).join(' ')).not.toContain(
       'what a development build would take'
@@ -130,18 +130,18 @@ describe(buildSmokeFollowUps, () => {
   // @ref llp/0005-runtime-loop-tools.rfc.md §Peer churn — an error window is a property of the
   // app's session and the session outlives a fix, so a reload leads.
   it(`leads a non-empty window with the reload`, () => {
-    expect(commands({ failing: 1, outcome: 'failed' })[0]).toBe('npx exagent runtime:reload --ios');
+    expect(commands({ failing: 1, outcome: 'failed' })[0]).toBe('npx @expo/agent-cli runtime:reload --ios');
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §The fourth: `typecheck`. Nothing threw and the bundle
   // transformed, which is not the same as the code being right — a `Spacing.md` that evaluates to
   // undefined renders a screen with `padding: undefined` and every runtime gate green.
   it(`answers a pass with the gate this one is structurally blind to`, () => {
-    expect(commands()[0]).toBe('npx exagent typecheck');
+    expect(commands()[0]).toBe('npx @expo/agent-cli typecheck');
   });
 
   it(`points at the picture it took, when it took one`, () => {
-    expect(commands()).toContain('open /project/.expo/exagent/smoke.png');
+    expect(commands()).toContain('open /project/.expo/agent-cli/smoke.png');
     expect(commands({ screenshotTaken: false, screenshotPath: null }).join(' ')).not.toContain(
       'open '
     );
@@ -149,10 +149,10 @@ describe(buildSmokeFollowUps, () => {
 
   it(`keeps the route on a re-run it suggests`, () => {
     expect(commands({ devServerFound: false, route: '/notes' })).toContain(
-      'npx exagent smoke --start --ios --route /notes'
+      'npx @expo/agent-cli smoke --start --ios --route /notes'
     );
     expect(commands({ bundleBroken: true, outcome: 'failed', route: '/notes' })).toContain(
-      'npx exagent smoke --ios --route /notes'
+      'npx @expo/agent-cli smoke --ios --route /notes'
     );
   });
 });
@@ -160,7 +160,7 @@ describe(buildSmokeFollowUps, () => {
 // @ref llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
 // The same rule the `platform` comment above states, for the other fact that decides which device a
 // run is about. A `smoke --cloud` that could not find a session was answered with
-// `npx exagent navigate / --ios` and `npx exagent smoke --ios` — a ladder off the backend the
+// `npx @expo/agent-cli navigate / --ios` and `npx @expo/agent-cli smoke --ios` — a ladder off the backend the
 // caller chose, onto a booted device the host that reached for the cloud may not have at all.
 describe('a run that asked for the cloud', () => {
   it(`keeps --cloud on every command that takes it`, () => {
@@ -171,7 +171,7 @@ describe('a run that asked for the cloud', () => {
       { outcome: 'inconclusive' as const, screenshotTaken: false, screenshotPath: null },
     ]) {
       for (const command of commands({ ...overrides, cloud: true })) {
-        if (/exagent (smoke|navigate|runtime:reload)\b/.test(command)) {
+        if (/@expo\/agent-cli (smoke|navigate|runtime:reload)\b/.test(command)) {
           expect(command).toContain('--cloud');
         }
       }
@@ -182,7 +182,7 @@ describe('a run that asked for the cloud', () => {
     const followups = buildSmokeFollowUps(input({ appsConnected: 0, cloud: true }));
     const navigate = followups.find((followup) => followup.id === 'navigate')!;
 
-    expect(navigate.command).toBe('npx exagent navigate / --ios --cloud');
+    expect(navigate.command).toBe('npx @expo/agent-cli navigate / --ios --cloud');
     expect(navigate.why).not.toContain('booted device');
   });
 
@@ -191,10 +191,10 @@ describe('a run that asked for the cloud', () => {
   // session that does not exist while suggesting it without would leave the backend silently.
   it(`never offers the other platform, which is another session`, () => {
     expect(commands({ runtimeSupported: false, cloud: true })).not.toContain(
-      'npx exagent smoke --android'
+      'npx @expo/agent-cli smoke --android'
     );
     // The local run still has it: there the other platform is another simulator on this machine.
-    expect(commands({ runtimeSupported: false })).toContain('npx exagent smoke --android');
+    expect(commands({ runtimeSupported: false })).toContain('npx @expo/agent-cli smoke --android');
   });
 
   it(`changes nothing for a run that did not ask for the cloud`, () => {

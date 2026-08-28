@@ -48,5 +48,5 @@ function whyOf(target: RunTarget, source: RunTargetSource): string {
   const flag = target === 'dev-build' ? '--dev-client' : '--go';
   return source === 'flag'
     ? `${flag} asked for ${app}.`
-    : `The exagent config asks for ${app}.`;
+    : `The @expo/agent-cli config asks for ${app}.`;
 }

@@ -10,8 +10,8 @@ import type { AgentsMdResult } from './types';
 /** The file the block is maintained in, relative to the project root. */
 export const AGENTS_MD_FILE = 'AGENTS.md';
 
-export const BLOCK_START = '<!-- BEGIN EXAGENT MANAGED BLOCK -->';
-export const BLOCK_END = '<!-- END EXAGENT MANAGED BLOCK -->';
+export const BLOCK_START = '<!-- BEGIN EXPO AGENT CLI MANAGED BLOCK -->';
+export const BLOCK_END = '<!-- END EXPO AGENT CLI MANAGED BLOCK -->';
 
 /**
  * Return the contents of `AGENTS.md` with the managed block set to `blockBody`.
@@ -76,7 +76,7 @@ export async function writeManagedBlockAsync(
 /**
  * Note a `CLAUDE.md` that never points at `AGENTS.md`.
  *
- * `exagent` maintains one file only: writing into a second agent instruction file would edit
+ * `@expo/agent-cli` maintains one file only: writing into a second agent instruction file would edit
  * content nobody asked it to own. An agent that reads `CLAUDE.md` alone would then miss the
  * block, so say so instead of fixing it silently. Returns null when there is nothing to say.
  */

@@ -29,7 +29,7 @@ describe('the input source', () => {
   });
 
   it('implies --stdin when something is piping in', () => {
-    // `npx expo run:ios 2>&1 | npx exagent inspect:build-log` is the shape the command is for, and
+    // `npx expo run:ios 2>&1 | npx @expo/agent-cli inspect:build-log` is the shape the command is for, and
     // making the caller also type `--stdin` would be a flag that only ever has one value.
     expect(resolveExplainOptions([], PIPED).source).toEqual({ kind: 'stdin' });
   });

@@ -102,9 +102,9 @@ describe(`${preflightRuntimeAsync.name} with no dev server`, () => {
 
     expect(error.code).toBe('NO_DEV_SERVER');
     expect(error.message).toContain(devServerUrl);
-    expect(error.message).toContain('npx exagent dev --detach');
+    expect(error.message).toContain('npx @expo/agent-cli dev --detach');
     expect(error.message).not.toContain('npx expo start');
-    expect(error.suggestedCommand).toBe('npx exagent dev --detach');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli dev --detach');
   });
 
   // Both halves of the family ask the same question, so the answer is the same object: an agent
@@ -136,8 +136,8 @@ describe(`${preflightRuntimeAsync.name} with no dev server`, () => {
       cloud: true,
     }).catch((e) => e);
 
-    expect(error.message).toContain('npx exagent dev --detach --tunnel');
-    expect(error.message).toContain('npx exagent navigate / --cloud');
+    expect(error.message).toContain('npx @expo/agent-cli dev --detach --tunnel');
+    expect(error.message).toContain('npx @expo/agent-cli navigate / --cloud');
   });
 
   it(`should not retry a dev server that does not answer`, async () => {
@@ -177,7 +177,7 @@ describe(`${preflightRuntimeAsync.name} with no app connected`, () => {
     expect(error.code).toBe('NO_APP_CONNECTED');
     expect(error.message).toContain('no app is connected');
     expect(error.message).toContain(`${devServerUrl}/json/list`);
-    expect(error.message).toContain('npx exagent navigate /');
+    expect(error.message).toContain('npx @expo/agent-cli navigate /');
     // Not a keypress in a terminal: a detached dev server has none, and a driving agent has no
     // keyboard for one that has (friction run 5, F48-5).
     expect(error.message).not.toContain('press "i"');
@@ -313,9 +313,9 @@ describe(reachTheAppLadder, () => {
       for (const state of ['no-dev-server', 'no-app'] as const) {
         const ladder = reachTheAppLadder({ state, cloud: false, platform });
 
-        expect(ladder).toContain(`npx exagent navigate / --${platform}`);
+        expect(ladder).toContain(`npx @expo/agent-cli navigate / --${platform}`);
         if (state === 'no-dev-server') {
-          expect(ladder).toContain(`npx exagent dev --detach --${platform}`);
+          expect(ladder).toContain(`npx @expo/agent-cli dev --detach --${platform}`);
         }
       }
     }
@@ -325,13 +325,13 @@ describe(reachTheAppLadder, () => {
   // still have to be on the one line, in the order the CLI accepts them.
   it(`keeps the tunnel next to the platform for a cloud session`, () => {
     expect(reachTheAppLadder({ state: 'no-dev-server', cloud: true, platform: 'ios' })).toContain(
-      'npx exagent dev --detach --tunnel --ios'
+      'npx @expo/agent-cli dev --detach --tunnel --ios'
     );
   });
 
   it(`offers no platform flag when the caller named none`, () => {
     expect(reachTheAppLadder({ state: 'no-dev-server', cloud: false })).toContain(
-      'npx exagent dev --detach"'
+      'npx @expo/agent-cli dev --detach"'
     );
   });
 });
@@ -351,7 +351,7 @@ describe(`${preflightRuntimeAsync.name} scoped to a platform`, () => {
     expect(error.code).toBe('NO_APP_CONNECTED');
     expect(error.message).toContain('No android app is connected');
     expect(error.message).toContain('it is on ios');
-    expect(error.suggestedCommand).toBe('npx exagent navigate / --android');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli navigate / --android');
     // The count is of the list as the dev server gave it, so a caller can see that an app *is*
     // attached and that it is the wrong one.
     expect(error.data).toMatchObject({ debuggerTargets: 1, platform: 'android' });

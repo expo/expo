@@ -26,7 +26,7 @@ describe(resolveInstallPlan, () => {
     expect(resolveInstallPlan(['expo-sqlite', '--', 'react']).packages).toEqual(['expo-sqlite']);
   });
 
-  it(`should strip the exagent-only flags from the expo arguments`, () => {
+  it(`should strip the agent-cli-only flags from the expo arguments`, () => {
     const plan = resolveInstallPlan([
       'expo-sqlite',
       '--no-agent-skills',
@@ -118,7 +118,7 @@ describe(resolveInstallPlan, () => {
 
     it(`should point a package-manager flag at the separator that forwards it`, () => {
       expect(() => resolveInstallPlan(['react', '--verbose'])).toThrow(
-        /npx exagent install react -- --verbose/
+        /npx @expo\/agent-cli install react -- --verbose/
       );
     });
 

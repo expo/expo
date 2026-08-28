@@ -50,7 +50,7 @@ export function resolveDevicePlatform(
       throw new CommandError(
         'BAD_ARGS',
         [
-          `--platform is "${platform}", which is not a platform "exagent ${command}" can act on.`,
+          `--platform is "${platform}", which is not a platform "@expo/agent-cli ${command}" can act on.`,
           `Why: this command drives the app through a device tool — "xcrun simctl" or "adb" — and only ${RUNTIME_PLATFORMS.join(' and ')} have one.`,
           `How: pass ${RUNTIME_PLATFORMS.map((name) => `--platform ${name}`).join(' or ')}, or leave it out to act on whichever device is booted.`,
         ].join('\n')

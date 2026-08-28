@@ -11,7 +11,7 @@
 // `Resolving dependencies` — which the caller then reports as what the *service* said about its
 // builds.
 //
-// Observed [F93, live tier, 2026-08-27], six runs of `exagent status --explain` against a fresh copy
+// Observed [F93, live tier, 2026-08-27], six runs of `@expo/agent-cli status --explain` against a fresh copy
 // of an EAS-linked project with no `.expo` cache: both platforms poisoned 2/6, one platform poisoned
 // 1/6, clean 3/6. The identical argv run on its own exits 0 with the correct payload every time, and
 // a ~50 ms skew between the two spawns made the collision disappear.

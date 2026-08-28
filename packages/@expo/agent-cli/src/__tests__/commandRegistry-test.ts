@@ -40,11 +40,11 @@ import type { Command } from '../types';
 function syntheticHelp(command: string): CommandHelp {
   return {
     command,
-    usage: `npx exagent ${command}`,
+    usage: `npx @expo/agent-cli ${command}`,
     options: ['-h, --help   Usage info'],
     examples: [
-      { run: `npx exagent ${command}`, gets: 'nothing; this command exists for one test' },
-      { run: `npx exagent ${command} --help`, gets: 'this block' },
+      { run: `npx @expo/agent-cli ${command}`, gets: 'nothing; this command exists for one test' },
+      { run: `npx @expo/agent-cli ${command} --help`, gets: 'this block' },
     ],
     next: ['status'],
   };
@@ -386,7 +386,7 @@ describe(resolveCommand, () => {
     });
   });
 
-  // `expo add` is `expo install`, so `exagent add` is `exagent install` — the wrapper with the
+  // `expo add` is `expo install`, so `@expo/agent-cli add` is `@expo/agent-cli install` — the wrapper with the
   // skill sync and the impact report, not a bare forward.
   it('resolves an alias to the command it names', () => {
     expect(resolveCommand('add', ['expo-camera'])).toEqual({
@@ -581,12 +581,12 @@ describe(formatGroupHelp, () => {
   });
 
   it('names the command a bare group runs', () => {
-    expect(formatGroupHelp('skills')).toContain('npx exagent skills');
+    expect(formatGroupHelp('skills')).toContain('npx @expo/agent-cli skills');
     expect(formatGroupHelp('skills')).toContain('skills:sync');
   });
 });
 
-// `exagent build --platform ios` is the worst thing a group named after another CLI's verb could
+// `@expo/agent-cli build --platform ios` is the worst thing a group named after another CLI's verb could
 // do: `build` is a real verb of a real CLI, and printing a listing and exiting 0 would tell a
 // driving agent it had started a build (llp/0010 §Registry rules).
 describe('a group whose name is another CLI’s verb', () => {
@@ -623,7 +623,7 @@ describe('a group whose name is another CLI’s verb', () => {
     withGroup('build', group, () => {
       const message = flagsWithoutActionMessage('build', ['--platform', 'ios']);
 
-      expect(message).toContain('"exagent build --platform ios"');
+      expect(message).toContain('"@expo/agent-cli build --platform ios"');
       expect(message).toContain('"npx eas build"');
       expect(flagsWithoutActionSuggestion('build', ['--platform', 'ios'])).toBe(
         'npx eas build --platform ios'
@@ -661,7 +661,7 @@ describe('the build verb, which this CLI no longer groups anything under', () =>
     const message = unknownCommandMessage('build');
 
     expect(message).toContain('npx eas build');
-    expect(message).toContain('npx exagent inspect:build-log');
+    expect(message).toContain('npx @expo/agent-cli inspect:build-log');
     expect(unknownCommandSuggestion('build')).toBe('npx eas build');
   });
 });
@@ -670,16 +670,16 @@ describe(flagsWithoutActionMessage, () => {
   it('quotes the command back, and names the actions the options could belong to', () => {
     const message = flagsWithoutActionMessage('runtime', ['--json']);
 
-    expect(message).toContain('"exagent runtime --json"');
+    expect(message).toContain('"@expo/agent-cli runtime --json"');
     expect(message).toContain('no default action');
     expect(message).toContain('runtime:eval');
     expect(message).toContain('runtime:reload');
-    expect(message).toContain('npx exagent runtime --help');
+    expect(message).toContain('npx @expo/agent-cli runtime --help');
   });
 
   // Only a group that named another CLI's command has one to point at.
   it('sends a group without another CLI behind it to its own help', () => {
-    expect(flagsWithoutActionSuggestion('runtime', ['--json'])).toBe('npx exagent runtime --help');
+    expect(flagsWithoutActionSuggestion('runtime', ['--json'])).toBe('npx @expo/agent-cli runtime --help');
     expect(flagsWithoutActionMessage('runtime', ['--json'])).not.toContain('npx eas');
   });
 });
@@ -795,7 +795,7 @@ describe('workflow', () => {
 });
 
 // The sections are the whole advertised surface: a command missing from them is a command an agent
-// reading `exagent --help` never learns about.
+// reading `@expo/agent-cli --help` never learns about.
 // llp/0006 naming rule: a capability only this CLI has gets a verb of its own, and a name shared
 // with an `expo` command has to behave like that command. `typecheck` is the first, so it must not
 // be in the forwarded set — `expo` has no command by that name to forward to.
@@ -879,9 +879,9 @@ describe(unknownCommandMessage, () => {
   it('names the closest commands', () => {
     const message = unknownCommandMessage('stop');
 
-    expect(message).toContain('"exagent stop" is not a command');
-    expect(message).toContain('npx exagent dev:stop');
-    expect(message).toContain('npx exagent runtime:stop');
+    expect(message).toContain('"@expo/agent-cli stop" is not a command');
+    expect(message).toContain('npx @expo/agent-cli dev:stop');
+    expect(message).toContain('npx @expo/agent-cli runtime:stop');
   });
 
   it('says nothing about close names when there are none', () => {
@@ -894,25 +894,25 @@ describe(unknownCommandMessage, () => {
     for (const name of ['logs', 'log', 'LOGS']) {
       const message = unknownCommandMessage(name);
 
-      expect(message).toContain(`"exagent ${name}" is not a command`);
-      expect(message).toContain('npx exagent dev:logs');
-      expect(message).toContain('npx exagent smoke');
-      expect(message).toContain('npx exagent runtime:errors');
+      expect(message).toContain(`"@expo/agent-cli ${name}" is not a command`);
+      expect(message).toContain('npx @expo/agent-cli dev:logs');
+      expect(message).toContain('npx @expo/agent-cli smoke');
+      expect(message).toContain('npx @expo/agent-cli runtime:errors');
     }
   });
 });
 
 describe(unknownCommandSuggestion, () => {
   it('recovers into the one close name', () => {
-    expect(unknownCommandSuggestion('stauts')).toBe('npx exagent status --help');
+    expect(unknownCommandSuggestion('stauts')).toBe('npx @expo/agent-cli status --help');
   });
 
   it('falls back to the listing when the answer is a choice', () => {
-    expect(unknownCommandSuggestion('stop')).toBe('npx exagent --help');
-    expect(unknownCommandSuggestion('zzzzzzzz')).toBe('npx exagent --help');
+    expect(unknownCommandSuggestion('stop')).toBe('npx @expo/agent-cli --help');
+    expect(unknownCommandSuggestion('zzzzzzzz')).toBe('npx @expo/agent-cli --help');
   });
 
   it('recovers a missing capability into the command that answers it', () => {
-    expect(unknownCommandSuggestion('logs')).toBe('npx exagent dev:logs');
+    expect(unknownCommandSuggestion('logs')).toBe('npx @expo/agent-cli dev:logs');
   });
 });

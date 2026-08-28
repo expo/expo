@@ -32,7 +32,7 @@
 //  - **No published Expo module ships `skills/*/SKILL.md`**, so the discovery this suite exercises
 //    is over a skill written into `node_modules` the way a module author would ship one. That
 //    finding is asserted too, because it is the feature's reach.
-//  - **A forwarded command is bare.** `exagent config --json` and `npx expo config --json` are
+//  - **A forwarded command is bare.** `@expo/agent-cli config --json` and `npx expo config --json` are
 //    compared byte for byte, which is the only form of "nothing was added" worth the name.
 
 import fs from 'node:fs';
@@ -87,7 +87,7 @@ describeLive('live-project', gate)('live-project: the commands whose backend is 
     // Registered before anything that needs them: a failure anywhere below still stops the dev
     // server, and the directory the others run *in* is deleted last (`onCleanup` is newest-first).
     run.onCleanup('scratch project', () => {
-      if (!process.env.EXAGENT_LIVE_KEEP) {
+      if (!process.env.AGENT_CLI_LIVE_KEEP) {
         fs.rmSync(run.tempDir, { recursive: true, force: true });
       }
     });
@@ -162,7 +162,7 @@ describeLive('live-project', gate)('live-project: the commands whose backend is 
       expect(warm.source).toBe('cache');
       expect(warm.revalidatedAgainst).toBeGreaterThan(0);
 
-      const recordPath = path.join(projectRoot, '.expo', 'exagent-fingerprint.json');
+      const recordPath = path.join(projectRoot, '.expo', 'agent-cli-fingerprint.json');
       expect(fs.existsSync(recordPath)).toBe(true);
 
       const installed = await runLiveAsync(
@@ -214,7 +214,7 @@ describeLive('live-project', gate)('live-project: the commands whose backend is 
       expect(impact.expoGoBundled).toBe(false);
       expect(impact.action).toBe('prebuild-and-build');
       const dev = payload.followups.find((entry: any) => entry.id === 'dev');
-      expect(dev.command).toBe('npx exagent dev');
+      expect(dev.command).toBe('npx @expo/agent-cli dev');
       expect(dev.why).toContain('react-native-mmkv');
     });
 
@@ -324,7 +324,7 @@ describeLive('live-project', gate)('live-project: the commands whose backend is 
     // maintains one block inside a file somebody else wrote.
     it('appends its managed block to the scaffold’s own AGENTS.md', async () => {
       const before = fs.readFileSync(path.join(projectRoot, 'AGENTS.md'), 'utf8');
-      expect(before).not.toContain('BEGIN EXAGENT MANAGED BLOCK');
+      expect(before).not.toContain('BEGIN EXPO AGENT CLI MANAGED BLOCK');
 
       const result = await runLiveAsync(run, projectRoot, ['agents:setup', '--json'], {
         label: 'agents-setup',
@@ -338,11 +338,11 @@ describeLive('live-project', gate)('live-project: the commands whose backend is 
       const after = fs.readFileSync(path.join(projectRoot, 'AGENTS.md'), 'utf8');
       // Byte-for-byte: the user's file is a prefix of the result, with the block appended.
       expect(after.startsWith(before.replace(/\n+$/, ''))).toBe(true);
-      expect(after).toContain('BEGIN EXAGENT MANAGED BLOCK');
-      expect(after).toContain('END EXAGENT MANAGED BLOCK');
+      expect(after).toContain('BEGIN EXPO AGENT CLI MANAGED BLOCK');
+      expect(after).toContain('END EXPO AGENT CLI MANAGED BLOCK');
       // The block describes the project it was run in, read rather than templated.
       expect(after).toContain('- Project: projapp');
-      expect(after).toContain('npx exagent status');
+      expect(after).toContain('npx @expo/agent-cli status');
     });
 
     it('changes nothing on a second run, and says so', async () => {
@@ -383,7 +383,7 @@ describeLive('live-project', gate)('live-project: the commands whose backend is 
     it('refuses a block with no end marker rather than rewriting past it', async () => {
       const filePath = path.join(projectRoot, 'AGENTS.md');
       const good = fs.readFileSync(filePath, 'utf8');
-      fs.writeFileSync(filePath, good.replace('<!-- END EXAGENT MANAGED BLOCK -->', '<!-- gone -->'));
+      fs.writeFileSync(filePath, good.replace('<!-- END EXPO AGENT CLI MANAGED BLOCK -->', '<!-- gone -->'));
 
       const result = await runLiveAsync(run, projectRoot, ['agents:setup', '--json'], {
         label: 'agents-setup-unclosed',

@@ -3,14 +3,14 @@ import { buildNewFollowUps } from '../new';
 describe(buildNewFollowUps, () => {
   it(`should name the commands that orient, run and wire up the new project`, () => {
     expect(buildNewFollowUps({ directory: 'my-app', installed: true })).toEqual([
-      expect.objectContaining({ id: 'status', command: 'cd my-app && npx exagent status' }),
+      expect.objectContaining({ id: 'status', command: 'cd my-app && npx @expo/agent-cli status' }),
       expect.objectContaining({
         id: 'dev',
-        command: 'cd my-app && npx exagent dev',
+        command: 'cd my-app && npx @expo/agent-cli dev',
       }),
       expect.objectContaining({
         id: 'agents-setup',
-        command: 'cd my-app && npx exagent agents:setup',
+        command: 'cd my-app && npx @expo/agent-cli agents:setup',
       }),
     ]);
   });
@@ -27,7 +27,7 @@ describe(buildNewFollowUps, () => {
 
   it(`should keep the directory as typed, so the commands can be pasted`, () => {
     expect(buildNewFollowUps({ directory: 'apps/my-app', installed: true })[0]!.command).toBe(
-      'cd apps/my-app && npx exagent status'
+      'cd apps/my-app && npx @expo/agent-cli status'
     );
   });
 

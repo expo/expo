@@ -34,7 +34,7 @@ export const MAX_LINES = 100_000;
 export const MAX_LINE_LENGTH = 4_000;
 
 /** The marker a truncated line ends with, so a reader is never shown a silent cut. */
-export const LINE_TRUNCATION_MARKER = '… [line truncated by exagent]';
+export const LINE_TRUNCATION_MARKER = '… [line truncated by @expo/agent-cli]';
 
 /**
  * How many lines are dropped at once when the window overflows.
@@ -257,6 +257,6 @@ function unreadable(filePath: string, why: string, how: string): CommandError {
       `How: ${how}`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent inspect:build-log --help';
+  error.suggestedCommand = 'npx @expo/agent-cli inspect:build-log --help';
   return error;
 }

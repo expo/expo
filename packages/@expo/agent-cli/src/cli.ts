@@ -44,7 +44,7 @@ const args = arg(
   }
 );
 
-// Check if we are running `npx exagent <command>` or `npx exagent`.
+// Check if we are running `npx @expo/agent-cli <command>` or `npx @expo/agent-cli`.
 const subcommand = args._[0] ?? null;
 
 // Command arguments come from the raw argv, not from `args._`: `arg` drops the `--` separator,
@@ -64,8 +64,8 @@ configureColor({
   isTty: process.stdout.isTTY === true,
 });
 
-// Push the help flag onto the command args, e.g. for `npx exagent --help skills`. This runs before
-// the command is resolved, so `exagent --help runtime` is the same request as `exagent runtime -h`.
+// Push the help flag onto the command args, e.g. for `npx @expo/agent-cli --help skills`. This runs before
+// the command is resolved, so `@expo/agent-cli --help runtime` is the same request as `@expo/agent-cli runtime -h`.
 if (
   subcommand != null &&
   args['--help'] &&
@@ -75,22 +75,22 @@ if (
   commandArgs.push('--help');
 }
 
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher — the registry in
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher — the registry in
 // `commandRegistry.ts` owns which names exist: its own commands, the actions of its groups, and
 // the fixed set of `expo` commands it forwards. A name in none of them is an error, not a forward.
 const resolution = subcommand == null ? null : resolveCommand(subcommand, commandArgs);
 
-// Set up event logger output before any console output, so agents driving `exagent` read
+// Set up event logger output before any console output, so agents driving `@expo/agent-cli` read
 // JSONL events instead of scraping the terminal. The canonical name of the command is logged,
 // so `runtime eval` and `runtime:eval` are one command on the event stream.
 installEventLogger({
   command: args['--version']
-    ? 'exagent --version'
+    ? '@expo/agent-cli --version'
     : resolution == null
-      ? 'exagent --help'
+      ? '@expo/agent-cli --help'
       : resolution.kind === 'command'
-        ? `exagent ${resolution.name}`
-        : `exagent ${subcommand}`,
+        ? `@expo/agent-cli ${resolution.name}`
+        : `@expo/agent-cli ${subcommand}`,
   version,
 });
 
@@ -138,9 +138,9 @@ switch (resolution.kind) {
     break;
 
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — the listing, and then the options of
-  // the action the bare name runs. `exagent dev --help` used to print only the two action names,
+  // the action the bare name runs. `@expo/agent-cli dev --help` used to print only the two action names,
   // so a caller checking the help of the command it was about to run never learned that `--plan`
-  // exists — the one flag that makes `exagent dev` safe to run unattended. A group whose bare name
+  // exists — the one flag that makes `@expo/agent-cli dev` safe to run unattended. A group whose bare name
   // does something has to document what that something takes.
   case 'group-help': {
     Log.log(formatGroupHelp(resolution.group));
@@ -163,7 +163,7 @@ switch (resolution.kind) {
       'UNKNOWN_ACTION',
       unknownActionMessage(resolution.group, resolution.action)
     );
-    error.suggestedCommand = `npx exagent ${resolution.group} --help`;
+    error.suggestedCommand = `npx @expo/agent-cli ${resolution.group} --help`;
     logCmdError(error);
     break;
   }
@@ -179,7 +179,7 @@ switch (resolution.kind) {
       flagsWithoutActionMessage(resolution.group, resolution.flags)
     );
     // For a group named after another CLI's verb this is that CLI's command, with these flags on
-    // it: `exagent build --platform ios` recovers with `npx eas build --platform ios`.
+    // it: `@expo/agent-cli build --platform ios` recovers with `npx eas build --platform ios`.
     error.suggestedCommand = flagsWithoutActionSuggestion(resolution.group, resolution.flags);
     logCmdError(error);
     break;
@@ -196,6 +196,6 @@ switch (resolution.kind) {
   }
 
   case 'passthrough':
-    import('./passthrough').then((i) => i.exagentPassthrough(resolution.command)(resolution.argv));
+    import('./passthrough').then((i) => i.agentCliPassthrough(resolution.command)(resolution.argv));
     break;
 }

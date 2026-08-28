@@ -142,7 +142,7 @@ describe(buildExplainFollowUps, () => {
       source: { kind: 'file', path: '/tmp/build.log' },
     });
     expect(fromFile.find((followup) => followup.id === 'explain-all')?.command).toBe(
-      'npx exagent inspect:build-log --file /tmp/build.log --all'
+      'npx @expo/agent-cli inspect:build-log --file /tmp/build.log --all'
     );
 
     // A piped log cannot be re-read — the bytes are gone — so the rung spells the pipe back out
@@ -153,7 +153,7 @@ describe(buildExplainFollowUps, () => {
       moreMayExist: true,
       source: { kind: 'stdin' },
     });
-    expect(fromStdin[0]!.command).toBe('npx exagent inspect:build-log --stdin --all --context 40');
+    expect(fromStdin[0]!.command).toBe('npx @expo/agent-cli inspect:build-log --stdin --all --context 40');
   });
 
   it('never offers more than the budget', () => {

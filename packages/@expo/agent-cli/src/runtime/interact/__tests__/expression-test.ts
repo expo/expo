@@ -1411,7 +1411,7 @@ describe('the caller input that reaches the app', () => {
 
   it(`types text that would end the expression if it were not escaped`, () => {
     const record: string[] = [];
-    const hostile = `'); globalThis.__exagentPwned = true; ('`;
+    const hostile = `'); globalThis.__agentCliPwned = true; ('`;
 
     against<CallAnswer>(
       {
@@ -1429,6 +1429,6 @@ describe('the caller input that reaches the app', () => {
     );
 
     expect(record).toEqual([hostile]);
-    expect((globalThis as Record<string, unknown>).__exagentPwned).toBeUndefined();
+    expect((globalThis as Record<string, unknown>).__agentCliPwned).toBeUndefined();
   });
 });

@@ -4,7 +4,7 @@
 // except the probe and two file reads, and it is the only module that knows the order they go in.
 
 import { easJsonExistsSync } from '../followups/projectFiles';
-import { readExagentSettings, settingsBuildBackend } from '../settings';
+import { readAgentCliSettings, settingsBuildBackend } from '../settings';
 import type { BuildBackend, RunTarget } from '../settings/types';
 import { applyToolchainProbe, detectToolchainAsync } from '../toolchain';
 import { selectBuildBackend } from '../toolchain/selectBackend';
@@ -42,7 +42,7 @@ export async function resolveStartPlanAsync(
 ): Promise<StartPlan> {
   const { requestedBackend = null, requestedTarget = null, hostPlatform, ...planOptions } = options;
 
-  const { settings } = readExagentSettings(projectRoot);
+  const { settings } = readAgentCliSettings(projectRoot);
   const runTarget = selectRunTarget({
     requested: requestedTarget,
     configured: settings.target,

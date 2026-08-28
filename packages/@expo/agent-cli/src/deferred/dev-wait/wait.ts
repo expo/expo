@@ -10,7 +10,7 @@ import {
   printHelp,
 } from '../../utils/args';
 
-export const exagentDevWait: Command = async (argv) => {
+export const agentCliDevWait: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -33,7 +33,7 @@ export const exagentDevWait: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Wait for the dev server, and check that this project's code still compiles`,
-      chalk`npx exagent dev:wait {dim [options]}`,
+      chalk`npx @expo/agent-cli dev:wait {dim [options]}`,
       [
         `--timeout ${DURATION_METAVAR}      How long to wait in total (default: 2m)`,
         `--require-app              Also wait for an app to attach to the dev server`,
@@ -47,8 +47,8 @@ export const exagentDevWait: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  {dim $} npx exagent dev:wait`,
-        chalk`  {dim $} npx exagent dev:wait --require-app --timeout 60s --json`,
+        chalk`  {dim $} npx @expo/agent-cli dev:wait`,
+        chalk`  {dim $} npx @expo/agent-cli dev:wait --require-app --timeout 60s --json`,
         '',
         `  ${DURATION_HELP_NOTE}`,
         '',
@@ -85,7 +85,7 @@ export const exagentDevWait: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent dev:wait -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli dev:wait -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrCwd } = require('../../utils/findUp') as typeof import('../../utils/findUp');
   const { EXIT_OK, exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');

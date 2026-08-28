@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0005-runtime-loop-tools.rfc.md
 //
-// `exagent navigate` is the one runtime-facing command that *writes*: it drives a real device. A
+// `@expo/agent-cli navigate` is the one runtime-facing command that *writes*: it drives a real device. A
 // dev server resolved wrongly here does not produce a wrong reading, it loads another project's app
 // onto the user's simulator and reports success — which is what happened while this command
 // assumed 8081 instead of reading the project's dev-server lock.
@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   holdDevLockAsync,
   installStubBinAsync,
   setupFixtureAsync,
@@ -85,11 +85,11 @@ async function installStubXcrunAsync(projectRoot: string): Promise<() => string[
       : [];
 }
 
-describe('exagent navigate', () => {
+describe('@expo/agent-cli navigate', () => {
   it('documents that the dev server is discovered, not assumed to be 8081', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['navigate', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['navigate', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--dev-server-url');
@@ -113,7 +113,7 @@ describe('exagent navigate', () => {
     });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['navigate', '/explore', '--ios', '--json'],
         { env: stubExpoEnv(projectRoot) }
@@ -144,7 +144,7 @@ describe('exagent navigate', () => {
     const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['navigate', '/explore', '--ios', '--json', '--dev-server-url', stub.url],
         { env: stubExpoEnv(projectRoot) }
@@ -180,7 +180,7 @@ describe('exagent navigate', () => {
       const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['navigate', '/totally-bogus-route-xyz', '--ios', '--json', '--dev-server-url', stub.url],
           { env: stubExpoEnv(projectRoot), reject: false }
@@ -207,14 +207,14 @@ describe('exagent navigate', () => {
       const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['navigate', '/note', '--ios', '--json', '--dev-server-url', stub.url],
           { env: stubExpoEnv(projectRoot), reject: false }
         );
 
         expect(JSON.parse(result.stdout).error.suggestedCommand).toBe(
-          'npx exagent navigate /notes'
+          'npx @expo/agent-cli navigate /notes'
         );
       } finally {
         await stub.close();
@@ -228,7 +228,7 @@ describe('exagent navigate', () => {
       const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['navigate', '/users/42', '--ios', '--json', '--dev-server-url', stub.url],
           { env: stubExpoEnv(projectRoot) }
@@ -256,7 +256,7 @@ describe('exagent navigate', () => {
       const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           [
             'navigate',
@@ -285,7 +285,7 @@ describe('exagent navigate', () => {
       const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
 
       try {
-        const result = await executeExagentAsync(
+        const result = await executeAgentCliAsync(
           projectRoot,
           ['navigate', '/anything', '--ios', '--json', '--dev-server-url', stub.url],
           { env: stubExpoEnv(projectRoot) }
@@ -306,7 +306,7 @@ describe('exagent navigate', () => {
     const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
 
     try {
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['navigate', '/', '--ios', '--json', '--dev-server-url', stub.url],
         { env: stubExpoEnv(projectRoot) }
@@ -330,13 +330,13 @@ describe('exagent navigate', () => {
   // @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — **F142.**
   // The step the acceptance walk stalled on: the dev server it had asked for had died, so
   // `navigate / --ios` could not build an Expo Go URL — and the one line it was handed to recover
-  // with was `npx exagent dev --detach`, with the `--ios` dropped. Following it would have started a
+  // with was `npx @expo/agent-cli dev --detach`, with the `--ios` dropped. Following it would have started a
   // dev server for whichever platform the plan engine picks, which is not what was asked for.
   it('keeps the platform the caller named on the line it recovers with', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     await installStubXcrunAsync(projectRoot);
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       // No dev server anywhere: no lock, no log, and a named URL nothing answers on.
       ['navigate', '/', '--ios', '--dev-server-url', 'http://127.0.0.1:1', '--json'],

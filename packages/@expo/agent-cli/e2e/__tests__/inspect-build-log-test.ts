@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0012-build-explain.rfc.md
 //
-// `exagent inspect:build-log` at the process boundary, through the published bin. The unit suite pins
+// `@expo/agent-cli inspect:build-log` at the process boundary, through the published bin. The unit suite pins
 // what the extractor answers for each committed log; this pins the things only a real process
 // shows — that `--json` is one parseable object, that a piped log is read off a real pipe with no
 // TTY anywhere, that a report is exit 0 even when it located nothing, and that a log that could
@@ -13,7 +13,7 @@ import path from 'node:path';
 import {
   bin,
   collectOutput,
-  executeExagentAsync,
+  executeAgentCliAsync,
   setupFixtureAsync,
   waitForExitAsync,
   type ExecuteResult,
@@ -67,11 +67,11 @@ type ExplainReport = {
 /**
  * Run the CLI with a log written to its stdin, over a real pipe.
  *
- * The shared `spawnExagent` wires stdin to `ignore`, which is the right default for every other
+ * The shared `spawnAgentCli` wires stdin to `ignore`, which is the right default for every other
  * command and is exactly what this one must not be tested with: `--stdin` reading `/dev/null`
  * would pass whatever the pipe handling did.
  */
-async function pipeIntoExagentAsync(
+async function pipeIntoAgentCliAsync(
   cwd: string,
   args: string[],
   input: string,
@@ -97,11 +97,11 @@ function readEvents(eventsFile: string): Record<string, any>[] {
     .map((line) => JSON.parse(line));
 }
 
-describe('exagent inspect:build-log --file', () => {
+describe('@expo/agent-cli inspect:build-log --file', () => {
   it('reports the failure in a real xcodebuild log, and exits 0', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'inspect:build-log',
       '--file',
       fixture('xcodebuild-pods-out-of-sync.log'),
@@ -121,7 +121,7 @@ describe('exagent inspect:build-log --file', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['inspect:build-log', '--file', fixture('metro-unresolved-module.log'), '--json'],
       { env: { LOG_EVENTS: eventsFile } }
@@ -156,7 +156,7 @@ describe('exagent inspect:build-log --file', () => {
     const logPath = fixture('gradle-kotlin-compile-error.log');
 
     const first: ExplainReport = JSON.parse(
-      (await executeExagentAsync(projectRoot, ['inspect:build-log', '--file', logPath, '--json']))
+      (await executeAgentCliAsync(projectRoot, ['inspect:build-log', '--file', logPath, '--json']))
         .stdout
     );
     const rerun = first.followups.find((followup) => followup.id === 'explain-all')!;
@@ -165,8 +165,8 @@ describe('exagent inspect:build-log --file', () => {
     // here rather than pattern-matched: a rung that dropped `--file` would read this run's stdin
     // and fail with BAD_ARGS, and a substring assertion would not notice.
     expect(rerun.command).toContain(logPath);
-    const args = rerun.command.replace(/^npx exagent /, '').split(' ');
-    const result = await executeExagentAsync(projectRoot, [...args, '--json']);
+    const args = rerun.command.replace(/^npx @expo\/agent-cli /, '').split(' ');
+    const result = await executeAgentCliAsync(projectRoot, [...args, '--json']);
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout).otherFailures.length).toBeGreaterThan(0);
@@ -177,7 +177,7 @@ describe('exagent inspect:build-log --file', () => {
 
     // A pod install that printed eight `[!]` warnings and succeeded. "No error located" is a
     // report, and a report is exit 0 (llp/0012 §Exit codes).
-    const result = await executeExagentAsync(projectRoot, [
+    const result = await executeAgentCliAsync(projectRoot, [
       'inspect:build-log',
       '--file',
       fixture('no-failure-successful-pod-install.log'),
@@ -194,9 +194,9 @@ describe('exagent inspect:build-log --file', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const args = ['inspect:build-log', '--file', fixture('gradle-kotlin-compile-error.log'), '--json'];
 
-    const plain: ExplainReport = JSON.parse((await executeExagentAsync(projectRoot, args)).stdout);
+    const plain: ExplainReport = JSON.parse((await executeAgentCliAsync(projectRoot, args)).stdout);
     const all: ExplainReport = JSON.parse(
-      (await executeExagentAsync(projectRoot, [...args, '--all'])).stdout
+      (await executeAgentCliAsync(projectRoot, [...args, '--all'])).stdout
     );
 
     expect(plain.otherFailures).toEqual([]);
@@ -205,12 +205,12 @@ describe('exagent inspect:build-log --file', () => {
   });
 });
 
-describe('exagent inspect:build-log --stdin', () => {
+describe('@expo/agent-cli inspect:build-log --stdin', () => {
   it('reads a log off a pipe, with no TTY anywhere', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const log = fs.readFileSync(fixture('npm-package-not-found.log'), 'utf8');
 
-    const result = await pipeIntoExagentAsync(
+    const result = await pipeIntoAgentCliAsync(
       projectRoot,
       ['inspect:build-log', '--stdin', '--json'],
       log
@@ -229,7 +229,7 @@ describe('exagent inspect:build-log --stdin', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const log = fs.readFileSync(fixture('gradle-duplicate-class.log'), 'utf8');
 
-    const result = await pipeIntoExagentAsync(projectRoot, ['inspect:build-log', '--json'], log);
+    const result = await pipeIntoAgentCliAsync(projectRoot, ['inspect:build-log', '--json'], log);
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout).failure.signature).toBe('android.gradle.duplicate-class');
@@ -263,7 +263,7 @@ describe('exagent inspect:build-log --stdin', () => {
 
     // The shared runner wires stdin to `ignore`, so this is a run with stdin at EOF and no TTY —
     // exactly the "the log never arrived" case.
-    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['inspect:build-log', '--json'], {
       reject: false,
     });
 
@@ -280,7 +280,7 @@ describe('when no report can be produced', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['inspect:build-log', '--file', path.join(projectRoot, 'nope.log'), '--json'],
       { reject: false, env: { LOG_EVENTS: eventsFile } }
@@ -293,7 +293,7 @@ describe('when no report can be produced', () => {
       error: {
         code: 'LOG_UNREADABLE',
         message: expect.stringContaining('there is nothing at that path'),
-        suggestedCommand: 'npx exagent inspect:build-log --help',
+        suggestedCommand: 'npx @expo/agent-cli inspect:build-log --help',
         needsHuman: null,
         data: null,
       },
@@ -302,7 +302,7 @@ describe('when no report can be produced', () => {
     const events = readEvents(eventsFile);
     expect(events.find((entry) => entry._e === 'cli:error')).toMatchObject({
       code: 'LOG_UNREADABLE',
-      suggestedCommand: 'npx exagent inspect:build-log --help',
+      suggestedCommand: 'npx @expo/agent-cli inspect:build-log --help',
     });
   });
 
@@ -310,7 +310,7 @@ describe('when no report can be produced', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const buildId = '2f1c9f0e-6b1e-4a3d-9c1a-0b6f1e2d3c4a';
 
-    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', buildId], {
+    const result = await executeAgentCliAsync(projectRoot, ['inspect:build-log', buildId], {
       reject: false,
     });
 
@@ -324,7 +324,7 @@ describe('when no report can be produced', () => {
   it('reports an unknown flag rather than ignoring it', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['inspect:build-log', '--file', fixture('npm-peer-conflict.log'), '--bogus'],
       { reject: false }
@@ -342,7 +342,7 @@ describe('the registry', () => {
   it('lists inspect:build-log in the group, untagged beside the action that kept the tag', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['inspect', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['inspect', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('inspect:build-log');
@@ -355,19 +355,19 @@ describe('the registry', () => {
   it('answers the bare build verb with the CLI that does start a build', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['build', '--platform', 'ios'], {
+    const result = await executeAgentCliAsync(projectRoot, ['build', '--platform', 'ios'], {
       reject: false,
     });
 
     expect(result.exitCode).toBe(1);
     expect(result.all).toContain('npx eas build');
-    expect(result.all).toContain('npx exagent inspect:build-log');
+    expect(result.all).toContain('npx @expo/agent-cli inspect:build-log');
   });
 
   it('prints usage for --help without reading anything', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['inspect:build-log', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('--file <path>');
@@ -392,7 +392,7 @@ describe('input that is not a log', () => {
     const file = path.join(projectRoot, 'build.log.br');
     await fs.promises.writeFile(file, compressedBytes());
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['inspect:build-log', '--file', file, '--json'],
       { reject: false }
@@ -409,7 +409,7 @@ describe('input that is not a log', () => {
     const file = path.join(projectRoot, 'binary.log');
     await fs.promises.writeFile(file, compressedBytes());
 
-    const result = await executeExagentAsync(projectRoot, ['inspect:build-log', '--file', file], {
+    const result = await executeAgentCliAsync(projectRoot, ['inspect:build-log', '--file', file], {
       reject: false,
     });
 

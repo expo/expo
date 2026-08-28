@@ -97,7 +97,7 @@ describe(applyManagedBlock, () => {
   it('should report an unclosed managed block instead of overwriting the rest of the file', () => {
     const before = ['# My rules', BLOCK_START, 'Old body.', '', 'User content.', ''].join('\n');
 
-    expect(() => applyManagedBlock(before, 'New body.')).toThrow(/END EXAGENT MANAGED BLOCK/);
+    expect(() => applyManagedBlock(before, 'New body.')).toThrow(/END EXPO AGENT CLI MANAGED BLOCK/);
     // Nothing after the start marker is lost, because nothing is written at all.
     expect(before).toContain('User content.');
   });

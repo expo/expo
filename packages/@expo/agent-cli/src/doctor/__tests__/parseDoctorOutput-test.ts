@@ -191,11 +191,11 @@ describe(extractAdviceAction, () => {
     // check, and adds the structured `check` object the rest of the surface expects.
     [
       "Use 'npx expo install --check' to review and upgrade your dependencies.",
-      'npx exagent install --check',
+      'npx @expo/agent-cli install --check',
     ],
     [
       'Upgrade to React Native 0.86.2 or later. For Expo projects, run `npx expo install --fix` to align them.',
-      'npx exagent install --fix',
+      'npx @expo/agent-cli install --fix',
     ],
     [
       'Resolve schema errors in your app config. Learn more: https://docs.expo.dev/workflow/configuration/',
@@ -233,13 +233,13 @@ describe(buildDoctorCheckFollowUps, () => {
     // In the order the checks ran, capped at the three llp/0009 allows.
     expect(followups).toHaveLength(3);
     expect(followups.map((followup) => followup.command)).toEqual([
-      'npx exagent install --fix',
+      'npx @expo/agent-cli install --fix',
       'https://docs.expo.dev/workflow/configuration/',
-      'npx exagent install --check',
+      'npx @expo/agent-cli install --check',
     ]);
     expect(followups[0]).toEqual({
-      id: 'doctor-advice-exagent-install-fix',
-      command: 'npx exagent install --fix',
+      id: 'doctor-advice-install-fix',
+      command: 'npx @expo/agent-cli install --fix',
       why: 'Check for Expo SDK versions affected by Hermes V1 regressions',
     });
   });
@@ -267,8 +267,8 @@ describe(buildDoctorCheckFollowUps, () => {
 
     expect(buildDoctorCheckFollowUps(report(raw, 1))).toEqual([
       {
-        id: 'doctor-advice-exagent-install-fix',
-        command: 'npx exagent install --fix',
+        id: 'doctor-advice-install-fix',
+        command: 'npx @expo/agent-cli install --fix',
         why: 'Check one',
       },
     ]);

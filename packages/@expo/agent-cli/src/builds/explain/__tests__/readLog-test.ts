@@ -29,7 +29,7 @@ function streamOf(chunks: string[]): NodeJS.ReadableStream {
 
 let temporaryDir: string;
 beforeAll(() => {
-  temporaryDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exagent-readlog-'));
+  temporaryDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-cli-readlog-'));
 });
 afterAll(() => {
   fs.rmSync(temporaryDir, { recursive: true, force: true });
@@ -174,7 +174,7 @@ describe('readLogFileAsync', () => {
 
   it('ends every failure with something to run', async () => {
     await expect(readLogFileAsync(path.join(temporaryDir, 'nope.log'))).rejects.toMatchObject({
-      suggestedCommand: 'npx exagent inspect:build-log --help',
+      suggestedCommand: 'npx @expo/agent-cli inspect:build-log --help',
     });
   });
 });

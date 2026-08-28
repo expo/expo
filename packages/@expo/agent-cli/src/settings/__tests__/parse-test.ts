@@ -1,13 +1,13 @@
 /* eslint-env jest */
 // @ref llp/0015-backend-selection-and-config.rfc.md §Validation
 // Every value the config takes, and every value it refuses. Pure: no file, no project.
-import { parseExagentSettings, settingsAreEmpty, settingsBuildBackend } from '../parse';
+import { parseAgentCliSettings, settingsAreEmpty, settingsBuildBackend } from '../parse';
 import { EMPTY_SETTINGS } from '../types';
 
-const WHERE = '"expo.exagent" in package.json';
+const WHERE = '"expo.agentCli" in package.json';
 
 function parse(raw: unknown) {
-  return parseExagentSettings(raw, WHERE);
+  return parseAgentCliSettings(raw, WHERE);
 }
 
 describe('an absent config', () => {
@@ -62,7 +62,7 @@ describe('resolving the backend for one platform', () => {
 
 describe('what the config refuses', () => {
   it(`refuses a value that is not an object, and names the location`, () => {
-    expect(() => parse('eas')).toThrow(/"expo.exagent" in package.json is "eas"/);
+    expect(() => parse('eas')).toThrow(/"expo.agentCli" in package.json is "eas"/);
     expect(() => parse(['eas'])).toThrow(/is an array, and it has to be an object/);
   });
 
@@ -99,16 +99,16 @@ describe('what the config refuses', () => {
 
   it(`refuses an unknown key inside a platform entry`, () => {
     expect(() => parse({ ios: { target: 'dev-build' } })).toThrow(
-      /› ios names a key this version of exagent does not know: "target"/
+      /› ios names a key this version of @expo\/agent-cli does not know: "target"/
     );
   });
 
-  it(`carries the BAD_EXAGENT_CONFIG code and no suggested command`, () => {
+  it(`carries the BAD_AGENT_CLI_CONFIG code and no suggested command`, () => {
     expect.assertions(2);
     try {
       parse({ buildBackend: 'cloud' });
     } catch (error: any) {
-      expect(error.code).toBe('BAD_EXAGENT_CONFIG');
+      expect(error.code).toBe('BAD_AGENT_CLI_CONFIG');
       // The fix is an edit; every command that reads the config stops in the same place until it
       // is made, so there is no command to suggest.
       expect(error.suggestedCommand).toBeUndefined();
@@ -121,7 +121,7 @@ describe('what the config refuses', () => {
       parse({ buildBackend: 'cloud' });
     } catch (error: any) {
       const [what, why, how] = String(error.message).split('\n');
-      expect(what).toContain('"expo.exagent" in package.json');
+      expect(what).toContain('"expo.agentCli" in package.json');
       expect(why).toMatch(/^Why: /);
       expect(how).toMatch(/^How: /);
     }

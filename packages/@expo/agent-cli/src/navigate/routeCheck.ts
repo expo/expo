@@ -18,7 +18,7 @@ import { CommandError } from '../utils/errors';
 const MAX_LISTED_ROUTES = 24;
 
 /**
- * Machine shape of the route check, inside `exagent navigate --json`.
+ * Machine shape of the route check, inside `@expo/agent-cli navigate --json`.
  *
  * `checked` is exactly `ok != null` and `reason` is present exactly when `ok` is null, so the
  * three keys read as one fact — the discipline llp/0010 §`checked` and `ok` move together settled
@@ -104,14 +104,14 @@ export function checkRoute({
  *
  * The `Try:` line of this failure is what a driving agent runs next, so it has to be the command
  * the caller was already running. `runtime:reload --route /nope` used to be answered with
- * `npx exagent navigate /notes` [observed — friction run 5], which corrects the route and drops
+ * `npx @expo/agent-cli navigate /notes` [observed — friction run 5], which corrects the route and drops
  * the reload — and the reload was the point: `navigate` opens a route in the app that is running,
  * while `runtime:reload --route` puts the app back on the code that is on disk first.
  */
 const ROUTE_COMMANDS = {
-  navigate: (route: string) => `npx exagent navigate ${route}`,
-  'runtime:reload': (route: string) => `npx exagent runtime:reload --route ${route}`,
-  smoke: (route: string) => `npx exagent smoke --route ${route}`,
+  navigate: (route: string) => `npx @expo/agent-cli navigate ${route}`,
+  'runtime:reload': (route: string) => `npx @expo/agent-cli runtime:reload --route ${route}`,
+  smoke: (route: string) => `npx @expo/agent-cli smoke --route ${route}`,
 } as const;
 
 /** A command that resolves a route against the project's routes before it acts on one. */

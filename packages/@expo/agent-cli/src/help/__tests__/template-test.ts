@@ -44,7 +44,7 @@ describe('the template', () => {
     expect(help.command).toBe(name);
 
     // Usage is the line a caller copies, so it is this CLI's own invocation.
-    expect(help.usage.startsWith('npx exagent ')).toBe(true);
+    expect(help.usage.startsWith('npx @expo/agent-cli ')).toBe(true);
 
     // Options: one line each, every one starting at the flag it documents.
     expect(help.options.length).toBeGreaterThan(0);
@@ -58,7 +58,7 @@ describe('the template', () => {
     expect(help.examples.length).toBeGreaterThanOrEqual(2);
     expect(help.examples.length).toBeLessThanOrEqual(4);
     for (const example of help.examples) {
-      expect(example.run.startsWith('npx exagent ')).toBe(true);
+      expect(example.run.startsWith('npx @expo/agent-cli ')).toBe(true);
       expect(example.gets.length).toBeGreaterThan(0);
       expect(example.gets).not.toContain('\n');
       expect(example.gets.length).toBeLessThanOrEqual(100);

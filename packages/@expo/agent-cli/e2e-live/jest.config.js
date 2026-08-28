@@ -12,7 +12,7 @@ module.exports = {
   testEnvironment: 'node',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
   rootDir: path.resolve(__dirname),
-  displayName: 'exagent-e2e-live',
+  displayName: 'agent-cli-e2e-live',
   roots: ['__tests__'],
   // The fixtures are project source that gets copied into a scratch project, never modules of this
   // one. `livecheck/` in particular carries its own `package.json` with the name `livecheck`.

@@ -75,7 +75,7 @@ describe(resolveSpawnTarget, () => {
     });
 
     it(`should escape a double quote inside an argument`, () => {
-      // `exagent install` forwards whatever the caller typed, so an argument can contain anything.
+      // `@expo/agent-cli install` forwards whatever the caller typed, so an argument can contain anything.
       expect(resolveSpawnTarget('C:\\bin\\expo.cmd', ['install', 'a"b'])).toEqual({
         command: '"C:\\bin\\expo.cmd"',
         args: ['"install"', '"a\\"b"'],

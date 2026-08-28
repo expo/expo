@@ -59,7 +59,7 @@ describe(buildBuildWaitFollowUps, () => {
     const followups = buildBuildWaitFollowUps(input({ outcome: 'errored' }));
     const explain = followups.find((followup) => followup.id === 'explain-saved-log');
 
-    expect(explain?.command).toBe('npx exagent build:explain --file <path>');
+    expect(explain?.command).toBe('npx @expo/agent-cli build:explain --file <path>');
     expect(explain?.why).toContain('Nothing here can download it for you yet');
   });
 
@@ -99,7 +99,7 @@ describe(buildBuildWaitFollowUps, () => {
     );
 
     expect(followups.map((followup) => followup.id)).toEqual(['wait-longer', 'eas-build-view']);
-    expect(followups[0]!.command).toBe(`npx exagent build:wait ${ID} --timeout 90m`);
+    expect(followups[0]!.command).toBe(`npx @expo/agent-cli build:wait ${ID} --timeout 90m`);
     expect(followups[1]!.command).toBe(`npx eas build:view ${ID} --json`);
   });
 

@@ -45,7 +45,7 @@ const PLAIN_TESTID = /^[\w.:@/-]+$/;
  *
  * Quoted only when it has to be. These commands print their suggestions *inside* a sentence that is
  * itself quoted, so an unconditional `JSON.stringify` produced
- * `run "npx exagent runtime:tree --testID "note-list"" for …` [observed — live, 2026-08-26], which
+ * `run "npx @expo/agent-cli runtime:tree --testID "note-list"" for …` [observed — live, 2026-08-26], which
  * is three levels of quote for a string that needed none.
  */
 function quoted(testID: string): string {
@@ -125,7 +125,7 @@ function matchLine(match: TreeMatchJson): string {
   }: ${handler}${disabled}`;
 }
 
-/** The human report of `exagent runtime:tree`. */
+/** The human report of `@expo/agent-cli runtime:tree`. */
 export function formatTree(report: RuntimeTreeJson): string {
   const header: string[] = [];
   if (report.testID == null) {
@@ -183,7 +183,7 @@ function foundLine(report: RuntimeTapJson | RuntimeTypeJson): string {
 const CALL_CAVEAT =
   'This called the prop, not the screen: there was no touch, no press timing and no gesture recognition, and the handler was given a synthetic event whose coordinates are zero.';
 
-/** The human report of `exagent runtime:tap`. */
+/** The human report of `@expo/agent-cli runtime:tap`. */
 export function formatTap(report: RuntimeTapJson): string {
   if (!report.called) {
     return [
@@ -216,7 +216,7 @@ export function formatTap(report: RuntimeTapJson): string {
   return [...lines, wrapUntrustedAppOutput(body.join('\n'))].join('\n');
 }
 
-/** The human report of `exagent runtime:type`. */
+/** The human report of `@expo/agent-cli runtime:type`. */
 export function formatType(report: RuntimeTypeJson): string {
   if (!report.called) {
     return [
@@ -304,7 +304,7 @@ function allScreensClause(report: RuntimeTapJson | RuntimeTypeJson): string {
 
 /** What, why and how for a `runtime:tap` that called nothing, or whose handler threw. */
 export function explainTapFailure(report: RuntimeTapJson): InteractFailure {
-  return explainFailure(report, 'runtime:tap', 'onPress', `npx exagent runtime:tap ${quoted(report.testID)}`);
+  return explainFailure(report, 'runtime:tap', 'onPress', `npx @expo/agent-cli runtime:tap ${quoted(report.testID)}`);
 }
 
 /** What, why and how for a `runtime:type` that called nothing, or whose handler threw. */
@@ -313,16 +313,16 @@ export function explainTypeFailure(report: RuntimeTypeJson): InteractFailure {
     report,
     'runtime:type',
     'onChangeText',
-    `npx exagent runtime:type ${JSON.stringify(report.text)} --testID ${quoted(report.testID)}`
+    `npx @expo/agent-cli runtime:type ${JSON.stringify(report.text)} --testID ${quoted(report.testID)}`
   );
   if (report.reason === 'no-submit-handler') {
     return {
       message: [
         `--submit found no onSubmitEditing to call on ${report.testID}, so nothing was submitted (dev server ${report.devServerUrl}).`,
         `Why: the text did go in — onChangeText ran on ${report.handlerOn} — and no fiber of this element carries onSubmitEditing, so there is no submit for this command to make.`,
-        `How: if the app submits from a button, tap that instead. Run "npx exagent runtime:tree --testID ${quoted(report.testID)}" for what this element does carry.`,
+        `How: if the app submits from a button, tap that instead. Run "npx @expo/agent-cli runtime:tree --testID ${quoted(report.testID)}" for what this element does carry.`,
       ].join('\n'),
-      suggestedCommand: `npx exagent runtime:tree --testID ${quoted(report.testID)}`,
+      suggestedCommand: `npx @expo/agent-cli runtime:tree --testID ${quoted(report.testID)}`,
     };
   }
   return failure;
@@ -350,7 +350,7 @@ function explainFailure(
   handlerProp: string,
   rerun: string
 ): InteractFailure {
-  const tree = `npx exagent runtime:tree --testID ${quoted(report.testID)}`;
+  const tree = `npx @expo/agent-cli runtime:tree --testID ${quoted(report.testID)}`;
   const verb = command === 'runtime:tap' ? 'tapped' : 'typed into';
   /**
    * "nothing was tapped" / "nothing was typed", with the object when there is one.
@@ -372,9 +372,9 @@ function explainFailure(
         message: [
           `No element carrying the testID ${report.testID} was found, so ${nothing(false)} (dev server ${report.devServerUrl}).`,
           `Why: this walks the app's own component tree and matches on the testID prop as written in the JSX, so an element with no testID cannot be addressed at all.${allScreensClause(report)}`,
-          `How: run "npx exagent runtime:tree" for the testIDs this screen is carrying${report.allScreens ? '' : ', or "npx exagent runtime:tree --all-screens" for every mounted screen'}. If the element has no testID, add one.`,
+          `How: run "npx @expo/agent-cli runtime:tree" for the testIDs this screen is carrying${report.allScreens ? '' : ', or "npx @expo/agent-cli runtime:tree --all-screens" for every mounted screen'}. If the element has no testID, add one.`,
         ].join('\n'),
-        suggestedCommand: 'npx exagent runtime:tree',
+        suggestedCommand: 'npx @expo/agent-cli runtime:tree',
       };
     case 'ambiguous':
       return {
@@ -417,7 +417,7 @@ function explainFailure(
           several
             ? `Why: ${report.matched} separate elements carry this testID and no fiber of any of them carries ${handlerProp}, nor does any of their ancestors — so --index would only choose between elements this command cannot drive. ${report.candidates.map((candidate) => `[${candidate.index}] ${candidate.component}${candidate.screen == null ? '' : ` on ${candidate.screen}`}`).join(', ')}.`
             : `Why: no fiber of this element carries ${handlerProp}, and neither does any of its ancestors — ${report.component ?? 'the element'} is not something this command can drive.`,
-          `How: run "${tree}" for what ${several ? 'each of them does' : 'this element does'} carry, or "npx exagent runtime:tree" for the elements on this screen that have a handler.`,
+          `How: run "${tree}" for what ${several ? 'each of them does' : 'this element does'} carry, or "npx @expo/agent-cli runtime:tree" for the elements on this screen that have a handler.`,
         ].join('\n'),
         suggestedCommand: tree,
       };
@@ -431,9 +431,9 @@ function explainFailure(
       message: [
         `The app's own handler threw when ${report.testID} was ${verb} (dev server ${report.devServerUrl}).`,
         `Why: the call was made — ${report.handler} ran on ${report.handlerOn} — and the app's code raised. The exception is in the report above, fenced as app output.`,
-        `How: fix the handler, then "npx exagent runtime:reload" so the app runs the fixed code, and run this again. "npx exagent runtime:errors" collects anything else the app reports.`,
+        `How: fix the handler, then "npx @expo/agent-cli runtime:reload" so the app runs the fixed code, and run this again. "npx @expo/agent-cli runtime:errors" collects anything else the app reports.`,
       ].join('\n'),
-      suggestedCommand: 'npx exagent runtime:reload',
+      suggestedCommand: 'npx @expo/agent-cli runtime:reload',
     };
   }
 
@@ -471,9 +471,9 @@ export function explainBundleRefusal(
       message: [
         `The bundler had not finished building this project's entry bundle, so ${what}.`,
         `Why: ${bundle.reason ?? 'the bundler gave no answer about the entry bundle'}. Until that build finishes it is not known whether the app is running the code that is on disk, and this command would have described a runtime nobody can place.`,
-        `How: run "npx exagent smoke" to wait for the bundle and the app together, then run "${rerun}" again. Pass --no-bundle-check to read the app without asking about the bundle first.`,
+        `How: run "npx @expo/agent-cli smoke" to wait for the bundle and the app together, then run "${rerun}" again. Pass --no-bundle-check to read the app without asking about the bundle first.`,
       ].join('\n'),
-      suggestedCommand: 'npx exagent smoke',
+      suggestedCommand: 'npx @expo/agent-cli smoke',
     };
   }
 
@@ -485,10 +485,10 @@ export function explainBundleRefusal(
     message: [
       `This project's entry bundle does not compile, so ${what}.`,
       `Why: the bundler stopped${where ? ` at ${where}` : ''} — ${error?.message ?? 'it reported an error'}. The app on the device is still running the bundle from before that edit, so what this command would have read is the old code, and a pass for it would be a pass for code that no longer exists.`,
-      `How: fix ${where || 'the file the bundler named'}, then "npx exagent runtime:reload" so the app runs the fixed code, and run "${rerun}" again. Pass --no-bundle-check to act on the app as it is, which is only useful when you mean to drive a bundle you know is stale.`,
+      `How: fix ${where || 'the file the bundler named'}, then "npx @expo/agent-cli runtime:reload" so the app runs the fixed code, and run "${rerun}" again. Pass --no-bundle-check to act on the app as it is, which is only useful when you mean to drive a bundle you know is stale.`,
       ...(error?.snippet ? [error.snippet] : []),
     ].join('\n'),
-    suggestedCommand: 'npx exagent runtime:reload',
+    suggestedCommand: 'npx @expo/agent-cli runtime:reload',
   };
 }
 

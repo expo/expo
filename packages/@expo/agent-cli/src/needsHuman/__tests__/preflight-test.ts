@@ -195,7 +195,7 @@ describe(readAuthPreflightAsync, () => {
 
   // @ref llp/0021-honest-reports.rfc.md §Two CLIs read one session file — friction run
   // 7, F65. `status` said "nothing could answer" on a machine whose `eas` was a shim, while
-  // `exagent whoami` printed the account name in the same directory.
+  // `@expo/agent-cli whoami` printed the account name in the same directory.
   describe('the project’s own Expo CLI, when the EAS CLI could not answer', () => {
     /** A project with both bins, and a `whoami` answer per binary. */
     function mockBothAsync(answers: {
@@ -273,7 +273,7 @@ describe(readAuthPreflightAsync, () => {
 
     // F113: in an npm workspace the app's `expo` lives at the workspace root, so this rung had a
     // free answer available and reported "nothing could answer" instead [observed — 2026-08-27,
-    // `status` in a hoisted monorepo printed auth `unknown` while `exagent whoami` named the user].
+    // `status` in a hoisted monorepo printed auth `unknown` while `@expo/agent-cli whoami` named the user].
     it('asks an expo an npm workspace hoisted above the project', async () => {
       const workspace = path.resolve('/workspace');
       const app = path.join(workspace, 'apps', 'mobile');

@@ -1,7 +1,7 @@
 // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints, item 5 — `expo-doctor` is a member of
 // the Expo CLI family and is driven as a subprocess.
 //
-// The split is: expo-doctor diagnoses, `exagent` normalizes. Nothing here re-implements a check.
+// The split is: expo-doctor diagnoses, `@expo/agent-cli` normalizes. Nothing here re-implements a check.
 
 import { stripVTControlCharacters } from 'util';
 

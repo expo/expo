@@ -1,4 +1,4 @@
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher — the forwarded set.
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher — the forwarded set.
 // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — the session these commands manage.
 //
 // The four auth commands are forwarded like every other `expo` command, with one difference: what
@@ -8,7 +8,7 @@
 //
 // It usually does not. Outside an Expo app — a scratch directory, an API server, a monorepo's
 // root — `resolveExpoCli` falls through to `npx expo`, which installs the whole SDK to read one
-// JSON file [observed — 2026-08-26: `exagent whoami` in an empty directory printed
+// JSON file [observed — 2026-08-26: `@expo/agent-cli whoami` in an empty directory printed
 // `npm warn exec The following package was not found and will be installed: expo@57.0.16` and then
 // the account name], and fails outright when the registry cannot be reached [observed — same date,
 // with an empty npm cache: `npm error code ENOTCACHED`].
@@ -220,7 +220,7 @@ export function authCliLabel({ command, prefixArgs, runner }: AuthCli): string {
 /**
  * The line printed above a run the project did not resolve.
  *
- * **On stderr**, always. `exagent whoami`'s stdout is the account name and nothing else — this
+ * **On stderr**, always. `@expo/agent-cli whoami`'s stdout is the account name and nothing else — this
  * CLI's own auth preflight parses it (`src/needsHuman/preflight.ts`), and so will anything else
  * that reads a name out of a pipe. A note about which CLI answered belongs on the channel notes go
  * on.
@@ -245,7 +245,7 @@ export function authFallbackNotice(cli: AuthCli, command: string): string | null
 /**
  * The command that answers one of the four auth commands.
  *
- * Deliberately shaped like `exagentExpoPassthrough`, and for the same reason: nothing is added to
+ * Deliberately shaped like `agentCliExpoPassthrough`, and for the same reason: nothing is added to
  * the run. The arguments, the output, the errors and the exit code all stay the answering CLI's,
  * and the only thing this contributes is *which* CLI that is, plus one line on stderr saying so
  * when it is not the one the reader would assume.
@@ -255,7 +255,7 @@ export function authFallbackNotice(cli: AuthCli, command: string): string | null
  *
  * @param command One of {@link AUTH_COMMANDS}.
  */
-export function exagentAuthPassthrough(command: string): Command {
+export function agentCliAuthPassthrough(command: string): Command {
   return async (argv) => {
     const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
     const { event } = require('../events') as typeof import('../events');
@@ -309,7 +309,7 @@ export function exagentAuthPassthrough(command: string): Command {
 }
 
 /**
- * The machine shape of `exagent whoami --json`.
+ * The machine shape of `@expo/agent-cli whoami --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one object on stdout, every key
  * always present, and a fact the run does not have is null.

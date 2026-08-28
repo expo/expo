@@ -63,7 +63,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
     auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
     next: {
-      command: 'exagent dev',
+      command: '@expo/agent-cli dev',
       rule: 'expo-go',
       target: 'expo-go',
       steps: [],
@@ -102,7 +102,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['runtime-errors']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:errors');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:errors');
   });
 
   it(`should not offer the runtime loop for a dev server without an app`, () => {
@@ -159,7 +159,7 @@ describe(buildStatusFollowUps, () => {
             },
           ],
           ota: null,
-          comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null, platform: null },
+          comparison: { kind: 'last-build', label: 'last build recorded by @expo/agent-cli', buildId: null, platform: null },
           changedFiles: null,
           hashSource: COMPUTED_FINGERPRINT,
         },
@@ -205,7 +205,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['skills-sync']);
-    expect(followups[0]!.command).toBe('npx exagent skills:sync');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli skills:sync');
     expect(followups[0]!.why).toContain('1 of 3');
   });
 
@@ -219,7 +219,7 @@ describe(buildStatusFollowUps, () => {
 
   // @ref llp/0020-not-an-expo-app.rfc.md §What each command does
   // The same rung, aimed at a directory that is not this CLI's subject, is the trap spelled as a
-  // follow-up: `npx exagent install expo-dev-client` would have written into whatever repository
+  // follow-up: `npx @expo/agent-cli install expo-dev-client` would have written into whatever repository
   // the caller happened to be standing in.
   it(`should offer nothing but a way out when the directory is not an Expo app`, () => {
     const followups = buildStatusFollowUps(
@@ -239,7 +239,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['not-expo-app']);
-    expect(followups[0]!.command).toBe('npx exagent new my-app');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli new my-app');
   });
 
   // The reasons themselves are in `status --json` now, so the follow-up is the action they imply
@@ -250,7 +250,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['install-dev-client']);
-    expect(followups[0]!.command).toBe('npx exagent install expo-dev-client');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli install expo-dev-client');
   });
 
   it(`should not offer a dev client the project already depends on`, () => {
@@ -295,7 +295,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['runtime-errors', 'skills-sync', 'install-dev-client']);
-    expect(followups.map((followup) => followup.command)).not.toContain('exagent dev');
+    expect(followups.map((followup) => followup.command)).not.toContain('@expo/agent-cli dev');
   });
 
   it(`should offer nothing when every section failed to be read`, () => {
@@ -338,7 +338,7 @@ describe(buildNavigateFollowUps, () => {
     });
 
     expect(followups.find((followup) => followup.id === 'runtime-errors')?.command).toBe(
-      'npx exagent runtime:errors --android'
+      'npx @expo/agent-cli runtime:errors --android'
     );
   });
 
@@ -364,7 +364,7 @@ describe(buildNavigateFollowUps, () => {
 
     expect(screenshot.why).toMatch(/still be loading|not finished loading/i);
     // And what to wait for, which is a command rather than a number of seconds.
-    expect(screenshot.why).toContain('npx exagent runtime:tree');
+    expect(screenshot.why).toContain('npx @expo/agent-cli runtime:tree');
   });
 
   // F104 — found live on 2026-08-27. The line above is good advice on iOS and impossible advice on
@@ -381,8 +381,8 @@ describe(buildNavigateFollowUps, () => {
     expect(screenshot.why).toMatch(/still be loading|not finished loading/i);
     // The command is still *named*, as the thing that cannot answer — what must be gone is the
     // instruction to run it.
-    expect(screenshot.why).not.toContain('run "npx exagent runtime:tree" first');
-    expect(screenshot.why).toContain('npx exagent smoke --android');
+    expect(screenshot.why).not.toContain('run "npx @expo/agent-cli runtime:tree" first');
+    expect(screenshot.why).toContain('npx @expo/agent-cli smoke --android');
   });
 
   it(`says it for a cloud session too, where the load is slower rather than faster`, () => {
@@ -403,8 +403,8 @@ describe(buildRuntimeErrorsFollowUps, () => {
     // The reload leads: an app whose render threw keeps running the code from before the fix, so
     // re-running this command first would read the old run and report the bug as unfixed.
     expect(ids(followups)).toEqual(['reload-app', 'runtime-errors-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:reload');
-    expect(followups[1]!.command).toBe('npx exagent runtime:errors --duration 2000');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:reload');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli runtime:errors --duration 2000');
     expect(followups[1]!.why).toContain('empty');
   });
 
@@ -413,16 +413,16 @@ describe(buildRuntimeErrorsFollowUps, () => {
 
     expect(ids(followups)).toEqual(['runtime-errors-reproduce', 'runtime-errors-typecheck']);
     // A longer window, because the failure was not reproduced inside the last one.
-    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 4000');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:errors --duration 4000');
     expect(followups[0]!.why).toContain('reproduce');
     // And the rung that contradicts the reading an empty window invites: the bug this command
     // cannot see does not throw at all (F34).
-    expect(followups[1]!.command).toBe('npx exagent typecheck');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli typecheck');
   });
 
   // F103 — found live on 2026-08-27. llp/0005 §Smaller things records F54/F58 as "every command a
   // follow-up names now carries the flag the run had", and this one never did: `runtime:errors
-  // --android` suggested `npx exagent runtime:reload` and `npx exagent runtime:errors --duration
+  // --android` suggested `npx @expo/agent-cli runtime:reload` and `npx @expo/agent-cli runtime:errors --duration
   // 6000`, both of which read whichever app the dev server lists first. On a machine with a
   // simulator and an emulator on one dev server the flagless rerun is a different question from the
   // one that was just asked — and after F100 it is a *readable* different question, which is worse:
@@ -433,8 +433,8 @@ describe(buildRuntimeErrorsFollowUps, () => {
         (followup) => followup.command
       )
     ).toEqual([
-      'npx exagent runtime:reload --android',
-      'npx exagent runtime:errors --android --duration 2000',
+      'npx @expo/agent-cli runtime:reload --android',
+      'npx @expo/agent-cli runtime:errors --android --duration 2000',
     ]);
 
     expect(
@@ -442,9 +442,9 @@ describe(buildRuntimeErrorsFollowUps, () => {
         (followup) => followup.command
       )
     ).toEqual([
-      'npx exagent runtime:errors --android --duration 4000',
+      'npx @expo/agent-cli runtime:errors --android --duration 4000',
       // `typecheck` reads the code on disk, which no platform flag changes.
-      'npx exagent typecheck',
+      'npx @expo/agent-cli typecheck',
     ]);
   });
 });
@@ -454,7 +454,7 @@ describe(buildSkillsSyncFollowUps, () => {
     const followups = buildSkillsSyncFollowUps({ skillPackages: [], agentId: null });
 
     expect(ids(followups)).toEqual(['skills-list']);
-    expect(followups[0]!.command).toBe('npx exagent skills:list');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli skills:list');
   });
 
   it(`should note that a detected agent loads the linked skills by itself`, () => {
@@ -464,7 +464,7 @@ describe(buildSkillsSyncFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['skills-list', 'skills-show']);
-    expect(followups[1]!.command).toBe('npx exagent skills:show @expo/ui');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli skills:show @expo/ui');
     expect(followups[1]!.why).toContain('claude-code');
     expect(followups[1]!.why).toContain('automatically');
   });

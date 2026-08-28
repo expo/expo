@@ -202,7 +202,7 @@ function failureError(
         : `How: fix what it reported above and run the command again. Nothing is submitted until the launch URL is opened, so a retry is safe.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent deploy --native';
+  error.suggestedCommand = 'npx @expo/agent-cli deploy --native';
   return error;
 }
 

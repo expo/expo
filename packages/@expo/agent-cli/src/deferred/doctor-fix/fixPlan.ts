@@ -241,10 +241,10 @@ async function assertNativeIsCleanAsync(
     [
       `Nothing was planned: ${subject} ${named.length === 1 ? 'has' : 'have'} uncommitted changes (${dirty.slice(0, 5).join(', ')}${dirty.length > 5 ? `, and ${dirty.length - 5} more` : ''}).`,
       `Why: this tier deletes inside those directories and reinstalls into them, and a checkpoint holds only tracked files that are already committed — so your uncommitted native work would be the one thing no snapshot could put back.`,
-      `How: commit or stash the changes and run this again, or use "npx exagent doctor:fix --tier safe", which never touches the native directories.`,
+      `How: commit or stash the changes and run this again, or use "npx @expo/agent-cli doctor:fix --tier safe", which never touches the native directories.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent doctor:fix --tier safe';
+  error.suggestedCommand = 'npx @expo/agent-cli doctor:fix --tier safe';
   throw error;
 }
 
@@ -292,10 +292,10 @@ export function unsafePathError(stepId: string, rejection: string): CommandError
     [
       `Nothing was deleted: the "${stepId}" step named a path this command refuses to touch.`,
       `Why: ${rejection}`,
-      `How: this is either a bug in exagent or a link planted where a cache directory should be. Check the path by hand, then report it at https://github.com/expo/expo/issues.`,
+      `How: this is either a bug in @expo/agent-cli or a link planted where a cache directory should be. Check the path by hand, then report it at https://github.com/expo/expo/issues.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent doctor:fix --tier safe';
+  error.suggestedCommand = 'npx @expo/agent-cli doctor:fix --tier safe';
   return error;
 }
 

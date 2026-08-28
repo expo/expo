@@ -11,7 +11,7 @@ export type NativePlatform = 'ios' | 'android';
 export type PlanPlatform = NativePlatform | 'web';
 
 /**
- * The fingerprint hash of the last development build `exagent` ran, per platform.
+ * The fingerprint hash of the last development build `@expo/agent-cli` ran, per platform.
  *
  * @see ./lastBuild.ts for the `.expo` file this is read from.
  */
@@ -62,7 +62,7 @@ export interface DecideStartPlanOptions {
    */
   requestedPlatform?: PlanPlatform;
   /**
-   * Fingerprint hashes of the last builds `exagent` ran. Passed in by the caller so the
+   * Fingerprint hashes of the last builds `@expo/agent-cli` ran. Passed in by the caller so the
    * decision table stays a pure function of probed state.
    */
   lastBuild?: LastBuildFingerprints;

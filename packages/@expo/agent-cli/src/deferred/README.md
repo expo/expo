@@ -11,11 +11,11 @@ Each area is one directory, named after the command it used to be:
 
 | Directory          | Was                                     | Why it left v1                    | Design                             |
 | ------------------ | --------------------------------------- | --------------------------------- | ---------------------------------- |
-| `dev-wait/`        | `exagent dev:wait`                       | `smoke` is the gate agents reach for | `llp/0017` §`dev:wait` |
-| `checkpoint/`      | `exagent checkpoint[:list\|:undo]`       | agents manage git themselves      | `llp/0017` §The checkpoint system |
-| `build-wait/`      | `exagent build:wait`                     | returns as `exagent build --wait` | `llp/0017` §`build:wait` |
-| `runtime-network/` | `exagent runtime:network`                | RN's Network domain is unstable   | `llp/0017` §`runtime:network` |
-| `doctor-fix/`      | `exagent doctor:fix`                     | the check half is the v1 answer   | `llp/0017` §`doctor:fix` |
+| `dev-wait/`        | `@expo/agent-cli dev:wait`                       | `smoke` is the gate agents reach for | `llp/0017` §`dev:wait` |
+| `checkpoint/`      | `@expo/agent-cli checkpoint[:list\|:undo]`       | agents manage git themselves      | `llp/0017` §The checkpoint system |
+| `build-wait/`      | `@expo/agent-cli build:wait`                     | returns as `@expo/agent-cli build --wait` | `llp/0017` §`build:wait` |
+| `runtime-network/` | `@expo/agent-cli runtime:network`                | RN's Network domain is unstable   | `llp/0017` §`runtime:network` |
+| `doctor-fix/`      | `@expo/agent-cli doctor:fix`                     | the check half is the v1 answer   | `llp/0017` §`doctor:fix` |
 
 ## How it stays out of the way
 

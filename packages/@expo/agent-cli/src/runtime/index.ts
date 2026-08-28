@@ -15,12 +15,12 @@ const SHARED_RUNTIME_OPTIONS = [
 /** The refusal every action of the family shares, in the two lines a caller has to act on. */
 const RUNTIME_CONNECTION_NOTE = [
   `Needs a dev server with the app connected to it. Without either, exit 1 with NO_DEV_SERVER`,
-  `or NO_APP_CONNECTED: run "npx exagent dev --detach", then "npx exagent navigate /".`,
+  `or NO_APP_CONNECTED: run "npx @expo/agent-cli dev --detach", then "npx @expo/agent-cli navigate /".`,
 ];
 
 export const runtimeEvalHelp: CommandHelp = {
   command: 'runtime:eval',
-  usage: 'npx exagent runtime:eval <expression>',
+  usage: 'npx @expo/agent-cli runtime:eval <expression>',
   options: [
     `--timeout ${DURATION_METAVAR}      How long to wait for the app to answer, and for a\n` +
       `                          promise it returned to settle (default: 5s)`,
@@ -30,15 +30,15 @@ export const runtimeEvalHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent runtime:eval "globalThis.__DEV__"',
+      run: 'npx @expo/agent-cli runtime:eval "globalThis.__DEV__"',
       gets: 'the value the running app has for that expression',
     },
     {
-      run: 'npx exagent runtime:eval "Object.keys(expo)" --json',
+      run: 'npx @expo/agent-cli runtime:eval "Object.keys(expo)" --json',
       gets: 'what this app’s expo global offers, as one object',
     },
     {
-      run: 'npx exagent runtime:eval "store.getState().user" --timeout 30s',
+      run: 'npx @expo/agent-cli runtime:eval "store.getState().user" --timeout 30s',
       gets: 'the same, waiting half a minute for a slow answer',
     },
   ],
@@ -63,7 +63,7 @@ export const runtimeEvalHelp: CommandHelp = {
     `The expression runs in a Hermes runtime: no require, no import(), no process, no fs, so a`,
     `module the app did not already load is out of reach. What is in reach is the app's globals,`,
     `and the useful one is expo — Object.keys(expo) lists what this version offers, and`,
-    `expo.reloadAppAsync() reloads the app. Reach for "npx exagent runtime:reload" instead: it`,
+    `expo.reloadAppAsync() reloads the app. Reach for "npx @expo/agent-cli runtime:reload" instead: it`,
     `makes that call for you, checks the entry bundle first, and reports whether the app is back.`,
     `A promise is awaited and reported under promise; --no-await-promise reports it pending.`,
     `Exit 1 when the expression throws in the app or its promise rejects. Values come from the`,
@@ -74,7 +74,7 @@ export const runtimeEvalHelp: CommandHelp = {
 
 export const runtimeErrorsHelp: CommandHelp = {
   command: 'runtime:errors',
-  usage: 'npx exagent runtime:errors',
+  usage: 'npx @expo/agent-cli runtime:errors',
   options: [
     `--duration ${DURATION_METAVAR}     How long to listen for errors (default: 2s)`,
     `--fail-on-error           Exit 20 when the window caught anything (default: exit 0)`,
@@ -84,15 +84,15 @@ export const runtimeErrorsHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent runtime:errors',
+      run: 'npx @expo/agent-cli runtime:errors',
       gets: 'what the app reported over two seconds, with stacks mapped onto your files',
     },
     {
-      run: 'npx exagent runtime:errors --duration 5s --json',
+      run: 'npx @expo/agent-cli runtime:errors --duration 5s --json',
       gets: 'the same over five seconds, as one object',
     },
     {
-      run: 'npx exagent runtime:errors --fail-on-error',
+      run: 'npx @expo/agent-cli runtime:errors --fail-on-error',
       gets: 'exit 20 when the window caught anything — a gate for a script',
     },
   ],
@@ -124,7 +124,7 @@ export const runtimeErrorsHelp: CommandHelp = {
   ],
 };
 
-export const exagentRuntime: Command = async (argv) => {
+export const agentCliRuntime: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -150,7 +150,7 @@ export const exagentRuntime: Command = async (argv) => {
     printCommandHelp(args._[0] === 'errors' ? runtimeErrorsHelp : runtimeEvalHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent runtime:eval -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli runtime:eval -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrCwd } = require('../utils/findUp') as typeof import('../utils/findUp');
   const { resolveRuntimeCommand } =

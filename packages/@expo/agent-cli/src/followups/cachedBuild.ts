@@ -3,8 +3,8 @@
 //
 // "EAS already has the app a rebuild would produce, so the next command is a download."
 //
-// This was two builders with one sentence between them, reached from `exagent impact` and from
-// `exagent status`. The fold left one caller, so it is one builder with one id — the simplification
+// This was two builders with one sentence between them, reached from `@expo/agent-cli impact` and from
+// `@expo/agent-cli status`. The fold left one caller, so it is one builder with one id — the simplification
 // the fold was for, and a reminder that two copies of a sentence are often two commands that should
 // have been one.
 

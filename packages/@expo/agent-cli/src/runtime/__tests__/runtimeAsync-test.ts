@@ -161,7 +161,7 @@ describe(runtimeEvalAsync, () => {
     const error = await runtimeEvalAsync(evalOptions).catch((e) => e);
 
     expect(error.code).toBe('NO_DEV_SERVER');
-    expect(error.message).toContain('npx exagent dev --detach');
+    expect(error.message).toContain('npx @expo/agent-cli dev --detach');
     expect(evaluateAsync).not.toHaveBeenCalled();
   });
 
@@ -188,9 +188,9 @@ describe(runtimeEvalAsync, () => {
     expect(error.message).toContain('reports an empty window');
     // @ref ../runtimeAsync — friction run 6, F55. `dev --plan` prints the Expo Go path for a
     // project Expo Go can serve, so it must not be offered as the way to see a development build.
-    expect(error.message).not.toContain('"npx exagent dev" prints the plan');
+    expect(error.message).not.toContain('"npx @expo/agent-cli dev" prints the plan');
     expect(error.message).not.toMatch(/--timeout/);
-    expect(error.suggestedCommand).toBe('npx exagent runtime:errors --android');
+    expect(error.suggestedCommand).toBe('npx @expo/agent-cli runtime:errors --android');
   });
 
   // F21: a rejected promise is the asynchronous form of a throw, so an agent gating on the exit
@@ -436,12 +436,12 @@ describe(runtimeErrorsAsync, () => {
       followups: [
         {
           id: 'runtime-errors-reproduce',
-          command: 'npx exagent runtime:errors --duration 4000',
+          command: 'npx @expo/agent-cli runtime:errors --duration 4000',
           why: expect.stringContaining('reproduce'),
         },
         {
           id: 'runtime-errors-typecheck',
-          command: 'npx exagent typecheck',
+          command: 'npx @expo/agent-cli typecheck',
           why: expect.stringContaining('not a healthy app'),
         },
       ],
@@ -478,7 +478,7 @@ describe(runtimeErrorsAsync, () => {
     await runtimeErrorsAsync(errorsOptions);
 
     expect(printed()).toContain('Suggested next:');
-    expect(printed()).toContain('npx exagent runtime:errors --duration 2000');
+    expect(printed()).toContain('npx @expo/agent-cli runtime:errors --duration 2000');
   });
 
   it(`should ask for a longer window when nothing was reported`, async () => {
@@ -486,7 +486,7 @@ describe(runtimeErrorsAsync, () => {
 
     await runtimeErrorsAsync(errorsOptions);
 
-    expect(printed()).toContain('npx exagent runtime:errors --duration 4000');
+    expect(printed()).toContain('npx @expo/agent-cli runtime:errors --duration 4000');
   });
 
   it(`should print no Next section with --no-followups`, async () => {

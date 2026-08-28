@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const doctorCheckHelp: CommandHelp = {
   command: 'doctor:check',
-  usage: 'npx exagent doctor:check',
+  usage: 'npx @expo/agent-cli doctor:check',
   options: [
     `--json            Print the whole report as JSON, expo-doctor's full text included`,
     `--no-followups    Leave the suggested follow-up commands out of the report`,
@@ -13,11 +13,11 @@ export const doctorCheckHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent doctor',
+      run: 'npx @expo/agent-cli doctor',
       gets: 'the failed checks and the advice each gave; exit 20 when any failed',
     },
     {
-      run: 'npx exagent doctor:check --json',
+      run: 'npx @expo/agent-cli doctor:check --json',
       gets: 'the same as one object, with everything expo-doctor printed under raw',
     },
   ],
@@ -35,7 +35,7 @@ export const doctorCheckHelp: CommandHelp = {
   ],
 };
 
-export const exagentDoctorCheck: Command = async (argv) => {
+export const agentCliDoctorCheck: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -52,7 +52,7 @@ export const exagentDoctorCheck: Command = async (argv) => {
     printCommandHelp(doctorCheckHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent doctor:check -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli doctor:check -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
   // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a

@@ -80,7 +80,7 @@ describe('the spawn that makes a group possible', () => {
     await promise;
 
     // `detached` is what creates the group. Without it the negative pid above signals this
-    // process's own group, which would take `exagent` down with the tool.
+    // process's own group, which would take `@expo/agent-cli` down with the tool.
     expect((jest.mocked(spawn).mock.calls[0]![2] as any).detached).toBe(USE_PROCESS_GROUP);
   });
 });

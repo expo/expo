@@ -134,7 +134,7 @@ export interface ResolveDeepLinkUrlParams {
    * @ref llp/0021-honest-reports.rfc.md §The plan has to carry the forwarded flags — F58, S5, F103,
    * and **F142.** It changes nothing about the URL: a link is the same link whichever device opens
    * it. It changes the two failures, which name commands — `navigate / --ios` against a dev server
-   * that had died recovered into a bare `npx exagent dev --detach`, and a bare `dev` plans for
+   * that had died recovered into a bare `npx @expo/agent-cli dev --detach`, and a bare `dev` plans for
    * whatever platform this machine's probe picks. So the one line the caller was handed was a
    * different run from the one they had asked for [observed — friction run 9, F142].
    */
@@ -164,7 +164,7 @@ export type ResolveDeepLinkUrlResult =
        * The command to put on the `Try:` line, decided here because it depends on *which* of the
        * three ways this can fail happened.
        *
-       * One `Try:` for all three was `npx exagent navigate <route> --scheme <your-app-scheme>` —
+       * One `Try:` for all three was `npx @expo/agent-cli navigate <route> --scheme <your-app-scheme>` —
        * two placeholders, so an agent could not run the last line of the failure at all
        * [observed — friction run 5]. A missing dev server is answered by starting one; a project
        * with no resolvable scheme is the one case where a person genuinely has to supply a value,
@@ -201,7 +201,7 @@ export function resolveDeepLinkUrl({
         'Why: there is nothing to navigate to.',
         'How: pass a route path such as "/profile/42", or a full URL such as "myapp://profile/42".',
       ].join('\n'),
-      suggestedCommand: `npx exagent navigate /${platformFlag}`,
+      suggestedCommand: `npx @expo/agent-cli navigate /${platformFlag}`,
     };
   }
 
@@ -237,12 +237,12 @@ export function resolveDeepLinkUrl({
         error: [
           'Cannot build an Expo Go URL because the dev server URL is unknown.',
           'Why: Expo Go deep links have the shape exp://<host>/--/<route>, so they need the running dev server host.',
-          `How: start the dev server with \`npx exagent dev --detach${platformFlag}\` and run this command again, or pass --scheme to target a development build instead.`,
+          `How: start the dev server with \`npx @expo/agent-cli dev --detach${platformFlag}\` and run this command again, or pass --scheme to target a development build instead.`,
         ].join('\n'),
         // The How: and the Try: named different commands here, which is a failure telling a reader
         // two things [observed — friction run 5]. Both are the one action that fixes this, and both
         // keep the platform the caller named (F142).
-        suggestedCommand: `npx exagent dev --detach${platformFlag}`,
+        suggestedCommand: `npx @expo/agent-cli dev --detach${platformFlag}`,
       };
     }
     const where = tunnelHost
@@ -296,7 +296,7 @@ export function resolveDeepLinkUrl({
     // The one case where a person has to supply a value this CLI cannot know. The `Try:` is
     // therefore the command that *prints what the project declares* rather than a line with a
     // hole in it: `--scheme <your-app-scheme>` is not something an agent can run.
-    suggestedCommand: 'npx exagent inspect:config-plugins --json',
+    suggestedCommand: 'npx @expo/agent-cli inspect:config-plugins --json',
   };
 }
 

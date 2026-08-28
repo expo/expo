@@ -18,7 +18,7 @@ export function buildSkillsSyncFollowUps({
   const followups: FollowUp[] = [
     {
       id: 'skills-list',
-      command: 'npx exagent skills:list',
+      command: 'npx @expo/agent-cli skills:list',
       why: 'Lists every discovered skill and the agent directories it is linked into.',
     },
   ];
@@ -26,7 +26,7 @@ export function buildSkillsSyncFollowUps({
   if (agentId && skillPackages.length) {
     followups.push({
       id: 'skills-show',
-      command: `npx exagent skills:show ${skillPackages[0]}`,
+      command: `npx @expo/agent-cli skills:show ${skillPackages[0]}`,
       why: `${agentId} loads the linked skills automatically, so nothing has to read them here; this prints one on demand.`,
     });
   }

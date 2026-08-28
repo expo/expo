@@ -38,7 +38,7 @@ re-generated to confirm it hashes to the pre-capture value again.
 | both platforms | 79 | 43,072 |
 
 This is the measurement behind the decision to store the whole fingerprint in
-`.expo/exagent-last-build.json` rather than gzip it or store a subset — see llp/0011
+`.expo/agent-cli-last-build.json` rather than gzip it or store a subset — see llp/0011
 §The record has to hold the sources. It is a small app; a large one is bigger, and the record is
 advisory, so a project where it grows unreasonably loses a comparison and never a command.
 

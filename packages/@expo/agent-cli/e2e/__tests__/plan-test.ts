@@ -1,14 +1,14 @@
 /* eslint-env jest */
 // @ref llp/0004-smart-start-and-project-state.rfc.md
 //
-// `exagent dev --plan` emits the plan the decision table produced and exits without executing
+// `@expo/agent-cli dev --plan` emits the plan the decision table produced and exits without executing
 // it, so a driving agent can present it for approval (llp/0008-guardrails). These tests check the
 // plan against the fixture matrix in `e2e/fixtures/README.md`, and check that nothing ran.
 import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   installStubBinAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
@@ -78,13 +78,13 @@ async function setupAsync(fixtureName: string): Promise<string> {
  * Write the developer config into a copied fixture, at the key the CLI reads it from.
  *
  * @ref llp/0015-backend-selection-and-config.rfc.md §Where the config lives
- * `package.json` › `expo` › `exagent`, beside `expo.install` and `expo.doctor`. Written through
+ * `package.json` › `expo` › `@expo/agent-cli`, beside `expo.install` and `expo.doctor`. Written through
  * the real file, so this exercises the reader rather than a switch built for the test.
  */
-async function writeExagentConfigAsync(projectRoot: string, config: unknown): Promise<void> {
+async function writeAgentCliConfigAsync(projectRoot: string, config: unknown): Promise<void> {
   const file = path.join(projectRoot, 'package.json');
   const packageJson = JSON.parse(await fs.promises.readFile(file, 'utf8'));
-  packageJson.expo = { ...packageJson.expo, exagent: config };
+  packageJson.expo = { ...packageJson.expo, agentCli: config };
   await fs.promises.writeFile(file, JSON.stringify(packageJson, null, 2));
 }
 
@@ -94,7 +94,7 @@ async function planTextInAsync(
   args: string[] = [],
   env?: Record<string, string>
 ): Promise<string> {
-  const result = await executeExagentAsync(projectRoot, ['dev', '--plan', ...args], { env });
+  const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', ...args], { env });
 
   expect(result.exitCode).toBe(0);
   // `--plan` stops after emitting the plan, so the stub `expo` bin records no invocation.
@@ -133,11 +133,11 @@ async function planTextAsync(
   return planTextInAsync(await setupAsync(fixtureName), args, env);
 }
 
-describe('exagent dev --plan', () => {
+describe('@expo/agent-cli dev --plan', () => {
   // `dev` is a group now, so its own options are documented under the action the bare name runs.
   it('documents the flag in `dev:run --help`', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['dev:run', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--plan');
@@ -163,7 +163,7 @@ describe('exagent dev --plan', () => {
     // Expo Go" — a command that opens nothing, described as the thing that does.
     it('shows the platform flag it will really run with, and says what it does', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
 
       const plan: StartPlan = JSON.parse(result.stdout);
       expect(plan.steps.map((step) => step.argv)).toEqual([['expo', 'start', '--go', '--ios']]);
@@ -175,7 +175,7 @@ describe('exagent dev --plan', () => {
     // executed `expo start --go --tunnel`, so what an agent approved was not what happened.
     it('prints every forwarded flag, because the plan approved is the plan run', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev',
         '--plan',
         '--json',
@@ -190,12 +190,12 @@ describe('exagent dev --plan', () => {
 
     it('admits that a plain start opens nothing, and names what does', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json']);
 
       const plan: StartPlan = JSON.parse(result.stdout);
       expect(plan.steps.map((step) => step.argv)).toEqual([['expo', 'start', '--go']]);
       expect(plan.steps[0]!.reason).toContain('opens nothing on its own');
-      expect(plan.steps[0]!.reason).toContain('exagent navigate /');
+      expect(plan.steps[0]!.reason).toContain('@expo/agent-cli navigate /');
     });
   });
 
@@ -297,7 +297,7 @@ describe('exagent dev --plan', () => {
   describe('the machine readable plan', () => {
     it('prints the StartPlan as JSON with `--plan --json`', async () => {
       const projectRoot = await setupFixtureAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
 
       expect(result.exitCode).toBe(0);
 
@@ -331,7 +331,7 @@ describe('exagent dev --plan', () => {
     // is the feature, and would read here as a flake.
     it('marks every building step local, and carries the requirement in the payload', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev',
         '--plan',
         '--json',
@@ -357,7 +357,7 @@ describe('exagent dev --plan', () => {
 
     it('marks a plan that builds nothing as building nothing', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
 
       const plan: StartPlan = JSON.parse(result.stdout);
       expect(plan.steps.map((step) => step.runsOn)).toEqual([null]);
@@ -388,7 +388,7 @@ describe('exagent dev --plan', () => {
       const projectRoot = await setupAsync('dev-client-app');
       await breakXcodeSelectAsync(projectRoot);
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
       const plan: StartPlan = JSON.parse(result.stdout);
 
       expect(plan.buildLocation).toMatchObject({
@@ -408,7 +408,7 @@ describe('exagent dev --plan', () => {
 
     it('takes the same route for a missing Android SDK, from the directory that is not there', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--plan', '--json', '--android'],
         { env: { ANDROID_HOME: path.join(projectRoot, 'no-such-android-sdk') } }
@@ -430,7 +430,7 @@ describe('exagent dev --plan', () => {
       const projectRoot = await setupAsync('dev-client-app');
       await breakXcodeSelectAsync(projectRoot);
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev',
         '--plan',
         '--json',
@@ -453,7 +453,7 @@ describe('exagent dev --plan', () => {
 
     it('honours --eas on a machine that could build here', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev',
         '--plan',
         '--json',
@@ -468,7 +468,7 @@ describe('exagent dev --plan', () => {
 
     it('refuses --eas and --local together, which name two places for one build', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--plan', '--ios', '--eas', '--local'],
         { reject: false }
@@ -481,7 +481,7 @@ describe('exagent dev --plan', () => {
 
     it('says in the help which of the two routes a build takes', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
-      const dev = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
+      const dev = await executeAgentCliAsync(projectRoot, ['dev:run', '--help']);
 
       expect(dev.all).toContain('A local');
       expect(dev.all).toContain('A cloud build (eas build) happens');
@@ -492,9 +492,9 @@ describe('exagent dev --plan', () => {
   describe('the developer config', () => {
     it('plans a development build for a project Expo Go could run', async () => {
       const projectRoot = await setupAsync('go-app');
-      await writeExagentConfigAsync(projectRoot, { target: 'dev-build' });
+      await writeAgentCliConfigAsync(projectRoot, { target: 'dev-build' });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev',
         '--plan',
         '--json',
@@ -512,42 +512,42 @@ describe('exagent dev --plan', () => {
       ]);
       // Labelled, so a reader can tell a plan the config changed from one it did not.
       expect(plan.reasons).toContain(
-        'The exagent config asks for a development build. Expo Go could run this project, and the plan builds one anyway.'
+        'The @expo/agent-cli config asks for a development build. Expo Go could run this project, and the plan builds one anyway.'
       );
       expect(readStubExpoInvocations(projectRoot)).toEqual([]);
     });
 
     it('leaves the Expo Go plan alone when the config asks for Expo Go', async () => {
       const projectRoot = await setupAsync('go-app');
-      await writeExagentConfigAsync(projectRoot, { target: 'expo-go' });
+      await writeAgentCliConfigAsync(projectRoot, { target: 'expo-go' });
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
       const plan: StartPlan = JSON.parse(result.stdout);
 
       expect(plan.rule).toBe('expo-go');
       expect(plan.reasons).toContain(
-        'The exagent config asks for Expo Go. Expo Go can run this project, so that is what the plan uses.'
+        'The @expo/agent-cli config asks for Expo Go. Expo Go can run this project, so that is what the plan uses.'
       );
     });
 
     it('sends the build to EAS on a machine that could do it here', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      await writeExagentConfigAsync(projectRoot, { buildBackend: 'eas' });
+      await writeAgentCliConfigAsync(projectRoot, { buildBackend: 'eas' });
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
       const plan: StartPlan = JSON.parse(result.stdout);
 
       expect(plan.buildLocation).toMatchObject({ runsOn: 'eas', selection: { source: 'config' } });
-      expect(plan.buildLocation!.selection!.why).toContain('"expo.exagent" in package.json');
+      expect(plan.buildLocation!.selection!.why).toContain('"expo.agentCli" in package.json');
       expect(plan.steps.map((step) => step.argv[0])).toContain('eas');
     });
 
     it('applies a per-platform choice to that platform only', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      await writeExagentConfigAsync(projectRoot, { ios: { buildBackend: 'eas' } });
+      await writeAgentCliConfigAsync(projectRoot, { ios: { buildBackend: 'eas' } });
 
-      const ios = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
-      const android = await executeExagentAsync(
+      const ios = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+      const android = await executeAgentCliAsync(
         projectRoot,
         ['dev', '--plan', '--json', '--android', '--local'],
         { env: { ANDROID_HOME: path.join(projectRoot, 'no-such-android-sdk') } }
@@ -559,9 +559,9 @@ describe('exagent dev --plan', () => {
 
     it('lets a flag beat the config', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      await writeExagentConfigAsync(projectRoot, { buildBackend: 'eas' });
+      await writeAgentCliConfigAsync(projectRoot, { buildBackend: 'eas' });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'dev',
         '--plan',
         '--json',
@@ -575,9 +575,9 @@ describe('exagent dev --plan', () => {
 
     it('refuses a key it does not know, naming the keys it does', async () => {
       const projectRoot = await setupAsync('go-app');
-      await writeExagentConfigAsync(projectRoot, { backend: 'eas' });
+      await writeAgentCliConfigAsync(projectRoot, { backend: 'eas' });
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--ios'], {
         reject: false,
       });
 
@@ -589,24 +589,24 @@ describe('exagent dev --plan', () => {
 
     it('refuses a value outside the set, naming the set and the location', async () => {
       const projectRoot = await setupAsync('go-app');
-      await writeExagentConfigAsync(projectRoot, { buildBackend: 'cloud' });
+      await writeAgentCliConfigAsync(projectRoot, { buildBackend: 'cloud' });
 
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--ios'], {
         reject: false,
       });
 
       expect(result.exitCode).not.toBe(0);
-      expect(result.all).toContain('"expo.exagent" in package.json');
+      expect(result.all).toContain('"expo.agentCli" in package.json');
       expect(result.all).toContain('"local", "eas"');
     });
 
     it('changes nothing for a project that names no config', async () => {
       const withoutConfig = await setupAsync('go-app');
-      const result = await executeExagentAsync(withoutConfig, ['dev', '--plan', '--json', '--ios']);
+      const result = await executeAgentCliAsync(withoutConfig, ['dev', '--plan', '--json', '--ios']);
 
       const plan: StartPlan = JSON.parse(result.stdout);
       expect(plan.rule).toBe('expo-go');
-      expect(plan.reasons.join(' ')).not.toContain('exagent config');
+      expect(plan.reasons.join(' ')).not.toContain('@expo/agent-cli config');
     });
   });
 
@@ -616,21 +616,21 @@ describe('exagent dev --plan', () => {
       const output = await planTextAsync('go-app', ['--ios']);
 
       expect(output).toContain('Suggested next:');
-      expect(output).toContain('npx exagent dev');
+      expect(output).toContain('npx @expo/agent-cli dev');
     });
 
     it('explains the build a stale plan includes', async () => {
       const output = await planTextAsync('dev-client-app', ['--ios']);
 
-      expect(output).toContain('npx exagent status');
+      expect(output).toContain('npx @expo/agent-cli status');
       // Expo Go is out for this fixture, so the reasons in the probe are worth reading in full.
-      expect(output).toContain('npx exagent status --json');
-      expect(output).not.toContain('npx exagent context');
+      expect(output).toContain('npx @expo/agent-cli status --json');
+      expect(output).not.toContain('npx @expo/agent-cli context');
     });
 
     it('embeds the follow-ups in the JSON plan, which stays one object', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--json']);
 
       expect(result.exitCode).toBe(0);
       const plan: StartPlan = JSON.parse(result.stdout);
@@ -639,8 +639,8 @@ describe('exagent dev --plan', () => {
 
     it('leaves them out with --no-followups, keeping the key set', async () => {
       const projectRoot = await setupAsync('go-app');
-      const text = await executeExagentAsync(projectRoot, ['dev', '--plan', '--no-followups']);
-      const json = await executeExagentAsync(projectRoot, [
+      const text = await executeAgentCliAsync(projectRoot, ['dev', '--plan', '--no-followups']);
+      const json = await executeAgentCliAsync(projectRoot, [
         'dev',
         '--plan',
         '--json',
@@ -651,12 +651,12 @@ describe('exagent dev --plan', () => {
       const plan: StartPlan = JSON.parse(json.stdout);
       expect(plan.followups).toEqual([]);
       expect(Object.keys(plan)).toContain('followups');
-      // The flag is exagent's own, so it never reaches the Expo CLI.
+      // The flag is @expo/agent-cli's own, so it never reaches the Expo CLI.
       expect(readStubExpoInvocations(projectRoot)).toEqual([]);
     });
 
-    it('leaves them out for EXAGENT_NO_FOLLOWUPS', async () => {
-      const output = await planTextAsync('go-app', [], { EXAGENT_NO_FOLLOWUPS: '1' });
+    it('leaves them out for AGENT_CLI_NO_FOLLOWUPS', async () => {
+      const output = await planTextAsync('go-app', [], { AGENT_CLI_NO_FOLLOWUPS: '1' });
 
       expect(output).not.toContain('Suggested next:');
     });
@@ -664,7 +664,7 @@ describe('exagent dev --plan', () => {
     it('emits one cli:followups event for a driving agent', async () => {
       const projectRoot = await setupAsync('go-app');
       const eventsFile = path.join(projectRoot, 'events.jsonl');
-      const result = await executeExagentAsync(projectRoot, ['dev', '--plan'], {
+      const result = await executeAgentCliAsync(projectRoot, ['dev', '--plan'], {
         env: { LOG_EVENTS: eventsFile },
       });
 

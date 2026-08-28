@@ -173,7 +173,7 @@ describe(resolveTypeOptions, () => {
     expect(caught?.message).toMatch(/How:/);
     // Clearing an input is a thing a caller means to do, so it is not the same as passing nothing.
     expect(caught?.message).toContain('""');
-    expect(caught?.suggestedCommand).toBe('npx exagent runtime:tree');
+    expect(caught?.suggestedCommand).toBe('npx @expo/agent-cli runtime:tree');
   });
 
   it(`refuses two positionals, which is unquoted text`, () => {

@@ -50,13 +50,13 @@ export function describeLive(name: string, gate: Gate): jest.Describe {
   return describe.skip;
 }
 
-/** The `exagent` bin under test — the ncc bundle, which is what the registry serves. */
-export const bin = path.resolve(__dirname, '../bin/exagent.js');
+/** The `@expo/agent-cli` bin under test — the ncc bundle, which is what the registry serves. */
+export const bin = path.resolve(__dirname, '../bin/cli.js');
 
 /**
  * That the published surface exists at all.
  *
- * These suites run `bin/exagent.js`, which loads `build/cli/index.js`. That file is the artifact of
+ * These suites run `bin/cli.js`, which loads `build/cli/index.js`. That file is the artifact of
  * `pnpm build`, and a stale or absent one is the one prerequisite failure that would make the whole
  * tier a test of nothing.
  */
@@ -81,7 +81,7 @@ export type Simulator = { udid: string; name: string };
  *
  * Booted rather than bootable on purpose: booting one costs tens of seconds and leaves the machine
  * in a state this suite did not find it in, and "the app opens on the simulator you are looking at"
- * is the thing a live tier is for. `EXAGENT_LIVE_UDID` names one when several are booted.
+ * is the thing a live tier is for. `AGENT_CLI_LIVE_UDID` names one when several are booted.
  */
 export function bootedSimulatorGate(): {
   gate: Gate;
@@ -105,7 +105,7 @@ export function bootedSimulatorGate(): {
     };
   }
 
-  const wanted = process.env.EXAGENT_LIVE_UDID;
+  const wanted = process.env.AGENT_CLI_LIVE_UDID;
   const booted: Simulator[] = [];
   for (const devices of Object.values(JSON.parse(listed).devices as Record<string, any[]>)) {
     for (const device of devices) {
@@ -118,8 +118,8 @@ export function bootedSimulatorGate(): {
     return {
       gate: missing(
         wanted
-          ? `no booted simulator has the udid EXAGENT_LIVE_UDID names (${wanted}) — boot it with "xcrun simctl boot ${wanted}"`
-          : 'no iOS simulator is booted — boot one ("xcrun simctl boot <udid>" then "open -a Simulator"), or name one with EXAGENT_LIVE_UDID'
+          ? `no booted simulator has the udid AGENT_CLI_LIVE_UDID names (${wanted}) — boot it with "xcrun simctl boot ${wanted}"`
+          : 'no iOS simulator is booted — boot one ("xcrun simctl boot <udid>" then "open -a Simulator"), or name one with AGENT_CLI_LIVE_UDID'
       ),
       simulator: null,
     };
@@ -325,13 +325,13 @@ export function androidDeviceGate(): { gate: Gate; device: AndroidDevice | null 
       device: null,
     };
   }
-  const wanted = process.env.EXAGENT_LIVE_AVD;
+  const wanted = process.env.AGENT_CLI_LIVE_AVD;
   const avd = wanted ? avds.find((name) => name === wanted) : avds[0];
   if (!avd) {
     return {
       gate: missing(
         wanted
-          ? `no AVD is named ${wanted} (EXAGENT_LIVE_AVD); "${emulator} -list-avds" reports ${avds.length ? avds.join(', ') : 'none'}`
+          ? `no AVD is named ${wanted} (AGENT_CLI_LIVE_AVD); "${emulator} -list-avds" reports ${avds.length ? avds.join(', ') : 'none'}`
           : `no Android device is attached and this machine has no AVD to boot — create one in ` +
             `Android Studio's Device Manager, or with "${path.join(path.dirname(path.dirname(adb)), 'cmdline-tools', 'latest', 'bin', 'avdmanager')} create avd -n tuft-pixel -k "system-images;android-35;google_apis;arm64-v8a""`
       ),
@@ -358,14 +358,14 @@ export type DevClientProject = {
  *
  * The gate is the installed app rather than the project, and that is the whole reason this suite is
  * shaped unlike every other one in this tier. `live-local` and `live-android` scaffold their own
- * project in `beforeAll` because `exagent new` costs seconds. A development build costs about
+ * project in `beforeAll` because `@expo/agent-cli new` costs seconds. A development build costs about
  * **fifteen minutes** of Xcode or Gradle, and [[0022-live-tier]] §What green claims already says a
  * suite may not spend that. So the artifact is the prerequisite: somebody ran `npx expo run:android`
  * once, and this suite is what that buys.
  *
  * Consequences worth knowing before reading a skip:
  *
- * - **The project is named, not scaffolded** (`EXAGENT_LIVE_DEVCLIENT_PROJECT`), because the
+ * - **The project is named, not scaffolded** (`AGENT_CLI_LIVE_DEVCLIENT_PROJECT`), because the
  *   installed app is bound to that project's `android.package` / `ios.bundleIdentifier` and its
  *   `scheme`. A fresh scaffold would be a different app.
  * - **It is used in place, not copied.** The scratch-outside-git rule exists because `eas deploy`
@@ -378,11 +378,11 @@ export function devClientProjectGate(): {
   gate: Gate;
   project: DevClientProject | null;
 } {
-  const named = process.env.EXAGENT_LIVE_DEVCLIENT_PROJECT;
+  const named = process.env.AGENT_CLI_LIVE_DEVCLIENT_PROJECT;
   if (!named) {
     return {
       gate: missing(
-        'EXAGENT_LIVE_DEVCLIENT_PROJECT is not set. This suite drives a development build that is ' +
+        'AGENT_CLI_LIVE_DEVCLIENT_PROJECT is not set. This suite drives a development build that is ' +
           'already installed on a device, because making one costs about fifteen minutes and a live ' +
           'suite may not spend that. Point it at a project you have run "npx expo run:android" or ' +
           '"npx expo run:ios" in'
@@ -410,7 +410,7 @@ export function devClientProjectGate(): {
   if (!dependencies['expo-dev-client']) {
     return {
       gate: missing(
-        `${root} does not depend on expo-dev-client, so nothing there is a development build — run "npx exagent install expo-dev-client" in it, then "npx expo run:android"`
+        `${root} does not depend on expo-dev-client, so nothing there is a development build — run "npx @expo/agent-cli install expo-dev-client" in it, then "npx expo run:android"`
       ),
       project: null,
     };
@@ -466,22 +466,22 @@ export function androidDevBuildGate(project: DevClientProject | null, device: An
     return missing(`"${device.adb} -s ${device.serial} shell pm list packages" could not run: ${error.message}`);
   }
 
-  // The second half, and it is what makes the suite cheap rather than merely possible: `exagent dev`
+  // The second half, and it is what makes the suite cheap rather than merely possible: `@expo/agent-cli dev`
   // plans a **build** for a platform with no recorded fingerprint, so a project whose app is
   // installed and whose record is missing would send `beforeAll` into fifteen minutes of Gradle.
   // The record is written when the `expo run:android` step exits — which is when its dev server is
   // stopped, not when the compiler finishes [observed — wave 29, 2026-08-28] — so "installed" and
   // "recorded" really are two facts and this gate needs both.
-  const record = path.join(project.root, '.expo', 'exagent-last-build.json');
+  const record = path.join(project.root, '.expo', 'agent-cli-last-build.json');
   try {
     if (JSON.parse(fs.readFileSync(record, 'utf8'))?.android == null) {
       return missing(
-        `${record} records no android build, so "exagent dev" would plan one rather than serve the app that is installed — run "npx expo run:android" through "npx exagent dev --android", and stop it with "npx exagent dev:stop", which is what writes the record`
+        `${record} records no android build, so "@expo/agent-cli dev" would plan one rather than serve the app that is installed — run "npx expo run:android" through "npx @expo/agent-cli dev --android", and stop it with "npx @expo/agent-cli dev:stop", which is what writes the record`
       );
     }
   } catch {
     return missing(
-      `${project.root} has no ${path.join('.expo', 'exagent-last-build.json')}, so "exagent dev" would plan a native build rather than serve the app that is already installed`
+      `${project.root} has no ${path.join('.expo', 'agent-cli-last-build.json')}, so "@expo/agent-cli dev" would plan a native build rather than serve the app that is already installed`
     );
   }
   return ok;
@@ -516,7 +516,7 @@ export function stagingGate(): { gate: Gate; user: string | null } {
   if (!user) {
     return {
       gate: missing(
-        `no staging session was found in ${STAGING_SESSION_FILE} — sign in with "EXPO_STAGING=1 npx exagent login"`
+        `no staging session was found in ${STAGING_SESSION_FILE} — sign in with "EXPO_STAGING=1 npx @expo/agent-cli login"`
       ),
       user: null,
     };
@@ -545,12 +545,12 @@ export function assertStaging(what: string): void {
 /** An EAS-linked project on disk to read builds from, copied read-only into the scratch area. */
 export function easProjectGate(): { gate: Gate; source: string | null } {
   const source = path.resolve(
-    process.env.EXAGENT_LIVE_EAS_PROJECT ?? path.join(os.homedir(), 'Developer', 'DailyWords-Grok')
+    process.env.AGENT_CLI_LIVE_EAS_PROJECT ?? path.join(os.homedir(), 'Developer', 'DailyWords-Grok')
   );
   if (!fs.existsSync(path.join(source, 'package.json'))) {
     return {
       gate: missing(
-        `no EAS-linked project to read builds from: ${source} has no package.json — point EXAGENT_LIVE_EAS_PROJECT at one that has finished EAS builds on staging`
+        `no EAS-linked project to read builds from: ${source} has no package.json — point AGENT_CLI_LIVE_EAS_PROJECT at one that has finished EAS builds on staging`
       ),
       source: null,
     };
@@ -639,10 +639,10 @@ export function registryGate(): Gate {
  * `eas simulator:stop`, so it is asked for by name or not at all.
  */
 export function cloudOptInGate(): Gate {
-  return process.env.EXAGENT_LIVE_CLOUD === '1'
+  return process.env.AGENT_CLI_LIVE_CLOUD === '1'
     ? ok
     : missing(
-        'EXAGENT_LIVE_CLOUD=1 is not set — an EAS Simulator session bills from start to stop, so this suite never runs without being asked for by name'
+        'AGENT_CLI_LIVE_CLOUD=1 is not set — an EAS Simulator session bills from start to stop, so this suite never runs without being asked for by name'
       );
 }
 
@@ -656,14 +656,14 @@ export function cloudOptInGate(): Gate {
  * page [observed — wave19-live, `01-dev-tunnel.err`, 2026-08-27]. So the gate is not "is ngrok
  * installed": it is "is there a way to publish a local port", which here is `tuft host`.
  *
- * `EXAGENT_LIVE_PUBLIC_ORIGIN` is the escape hatch for a machine with a different one — a reverse
+ * `AGENT_CLI_LIVE_PUBLIC_ORIGIN` is the escape hatch for a machine with a different one — a reverse
  * proxy, a Cloudflare tunnel, an ngrok that actually starts. The suite sets `EXPO_PACKAGER_PROXY_URL`
  * to whatever this resolves to; wave 19 taught `src/dev/advertisedUrl.ts` to read a proxy origin out
  * of the dev server's manifest, because a proxied run prints `Waiting on http://localhost:<port>` and
  * names the real origin only in `launchAsset.url`.
  */
 export function publicOriginGate(): Gate {
-  if (process.env.EXAGENT_LIVE_PUBLIC_ORIGIN) {
+  if (process.env.AGENT_CLI_LIVE_PUBLIC_ORIGIN) {
     return ok;
   }
   try {
@@ -671,7 +671,7 @@ export function publicOriginGate(): Gate {
     return ok;
   } catch {
     return missing(
-      'no way to publish a local port: "tuft host" could not run, and EXAGENT_LIVE_PUBLIC_ORIGIN is ' +
+      'no way to publish a local port: "tuft host" could not run, and AGENT_CLI_LIVE_PUBLIC_ORIGIN is ' +
         'not set. A cloud simulator cannot reach 127.0.0.1 or a LAN address, and "expo start --tunnel" ' +
         'does not start on this machine (@expo/ngrok exits 1 — see wave19-live/01-dev-tunnel.err), so ' +
         'the dev server needs a proxy origin instead'

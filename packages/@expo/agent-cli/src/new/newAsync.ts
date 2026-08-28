@@ -19,13 +19,13 @@ import { resolveGitStateAsync } from './git';
 import { createExpoOutputFilter } from './output';
 import type { NewOptions } from './resolveOptions';
 
-/** Width of the label column of the human readable summary, as in `exagent status`. */
+/** Width of the label column of the human readable summary, as in `@expo/agent-cli status`. */
 const LABEL_WIDTH = 12;
 
 /** How much of a failed `create-expo` run is repeated on stderr in `--json` mode. */
 const FAILURE_TAIL_LINES = 20;
 
-/** The shape `exagent new --json` prints. Top-level keys are the stable contract (llp/0006). */
+/** The shape `@expo/agent-cli new --json` prints. Top-level keys are the stable contract (llp/0006). */
 export interface NewProjectReport {
   /** Absolute path of the project directory, whether or not it was created. */
   projectRoot: string;

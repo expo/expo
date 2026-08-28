@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // Which port the lock publishes. The dev server picks it, not the wrapper, so the wrapper reads
 // it back out of the dev server's own log — and must not read the previous run's answer.
 

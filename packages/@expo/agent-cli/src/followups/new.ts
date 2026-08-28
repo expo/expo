@@ -28,17 +28,17 @@ export function buildNewFollowUps({ directory, installed }: NewFollowUpInput): F
   followups.push(
     {
       id: 'status',
-      command: inProject('npx exagent status'),
+      command: inProject('npx @expo/agent-cli status'),
       why: 'Prints what the new project is and what would happen next, without starting anything.',
     },
     {
       id: 'dev',
-      command: inProject('npx exagent dev'),
+      command: inProject('npx @expo/agent-cli dev'),
       why: 'Runs the app, deciding between Expo Go, a development build and a plain dev server from the project state.',
     },
     {
       id: 'agents-setup',
-      command: inProject('npx exagent agents:setup'),
+      command: inProject('npx @expo/agent-cli agents:setup'),
       why: 'Links the agent skills of the installed packages and writes the managed AGENTS.md block.',
     }
   );

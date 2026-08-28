@@ -167,7 +167,7 @@ describe('the fixtures directory', () => {
 describe('input that is not a log', () => {
   let temporaryDir: string;
   beforeAll(() => {
-    temporaryDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exagent-notalog-'));
+    temporaryDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-cli-notalog-'));
   });
   afterAll(() => {
     fs.rmSync(temporaryDir, { recursive: true, force: true });

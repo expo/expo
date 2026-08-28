@@ -291,16 +291,16 @@ export function reachTheAppLadder({
   // session needs from a dev server is a tunnel, because a datacenter cannot reach this loopback.
   const cloudFlag = cloud ? ' --cloud' : '';
   const platformFlag = platform == null ? '' : ` --${platform}`;
-  const navigate = `npx exagent navigate /${platformFlag}${cloudFlag}`;
+  const navigate = `npx @expo/agent-cli navigate /${platformFlag}${cloudFlag}`;
   // `dev` takes the platform too, and dropping it here was F142's sibling: a bare `dev` asks the
   // plan engine to pick a platform, and on a Mac it picks iOS — so the first rung of the ladder out
   // of "no android app is connected" started a dev server for the other one.
-  const dev = `npx exagent dev --detach${cloud ? ' --tunnel' : ''}${platformFlag}`;
+  const dev = `npx @expo/agent-cli dev --detach${cloud ? ' --tunnel' : ''}${platformFlag}`;
 
   if (state === 'no-dev-server') {
     return `start one with "${dev}" in the project root and open the app with "${navigate}", then run this command again.`;
   }
-  return `open the app on a device or simulator with "${navigate}" — or, when the device is a phone or a cloud simulator this machine cannot drive, get the URL to open on it with "npx exagent navigate /${platformFlag} --print-url". Then let "npx exagent smoke${cloudFlag}" wait for the bundle and the app together, and run this command again.`;
+  return `open the app on a device or simulator with "${navigate}" — or, when the device is a phone or a cloud simulator this machine cannot drive, get the URL to open on it with "npx @expo/agent-cli navigate /${platformFlag} --print-url". Then let "npx @expo/agent-cli smoke${cloudFlag}" wait for the bundle and the app together, and run this command again.`;
 }
 
 /** Attach the observed counts to a refusal, in the shape the whole family uses. */
@@ -353,9 +353,9 @@ export function noDevServerError({
       `How: ${reachTheAppLadder({ state: 'no-dev-server', cloud, platform })} ${howToNameTheDevServer(named)}`,
     ].join('\n')
   );
-  // The same command the How: names. They disagreed — `npx expo start` in one and `npx exagent dev`
+  // The same command the How: names. They disagreed — `npx expo start` in one and `npx @expo/agent-cli dev`
   // in the other — which is one failure telling a reader two things [observed — friction run 5].
-  error.suggestedCommand = `npx exagent dev --detach${cloud ? ' --tunnel' : ''}${platform == null ? '' : ` --${platform}`}`;
+  error.suggestedCommand = `npx @expo/agent-cli dev --detach${cloud ? ' --tunnel' : ''}${platform == null ? '' : ` --${platform}`}`;
   return withData(error, { devServerUrl, devServerReachable: false, platform });
 }
 
@@ -393,7 +393,7 @@ export function noAppConnectedError({
   );
   // 22 rather than 1: the CLI worked and could not *conclude*, which is what this band is for.
   error.exitCode = EXIT_OUTCOME_TIMEOUT;
-  error.suggestedCommand = `npx exagent navigate /${platform == null ? '' : ` --${platform}`}${cloud ? ' --cloud' : ''}`;
+  error.suggestedCommand = `npx @expo/agent-cli navigate /${platform == null ? '' : ` --${platform}`}${cloud ? ' --cloud' : ''}`;
   return withData(error, { devServerUrl, devServerReachable: true, platform });
 }
 
@@ -420,7 +420,7 @@ function noAppOnPlatformError(
       ? [
           `No ${platform} app is connected to the Expo dev server at ${devServerUrl}, so there is nothing on ${platform} to read.`,
           `Why: its debugger target list names ${others.length} app${others.length === 1 ? '' : 's'}, and ${others.length === 1 ? 'it is' : 'they are'} on ${uniqueOthers.join(' and ')}${scoped.undetermined.length > 0 ? `, plus ${scoped.undetermined.length} whose platform nothing in the target names` : ''}. Reading one of those would answer a question about ${uniqueOthers[0]} while reporting it as ${platform}.`,
-          `How: open the app on ${platform} with "npx exagent navigate / --${platform}${cloud ? ' --cloud' : ''}", then run this command again. Drop --${platform} to read whichever app is connected.`,
+          `How: open the app on ${platform} with "npx @expo/agent-cli navigate / --${platform}${cloud ? ' --cloud' : ''}", then run this command again. Drop --${platform} to read whichever app is connected.`,
         ].join('\n')
       : [
           `No app connected to the Expo dev server at ${devServerUrl} could be shown to be running on ${platform}.`,
@@ -430,8 +430,8 @@ function noAppOnPlatformError(
   );
   error.suggestedCommand =
     uniqueOthers.length > 0
-      ? `npx exagent navigate / --${platform}${cloud ? ' --cloud' : ''}`
-      : 'npx exagent status --json';
+      ? `npx @expo/agent-cli navigate / --${platform}${cloud ? ' --cloud' : ''}`
+      : 'npx @expo/agent-cli status --json';
   return withData(error, {
     devServerUrl,
     devServerReachable: true,

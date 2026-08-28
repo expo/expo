@@ -9,7 +9,7 @@ describe(buildTypeCheckFollowUps, () => {
     const followups = buildTypeCheckFollowUps({ checked: true, errorCount: 7 });
 
     expect(ids(followups)).toEqual(['typecheck-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent typecheck');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli typecheck');
   });
 
   // The escalation ladder of llp/0009: consistent types, then a bundle that builds, then an app

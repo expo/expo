@@ -5,7 +5,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const deployHelp: CommandHelp = {
   command: 'deploy',
-  usage: 'npx exagent deploy',
+  usage: 'npx @expo/agent-cli deploy',
   options: [
     `--web                Deploy the web export to EAS Hosting`,
     `--native             Launch the native app with create-launch (launch.expo.dev)`,
@@ -16,19 +16,19 @@ export const deployHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent deploy',
+      run: 'npx @expo/agent-cli deploy',
       gets: 'a project with web support deploys its web app; no target flag needed',
     },
     {
-      run: 'npx exagent deploy --web --json',
+      run: 'npx @expo/agent-cli deploy --web --json',
       gets: 'the same, as one object: expo export --platform web, then eas deploy',
     },
     {
-      run: 'npx exagent deploy --native',
+      run: 'npx @expo/agent-cli deploy --native',
       gets: 'a launch.expo.dev URL to open — the store steps happen in the browser',
     },
     {
-      run: 'npx exagent deploy --native --upload-root ../..',
+      run: 'npx @expo/agent-cli deploy --native --upload-root ../..',
       gets: 'the same, for an app that lives inside a monorepo',
     },
   ],
@@ -45,7 +45,7 @@ export const deployHelp: CommandHelp = {
   ],
 };
 
-export const exagentDeploy: Command = async (argv) => {
+export const agentCliDeploy: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -69,7 +69,7 @@ export const exagentDeploy: Command = async (argv) => {
     printCommandHelp(deployHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent deploy -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli deploy -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   // @ref llp/0020-not-an-expo-app.rfc.md — this command acts on the app, so it stops in a
   // directory that holds no app rather than planning work against whatever is there.

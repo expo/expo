@@ -13,7 +13,7 @@ import type { ToolchainProbe } from './types';
 export type BackendSource =
   /** A flag on this command line. Highest, because it is the most recent thing anyone said. */
   | 'flag'
-  /** The project's `exagent` config. */
+  /** The project's `@expo/agent-cli` config. */
   | 'config'
   /** This host cannot have the toolchain at all, whatever anyone installs. */
   | 'host'
@@ -94,7 +94,7 @@ export function selectBuildBackend({
     return choice(
       configured,
       'config',
-      `the exagent config asks for it — "expo.exagent" in package.json.${anyway}`,
+      `the @expo/agent-cli config asks for it — "expo.agentCli" in package.json.${anyway}`,
       configured === 'local' && impossible
     );
   }

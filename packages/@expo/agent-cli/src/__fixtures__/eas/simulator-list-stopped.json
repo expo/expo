@@ -2,7 +2,7 @@
   "sessions": [
     {
       "id": "01a03d80-0556-7d22-98df-f415d9392b98",
-      "name": "exagent wave11 discovery check",
+      "name": "@expo/agent-cli wave11 discovery check",
       "type": "agent-device",
       "status": "STOPPED",
       "platform": "IOS",

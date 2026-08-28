@@ -1,5 +1,5 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
-// What `exagent install --json` prints. The top-level keys are the de-facto version of this
+// What `@expo/agent-cli install --json` prints. The top-level keys are the de-facto version of this
 // command, so they never depend on which way the install went: a caller that reads `impact` after
 // a run that classified nothing gets `[]`, not a missing key.
 
@@ -7,7 +7,7 @@ import type { FollowUp } from '../followups/types';
 import type { InstallImpactReport } from '../project/types';
 import type { InstallCheckReport } from './checkReport';
 
-/** The one JSON object `exagent install --json` prints on stdout. */
+/** The one JSON object `@expo/agent-cli install --json` prints on stdout. */
 export interface InstallReport {
   projectRoot: string;
   /** Package specs named on the command line, e.g. `['expo-clipboard']`. */

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
 //
-// F29: `exagent install --check --json <package>` on a package the project does not have exited
+// F29: `@expo/agent-cli install --check --json <package>` on a package the project does not have exited
 // **1** with a success-shaped object — `installed: false`, `check: null`, the code buried in the
 // body — and zero bytes on stderr. `--check` is the natural first move for an agent deciding
 // whether to install something, so the one thing it must never do is answer a failure with an
@@ -9,17 +9,17 @@
 //
 // Driven through the published bin against the fixture's stub `expo`, because the property is
 // about the process boundary: the exit code, what is on stdout, and what is on stderr.
-import { executeExagentAsync, setupFixtureAsync } from '../utils';
+import { executeAgentCliAsync, setupFixtureAsync } from '../utils';
 
 /** The message the real Expo CLI prints for a package it cannot resolve, verbatim. */
 const PACKAGE_NOT_FOUND =
   '"@react-native-async-storage/async-storage" is added as a dependency in your project\'s package.json but it doesn\'t seem to be installed. Run "npm install", or the equivalent for your package manager, and try again.';
 
-describe('exagent install --check', () => {
+describe('@expo/agent-cli install --check', () => {
   it(`should carry the diagnosis when the Expo CLI printed no report`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['install', '--check', '--json', '@react-native-async-storage/async-storage'],
       {
@@ -45,7 +45,7 @@ describe('exagent install --check', () => {
   it(`should pass the Expo CLI's own report through for a check that ran`, async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['install', '--check', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['install', '--check', '--json'], {
       env: { STUB_EXPO_CHECK_JSON: '{"dependencies":[],"upToDate":true}' },
     });
 
@@ -69,7 +69,7 @@ describe('exagent install --check', () => {
       upToDate: false,
     });
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['install', '--check', '--json', 'expo-camera'],
       { reject: false, env: { STUB_EXPO_EXIT_CODE: '1', STUB_EXPO_CHECK_JSON: report } }
@@ -102,7 +102,7 @@ describe('exagent install --check', () => {
       },
     ];
 
-    const result = await executeExagentAsync(projectRoot, ['install', '--check', '--json'], {
+    const result = await executeAgentCliAsync(projectRoot, ['install', '--check', '--json'], {
       reject: false,
       env: {
         STUB_EXPO_EXIT_CODE: '1',

@@ -64,13 +64,13 @@ function mockPlan(overrides: Partial<StartPlan> = {}): StartPlan {
 
 describe(buildStartFollowUps, () => {
   // The ladder starts one rung lower than it used to: a dev server serves a bundle and opens
-  // nothing, and opening the app was the one step no exagent command named. The cap of three then
+  // nothing, and opening the app was the one step no @expo/agent-cli command named. The cap of three then
   // drops the furthest rung, which is what the cap is for.
   it(`should offer the open step, the LAN URL, and the runtime loop`, () => {
     const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson: true });
 
     expect(ids(followups)).toEqual(['open-app', 'real-device', 'runtime-errors']);
-    expect(followups[0]!.command).toBe('npx exagent navigate /');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli navigate /');
     expect(followups[1]!.command).toBe(lanUrl);
   });
 
@@ -96,7 +96,7 @@ describe(buildStartFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['open-app', 'real-device-tunnel', 'runtime-errors']);
-    expect(followups[1]!.command).toBe('npx exagent start --tunnel');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli start --tunnel');
     expect(followups[1]!.why).toContain('no LAN address');
   });
 
@@ -144,13 +144,13 @@ describe(buildStartFollowUps, () => {
 
       expect(ids(followups)).toEqual(['web-url', 'web-typecheck', 'deploy-web']);
       expect(followups[0]!.command).toBe('http://localhost:8134');
-      expect(followups[1]!.command).toBe('npx exagent typecheck');
+      expect(followups[1]!.command).toBe('npx @expo/agent-cli typecheck');
     });
 
     it(`should offer the deploy that ships a web build, not a native cloud build`, () => {
       const followups = buildStartFollowUps({ ...web, webUrl: 'http://localhost:8134' });
 
-      expect(followups.at(-1)!.command).toBe('npx exagent deploy --web');
+      expect(followups.at(-1)!.command).toBe('npx @expo/agent-cli deploy --web');
       expect(ids(followups)).not.toContain('eas-build-configure');
     });
 
@@ -196,11 +196,11 @@ describe(buildStartPlanFollowUps, () => {
     const followups = buildStartPlanFollowUps(mockPlan(), mockState());
 
     expect(ids(followups)).toEqual(['dev']);
-    expect(followups[0]!.command).toBe('npx exagent dev');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli dev');
   });
 
   // F103 — found live on 2026-08-27: `dev --plan --android` printed
-  // `expo start --go --android` and then offered `npx exagent dev`, which on this Mac plans for
+  // `expo start --go --android` and then offered `npx @expo/agent-cli dev`, which on this Mac plans for
   // **iOS**. The one follow-up whose whole promise is "runs the plan above" ran a different plan.
   //
   // The flag the caller typed is what is carried, not the platform the plan settled on: a no-flag
@@ -211,13 +211,13 @@ describe(buildStartPlanFollowUps, () => {
       buildStartPlanFollowUps(mockPlan(), mockState(), 'android').find(
         (followup) => followup.id === 'dev'
       )!.command
-    ).toBe('npx exagent dev --android');
+    ).toBe('npx @expo/agent-cli dev --android');
 
     expect(
       buildStartPlanFollowUps(mockPlan(), mockState(), undefined).find(
         (followup) => followup.id === 'dev'
       )!.command
-    ).toBe('npx exagent dev');
+    ).toBe('npx @expo/agent-cli dev');
   });
 
   it.each(['dev-client-stale', 'bare-stale', 'needs-dev-client'])(
@@ -227,7 +227,7 @@ describe(buildStartPlanFollowUps, () => {
 
       expect(ids(followups)).toContain('build-freshness');
       expect(followups.find((item) => item.id === 'build-freshness')!.command).toBe(
-        'npx exagent status'
+        'npx @expo/agent-cli status'
       );
     }
   );
@@ -250,7 +250,7 @@ describe(buildStartPlanFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['dev', 'build-freshness', 'project-context']);
-    expect(followups.at(-1)!.command).toBe('npx exagent status --json');
+    expect(followups.at(-1)!.command).toBe('npx @expo/agent-cli status --json');
   });
 
   it(`should never offer more than three follow-ups`, () => {
@@ -416,7 +416,7 @@ describe(`${buildStartFollowUps.name} — a tunnelled run, and a machine with no
     expect(followups.map((followup) => followup.command)).not.toContain(lanUrl);
     expect(ids(followups)).toContain('real-device-tunnel');
     expect(followups.find((followup) => followup.id === 'real-device-tunnel')!.command).toBe(
-      'npx exagent navigate / --print-url'
+      'npx @expo/agent-cli navigate / --print-url'
     );
   });
 
@@ -453,7 +453,7 @@ describe(`${buildStartFollowUps.name} — a tunnelled run, and a machine with no
     const open = followups.find((followup) => followup.id === 'open-app-cloud');
 
     expect(ids(followups)).not.toContain('open-app');
-    expect(open?.command).toBe('npx exagent navigate / --cloud');
+    expect(open?.command).toBe('npx @expo/agent-cli navigate / --cloud');
     expect(open?.why).toContain('bills until');
   });
 
@@ -470,7 +470,7 @@ describe(`${buildStartFollowUps.name} — a tunnelled run, and a machine with no
   it(`leads a tunnelled run with no device with the URL command`, () => {
     const followups = buildStartFollowUps({ ...base, tunnel: true, localDevice: 'absent' });
 
-    expect(followups[0]!.command).toBe('npx exagent navigate / --print-url');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli navigate / --print-url');
     expect(followups[0]!.why).toContain('no booted simulator and no attached device');
   });
 });

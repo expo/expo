@@ -1,4 +1,4 @@
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `@expo/agent-cli` launcher
 // The whole command surface as data: which names exist, what loads them, and how one argv resolves
 // to one of them. `cli.ts` reads the answer and does the I/O; nothing here prints or exits, so the
 // resolution rules are unit-testable without spawning the CLI.
@@ -23,7 +23,7 @@ import type { CommandHelp } from './help/types';
 import type { Command } from './types';
 import { color } from './utils/color';
 
-/** Loads one command module on demand, so `exagent --help` never pays for the whole CLI. */
+/** Loads one command module on demand, so `@expo/agent-cli --help` never pays for the whole CLI. */
 export type CommandLoader = () => Promise<Command>;
 
 /**
@@ -91,14 +91,14 @@ export interface CommandGroup {
   /** What the group is for, printed as the `Info` line of the group help. */
   summary: string;
   /**
-   * Action the bare group name runs, e.g. `exagent doctor` runs `doctor:check`.
+   * Action the bare group name runs, e.g. `@expo/agent-cli doctor` runs `doctor:check`.
    * A group without one prints its help instead, because there is nothing obvious to do.
    */
   defaultAction?: string;
   /**
    * The command another CLI owns the bare group name for, e.g. `npx eas build` for `build`.
    *
-   * Set it when the group name is also a verb someone will type on its own. `exagent build
+   * Set it when the group name is also a verb someone will type on its own. `@expo/agent-cli build
    * --platform ios` is not a typo — it is a real command of a real CLI, aimed at the wrong one —
    * and the answer that helps is that command, with the caller's own flags on it, rather than a
    * listing of two actions that do something else (llp/0010 §Registry rules).
@@ -123,7 +123,7 @@ export function withAction(action: string, load: CommandLoader): CommandLoader {
 export const topLevelCommands: { [command: string]: TopLevelCommand } = {
   deploy: {
     summary: 'Ship the web app, or launch the native one',
-    load: () => import('./deploy').then((i) => i.exagentDeploy),
+    load: () => import('./deploy').then((i) => i.agentCliDeploy),
     help: () => import('./deploy').then((i) => i.deployHelp),
   },
   // The on-ramp, as a command rather than only as a flag. An agent that has been handed this CLI
@@ -131,22 +131,22 @@ export const topLevelCommands: { [command: string]: TopLevelCommand } = {
   // suggestion to read something else (llp/0024 §The on-ramp).
   help: {
     summary: `Learn the workflow, or one command's help`,
-    load: () => import('./help').then((i) => i.exagentHelp),
+    load: () => import('./help').then((i) => i.agentCliHelp),
     help: () => import('./help').then((i) => i.helpHelp),
   },
   install: {
     summary: 'Install packages, and link the skills they ship',
-    load: () => import('./install').then((i) => i.exagentInstall),
+    load: () => import('./install').then((i) => i.agentCliInstall),
     help: () => import('./install').then((i) => i.installHelp),
   },
   navigate: {
     summary: 'Open a route in the app on a booted device',
-    load: () => import('./navigate').then((i) => i.exagentNavigate),
+    load: () => import('./navigate').then((i) => i.agentCliNavigate),
     help: () => import('./navigate').then((i) => i.navigateHelp),
   },
   new: {
     summary: 'Create a new Expo project without a terminal',
-    load: () => import('./new').then((i) => i.exagentNew),
+    load: () => import('./new').then((i) => i.agentCliNew),
     help: () => import('./new').then((i) => i.newHelp),
   },
   // A capability only this CLI has, so it gets a verb of its own (llp/0006 naming rule): `expo`
@@ -158,17 +158,17 @@ export const topLevelCommands: { [command: string]: TopLevelCommand } = {
   // pass — was falsified by a development build with the code needing no change.
   smoke: {
     summary: 'Prove the app boots, on a device',
-    load: () => import('./smoke').then((i) => i.exagentSmoke),
+    load: () => import('./smoke').then((i) => i.agentCliSmoke),
     help: () => import('./smoke').then((i) => i.smokeHelp),
   },
   start: {
     summary: 'expo start, plus a sync of the agent skills',
-    load: () => import('./start').then((i) => i.exagentStart),
+    load: () => import('./start').then((i) => i.agentCliStart),
     help: () => import('./start').then((i) => i.startHelp),
   },
   status: {
     summary: 'Where the project is now, and what to run next',
-    load: () => import('./status').then((i) => i.exagentStatus),
+    load: () => import('./status').then((i) => i.agentCliStatus),
     help: () => import('./status').then((i) => i.statusHelp),
   },
   // A capability only this CLI has gets a verb of its own (llp/0006 naming rule): `expo` has no
@@ -176,7 +176,7 @@ export const topLevelCommands: { [command: string]: TopLevelCommand } = {
   // there is no `expo` behaviour for this name to have to match.
   typecheck: {
     summary: `Type-check with the project's own compiler`,
-    load: () => import('./typecheck').then((i) => i.exagentTypecheck),
+    load: () => import('./typecheck').then((i) => i.agentCliTypecheck),
     help: () => import('./typecheck').then((i) => i.typecheckHelp),
   },
 };
@@ -188,7 +188,7 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     actions: {
       setup: {
         summary: 'Write AGENTS.md and link the agent skills',
-        load: () => import('./agents').then((i) => i.exagentAgentsSetup),
+        load: () => import('./agents').then((i) => i.agentCliAgentsSetup),
         help: () => import('./agents').then((i) => i.agentsSetupHelp),
       },
     },
@@ -210,7 +210,7 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       // reader about.
       'build-log': {
         summary: 'Say what failed in a build log',
-        load: () => import('./builds').then((i) => i.exagentInspectBuildLog),
+        load: () => import('./builds').then((i) => i.agentCliInspectBuildLog),
         help: () => import('./builds').then((i) => i.inspectBuildLogHelp),
       },
       // Still unstable, and the only command in the surface that is. Its report has three times
@@ -219,13 +219,13 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       // is five waves old and has been read on one project shape.
       'config-plugins': {
         summary: 'What the config plugins produced',
-        load: () => import('./config').then((i) => i.exagentInspectConfigPlugins),
+        load: () => import('./config').then((i) => i.agentCliInspectConfigPlugins),
         help: () => import('./config').then((i) => i.inspectConfigPluginsHelp),
         unstable: true,
       },
     },
   },
-  // `dev` is a group with a default action rather than a top-level command, so `exagent dev` runs
+  // `dev` is a group with a default action rather than a top-level command, so `@expo/agent-cli dev` runs
   // the plan engine exactly as before while `dev:stop` and `dev:logs` join it as entries. Promoting
   // a name this way costs nothing at the call site: a group with a `defaultAction` gives it every
   // option.
@@ -235,17 +235,17 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     actions: {
       run: {
         summary: 'Get this app onto a device: plan it, then run it',
-        load: () => import('./dev').then((i) => i.exagentDev),
+        load: () => import('./dev').then((i) => i.agentCliDev),
         help: () => import('./dev').then((i) => i.devRunHelp),
       },
       stop: {
         summary: `Stop this project's dev server`,
-        load: () => import('./dev/stop').then((i) => i.exagentDevStop),
+        load: () => import('./dev/stop').then((i) => i.agentCliDevStop),
         help: () => import('./dev/stop').then((i) => i.devStopHelp),
       },
       logs: {
         summary: 'Read what the detached dev server printed',
-        load: () => import('./dev/logs').then((i) => i.exagentDevLogs),
+        load: () => import('./dev/logs').then((i) => i.agentCliDevLogs),
         help: () => import('./dev/logs').then((i) => i.devLogsHelp),
       },
     },
@@ -256,7 +256,7 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     actions: {
       check: {
         summary: 'Run expo-doctor and normalize its report',
-        load: () => import('./doctor').then((i) => i.exagentDoctorCheck),
+        load: () => import('./doctor').then((i) => i.agentCliDoctorCheck),
         help: () => import('./doctor').then((i) => i.doctorCheckHelp),
       },
     },
@@ -266,12 +266,12 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     actions: {
       eval: {
         summary: 'Evaluate JavaScript in the running app',
-        load: withAction('eval', () => import('./runtime').then((i) => i.exagentRuntime)),
+        load: withAction('eval', () => import('./runtime').then((i) => i.agentCliRuntime)),
         help: () => import('./runtime').then((i) => i.runtimeEvalHelp),
       },
       errors: {
         summary: 'Collect runtime errors over a time window',
-        load: withAction('errors', () => import('./runtime').then((i) => i.exagentRuntime)),
+        load: withAction('errors', () => import('./runtime').then((i) => i.agentCliRuntime)),
         help: () => import('./runtime').then((i) => i.runtimeErrorsHelp),
       },
       // The interaction commands, from the spike of llp/0014. Modules of their own, like
@@ -285,17 +285,17 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       // and the report shape has not moved in the nineteen waves since.
       tree: {
         summary: 'What is on screen, ready for a tap',
-        load: () => import('./runtime/interact/tree').then((i) => i.exagentRuntimeTree),
+        load: () => import('./runtime/interact/tree').then((i) => i.agentCliRuntimeTree),
         help: () => import('./runtime/interact/tree').then((i) => i.runtimeTreeHelp),
       },
       tap: {
         summary: 'Tap the element carrying a testID',
-        load: () => import('./runtime/interact/tap').then((i) => i.exagentRuntimeTap),
+        load: () => import('./runtime/interact/tap').then((i) => i.agentCliRuntimeTap),
         help: () => import('./runtime/interact/tap').then((i) => i.runtimeTapHelp),
       },
       type: {
         summary: 'Type into the input with a testID',
-        load: () => import('./runtime/interact/type').then((i) => i.exagentRuntimeType),
+        load: () => import('./runtime/interact/type').then((i) => i.agentCliRuntimeType),
         help: () => import('./runtime/interact/type').then((i) => i.runtimeTypeHelp),
       },
       // Two actions with modules of their own, like `dev:stop`: they drive the app rather than
@@ -303,12 +303,12 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       // into the shared `runtime` module would give one `--help` block three subjects.
       reload: {
         summary: 'Reload the app onto the code on disk now',
-        load: () => import('./runtime/reload').then((i) => i.exagentReload),
+        load: () => import('./runtime/reload').then((i) => i.agentCliReload),
         help: () => import('./runtime/reload').then((i) => i.runtimeReloadHelp),
       },
       stop: {
         summary: 'Stop the app on the device it runs on',
-        load: () => import('./runtime/stop').then((i) => i.exagentRuntimeStop),
+        load: () => import('./runtime/stop').then((i) => i.agentCliRuntimeStop),
         help: () => import('./runtime/stop').then((i) => i.runtimeStopHelp),
       },
     },
@@ -319,22 +319,22 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     actions: {
       sync: {
         summary: `Link the installed packages' skills`,
-        load: withAction('sync', () => import('./skills').then((i) => i.exagentSkills)),
+        load: withAction('sync', () => import('./skills').then((i) => i.agentCliSkills)),
         help: () => import('./skills').then((i) => i.skillsSyncHelp),
       },
       list: {
         summary: 'List the skills the installed packages ship',
-        load: withAction('list', () => import('./skills').then((i) => i.exagentSkills)),
+        load: withAction('list', () => import('./skills').then((i) => i.agentCliSkills)),
         help: () => import('./skills').then((i) => i.skillsListHelp),
       },
       show: {
         summary: `Print the SKILL.md of a package`,
-        load: withAction('show', () => import('./skills').then((i) => i.exagentSkills)),
+        load: withAction('show', () => import('./skills').then((i) => i.agentCliSkills)),
         help: () => import('./skills').then((i) => i.skillsShowHelp),
       },
       clean: {
         summary: 'Remove the managed skill links',
-        load: withAction('clean', () => import('./skills').then((i) => i.exagentSkills)),
+        load: withAction('clean', () => import('./skills').then((i) => i.agentCliSkills)),
         help: () => import('./skills').then((i) => i.skillsCleanHelp),
       },
     },
@@ -344,8 +344,8 @@ export const commandGroups: { [group: string]: CommandGroup } = {
 /**
  * Other names for a command above, as `alias -> command`.
  *
- * These exist for parity: `expo add` is `expo install` under another name, so `exagent add` has to
- * be `exagent install` — the wrapper with the skill sync and the impact report — and not a bare
+ * These exist for parity: `expo add` is `expo install` under another name, so `@expo/agent-cli add` has to
+ * be `@expo/agent-cli install` — the wrapper with the skill sync and the impact report — and not a bare
  * forward that quietly does less than the command it looks like. An alias resolves to its target's
  * name, so the event stream and the follow-ups only ever name the command that ran.
  *
@@ -420,15 +420,15 @@ export type CommandResolution =
  *
  * Two rules of the resolution order are worth naming:
  *
- * 1. **Options without an action are an error, not help.** `exagent <group> --json` used to print
+ * 1. **Options without an action are an error, not help.** `@expo/agent-cli <group> --json` used to print
  *    the group listing and exit 0, which an agent reads as "that worked" — a silent no-op is the
  *    one answer a driving agent cannot recover from. A group that declares a `defaultAction` is
  *    unaffected: there the options belong to that action, and it runs with them.
  * 2. **A group cannot capture the bare form of a forwarded `expo` command.** A group named after
- *    one — `config`, say — owns its colon forms (`config:doctor`) and nothing else: `exagent
+ *    one — `config`, say — owns its colon forms (`config:doctor`) and nothing else: `@expo/agent-cli
  *    config` stays `expo config`, because the bare name means what the `expo` command means
  *    (llp/0006 naming rule). The space form is unavailable for such a group, so
- *    `exagent config doctor` forwards two arguments to `expo config` rather than resolving here.
+ *    `@expo/agent-cli config doctor` forwards two arguments to `expo config` rather than resolving here.
  *
  * @param command The first positional argument, e.g. `runtime:eval` or `runtime`.
  * @param argv Everything after it, with the help flag already normalized into it by `cli.ts`.
@@ -474,7 +474,7 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
         load: target.load,
       };
     }
-    // `exagent <group> --help` is about the group, so it lists the actions instead of running one.
+    // `@expo/agent-cli <group> --help` is about the group, so it lists the actions instead of running one.
     if (argv.includes('--help') || argv.includes('-h')) {
       return { kind: 'group-help', group: command };
     }
@@ -542,7 +542,7 @@ export function commandSummary(name: string): string {
 
 /** One rung of the workflow map: a command line, and what running it gets you. */
 export interface WorkflowRung {
-  /** The command as a caller types it after `npx exagent`, e.g. `dev --detach`. */
+  /** The command as a caller types it after `npx @expo/agent-cli`, e.g. `dev --detach`. */
   run: string;
   /** What it gets you, in the present tense. Short enough to sit in a column. */
   gets: string;
@@ -783,7 +783,7 @@ function wrapCommands(commands: string[], indent: string): string {
 export const CLI_SUMMARY = 'get an Expo app running on a device, change it, check it, and ship it';
 
 /**
- * The `exagent --help` screen: the loop first, then every command by the job it does.
+ * The `@expo/agent-cli --help` screen: the loop first, then every command by the job it does.
  *
  * @ref llp/0024-cli-ui.rfc.md §The workflow map
  * The order is the argument. A caller who does not know this CLI cannot use a listing — they do not
@@ -808,10 +808,10 @@ export function formatTopLevelHelp(): string {
     .join('\n');
 
   return `
-  ${color.command('exagent')} — ${CLI_SUMMARY}
+  ${color.command('@expo/agent-cli')} — ${CLI_SUMMARY}
 
   ${color.heading('Usage')}
-    ${color.muted('$')} npx exagent <command> [options]
+    ${color.muted('$')} npx @expo/agent-cli <command> [options]
 
   ${ON_RAMP_FOOTER}
     ${color.muted('what to run in order, the exit codes, and the --json contract')}
@@ -824,11 +824,11 @@ ${sections}
     --help, -h      Usage info
 
   The options, examples and JSON keys of one command
-    ${color.muted('$')} npx exagent status --help
+    ${color.muted('$')} npx @expo/agent-cli status --help
 `;
 }
 
-/** The `exagent <group>` listing: what the group is for, and the actions it has. */
+/** The `@expo/agent-cli <group>` listing: what the group is for, and the actions it has. */
 export function formatGroupHelp(name: string): string {
   const group = commandGroups[name]!;
   // One column for the names, so the summaries line up whatever the longest action is called.
@@ -844,7 +844,7 @@ export function formatGroupHelp(name: string): string {
     ? `\n\n    ${color.muted(EXPERIMENTAL_NOTE)}`
     : '';
   const bare = group.defaultAction
-    ? `\n\n    ${color.command(`npx exagent ${name}`)} runs ${color.command(`${name}:${group.defaultAction}`)}, whose options are below.`
+    ? `\n\n    ${color.command(`npx @expo/agent-cli ${name}`)} runs ${color.command(`${name}:${group.defaultAction}`)}, whose options are below.`
     : '';
   // The example names an action the reader has *not* just been shown the options of: for a group
   // with a default action, `cli.ts` prints that action's own help right under this listing.
@@ -856,13 +856,13 @@ export function formatGroupHelp(name: string): string {
   ${color.command(name)} — ${group.summary}
 
   ${color.heading('Usage')}
-    ${color.muted('$')} npx exagent ${name}:${color.muted('<action> [options]')}
+    ${color.muted('$')} npx @expo/agent-cli ${name}:${color.muted('<action> [options]')}
 
   ${color.heading('Actions')}
 ${actions}${experimental}${bare}
 
   For the options of one action, run it with the ${color.heading('--help')} flag
-    ${color.muted('$')} npx exagent ${example} --help
+    ${color.muted('$')} npx @expo/agent-cli ${example} --help
 
   ${ON_RAMP_FOOTER}
 `;
@@ -874,9 +874,9 @@ ${actions}${experimental}${bare}
  */
 export function unknownActionMessage(group: string, action: string): string {
   return (
-    `"${action}" is not an action of "exagent ${group}". ` +
+    `"${action}" is not an action of "@expo/agent-cli ${group}". ` +
     `The actions of the ${group} group are the ones listed above: ${actionNames(group).join(', ')}. ` +
-    `Run one of those, or "npx exagent ${group} --help" for what each of them does.`
+    `Run one of those, or "npx @expo/agent-cli ${group} --help" for what each of them does.`
   );
 }
 
@@ -891,12 +891,12 @@ export function unknownActionMessage(group: string, action: string): string {
 export function flagsWithoutActionMessage(group: string, flags: string[]): string {
   const bare = commandGroups[group]?.bareNameCommand;
   return (
-    `"exagent ${group} ${flags.join(' ')}" names no action, so nothing ran. ` +
+    `"@expo/agent-cli ${group} ${flags.join(' ')}" names no action, so nothing ran. ` +
     `The ${group} group has no default action: its options belong to one of its actions, not to the group itself, so there is nothing here for ${flags[0]} to apply to. ` +
     (bare
-      ? `"exagent ${group}" is not the command that starts one — that is "${bare}", which takes these options. `
+      ? `"@expo/agent-cli ${group}" is not the command that starts one — that is "${bare}", which takes these options. `
       : '') +
-    `Run one of ${actionNames(group).join(', ')} with those options, or "npx exagent ${group} --help" for what each of them does.`
+    `Run one of ${actionNames(group).join(', ')} with those options, or "npx @expo/agent-cli ${group} --help" for what each of them does.`
   );
 }
 
@@ -908,7 +908,7 @@ export function flagsWithoutActionMessage(group: string, flags: string[]): strin
  */
 export function flagsWithoutActionSuggestion(group: string, flags: string[]): string {
   const bare = commandGroups[group]?.bareNameCommand;
-  return bare ? [bare, ...flags].join(' ') : `npx exagent ${group} --help`;
+  return bare ? [bare, ...flags].join(' ') : `npx @expo/agent-cli ${group} --help`;
 }
 
 /**
@@ -944,10 +944,10 @@ function maxEditsFor(name: string): number {
  *
  * Two rules, in order, because they answer two different mistakes:
  *
- * 1. **The action name on its own.** `exagent sync` is not a typo — it is a caller that knows what
+ * 1. **The action name on its own.** `@expo/agent-cli sync` is not a typo — it is a caller that knows what
  *    it wants and does not know which group owns it, and the answer is every group that has an
  *    action by that name: `skills:sync`. Exact, so it never guesses.
- * 2. **A small number of edits.** `exagent stauts` is the other mistake, and Levenshtein is what
+ * 2. **A small number of edits.** `@expo/agent-cli stauts` is the other mistake, and Levenshtein is what
  *    recognises it. Ordered by distance, then by the registry's own order, so the answer is stable.
  *
  * Pure and exported for the test table: the value of a suggestion is entirely in which names it
@@ -997,7 +997,7 @@ function editDistance(a: string, b: string): number {
  * A capability a caller reaches for that this CLI does not have, and what does the job instead.
  *
  * The nearest-match rules above answer a *typo*; this table answers a *wrong assumption*, which
- * they cannot: `exagent logs` is spelled correctly, is nothing like any name in the registry, and
+ * they cannot: `@expo/agent-cli logs` is spelled correctly, is nothing like any name in the registry, and
  * so is answered with "is in none of them" and a link to the full listing — leaving the reader to
  * work out from thirty names whether a log command exists at all. Saying that it does not, and
  * naming the two commands that answer what a log is read for, is one hop instead of three.
@@ -1012,19 +1012,19 @@ const absentCapabilities: {
   // `dev:logs` exists now, so the bare name is a caller one hop away from it rather than one
   // reaching for a capability this CLI does not have. The other two commands stay in the answer:
   // a log is read for three different questions, and only one of them is "what did it print".
-  // `exagent build --platform ios` is a real command of a real CLI aimed at the wrong one. It used
+  // `@expo/agent-cli build --platform ios` is a real command of a real CLI aimed at the wrong one. It used
   // to be answered by a `build` group with a `bareNameCommand` (llp/0010 §Registry rules (c)); the
   // v1 narrowing left that group with nothing in it — `build:wait` deferred, `build:explain` renamed
   // to `inspect:build-log` — so the answer moved here, where a name this CLI does not have belongs.
   build: {
     absent: `starting a build is the EAS CLI's job, not this one's`,
-    instead: `Run "npx eas build" with the flags you meant to pass here — this CLI wraps no build verb, and never did. What it has is "npx exagent inspect:build-log", which reads the log a finished build left behind and says what failed in it.`,
+    instead: `Run "npx eas build" with the flags you meant to pass here — this CLI wraps no build verb, and never did. What it has is "npx @expo/agent-cli inspect:build-log", which reads the log a finished build left behind and says what failed in it.`,
     suggestedCommand: 'npx eas build',
   },
   logs: {
-    absent: `the log this CLI keeps is the dev server's, and it is "npx exagent dev:logs"`,
-    instead: `That reads what a dev server started with "npx exagent dev --detach" has printed. For the two questions a log is more often opened for: "npx exagent smoke" says whether the bundler finished, whether this project compiles and whether the app came up, and "npx exagent runtime:errors" collects what the running app threw over a time window.`,
-    suggestedCommand: 'npx exagent dev:logs',
+    absent: `the log this CLI keeps is the dev server's, and it is "npx @expo/agent-cli dev:logs"`,
+    instead: `That reads what a dev server started with "npx @expo/agent-cli dev --detach" has printed. For the two questions a log is more often opened for: "npx @expo/agent-cli smoke" says whether the bundler finished, whether this project compiles and whether the app came up, and "npx @expo/agent-cli runtime:errors" collects what the running app threw over a time window.`,
+    suggestedCommand: 'npx @expo/agent-cli dev:logs',
   },
 };
 // The singular is the same mistake, and the same answer.
@@ -1044,7 +1044,7 @@ absentCapabilities.log = absentCapabilities.logs!;
 // registry — so the table is the only thing that can answer.
 const onRampRecovery = {
   absent: `the on-ramp is a topic you ask "help" for by name`,
-  instead: `Run "${ON_RAMP_POINTER}". "help" takes a positional topic — not a colon action, and not a flag — and anything that is not a topic is read as a command name, so "npx exagent help <command>" prints that command's own help.`,
+  instead: `Run "${ON_RAMP_POINTER}". "help" takes a positional topic — not a colon action, and not a flag — and anything that is not a topic is read as a command name, so "npx @expo/agent-cli help <command>" prints that command's own help.`,
   suggestedCommand: ON_RAMP_POINTER,
 };
 for (const spelling of [
@@ -1062,9 +1062,9 @@ export function unknownCommandMessage(command: string): string {
   const absent = absentCapabilities[command.toLowerCase()];
   if (absent) {
     return (
-      `"exagent ${command}" is not a command, and ${absent.absent}. ` +
+      `"@expo/agent-cli ${command}" is not a command, and ${absent.absent}. ` +
       `${absent.instead} ` +
-      `Run "npx exagent --help" for the whole list.`
+      `Run "npx @expo/agent-cli --help" for the whole list.`
     );
   }
 
@@ -1073,18 +1073,18 @@ export function unknownCommandMessage(command: string): string {
   // `dev:logs`, not a listing of thirty commands to find it in again.
   const didYouMean = suggestions.length
     ? `The closest ${suggestions.length === 1 ? 'name is' : 'names are'} ${suggestions
-        .map((name) => `"npx exagent ${name}"`)
+        .map((name) => `"npx @expo/agent-cli ${name}"`)
         .join(', ')}. `
     : '';
   return (
-    `"exagent ${command}" is not a command. ` +
-    `exagent runs its own commands, the actions of its command groups (${Object.keys(
+    `"@expo/agent-cli ${command}" is not a command. ` +
+    `@expo/agent-cli runs its own commands, the actions of its command groups (${Object.keys(
       commandGroups
     ).join(
       ', '
     )}), and a fixed set of ${forwardedCommands.length} expo commands it forwards; "${command}" is in none of them, so neither CLI has it. ` +
     didYouMean +
-    `Run "npx exagent --help" for the whole list.`
+    `Run "npx @expo/agent-cli --help" for the whole list.`
   );
 }
 
@@ -1102,6 +1102,6 @@ export function unknownCommandSuggestion(command: string): string {
 
   const suggestions = suggestCommandNames(command);
   return suggestions.length === 1
-    ? `npx exagent ${suggestions[0]} --help`
-    : 'npx exagent --help';
+    ? `npx @expo/agent-cli ${suggestions[0]} --help`
+    : 'npx @expo/agent-cli --help';
 }

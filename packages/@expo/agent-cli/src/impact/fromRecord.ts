@@ -1,12 +1,12 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §The impact headline is free, the explanation is not
 // @ref llp/0011-impact-and-freshness.rfc.md §Two commands, one classifier
 //
-// What a change costs, computed from two things `exagent status` already holds: the fingerprint
-// its probe took, and the one `.expo/exagent-last-build.json` recorded after the last build this
+// What a change costs, computed from two things `@expo/agent-cli status` already holds: the fingerprint
+// its probe took, and the one `.expo/agent-cli-last-build.json` recorded after the last build this
 // CLI ran. No subprocess, no network, no second fingerprint run — see `src/project/localDiff.ts`
 // for the diff this leans on and why it is a port rather than a spawn.
 //
-// **This answers `null` where `exagent impact` answers `needs-native-build`, and that is the
+// **This answers `null` where `@expo/agent-cli impact` answers `needs-native-build`, and that is the
 // difference between the two commands rather than a disagreement.** `impact` is a *gate*: it has
 // to name a class because `--assert` compares against one, and "unknown" cannot be gated on, so
 // its rule is the conservative one — undecided means build, which over-plans at worst. `status` is
@@ -44,7 +44,7 @@ export interface RecordedImpact {
 /**
  * Classify the working tree against what was recorded for one platform.
  *
- * @param recorded what `.expo/exagent-last-build.json` holds for the platform, or null.
+ * @param recorded what `.expo/agent-cli-last-build.json` holds for the platform, or null.
  * @param head the fingerprint of the working tree, as the project probe took it.
  */
 export function classifyAgainstRecordedBuild(
@@ -59,11 +59,11 @@ export function classifyAgainstRecordedBuild(
     );
   }
   if (!recorded) {
-    // Not "unchanged", and not a class either. `exagent dev` writes this record after a native
+    // Not "unchanged", and not a class either. `@expo/agent-cli dev` writes this record after a native
     // build it ran; a build made by EAS, by Xcode, or on another machine leaves nothing here.
     return undecided(
       null,
-      `no build is recorded for ${platform}, so there is nothing to compare this against — "exagent dev" writes the record after a native build it runs`
+      `no build is recorded for ${platform}, so there is nothing to compare this against — "@expo/agent-cli dev" writes the record after a native build it runs`
     );
   }
 

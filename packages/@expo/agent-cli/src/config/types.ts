@@ -37,7 +37,7 @@ export interface EffectiveConfigReport {
   /**
    * The `sdkVersion` the **evaluated app config** resolves to, e.g. `57.0.0`.
    *
-   * Deliberately not called `sdkVersion`: `exagent status` reports a field of that name, and it is
+   * Deliberately not called `sdkVersion`: `@expo/agent-cli status` reports a field of that name, and it is
    * the version of the **installed `expo` package** — `57.0.15` where this reads `57.0.0`. Both are
    * right and they answer different questions, so they cannot share one name. This is the SDK line
    * the config targets and the plugins compiled against; `status.project.sdkVersion` is the code
@@ -73,7 +73,7 @@ export interface EffectiveConfigReport {
    * `_internal.autolinkedModules`, which the prebuild config fills from the Expo autolinking
    * resolver, so it holds packages that ship an `expo-module.config.json` and nothing else. A React
    * Native community module with an `ios/`, an `android/` and a podspec — the shape
-   * `exagent install` classifies as `native-module` — is linked by React Native's own autolinking
+   * `@expo/agent-cli install` classifies as `native-module` — is linked by React Native's own autolinking
    * and never appears here [observed — friction run 3, F35: `@react-native-async-storage/
    * async-storage` was classified `native-module` by one command and absent from this list in the
    * next]. Under the old name `autolinkedModules`, an agent asking "is my native dependency

@@ -60,9 +60,9 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
   if (!records.length) {
     const error = new CommandError(
       'NO_CHECKPOINTS',
-      `No checkpoint is recorded for this project. "exagent install", "exagent agents:setup" and "exagent dev" record one before they change anything, and "exagent checkpoint" records one now.`
+      `No checkpoint is recorded for this project. "@expo/agent-cli install", "@expo/agent-cli agents:setup" and "@expo/agent-cli dev" record one before they change anything, and "@expo/agent-cli checkpoint" records one now.`
     );
-    error.suggestedCommand = 'npx exagent checkpoint';
+    error.suggestedCommand = 'npx @expo/agent-cli checkpoint';
     throw error;
   }
 
@@ -70,9 +70,9 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
   if (!record) {
     const error = new CommandError(
       'CHECKPOINT_NOT_FOUND',
-      `No checkpoint of this project has the id "${options.id}". The ids of the ${records.length} recorded checkpoints are listed by "exagent checkpoint:list".`
+      `No checkpoint of this project has the id "${options.id}". The ids of the ${records.length} recorded checkpoints are listed by "@expo/agent-cli checkpoint:list".`
     );
-    error.suggestedCommand = 'npx exagent checkpoint:list';
+    error.suggestedCommand = 'npx @expo/agent-cli checkpoint:list';
     throw error;
   }
 
@@ -89,7 +89,7 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
       'CHECKPOINT_OBJECT_MISSING',
       `Git no longer has the snapshot ${shortId(record.id)}. A checkpoint is an unreferenced git object, so "git gc --prune=now" deletes it. Restore an older checkpoint, or recover the files from git history.`
     );
-    error.suggestedCommand = 'npx exagent checkpoint:list';
+    error.suggestedCommand = 'npx @expo/agent-cli checkpoint:list';
     throw error;
   }
 
@@ -134,7 +134,7 @@ export interface PrintUndoOptions extends UndoOptions {
   followups?: boolean;
 }
 
-/** The `exagent checkpoint:undo` command: restore a checkpoint, then say what changed and what is left. */
+/** The `@expo/agent-cli checkpoint:undo` command: restore a checkpoint, then say what changed and what is left. */
 export async function printUndoAsync(
   projectRoot: string,
   options: PrintUndoOptions
@@ -202,7 +202,7 @@ export interface PrintCheckpointListOptions {
 }
 
 /**
- * The `exagent checkpoint:list` command: the checkpoints this project has.
+ * The `@expo/agent-cli checkpoint:list` command: the checkpoints this project has.
  *
  * Reads the store only. It answers in a project whose repository is gone, and never spawns git.
  */
@@ -220,7 +220,7 @@ export async function printCheckpointListAsync(
   if (!records.length) {
     Log.log(
       chalk.dim(
-        'No checkpoint is recorded for this project. Record one with "npx exagent checkpoint".'
+        'No checkpoint is recorded for this project. Record one with "npx @expo/agent-cli checkpoint".'
       )
     );
     return;

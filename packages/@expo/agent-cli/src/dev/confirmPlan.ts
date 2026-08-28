@@ -1,5 +1,5 @@
 // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run
-// The human guardrail on the plan-first contract: since `exagent dev` runs the plan it printed,
+// The human guardrail on the plan-first contract: since `@expo/agent-cli dev` runs the plan it printed,
 // a person watching a terminal gets one chance to say no before a prebuild or a native build
 // starts. Agents and CI never see this prompt — they are non-interactive, and `--plan` is the
 // approval hop built for them.
@@ -51,7 +51,7 @@ export async function confirmPlanAsync(plan: StartPlan, options: DevOptions): Pr
   if (!approved) {
     event('start_plan_declined', { rule: plan.rule, steps: plan.steps.length });
     Log.log(
-      chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx exagent dev --plan} to print it again, or {bold npx exagent start} to start the dev server without planning.`
+      chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx @expo/agent-cli dev --plan} to print it again, or {bold npx @expo/agent-cli start} to start the dev server without planning.`
     );
   }
   return approved;

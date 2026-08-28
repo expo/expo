@@ -20,7 +20,7 @@ introduced on purpose:
   indented continuation lines**, which is what pins that a nested explanation is joined onto the
   message rather than dropped.
 - `TS2339` at `src/app/notes.tsx(71,22)` — `Spacing.md` on a constant that has no `md`. This is the
-  exact error the friction run found after every `exagent` gate had reported green: it is
+  exact error the friction run found after every `@expo/agent-cli` gate had reported green: it is
   `undefined` at runtime, so the screen rendered with `padding: undefined` and no throw anywhere
   (F34).
 

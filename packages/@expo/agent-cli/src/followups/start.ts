@@ -104,7 +104,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
       ? [
           {
             id: 'open-app',
-            command: 'npx exagent navigate /',
+            command: 'npx @expo/agent-cli navigate /',
             why: 'The dev server is up but opens nothing, so this deep-links the app onto the booted simulator or the attached device.',
           },
         ]
@@ -114,7 +114,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
           [
             {
               id: 'open-app-cloud',
-              command: 'npx exagent navigate / --cloud',
+              command: 'npx @expo/agent-cli navigate / --cloud',
               why: 'This machine has no booted simulator and no attached device, and this project has an EAS Simulator session on record — so this deep-links the app onto that instead. It needs a tunnelled dev server, and the session bills until "npx eas simulator:stop".',
             },
           ]
@@ -125,7 +125,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
     realDeviceFollowUp(input),
     {
       id: 'runtime-errors',
-      command: 'npx exagent runtime:errors',
+      command: 'npx @expo/agent-cli runtime:errors',
       why: 'Reads the errors the running app reports; reproduce the problem while it listens.',
     },
     buildEasBuildFollowUp(input.easJson, input.localBuild ?? null),
@@ -138,7 +138,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
  * A web run needs no device, so the two steps a native run leads with — deep-link the app, then
  * reach it from a phone — do not exist, and `runtime:errors` has no debugger target to read either:
  * the app is in a browser, not attached to the dev server. What is left is where the site is, how
- * to prove it compiles, and where it ships. The list used to lead with `npx exagent runtime:errors`
+ * to prove it compiles, and where it ships. The list used to lead with `npx @expo/agent-cli runtime:errors`
  * and `npx eas build:configure` — a cloud *native* build the run did not need — and named neither
  * the URL nor a way to check the bundle [observed — friction run 2, 2026-08-23].
  */
@@ -151,7 +151,7 @@ function webFollowUps(input: StartFollowUpInput): FollowUp[] {
       }
     : {
         id: 'dev-server-port-unknown',
-        command: 'npx exagent status --json',
+        command: 'npx @expo/agent-cli status --json',
         why: 'The dev server did not report a port, so no URL can be named for it — status says which dev server this project actually has. Pass --port to decide it up front.',
       };
 
@@ -159,12 +159,12 @@ function webFollowUps(input: StartFollowUpInput): FollowUp[] {
     site,
     {
       id: 'web-typecheck',
-      command: 'npx exagent typecheck',
+      command: 'npx @expo/agent-cli typecheck',
       why: 'Runs this project\'s own compiler and exits 20 with the file and line of every error, which is the check the browser tab cannot give you.',
     },
     {
       id: 'deploy-web',
-      command: 'npx exagent deploy --web',
+      command: 'npx @expo/agent-cli deploy --web',
       why: 'Exports the web bundle and deploys it to EAS Hosting, which is where a web build ships.',
     },
   ];
@@ -194,7 +194,7 @@ function realDeviceFollowUp({
   if (tunnel) {
     return {
       id: 'real-device-tunnel',
-      command: 'npx exagent navigate / --print-url',
+      command: 'npx @expo/agent-cli navigate / --print-url',
       why: `${noLocalDevice}This run tunnels the dev server, so its address is a tunnel host rather than this machine's — and the tunnel host is only known once it is up. This prints the exp:// link to open on a phone, a cloud simulator, or anywhere else.`,
     };
   }
@@ -204,7 +204,7 @@ function realDeviceFollowUp({
     // guess sends a device into another project's app and reports it as success.
     return {
       id: 'dev-server-port-unknown',
-      command: 'npx exagent status --json',
+      command: 'npx @expo/agent-cli status --json',
       why: 'The dev server did not report a port, so no URL can be named for it — status says which dev server this project actually has. Pass --port to decide it up front.',
     };
   }
@@ -212,12 +212,12 @@ function realDeviceFollowUp({
     return {
       id: 'real-device',
       command: lanUrl,
-      why: `${noLocalDevice}Open this URL in ${label} on a phone on the same network to run the app on a real device. A device that is not on this network — a cloud simulator — needs "npx exagent dev --detach --tunnel" instead.`,
+      why: `${noLocalDevice}Open this URL in ${label} on a phone on the same network to run the app on a real device. A device that is not on this network — a cloud simulator — needs "npx @expo/agent-cli dev --detach --tunnel" instead.`,
     };
   }
   return {
     id: 'real-device-tunnel',
-    command: 'npx exagent start --tunnel',
+    command: 'npx @expo/agent-cli start --tunnel',
     why: expoGo
       ? `${noLocalDevice}This host reports no LAN address, so a phone reaches the dev server through a tunnel.`
       : `${noLocalDevice}A development build on a phone needs a dev server URL it can reach; a tunnel serves one from any network.`,
@@ -272,7 +272,7 @@ export function buildStartPlanFollowUps(
    * The platform flag the caller typed, when they typed one.
    *
    * @ref llp/0005-runtime-loop-tools.rfc.md §Smaller things the same round settled — F103.
-   * `dev --plan --android` printed `expo start --go --android` and then offered `npx exagent dev`,
+   * `dev --plan --android` printed `expo start --go --android` and then offered `npx @expo/agent-cli dev`,
    * which on a Mac plans for iOS — so the one follow-up whose whole promise is "runs the plan above"
    * ran a different plan. The *typed* flag rather than the platform the plan settled on, which is
    * the same split `decideStartPlan` keeps: printing a flag nobody typed would claim they asked.
@@ -306,22 +306,22 @@ export function buildStartPlanFollowUps(
 
   followups.push({
     id: 'dev',
-    command: `npx exagent dev${platformFlag}`,
+    command: `npx @expo/agent-cli dev${platformFlag}`,
     why: 'Runs the plan above, emitting it again first so nothing runs unannounced.',
   });
 
   if (BUILDING_RULES.includes(plan.rule)) {
     followups.push({
       id: 'build-freshness',
-      command: 'npx exagent status',
-      why: 'The plan builds because no recorded build matches the current fingerprint; a build made by exagent is recorded, so the next plan skips it.',
+      command: 'npx @expo/agent-cli status',
+      why: 'The plan builds because no recorded build matches the current fingerprint; a build made by @expo/agent-cli is recorded, so the next plan skips it.',
     });
   }
 
   if (!state.expoGo.compatible) {
     followups.push({
       id: 'project-context',
-      command: 'npx exagent status --json',
+      command: 'npx @expo/agent-cli status --json',
       why: 'Expo Go cannot run this project; the probe in that report lists every reason.',
     });
   }

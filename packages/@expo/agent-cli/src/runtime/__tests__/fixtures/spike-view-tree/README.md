@@ -17,7 +17,7 @@ source — `var` throughout is deliberate.
 | App | `friction/run3/notesapp` — Expo SDK 57.0.15, `expo-router` 57.0.15, React 19.2.3, React Native 0.86.2, `react-native-gesture-handler` 2.32.0 |
 | Runtime | Expo Go, iOS 26.5 simulator `C159CF99-9B06-4D2F-BFDC-010A107E2FBC` (iPhone 17 Pro), Hermes, Fabric, bridgeless |
 | Renderer | `react-native-renderer` 19.2.3, `bundleType: 1` (development), one renderer, one fiber root |
-| Dev server | `exagent start --go --port 8230`, `http://127.0.0.1:8230` |
+| Dev server | `@expo/agent-cli start --go --port 8230`, `http://127.0.0.1:8230` |
 | Transport | `Runtime.evaluate` over the Metro inspector proxy, `returnByValue: true`, same-origin `Origin` header (`src/runtime/cdpClient.ts`) |
 
 `out-*.json` records `exprBytes` (the expression sent), `cdpResponseBytes` (the whole CDP frame

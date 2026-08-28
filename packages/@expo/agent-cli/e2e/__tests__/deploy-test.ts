@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy
 //
-// `exagent deploy` is orchestration: it resolves the tools and runs `expo export`, the EAS CLI and
+// `@expo/agent-cli deploy` is orchestration: it resolves the tools and runs `expo export`, the EAS CLI and
 // the launch CLI as subprocesses, then hands the URLs back. These tests drive the published CLI
 // against stub `eas` and `create-launch` bins installed next to the stub `expo` bin of the fixtures
 // (`e2e/fixtures/README.md`), so the orchestration is asserted without an EAS account, an Expo
@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  executeExagentAsync,
+  executeAgentCliAsync,
   getTemporaryPath,
   installStubBinAsync,
   readStubExpoInvocations,
@@ -367,12 +367,12 @@ function readStubEasInvocations(
     .filter((invocation) => includeProbes || invocation.args[0] !== 'whoami');
 }
 
-describe('exagent deploy', () => {
+describe('@expo/agent-cli deploy', () => {
   describe('web', () => {
     it(`should export the web bundle, deploy it, and print one JSON object`, async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web', '--json']);
       const report: DeployReport = JSON.parse(result.stdout);
 
       // The export runs through the project's own Expo CLI, as a subprocess.
@@ -416,7 +416,7 @@ describe('exagent deploy', () => {
     it(`should deploy the web app of a project that has one, without a target flag`, async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['deploy']);
+      const result = await executeAgentCliAsync(projectRoot, ['deploy']);
 
       expect(readStubEasInvocations(projectRoot)[0]!.args).toEqual(['deploy', '--non-interactive']);
       expect(result.stdout).toContain(STUB_DEPLOYMENT_URL);
@@ -426,7 +426,7 @@ describe('exagent deploy', () => {
     it(`should report a deployment whose URL is not in the output`, async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web', '--json'], {
         env: { STUB_EAS_NO_URL: '1' },
       });
       const report: DeployReport = JSON.parse(result.stdout);
@@ -440,12 +440,12 @@ describe('exagent deploy', () => {
     it(`should ask for a target when the project has no web app`, async () => {
       const projectRoot = await setupAsync('dev-client-app');
 
-      const result = await executeExagentAsync(projectRoot, ['deploy'], { reject: false });
+      const result = await executeAgentCliAsync(projectRoot, ['deploy'], { reject: false });
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('No deploy target');
       // Errors are prompts (llp/0006): the last line is what an agent runs next.
-      expect(result.stderr).toContain('Try: npx exagent deploy --native');
+      expect(result.stderr).toContain('Try: npx @expo/agent-cli deploy --native');
       // Nothing was spent before the question was asked.
       expect(readStubExpoInvocations(projectRoot)).toEqual([]);
       expect(readStubEasInvocations(projectRoot)).toEqual([]);
@@ -454,7 +454,7 @@ describe('exagent deploy', () => {
     it(`should report a failing eas without hiding its exit code`, async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
         env: { STUB_EAS_EXIT_CODE: '7' },
         reject: false,
       });
@@ -487,7 +487,7 @@ describe('exagent deploy', () => {
       it(`should name it rather than quoting it, and upload exactly once`, async () => {
         const projectRoot = await setupAsync('go-app');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web', '--json'], {
           env: shimEnv,
           reject: false,
         });
@@ -509,7 +509,7 @@ describe('exagent deploy', () => {
       it(`should let the CLI's own sentence decide the diagnosis when it gave one`, async () => {
         const projectRoot = await setupAsync('go-app');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web', '--json'], {
           env: {
             // Not a crash: the real CLI, refusing for a reason of its own.
             STUB_EAS_EXIT_CODE: '1',
@@ -540,7 +540,7 @@ describe('exagent deploy', () => {
       it(`should hand the person the fix, not the command that just failed`, async () => {
         const projectRoot = await setupAsync('go-app');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
           env: {
             STUB_EAS_EXIT_CODE: '1',
             // What the real CLI prints, accounts and all [observed — friction run 9].
@@ -569,7 +569,7 @@ describe('exagent deploy', () => {
       it(`should fill the account in when the EAS CLI named only one`, async () => {
         const projectRoot = await setupAsync('go-app');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
           env: {
             STUB_EAS_EXIT_CODE: '1',
             STUB_EAS_STDERR: [
@@ -593,7 +593,7 @@ describe('exagent deploy', () => {
     it(`should ask for @latest, and let the Expo CLI answer the account question, when nothing is pinned`, async () => {
       const projectRoot = await setupAsync('go-app', { pinEasCli: false });
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json']);
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web', '--json']);
 
       expect(result.exitCode).toBe(0);
       expect(readStubNpxInvocations(projectRoot)).toEqual([
@@ -622,7 +622,7 @@ describe('exagent deploy', () => {
         const projectRoot = await setupAsync('go-app');
         const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web', '--json'], {
           env: { STUB_EAS_WHOAMI_EXIT_CODE: '1', LOG_EVENTS: eventsFile },
           reject: false,
         });
@@ -657,7 +657,7 @@ describe('exagent deploy', () => {
       it(`should deploy anyway when the preflight could not answer`, async () => {
         const projectRoot = await setupAsync('go-app');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web', '--json'], {
           env: {
             STUB_EAS_WHOAMI_EXIT_CODE: '101',
             STUB_EAS_WHOAMI_STDERR: 'Stack backtrace:\n   2: tuft::main',
@@ -673,7 +673,7 @@ describe('exagent deploy', () => {
         const projectRoot = await setupAsync('go-app');
         const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
           env: {
             STUB_EAS_EXIT_CODE: '1',
             // The one stable auth error of the real CLI, verbatim.
@@ -707,7 +707,7 @@ describe('exagent deploy', () => {
         const projectRoot = await setupAsync('go-app');
         const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
           env: {
             STUB_EXPO_EXIT_CODE: '1',
             // What `@expo/cli`'s prompt helper prints when it cannot ask.
@@ -735,11 +735,11 @@ describe('exagent deploy', () => {
         const projectRoot = await setupAsync('go-app');
         const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+        const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
           env: {
             STUB_EAS_HANG: '1',
             // The guard is opted into by the call site; the window is this variable.
-            EXAGENT_PROMPT_TIMEOUT_MS: '1500',
+            AGENT_CLI_PROMPT_TIMEOUT_MS: '1500',
             LOG_EVENTS: eventsFile,
           },
           reject: false,
@@ -771,7 +771,7 @@ describe('exagent deploy', () => {
       const emptyDir = getTemporaryPath();
       await fs.promises.mkdir(emptyDir, { recursive: true });
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
         env: emptyPathEnv(emptyDir),
         reject: false,
       });
@@ -790,7 +790,7 @@ describe('exagent deploy', () => {
       const projectRoot = await setupAsync('go-app');
       const logPath = await installStubLaunchAsync(projectRoot);
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--native', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--native', '--json'], {
         env: launchEnv(logPath),
       });
       const report: DeployReport = JSON.parse(result.stdout);
@@ -837,7 +837,7 @@ describe('exagent deploy', () => {
       const projectRoot = await setupAsync('go-app');
       const logPath = await installStubLaunchAsync(projectRoot);
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--native'], {
         env: launchEnv(logPath),
       });
 
@@ -856,7 +856,7 @@ describe('exagent deploy', () => {
       const appDirectory = path.basename(projectRoot);
       const logPath = await installStubLaunchAsync(projectRoot);
 
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['deploy', '--native', '--upload-root', workspaceRoot, '--json'],
         { env: launchEnv(logPath) }
@@ -877,7 +877,7 @@ describe('exagent deploy', () => {
       const logPath = await installStubLaunchAsync(projectRoot);
       const eventsFile = path.join(projectRoot, 'events.jsonl');
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--native'], {
         env: { ...launchEnv(logPath, { mode: 'unauthenticated' }), LOG_EVENTS: eventsFile },
         reject: false,
       });
@@ -907,21 +907,21 @@ describe('exagent deploy', () => {
       const projectRoot = await setupAsync('go-app');
       const logPath = await installStubLaunchAsync(projectRoot);
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--native', '--json'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--native', '--json'], {
         env: launchEnv(logPath, { mode: 'refused' }),
         reject: false,
       });
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('project size limit of 500 MB');
-      expect(result.stderr).toContain('Try: npx exagent deploy --native');
+      expect(result.stderr).toContain('Try: npx @expo/agent-cli deploy --native');
     });
 
     it(`should report a run that printed no launch`, async () => {
       const projectRoot = await setupAsync('go-app');
       const logPath = await installStubLaunchAsync(projectRoot);
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--native'], {
         env: launchEnv(logPath, { mode: 'garbage' }),
         reject: false,
       });
@@ -933,13 +933,13 @@ describe('exagent deploy', () => {
     it(`should explain that the retired build flags are gone`, async () => {
       const projectRoot = await setupAsync('go-app');
 
-      const result = await executeExagentAsync(projectRoot, ['deploy', '--platform', 'ios'], {
+      const result = await executeAgentCliAsync(projectRoot, ['deploy', '--platform', 'ios'], {
         reject: false,
       });
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('launch.expo.dev');
-      expect(result.stderr).toContain('Try: npx exagent deploy --native');
+      expect(result.stderr).toContain('Try: npx @expo/agent-cli deploy --native');
     });
   });
 
@@ -947,7 +947,7 @@ describe('exagent deploy', () => {
     const projectRoot = await setupAsync('go-app');
     const logPath = await installStubLaunchAsync(projectRoot);
 
-    const result = await executeExagentAsync(
+    const result = await executeAgentCliAsync(
       projectRoot,
       ['deploy', '--web', '--native', '--json'],
       {
@@ -972,17 +972,17 @@ describe('exagent deploy', () => {
   });
 
   it(`should run with no TTY on any stream`, async () => {
-    // The e2e runner attaches no stdin (see `spawnExagent`), which is the shape an agent runs the
+    // The e2e runner attaches no stdin (see `spawnAgentCli`), which is the shape an agent runs the
     // CLI in: every tool it spawns gets the same, so a prompt fails instead of hanging.
     const projectRoot = await setupAsync('go-app');
     const logPath = await installStubLaunchAsync(projectRoot);
 
-    await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+    await executeAgentCliAsync(projectRoot, ['deploy', '--web'], {
       env: stubExpoEnv(projectRoot),
     });
     expect(readStubEasInvocations(projectRoot)[0]!.isTTY).toBe(false);
 
-    await executeExagentAsync(projectRoot, ['deploy', '--native'], { env: launchEnv(logPath) });
+    await executeAgentCliAsync(projectRoot, ['deploy', '--native'], { env: launchEnv(logPath) });
     expect(readStubLaunchInvocations(logPath)[0]!.isTTY).toBe(false);
   });
 });

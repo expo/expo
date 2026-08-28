@@ -210,7 +210,7 @@ async function withTemporaryIndexAsync<T>(
 ): Promise<T> {
   const indexFile = path.join(
     os.tmpdir(),
-    `exagent-checkpoint-index-${process.pid}-${Math.random().toString(36).slice(2)}`
+    `agent-cli-checkpoint-index-${process.pid}-${Math.random().toString(36).slice(2)}`
   );
   try {
     return await operation(indexFile);

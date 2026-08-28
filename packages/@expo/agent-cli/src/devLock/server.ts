@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // Holding the dev-server lock.
 //
 // The lock is a listening socket, not a file, so holding it *is* being alive. A reader learns
@@ -89,7 +89,7 @@ export async function acquireDevServerLockAsync(
     }
     error = await listenAsync(server, address);
     if (error?.code === 'EADDRINUSE') {
-      // Lost the race to another `exagent` that bound the freed address in between. It owns it.
+      // Lost the race to another `@expo/agent-cli` that bound the freed address in between. It owns it.
       const { info: holder } = await probeDevServerLockAsync(address);
       closeQuietly(server);
       return { status: 'in-use', address, holder };

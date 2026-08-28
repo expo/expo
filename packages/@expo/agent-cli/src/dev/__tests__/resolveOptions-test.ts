@@ -65,8 +65,8 @@ describe(resolveDevOptions, () => {
     });
   });
 
-  // `--smart` and `--passthrough` were `exagent start`'s mode flags and this command has neither:
-  // running the plan is what it does, and the plain `expo start` wrapper is `exagent start`.
+  // `--smart` and `--passthrough` were `@expo/agent-cli start`'s mode flags and this command has neither:
+  // running the plan is what it does, and the plain `expo start` wrapper is `@expo/agent-cli start`.
   //
   // They used to be forwarded to `expo start`, which does not have them either, so the run
   // decided a plan, printed it, and then failed on the Expo CLI's own report of a flag nobody has
@@ -167,7 +167,7 @@ describe(resolveDevOptions, () => {
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — `--port` is the answer to the
-  // one question `exagent dev` cannot be asked, so an unusable value is reported here and not by
+  // one question `@expo/agent-cli dev` cannot be asked, so an unusable value is reported here and not by
   // `expo start` a minute later.
   describe('--port', () => {
     it(`should read every spelling of the flag`, () => {

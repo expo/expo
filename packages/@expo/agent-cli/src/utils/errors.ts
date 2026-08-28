@@ -80,7 +80,7 @@ export interface NeedsHuman {
   url: string | null;
   /** Environment variables that remove the need on a machine with no person. */
   unattendedEnv: string[];
-  /** Whether re-running the same `exagent` command works once the person is done. */
+  /** Whether re-running the same `@expo/agent-cli` command works once the person is done. */
   resumable: boolean;
   /**
    * How the scenario was recognised.
@@ -269,7 +269,7 @@ export function logCmdError(error: any): never {
     // Print the error first, the recovery command last — the last line is what an
     // agent acts on.
     //
-    // Every printed line goes through `renderForInvoker`, so a `How:` that names `npx exagent …`
+    // Every printed line goes through `renderForInvoker`, so a `How:` that names `npx @expo/agent-cli …`
     // is pasteable in a Bun project. The event above and the envelope below keep the written form:
     // the machine contract does not move with the shell (`src/utils/invoker.ts`).
     exception(renderedError(error));

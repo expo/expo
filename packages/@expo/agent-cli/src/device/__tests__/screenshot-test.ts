@@ -78,10 +78,10 @@ describe(defaultScreenshotPath, () => {
   it(`writes under .expo, which is already gitignored`, () => {
     const filePath = defaultScreenshotPath('/project', new Date('2026-08-24T09:41:02.500Z'));
 
-    expect(filePath).toContain('/project/.expo/exagent/');
+    expect(filePath).toContain('/project/.expo/agent-cli/');
     expect(filePath.endsWith('.png')).toBe(true);
     // No colons: they are legal in a path on POSIX and not on Windows, and this is one path.
-    expect(filePath.slice('/project/.expo/exagent/'.length)).not.toContain(':');
+    expect(filePath.slice('/project/.expo/agent-cli/'.length)).not.toContain(':');
   });
 
   it(`never answers the same path twice, so a sweep keeps every picture`, () => {
@@ -143,13 +143,13 @@ describe(captureScreenshotAsync, () => {
     const result = await captureScreenshotAsync({
       platform: 'ios',
       deviceId: 'SIM-1',
-      filePath: '/project/.expo/exagent/one.png',
+      filePath: '/project/.expo/agent-cli/one.png',
     });
 
     expect(result).toMatchObject({
       ok: true,
       reason: null,
-      path: '/project/.expo/exagent/one.png',
+      path: '/project/.expo/agent-cli/one.png',
       platform: 'ios',
       deviceId: 'SIM-1',
     });
@@ -182,10 +182,10 @@ describe(captureScreenshotAsync, () => {
     await captureScreenshotAsync({
       platform: 'ios',
       deviceId: 'SIM-1',
-      filePath: '/project/.expo/exagent/nested/deep.png',
+      filePath: '/project/.expo/agent-cli/nested/deep.png',
     });
 
-    expect(fs.existsSync('/project/.expo/exagent/nested/deep.png')).toBe(true);
+    expect(fs.existsSync('/project/.expo/agent-cli/nested/deep.png')).toBe(true);
   });
 
   // The reason the exit code is not what success is read from: `adb exec-out` answers a device
@@ -294,7 +294,7 @@ describe(`${captureScreenshotAsync.name} on a cloud simulator`, () => {
       projectRoot: '/project',
       platform: 'ios',
       deviceId: 'sess-1',
-      filePath: '/project/.expo/exagent/cloud.png',
+      filePath: '/project/.expo/agent-cli/cloud.png',
     });
 
     expect(result).toMatchObject({ ok: true, reason: null });
@@ -314,7 +314,7 @@ describe(`${captureScreenshotAsync.name} on a cloud simulator`, () => {
       projectRoot: '/project',
       platform: 'ios',
       deviceId: 'sess-1',
-      filePath: '/project/.expo/exagent/cloud.png',
+      filePath: '/project/.expo/agent-cli/cloud.png',
     });
 
     expect(result.ok).toBe(false);

@@ -33,7 +33,7 @@ export function setJsonRequested(value: boolean): void {
  * Whether an argument list asks for JSON output.
  *
  * Only before a `--` separator. `install` and `start` forward everything after it to another tool
- * verbatim, so `exagent install -- --json` is a flag for npm and says nothing about what this CLI
+ * verbatim, so `@expo/agent-cli install -- --json` is a flag for npm and says nothing about what this CLI
  * prints.
  */
 export function argvRequestsJson(argv: string[]): boolean {

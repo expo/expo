@@ -187,7 +187,7 @@ describe(collectStatusReportAsync, () => {
   });
 
   // The whole probe rides along, so `status --json` is the project brief the former
-  // `exagent context` printed, and nothing has to run a second command for the raw facts.
+  // `@expo/agent-cli context` printed, and nothing has to run a second command for the raw facts.
   it(`should carry the raw project probe`, async () => {
     const state = mockState({
       expoGo: {
@@ -953,7 +953,7 @@ describe(printStatusAsync, () => {
         followups: [
           {
             id: 'runtime-errors',
-            command: 'npx exagent runtime:errors',
+            command: 'npx @expo/agent-cli runtime:errors',
             why: expect.any(String),
           },
         ],
@@ -966,7 +966,7 @@ describe(printStatusAsync, () => {
 
       expect(Log.log).toHaveBeenCalledTimes(1);
       expect(JSON.parse(output()).followups).toEqual([
-        { id: 'runtime-errors', command: 'npx exagent runtime:errors', why: expect.any(String) },
+        { id: 'runtime-errors', command: 'npx @expo/agent-cli runtime:errors', why: expect.any(String) },
       ]);
     });
 
@@ -984,9 +984,9 @@ describe(printStatusAsync, () => {
         'install-dev-client',
       ]);
       // The dev server of this fixture is running with an app attached, so `next` is the readiness
-      // gate rather than `exagent dev` — and deliberately not `runtime:errors`, which the
+      // gate rather than `@expo/agent-cli dev` — and deliberately not `runtime:errors`, which the
       // `runtime-errors` follow-up above already names.
-      expect(report.next.command).toBe('npx exagent smoke');
+      expect(report.next.command).toBe('npx @expo/agent-cli smoke');
       expect(
         report.followups.map((followup: { command: string }) => followup.command)
       ).not.toContain(report.next.command);

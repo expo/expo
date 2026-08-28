@@ -1,7 +1,7 @@
 // Deferred from v1 (2026-08-26) — kept as reference, imported by nothing; see llp/0010
 //
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
-// Argument resolution for `exagent build:wait`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `@expo/agent-cli build:wait`. Pure: argv in, options out, `CommandError` for
 // anything a caller can get wrong, so every combination is unit-testable without an EAS account.
 
 import { parseArgsOrThrow, resolveDuration } from '../../utils/args';
@@ -60,7 +60,7 @@ const WAIT_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent build:wait <id>`.
+ * Resolve the arguments of `@expo/agent-cli build:wait <id>`.
  *
  * @throws {CommandError} `BAD_ARGS` for a missing or duplicated id, an unknown flag, an unusable
  *   duration, or a poll interval that cannot fit inside the wait.
@@ -79,7 +79,7 @@ export function resolveBuildWaitOptions(argv: string[]): BuildWaitOptions {
       [
         `Expected one build id, but got ${positional.length} (${positional.join(', ')}).`,
         `Why: a wait attaches to exactly one build, and picking one of several for you would mean reporting an outcome for a build you did not name.`,
-        `How: run this once per id, or wait on them in parallel: npx exagent build:wait ${positional[0]}`,
+        `How: run this once per id, or wait on them in parallel: npx @expo/agent-cli build:wait ${positional[0]}`,
       ].join('\n')
     );
   }
@@ -128,8 +128,8 @@ function missingId(kind: BuildWaitKind): CommandError {
   const buildListing = 'npx eas build:list --limit 5 --json --non-interactive';
   const how =
     kind === 'submission'
-      ? `How: run "npx exagent build:wait <submission-id> --submission". The id is the one "npx eas submit" printed when it started, and the one the submission's page on expo.dev shows.`
-      : `How: run "npx exagent build:wait <build-id>". List the recent builds with "${buildListing}".`;
+      ? `How: run "npx @expo/agent-cli build:wait <submission-id> --submission". The id is the one "npx eas submit" printed when it started, and the one the submission's page on expo.dev shows.`
+      : `How: run "npx @expo/agent-cli build:wait <build-id>". List the recent builds with "${buildListing}".`;
 
   const error = new CommandError(
     'BAD_ARGS',
@@ -139,6 +139,6 @@ function missingId(kind: BuildWaitKind): CommandError {
       how,
     ].join('\n')
   );
-  error.suggestedCommand = kind === 'submission' ? 'npx exagent build:wait --help' : buildListing;
+  error.suggestedCommand = kind === 'submission' ? 'npx @expo/agent-cli build:wait --help' : buildListing;
   return error;
 }

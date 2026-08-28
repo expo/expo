@@ -36,7 +36,7 @@ import type { AuthStatus, BuildsStatus, PlatformBuild } from './types';
 const PLATFORMS: NativePlatform[] = ['ios', 'android'];
 
 /** Name of the record inside the project's `.expo` directory. */
-export const EAS_BUILDS_FILE_NAME = 'exagent-eas-builds.json';
+export const EAS_BUILDS_FILE_NAME = 'agent-cli-eas-builds.json';
 
 /**
  * How long one platform's lookup may take, fingerprint run and network call together.

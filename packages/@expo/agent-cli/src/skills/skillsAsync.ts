@@ -213,7 +213,7 @@ export async function showSkillsAsync(
   if (!packageSkills.length) {
     throw new CommandError(
       'BAD_ARGS',
-      `No skills found for "${packageName}". The package is not installed, or it ships no skills/<name>/SKILL.md directory. Run ${chalk.bold('npx exagent skills:list')} to see the packages that provide skills.`
+      `No skills found for "${packageName}". The package is not installed, or it ships no skills/<name>/SKILL.md directory. Run ${chalk.bold('npx @expo/agent-cli skills:list')} to see the packages that provide skills.`
     );
   }
 
@@ -267,8 +267,8 @@ export async function cleanSkillsAsync(
 }
 
 /**
- * Best-effort skill sync for `exagent install`, `exagent start` and `exagent dev`. Runs only for the
- * agents cached in `.expo/agent-skill-links.json` by a previous `npx exagent skills` run, so it
+ * Best-effort skill sync for `@expo/agent-cli install`, `@expo/agent-cli start` and `@expo/agent-cli dev`. Runs only for the
+ * agents cached in `.expo/agent-skill-links.json` by a previous `npx @expo/agent-cli skills` run, so it
  * stays off until the user selects agents once. Never prompts and never throws.
  * With `packages` (the specs that were just installed), only the skills of those
  * packages are linked and nothing is pruned. Without it, a full sync runs.
@@ -306,7 +306,7 @@ export async function autoSyncSkillsAsync(
       Log.log(
         chalk.gray(
           `Synced agent skills: ${created.length} linked, ${pruned.length} removed. Run ${chalk.bold(
-            'npx exagent skills:list'
+            'npx @expo/agent-cli skills:list'
           )} for details.`
         )
       );

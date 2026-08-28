@@ -131,7 +131,7 @@ export const CLOUD_SIMULATOR_WAITLIST_URL = 'https://expo.dev/services/simulator
  * `--build-id <id>` instead, which is the other observed way to have an app on the session.
  */
 export const CLOUD_SESSION_START_COMMAND =
-  'npx eas simulator --platform ios --type agent-device --expo-go --non-interactive --name "exagent"';
+  'npx eas simulator --platform ios --type agent-device --expo-go --non-interactive --name "expo-agent-cli"';
 
 // ---- The argv, as pure functions -------------------------------------------------------------
 //
@@ -949,10 +949,10 @@ export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandE
         `Why: ${probe.reason ?? 'the availability check answered that the feature is off for this account'}. It is a limited-access EAS feature that is still rolling out, so it is not a thing this command can turn on.`,
         // The URL comes from the service when it sends one, so a refusal ends in where access comes
         // from rather than only in "no".
-        `How: ask for access at ${probe.waitlistUrl ?? CLOUD_SIMULATOR_WAITLIST_URL}. Until then, open the link on a local device — boot a simulator or attach a device and run this command again — or hand the URL to whatever can open it with "npx exagent navigate <route> --print-url".`,
+        `How: ask for access at ${probe.waitlistUrl ?? CLOUD_SIMULATOR_WAITLIST_URL}. Until then, open the link on a local device — boot a simulator or attach a device and run this command again — or hand the URL to whatever can open it with "npx @expo/agent-cli navigate <route> --print-url".`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent navigate / --print-url';
+    error.suggestedCommand = 'npx @expo/agent-cli navigate / --print-url';
     return error;
   }
 
@@ -964,7 +964,7 @@ export function cloudSessionUnavailableError(probe: CloudSessionProbe): CommandE
       // `--id` is named rather than left out: `simulator:stop` defaults to `.env.eas-simulator`,
       // and a session started with `--json` writes that file empty, so the bare form has nothing to
       // read [observed — 2026-08-26, live]. Advice that bills by the minute has to work first time.
-      `How: start one with "${start}", then run this command again. "--expo-go" is not optional advice: a session started without it comes up with no app installed, and every link opened on it is refused. A project with a development build of its own passes "--build-id <id>" instead. The session bills until it is stopped, so end it with "npx eas simulator:stop --id <session-id>" when the run is done. To see what this project has running, "npx eas simulator:list --status in-progress" lists it, with the id. To open the link somewhere this CLI does not drive, "npx exagent navigate <route> --print-url" prints the URL and asks for no device.`,
+      `How: start one with "${start}", then run this command again. "--expo-go" is not optional advice: a session started without it comes up with no app installed, and every link opened on it is refused. A project with a development build of its own passes "--build-id <id>" instead. The session bills until it is stopped, so end it with "npx eas simulator:stop --id <session-id>" when the run is done. To see what this project has running, "npx eas simulator:list --status in-progress" lists it, with the id. To open the link somewhere this CLI does not drive, "npx @expo/agent-cli navigate <route> --print-url" prints the URL and asks for no device.`,
     ].join('\n')
   );
   error.suggestedCommand = start;
@@ -990,7 +990,7 @@ export function cloudSessionUnknownError(probe: CloudSessionProbe): CommandError
           ? `${CLOUD_SESSION_ENV_FILE} names session ${probe.sessionId}, and whether that session is still up is exactly what could not be read — so this is not being reported as "no session", which would be an instruction to start a second billed one.`
           : 'What this project has running could not be listed, so "no session" would be a guess, and acting on it would start a second billed one next to any that is up.'
       }`,
-      `How: run "npx eas simulator:list --status in-progress" to see what the CLI says, and check that the "eas" being run is the EAS CLI. Then run this command again, or open the URL elsewhere with "npx exagent navigate <route> --print-url".`,
+      `How: run "npx eas simulator:list --status in-progress" to see what the CLI says, and check that the "eas" being run is the EAS CLI. Then run this command again, or open the URL elsewhere with "npx @expo/agent-cli navigate <route> --print-url".`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx eas simulator:list --status in-progress';
@@ -1025,7 +1025,7 @@ export function cloudPlatformMismatchError(
       `How: run this command with --${session} (or with no platform flag, which takes the session's own), or start a ${wanted} session and run it again.`,
     ].join('\n')
   );
-  error.suggestedCommand = `npx exagent navigate / --cloud --${session}`;
+  error.suggestedCommand = `npx @expo/agent-cli navigate / --cloud --${session}`;
   return error;
 }
 
@@ -1039,7 +1039,7 @@ export function cloudPlatformUnknownError(sessionId: string | null): CommandErro
       `How: name it — run this command again with --ios or --android.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent navigate / --cloud --ios';
+  error.suggestedCommand = 'npx @expo/agent-cli navigate / --cloud --ios';
   return error;
 }
 
@@ -1058,10 +1058,10 @@ export function cloudNeedsTunnelError(url: string, hostType: string | null): Com
     [
       `The dev server is only reachable from ${hostType === 'localhost' ? 'this machine' : 'this network'}, so a cloud simulator cannot load ${url} and nothing was opened.`,
       `Why: the URL carries a ${hostType ?? 'local'} host, and the simulator runs on EAS infrastructure — ${hostType === 'localhost' ? 'that host is the loopback of whatever resolves it, which there is a machine in a datacenter' : 'that address is on this network and the session is not'}. Opening it would land the app on an error screen with the device tool reporting success, which is the class of false green this command exists to remove.`,
-      `How: restart the dev server with a tunnel — "npx exagent dev --detach --tunnel" — and run this command again. A tunnel serves the same dev server from any network, which is the one address a cloud simulator can use.`,
+      `How: restart the dev server with a tunnel — "npx @expo/agent-cli dev --detach --tunnel" — and run this command again. A tunnel serves the same dev server from any network, which is the one address a cloud simulator can use.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent dev --detach --tunnel';
+  error.suggestedCommand = 'npx @expo/agent-cli dev --detach --tunnel';
   return error;
 }
 
@@ -1200,7 +1200,7 @@ export function cloudVerbNotSupportedError(action: string): CommandError {
     [
       `${action} is not something this CLI can do on a cloud simulator, so nothing ran.`,
       `Why: the controller that drives an EAS Simulator session has no verb for it. "eas simulator:stop" ends the whole session — the remote machine and everything on it — which is a larger act than the one asked for here, and doing it under this name would report a session teardown as the act that was requested.`,
-      `How: to put the app back into a known state, open a route on it again with "npx exagent navigate / --cloud". To end the session itself, and its billing, run "npx eas simulator:stop".`,
+      `How: to put the app back into a known state, open a route on it again with "npx @expo/agent-cli navigate / --cloud". To end the session itself, and its billing, run "npx eas simulator:stop".`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx eas simulator:stop';

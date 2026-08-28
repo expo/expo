@@ -252,7 +252,7 @@ describe(spawnSubprocessAsync, () => {
 
     child.emit('close', 0, null);
     await promise;
-    // The listener is removed once the child is gone, or `exagent` would keep ignoring signals.
+    // The listener is removed once the child is gone, or `@expo/agent-cli` would keep ignoring signals.
     expect(process.listenerCount('SIGTERM')).toBe(listenersBefore);
   });
 });

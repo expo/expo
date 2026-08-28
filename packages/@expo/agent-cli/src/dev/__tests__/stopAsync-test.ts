@@ -214,7 +214,7 @@ describe(devStopAsync, () => {
       expect(printed()).toContain('still answering, by something else');
       expect(printed()).toContain('::1');
       // The rung comes first, because it is what settles which listener that is.
-      expect(printed()).toContain('npx exagent dev:stop --port 8081');
+      expect(printed()).toContain('npx @expo/agent-cli dev:stop --port 8081');
     });
 
     // The other half of "the pid is primary": the signal worked, and what did not go away is the
@@ -234,7 +234,7 @@ describe(devStopAsync, () => {
       // Named to be ruled out, never offered: the recovery is the other dev server.
       expect(printedErrors()).toContain('SIGKILL has nothing left to signal');
       expect(printedErrors()).not.toContain('which the process cannot decline');
-      expect(printedErrors()).toContain('npx exagent status --json');
+      expect(printedErrors()).toContain('npx @expo/agent-cli status --json');
     });
   });
 

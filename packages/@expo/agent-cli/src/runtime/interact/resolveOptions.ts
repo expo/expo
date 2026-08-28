@@ -194,7 +194,7 @@ function resolveShared(
 }
 
 /**
- * Resolve the arguments of `exagent runtime:tree`.
+ * Resolve the arguments of `@expo/agent-cli runtime:tree`.
  *
  * @throws {CommandError} `BAD_ARGS` for an unknown flag, an unusable count, or a bare word — which
  * is a caller who meant `--testID` and would otherwise have been given the whole screen.
@@ -204,7 +204,7 @@ export function resolveTreeOptions(argv: string[]): RuntimeTreeOptions {
   const args = parseArgsOrThrow(TREE_ARGS, argv, 'runtime:tree');
   if (args._.length > 0) {
     throw strayArgumentError('runtime:tree', args._, {
-      hint: `to look at one element, name it with the flag: npx exagent runtime:tree --testID ${args._[0]}`,
+      hint: `to look at one element, name it with the flag: npx @expo/agent-cli runtime:tree --testID ${args._[0]}`,
     });
   }
 
@@ -222,7 +222,7 @@ function resolveIndex(args: { readonly [flag: string]: unknown }): number | null
 }
 
 /**
- * Resolve the arguments of `exagent runtime:tap`.
+ * Resolve the arguments of `@expo/agent-cli runtime:tap`.
  *
  * @throws {CommandError} `BAD_ARGS` for a missing testID, more than one, or an unusable index.
  */
@@ -234,16 +234,16 @@ export function resolveTapOptions(argv: string[]): RuntimeTapOptions {
     throw new CommandError(
       'BAD_ARGS',
       [
-        `Missing testID. "exagent runtime:tap" taps the element carrying a testID, and none was named.`,
+        `Missing testID. "@expo/agent-cli runtime:tap" taps the element carrying a testID, and none was named.`,
         `Why: there is no other way to say which element to tap — this walks the app's own component tree, so the testID in the JSX is the address.`,
-        `How: pass it as the first argument: npx exagent runtime:tap <testID>. Run "npx exagent runtime:tree" for the testIDs the screen is carrying.`,
+        `How: pass it as the first argument: npx @expo/agent-cli runtime:tap <testID>. Run "npx @expo/agent-cli runtime:tree" for the testIDs the screen is carrying.`,
       ].join('\n')
     );
   }
   if (positional.length > 1) {
     throw new CommandError(
       'BAD_ARGS',
-      `Expected one testID, but got ${positional.length} arguments (${positional.join(' ')}). "exagent runtime:tap" taps one element; to pick between several elements carrying the same testID, use --index.`
+      `Expected one testID, but got ${positional.length} arguments (${positional.join(' ')}). "@expo/agent-cli runtime:tap" taps one element; to pick between several elements carrying the same testID, use --index.`
     );
   }
 
@@ -258,7 +258,7 @@ export function resolveTapOptions(argv: string[]): RuntimeTapOptions {
 }
 
 /**
- * Resolve the arguments of `exagent runtime:type`.
+ * Resolve the arguments of `@expo/agent-cli runtime:type`.
  *
  * The text is the positional and the testID is a flag, which is the shape llp/0014 recommended: the
  * subject of the command is the text, and an input is where it goes.
@@ -275,18 +275,18 @@ export function resolveTypeOptions(argv: string[]): RuntimeTypeOptions {
     const missingText = new CommandError(
       'BAD_ARGS',
       [
-        `Missing text. "exagent runtime:type" types a string into an input, and none was given.`,
+        `Missing text. "@expo/agent-cli runtime:type" types a string into an input, and none was given.`,
         `Why: the text is this command's subject and its first argument, so there is nothing to type — and an empty run is not the same as clearing the field, which is what "" means and is a thing a caller asks for on purpose.`,
-        `How: npx exagent runtime:type "<text>" --testID <id>, or npx exagent runtime:type "" --testID <id> to clear the input. Run "npx exagent runtime:tree" for the testIDs the screen is carrying.`,
+        `How: npx @expo/agent-cli runtime:type "<text>" --testID <id>, or npx @expo/agent-cli runtime:type "" --testID <id> to clear the input. Run "npx @expo/agent-cli runtime:tree" for the testIDs the screen is carrying.`,
       ].join('\n')
     );
-    missingText.suggestedCommand = 'npx exagent runtime:tree';
+    missingText.suggestedCommand = 'npx @expo/agent-cli runtime:tree';
     throw missingText;
   }
   if (positional.length > 1) {
     throw new CommandError(
       'BAD_ARGS',
-      `Expected one string of text, but got ${positional.length} arguments (${positional.join(' ')}). Quote the text so the shell passes it as one argument: npx exagent runtime:type "${positional.join(' ')}" --testID <id>`
+      `Expected one string of text, but got ${positional.length} arguments (${positional.join(' ')}). Quote the text so the shell passes it as one argument: npx @expo/agent-cli runtime:type "${positional.join(' ')}" --testID <id>`
     );
   }
   const testID = args['--testID'] == null ? null : String(args['--testID']);
@@ -294,9 +294,9 @@ export function resolveTypeOptions(argv: string[]): RuntimeTypeOptions {
     throw new CommandError(
       'BAD_ARGS',
       [
-        `Missing --testID. "exagent runtime:type" needs to know which input the text goes into.`,
+        `Missing --testID. "@expo/agent-cli runtime:type" needs to know which input the text goes into.`,
         `Why: the text is the argument, so the input cannot be one too — and typing into whichever input the walk met first would be a guess about the app.`,
-        `How: npx exagent runtime:type ${JSON.stringify(positional[0])} --testID <id>. Run "npx exagent runtime:tree" for the testIDs the screen is carrying.`,
+        `How: npx @expo/agent-cli runtime:type ${JSON.stringify(positional[0])} --testID <id>. Run "npx @expo/agent-cli runtime:tree" for the testIDs the screen is carrying.`,
       ].join('\n')
     );
   }

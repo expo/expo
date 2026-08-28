@@ -1,7 +1,7 @@
 /* eslint-env jest */
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 //
-// `exagent status` is the read-only overview: it prints where the project is and what would
+// `@expo/agent-cli status` is the read-only overview: it prints where the project is and what would
 // happen next, and always exits 0. These tests run it through the CLI it is published as, against
 // the fixture matrix in `e2e/fixtures/README.md`.
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ import { WebSocketServer } from 'ws';
 import {
   clearStubFingerprintInvocations,
   documentedJsonKeys,
-  executeExagentAsync,
+  executeAgentCliAsync,
   holdDevLockAsync,
   installStubBinAsync,
   installStubEasRunnerAsync,
@@ -228,7 +228,7 @@ async function reportInAsync(
   args: string[] = [],
   env: Record<string, string> = {}
 ): Promise<StatusReport> {
-  const result = await executeExagentAsync(
+  const result = await executeAgentCliAsync(
     projectRoot,
     ['status', '--json', '--dev-server-url', await getUnusedDevServerUrlAsync(), ...args],
     { env }
@@ -284,10 +284,10 @@ async function installStubEasAsync(
   await pinEasCliAsync(projectRoot);
 }
 
-describe('exagent status', () => {
+describe('@expo/agent-cli status', () => {
   it('prints usage with `status --help`', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['status', '--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['status', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--json');
@@ -296,7 +296,7 @@ describe('exagent status', () => {
 
   it('lists the command in the top level help', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['--help']);
+    const result = await executeAgentCliAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('status');
@@ -305,7 +305,7 @@ describe('exagent status', () => {
   describe('go-app — an Expo Go compatible CNG project', () => {
     it('prints one line per section', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
@@ -395,7 +395,7 @@ describe('exagent status', () => {
         const projectRoot = await setupAsync('go-app');
         await installStubEasAsync(projectRoot, { user: null });
 
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'status',
           '--dev-server-url',
           await getUnusedDevServerUrlAsync(),
@@ -425,7 +425,7 @@ describe('exagent status', () => {
 
     it('starts nothing and exits 0', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
@@ -434,7 +434,7 @@ describe('exagent status', () => {
       expect(result.exitCode).toBe(0);
       // Status is read-only. The one `expo` it runs is `whoami`, and only when the EAS CLI could
       // not answer who this machine is: both CLIs read the same session file, and a report that
-      // said "nothing could answer" while `exagent whoami` printed the name was the finding
+      // said "nothing could answer" while `@expo/agent-cli whoami` printed the name was the finding
       // (F65). Nothing else is invoked, and nothing is started.
       expect(readStubExpoInvocations(projectRoot).map((invocation) => invocation.args)).toEqual([
         ['whoami'],
@@ -444,7 +444,7 @@ describe('exagent status', () => {
     it('emits the status event for a driving agent', async () => {
       const projectRoot = await setupAsync('go-app');
       const eventsFile = path.join(projectRoot, 'events.jsonl');
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env: { LOG_EVENTS: eventsFile } }
@@ -465,7 +465,7 @@ describe('exagent status', () => {
     // line, so the follow-ups only reach a driving agent through JSON and the event stream.
     it('keeps the follow-ups out of the text report', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
@@ -477,7 +477,7 @@ describe('exagent status', () => {
 
     it('reports an empty follow-up list with --no-followups, keeping the key set', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--json',
         '--no-followups',
@@ -500,8 +500,8 @@ describe('exagent status', () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const devServerUrl = await getUnusedDevServerUrlAsync();
 
-      const help = await executeExagentAsync(projectRoot, ['status', '--help']);
-      const report = await executeExagentAsync(projectRoot, [
+      const help = await executeAgentCliAsync(projectRoot, ['status', '--help']);
+      const report = await executeAgentCliAsync(projectRoot, [
         'status',
         '--json',
         '--dev-server-url',
@@ -535,7 +535,7 @@ describe('exagent status', () => {
 
     it('reports a native fingerprint change as stale', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--json', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env: { STUB_FINGERPRINT_HASH: 'aaaabbbbccccddddeeeeffff0000111122223333' } }
@@ -553,7 +553,7 @@ describe('exagent status', () => {
 
     it('reports a failing fingerprint tool as an unknown freshness, still exiting 0', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--json', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env: { STUB_FINGERPRINT_EXIT_CODE: '1' } }
@@ -612,7 +612,7 @@ process.stdout.write(JSON.stringify({ hash, sources }) + '\\n');
         await installStubBinAsync(dir, 'fingerprint', stub);
       }
       await fs.promises.writeFile(
-        path.join(projectRoot, '.expo', 'exagent-last-build.json'),
+        path.join(projectRoot, '.expo', 'agent-cli-last-build.json'),
         JSON.stringify(recorded)
       );
       return projectRoot;
@@ -670,7 +670,7 @@ process.stdout.write(JSON.stringify({ hash, sources }) + '\\n');
 
     it('prints the class and the sentence on an impact line', async () => {
       const projectRoot = await setupImpactAsync(v2Record([APP_CONFIG]));
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         {
@@ -690,10 +690,10 @@ process.stdout.write(JSON.stringify({ hash, sources }) + '\\n');
 
     // The v1 record is a bare hash string. It can say the surface moved and not what moved, and
     // `status` refuses to name a class it did not establish. See llp/0011 §Two commands, one
-    // classifier for why `exagent impact` answers differently for the same project.
+    // classifier for why `@expo/agent-cli impact` answers differently for the same project.
     it('refuses to name a class for a record that stored only a hash, and still exits 0', async () => {
       const projectRoot = await setupImpactAsync({ ios: FIXTURE_FINGERPRINT_HASH });
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env: { STUB_FINGERPRINT_HASH: 'ffff1111ffff1111ffff1111ffff1111ffff1111' } }
@@ -746,7 +746,7 @@ process.stdout.write(JSON.stringify({
         await installStubBinAsync(dir, 'fingerprint', stub);
       }
       await fs.promises.writeFile(
-        path.join(projectRoot, '.expo', 'exagent-last-build.json'),
+        path.join(projectRoot, '.expo', 'agent-cli-last-build.json'),
         JSON.stringify({ ios: { hash: FIXTURE_FINGERPRINT_HASH, sources: [] } })
       );
 
@@ -816,7 +816,7 @@ process.stdout.write(JSON.stringify({
 
     it('prints the changed sources and the ota verdict for a human', async () => {
       const { projectRoot, env } = await setupExplainAsync({ policy: 'appVersion' });
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env }
@@ -832,7 +832,7 @@ process.stdout.write(JSON.stringify({
     // Section isolation: `--explain` is three answers, and one that cannot be had costs one line.
     it('keeps every other fact when the config subprocess fails', async () => {
       const { projectRoot, env } = await setupExplainAsync({ policy: 'appVersion' });
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--json', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env: { ...env, STUB_EXPO_EXIT_CODE: '1' } }
@@ -878,7 +878,7 @@ process.stdout.write(JSON.stringify({
         await installStubBinAsync(dir, 'fingerprint', stub);
       }
       await fs.promises.writeFile(
-        path.join(projectRoot, '.expo', 'exagent-last-build.json'),
+        path.join(projectRoot, '.expo', 'agent-cli-last-build.json'),
         JSON.stringify(recorded)
       );
       return projectRoot;
@@ -897,7 +897,7 @@ process.stdout.write(JSON.stringify({
       args: string[],
       env: Record<string, string> = {}
     ) {
-      return executeExagentAsync(
+      return executeAgentCliAsync(
         projectRoot,
         ['status', ...args, '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env, reject: false }
@@ -1010,7 +1010,7 @@ process.stdout.write(JSON.stringify({
 
       expect(result.exitCode).toBe(1);
       expect(result.all).toContain('--build needs --explain');
-      expect(result.all).toContain('npx exagent status --explain --build build-1');
+      expect(result.all).toContain('npx @expo/agent-cli status --explain --build build-1');
     });
   });
 
@@ -1145,7 +1145,7 @@ process.exit(1);
 
     it('leaves the eas build line out of the human report of a default run', async () => {
       const projectRoot = await setupWithEasAsync();
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
@@ -1273,7 +1273,7 @@ process.exit(1);
       // Two changes, and both are the point. `STUB_FINGERPRINT_HASH` is what makes the stub print a
       // different hash, and `app.json` is what makes the *fingerprint* cache recompute at all: an
       // environment variable is not a file, so a run that only set it would be answered out of
-      // `.expo/exagent-fingerprint.json` with the old hash and this section's cache would still
+      // `.expo/agent-cli-fingerprint.json` with the old hash and this section's cache would still
       // match (llp/0023 §What invalidates an answer). A real project moves its hash by changing a
       // file, which is what the second line stands in for.
       const configPath = path.join(projectRoot, 'app.json');
@@ -1303,7 +1303,7 @@ process.exit(1);
     // The live case: `notesapp` has no EAS link, and the CLI refuses on stdout with exit 1.
     it('reports a project with no EAS link as unknown, and still exits 0', async () => {
       const projectRoot = await setupWithEasAsync();
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--json', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         {
@@ -1358,7 +1358,7 @@ process.exit(1);
         // The project's own recorded build no longer matches, so a rebuild was the alternative.
         STUB_FINGERPRINT_HASH: 'aaaabbbbccccddddeeeeffff0000111122223333',
       };
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--explain', '--dev-server-url', await getUnusedDevServerUrlAsync()],
         { env }
@@ -1427,7 +1427,7 @@ process.exit(1);
       const projectRoot = await setupAsync('dev-client-fresh-app');
       await reportInAsync(projectRoot);
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
@@ -1525,14 +1525,14 @@ process.exit(1);
       expect(report.freshness?.hashSource.source).toBe('computed');
     });
 
-    it('recomputes when EXAGENT_NO_FINGERPRINT_CACHE is set', async () => {
+    it('recomputes when AGENT_CLI_NO_FINGERPRINT_CACHE is set', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
       await reportInAsync(projectRoot);
       clearStubFingerprintInvocations(projectRoot);
 
       // The variable is for the paths that have no flag of their own — a probe inside another
       // command — so it has to work on the ones that do as well.
-      const report = await reportInAsync(projectRoot, [], { EXAGENT_NO_FINGERPRINT_CACHE: '1' });
+      const report = await reportInAsync(projectRoot, [], { AGENT_CLI_NO_FINGERPRINT_CACHE: '1' });
 
       expect(spawns(projectRoot)).toEqual(['all']);
       expect(report.freshness?.hashSource.source).toBe('computed');
@@ -1545,7 +1545,7 @@ process.exit(1);
 
       const record = JSON.parse(
         await fs.promises.readFile(
-          path.join(projectRoot, '.expo', 'exagent-fingerprint.json'),
+          path.join(projectRoot, '.expo', 'agent-cli-fingerprint.json'),
           'utf8'
         )
       );
@@ -1637,7 +1637,7 @@ process.exit(1);
 
     it('names the checked-in native directories in the human report', async () => {
       const projectRoot = await setupAsync('bare-app');
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
@@ -1653,7 +1653,7 @@ process.exit(1);
     it('says nothing about a build for a project whose next plan has none', async () => {
       const projectRoot = await setupAsync('go-app');
       const report = await reportInAsync(projectRoot);
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
@@ -1676,7 +1676,7 @@ process.exit(1);
       const projectRoot = await setupAsync('dev-client-app');
       const file = path.join(projectRoot, 'package.json');
       const packageJson = JSON.parse(await fs.promises.readFile(file, 'utf8'));
-      packageJson.expo = { ...packageJson.expo, exagent: { buildBackend: 'eas' } };
+      packageJson.expo = { ...packageJson.expo, agentCli: { buildBackend: 'eas' } };
       await fs.promises.writeFile(file, JSON.stringify(packageJson, null, 2));
 
       const report = await reportInAsync(projectRoot);
@@ -1685,14 +1685,14 @@ process.exit(1);
         selection: { source: 'config' },
       });
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         await getUnusedDevServerUrlAsync(),
       ]);
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('build ');
-      expect(result.stdout).toContain('"expo.exagent" in package.json');
+      expect(result.stdout).toContain('"expo.agentCli" in package.json');
     });
 
     // `status` exits 0 by contract, and a preference file it cannot read must not change that:
@@ -1701,7 +1701,7 @@ process.exit(1);
       const projectRoot = await setupAsync('dev-client-app');
       const file = path.join(projectRoot, 'package.json');
       const packageJson = JSON.parse(await fs.promises.readFile(file, 'utf8'));
-      packageJson.expo = { ...packageJson.expo, exagent: { buildBackend: 'cloud' } };
+      packageJson.expo = { ...packageJson.expo, agentCli: { buildBackend: 'cloud' } };
       await fs.promises.writeFile(file, JSON.stringify(packageJson, null, 2));
 
       const report = await reportInAsync(projectRoot);
@@ -1726,7 +1726,7 @@ process.exit(1);
       const devServer = await startDevServerDoubleAsync([CDP_TARGET]);
       server = devServer.server;
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--json',
         '--dev-server-url',
@@ -1777,7 +1777,7 @@ process.exit(1);
       const stub = await startStubDevServerAsync({ projectRoot, targets: [CDP_TARGET] });
 
       try {
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'status',
           '--json',
           '--dev-server-url',
@@ -1802,14 +1802,14 @@ process.exit(1);
     });
 
     // The report used to say "running on http://127.0.0.1:8099" and, three lines below it,
-    // "next  exagent dev → expo-go: expo start --go" — advice to start a second dev server, which
+    // "next  @expo/agent-cli dev → expo-go: expo start --go" — advice to start a second dev server, which
     // is both a contradiction and a command that would fail on the busy port.
     it('sends a healthy dev server to verification instead of to a second dev server', async () => {
       const projectRoot = await setupAsync('go-app');
       const stub = await startStubDevServerAsync({ projectRoot, targets: [CDP_TARGET] });
 
       try {
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'status',
           '--json',
           '--dev-server-url',
@@ -1817,7 +1817,7 @@ process.exit(1);
         ]);
 
         const report: StatusReport = JSON.parse(result.stdout);
-        expect(report.next?.command).toBe('npx exagent smoke');
+        expect(report.next?.command).toBe('npx @expo/agent-cli smoke');
         expect(report.next?.why).toContain('instead of starting a second server');
         // The project's own shape is still reported: a running server does not change it.
         expect(report.next?.rule).toBe('expo-go');
@@ -1832,14 +1832,14 @@ process.exit(1);
       const stub = await startStubDevServerAsync({ projectRoot, targets: [CDP_TARGET] });
 
       try {
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'status',
           '--dev-server-url',
           stub.url,
         ]);
 
-        expect(result.stdout).toContain('exagent smoke');
-        expect(result.stdout).not.toContain('exagent dev → expo-go');
+        expect(result.stdout).toContain('@expo/agent-cli smoke');
+        expect(result.stdout).not.toContain('@expo/agent-cli dev → expo-go');
       } finally {
         await stub.close();
       }
@@ -1851,7 +1851,7 @@ process.exit(1);
       const stub = await startStubDevServerAsync({ projectRoot: '/somewhere/else', targets: [] });
 
       try {
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'status',
           '--json',
           '--dev-server-url',
@@ -1859,7 +1859,7 @@ process.exit(1);
         ]);
 
         const report: StatusReport = JSON.parse(result.stdout);
-        expect(report.next?.command).toBe('npx exagent dev');
+        expect(report.next?.command).toBe('npx @expo/agent-cli dev');
         expect(report.next?.why).toBeNull();
       } finally {
         await stub.close();
@@ -1871,7 +1871,7 @@ process.exit(1);
       const stub = await startStubDevServerAsync({ projectRoot: '/somewhere/else', targets: [] });
 
       try {
-        const result = await executeExagentAsync(projectRoot, [
+        const result = await executeAgentCliAsync(projectRoot, [
           'status',
           '--dev-server-url',
           stub.url,
@@ -1888,7 +1888,7 @@ process.exit(1);
       const devServer = await startDevServerDoubleAsync([CDP_TARGET]);
       server = devServer.server;
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--dev-server-url',
         devServer.url,
@@ -1904,7 +1904,7 @@ process.exit(1);
       const devServer = await startDevServerDoubleAsync([]);
       server = devServer.server;
 
-      const result = await executeExagentAsync(projectRoot, [
+      const result = await executeAgentCliAsync(projectRoot, [
         'status',
         '--json',
         '--dev-server-url',
@@ -1924,9 +1924,9 @@ process.exit(1);
       expect(report.devServer?.reason).toBeTruthy();
     });
 
-    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
     // With no `--dev-server-url`, discovery asks the project's dev-server lock before it scans
-    // ports. The lock is held by this test, standing in for a running `exagent start`.
+    // ports. The lock is held by this test, standing in for a running `@expo/agent-cli start`.
     it('finds the dev server the project lock names, with no URL given', async () => {
       const projectRoot = await setupAsync('go-app');
       const devServer = await startDevServerDoubleAsync([CDP_TARGET]);
@@ -1940,7 +1940,7 @@ process.exit(1);
       });
 
       try {
-        const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+        const result = await executeAgentCliAsync(projectRoot, ['status', '--json']);
 
         expect(result.exitCode).toBe(0);
         const report: StatusReport = JSON.parse(result.stdout);
@@ -1975,7 +1975,7 @@ process.exit(1);
       });
 
       try {
-        const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+        const result = await executeAgentCliAsync(projectRoot, ['status', '--json']);
 
         expect(result.exitCode).toBe(0);
         const report: StatusReport = JSON.parse(result.stdout);
@@ -2007,7 +2007,7 @@ process.exit(1);
         const runs: number[] = [];
         for (let attempt = 0; attempt < 2; attempt++) {
           const startedAt = Date.now();
-          const result = await executeExagentAsync(projectRoot, args);
+          const result = await executeAgentCliAsync(projectRoot, args);
           expect(result.exitCode).toBe(0);
           runs.push(Date.now() - startedAt);
         }
@@ -2022,7 +2022,7 @@ process.exit(1);
 
     it('rejects a `--dev-server-url` that is not a URL', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(
+      const result = await executeAgentCliAsync(
         projectRoot,
         ['status', '--dev-server-url', 'not a url'],
         { reject: false }

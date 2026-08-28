@@ -29,7 +29,7 @@ export function getProjectRoot(args: arg.Result<arg.Spec>) {
  *
  * Stated per command rather than inferred, and with no default, so the type checker asks the
  * question of every command that parses arguments — including the next one somebody writes.
- * `exagent checkpoint:undo <id>` accepted an argument it had no place for, dropped it, and
+ * `@expo/agent-cli checkpoint:undo <id>` accepted an argument it had no place for, dropped it, and
  * restored the newest checkpoint over the working tree while reporting success. That command was
  * deferred out of v1 (llp/0016); the rule it forced applies to every command with no positional.
  *
@@ -127,14 +127,14 @@ export function strayArgumentError(
   const error = new CommandError(
     'BAD_ARGS',
     [
-      `Unexpected argument: ${stray[0]}. "exagent ${command}" reads no positional arguments${stray.length > 1 ? `, and ${stray.length} were passed (${stray.join(' ')})` : ''}.`,
+      `Unexpected argument: ${stray[0]}. "@expo/agent-cli ${command}" reads no positional arguments${stray.length > 1 ? `, and ${stray.length} were passed (${stray.join(' ')})` : ''}.`,
       `Why: nothing in this command consumes it, so it would have been dropped and the command would have run as if it were not there — and reported success.`,
       hint
         ? `How: ${hint}`
-        : `How: run "npx exagent ${command} --help" for the options this command does take.`,
+        : `How: run "npx @expo/agent-cli ${command} --help" for the options this command does take.`,
     ].join('\n')
   );
-  error.suggestedCommand = `npx exagent ${command} --help`;
+  error.suggestedCommand = `npx @expo/agent-cli ${command} --help`;
   return error;
 }
 

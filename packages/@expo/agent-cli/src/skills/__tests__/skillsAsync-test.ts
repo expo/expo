@@ -49,7 +49,7 @@ const cursorAgent: SkillsAgent = {
   displayName: 'Cursor',
   skillsDir: '.agents/skills',
 };
-const codexAgent: SkillsAgent = {
+const codexCliAgent: SkillsAgent = {
   id: 'codex',
   displayName: 'Codex',
   skillsDir: '.agents/skills',
@@ -69,7 +69,7 @@ function printed(): string {
 
 beforeEach(() => {
   // The sync refreshes the gitignore block for every known agent directory.
-  jest.mocked(getAllAgents).mockReturnValue([claudeAgent, cursorAgent, codexAgent]);
+  jest.mocked(getAllAgents).mockReturnValue([claudeAgent, cursorAgent, codexCliAgent]);
 });
 
 describe('syncSkillsAsync', () => {
@@ -78,7 +78,7 @@ describe('syncSkillsAsync', () => {
   it('should link discovered skills into deduped agent directories', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
-      agents: [claudeAgent, cursorAgent, codexAgent],
+      agents: [claudeAgent, cursorAgent, codexCliAgent],
       source: 'cache',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
@@ -209,7 +209,7 @@ describe('syncSkillsAsync', () => {
       await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
       expect(printed()).toContain('Suggested next:');
-      expect(printed()).toContain('npx exagent skills:list');
+      expect(printed()).toContain('npx @expo/agent-cli skills:list');
     });
 
     it('should note that a detected agent loads the linked skills by itself', async () => {
@@ -221,7 +221,7 @@ describe('syncSkillsAsync', () => {
 
       await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
-      expect(printed()).toContain('npx exagent skills:show @acme/tool');
+      expect(printed()).toContain('npx @expo/agent-cli skills:show @acme/tool');
       expect(printed()).toContain('claude-code');
     });
 
@@ -411,7 +411,7 @@ describe('skills --json reports', () => {
       followups: [
         {
           id: 'skills-list',
-          command: 'npx exagent skills:list',
+          command: 'npx @expo/agent-cli skills:list',
           why: 'Lists every discovered skill and the agent directories it is linked into.',
         },
       ],
@@ -504,7 +504,7 @@ describe('cleanSkillsAsync', () => {
   afterEach(() => vol.reset());
 
   it('should clean managed links from all known agent directories', async () => {
-    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexAgent]);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexCliAgent]);
     jest.mocked(cleanSkillLinksAsync).mockResolvedValueOnce({ pruned: [] });
 
     await cleanSkillsAsync('/root', { agents: [], dryRun: false });
@@ -538,7 +538,7 @@ describe('autoSyncSkillsAsync', () => {
 
   it('should sync without prompting for the cached agents', async () => {
     jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
-    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexAgent]);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexCliAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
 

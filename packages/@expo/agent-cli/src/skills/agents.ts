@@ -64,7 +64,7 @@ const AGENTS: AgentDefinition[] = [
   },
 ];
 
-/** All agents that `npx exagent skills` can link skills for. */
+/** All agents that `npx @expo/agent-cli skills` can link skills for. */
 export function getAllAgents(): SkillsAgent[] {
   return AGENTS.map(toPublicAgent);
 }

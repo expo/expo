@@ -19,8 +19,8 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-errors', 'runtime-network-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 5000');
-    expect(followups[1]!.command).toBe('npx exagent runtime:network --duration 5000');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:errors --duration 5000');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli runtime:network --duration 5000');
   });
 
   it(`should ask for a longer window when the app made no request`, () => {
@@ -32,7 +32,7 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-reproduce']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:network --duration 10000');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:network --duration 10000');
     expect(followups[0]!.why).toContain('trigger');
   });
 
@@ -48,9 +48,9 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-pending', 'runtime-network-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 5000');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:errors --duration 5000');
     expect(followups[0]!.why).toContain('connection');
-    expect(followups[1]!.command).toBe('npx exagent runtime:network --duration 10000');
+    expect(followups[1]!.command).toBe('npx @expo/agent-cli runtime:network --duration 10000');
   });
 
   // Every request answered, so a wrong screen is not a network problem: look at the app instead.
@@ -63,6 +63,6 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-clean']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 5000');
+    expect(followups[0]!.command).toBe('npx @expo/agent-cli runtime:errors --duration 5000');
   });
 });

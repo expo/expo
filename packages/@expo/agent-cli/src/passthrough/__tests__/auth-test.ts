@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { exagentPassthrough } from '..';
+import { agentCliPassthrough } from '..';
 import { AUTH_COMMANDS, authCliLabel, resolveAuthCliAsync, resolveRegisterCli } from '../auth';
 import * as Log from '../../log';
 import * as subprocess from '../../utils/subprocess';
@@ -171,7 +171,7 @@ describe(`register passthrough`, () => {
     jest.spyOn(process, 'cwd').mockReturnValue(path.resolve('/elsewhere'));
     jest.mocked(runInheritedAsync).mockResolvedValue(0);
 
-    await exagentPassthrough('register')([]);
+    await agentCliPassthrough('register')([]);
 
     expect(runInheritedAsync).toHaveBeenCalledWith('npx', ['expo', 'register'], expect.anything());
     expect(jest.mocked(Log.error).mock.calls.join('\n')).toContain('npx expo');
@@ -181,7 +181,7 @@ describe(`register passthrough`, () => {
     jest.spyOn(process, 'cwd').mockReturnValue(path.resolve('/elsewhere'));
     jest.mocked(runInheritedAsync).mockResolvedValue(0);
 
-    await exagentPassthrough('register')([]);
+    await agentCliPassthrough('register')([]);
 
     // `runInheritedAsync` is the inherited-stdio spawn: using it at all is the assertion.
     expect(runExpoAsync).not.toHaveBeenCalled();
@@ -194,7 +194,7 @@ describe(`AUTH_COMMANDS`, () => {
   });
 });
 
-describe(exagentPassthrough, () => {
+describe(agentCliPassthrough, () => {
   it(`should route the four auth commands away from the plain expo forward`, async () => {
     // A directory with no project and no expo: the plain forward would reach for `npx expo`.
     jest.spyOn(process, 'cwd').mockReturnValue(path.resolve('/elsewhere'));
@@ -205,7 +205,7 @@ describe(exagentPassthrough, () => {
     });
     jest.mocked(runInheritedAsync).mockResolvedValue(0);
 
-    await exagentPassthrough('whoami')([]);
+    await agentCliPassthrough('whoami')([]);
 
     expect(runExpoAsync).not.toHaveBeenCalled();
     expect(runInheritedAsync).toHaveBeenCalled();
@@ -215,7 +215,7 @@ describe(exagentPassthrough, () => {
     jest.spyOn(process, 'cwd').mockReturnValue(path.resolve('/elsewhere'));
     jest.mocked(runExpoAsync).mockResolvedValue(0);
 
-    await exagentPassthrough('prebuild')(['--clean']);
+    await agentCliPassthrough('prebuild')(['--clean']);
 
     expect(runExpoAsync).toHaveBeenCalledWith(path.resolve('/elsewhere'), ['prebuild', '--clean']);
   });

@@ -1,4 +1,4 @@
-// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`@expo/agent-cli status`
 // The dev-server lock: a listening socket that answers where this project's dev server is.
 //
 // Why a socket and not a file: a file records a fact, and a record of a running process outlives

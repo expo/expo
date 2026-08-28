@@ -1,5 +1,5 @@
 // @ref llp/0012-build-explain.rfc.md
-// `exagent inspect:build-log`, which the v1 narrowing renamed from `build:explain` (llp/0016): the
+// `@expo/agent-cli inspect:build-log`, which the v1 narrowing renamed from `build:explain` (llp/0016): the
 // `build` group it was in held one command that started nothing and one that waited on a build
 // somebody else started, and `inspect` is the group named after what the caller is actually doing.
 // The bare `build` verb is now a name this CLI does not have, answered by the absent-capability
@@ -16,7 +16,7 @@ import { assertWithOptionsArgs } from '../utils/args';
 
 export const inspectBuildLogHelp: CommandHelp = {
   command: 'inspect:build-log',
-  usage: 'npx exagent inspect:build-log --file <path> | --stdin',
+  usage: 'npx @expo/agent-cli inspect:build-log --file <path> | --stdin',
   options: [
     `--file <path>          Read the log from this file`,
     `--stdin                Read the log from stdin. Implied when stdin is not a terminal`,
@@ -29,15 +29,15 @@ export const inspectBuildLogHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx exagent inspect:build-log --file ~/Downloads/xcodebuild.log',
+      run: 'npx @expo/agent-cli inspect:build-log --file ~/Downloads/xcodebuild.log',
       gets: 'the failing phase, the line it failed on, and the lines around it',
     },
     {
-      run: 'npx exagent inspect:build-log --stdin --json',
+      run: 'npx @expo/agent-cli inspect:build-log --stdin --json',
       gets: 'the same from a piped log, as one object',
     },
     {
-      run: 'npx exagent inspect:build-log --file build.log --all',
+      run: 'npx @expo/agent-cli inspect:build-log --file build.log --all',
       gets: 'every rule that matched, not only the failing phase’s first',
     },
   ],
@@ -52,13 +52,13 @@ export const inspectBuildLogHelp: CommandHelp = {
     `and a test. Every answer carries the line it came from.`,
     `Exit codes: 0 a report was produced, "no error located" included · 1 no report could be`,
     `produced · 22 what arrived is not text, most often a log still brotli-compressed.`,
-    `"npx exagent inspect:build-log <build-id>" is reserved and does not work yet: eas-cli has no`,
+    `"npx @expo/agent-cli inspect:build-log <build-id>" is reserved and does not work yet: eas-cli has no`,
     `build:logs, so an EAS build's log has to be saved and passed with --file. Run`,
     `"npx eas build:view" for where those files are.`,
   ],
 };
 
-export const exagentInspectBuildLog: Command = async (argv) => {
+export const agentCliInspectBuildLog: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -82,7 +82,7 @@ export const exagentInspectBuildLog: Command = async (argv) => {
     printCommandHelp(inspectBuildLogHelp);
   }
 
-  // Load modules after the help prompt so `npx exagent inspect:build-log -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx @expo/agent-cli inspect:build-log -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { resolveExplainOptions } =
     require('./explain/resolveOptions') as typeof import('./explain/resolveOptions');

@@ -2,7 +2,7 @@
 //
 // The environments are the real ones, captured on the machine this was written on [observed — bun
 // 1.3.14, npm 11.17.0, node 26.5.0, 2026-08-26]. The case the module exists for is the first one:
-// `bunx exagent` runs this package's bin on **Node**, because `bunx` honours a
+// `bunx @expo/agent-cli` runs this package's bin on **Node**, because `bunx` honours a
 // `#!/usr/bin/env node` shebang — so nothing in-process says "bun", and a hardcoded `npx` then
 // sent a Bun user to npm's exec for every package this CLI spawns.
 

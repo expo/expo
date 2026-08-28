@@ -20,9 +20,9 @@ const storeFile = `${projectRoot}/.expo/${CHECKPOINTS_FILE_NAME}`;
 function record(overrides: Partial<CheckpointRecord> = {}): CheckpointRecord {
   return {
     id: '1111111111111111111111111111111111111111',
-    label: 'exagent install',
+    label: '@expo/agent-cli install',
     createdAt: '2026-08-22T10:00:00.000Z',
-    argv: ['exagent', 'install', 'expo-sqlite'],
+    argv: ['@expo/agent-cli', 'install', 'expo-sqlite'],
     path: '',
     ...overrides,
   };
@@ -143,12 +143,12 @@ describe(findCheckpoint, () => {
 describe(resolveCommandArgv, () => {
   it(`should describe the command that is running`, () => {
     expect(
-      resolveCommandArgv(['/usr/bin/node', '/tmp/bin/exagent.js', 'install', 'expo-sqlite'])
-    ).toEqual(['exagent', 'install', 'expo-sqlite']);
+      resolveCommandArgv(['/usr/bin/node', '/tmp/bin/cli.js', 'install', 'expo-sqlite'])
+    ).toEqual(['@expo/agent-cli', 'install', 'expo-sqlite']);
   });
 
   it(`should describe a bare invocation`, () => {
-    expect(resolveCommandArgv(['/usr/bin/node', '/tmp/bin/exagent.js'])).toEqual(['exagent']);
+    expect(resolveCommandArgv(['/usr/bin/node', '/tmp/bin/cli.js'])).toEqual(['@expo/agent-cli']);
   });
 });
 
