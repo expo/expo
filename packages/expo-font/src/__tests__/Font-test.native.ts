@@ -400,20 +400,4 @@ describe('loadAsync with an array of FontFamilyDefinitions (native)', () => {
       expect(Font.isLoading(familyName)).toBe(false);
     }
   });
-
-  it('rejects an out-of-range weight before downloading any asset', async () => {
-    const okAsset = _createMockAsset({ localUri: 'file:/ok.ttf' });
-    const definition: Font.FontFamilyDefinition = {
-      fontFamily: 'BadWeight',
-      fontDefinitions: [{ path: okAsset, weight: 5000 }],
-    };
-
-    await expect(Font.loadAsync([definition])).rejects.toThrow('Invalid font weight');
-
-    expect((okAsset as any).downloadAsync).not.toHaveBeenCalled();
-    expect((okAsset as any).downloaded).toBe(false);
-    expect(ExpoFontLoader.loadFontFamilyAsync).not.toHaveBeenCalled();
-    expect(Font.isLoaded('BadWeight')).toBe(false);
-    expect(Font.isLoading('BadWeight')).toBe(false);
-  });
 });

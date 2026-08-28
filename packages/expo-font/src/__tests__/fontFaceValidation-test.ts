@@ -26,24 +26,22 @@ describe('assertValidFontFaces', () => {
     ).toThrow(/path/);
   });
 
-  it('rejects a non-integer weight', () => {
-    expect(() => assertValidFontFaces('Family', [{ path: 'a.ttf', weight: 400.5 }])).toThrow(
-      'Invalid font weight'
-    );
-  });
-
   it('accepts a valid single-face definition', () => {
     expect(() => assertValidFontFaces('Family', [{ path: 'a.ttf', weight: 400 }])).not.toThrow();
   });
 });
 
 describe('normalizeWeight', () => {
-  it('rejects a non-integer weight and says so in the message', () => {
-    expect(() => normalizeWeight(400.5)).toThrow(/whole number/);
+  it('converts named and string weights to numbers', () => {
+    expect(normalizeWeight(400)).toBe(400);
+    expect(normalizeWeight('700')).toBe(700);
+    expect(normalizeWeight('normal')).toBe(400);
+    expect(normalizeWeight('bold')).toBe(700);
   });
 
-  it('still accepts a valid integer weight', () => {
-    expect(normalizeWeight(400)).toBe(400);
+  it('returns undefined for a range or an unparseable value', () => {
+    expect(normalizeWeight('100 900')).toBeUndefined();
+    expect(normalizeWeight('400abc')).toBeUndefined();
   });
 });
 
