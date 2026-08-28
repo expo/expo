@@ -13,12 +13,12 @@ The remote device starts blank unless the start command receives an application 
 
 Choose the build type based on what you need:
 
-| Goal                                         | Build type                                  |
-| -------------------------------------------- | ------------------------------------------- |
-| Inspect a fixed build or capture evidence    | Local release build or EAS simulator build  |
-| See current source changes with Fast Refresh | Development build connected to Metro        |
-| Test a compatible project without native code | Expo Go connected to Metro                 |
-| Use an existing EAS artifact                 | Matching iOS Simulator build or Android APK |
+| Goal                                          | Build type                                  |
+| --------------------------------------------- | ------------------------------------------- |
+| Inspect a fixed build or capture evidence     | Local release build or EAS simulator build  |
+| See current source changes with Fast Refresh  | Development build connected to Metro        |
+| Test a compatible project without native code | Expo Go connected to Metro                  |
+| Use an existing EAS artifact                  | Matching iOS Simulator build or Android APK |
 
 > **warning** A release build contains the JavaScript from build time. Connecting it to Metro does not enable Fast Refresh. Use a development build for live iteration.
 
@@ -26,12 +26,12 @@ Choose the build type based on what you need:
 
 Choose how you plan to control the device before starting the session. Pass the session type explicitly. On iOS, agent-device, Appium, and Argent sessions include both the selected controller and a web preview. Use `serve-sim` when you only need the web preview without programmatic control.
 
-| Session type     | Start option          | Use case                                                              |
-| ---------------- | --------------------- | --------------------------------------------------------------------- |
-| agent-device     | `--type agent-device` | [Agent-native device control and installation](/agents/agent-device/) |
-| Appium           | `--type appium`       | Existing Appium clients and test suites                               |
-| Argent           | `--type argent`       | [Argent device tools and Model Context Protocol (MCP) integration](/agents/argent/)   |
-| Web preview only | `--type serve-sim`    | Interactive iOS stream without programmatic control                   |
+| Session type     | Start option          | Use case                                                                            |
+| ---------------- | --------------------- | ----------------------------------------------------------------------------------- |
+| agent-device     | `--type agent-device` | [Agent-native device control and installation](/agents/agent-device/)               |
+| Appium           | `--type appium`       | Existing Appium clients and test suites                                             |
+| Argent           | `--type argent`       | [Argent device tools and Model Context Protocol (MCP) integration](/agents/argent/) |
+| Web preview only | `--type serve-sim`    | Interactive iOS stream without programmatic control                                 |
 
 ## Find the app identifier
 
