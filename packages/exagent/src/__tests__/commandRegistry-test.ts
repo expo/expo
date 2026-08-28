@@ -526,7 +526,51 @@ describe(withAction, () => {
   });
 });
 
+// @ref llp/0016-v1-scope.rfc.md §The graduation review
+// The mark is a claim about one command, so the set of commands carrying it is the assertable
+// half of it. Wave 36 graduated five of the six the narrowing marked, against the record each one
+// had by then; this list is what a sixth graduation, or a seventh mark, has to come here to change.
+describe(isUnstableCommand, () => {
+  // The canonical names, because that is what the help prints and what `isUnstableCommand` reads.
+  const marked = [
+    ...Object.keys(topLevelCommands),
+    ...Object.entries(commandGroups).flatMap(([group, { actions }]) =>
+      Object.keys(actions).map((action) => `${group}:${action}`)
+    ),
+  ].filter(isUnstableCommand);
+
+  it('is on inspect:config-plugins and on nothing else', () => {
+    expect(marked).toEqual(['inspect:config-plugins']);
+  });
+
+  it('answers for the colon form, which is what the help prints', () => {
+    expect(isUnstableCommand('inspect:config-plugins')).toBe(true);
+    expect(isUnstableCommand('inspect:build-log')).toBe(false);
+    expect(isUnstableCommand('smoke')).toBe(false);
+    expect(isUnstableCommand('runtime:tree')).toBe(false);
+    expect(isUnstableCommand('runtime:tap')).toBe(false);
+    expect(isUnstableCommand('runtime:type')).toBe(false);
+  });
+});
+
 describe(formatGroupHelp, () => {
+  // One marked action beside one that graduated is the case the per-command rule was written for:
+  // the tag is on the line it is about, and the footnote is under the section that has it.
+  it('tags only the action that carries the mark', () => {
+    const help = formatGroupHelp('inspect');
+
+    expect(help).toMatch(/config-plugins.*\[experimental\]/);
+    expect(help).not.toMatch(/build-log.*\[experimental\]/);
+    expect(help).toContain('experimental commands may change or vanish');
+  });
+
+  it('prints no footnote for a group whose actions have all graduated', () => {
+    const help = formatGroupHelp('runtime');
+
+    expect(help).not.toContain('[experimental]');
+    expect(help).not.toContain('experimental commands may change or vanish');
+  });
+
   it('lists every action of the group in its canonical colon form', () => {
     const help = formatGroupHelp('runtime');
 

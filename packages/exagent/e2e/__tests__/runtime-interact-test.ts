@@ -518,13 +518,18 @@ describe('exagent runtime:type', () => {
 });
 
 describe('the three commands in the help', () => {
-  it(`are listed as experimental actions of the runtime group`, async () => {
+  // @ref llp/0016-v1-scope.rfc.md §The graduation review
+  // Graduated in wave 36, so the group they are in carries no tag and no footnote at all. The mark
+  // is what an agent reads before it decides whether to build a loop on a command, and these three
+  // are rungs 3 and 4 of the workflow map that same help prints.
+  it(`are listed as ordinary actions of the runtime group`, async () => {
     const result = await executeExagentAsync(projectRoot, ['runtime', '--help']);
 
     for (const action of ['runtime:tree', 'runtime:tap', 'runtime:type']) {
       expect(result.stdout).toContain(action);
     }
-    expect(result.stdout).toContain('experimental commands may change or vanish');
+    expect(result.stdout).not.toContain('[experimental]');
+    expect(result.stdout).not.toContain('experimental commands may change or vanish');
   });
 
   it(`say in their own help what they do not do`, async () => {

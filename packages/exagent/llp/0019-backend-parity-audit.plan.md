@@ -109,7 +109,15 @@ than a gap. On iOS 26.5 every `simctl openurl` of a development build's scheme r
 `Open in "<app>"?`, on every call, and nothing in this tier can answer it. So the iOS development
 build rows say `by hand` with their evidence, which is a weaker claim than `filled` and is said so.]
 
-| Command | stub-e2e | live-project | live-local | live-android | live-devclient | live-eas | live-cloud |
+[**The column order below is the order the cells are in**, and it is not the order this header was
+written in until wave 36. `live-devclient` was appended as the last column when wave 29 added it,
+and `live-project` was inserted as the second when wave 31 added its, so the header read
+`… live-android | live-devclient | live-eas | live-cloud` over a body whose fifth cell is the EAS
+one. Nothing in the body moved; the header row is corrected. The rows that make it unambiguous are
+`whoami` (fifth cell names the **staging** session file) and `runtime:eval` (last cell is the
+development build returning `2`, which is wave 29's whole result).]
+
+| Command | stub-e2e | live-project | live-local | live-android | live-eas | live-cloud | live-devclient |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `new` | filled | **filled** — every test below runs against its scaffold | **filled** — scaffolds + installs, per run | **filled** — the same scaffold, per run | n/a | runnable (its own scaffold) | n/a — the artifact is the prerequisite; this suite never scaffolds |
 | `install --check` | filled | **filled** — the real report on **both** sides of a mismatch, and the `--fix` round trip (**found F130**) | **filled** — real registry resolution, `check.report` non-null (F76) | open — no platform dimension; `live-local` proves the wrapper | n/a | n/a | open — same reason as the columns left |
@@ -200,6 +208,19 @@ across three reloads, where Expo Go held a steady 2. That is the number the relo
 rung on ([[0005-runtime-loop-tools]] §One ladder, chosen by the command socket). Nothing was observed
 to go wrong because of it. It is written down because the ladder reads that count as "somebody is
 listening".
+
+### What this matrix was used for, in wave 36
+
+[added 2026-08-28] [[0016-v1-scope]] §The graduation review is the first decision made **out of**
+this table rather than recorded into it. Its criterion (b) — live evidence on every platform and
+runtime a command claims — is these columns, and the `filled` / `runnable` / `by hand` split is what
+made the criterion decidable: five of the six `[experimental]` commands graduated on cells somebody
+had seen green, and the sixth, `inspect:config-plugins`, kept the mark because its only live cell is
+`live-project` and it is five waves old.
+
+The split earned its keep a second time here. A review that counted `runnable` as evidence would
+have graduated on a suite nobody has run, which is the exact failure the column vocabulary exists to
+prevent.
 
 ### What the live columns changed
 

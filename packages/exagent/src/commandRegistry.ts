@@ -48,6 +48,13 @@ export type HelpLoader = () => Promise<CommandHelp>;
  * `true` or absent — never `false`. A command that is not marked is the ordinary case, and a
  * `unstable: false` beside twenty entries with nothing would read as a claim somebody made rather
  * than as the default.
+ *
+ * **The mark comes off against a record, not against a feeling** (llp/0016 §The graduation review).
+ * Six commands carried it out of the narrowing and one still does; the review that decided which
+ * asked three questions of each — has the behaviour contract held for five waves, is there live
+ * evidence on every platform and runtime the command claims, and is every failure mode it has
+ * honest. A command that fails one keeps the mark **with the named list of what would lift it**,
+ * so "experimental" is a state with a way out rather than a permanent hedge.
  */
 export type Unstable = true;
 
@@ -145,14 +152,14 @@ export const topLevelCommands: { [command: string]: TopLevelCommand } = {
   // A capability only this CLI has, so it gets a verb of its own (llp/0006 naming rule): `expo`
   // has no `smoke` in its command map, so there is no `expo` behaviour for this name to match.
   //
-  // Unstable: the gate is eight phases, and which of them belong in one command is the thing a
-  // first release is for finding out. The name is not going anywhere; the phase list and the
-  // outcome table might.
+  // Marked `unstable` at the narrowing, on the argument that the phase list and the outcome table
+  // might move. Graduated in wave 36 (llp/0016 §The graduation review): neither has moved since,
+  // and the hardest claim ever made about the outcome table — that `smoke --android` can never
+  // pass — was falsified by a development build with the code needing no change.
   smoke: {
     summary: 'Prove the app boots, on a device',
     load: () => import('./smoke').then((i) => i.exagentSmoke),
     help: () => import('./smoke').then((i) => i.smokeHelp),
-    unstable: true,
   },
   start: {
     summary: 'expo start, plus a sync of the agent skills',
@@ -190,18 +197,26 @@ export const commandGroups: { [group: string]: CommandGroup } = {
   // and `inspect:config-plugins`, under two groups named after other CLIs' verbs; one group named after
   // what the caller is doing holds them and every read-only answer that follows.
   //
-  // The group is not marked unstable — both of its actions are, individually. A group-level mark
+  // The group is not marked unstable — one of its actions is, individually. A group-level mark
   // would say something about the stable actions that join it later, which is the opposite of what
-  // is meant (see {@link Unstable}).
+  // is meant (see {@link Unstable}), and this group is now the case that shows it: two actions,
+  // one graduated and one not, on one listing (llp/0016 §The graduation review).
   inspect: {
     summary: 'Read what this project produced, without running it',
     actions: {
+      // Graduated in wave 36. Its behaviour, flags and rule table have not moved since the binary
+      // refusal of wave 17, and the reserved `<build-id>` form is additive by design
+      // (llp/0012 §What ships, and what is reserved), so it is not a change this mark would warn a
+      // reader about.
       'build-log': {
         summary: 'Say what failed in a build log',
         load: () => import('./builds').then((i) => i.exagentInspectBuildLog),
         help: () => import('./builds').then((i) => i.inspectBuildLogHelp),
-        unstable: true,
       },
+      // Still unstable, and the only command in the surface that is. Its report has three times
+      // been found to claim a completeness it has not got — F35 renamed the autolinked list, and
+      // F132 and F133 landed in wave 31 on the command's **first** live run. `declaredNotApplied`
+      // is five waves old and has been read on one project shape.
       'config-plugins': {
         summary: 'What the config plugins produced',
         load: () => import('./config').then((i) => i.exagentInspectConfigPlugins),
@@ -263,27 +278,25 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       // `dev:stop`: each takes different options and has honest limits that belong in its own
       // `--help` rather than in a shared block.
       //
-      // Unstable, on the rule the spike itself states: the mechanism was proved against one app,
-      // on one runtime, on one day. Every claim it makes about React's internals held there and is
-      // recorded with the payload that showed it — and a `RectButton` in a library nobody tried is
-      // the case that moves these command shapes.
+      // Marked `unstable` when they shipped, because the mechanism had been proved against one
+      // app, on one runtime, on one day. Graduated in wave 36 (llp/0018 §Why these ship
+      // `[experimental]`, and what closed it): the re-entry criterion that section named was the
+      // first friction run against a project they did not come from, that run happened in wave 17,
+      // and the report shape has not moved in the nineteen waves since.
       tree: {
         summary: 'What is on screen, ready for a tap',
         load: () => import('./runtime/interact/tree').then((i) => i.exagentRuntimeTree),
         help: () => import('./runtime/interact/tree').then((i) => i.runtimeTreeHelp),
-        unstable: true,
       },
       tap: {
         summary: 'Tap the element carrying a testID',
         load: () => import('./runtime/interact/tap').then((i) => i.exagentRuntimeTap),
         help: () => import('./runtime/interact/tap').then((i) => i.runtimeTapHelp),
-        unstable: true,
       },
       type: {
         summary: 'Type into the input with a testID',
         load: () => import('./runtime/interact/type').then((i) => i.exagentRuntimeType),
         help: () => import('./runtime/interact/type').then((i) => i.runtimeTypeHelp),
-        unstable: true,
       },
       // Two actions with modules of their own, like `dev:stop`: they drive the app rather than
       // read it, so they take different options and print different reports, and folding them

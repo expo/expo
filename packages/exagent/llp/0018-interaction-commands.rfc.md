@@ -1,7 +1,7 @@
 # 0018: The Interaction Commands — `runtime:tree`, `runtime:tap`, `runtime:type` As Shipped
 
 **Type:** RFC
-**Status:** Draft — implemented, marked `[experimental]`
+**Status:** Draft — implemented; `[experimental]` graduated 2026-08-28 ([[0016-v1-scope]] §The graduation review)
 **Systems:** `src/runtime/interact/` (`expression.ts`, `resolveOptions.ts`, `interactAsync.ts`, `format.ts`, `types.ts`, `tree.ts`, `tap.ts`, `type.ts`); the follow-up ladders (`src/followups/interact.ts`); the entry-bundle gate they share with `runtime:reload` (`src/runtime/bundleCheck.ts`); the `runtime` group of `src/commandRegistry.ts`; the `cli:runtime_tree` / `cli:runtime_tap` / `cli:runtime_type` events in `src/events.ts`; the `inspectorEvaluate` option of `e2e/utils.ts`
 **Author:** Tuft agent (implementation of [[0014-interaction-spike]], for Kudo)
 **Date:** 2026-08-26 (amended 2026-08-27 with §What friction run 7 changed)
@@ -156,7 +156,7 @@ the size argument that decides the `runtime:tree` default does not apply here.
 Without `--verify`, the only claim is that the handler was called. That is the honesty rule of this
 whole feature: nothing reports an effect it did not observe.
 
-## Why these ship `[experimental]`
+## Why these ship `[experimental]`, and what closed it
 
 Marked `unstable: true` on all three, per [[0016-v1-scope]] §Experimental is per command. The
 mechanism is proved, with five hypotheses all holding, but only against **one app, on one runtime, on
@@ -167,6 +167,38 @@ is the one nobody has tested: a component family in a library the spike never me
 
 The names are not going anywhere. What may move is the projection, the `--verify` diff, and whether
 `--index` needs a companion for picking a list row by its text.
+
+**Graduated 2026-08-28, wave 36** ([[0016-v1-scope]] §The graduation review). §What is still
+unverified named the re-entry point in as many words: *the first friction run against a project this
+did not come from*. That is friction run 7, in wave 17, and §What friction run 7 changed is what it
+cost — nine findings, all fixed in that wave. What the record holds now:
+
+- **Three apps, four platform-and-runtime combinations.** `notesapp` and `tapapp` on iOS Expo Go,
+  `dcapp` on an Android development build (wave 29) and on an iOS one by hand, and the Expo Go
+  Android refusal, which is the only answer that platform has. Every one is a `filled` cell of
+  [[0019-backend-parity-audit]] §The live matrix except the iOS development build, which is `by
+  hand` and is written as the weaker claim it is.
+- **Nineteen waves with no contract change.** The projection last moved in wave 17 (F69, the default
+  listing grouping by element); wave 21 added `error.data` to every `runtime` command's failure
+  envelope, this group included. `src/runtime/interact/` has had no other non-help commit since.
+- **Both dishonest failure modes closed and asserted live on two platforms.** F62 was a verified
+  green read off a stale bundle, and F63 was a `--verify` blind to the interpolated text every
+  counter on every screen is written with. The entry-bundle gate and the text extractor are what
+  answer them, and the break-and-fix cycle at `live-local` plus the `--verify` pair at
+  `live-devclient` are what watch them.
+
+Three things are still true and are not what the mark was for. **A component family in a library
+nobody tried** is still the fragility row most likely to move a report, and it moves *what is
+listed* rather than the key set — `groupSize`, `handlers` and `handlerOutsideMatch` are the fields
+that exist to make an unfamiliar family legible. **A tap whose handler is on an ancestor** has been
+*read* live (`groupSize: 6`, `handlerOn: "Text"` over the `expo-router` `Link` chain) and never
+*called* live. And **whether `--index` needs a companion** for picking a list row by its text is
+undecided, and would be an added flag rather than a changed one.
+
+The argument the other way, which is what tipped it: the wave-34 workflow map puts `runtime:tree`
+and `runtime:tap <testID>` on rungs 3 and 4 of the five-step loop `exagent --help` teaches. A
+surface that walks an agent onto a command and tells it in the same screen that the command may
+vanish is asking the agent to distrust its own instructions.
 
 ## Testing
 
@@ -371,18 +403,28 @@ command.
 
 ## What is still unverified
 
-- **Any app but this one.** One app, one runtime, one navigator (native tabs), on one day. The
-  `expo-router` `Link` group was read live and matched its recording. The gesture-handler families
-  were exercised by the *spike's* expressions only, and are covered here by fibers rebuilt from
-  those recordings.
-- **A tap whose handler is on an ancestor.** `handlerOutsideMatch` was reported `false` every time
-  live, because every element on this app has its own handler, which is the same thing the spike
-  found.
-- **`--index`**. No screen in the run had two elements sharing a testID, so the ambiguous path and
-  the index that resolves it are unit-tested and never live.
-- **The disabled refusal.** The same story: the spike added a `disabled` button temporarily and
-  reverted it, so what ran live here is the enabled case.
-- **Android, and a production bundle.** Neither was reachable, and both are refusal paths.
+Written when this document was, and four of the five have closed since. Each is marked with what
+closed it, because the *order* they closed in is what §Why these ship `[experimental]`, and what
+closed it rests on.
 
-The first friction run against a project this did not come from is what closes those, and is the
-re-entry point for the `[experimental]` mark.
+- ~~**Any app but this one.**~~ **Closed** — `tapapp` (friction run 7, wave 17) and `dcapp` (waves
+  29–30). The `expo-router` `Link` group was read live and matched its recording. The
+  gesture-handler families were exercised by the *spike's* expressions only, and are covered here by
+  fibers rebuilt from those recordings — **that half is still open**, and it is the fragility row
+  [[0014-interaction-spike]] names as the one most likely to move a report.
+- **A tap whose handler is on an ancestor.** Still open. `handlerOutsideMatch` was reported `false`
+  every time live, because every element on both apps has its own handler, which is the same thing
+  the spike found. The `Link` chain has been *read* with `handlerOn: "Text"` over a two-level gap;
+  no live run has *called* one.
+- ~~**`--index`**~~. **Closed** by friction run 7, whose project was built with two duplicate
+  testIDs on purpose, and asserted again at `live-devclient` (`ambiguous` → 20 on Android).
+- ~~**The disabled refusal.**~~ **Closed** the same way: a disabled button and an
+  `editable={false}` input, live on iOS Expo Go and on the Android development build,
+  `disabledOn` naming the prop in each.
+- ~~**Android, and a production bundle.**~~ **Android closed** — the Expo Go refusal in wave 25, the
+  development build in wave 29. A **production bundle** installs no DevTools hook, so it is not a
+  runtime these commands claim: they need a dev server and a debugger connection to run at all.
+
+The first friction run against a project this did not come from was the re-entry point for the
+`[experimental]` mark. It happened in wave 17, and the mark came off in wave 36
+([[0016-v1-scope]] §The graduation review).

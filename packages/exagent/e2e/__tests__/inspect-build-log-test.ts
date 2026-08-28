@@ -336,14 +336,18 @@ describe('when no report can be produced', () => {
 });
 
 describe('the registry', () => {
-  it('lists inspect:build-log in the group, tagged experimental', async () => {
+  // @ref llp/0016-v1-scope.rfc.md §The graduation review
+  // Wave 36 graduated this action and kept the one beside it, so the group listing is where the
+  // per-command rule is visible at the process boundary: one line tagged, one not, one footnote.
+  it('lists inspect:build-log in the group, untagged beside the action that kept the tag', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
     const result = await executeExagentAsync(projectRoot, ['inspect', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('inspect:build-log');
-    expect(result.stdout).toContain('[experimental]');
+    expect(result.stdout).not.toMatch(/build-log.*\[experimental\]/);
+    expect(result.stdout).toMatch(/config-plugins.*\[experimental\]/);
     expect(result.stdout).toContain('experimental commands may change or vanish');
   });
 

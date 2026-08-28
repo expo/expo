@@ -1632,6 +1632,13 @@ Decision [confirmed — Kudo, 2026-08-24]. `exagent smoke` is one command that a
 still boot", by asking the questions of six existing commands **in this process** and adding a
 seventh nothing could ask before: a picture of the screen.
 
+It shipped marked `[experimental]` and **graduated 2026-08-28**, wave 36 ([[0016-v1-scope]] §The
+graduation review). The mark's stated reason was that the phase list and the outcome table might
+move. The phase list last moved in wave 16, when `dev:wait`'s deferral sent it three questions it
+was already asking, and the outcome table has not moved at all — §The wall was Expo Go's, not
+Android's is the wave-29 run that falsified the strongest claim ever written about it and needed no
+code change to do it.
+
 The plan this ships from is `plans/cluster-a-runtime-verify.md` §Feature 1, written when none of
 those commands existed. Most of it has since been built as commands of its own, so `smoke` is now a
 thin composite rather than the eight new things the plan described. What it composes, and which
