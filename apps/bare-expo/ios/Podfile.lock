@@ -705,7 +705,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (55.0.2)
   - EXStructuredHeaders/Tests (55.0.2)
-  - EXUpdates (55.0.29):
+  - EXUpdates (55.0.30):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -733,7 +733,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdates/Tests (55.0.29):
+  - EXUpdates/Tests (55.0.30):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -4059,7 +4059,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: fb9cf50206b8707cb32b1f79b098430f70a39489
   ExpoWebBrowser: d8f05a76ddf8aded64ca5972b577f6a8ccc0be2d
   EXStructuredHeaders: 93ad4f31a2eec124428675e28aca11de243ee1e4
-  EXUpdates: 0faebe66e618f4136cdee6692dcea9f892e543e0
+  EXUpdates: c651069a9ecdfceb6c2614127c42da860b6b4bd6
   EXUpdatesInterface: 33cfb4116f9ddd0ee1732484248495d4fece9744
   FBLazyVector: b88945378388c6651d3725b0e8c2624fbb37ec64
   hermes-engine: a2a9fc7160af80292783f30b771f14a477f29712
