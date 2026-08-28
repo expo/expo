@@ -7,6 +7,5 @@
     "rootDir": "./src",
     "emitDeclarationOnly": true
   },
-  "include": ["./src/**/*"],
-  "exclude": ["**/__tests__/**"]
+  "include": ["./src/**/*"]
 }

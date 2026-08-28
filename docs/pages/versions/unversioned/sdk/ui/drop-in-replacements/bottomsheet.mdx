@@ -242,7 +242,7 @@ export default function BottomSheetScrollableExample() {
 
 ## Platform behavior
 
-`@gorhom/bottom-sheet` renders inline at the bottom of its parent view. This component uses native modal presentation on Android and iOS, and a drawer overlay on web.
+`@gorhom/bottom-sheet` renders inline at the bottom of its parent view. This component uses native modal presentation on Android and iOS, and an HTML `<dialog>` on web.
 
 This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and animation layer through `react-native-gesture-handler` and `react-native-reanimated`, while `@expo/ui/community/bottom-sheet` delegates those behaviors to Jetpack Compose, SwiftUI, and an HTML `<dialog>` on web. As a result, this component is best suited for modal bottom sheet flows, including callsites that use the `BottomSheet` API rather than `BottomSheetModal`.
 

@@ -57,3 +57,49 @@ describe('BottomSheetDialog handle contrast', () => {
     );
   });
 });
+
+describe('BottomSheetDialog body scroll lock', () => {
+  it('should keep the page locked until the last open sheet closes', async () => {
+    const { rerender } = render(
+      <>
+        <BottomSheetDialog open onOpenChange={() => {}}>
+          <Text>One</Text>
+        </BottomSheetDialog>
+        <BottomSheetDialog open onOpenChange={() => {}}>
+          <Text>Two</Text>
+        </BottomSheetDialog>
+      </>
+    );
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('expo-ui-bottom-sheet')).toHaveLength(2);
+    });
+    expect(document.body.style.overflow).toBe('hidden');
+
+    rerender(
+      <>
+        <BottomSheetDialog open={false} onOpenChange={() => {}}>
+          <Text>One</Text>
+        </BottomSheetDialog>
+        <BottomSheetDialog open onOpenChange={() => {}}>
+          <Text>Two</Text>
+        </BottomSheetDialog>
+      </>
+    );
+
+    expect(document.body.style.overflow).toBe('hidden');
+
+    rerender(
+      <>
+        <BottomSheetDialog open={false} onOpenChange={() => {}}>
+          <Text>One</Text>
+        </BottomSheetDialog>
+        <BottomSheetDialog open={false} onOpenChange={() => {}}>
+          <Text>Two</Text>
+        </BottomSheetDialog>
+      </>
+    );
+
+    expect(document.body.style.overflow).not.toBe('hidden');
+  });
+});

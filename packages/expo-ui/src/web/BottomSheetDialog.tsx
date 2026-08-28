@@ -200,24 +200,51 @@ const sheetCss = css`
   }
 `;
 
+type BodyScrollLock = {
+  count: number;
+  overflow: string;
+  position: string;
+  top: string;
+  width: string;
+  scrollY: number;
+};
+
+let bodyScrollLock: BodyScrollLock | null = null;
+
 function lockBodyScroll() {
+  if (bodyScrollLock) {
+    bodyScrollLock.count += 1;
+    return unlockBodyScroll;
+  }
   const scrollY = window.scrollY;
-  const { overflow, position, top, width, touchAction } = document.body.style;
+  bodyScrollLock = {
+    count: 1,
+    overflow: document.body.style.overflow,
+    position: document.body.style.position,
+    top: document.body.style.top,
+    width: document.body.style.width,
+    scrollY,
+  };
   document.body.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
   document.body.style.top = `-${scrollY}px`;
   document.body.style.width = '100%';
-  document.body.style.touchAction = 'none';
-  return () => {
-    document.body.style.overflow = overflow;
-    document.body.style.position = position;
-    document.body.style.top = top;
-    document.body.style.width = width;
-    document.body.style.touchAction = touchAction;
-    if (scrollY) {
-      window.scrollTo(0, scrollY);
-    }
-  };
+  return unlockBodyScroll;
+}
+
+function unlockBodyScroll() {
+  if (!bodyScrollLock) return;
+  bodyScrollLock.count -= 1;
+  if (bodyScrollLock.count > 0) return;
+  const { overflow, position, top, width, scrollY } = bodyScrollLock;
+  bodyScrollLock = null;
+  document.body.style.overflow = overflow;
+  document.body.style.position = position;
+  document.body.style.top = top;
+  document.body.style.width = width;
+  if (scrollY) {
+    window.scrollTo(0, scrollY);
+  }
 }
 
 /**
@@ -488,6 +515,7 @@ const styles = StyleSheet.create({
   },
   body: {
     minHeight: 0,
+    flexShrink: 1,
     overflowY: 'auto',
   },
   bodyFlex: {
