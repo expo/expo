@@ -195,6 +195,11 @@ class RemoteLoaderTest {
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
 
+    val launchAsset = AssetEntity("bundle-1234", "js")
+    launchAsset.relativePath = "bundle-1234"
+    launchAsset.isLaunchAsset = true
+    db.assetDao().insertAssets(listOf(launchAsset), update)
+
     val result = loader.load { _ ->
       Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
     }
@@ -250,6 +255,11 @@ class RemoteLoaderTest {
     )
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
+
+    val launchAsset = AssetEntity("bundle-1234", "js")
+    launchAsset.relativePath = "bundle-1234"
+    launchAsset.isLaunchAsset = true
+    db.assetDao().insertAssets(listOf(launchAsset), update)
 
     val result = loader.load { _ ->
       Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
