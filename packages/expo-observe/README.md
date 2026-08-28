@@ -1,4 +1,11 @@
-# expo-observe
+<p>
+  <a href="https://docs.expo.dev/versions/unversioned/sdk/observe/">
+    <img
+      src="../../.github/resources/expo-observe.svg"
+      alt="expo-observe"
+      height="64" />
+  </a>
+</p>
 
 **React Native performance monitoring, from the team that builds Expo.**
 
