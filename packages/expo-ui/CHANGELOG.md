@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- [Android] Add `cornerRadius` support to dropdown menu
 - [iOS] Added `'default'` as a value for every edge of the `padding` modifier, so a single edge can use the system default padding while the other edges use explicit lengths. ([#48903](https://github.com/expo/expo/pull/48903) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [android] Added `maskClip` modifier, exposing Compose's `CarouselItemScope.maskClip` so carousel items keep their shape while the carousel masks them. ([#48852](https://github.com/expo/expo/pull/48852) by [@SchroederNathan](https://github.com/SchroederNathan))
