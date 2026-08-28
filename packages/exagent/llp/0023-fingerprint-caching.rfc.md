@@ -86,6 +86,26 @@ the sources exists to protect. The whole record measures 43 KB for one key on a 
 that ever ran here. A project whose version cannot be read is not cached at all, because a hash
 from another version of the tool is not comparable with this one (llp/0001 §Constraints item 5).
 
+**Finding that package is three rungs, not one** [F111, fixed wave 27]. It was one — the literal
+path `<projectRoot>/node_modules/@expo/fingerprint/package.json` — and because a null version turns
+the whole cross-run cache off, the effect in a monorepo was that this document's subject silently did
+not exist there: two consecutive `status` runs in a pnpm workspace both reported `source: "computed"`
+and no record was ever written [observed — 2026-08-28, wave 27]. That is an asymmetry rather than a
+policy, and it is what makes it a defect: the fingerprint CLI *is* found and spawned in the same
+project, from `node_modules/.bin/fingerprint`, which pnpm writes. So the lookup now walks the way
+`node_modules` is actually laid out — the ancestors' `node_modules`, which is the same walk the
+hoisted-lockfile sentinels do; then, for pnpm's isolated store, the copy beside the project's own
+`expo`, reached **through** the symlink into the virtual store rather than to it. The first attempt
+resolved the link's own path, passed every unit case, and still wrote no record in a real workspace;
+there is a case for the symlink now. With it, a pnpm workspace app pins 14 files — the three above
+it (`../../pnpm-lock.yaml`, `../../pnpm-workspace.yaml`, `../../package.json`) included, which is
+the first time §the walk up to a hoisted lockfile has been exercised anywhere but a fixture.
+
+**What this does not reach: an npm-workspaces monorepo**, where npm hoists so completely that the app
+has no `node_modules` of its own at all. There `resolveFingerprintCli` finds no bin, so no hash is
+computed and there is nothing to cache — a larger defect than this one, in the project-local bin
+resolution every command shares rather than in this record (F113, wave 27, reported).
+
 The schema version is **2**. Version 1 keyed on sha256 content hashes and carried a digest of the
 native directories; an entry written under those rules was revalidated against a different question,
 so such a record is dropped rather than migrated. The thing it holds is recomputable in a second.
@@ -144,6 +164,18 @@ iOS and Android `googleServicesFile`. These are separate sources of the fingerpr
 (`expoConfigExternalFile`): changing an icon moves the hash and leaves `app.json` alone. Read
 statically and never evaluated (llp/0001 §Constraints item 5), capped at 64 files — over the cap the
 project is not cached, rather than cached without them.
+
+**A referenced path may be a directory, and one of them is the default scaffold's** [F112, fixed
+wave 27]. Since SDK 57 `ios.icon` is `./assets/expo.icon`, an icon bundle holding `icon.json` and an
+`Assets/` tree. A stamp of a directory is not a file stamp, so such an entry used to *disappear*
+out of the manifest with nothing said — and no entry is no mismatch. Live: editing
+`assets/expo.icon/icon.json` moved the hash from `f50891f3` to `ed4b0454`, and a warm `status` kept
+answering `f50891f3` from cache for the whole TTL, with `uncovered` never naming the gap [observed —
+2026-08-28, a bun-installed SDK 57 scaffold]. A directory is now expanded into its files, four
+levels deep, under the same 64-file cap — which is what the cap was always counting, since the point
+of it is the number of `stat` calls. The manifest of a default scaffold goes from 9 entries to 12.
+The count in the over-cap sentence went with it: the walk stops at the cap rather than finishing, so
+it no longer claims a number it never measured.
 
 `manifestsMatch` requires the same set at the same stamps. A sentinel that *appeared* or
 *disappeared* is a miss, not a partial match.
@@ -342,13 +374,19 @@ Unit, `src/project/__tests__/`:
 - `fingerprintKeys-test.ts` — that one entry is `mtime+size` and says so; a stamp that moves and one
   that does not; **the two limits, asserted as limits** — an edit that preserved size and timestamp is
   a match, and a file touched without being changed is a mismatch; the walk up to a hoisted lockfile;
-  the files a static config points at; `patches/`; the dynamic-config caveat; and the native
-  directories, whose absence from the key is pinned by four cases so nobody meets it as a surprise.
+  the files a static config points at, **including the ones inside a directory it points at**, in a
+  pair — the entries appear, and a file inside the bundle changing makes the two manifests disagree,
+  because only the second of those is what the record is believed on; `patches/`; the
+  dynamic-config caveat; and the native directories, whose absence from the key is pinned by four
+  cases so nobody meets it as a surprise.
 - `fingerprintCache-test.ts` — hit, and a miss for each row of the invalidation matrix; the TTL; the
   `keyKind` and `ageMs` a hit reports; a corrupt record; a schema-version bump; three concurrent
   writes keeping all three entries; no temporary file left behind. The three native-directory cases
   assert **hits**, with a comment saying which decision they encode, so narrowing the TTL or putting
-  the walk back shows up as a test that changed on purpose.
+  the walk back shows up as a test that changed on purpose. Three cases cover where the
+  `@expo/fingerprint` version is found: beside the project, in an ancestor a hoisted install put it
+  in, and beside `expo` **through** pnpm's symlink — the last one written after a fix that passed
+  the other two and still cached nothing in a real workspace.
 - `fingerprint-test.ts` — the memo (sequential, concurrent, per platform, per preset, and never
   across the cache-allowed boundary), `clearFingerprintMemo`, and the cross-run cache end to end.
 - `../dev/__tests__/devAsync-test.ts` — both caches dropped after a completed plan step, and neither

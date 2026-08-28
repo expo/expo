@@ -71,6 +71,35 @@ export async function resolvePackageRootAsync(
   }
 }
 
+/**
+ * {@link resolvePackageRootAsync}, for the callers that cannot await.
+ *
+ * The same walk and the same rules; the spelling differs because the fingerprint cache resolves a
+ * version on the path that decides whether to spawn at all, beside a `resolveFingerprintCli` that
+ * is synchronous for the same reason. One `statSync` per ancestor, which is what the async twin
+ * costs too.
+ */
+export function resolvePackageRootSync(projectRoot: string, packageName: string): string | null {
+  for (let dir = projectRoot; ; dir = path.dirname(dir)) {
+    const packageRoot = path.join(dir, 'node_modules', ...packageName.split('/'));
+    if (fs.statSync(path.join(packageRoot, 'package.json'), { throwIfNoEntry: false })?.isFile()) {
+      return packageRoot;
+    }
+    if (path.dirname(dir) === dir) {
+      return null;
+    }
+  }
+}
+
+/** Parse a JSON file synchronously, or return `null` when it is missing or malformed. */
+export function readJsonFileSync<T>(filePath: string): T | null {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8')) as T;
+  } catch {
+    return null;
+  }
+}
+
 export async function readProjectPackageJsonAsync(
   projectRoot: string
 ): Promise<ProjectPackageJson | null> {

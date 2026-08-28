@@ -127,6 +127,10 @@ const UNPINNED_NATIVE_DIRECTORIES = ['ios', 'android'];
  * `expo-font` can name a lot of files, and stat-ing a font library on every `status` would spend the
  * saving on the saving's own bookkeeping. Over the cap, the assets are reported as uncovered and the
  * cache is refused rather than kept without them.
+ *
+ * Counted **after** a directory is expanded into its files, which is the number that gets stat-ed:
+ * one `ios.icon` bundle is a handful of entries rather than one, and a config naming a dozen of them
+ * is what this cap is for.
  */
 const MAX_EXTERNAL_FILES = 64;
 
@@ -184,8 +188,10 @@ export async function buildFingerprintKeyManifestAsync(
   const external = await readStaticConfigAssetsAsync(projectRoot);
   if (external.truncated) {
     cacheable = false;
+    // A count is not claimed, because the walk stops at the cap rather than finishing: saying "the
+    // 65 asset files" of a config naming three hundred would be a number this never measured.
     uncovered.push(
-      `the ${external.paths.length} asset files this project's config points at, which is more than the ${MAX_EXTERNAL_FILES} this cache will stat on every run`
+      `the asset files this project's config points at, which are more than the ${MAX_EXTERNAL_FILES} this cache will stat on every run`
     );
   } else {
     for (const file of external.paths) {
@@ -278,6 +284,9 @@ async function listPatchFilesAsync(projectRoot: string): Promise<string[]> {
  * config contributes nothing here — which is one of the reasons that project's manifest reports the
  * config itself as uncovered. These are separate sources of the fingerprint
  * (`expoConfigExternalFile`): changing an icon changes the hash while leaving `app.json` alone.
+ *
+ * A referenced path may name a directory rather than a file — see {@link expandAssetPathAsync} —
+ * so what comes back is files, and the cap counts those.
  */
 async function readStaticConfigAssetsAsync(
   projectRoot: string
@@ -313,8 +322,49 @@ async function readStaticConfigAssetsAsync(
   ].filter((value): value is string => typeof value === 'string' && value.length > 0);
 
   const unique = [...new Set(referenced)];
-  const paths = unique.map((relative) => path.resolve(projectRoot, relative));
-  return { paths, truncated: unique.length > MAX_EXTERNAL_FILES };
+  const paths: string[] = [];
+  for (const relative of unique) {
+    for (const file of await expandAssetPathAsync(path.resolve(projectRoot, relative))) {
+      paths.push(file);
+      if (paths.length > MAX_EXTERNAL_FILES) {
+        return { paths, truncated: true };
+      }
+    }
+  }
+  return { paths, truncated: false };
+}
+
+/** How deep an asset bundle is walked before it is treated as too big to be a cache key. */
+const MAX_ASSET_DIRECTORY_DEPTH = 4;
+
+/**
+ * The files one path in an app config stands for.
+ *
+ * Usually one image, and since SDK 57 sometimes a **directory**: the default scaffold's `ios.icon`
+ * is `./assets/expo.icon`, an icon bundle holding an `icon.json` and an `Assets/` tree.
+ * `@expo/fingerprint` hashes what is inside it, and {@link stampFileAsync} answers null for a
+ * directory — so such an entry used to disappear out of the manifest with nothing said. No entry is
+ * no mismatch, so a file inside the bundle could change while the record still revalidated
+ * [observed — 2026-08-28, wave 27: editing `assets/expo.icon/icon.json` moved the real hash from
+ * f50891f3 to ed4b0454 while a warm `status` answered f50891f3 from cache for the whole TTL].
+ *
+ * A path that is neither a file nor a readable directory yields itself, so a config pointing at
+ * something that does not exist still pins its *absence* — a file that later appears is a
+ * mismatch, which is the direction to be wrong in.
+ */
+async function expandAssetPathAsync(candidate: string, depth = 0): Promise<string[]> {
+  const entries =
+    depth < MAX_ASSET_DIRECTORY_DEPTH
+      ? await fs.promises.readdir(candidate, { withFileTypes: true }).catch(() => null)
+      : null;
+  if (!entries) {
+    return [candidate];
+  }
+  const files: string[] = [];
+  for (const entry of entries) {
+    files.push(...(await expandAssetPathAsync(path.join(candidate, entry.name), depth + 1)));
+  }
+  return files;
 }
 
 /** The static config object, or null when this project has none (or an unreadable one). */

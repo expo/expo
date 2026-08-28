@@ -20,6 +20,7 @@ import path from 'path';
 import { ensureDotExpoProjectDirectoryInitialized } from '../utils/dotExpo';
 import { debugEvent } from './events';
 import type { FingerprintSource } from './fingerprint';
+import { readJsonFileSync, resolvePackageRootSync } from './nodeModules';
 import {
   buildFingerprintKeyManifestAsync,
   FINGERPRINT_KEY_KIND,
@@ -118,19 +119,57 @@ export function fingerprintCacheKey({
  * Read off the package rather than by running it: the CLI has no `--version` [observed — its
  * `package.json` `bin` is one entry with no version command], and spawning it to learn what a file
  * says would spend the second this cache exists to save.
+ *
+ * **Two lookups, because one directory is not where every install puts it** [F111, wave 27]. This
+ * used to read the literal path `<projectRoot>/node_modules/@expo/fingerprint/package.json`, and a
+ * null answer turns the whole cross-run cache off — so in the two monorepo shapes below the cache
+ * was silently absent while the fingerprint CLI itself was found and spawned normally, which is an
+ * asymmetry rather than a policy:
+ *
+ *  1. **A hoisted workspace** puts the package in an ancestor's `node_modules`, exactly as it puts
+ *     the lockfile in an ancestor — which {@link FingerprintKeyManifest} already walks up for.
+ *     {@link resolvePackageRootAsync} is that same walk.
+ *  2. **pnpm's isolated store** puts it in no ancestor at all: it is a transitive dependency of
+ *     `expo`, reachable only beside `expo` in the virtual store [observed — 2026-08-28, wave 27: a
+ *     pnpm workspace app resolved it at `node_modules/.pnpm/@expo+fingerprint@0.20.10…`, and two
+ *     consecutive `status` runs there both reported `source: "computed"` and wrote no record].
+ *     So the second rung asks the same walk again, starting from `expo`'s own directory.
+ *
+ * Both rungs are file lookups rather than `require.resolve`, for the reason
+ * {@link resolvePackageRootAsync} states: no project code may be executed to answer this.
  */
 export function resolveFingerprintCliVersion(projectRoot: string): string | null {
+  const direct = readPackageVersion(projectRoot, FINGERPRINT_PACKAGE_NAME);
+  if (direct) {
+    return direct;
+  }
+  const expoRoot = resolvePackageRootSync(projectRoot, 'expo');
+  // Through the link rather than to it: under pnpm the project's `node_modules/expo` is a *symlink*
+  // into the virtual store, and the walk has to continue from where the package really is or it
+  // climbs back through the project and finds nothing.
+  return expoRoot ? readPackageVersion(realPathOrSelf(expoRoot), FINGERPRINT_PACKAGE_NAME) : null;
+}
+
+/** A directory's real location, or the path itself when it cannot be resolved. */
+function realPathOrSelf(directory: string): string {
   try {
-    const manifest = JSON.parse(
-      fs.readFileSync(
-        path.join(projectRoot, 'node_modules', '@expo', 'fingerprint', 'package.json'),
-        'utf8'
-      )
-    ) as { version?: unknown };
-    return typeof manifest.version === 'string' && manifest.version ? manifest.version : null;
+    return fs.realpathSync(directory);
   } catch {
+    return directory;
+  }
+}
+
+/** The package whose version decides whether two hashes are comparable. */
+const FINGERPRINT_PACKAGE_NAME = '@expo/fingerprint';
+
+/** The `version` of one installed package, resolved from a directory, or null. */
+function readPackageVersion(from: string, packageName: string): string | null {
+  const packageRoot = resolvePackageRootSync(from, packageName);
+  if (!packageRoot) {
     return null;
   }
+  const manifest = readJsonFileSync<{ version?: unknown }>(path.join(packageRoot, 'package.json'));
+  return typeof manifest?.version === 'string' && manifest.version ? manifest.version : null;
 }
 
 /**

@@ -213,6 +213,52 @@ describe(buildFingerprintKeyManifestAsync, () => {
     );
   });
 
+  // @ref llp/0023-fingerprint-caching.rfc.md §What a cached hash is revalidated against
+  //
+  // F112. Since SDK 57 the default scaffold's `ios.icon` is `./assets/expo.icon`, which is a
+  // *directory* — an icon bundle holding `icon.json` and an `Assets/` tree. `stat` of a directory
+  // is not a file stamp, so the entry used to vanish out of the manifest silently: no entry, no
+  // mismatch, and `uncovered` never named it either. Editing a file inside the bundle moved the
+  // real hash while a warm `status` kept answering the old one for the whole TTL [observed —
+  // 2026-08-28, wave 27, a bun-installed SDK 57 scaffold: f50891f3 became ed4b0454 under
+  // `--no-fingerprint-cache` while the cached answer stayed f50891f3].
+  it('records the files inside a directory the config points at', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/app.json`]: JSON.stringify({
+        expo: { ios: { icon: './assets/expo.icon' } },
+      }),
+      [`${projectRoot}/assets/expo.icon/icon.json`]: '{"fill":{}}',
+      [`${projectRoot}/assets/expo.icon/Assets/Front.png`]: 'front',
+    });
+
+    const manifest = await buildFingerprintKeyManifestAsync(projectRoot);
+
+    expect(Object.keys(manifest.files)).toEqual(
+      expect.arrayContaining(['assets/expo.icon/icon.json', 'assets/expo.icon/Assets/Front.png'])
+    );
+  });
+
+  // The half that makes the case above a *cache* fix rather than a manifest detail: a file inside
+  // the bundle that changed has to make the two manifests disagree, or the record is still believed.
+  it('notices a file inside such a directory changing', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{"name":"app"}',
+      [`${projectRoot}/app.json`]: JSON.stringify({
+        expo: { ios: { icon: './assets/expo.icon' } },
+      }),
+      [`${projectRoot}/assets/expo.icon/icon.json`]: '{"fill":{}}',
+    });
+    const before = await buildFingerprintKeyManifestAsync(projectRoot);
+
+    // A different length, so the stamp moves whatever the clock did (llp/0023 §A note on writing
+    // tests against a stamp).
+    vol.writeFileSync(`${projectRoot}/assets/expo.icon/icon.json`, '{"fill":{"a":1,"b":2}}');
+    const after = await buildFingerprintKeyManifestAsync(projectRoot);
+
+    expect(manifestsMatch(before, after)).toBe(false);
+  });
+
   it('records the patch files patch-package applies', async () => {
     vol.fromJSON({
       [`${projectRoot}/package.json`]: '{"name":"app"}',

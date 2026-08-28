@@ -58,6 +58,52 @@ describe(resolveFingerprintCliVersion, () => {
     vol.unlinkSync(`${projectRoot}/node_modules/@expo/fingerprint/package.json`);
     expect(resolveFingerprintCliVersion(projectRoot)).toBeNull();
   });
+
+  // @ref llp/0023-fingerprint-caching.rfc.md §Layer 2 — the cross-run cache
+  //
+  // F111. A hoisted workspace install puts the package above the app, the way it puts the lockfile
+  // there, so a literal `<projectRoot>/node_modules/@expo/fingerprint` finds nothing — and a null
+  // version turns the whole cross-run cache off, silently, for every project in that shape.
+  it('walks up to a workspace root the install was hoisted to', () => {
+    vol.unlinkSync(`${projectRoot}/node_modules/@expo/fingerprint/package.json`);
+    vol.fromJSON({
+      '/node_modules/@expo/fingerprint/package.json': '{"version":"0.20.10"}',
+    });
+
+    expect(resolveFingerprintCliVersion(projectRoot)).toBe('0.20.10');
+  });
+
+  // The pnpm shape, which the walk above does not reach: the package is not in any ancestor
+  // `node_modules` at all, only beside `expo` in the virtual store. The fingerprint CLI *is* found
+  // and spawned there (pnpm writes `node_modules/.bin/fingerprint`), so refusing to cache is an
+  // asymmetry rather than a policy [observed — 2026-08-28, wave 27: two consecutive `status` runs
+  // in a pnpm workspace both reported `source: "computed"` and wrote no record at all].
+  it("finds the copy beside the project's own expo package", () => {
+    vol.unlinkSync(`${projectRoot}/node_modules/@expo/fingerprint/package.json`);
+    vol.fromJSON({
+      [`${projectRoot}/node_modules/expo/package.json`]: '{"name":"expo","version":"57.0.17"}',
+      [`${projectRoot}/node_modules/expo/node_modules/@expo/fingerprint/package.json`]:
+        '{"version":"0.20.10"}',
+    });
+
+    expect(resolveFingerprintCliVersion(projectRoot)).toBe('0.20.10');
+  });
+
+  // The shape pnpm actually writes, and the reason the case above is not enough: the project's
+  // `node_modules/expo` is a **symlink** into the virtual store, and the sibling the fingerprint
+  // package sits beside is the link's *target*. A walk that continued from the link's own path
+  // climbed back out through the project and found nothing [observed — 2026-08-28, wave 27: the
+  // first fix passed this file's other cases and still wrote no record in a real pnpm workspace].
+  it('follows the symlink pnpm writes into its virtual store', () => {
+    vol.unlinkSync(`${projectRoot}/node_modules/@expo/fingerprint/package.json`);
+    vol.fromJSON({
+      '/store/expo@57.0.17/node_modules/expo/package.json': '{"name":"expo","version":"57.0.17"}',
+      '/store/expo@57.0.17/node_modules/@expo/fingerprint/package.json': '{"version":"0.20.10"}',
+    });
+    vol.symlinkSync('/store/expo@57.0.17/node_modules/expo', `${projectRoot}/node_modules/expo`);
+
+    expect(resolveFingerprintCliVersion(projectRoot)).toBe('0.20.10');
+  });
 });
 
 describe(writeFingerprintCacheAsync, () => {
