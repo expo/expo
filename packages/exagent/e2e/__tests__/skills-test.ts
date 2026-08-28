@@ -365,8 +365,9 @@ describe('exagent', () => {
     for (const title of [
       'Develop',
       'Understand the project',
-      'Check a running app',
-      'Create and ship',
+      'Debug a running app',
+      'Create a project',
+      'Deployment',
       'Agent setup',
       'Learn',
       'Expo CLI (fallback to npx expo <command>)',
@@ -400,21 +401,23 @@ describe('exagent', () => {
   // The listing says which commands exist; the map above it says which one to run first, and the
   // on-ramp under the map teaches the protocol. A caller who has never seen this CLI needs all
   // three, in that order, on the first screen they are given.
-  it('puts the steps and the on-ramp above the listing', async () => {
+  it('puts the on-ramp above the listing, and leaves the steps to it', async () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.all).toContain('What to run, in order');
+    // The map lives in `help workflow` alone [confirmed — Kudo, 2026-08-28].
+    expect(result.all).not.toContain('What to run, in order');
     expect(result.all).toContain('New here? npx exagent help workflow');
+    const topic = await executeExagentAsync(projectRoot, ['help', 'workflow']);
     for (const title of [
       'Check the project',
       'Start the app',
       'Edit and reload',
       "Verify before you're done",
-      'Release',
+      'Deploy',
       'One-time setup',
     ]) {
-      expect(result.all).toContain(title);
+      expect(topic.all).toContain(title);
     }
     expect(result.all.indexOf('What to run, in order')).toBeLessThan(
       result.all.indexOf('Develop')

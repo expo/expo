@@ -667,24 +667,23 @@ describe(formatTopLevelHelp, () => {
 
     expect(help).toContain('Develop');
     expect(help).toContain('Understand the project');
-    expect(help).toContain('Check a running app');
-    expect(help).toContain('Create and ship');
+    expect(help).toContain('Debug a running app');
+    expect(help).toContain('Create a project');
+    expect(help).toContain('Deployment');
     expect(help).toContain('Agent setup');
     expect(help).toContain('Learn');
   });
 
   // @ref llp/0024-cli-ui.rfc.md §The workflow map
-  // The listing says which commands exist; only the map says which one to run first, which is
-  // the question an agent that has never seen this CLI actually has.
-  it('puts the workflow map above the listing, with the on-ramp under it', () => {
+  // The listing says which commands exist; only the map says which one to run first. That map
+  // lives in `help workflow` alone [confirmed — Kudo, 2026-08-28: "move this to help workflow"],
+  // so the top-level screen carries the pointer, above the listing, and not the map itself.
+  it('points at the on-ramp above the listing, and does not repeat the map', () => {
     const help = formatTopLevelHelp();
 
-    expect(help).toContain('What to run, in order');
-    for (const { title } of [...workflow, oneTimeSetup]) {
-      expect(help).toContain(title);
-    }
+    expect(help).not.toContain('What to run, in order');
     expect(help).toContain(ON_RAMP_POINTER);
-    expect(help.indexOf('What to run, in order')).toBeLessThan(help.indexOf('Commands'));
+    expect(help.indexOf(ON_RAMP_POINTER)).toBeLessThan(help.indexOf('Commands'));
   });
 
   // @ref llp/0024-cli-ui.rfc.md §The workflow map
@@ -700,7 +699,7 @@ describe(formatTopLevelHelp, () => {
       'Start the app',
       'Edit and reload',
       "Verify before you're done",
-      'Release',
+      'Deploy',
       'One-time setup',
     ]);
   });

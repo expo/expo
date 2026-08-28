@@ -158,9 +158,9 @@ describe('exagent smoke', () => {
       const result = await executeExagentAsync(projectRoot, ['--help']);
 
       expect(result.all).toContain('smoke');
-      // Renamed in wave 34: the section is what a caller is doing, and they are checking rather
-      // than debugging when they reach for smoke (llp/0024 §The workflow map).
-      expect(result.all).toContain('Check a running app');
+      // Renamed twice: wave 34 tried "Check a running app", and Kudo picked the familiar dev
+      // vocabulary over it [confirmed — Kudo, 2026-08-28].
+      expect(result.all).toContain('Debug a running app');
     });
   });
 

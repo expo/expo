@@ -596,7 +596,9 @@ export const workflow: WorkflowStep[] = [
     ],
   },
   {
-    title: 'Release',
+    // `Deploy` rather than `Release`: the step, the help group (`Deployment`) and the command
+    // itself then share one word [confirmed — Kudo, 2026-08-28].
+    title: 'Deploy',
     rungs: [{ run: 'deploy', gets: 'publish the web app to EAS Hosting' }],
   },
 ];
@@ -648,8 +650,9 @@ export const helpSections: HelpSection[] = [
     commands: ['status', 'doctor', ...actionNames('inspect')],
     note: 'Nothing here runs the project.',
   },
-  { title: 'Check a running app', commands: ['smoke', 'navigate', ...actionNames('runtime')] },
-  { title: 'Create and ship', commands: ['new', 'deploy'] },
+  { title: 'Debug a running app', commands: ['smoke', 'navigate', ...actionNames('runtime')] },
+  { title: 'Create a project', commands: ['new'] },
+  { title: 'Deployment', commands: ['deploy'] },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
   { title: 'Learn', commands: ['help'] },
   {
@@ -744,36 +747,6 @@ function wrapText(text: string, width: number): string[] {
  * One width across the numbered steps and the setup block, so the "what it gets you" column starts
  * in one place and the whole map reads as one table.
  */
-function rungWidth(): number {
-  const runs = [...workflow, oneTimeSetup].flatMap(({ rungs }) => rungs.map(({ run }) => run.length));
-  return Math.max(...runs) + 2;
-}
-
-/**
- * One step: its title on a line of its own, its commands indented under it.
- *
- * The title goes above the commands rather than into a third column because the titles are
- * sentences now rather than one-word labels, and three columns of prose is what does not fit on a
- * terminal (llp/0024 §The workflow map).
- */
-function workflowStepLines(step: WorkflowStep, number: number | null): string {
-  // The unnumbered block's title sits in the same column as the numbered ones, so the titles
-  // read as one list and the numbers as an aside on it.
-  const head = `    ${number == null ? '   ' : `${number}  `}${step.title}`;
-  return [
-    color.heading(head),
-    ...step.rungs.map(
-      ({ run, gets }) =>
-        `         ${color.command(run.padEnd(rungWidth()))}${color.muted(gets)}`
-    ),
-  ].join('\n');
-}
-
-/** The numbered steps, in order. */
-function workflowLines(): string {
-  return workflow.map((step, index) => workflowStepLines(step, index + 1)).join('\n');
-}
-
 /** One comma-separated list of commands, wrapped onto as many indented lines as it needs. */
 function wrapCommands(commands: string[], indent: string): string {
   const lines: string[] = [];
@@ -827,13 +800,8 @@ export function formatTopLevelHelp(): string {
   ${color.heading('Usage')}
     ${color.muted('$')} npx exagent <command> [options]
 
-  ${color.heading('What to run, in order')}
-${workflowLines()}
-
-${workflowStepLines(oneTimeSetup, null)}
-
   ${ON_RAMP_FOOTER}
-    ${color.muted('what each step above is for, the exit codes, and the --json contract')}
+    ${color.muted('what to run in order, the exit codes, and the --json contract')}
 
   ${color.heading('Commands')}
 ${sections}

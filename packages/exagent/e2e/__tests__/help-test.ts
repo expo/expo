@@ -18,16 +18,14 @@ describe('npx exagent --help', () => {
     projectRoot = await setupFixtureAsync('go-app');
   });
 
-  it('leads with the steps, and points at the on-ramp', async () => {
+  it('points at the on-ramp, and leaves the map to it', async () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('What to run, in order');
+    // The map lives in `help workflow` alone; the top level carries the pointer and the listing.
+    expect(result.stdout).not.toContain('What to run, in order');
     expect(result.stdout).toContain('New here? npx exagent help workflow');
-    // The map is what says which command comes first, which the listing cannot say.
-    expect(result.stdout).toContain('1  Check the project');
     expect(result.stdout).toContain('status');
-    expect(result.stdout).toContain("4  Verify before you're done");
     expect(result.stdout).toContain('smoke');
   });
 });
@@ -73,22 +71,21 @@ describe('the on-ramp', () => {
     }
   });
 
-  // The steps are the registry's own data, printed by both screens. Two screens that each claim to
-  // say what to run first are two screens that will one day disagree.
-  it('states the same steps as the top-level screen', async () => {
+  // The map lives in one screen only [confirmed — Kudo, 2026-08-28: "move this to help workflow"].
+  // Two screens that each claim to say what to run first are two screens that will one day
+  // disagree, so the topic states the steps and the top level points at the topic.
+  it('states the steps, which the top-level screen leaves to it', async () => {
     const topic = await executeExagentAsync(projectRoot, ['help', 'workflow']);
-    const listing = await executeExagentAsync(projectRoot, ['--help']);
 
     for (const title of [
       'Check the project',
       'Start the app',
       'Edit and reload',
       "Verify before you're done",
-      'Release',
+      'Deploy',
       'One-time setup',
     ]) {
       expect(topic.stdout).toContain(title);
-      expect(listing.stdout).toContain(title);
     }
   });
 });
