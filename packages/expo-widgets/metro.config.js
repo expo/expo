@@ -40,6 +40,17 @@ const buildConfig = {
       if (fileSpecifierRe.test(moduleName)) {
         return context.resolveRequest(context, moduleName, platform);
       }
+      // Deep imports into React Native internals (e.g.
+      // 'react-native/Libraries/Components/TextInput/TextInputState' pulled in
+      // via the @expo/ui barrel) slip past the exact-match stubs below and drag
+      // the whole RN core, including InitializeCore, into the widget bundle.
+      // The bundle runs in a bare JS context without the native bridge, where
+      // requiring RN's NativeModules throws "__fbBatchedBridgeConfig is not
+      // set" and every widget renders the "Could not create context for layout
+      // evaluation" placeholder. Resolve such deep imports as empty modules.
+      if (moduleName.startsWith('react-native/')) {
+        return { type: 'empty' };
+      }
       switch (moduleName) {
         case 'expo':
           return { type: 'sourceFile', filePath: expoStubPath };
