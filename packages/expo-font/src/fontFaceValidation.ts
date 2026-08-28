@@ -65,6 +65,9 @@ export function assertValidFontFaces(
       `No font faces were provided for font family "${fontFamily}". Set \`fontDefinitions\` to a non-empty array of \`FontFaceDefinition\`s.`
     );
   }
+  // Two faces may only collide when both fully declare weight and style; an undeclared value is
+  // resolved from the font file at load time, so it can't be compared here.
+  const seenFaces = new Set<string>();
   for (const face of fontDefinitions) {
     if (typeof face !== 'object' || face === null || face.path == null) {
       throw new CodedError(
@@ -72,6 +75,19 @@ export function assertValidFontFaces(
         `A face of font family "${fontFamily}" has no \`path\`. Set the face's \`path\` to a \`FontSource\`.`
       );
     }
+    const weight = normalizeWeight(resolveFaceWeight(face));
+    const style = normalizeStyle(resolveFaceStyle(face));
+    if (weight === undefined || style === undefined) {
+      continue;
+    }
+    const key = `${weight}/${style}`;
+    if (seenFaces.has(key)) {
+      throw new CodedError(
+        `ERR_FONT_API`,
+        `Font family "${fontFamily}" declares two faces with weight ${weight} and style "${style}". Give each face a distinct weight or style so the correct face is selected at render time.`
+      );
+    }
+    seenFaces.add(key);
   }
 }
 
