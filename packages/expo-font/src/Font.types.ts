@@ -60,8 +60,10 @@ export type FontFaceDefinition = {
    * On iOS, this value isn't used to select the face; iOS reads the weight embedded in the font
    * file's own metadata instead.
    *
-   * On web, maps to the CSS `font-weight` property. Leave unset for a variable font file that
-   * covers a range of weights &mdash; a single value restricts the face to only that weight.
+   * On web, maps to the CSS `font-weight` property. A variable font file can also declare a
+   * weight range as `'<min> <max>'`, for example `'100 900'`. Leave unset for a variable font
+   * file that covers its full range of weights &mdash; a single value restricts the face to only
+   * that weight. Android and iOS ignore a range and read the weight from the font file instead.
    */
   weight?: number | string;
   /**

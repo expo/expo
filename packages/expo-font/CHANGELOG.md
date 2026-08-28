@@ -13,6 +13,7 @@
 - [ios] Apply `fontWeight` to variable fonts loaded with `useFonts`. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
 - [android][ios] Select a face of a multi-face font family with the `fontWeight` and `fontStyle` style props. ([#49486](https://github.com/expo/expo/pull/49486) by [@vonovak](https://github.com/vonovak))
 - Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync` on Android, iOS, and web. Use `fontWeight` and `fontStyle` style props to select the correct face. ([#47939](https://github.com/expo/expo/pull/47939) by [@bryanmylee](https://github.com/bryanmylee))
+- [web] Accept a variable-font weight range, for example `weight: '100 900'`, on a font face. Android and iOS ignore a range and read the weight from the font file. ([#49487](https://github.com/expo/expo/pull/49487) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
