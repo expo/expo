@@ -34,6 +34,20 @@ class Env {
   }
 
   /**
+   * Compute every fingerprint from scratch: never answer one out of the project's `.expo` record.
+   * `--no-fingerprint-cache` does the same for one run of the commands that take it.
+   *
+   * For the case the record cannot cover on its own — a dynamic `app.config.js` whose answer
+   * depends on an environment variable or another file, which is the same bytes with a different
+   * result. The in-process memo is unaffected: it holds this run's own measurement.
+   *
+   * @see llp/0023-fingerprint-caching.rfc.md §The dynamic config caveat
+   */
+  get EXAGENT_NO_FINGERPRINT_CACHE() {
+    return boolish('EXAGENT_NO_FINGERPRINT_CACHE', false);
+  }
+
+  /**
    * How long a guarded subprocess may stay silent before its last line is checked for a question
    * it is waiting on. Widen it for a tool that is legitimately quiet for minutes at a time.
    *

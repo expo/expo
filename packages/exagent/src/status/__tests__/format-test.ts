@@ -2,7 +2,21 @@ import { stripVTControlCharacters } from 'node:util';
 
 import type { PlanBuildLocation } from '../../toolchain/types';
 import { formatStatusReport } from '../format';
-import type { FreshnessImpact, StatusReport } from '../types';
+import type { FingerprintHashSource, FreshnessImpact, StatusReport } from '../types';
+/**
+ * A fingerprint this run measured, which is what every case here assumes unless it says otherwise.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+ */
+const COMPUTED_FINGERPRINT: FingerprintHashSource = {
+  source: 'computed',
+  revalidatedAgainst: null,
+  keyKind: null,
+  computedAt: null,
+  ageMs: null,
+  caveats: [],
+};
+
 
 /** The report without color, so assertions never depend on the terminal's color support. */
 function report(value: StatusReport): string {
@@ -25,6 +39,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     freshness: {
       comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
       changedFiles: null,
+      hashSource: COMPUTED_FINGERPRINT,
       hash: 'abcdef0123456789',
       platforms: [
         {
@@ -246,11 +261,136 @@ describe(formatStatusReport, () => {
     expect(iosLine).toContain('simulator build 21d7d434');
   });
 
+  // @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+  // @ref llp/0021-honest-reports.rfc.md
+  describe('where the fingerprint came from', () => {
+    function withHashSource(hashSource: FingerprintHashSource): string {
+      return report(
+        mockReport({
+          freshness: {
+            comparison: {
+              kind: 'last-build' as const,
+              label: 'last build recorded by exagent',
+              buildId: null,
+              platform: null,
+            },
+            changedFiles: null,
+            hashSource,
+            hash: 'abcdef0123456789',
+            platforms: [],
+            ota: null,
+          },
+        })
+      );
+    }
+
+    it(`should say a cached hash was cached, by what check, and how old it is`, () => {
+      const rendered = withHashSource({
+        source: 'cache',
+        revalidatedAgainst: 7,
+        keyKind: 'mtime+size',
+        computedAt: '2026-08-27T09:00:00.000Z',
+        ageMs: 4 * 60 * 1000,
+        caveats: [],
+      });
+
+      expect(rendered).toContain('fingerprint: abcdef01 (from cache');
+      // The **kind** of check, not only the count: `mtime+size` is a stamp comparison and not a
+      // content hash, and a reader about to skip a native build is entitled to know which.
+      expect(rendered).toContain('revalidated by mtime+size of 7 files');
+      // And the age, because it is the whole bound on what the stamps cannot see.
+      expect(rendered).toContain('cached 4m ago');
+      // The way out is on the line that makes the claim, so a reader who does not accept it does
+      // not have to go looking for the flag.
+      expect(rendered).toContain('--no-fingerprint-cache');
+    });
+
+    it(`should never claim a content hash it did not compute`, () => {
+      const rendered = withHashSource({
+        source: 'cache',
+        revalidatedAgainst: 7,
+        keyKind: 'mtime+size',
+        computedAt: null,
+        ageMs: 1000,
+        caveats: [],
+      });
+
+      expect(rendered).not.toMatch(/hash of|content|sha/i);
+    });
+
+    it(`should print an age in seconds under a minute`, () => {
+      expect(
+        withHashSource({
+          source: 'cache',
+          revalidatedAgainst: 3,
+          keyKind: 'mtime+size',
+          computedAt: null,
+          ageMs: 12_400,
+          caveats: [],
+        })
+      ).toContain('cached 12s ago');
+    });
+
+    it(`should print an age over an hour in hours and minutes`, () => {
+      expect(
+        withHashSource({
+          source: 'cache',
+          revalidatedAgainst: 3,
+          keyKind: 'mtime+size',
+          computedAt: null,
+          ageMs: 95 * 60 * 1000,
+          caveats: [],
+        })
+      ).toContain('cached 1h35m ago');
+    });
+
+    it(`should say nothing at all about a hash it measured`, () => {
+      const rendered = withHashSource({
+        source: 'computed',
+        revalidatedAgainst: null,
+        keyKind: null,
+        computedAt: null,
+        ageMs: null,
+        caveats: [],
+      });
+
+      expect(rendered).not.toContain('from cache');
+      expect(rendered).not.toContain('--no-fingerprint-cache');
+    });
+
+    it(`should say nothing when nothing stated a source`, () => {
+      const rendered = withHashSource({
+        source: null,
+        revalidatedAgainst: null,
+        keyKind: null,
+        computedAt: null,
+        ageMs: null,
+        caveats: [],
+      });
+
+      expect(rendered).not.toContain('from cache');
+    });
+
+    it(`should use the singular for one pinned file`, () => {
+      expect(
+        withHashSource({
+          source: 'cache',
+          revalidatedAgainst: 1,
+          keyKind: 'mtime+size',
+          computedAt: null,
+          ageMs: 0,
+          caveats: [],
+        })
+      ).toContain('revalidated by mtime+size of 1 file,');
+    });
+  });
+
   it(`should print the fingerprint error under the freshness block`, () => {
     const value = mockReport({
       freshness: {
         comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
+        hashSource: COMPUTED_FINGERPRINT,
         hash: null,
         error: 'fingerprint CLI not found\nInstall @expo/fingerprint',
         platforms: [
@@ -292,6 +432,7 @@ describe(formatStatusReport, () => {
       freshness: {
         comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
+        hashSource: COMPUTED_FINGERPRINT,
         hash: null,
         error,
         platforms: [
@@ -689,6 +830,7 @@ describe('the impact line', () => {
       freshness: {
         comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
+        hashSource: COMPUTED_FINGERPRINT,
         hash: 'abcdef0123456789',
         ota: null,
         platforms: [
@@ -772,6 +914,7 @@ describe('the --explain detail', () => {
       freshness: {
         comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
         changedFiles: null,
+        hashSource: COMPUTED_FINGERPRINT,
         hash: 'abcdef0123456789',
         ota: null,
         platforms: [
@@ -836,6 +979,7 @@ describe('the --explain detail', () => {
         freshness: {
           comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
+          hashSource: COMPUTED_FINGERPRINT,
           hash: 'abcdef0123456789',
           platforms: [],
           ota: {
@@ -859,6 +1003,7 @@ describe('the --explain detail', () => {
         freshness: {
           comparison: { kind: 'last-build' as const, label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
+          hashSource: COMPUTED_FINGERPRINT,
           hash: 'abcdef0123456789',
           platforms: [],
           ota: {

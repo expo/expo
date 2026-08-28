@@ -40,6 +40,7 @@ export const exagentDev: Command = async (argv) => {
         `--go, --dev-client  Which app to run the project in, when both would work`,
         `--no-agent-skills   Skip linking agent skills from installed packages`,
         `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
+        `--no-fingerprint-cache   Hash the project again rather than revalidating the cached hash`,
         `-h, --help          Usage info`,
       ].join('\n'),
       [

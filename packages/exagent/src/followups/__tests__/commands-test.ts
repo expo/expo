@@ -1,10 +1,24 @@
 // Builders of the remaining commands: the ones whose input is one already-gathered report.
 
-import type { StatusReport } from '../../status/types';
+import type { FingerprintHashSource, StatusReport } from '../../status/types';
 import { buildNavigateFollowUps } from '../navigate';
 import { buildRuntimeErrorsFollowUps } from '../runtime';
 import { buildSkillsSyncFollowUps } from '../skills';
 import { buildStatusFollowUps } from '../status';
+/**
+ * A fingerprint this run measured, which is what every case here assumes unless it says otherwise.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+ */
+const COMPUTED_FINGERPRINT: FingerprintHashSource = {
+  source: 'computed',
+  revalidatedAgainst: null,
+  keyKind: null,
+  computedAt: null,
+  ageMs: null,
+  caveats: [],
+};
+
 
 function ids(followups: { id: string }[]): string[] {
   return followups.map((followup) => followup.id);
@@ -147,6 +161,7 @@ describe(buildStatusFollowUps, () => {
           ota: null,
           comparison: { kind: 'last-build', label: 'last build recorded by exagent', buildId: null, platform: null },
           changedFiles: null,
+          hashSource: COMPUTED_FINGERPRINT,
         },
         builds: {
           askedEas: true,

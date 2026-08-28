@@ -172,6 +172,14 @@ the same contract llp/0004 gave it.
 hash comparison, and tens of thousands of bytes of sources in a report that has nothing to say
 about any of them would be a regression paid by every caller. `impact` fingerprints for itself.
 
+**The same sources are also in the fingerprint cache**, for the same reason and at the same size:
+[[0023-fingerprint-caching]] stores `{hash, sources}` per key in `.expo/exagent-fingerprint.json`,
+because a warm run that kept only the hash would keep the freshness verdict and lose the diff this
+section is about. That record is what makes the fingerprint wrapper's `source: 'computed' | 'cache'`
+field exist, and every consumer here now receives it — along with the kind of check that revalidated
+it and how old it is, because that cache pins its files by size and modification time and does not
+look at `ios/` or `android/` at all.
+
 ## The three comparisons
 
 **`last-build` (default).** Fingerprint the working tree per platform, diff against the record.

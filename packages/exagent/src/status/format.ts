@@ -447,7 +447,57 @@ function freshnessLine(freshness: FreshnessStatus): string {
   if (freshness.error) {
     lines.push(`${indent}${chalk.dim(`fingerprint error: ${summarize(freshness.error)}`)}`);
   }
+  const provenance = fingerprintProvenance(freshness);
+  if (provenance) {
+    lines.push(`${indent}${chalk.dim(provenance)}`);
+  }
   return lines.join('\n');
+}
+
+/**
+ * The line that says where the hash above came from, or nothing when it was measured here.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+ * @ref llp/0021-honest-reports.rfc.md
+ * Printed only for a cached answer, and that asymmetry is the point: `computed` is what a reader
+ * already assumes a status report did, and `cache` is the claim that needs its evidence attached.
+ *
+ * Three facts make it checkable rather than a reassurance. **What kind of check** ran — `mtime+size`
+ * is a stamp comparison and not a content hash, and a reader who is about to skip a native build is
+ * entitled to know which. **How many files** it covered. And **how old** the entry is, because the
+ * age is the whole bound on the two things the stamps cannot see: an edit under `ios/`/`android/`,
+ * and one that preserved a file's size and timestamp.
+ */
+function fingerprintProvenance(freshness: FreshnessStatus): string | null {
+  const { source, revalidatedAgainst, keyKind, ageMs } = freshness.hashSource;
+  if (source !== 'cache') {
+    return null;
+  }
+  const by = keyKind ? `by ${keyKind} of` : 'against';
+  const pinned =
+    revalidatedAgainst == null
+      ? 'the files it was recorded against'
+      : `${revalidatedAgainst} ${pluralize(revalidatedAgainst, 'file', 'files')}`;
+  const age = ageMs == null ? '' : `, cached ${formatAge(ageMs)} ago`;
+  // The same eight characters the freshness details show, so the two read as one hash.
+  const hash = freshness.hash ? freshness.hash.slice(0, 8) : 'unknown';
+  return `fingerprint: ${hash} (from cache, revalidated ${by} ${pinned}${age}) — pass --no-fingerprint-cache to hash the project again`;
+}
+
+/**
+ * An age a reader can weigh at a glance.
+ *
+ * Whole units and never a decimal: this number is read to decide whether a cached answer can be
+ * trusted, and "4m" answers that where "4.31 minutes" only looks like it does. Seconds below a
+ * minute, because most hits in an agent loop are seconds old and "0m" would read as stale-proof.
+ */
+function formatAge(ms: number): string {
+  const seconds = Math.max(0, Math.round(ms / 1000));
+  if (seconds < 60) {
+    return `${seconds}s`;
+  }
+  const minutes = Math.floor(seconds / 60);
+  return minutes < 60 ? `${minutes}m` : `${Math.floor(minutes / 60)}h${minutes % 60}m`;
 }
 
 function devServerLine(devServer: DevServerStatus): string {

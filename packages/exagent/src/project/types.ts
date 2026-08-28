@@ -3,7 +3,7 @@
 // post-install impact classifier, and the smart start plan engine. Pure data — no I/O here.
 import type { RunsOn } from '../toolchain/runsOn';
 import type { PlanBuildLocation } from '../toolchain/types';
-import type { FingerprintSource } from './fingerprint';
+import type { FingerprintResult, FingerprintSource } from './fingerprint';
 
 /**
  * How the app is expected to run during development.
@@ -53,13 +53,19 @@ export interface ProjectState {
   /** `react-native-web` is a dependency. */
   hasWeb: boolean;
   expoGo: ExpoGoCompatibility;
-  /** `@expo/fingerprint` hash of the native surface, via subprocess. Null + error when the
+  /**
+   * `@expo/fingerprint` hash of the native surface, via subprocess. Null + error when the
    * fingerprint CLI is unavailable or fails.
    *
    * `sources` is what the hash was computed from — the half a diff needs, and the half `status`
    * strips before it prints the probe, because it is tens of thousands of bytes and a report
-   * about freshness has nothing to say about any of them. */
-  fingerprint: { hash: string | null; sources?: FingerprintSource[] | null; error?: string };
+   * about freshness has nothing to say about any of them.
+   *
+   * The provenance fields ride along whole (llp/0023): a `--json` reader gets the same `source`,
+   * `revalidatedAgainst` and `computedAt` the printed report says, so nothing has to infer whether
+   * the hash was measured or revalidated.
+   */
+  fingerprint: Omit<FingerprintResult, 'sources'> & { sources?: FingerprintSource[] | null };
 }
 
 /** Classification of one installed package's impact on the native surface. */

@@ -117,6 +117,53 @@ describe(buildFreshnessStatus, () => {
     )!;
   }
 
+  // @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+  it(`should carry where the hash came from`, () => {
+    const status = buildFreshnessStatus(
+      mockState({
+        fingerprint: {
+          hash: 'abcdef0123456789',
+          source: 'cache',
+          revalidatedAgainst: 7,
+          keyKind: 'mtime+size',
+          computedAt: '2026-08-27T09:00:00.000Z',
+          ageMs: 240_000,
+          cacheCaveats: ['the contents of node_modules'],
+        },
+      }),
+      {}
+    );
+
+    expect(status.hashSource).toEqual({
+      source: 'cache',
+      revalidatedAgainst: 7,
+      keyKind: 'mtime+size',
+      computedAt: '2026-08-27T09:00:00.000Z',
+      ageMs: 240_000,
+      caveats: ['the contents of node_modules'],
+    });
+  });
+
+  it(`should carry no caveats for a hash it measured`, () => {
+    const status = buildFreshnessStatus(
+      mockState({
+        // A `computed` result carries no revalidation, and its caveats are about a cache that did
+        // not answer — so they must not reach a report about a measurement.
+        fingerprint: { hash: 'abcdef0123456789', source: 'computed' },
+      }),
+      {}
+    );
+
+    expect(status.hashSource).toEqual({
+      source: 'computed',
+      revalidatedAgainst: null,
+      keyKind: null,
+      computedAt: null,
+      ageMs: null,
+      caveats: [],
+    });
+  });
+
   // @ref llp/0021-honest-reports.rfc.md §Freshness has two axes — K7(d). Backend × platform.
   it(`should report one entry per backend per platform`, () => {
     const status = buildFreshnessStatus(mockState(), {});

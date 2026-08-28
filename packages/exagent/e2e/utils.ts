@@ -35,6 +35,9 @@ const verboseDefault = !!process.env.EXPO_E2E_VERBOSE;
 /** Name of the file the stub `expo` bin appends one JSON line to per invocation. */
 export const STUB_EXPO_LOG_NAME = 'stub-expo-invocations.jsonl';
 
+/** Name of the file the stub `fingerprint` bin appends one JSON line to per invocation. */
+export const STUB_FINGERPRINT_LOG_NAME = 'stub-fingerprint-invocations.jsonl';
+
 /**
  * Copy a committed fixture project to a fresh temporary directory, and install the stub `expo`
  * bin into it. Every test gets its own copy, so tests never share mutable project state.
@@ -232,6 +235,37 @@ export function readStubExpoInvocations(projectRoot: string): StubExpoInvocation
     .split('\n')
     .filter(Boolean)
     .map((line) => JSON.parse(line));
+}
+
+/** One recorded invocation of the stub `fingerprint` bin. */
+export type StubFingerprintInvocation = {
+  /** Arguments the wrapper sent, without the bin itself — so a `--platform` is visible here. */
+  args: string[];
+  cwd: string;
+};
+
+/**
+ * Read every invocation of the stub `fingerprint` bin recorded for a project.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §Proof
+ * The only way to observe the caching from outside: a memo hit, a cache hit and a recomputation all
+ * print the same hash, and differ only in how many subprocesses were spawned.
+ */
+export function readStubFingerprintInvocations(projectRoot: string): StubFingerprintInvocation[] {
+  const logPath = path.join(projectRoot, STUB_FINGERPRINT_LOG_NAME);
+  if (!fs.existsSync(logPath)) {
+    return [];
+  }
+  return fs
+    .readFileSync(logPath, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
+}
+
+/** Forget every invocation recorded so far, so the next command's count starts at zero. */
+export function clearStubFingerprintInvocations(projectRoot: string): void {
+  fs.rmSync(path.join(projectRoot, STUB_FINGERPRINT_LOG_NAME), { force: true });
 }
 
 export type ExecuteResult = {

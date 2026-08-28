@@ -10,6 +10,7 @@ describe(resolveDevOptions, () => {
       platform: 'web',
       buildBackend: null,      runTarget: null,
       json: false,
+      fingerprintCache: true,
       followups: true,
       yes: false,
       detach: false,
@@ -30,6 +31,7 @@ describe(resolveDevOptions, () => {
       platform: undefined,
       buildBackend: null,      runTarget: null,
       json: false,
+      fingerprintCache: true,
       followups: true,
       yes: false,
       detach: false,
@@ -52,6 +54,7 @@ describe(resolveDevOptions, () => {
       platform: undefined,
       buildBackend: null,      runTarget: null,
       json: false,
+      fingerprintCache: true,
       followups: true,
       yes: false,
       detach: false,
@@ -108,6 +111,7 @@ describe(resolveDevOptions, () => {
       platform: undefined,
       buildBackend: null,      runTarget: null,
       json: true,
+      fingerprintCache: true,
       followups: true,
       yes: false,
       detach: false,
@@ -134,6 +138,7 @@ describe(resolveDevOptions, () => {
       platform: undefined,
       buildBackend: null,      runTarget: null,
       json: false,
+      fingerprintCache: true,
       followups: false,
       yes: false,
       detach: false,
@@ -142,6 +147,19 @@ describe(resolveDevOptions, () => {
       detachArgv: expect.any(Array),
       port: null,
     });
+  });
+
+  // @ref llp/0023-fingerprint-caching.rfc.md §Every consumer can turn it off
+  it(`should refuse a cached fingerprint and strip the flag`, () => {
+    const options = resolveDevOptions(['--no-fingerprint-cache', '--clear']);
+
+    expect(options.fingerprintCache).toBe(false);
+    // The flag is this command's own, so `expo start` never sees it.
+    expect(options.expoArgs).toEqual(['--clear']);
+  });
+
+  it(`should allow a cached fingerprint without the flag`, () => {
+    expect(resolveDevOptions([]).fingerprintCache).toBe(true);
   });
 
   it(`should keep the follow-ups without the flag`, () => {

@@ -133,6 +133,17 @@ export interface StatusOptions {
   changedFilesTimeoutMs?: number;
   /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
   followups?: boolean;
+  /**
+   * Whether a fingerprint may be answered out of the project's own record (`--no-fingerprint-cache`
+   * clears it).
+   *
+   * @ref llp/0023-fingerprint-caching.rfc.md
+   * This is the flag that pays for the report's promptness: a default `status` computes one
+   * fingerprint and `--explain` computes three, at about a second each, and all three are the same
+   * three the previous run computed unless one of the pinned files moved. Undefined leaves the
+   * decision to `EXAGENT_NO_FINGERPRINT_CACHE`.
+   */
+  fingerprintCache?: boolean;
 }
 
 /** Gather the report, emit it for agents, and print it for humans. */
@@ -158,6 +169,11 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     freshness: { ios: freshnessOf(report, 'ios'), android: freshnessOf(report, 'android') },
     easBuilds: { ios: easBuildOf(report, 'ios'), android: easBuildOf(report, 'android') },
     easBuildsAsked: report.builds?.askedEas ?? false,
+    // @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+    // On the machine channel too, so a driving agent can tell a measured hash from a revalidated
+    // one without parsing the printed line.
+    fingerprintSource: report.freshness?.hashSource.source ?? null,
+    fingerprintRevalidatedAgainst: report.freshness?.hashSource.revalidatedAgainst ?? null,
     skillsDiscovered: report.skills?.discovered ?? 0,
     skillsLinked: report.skills?.linked ?? 0,
     impact: {
@@ -196,7 +212,7 @@ export async function collectStatusReportAsync(
   options: StatusOptions
 ): Promise<StatusReport> {
   const [project, devServer, device, skills, auth] = await Promise.all([
-    attemptAsync(() => readProjectAsync(projectRoot)),
+    attemptAsync(() => readProjectAsync(projectRoot, options)),
     attemptAsync(() => probeDevServerStatusAsync(projectRoot, options)),
     attemptAsync(() => readLocalDeviceStatusAsync(options)),
     attemptAsync(() => readSkillsStatusAsync(projectRoot)),
@@ -339,6 +355,7 @@ export async function collectStatusReportAsync(
         auth: report.auth,
         projectHash: report.freshness?.hash ?? null,
         timeoutMs: options.buildLookupTimeoutMs,
+        fingerprintCache: options.fingerprintCache,
       })
     ),
     options.explain && report.freshness
@@ -617,10 +634,11 @@ async function attemptPlanAsync(
 }
 
 async function readProjectAsync(
-  projectRoot: string
+  projectRoot: string,
+  options: StatusOptions
 ): Promise<{ state: ProjectState; packageName: string | null }> {
   const [state, packageJson] = await Promise.all([
-    probeProjectStateAsync(projectRoot),
+    probeProjectStateAsync(projectRoot, { fingerprintCache: options.fingerprintCache }),
     readProjectPackageJsonAsync(projectRoot),
   ]);
   return { state, packageName: packageJson?.name ?? null };

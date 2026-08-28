@@ -13,12 +13,14 @@ import { decideExpoGoTarget } from '../navigate/target';
 import { decideStartPlan } from '../plan/decide';
 import type { LastBuildRecord } from '../plan/lastBuild';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
+import type { FingerprintResult } from '../project/fingerprint';
 import type { ProjectState, StartPlan } from '../project/types';
 import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
 import type {
   BuildsStatus,
   DevServerStatus,
   ExpoGoStatus,
+  FingerprintHashSource,
   FreshnessComparison,
   FreshnessStatus,
   LocalDeviceStatus,
@@ -147,8 +149,38 @@ export function buildFreshnessStatus(
   };
   // `ota` and `changedFiles` are filled in by the caller: one costs a subprocess, and the other is
   // only read when the fingerprint said the native surface did not move.
-  const rest = { platforms, comparison, changedFiles: null, ota: null };
+  const rest = {
+    platforms,
+    comparison,
+    changedFiles: null,
+    ota: null,
+    hashSource: fingerprintHashSource(state.fingerprint),
+  };
   return error ? { hash, error, ...rest } : { hash, ...rest };
+}
+
+/**
+ * Where the probe's hash came from, in the shape the report carries.
+ *
+ * @ref llp/0023-fingerprint-caching.rfc.md §The report says where the answer came from
+ * Read off the fingerprint result rather than inferred from the flags: whether a cache answered is
+ * something only the call that asked knows, and a report that guessed would sometimes claim a
+ * measurement it did not take (llp/0021).
+ */
+export function fingerprintHashSource(
+  fingerprint: Pick<
+    FingerprintResult,
+    'source' | 'revalidatedAgainst' | 'keyKind' | 'computedAt' | 'ageMs' | 'cacheCaveats'
+  >
+): FingerprintHashSource {
+  return {
+    source: fingerprint.source ?? null,
+    revalidatedAgainst: fingerprint.revalidatedAgainst ?? null,
+    keyKind: fingerprint.keyKind ?? null,
+    computedAt: fingerprint.computedAt ?? null,
+    ageMs: fingerprint.ageMs ?? null,
+    caveats: fingerprint.source === 'cache' ? (fingerprint.cacheCaveats ?? []) : [],
+  };
 }
 
 function platformFreshness(
