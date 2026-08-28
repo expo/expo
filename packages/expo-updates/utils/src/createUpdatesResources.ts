@@ -1,10 +1,4 @@
-import {
-  consumeConfigEnvMode,
-  getOriginalEnv,
-  loadProjectEnv,
-  logLoadedEnv,
-  setNodeEnv,
-} from '@expo/env';
+import { consumeConfigEnvMode, getOriginalEnv, loadProjectEnv, logLoadedEnv } from '@expo/env';
 import assert from 'assert';
 
 import { createFingerprintForBuildAsync } from './createFingerprintForBuildAsync';
@@ -20,7 +14,6 @@ export function loadEnvForBuild(projectRoot: string): void {
   const mode = consumeConfigEnvMode();
   assert(mode, 'Must provide a config mode');
 
-  setNodeEnv(mode);
   globalThis.__DEV__ = mode === 'development';
   logLoadedEnv(loadProjectEnv(projectRoot, { mode }));
 }

@@ -28,7 +28,8 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     val entryFile = detectedEntryFile(reactExtension)
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
-    if (isNativeDebuggingEnabled(project)) {
+    val nativeDebuggingEnabled = isNativeDebuggingEnabled(project)
+    if (nativeDebuggingEnabled) {
       logger.warn("Disable all react.debuggableVariants because EX_UPDATES_NATIVE_DEBUG=1")
       reactExtension.debuggableVariants.set(listOf())
     }
@@ -38,9 +39,14 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       val projectRoot = project.rootProject.projectDir.parentFile.toPath()
       val isDebuggableVariant =
         reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
+      val isDevelopmentBuild = isDevelopmentBuild(
+        buildType = variant.buildType,
+        isDebuggableVariant = isDebuggableVariant,
+        nativeDebuggingEnabled = nativeDebuggingEnabled
+      )
       val configMode = getConfigMode(
         inheritedMode = System.getenv("__EXPO_CONFIG_MODE"),
-        isDebuggableVariant = isDebuggableVariant
+        isDevelopmentBuild = isDevelopmentBuild
       )
 
       val createUpdatesResourcesTask = project.tasks.register("create${targetName}UpdatesResources", CreateUpdatesResourcesTask::class.java) {
@@ -130,11 +136,22 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
 internal fun getConfigMode(
   inheritedMode: String?,
-  isDebuggableVariant: Boolean
+  isDevelopmentBuild: Boolean
 ): String = when {
   !inheritedMode.isNullOrEmpty() -> inheritedMode
-  isDebuggableVariant -> "development"
+  isDevelopmentBuild -> "development"
   else -> "production"
+}
+
+internal fun isDevelopmentBuild(
+  buildType: String?,
+  isDebuggableVariant: Boolean,
+  nativeDebuggingEnabled: Boolean
+): Boolean {
+  if (!nativeDebuggingEnabled) {
+    return isDebuggableVariant
+  }
+  return buildType == "debug" || buildType == "debugOptimized"
 }
 
 /**
