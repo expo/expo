@@ -1,15 +1,11 @@
-import { act, render, renderHook } from '@testing-library/react-native';
+import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
-import { use, useEffect } from 'react';
 
 import { CommonActions, type ParamListBase, StackActions, StackRouter } from '../../routers';
-import { type PreventedRoutes, PreventRemoveContext } from '../PreventRemoveContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { getPreventableRoutes } from '../useOnPreventRemove';
 import { usePreventRemove } from '../usePreventRemove';
-import { usePreventRemoveContext } from '../usePreventRemoveContext';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouterKey } from './__fixtures__/MockRouter';
 
@@ -19,226 +15,18 @@ jest.mock('nanoid/non-secure', () => {
   return m;
 });
 
+let consoleWarnSpy: jest.SpyInstance;
+
 beforeEach(() => {
   MockRouterKey.current = 0;
 
   require('nanoid/non-secure').__key = 0;
+  consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
-test('throws when the prevent remove context is missing', () => {
-  expect(() => renderHook(() => usePreventRemoveContext())).toThrow(
-    "Couldn't find the prevent remove context. Is your component inside NavigationContent?"
-  );
-});
+afterEach(() => consoleWarnSpy.mockRestore());
 
-test('throws when registering a route outside the navigation state', () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-  let setPreventRemove: NonNullable<
-    React.ContextType<typeof PreventRemoveContext>
-  >['setPreventRemove'];
-  const TestScreen = () => {
-    setPreventRemove = usePreventRemoveContext().setPreventRemove;
-    return null;
-  };
-
-  render(
-    <BaseNavigationContainer>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(() => act(() => setPreventRemove('test', 'missing', true))).toThrow(
-    "Couldn't find a route with the key missing. Is your component inside NavigationContent?"
-  );
-});
-
-// TODO(@ubax): Restore preventRemove behavior for preloaded screens. https://linear.app/expo/issue/ENG-26123
-test.skip('only enables preventRemove after a preloaded screen is promoted', () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-  const onPreventRemove = jest.fn();
-  let preventedRoutes: PreventedRoutes | undefined;
-  const ProtectedScreen = () => {
-    usePreventRemove(true, onPreventRemove);
-    preventedRoutes = use(PreventRemoveContext)?.preventedRoutes;
-    return null;
-  };
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  render(
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="first">{() => null}</Screen>
-        <Screen name="second">{() => null}</Screen>
-        <Screen name="protected" component={ProtectedScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  act(() => {
-    ref.current?.navigate('second');
-    ref.current?.dispatch(CommonActions.preload('protected'));
-  });
-  const preloadedRoute = ref.current?.getRootState().routes.at(-1)!;
-
-  expect(preventedRoutes?.[preloadedRoute.key]).toBeUndefined();
-  act(() => ref.current?.goBack());
-
-  expect(onPreventRemove).not.toHaveBeenCalled();
-  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual([
-    'first',
-    'protected',
-  ]);
-  expect(ref.current?.getRootState().index).toBe(0);
-
-  act(() => ref.current?.navigate('protected'));
-  const promotedState = ref.current?.getRootState();
-
-  expect(preventedRoutes?.[preloadedRoute.key]).toEqual({ preventRemove: true });
-  act(() => ref.current?.goBack());
-
-  expect(onPreventRemove).toHaveBeenCalledTimes(1);
-  expect(ref.current?.getRootState()).toEqual(promotedState);
-});
-
-test('does not propagate preventRemove from a preloaded nested stack', () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-  const onPreventRemove = jest.fn();
-  let parentPreventedRoutes: PreventedRoutes | undefined;
-  const ProtectedScreen = () => {
-    usePreventRemove(true, onPreventRemove);
-    return null;
-  };
-  const ParentPreventedRoutesObserver = () => {
-    parentPreventedRoutes = use(PreventRemoveContext)?.preventedRoutes;
-    return null;
-  };
-  const NestedStack = (props: any) => {
-    const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
-
-    useEffect(() => navigation.dispatch(CommonActions.preload('protected')), [navigation]);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  render(
-    <BaseNavigationContainer
-      ref={ref}
-      initialState={{
-        type: 'stack',
-        index: 0,
-        routes: [
-          { name: 'home' },
-          {
-            name: 'nested',
-            state: { type: 'stack', routes: [{ name: 'index' }] },
-          },
-        ],
-      }}>
-      <TestNavigator>
-        <Screen name="home">{() => null}</Screen>
-        <Screen name="nested">
-          {() => (
-            <>
-              <ParentPreventedRoutesObserver />
-              <NestedStack>
-                <Screen name="index">{() => null}</Screen>
-                <Screen name="protected" component={ProtectedScreen} />
-              </NestedStack>
-            </>
-          )}
-        </Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  act(() => ref.current?.navigate('nested'));
-  const nestedRoute = ref.current?.getRootState().routes.at(-1)!;
-
-  expect(parentPreventedRoutes?.[nestedRoute.key]).toBeUndefined();
-  act(() => ref.current?.goBack());
-
-  expect(onPreventRemove).not.toHaveBeenCalled();
-  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['home']);
-});
-
-test('only active stack routes are preventable', () => {
-  const routes = [
-    { key: 'a', name: 'a' },
-    { key: 'b', name: 'b' },
-    { key: 'p1', name: 'p1' },
-    { key: 'p2', name: 'p2' },
-  ];
-
-  expect(
-    getPreventableRoutes({
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'stack',
-      index: 1,
-      routeNames: routes.map((route) => route.name),
-      routes,
-    })
-  ).toEqual(routes.slice(0, 2));
-
-  expect(
-    getPreventableRoutes({
-      stale: false,
-      routeKeySeq: 0,
-      type: 'tab',
-      key: 'tabs',
-      index: 1,
-      routeNames: routes.map((route) => route.name),
-      routes,
-    })
-  ).toEqual(routes);
-
-  expect(
-    getPreventableRoutes(
-      {
-        index: 0,
-        routes,
-      },
-      'stack'
-    )
-  ).toEqual(routes.slice(0, 1));
-});
-
-// TODO(@ubax): Restore usePreventRemove after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a screen with 'usePreventRemove' hook", () => {
+test("prevents removing a screen with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -347,8 +135,7 @@ test.skip("prevents removing a screen with 'usePreventRemove' hook", () => {
   });
 });
 
-// TODO(@ubax): Restore blocked effect dispatch after reducer dispatch supports prevention. https://linear.app/expo/issue/ENG-26123
-test.skip('dispatches a blocked action from an effect after disabling prevention', () => {
+test('allows an action dispatched while disabling prevention', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
     return (
@@ -359,19 +146,14 @@ test.skip('dispatches a blocked action from an effect after disabling prevention
   };
   let discard: () => void;
   const onPreventRemove = jest.fn();
-  const TestScreen = ({ navigation }: any) => {
+  const TestScreen = () => {
     const [preventRemove, setPreventRemove] = React.useState(true);
-    const pendingAction = React.useRef<any>(null);
-    usePreventRemove(preventRemove, ({ data }) => {
-      pendingAction.current = data.action;
-      onPreventRemove();
-    });
-    React.useEffect(() => {
-      if (!preventRemove && pendingAction.current) {
-        navigation.dispatch(pendingAction.current);
-      }
-    }, [navigation, preventRemove]);
-    discard = () => setPreventRemove(false);
+    const disablePrevention = usePreventRemove(preventRemove, onPreventRemove);
+    discard = () => {
+      setPreventRemove(false);
+      disablePrevention();
+      ref.current?.goBack();
+    };
     return null;
   };
   const ref = createNavigationContainerRef<ParamListBase>();
@@ -391,12 +173,139 @@ test.skip('dispatches a blocked action from an effect after disabling prevention
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 
   act(() => discard());
+
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo']);
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 });
 
-// TODO(@ubax): Restore repeated usePreventRemove registration after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a screen when 'usePreventRemove' hook is called multiple times", () => {
+test('warns when disablePrevention is called and preventRemove stays true', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  let disablePrevention!: () => void;
+  const TestScreen = () => {
+    disablePrevention = usePreventRemove(true);
+    return null;
+  };
+
+  render(
+    <BaseNavigationContainer>
+      <TestNavigator>
+        <Screen name="foo" component={TestScreen} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(disablePrevention);
+
+  expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+});
+
+test('does not warn when preventRemove is set to false with disablePrevention', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  let discard!: () => void;
+  const TestScreen = () => {
+    const [preventRemove, setPreventRemove] = React.useState(true);
+    const disablePrevention = usePreventRemove(preventRemove);
+    discard = () => {
+      setPreventRemove(false);
+      disablePrevention();
+    };
+    return null;
+  };
+
+  render(
+    <BaseNavigationContainer>
+      <TestNavigator>
+        <Screen name="foo" component={TestScreen} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(discard);
+
+  expect(consoleWarnSpy).not.toHaveBeenCalled();
+});
+
+test('does not propagate prevention from a preloaded nested stack route', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  const onPreventRemove = jest.fn();
+  const ProtectedScreen = () => {
+    usePreventRemove(true, onPreventRemove);
+    return null;
+  };
+  let preloadProtected!: () => void;
+  const NestedStack = (props: any) => {
+    const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder(
+      StackRouter,
+      props
+    );
+    preloadProtected = () => navigation.dispatch(CommonActions.preload('protected'));
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  const ref = createNavigationContainerRef<ParamListBase>();
+
+  render(
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        type: 'stack',
+        index: 0,
+        routes: [
+          { name: 'home' },
+          { name: 'nested', state: { type: 'stack', routes: [{ name: 'index' }] } },
+        ],
+      }}>
+      <TestNavigator>
+        <Screen name="home">{() => null}</Screen>
+        <Screen name="nested">
+          {() => (
+            <NestedStack>
+              <Screen name="index">{() => null}</Screen>
+              <Screen name="protected" component={ProtectedScreen} />
+            </NestedStack>
+          )}
+        </Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(preloadProtected);
+  expect(ref.current?.getRootState().routes[1]?.state?.routes.map((route) => route.name)).toEqual([
+    'index',
+    'protected',
+  ]);
+  act(() => ref.current?.navigate('nested'));
+  act(() => ref.current?.goBack());
+
+  expect(onPreventRemove).not.toHaveBeenCalled();
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['home']);
+});
+
+test("prevents removing a screen when 'usePreventRemove' hook is called multiple times", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -608,8 +517,7 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   expect(onPreventRemove).toHaveBeenCalledTimes(0);
 });
 
-// TODO(@ubax): Restore child usePreventRemove propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'usePreventRemove' hook", () => {
+test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -710,8 +618,7 @@ test.skip("prevents removing a child screen with 'usePreventRemove' hook", () =>
   });
 });
 
-// TODO(@ubax): Restore grandchild usePreventRemove propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a grand child screen with 'usePreventRemove' hook", () => {
+test("prevents removing a grand child screen with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -812,8 +719,7 @@ test.skip("prevents removing a grand child screen with 'usePreventRemove' hook",
   });
 });
 
-// TODO(@ubax): Restore multiple usePreventRemove handlers after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing by multiple screens with 'usePreventRemove' hook", () => {
+test("prevents removing by multiple screens with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -906,6 +812,8 @@ test.skip("prevents removing by multiple screens with 'usePreventRemove' hook", 
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onPreventRemove.lex).toHaveBeenCalledTimes(1);
+  expect(onPreventRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onPreventRemove.bar).toHaveBeenCalledTimes(1);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
@@ -916,7 +824,8 @@ test.skip("prevents removing by multiple screens with 'usePreventRemove' hook", 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onPreventRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onPreventRemove.baz).toHaveBeenCalledTimes(2);
+  expect(onPreventRemove.bar).toHaveBeenCalledTimes(2);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
@@ -927,7 +836,7 @@ test.skip("prevents removing by multiple screens with 'usePreventRemove' hook", 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onPreventRemove.bar).toHaveBeenCalledTimes(1);
+  expect(onPreventRemove.bar).toHaveBeenCalledTimes(3);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
@@ -944,8 +853,7 @@ test.skip("prevents removing by multiple screens with 'usePreventRemove' hook", 
   });
 });
 
-// TODO(@ubax): Restore targeted reset prevention after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'usePreventRemove' hook with targeted reset", () => {
+test("prevents removing a child screen with 'usePreventRemove' hook with targeted reset", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 

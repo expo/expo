@@ -1,14 +1,28 @@
-import { act, render } from '@testing-library/react-native';
+import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { NavigationState, Router } from '../../routers';
 import { Screen } from '../Screen';
+import { useEventEmitter } from '../useEventEmitter';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+});
+
+test('stops emitting removed events immediately after unsubscribe', () => {
+  const callback = jest.fn();
+  const { result } = renderHook(() =>
+    useEventEmitter<{ removed: { data: { action: { type: string } } } }>()
+  );
+  const unsubscribe = result.current.create('route').addListener('removed', callback);
+
+  unsubscribe();
+  result.current.emit({ type: 'removed', target: 'route', data: { action: { type: 'REMOVE' } } });
+
+  expect(callback).not.toHaveBeenCalled();
 });
 
 test('fires focus and blur events in root navigator', () => {

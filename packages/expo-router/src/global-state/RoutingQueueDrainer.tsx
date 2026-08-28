@@ -27,11 +27,7 @@ export function RoutingQueueDrainer({ ready, processIntent }: Props) {
       // during the next render, so errors from it surface there, not here.
       try {
         intent.onDispatch?.(intent.metadata);
-        if (intent.type === 'NAVIGATOR_ACTION') {
-          intent.payload.dispatchSync(intent.payload.action);
-        } else {
-          processIntent(intent);
-        }
+        processIntent(intent);
       } catch (error) {
         const message =
           typeof error === 'object' && error != null && 'message' in error ? error.message : error;

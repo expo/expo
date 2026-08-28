@@ -603,8 +603,7 @@ test.skip('logs error if no navigator handled the action', () => {
   spy.mockRestore();
 });
 
-// TODO(@ubax): Restore removePrevented handling after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a screen with 'removePrevented' event", () => {
+test("prevents removing a screen with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -713,6 +712,10 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
     setPreventRemove(false);
   });
 
+  expect(onStateChange).toHaveBeenCalledTimes(2);
+
+  act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
+
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     type: 'stack',
@@ -725,8 +728,7 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
   });
 });
 
-// TODO(@ubax): Restore child removePrevented propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'removePrevented' event", () => {
+test("prevents removing a child screen with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -816,8 +818,7 @@ test.skip("prevents removing a child screen with 'removePrevented' event", () =>
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore grandchild removePrevented propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a grand child screen with 'removePrevented' event", () => {
+test("prevents removing a grand child screen with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -911,8 +912,7 @@ test.skip("prevents removing a grand child screen with 'removePrevented' event",
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore multiple removePrevented handlers after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing by multiple screens with 'removePrevented' event", () => {
+test("prevents removing by multiple screens with 'removePrevented' event", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -1011,6 +1011,8 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onBeforeRemove.lex).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(1);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
@@ -1019,7 +1021,8 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
   });
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(2);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(2);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
@@ -1028,13 +1031,12 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
   });
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(3);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore targeted reset prevention after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'removePrevented' event with targeted reset", () => {
+test("prevents removing a child screen with 'removePrevented' event with targeted reset", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 

@@ -4,13 +4,13 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
-import { navigationRef } from '../global-state/navigationRef';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { useGuardRedirect } from '../layouts/GuardContext';
 import { Stack } from '../layouts/Stack';
 import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
+import { unstable_navigationEvents } from '../navigationEvents';
 import { useIsFocused } from '../react-navigation/native';
 import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs, useTabTrigger } from '../ui';
@@ -1396,10 +1396,8 @@ it('resets when focused tab is pressed again', async () => {
   expect(screen).toHaveSegments(['stack']);
 });
 
-// TODO(@ubax): Restore __unsafe_action__ events. https://linear.app/expo/issue/ENG-26123
-it.skip('dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
+it('dispatches only one action when re-tapping active tab with nested stack', async () => {
+  const dispatchedActions: string[] = [];
 
   renderRouter({
     _layout: () => (
@@ -1439,9 +1437,9 @@ it.skip('dispatches only one action when re-tapping active tab with nested stack
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
+  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+    dispatchedActions.push(event.actionType)
+  );
 
   // Re-tap the movies tab
   await userEvent.press(screen.getByTestId('goto-movies'));
@@ -1453,15 +1451,11 @@ it.skip('dispatches only one action when re-tapping active tab with nested stack
 
   expect(dispatchedActions).toHaveLength(1);
 
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(dispatchedActions[0]).toBe('POP_TO_TOP');
 });
 
-// TODO(@ubax): Restore __unsafe_action__ events. https://linear.app/expo/issue/ENG-26123
-it.skip('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
+it('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
+  const dispatchedActions: string[] = [];
 
   renderRouter({
     _layout: () => (
@@ -1494,9 +1488,9 @@ it.skip('JSTabs dispatches only one action when re-tapping active tab with neste
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
+  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+    dispatchedActions.push(event.actionType)
+  );
 
   // Re-tap the movies tab
   await userEvent.press(screen.getByLabelText('movies, tab, 2 of 2'));
@@ -1508,9 +1502,7 @@ it.skip('JSTabs dispatches only one action when re-tapping active tab with neste
 
   expect(dispatchedActions).toHaveLength(1);
 
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(dispatchedActions[0]).toBe('POP_TO_TOP');
 });
 
 it('does not reset when focused tab is pressed again, but the press is prevented', async () => {

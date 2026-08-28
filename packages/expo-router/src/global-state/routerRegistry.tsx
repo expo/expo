@@ -17,16 +17,6 @@ export type RouterRegistryEntry = {
   ) => RouterActionResult<NavigationState> | null;
   shouldActionChangeFocus?: (action: NavigationAction) => boolean;
   getStateForRouteFocus?: (state: NavigationState, routeKey: string) => NavigationState;
-  shouldPreventRemove?: (
-    prev: NavigationState,
-    next: NavigationState,
-    action: NavigationAction
-  ) => boolean;
-  emitBeforeRemove?: (
-    prev: NavigationState,
-    next: NavigationState,
-    action: NavigationAction
-  ) => void;
   routeNode?: RouteNode;
 };
 

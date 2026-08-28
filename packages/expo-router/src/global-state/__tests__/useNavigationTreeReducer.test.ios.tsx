@@ -28,21 +28,176 @@ const initialState: NavigationState = {
 };
 
 function renderReducer({
-  registry,
   state = initialState,
+  registry,
+  routesWithRemovalPrevented = new Set(),
 }: {
-  registry: RouterRegistry;
   state?: NavigationState;
+  registry: RouterRegistry;
+  routesWithRemovalPrevented?: ReadonlySet<string>;
 }) {
-  return renderHook<ReturnType<typeof useNavigationTreeReducer>, { registry: RouterRegistry }>(
-    ({ registry }) =>
-      useNavigationTreeReducer({
+  const reports: NonNullable<ReturnType<typeof useNavigationTreeReducer>['report']>[] = [];
+  const result = renderHook<
+    ReturnType<typeof useNavigationTreeReducer>,
+    {
+      registry: RouterRegistry;
+      routesWithRemovalPrevented: ReadonlySet<string>;
+    }
+  >(
+    ({ registry, routesWithRemovalPrevented }) => {
+      const reducer = useNavigationTreeReducer({
         initialState: state,
         registry,
-      }),
-    { initialProps: { registry } }
+        routesWithRemovalPrevented,
+      });
+      if (reducer.report) {
+        reports.push(reducer.report);
+      }
+      return reducer;
+    },
+    { initialProps: { registry, routesWithRemovalPrevented } }
   );
+  return { ...result, reports };
 }
+
+test('reports and vetoes removal of a prevented route', () => {
+  const action = { type: 'REMOVE' };
+  const result = renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: 0, routes: state.routes.slice(0, 1) },
+          affectedRouteKey: state.routes[0]!.key,
+        })),
+      ],
+    ]),
+    routesWithRemovalPrevented: new Set(['third']),
+  });
+
+  act(() => result.result.current.handleAction(action));
+
+  expect(result.result.current.state).toBe(initialState);
+  expect(result.reports.at(-1)).toMatchObject({
+    events: [{ type: 'prevented-routes', routeKeys: ['third'], action }],
+  });
+  expect(result.result.current.report).toMatchObject({
+    events: [{ type: 'prevented-routes', routeKeys: ['third'], action }],
+  });
+});
+
+test('commits removal and reports removed routes when none are prevented', () => {
+  const action = { type: 'REMOVE' };
+  const result = renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: 0, routes: state.routes.slice(0, 1) },
+          affectedRouteKey: state.routes[0]!.key,
+        })),
+      ],
+    ]),
+  });
+
+  act(() => result.result.current.handleAction(action));
+
+  expect(result.result.current.state.routes).toHaveLength(1);
+  expect(result.reports.at(-1)).toMatchObject({
+    events: [
+      { type: 'removed-routes', routeKeys: ['third', 'second'], action },
+      { type: 'action-dispatched', action },
+    ],
+  });
+});
+
+test('does not let a preloaded stack route prevent removal', () => {
+  const stackState: NavigationState = {
+    ...initialState,
+    type: 'stack',
+    index: 0,
+  };
+  const result = renderReducer({
+    state: stackState,
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, routes: state.routes.slice(0, 1) },
+          affectedRouteKey: state.routes[0]!.key,
+        })),
+      ],
+    ]),
+    routesWithRemovalPrevented: new Set(['second']),
+  });
+
+  act(() => result.result.current.handleAction({ type: 'REMOVE_PRELOAD' }));
+
+  expect(result.result.current.state.routes).toHaveLength(1);
+  expect(result.reports.at(-1)?.events).toEqual([
+    expect.objectContaining({
+      type: 'action-dispatched',
+      action: { type: 'REMOVE_PRELOAD' },
+    }),
+  ]);
+});
+
+test('prevents moving an active route into the preloaded region', () => {
+  const stackState: NavigationState = {
+    ...initialState,
+    type: 'stack',
+    index: 2,
+  };
+  const result = renderReducer({
+    state: stackState,
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: 0 },
+          affectedRouteKey: state.routes[0]!.key,
+        })),
+      ],
+    ]),
+    routesWithRemovalPrevented: new Set(['second']),
+  });
+
+  act(() => result.result.current.handleAction({ type: 'RESET_INDEX' }));
+
+  expect(result.result.current.state).toBe(stackState);
+  expect(result.reports.at(-1)?.events).toEqual([
+    {
+      id: 0,
+      type: 'prevented-routes',
+      routeKeys: ['second'],
+      action: { type: 'RESET_INDEX' },
+    },
+  ]);
+});
+
+test('does not veto route name changes', () => {
+  const action = { type: 'ROUTE_NAMES_CHANGED' };
+  const result = renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: 0, routes: state.routes.slice(0, 1) },
+          affectedRouteKey: state.routes[0]!.key,
+        })),
+      ],
+    ]),
+    routesWithRemovalPrevented: new Set(['third']),
+  });
+
+  act(() => result.result.current.handleAction(action));
+
+  expect(result.result.current.state.routes).toHaveLength(1);
+  expect(result.reports.at(-1)?.events).toEqual([
+    { id: 0, type: 'removed-routes', routeKeys: ['third', 'second'], action },
+    expect.objectContaining({ id: 1, type: 'action-dispatched', action }),
+  ]);
+});
 
 it('reduces consecutive actions against accumulated state with one committed update', () => {
   const reduce = jest.fn((state: NavigationState) => ({
@@ -53,14 +208,76 @@ it('reduces consecutive actions against accumulated state with one committed upd
     registry: new Map([['root', entry(reduce)]]),
   });
 
+  const firstAction = { type: 'NEXT_FIRST' };
+  const secondAction = { type: 'NEXT_SECOND' };
   act(() => {
-    result.result.current.handleAction({ type: 'NEXT' });
-    result.result.current.handleAction({ type: 'NEXT' });
+    result.result.current.handleAction(firstAction);
+    result.result.current.handleAction(secondAction);
   });
 
   expect(reduce).toHaveBeenCalledTimes(2);
   expect(reduce.mock.calls[1]![0].index).toBe(1);
   expect(result.result.current.state.index).toBe(2);
+  expect(result.reports.at(-1)?.events).toEqual([
+    expect.objectContaining({
+      id: 0,
+      type: 'action-dispatched',
+      action: firstAction,
+    }),
+    expect.objectContaining({
+      id: 1,
+      type: 'action-dispatched',
+      action: secondAction,
+    }),
+  ]);
+});
+
+it('assigns increasing ids to events across actions', () => {
+  const result = renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: state.index + 1 },
+          affectedRouteKey: state.routes[state.index + 1]!.key,
+        })),
+      ],
+    ]),
+  });
+
+  act(() => result.result.current.handleAction({ type: 'FIRST' }));
+  act(() => result.result.current.handleAction({ type: 'SECOND' }));
+
+  expect(result.result.current.report?.events.map((event) => event.id)).toEqual([0, 1]);
+});
+
+it('consumes only the listed report events', () => {
+  const result = renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: state.index + 1 },
+          affectedRouteKey: state.routes[state.index + 1]!.key,
+        })),
+      ],
+    ]),
+  });
+
+  act(() => {
+    result.result.current.handleAction({ type: 'FIRST' });
+    result.result.current.handleAction({ type: 'SECOND' });
+  });
+  act(() => result.result.current.consumeReportEvents([0]));
+
+  expect(result.result.current.report?.events.map((event) => event.id)).toEqual([1]);
+
+  const report = result.result.current.report;
+  act(() => result.result.current.consumeReportEvents([99]));
+  expect(result.result.current.report).toBe(report);
+
+  act(() => result.result.current.consumeReportEvents([1]));
+  expect(result.result.current.report).toBeUndefined();
 });
 
 it('logs an error for stale focused state after commit', () => {
@@ -75,7 +292,9 @@ it('logs an error for stale focused state after commit', () => {
     } as unknown as NavigationState;
     return { state: staleState, affectedRouteKey: state.routes[0]!.key };
   });
-  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  const result = renderReducer({
+    registry: new Map([['root', entry(reduce)]]),
+  });
 
   act(() => result.result.current.handleAction({ type: 'STALE' }));
 
@@ -145,7 +364,13 @@ it('warns for direct navigation actions carrying a screen param', () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const result = renderReducer({
     registry: new Map([
-      ['root', entry((state) => ({ state, affectedRouteKey: state.routes[state.index]!.key }))],
+      [
+        'root',
+        entry((state) => ({
+          state,
+          affectedRouteKey: state.routes[state.index]!.key,
+        })),
+      ],
     ]),
   });
 
@@ -199,9 +424,14 @@ it('resets a state slice when its router unregisters', () => {
   const routeNode = node('root', [node('first'), node('second'), node('third')]);
   routeNode.initialRouteName = 'second';
   const registryEntry = { ...entry(() => null), routeNode };
-  const result = renderReducer({ registry: new Map([['root', registryEntry]]) });
+  const result = renderReducer({
+    registry: new Map([['root', registryEntry]]),
+  });
 
-  result.rerender({ registry: new Map() });
+  result.rerender({
+    registry: new Map(),
+    routesWithRemovalPrevented: new Set(),
+  });
 
   expect(result.result.current.state).toMatchObject({
     index: 0,
@@ -239,7 +469,10 @@ it('does not reset a state slice when its router entry is replaced', () => {
     registry: new Map([['root', entry(() => null)]]),
   });
 
-  result.rerender({ registry: new Map([['root', entry(() => null)]]) });
+  result.rerender({
+    registry: new Map([['root', entry(() => null)]]),
+    routesWithRemovalPrevented: new Set(),
+  });
 
   expect(result.result.current.state).toBe(initialState);
 });
@@ -258,7 +491,11 @@ describe('NAVIGATE_TO_HREF', () => {
 
   function navigateToHref(
     result: ReturnType<typeof renderReducer>,
-    payload: { href?: string; options?: LinkToOptions; originalHref?: string } = {}
+    payload: {
+      href?: string;
+      options?: LinkToOptions;
+      originalHref?: string;
+    } = {}
   ) {
     act(() =>
       result.result.current.processIntent({
@@ -281,7 +518,10 @@ describe('NAVIGATE_TO_HREF', () => {
   });
 
   it('warns with the resolved href when the href is invalid', () => {
-    mockGetNavigateAction.mockReturnValue({ status: 'invalid', href: '/resolved' });
+    mockGetNavigateAction.mockReturnValue({
+      status: 'invalid',
+      href: '/resolved',
+    });
     const result = renderReducer({ registry: new Map() });
 
     navigateToHref(result);
@@ -291,7 +531,10 @@ describe('NAVIGATE_TO_HREF', () => {
   });
 
   it('warns with the original href when the href is invalid after a redirect', () => {
-    mockGetNavigateAction.mockReturnValue({ status: 'invalid', href: '/resolved' });
+    mockGetNavigateAction.mockReturnValue({
+      status: 'invalid',
+      href: '/resolved',
+    });
     const result = renderReducer({ registry: new Map() });
 
     navigateToHref(result, { originalHref: 'myapp://original' });
@@ -332,6 +575,7 @@ describe('NAVIGATE_TO_HREF', () => {
         routeNode: undefined,
         linking: undefined,
         redirects: undefined,
+        routesWithRemovalPrevented: new Set(),
       },
       'PUSH',
       true,

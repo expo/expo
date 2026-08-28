@@ -9,8 +9,6 @@ import { navigationRef } from '../../../global-state/navigationRef';
 import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/StackClient';
 import { getMockContext } from '../../../testing-library/mock-config';
-import { CommonActions } from '../../routers';
-import { useNavigation } from '../useNavigation';
 import { usePreventRemove } from '../usePreventRemove';
 
 global.ResizeObserver = class {
@@ -19,15 +17,15 @@ global.ResizeObserver = class {
   disconnect() {}
 } as typeof ResizeObserver;
 
-// TODO(@ubax): Restore remove prevention after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-test.skip('continues a blocked router back after disabling prevention', () => {
+test('allows router back after disabling prevention', () => {
   let discard: () => void;
   const onPreventRemove = jest.fn();
   const Form = () => {
     const [dirty, setDirty] = React.useState(true);
-    usePreventRemove(dirty, onPreventRemove);
+    const disablePrevention = usePreventRemove(dirty, onPreventRemove);
     discard = () => {
       setDirty(false);
+      disablePrevention();
       router.back();
     };
     return <View testID="form" />;
@@ -54,15 +52,15 @@ test.skip('continues a blocked router back after disabling prevention', () => {
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
 });
 
-// TODO(@ubax): Restore nested remove prevention after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-test.skip('continues a blocked parent back after disabling nested prevention', () => {
+test('allows parent back after disabling nested prevention', () => {
   let discard: () => void;
   const onPreventRemove = jest.fn();
   const Form = () => {
     const [dirty, setDirty] = React.useState(true);
-    usePreventRemove(dirty, onPreventRemove);
+    const disablePrevention = usePreventRemove(dirty, onPreventRemove);
     discard = () => {
       setDirty(false);
+      disablePrevention();
       router.back();
     };
     return <View testID="nested-form" />;
@@ -85,37 +83,4 @@ test.skip('continues a blocked parent back after disabling nested prevention', (
   act(() => discard());
   expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/');
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
-});
-
-// TODO(@ubax): Restore beforeRemove handling after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-test.skip('throws a descriptive error when beforeRemove calls preventDefault', () => {
-  let goBack: () => void;
-  const Form = () => {
-    const navigation = useNavigation();
-    goBack = () => navigation.dispatchSync(CommonActions.goBack());
-    React.useEffect(
-      () =>
-        navigation.addListener('beforeRemove', (event) => {
-          // @ts-expect-error: legacy code treated `beforeRemove` as preventable
-          event.preventDefault();
-        }),
-      [navigation]
-    );
-    return <View testID="form" />;
-  };
-
-  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-  const context = getMockContext({
-    _layout: () => <Stack />,
-    index: () => <View testID="index" />,
-    form: Form,
-  });
-  render(<ExpoRoot context={context} location="/" />);
-
-  act(() => router.push('/form'));
-
-  expect(() => act(() => goBack())).toThrow(
-    '`beforeRemove` is a notification-only event and cannot prevent screen removal. Use `usePreventRemove` with the `removePrevented` event instead.'
-  );
-  expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/form');
 });
