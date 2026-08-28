@@ -51,6 +51,7 @@ export type BottomSheetDialogProps = {
 type DragSession = {
   pointerId: number;
   startY: number;
+  lastY: number;
   startHeight: number;
   active: boolean;
 };
@@ -82,6 +83,11 @@ function findScrollableAncestor(
     el = el.parentElement;
   }
   return null;
+}
+
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  return target.closest('button, a, input, textarea, select, [role="button"]') != null;
 }
 
 function isDialogOpen(dialog: HTMLDialogElement) {
@@ -270,6 +276,7 @@ export function BottomSheetDialog({
   const overlayRef = useRef(null);
   const handleRef = useRef(null);
   const dragRef = useRef<DragSession | null>(null);
+  const playedEnterRef = useRef(false);
   const [mounted, setMounted] = useState(open);
   const [dragHeight, setDragHeight] = useState<number | null>(null);
 
@@ -285,6 +292,8 @@ export function BottomSheetDialog({
 
     if (open) {
       if (!isDialogOpen(dialog)) openDialog(dialog);
+      if (playedEnterRef.current) return;
+      playedEnterRef.current = true;
       if (prefersReducedMotion()) {
         sheet.style.animation = 'none';
         overlay.style.animation = 'none';
@@ -302,6 +311,7 @@ export function BottomSheetDialog({
       return;
     }
 
+    playedEnterRef.current = false;
     if (!isDialogOpen(dialog)) return;
     if (prefersReducedMotion()) {
       closeDialog(dialog);
@@ -371,10 +381,12 @@ export function BottomSheetDialog({
       if (!fromHandle) {
         const scrollable = findScrollableAncestor(event.target, sheet);
         if (scrollable && scrollable.scrollTop > 0) return;
+        if (isInteractiveTarget(event.target)) return;
       }
       dragRef.current = {
         pointerId: event.pointerId,
         startY: event.clientY,
+        lastY: event.clientY,
         startHeight: resolveStartHeightRef.current(),
         active: false,
       };
@@ -389,6 +401,7 @@ export function BottomSheetDialog({
       const drag = dragRef.current;
       if (!drag || drag.pointerId !== event.pointerId) return;
       const deltaY = event.clientY - drag.startY;
+      drag.lastY = event.clientY;
       if (!drag.active) {
         if (Math.abs(deltaY) < DRAG_THRESHOLD_PX) return;
         drag.active = true;
@@ -398,15 +411,15 @@ export function BottomSheetDialog({
       setDragHeight(Math.min(maxHeight, Math.max(0, drag.startHeight - deltaY)));
     };
 
-    const onPointerUp = (event: PointerEvent) => {
+    const finishDrag = (clientY: number) => {
       const drag = dragRef.current;
-      if (!drag || drag.pointerId !== event.pointerId) return;
+      if (!drag) return;
       dragRef.current = null;
       if (!drag.active) {
         setDragHeight(null);
         return;
       }
-      const predicted = Math.max(0, drag.startHeight - (event.clientY - drag.startY));
+      const predicted = Math.max(0, drag.startHeight - (clientY - drag.startY));
       setDragHeight(null);
       const closeBelow =
         minSnapHeightRef.current != null
@@ -419,6 +432,12 @@ export function BottomSheetDialog({
       onDragEndRef.current?.(predicted);
     };
 
+    const onPointerUp = (event: PointerEvent) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      finishDrag(event.clientY);
+    };
+
     const abortDrag = (event: PointerEvent) => {
       const drag = dragRef.current;
       if (!drag || drag.pointerId !== event.pointerId) return;
@@ -426,17 +445,32 @@ export function BottomSheetDialog({
       setDragHeight(null);
     };
 
+    const onLostPointerCapture = (event: PointerEvent) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      // Capture is released after pointerup. Some browsers fire this before the
+      // bubbling window pointerup, so aborting here skipped onDragEnd / snapping.
+      if ((event.buttons ?? 0) !== 0) {
+        try {
+          sheet.setPointerCapture(event.pointerId);
+        } catch {}
+        return;
+      }
+      finishDrag(drag.lastY);
+    };
+
+    const windowPointerOptions = { capture: true };
     sheet.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', abortDrag);
-    sheet.addEventListener('lostpointercapture', abortDrag);
+    window.addEventListener('pointermove', onPointerMove, windowPointerOptions);
+    window.addEventListener('pointerup', onPointerUp, windowPointerOptions);
+    window.addEventListener('pointercancel', abortDrag, windowPointerOptions);
+    sheet.addEventListener('lostpointercapture', onLostPointerCapture);
     return () => {
       sheet.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', abortDrag);
-      sheet.removeEventListener('lostpointercapture', abortDrag);
+      window.removeEventListener('pointermove', onPointerMove, windowPointerOptions);
+      window.removeEventListener('pointerup', onPointerUp, windowPointerOptions);
+      window.removeEventListener('pointercancel', abortDrag, windowPointerOptions);
+      sheet.removeEventListener('lostpointercapture', onLostPointerCapture);
       dragRef.current = null;
       setDragHeight(null);
     };
@@ -492,10 +526,13 @@ export function BottomSheetDialog({
         {showHandle ? (
           <View
             ref={handleRef}
-            testID={BOTTOM_SHEET_TEST_IDS.handle}
             dataSet={{ expoUiBottomSheetHandle: '', grabbing: dragging ? 'true' : undefined }}
-            style={[styles.handle, { backgroundColor: handleBackground }]}
-          />
+            style={styles.handleHit}>
+            <View
+              testID={BOTTOM_SHEET_TEST_IDS.handle}
+              style={[styles.handle, { backgroundColor: handleBackground }]}
+            />
+          </View>
         ) : null}
         <View
           testID={innerTestID}
@@ -533,13 +570,17 @@ const styles = StyleSheet.create({
     transitionProperty: 'height',
     transitionTimingFunction: 'ease',
   },
+  handleHit: {
+    alignSelf: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 2,
+    flexShrink: 0,
+  },
   handle: {
     width: 36,
     height: 5,
     borderRadius: 100,
-    marginTop: 8,
-    marginBottom: 4,
-    alignSelf: 'center',
     flexShrink: 0,
   },
   body: {
