@@ -479,7 +479,7 @@ The chain, in four steps:
    terminal gets the Terminal UI instead and no such line, which is exactly why the local repro
    showed none.
 
-**It is upstream, and it is one option wide.** `constructUrl({ scheme: 'http' })` in step 2 makes it
+**It is upstream, and it is one option wide**. `constructUrl({ scheme: 'http' })` in step 2 makes it
 the URL every other branch produces. Filed in [[0010-agent-conventions]] §Upstream asks with this
 repro. Everything that reads `getDevServerUrl()` under a v2 tunnel is affected, not only the printed
 line. The MCP server's `devServerUrl` and the non-native `DevelopmentSession` URL take the same

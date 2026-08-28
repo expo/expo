@@ -131,7 +131,7 @@ The trade is that a stamp is a weaker statement about a file, and it is worth be
   and a fresh clone all rewrite modification times. That costs a recomputation of a hash that would
   have come back identical. It is a slow answer rather than a wrong one, and it is the direction to
   be wrong in.
-- **The remaining case is real and small.** An edit that preserves both size and timestamp is
+- **The remaining case is real and small**. An edit that preserves both size and timestamp is
   invisible. Nothing in this manifest catches it. The TTL does.
 
 ## What a cached hash is revalidated against

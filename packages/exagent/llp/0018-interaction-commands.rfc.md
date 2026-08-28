@@ -70,11 +70,11 @@ disabled refusal is written for `tap`.
 
 Both were added to `type`, for one reason each:
 
-- **`--index`.** `type` matches the same way `tap` does, so it meets `ambiguous` the same way. Its
+- **`--index`**. `type` matches the same way `tap` does, so it meets `ambiguous` the same way. Its
   recommended shape gives an agent that meets it no way forward at all: the answer would be "give
   the input a unique testID", which is a code change, delivered in an exit code that says "retry
   differently".
-- **`--force`, and the disabled refusal behind it.** `editable={false}` is what a `TextInput` uses
+- **`--force`, and the disabled refusal behind it**. `editable={false}` is what a `TextInput` uses
   for the state `disabled` is on a button, and calling `onChangeText` on one is the same false pass
   the spike called *the one correctness bug in the mechanism*. Refusing it is the same three lines,
   and `--force` is what keeps the refusal recoverable, exactly as it does for `tap`.
@@ -378,7 +378,7 @@ command.
 - **A tap whose handler is on an ancestor.** `handlerOutsideMatch` was reported `false` every time
   live, because every element on this app has its own handler, which is the same thing the spike
   found.
-- **`--index`.** No screen in the run had two elements sharing a testID, so the ambiguous path and
+- **`--index`**. No screen in the run had two elements sharing a testID, so the ambiguous path and
   the index that resolves it are unit-tested and never live.
 - **The disabled refusal.** The same story: the spike added a `disabled` button temporarily and
   reverted it, so what ran live here is the enabled case.
