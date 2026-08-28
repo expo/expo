@@ -10,27 +10,27 @@
 ## Summary
 
 Friction run 7, the first live-staging run and Kudo's own cloud loop found thirteen failures of one
-kind. In every one of
-them the CLI **had** the right answer and reported a different one: the detached child wrote its own
-needs-human verdict into a log while the parent printed `Bundler ready` and exit 0; `dev:stop --port
-8195` read a lock for port 8190 and killed that; one EAS build's fingerprint comparison was copied
-onto both platforms and said an iOS build could run android code; `status` reported `auth unknown
-(nothing could answer)` in a directory where `exagent whoami` printed the name.
+kind. In every one of them the CLI **had** the right answer and reported a different one. The
+detached child wrote its own needs-human verdict into a log while the parent printed `Bundler ready`
+and exit 0. `dev:stop --port 8195` read a lock for port 8190 and killed that. One EAS build's
+fingerprint comparison was copied onto both platforms and said an iOS build could run android code.
+`status` reported `auth unknown (nothing could answer)` in a directory where `exagent whoami` printed
+the name.
 
 None of them is a missing feature. Each is a **claim made about the wrong subject**, or at the wrong
-time, or from the wrong evidence — and the cloud loop added the two most expensive versions of it:
+time, or from the wrong evidence. The cloud loop added the two most expensive versions of it:
 `freshness ios: stale (no recorded build)` about a project whose fingerprint matched a finished EAS
 build, and a dev server line quoting a URL nothing can open. This LLP records the rules that came out
 of fixing them, because the same mistake is available to every command in the surface.
 
 ## The rules
 
-1. **A flag that names a target is the target.** Not a hint, not a fallback — the thing the command
+1. **A flag that names a target is the target.** Not a hint and not a fallback: the thing the command
    acts on.
 2. **A claim is about the moment it is printed.** Readiness established two seconds ago is not
-   readiness, and a report is written after the waits, not before them.
+   readiness, and a report is written after the waits rather than before them.
 3. **One subject, one answer.** An answer about one platform, one build or one process is never
-   copied onto its siblings; they get a stated non-answer instead.
+   copied onto its siblings. They get a stated non-answer instead.
 4. **Read the tool's own sentence before guessing.** A guess is allowed only where nothing was
    recognised, and it must say that it is one.
 5. **A note nobody reads is not a note.** A failure that reached `--json` and not the text report is
@@ -58,18 +58,18 @@ Every section below is one of these applied, with the finding that forced it.
 `dev:stop` is the one destructive verb in the v1 surface. It read the project's dev-server lock
 first and the caller's `--port` second, so `dev:stop --port 8195` sent `SIGTERM` to the pid on
 **8190**, left the listener on 8195 alone, and reported `Stopped yes · Dev server
-http://127.0.0.1:8190 · via lock` — naming a port the caller had not asked about
+http://127.0.0.1:8190 · via lock`, naming a port the caller had not asked about
 [observed — friction run 7, F60, reproduced twice].
 
 **The decision.** When `--port` is passed, the lock is consulted only to decide whether the listener
-on *that* port is this CLI's. A lock for another port is reported in `detail` — so a caller who
-mistyped a port learns where their own dev server actually is — and never signalled. `lockHeld` is
-now "a lock answered **for the target**", which is false in that case.
+on *that* port is this CLI's. A lock for another port is reported in `detail`, so a caller who
+mistyped a port learns where their own dev server actually is, and it is never signalled. `lockHeld`
+now means "a lock answered **for the target**", which is false in that case.
 
 The negative answer had the same shape of error. With a `python3 -m http.server` on 8195 the command
 answered `nothing is listening on port 8195`, because `lsof` had named no process and a null lookup
-was read as an empty port [F72]. Those are two different facts. `isPortInUseAsync` (a bind attempt on
-the loopback interface, `src/dev/portListener.ts`) settles it without naming anyone: a port that
+was read as an empty port [F72]. Those are two different facts. `isPortInUseAsync`, a bind attempt on
+the loopback interface (`src/dev/portListener.ts`), settles it without naming anyone. A port that
 cannot be bound is in use, the reason becomes `no Expo dev server answered on port 8195; pid 63465
 (python3) is listening and is not one`, and the outcome is the `foreign-dev-server` shape at exit 20
 rather than `not-running` at exit 0.
@@ -100,48 +100,48 @@ gone, and that wait is where the live reproduction died — twenty seconds of wa
 success report.
 
 **What this does not fix.** A child that dies *after* the parent has returned cannot be caught by
-the parent. The `--ios` reproduction of F61 is that case: `expo start --ios` published the lock,
+the parent. The `--ios` reproduction of F61 is that case. `expo start --ios` published the lock,
 answered `/status`, and only then was refused permission to control Simulator.app, eight seconds
 after the parent had exited. `dev:logs` reads that verdict correctly, and `navigate` fails honestly
-afterwards; catching it at the source would need a signal for "the app opened" that the CLI family
+afterwards. Catching it at the source would need a signal for "the app opened" that the CLI family
 does not emit. Recorded here rather than left as a surprise.
 
 ### A detached child's own verdict
 
 The verdict the child computes is a **rendering of this CLI's own error**, so the parent reads it
-back rather than re-deriving it: `Log.exception` prints `Error.toString()`, `logCmdError` prints
+back rather than re-deriving it. `Log.exception` prints `Error.toString()`, `logCmdError` prints
 `formatNeedsHumanBlock`'s three rows under it, and `parseDetachedChildVerdict`
 (`src/dev/childVerdict.ts`) recovers the scenario id and the message from those. The round trip is
-pinned by a test that builds the log out of the two functions that write it — the same discipline
-`formatPortMove`/`parsePortMove` are held to.
+pinned by a test that builds the log out of the two functions that write it, the same discipline
+`formatPortMove` and `parsePortMove` are held to.
 
 A recovered handoff is raised as a `NeedsHumanError` with the registry's own row, so the caller gets
 exit 7 and the full machine-readable handoff. Its `detectedBy` is a new value,
-**`detached-child-log`**: the stop was not observed by this process, it was relayed, and a reader of
-a handoff deserves to know which. Everything else is exit 20 with the log tail fenced.
+**`detached-child-log`**, because the stop was not observed by this process but relayed, and a reader
+of a handoff deserves to know which. Everything else is exit 20 with the log tail fenced.
 
 ### And its phase, on the same channel
 
 [added — wave 30, 2026-08-28, for F125. Design in [[0004-smart-start-and-project-state]] §What a
 development build costs the plan → the phase decision; code in `parseDetachedChildPhase`.]
 
-The rule this section states — a claim about **now**, checked at the moment of return — had one hole
+The rule this section states, a claim about **now** checked at the moment of return, had one hole
 left in it, and a development build is where it shows. The dev-server lock is taken at the *start* of
-the plan's dev-server step, and `expo run:ios` / `expo run:android` is one subprocess that builds,
+the plan's dev-server step, and `expo run:ios` or `expo run:android` is one subprocess that builds,
 installs and only then serves. So the lock answered a second into a ten-minute Gradle build, and
 `--wait-ready` gave up against a port nothing listens on and reported `The dev server started on
 http://127.0.0.1:8081 (pid 29996) … The dev server is still running — this is about the wait, not
 about the server.` Nothing was started and nothing was listening [observed — wave 29,
 `evidence/10-dev-detach-android.json`].
 
-**The decision.** The wording tracks the plan's phase: `building` ⇒ say building and name the step;
-`serving` ⇒ started. The exit code and the effect do not change — the wait really did give up, and
-the child really is still building.
+**The decision.** The wording tracks the plan's phase. `building` means say building and name the
+step. `serving` means started. The exit code and the effect do not change, because the wait really
+did give up and the child really is still building.
 
 **The channel is this one**, deliberately. The verdict above is read out of the child's log because
 that is the only channel a detached child has to its parent, and the phase is read out of the same
-log, out of two formats this CLI already owns: the **plan table** of `src/plan/format.ts` says which
-step holds the lock, and the **install marker** of `src/dev/buildEvidence.ts` — F121's own — says
+log, out of two formats this CLI already owns. The **plan table** of `src/plan/format.ts` says which
+step holds the lock, and the **install marker** of `src/dev/buildEvidence.ts`, F121's own, says
 whether that step's compiler has finished. Nothing new is printed and no second channel exists to
 drift. `serving` is the answer whenever nothing says otherwise, because guessing `building` would put
 a sentence about a compiler into the report of a dev server that never had one.
@@ -151,18 +151,18 @@ a sentence about a compiler into the report of a dev server that never had one.
 `tunnelUrl` was null while the tunnel was up [S3]. The scrape looks for `Waiting on <url>`, and a
 detached run's log did not contain it. The dev server still knew: it builds its manifest's
 `launchAsset.url` from `getDevServerUrl()`, which is the tunnel origin whenever a tunnel is running.
-`fetchAdvertisedUrlAsync` asks it, one request, and `resolveDevServerReachAsync` falls back to it
-whenever the log named nothing — which fixes `navigate --print-url` and `status` at the same time.
+`fetchAdvertisedUrlAsync` asks it in one request, and `resolveDevServerReachAsync` falls back to it
+whenever the log named nothing, which fixes `navigate --print-url` and `status` at the same time.
 
 **Wave 19 widened that fallback by one condition**, and a live run is why. A dev server serving a
 **public origin** through a proxy prints `Waiting on http://localhost:<port>` and advertises the
 public origin in its manifest [observed — 2026-08-27, `EXPO_PACKAGER_PROXY_URL` against a public
 host, while validating the cloud reload]. The log named *something*, so the manifest was never asked,
 and `hostType: localhost` refused a cloud open the session could have served. So the manifest also
-wins over a log line that names **this machine** — and only then: it replaces the log's reading only
+wins over a log line that names **this machine**, and only then. It replaces the log's reading only
 when the manifest names a tunnel, because swapping a LAN address for `localhost` would hand back a
-URL a phone cannot use. The log stays first for a host a device can already reach: it is the dev
-server's own announcement, and it costs nothing.
+URL a phone cannot use. The log stays first for a host a device can already reach, because it is the
+dev server's own announcement and it costs nothing.
 
 ### The premise that could not be tested
 
@@ -198,25 +198,25 @@ Same project, same dev server, same run, three minutes apart. `navigate` read th
 public host; `smoke` did not and refused the link it had built itself.
 
 **The cause is one option carrying two facts.** `openRouteAsync` takes `devServerUrl` and skips the
-manifest lookup whenever it is set — correctly, for a `--dev-server-url` the caller pinned: they named
-the host they want reached, and substituting this project's tunnel host would answer a different
+manifest lookup whenever it is set. That is correct for a `--dev-server-url` the caller pinned: they
+named the host they want reached, and substituting this project's tunnel host would answer a different
 question. But `smoke` discovers this project's dev server in its first phase and hands the URL to its
 route phase, and *that* URL is a finding of the run rather than a caller's instruction. One field held
 both, and the safe reading of the field silenced the lookup.
 
 So the URL and its **provenance** are two fields now (`devServerUrlSource: 'flag' | 'discovered'`), and
 the rule is stated where it can be read: the reach lookup is suppressed for a caller's flag and for
-nothing else. The general form — and it is the second time this corpus has hit it — **a value and where
+nothing else. The general form, and it is the second time this corpus has hit it: **a value and where
 it came from are two facts, and a report or a decision that keeps only the first cannot tell a caller's
 instruction from its own finding.** The same shape produced the `devServerSource` field this CLI already
 reports for exactly this reason.
 
 **The audit the fix demanded found a third path.** `runtime:reload`'s landing open built the URL itself,
-under a doc comment saying it did so "exactly as `navigate` does" — true when written, false since the
-manifest lookup arrived. It never showed on a cloud relaunch, whose own verb carries the route, and it
-is exactly wrong for a phone on another network and for a `--route` reload that reloaded over the
-command socket. **A comment claiming two code paths agree is a claim with a shelf life**; three
-constructions of one URL is two too many, and there is now one source with three callers.
+under a doc comment saying it did so "exactly as `navigate` does". That was true when written and false
+since the manifest lookup arrived. It never showed on a cloud relaunch, whose own verb carries the
+route, and it is exactly wrong for a phone on another network and for a `--route` reload that reloaded
+over the command socket. **A comment claiming two code paths agree is a claim with a shelf life.**
+Three constructions of one URL is two too many, and there is now one source with three callers.
 
 ### The device a run used, in the field that names it
 
@@ -228,15 +228,15 @@ Wave 23, F98 [observed — live cloud, 2026-08-27]. `smoke --cloud --json` on a 
 ```
 
 The run drove a billed cloud session and photographed it, and the two fields a reader checks for "which
-device was this about" said none was involved. The mechanism: a healthy app opens nothing — the `app`
-phase finds it already connected and the `route` phase is skipped — so the two phases that set those
-fields never ran, and the device the *screenshot* phase resolved for itself was reported nowhere but
-inside the screenshot.
+device was this about" said none was involved. The mechanism: a healthy app opens nothing, because the
+`app` phase finds it already connected and the `route` phase is skipped. So the two phases that set
+those fields never ran, and the device the *screenshot* phase resolved for itself was reported nowhere
+but inside the screenshot.
 
 The rule: **a fact a run establishes belongs in the field that names it, whichever step established
 it.** A field filled by only some of the paths that can learn it is worse than one that is always
 absent, because a reader cannot tell "not known" from "not reached". The null is still kept for the
-case it is true of — no device was found — and that case has its own test.
+case it is true of, which is that no device was found, and that case has its own test.
 
 ## The plan has to carry the forwarded flags
 
@@ -248,27 +248,27 @@ forbids exactly this.
 
 **The decision.** `withForwardedExpoArgs` folds them onto the plan's own steps before anything is
 printed, so the plan object, the `cli:start_plan` event, the table and the subprocess all read one
-argv. `resolveStepArgs` still runs at execution time and is idempotent — a flag the argv already
+argv. `resolveStepArgs` still runs at execution time and is idempotent, so a flag the argv already
 holds is never added twice. `--tunnel`, `--lan` and `--localhost` are listed in `dev --help`'s
 options block as well as in its forwarded-flags paragraph, because the block is where a reader looks.
 
 ## One build is one platform
 
 `status --explain --build <id>` ran one `eas fingerprint:compare --build-id`, which takes no
-platform, and wrote its verdict onto **every** platform — so an iOS development-simulator build was
+platform, and wrote its verdict onto **every** platform. So an iOS development-simulator build was
 reported as able to run android code [S1, `statusAsync.ts:448-450`].
 
 **The decision.** The build's platform is asked of EAS (`eas build:view <id> --json
---non-interactive`), or taken from `--platform` when the caller named one — a stated fact is never
-overruled by a lookup. Only that platform's headline is replaced. The others get
+--non-interactive`), or taken from `--platform` when the caller named one, because a stated fact is
+never overruled by a lookup. Only that platform's headline is replaced. The others get
 `class: null` with `reason: "not compared — EAS build <id> is an ios build, and one build is one
-platform"`, which is the same "nothing was established" the rest of the report uses and which
+platform"`, which is the same "nothing was established" the rest of the report uses, and which
 `--assert` already answers with exit 22 rather than a guess.
 
 When the platform cannot be established the comparison is attributed to **no** platform, and every
 platform says so. A comparison whose subject is unknown is not an answer about either of them.
 
-**Provenance.** `buildViewArgs` is `[inferred]` — `build:view` is eas-cli's command for one build and
+**Provenance.** `buildViewArgs` is `[inferred]`. `build:view` is eas-cli's command for one build and
 `--json` implies `--non-interactive` on its siblings, but this argv has **not** been run against the
 published binary ([[0002-testing-and-evals]] §A flag is not shipped until it has run against the
 published binary). Every caller treats a failure as "not established", so a spelling this CLI got
@@ -278,18 +278,18 @@ wrong costs the attribution and never the report. It needs one live run to becom
 
 `status --explain --build abc123` against a broken `eas` printed an ordinary report and exit 0, with
 the string `abc123` nowhere on it, while `--json` carried the whole reason the comparison never
-happened [F66]. Two causes: `freshness.comparison` was written *after* the call, so a failure left
-`buildId: null` behind; and the text renderer only shows `errors.<section>` for a section that is
-**null**, and this section had plenty else to say.
+happened [F66]. Two causes. `freshness.comparison` was written *after* the call, so a failure left
+`buildId: null` behind. And the text renderer only shows `errors.<section>` for a section that is
+**null**, while this section had plenty else to say.
 
 **The decision.** The comparison target is recorded before the call, so a failed `--build` still
 echoes what was asked. And a section that printed a line and still failed gets a `<section> note`
-line, **in full and never summarized** — the actionable half of one of these sentences is usually
+line, **in full and never summarized**. The actionable half of one of these sentences is usually
 its last clause, which is exactly what a width cut removes [S9]. The same rule applies to the
 per-platform `reason` of the `eas build` line: too long for the line means printed under it.
 
 `status` still exits 0. It is a report, and reporting what it could not read is its contract
-([[0004-smart-start-and-project-state]] §Contract); `--assert` is the flag that turns it into a gate.
+([[0004-smart-start-and-project-state]] §Contract). `--assert` is the flag that turns it into a gate.
 
 ## Two CLIs read one session file
 
@@ -298,21 +298,21 @@ printed `kudochien` [F65]. The preflight asked only the `eas` binary, which on t
 shim that panicked.
 
 **The decision.** The preflight asks the EAS CLI first and, when that produced no answer, the
-project's own `expo whoami` — the rung `exagent whoami` itself uses. Both CLIs read the same
+project's own `expo whoami`, which is the rung `exagent whoami` itself uses. Both CLIs read the same
 `state.json`, so it is the same question asked of the CLI the project actually installed. The
 `source` field says which answered, and the union gains `expo whoami`.
 
 **The project's `node_modules/.bin/expo` only.** `resolveExpoCli` would fall back to a package
-runner, which downloads an SDK to read one JSON file; `status` promises to be instant. The cost of
-the fix is therefore one subprocess on a machine that has no EAS CLI — which previously spent none
+runner, which downloads an SDK to read one JSON file, and `status` promises to be instant. The cost
+of the fix is therefore one subprocess on a machine that has no EAS CLI, which previously spent none
 and reported nothing.
 
 ### Name the session file this run will read
 
 The `whoami` preamble hardcoded `~/.expo/state.json` [S6]. Under `EXPO_STAGING=1` the whole family
 reads `~/.expo-staging/state.json`, so the notice named a file the run never touched.
-`sessionFilePath()` applies the family's own three rules — `__UNSAFE_EXPO_HOME_DIRECTORY`, then
-`EXPO_STAGING`, then `EXPO_LOCAL` — and the notice prints the answer.
+`sessionFilePath()` applies the family's own three rules, `__UNSAFE_EXPO_HOME_DIRECTORY`, then
+`EXPO_STAGING`, then `EXPO_LOCAL`, and the notice prints the answer.
 
 ### `whoami --json`, and what a forwarded command still owes
 
@@ -321,12 +321,12 @@ options go to the CLI that answers, and an option this CLI does not know is that
 That stays. But `--json` is *this* CLI's contract and neither CLI has such a flag, so it was ignored
 and an agent that asked for one object got a line of prose at exit 0 [S7].
 
-**The decision.** `whoami --json` is answered here — captured rather than inherited, `--json`
-stripped from what is forwarded — as one object with `loggedIn`, `user`, `source`, `sessionFile` and
+**The decision.** `whoami --json` is answered here, captured rather than inherited and with `--json`
+stripped from what is forwarded, as one object with `loggedIn`, `user`, `source`, `sessionFile` and
 `cli`. The exit code stays the answering CLI's, so the two forms of the command agree. The forwarding
-of every other option is documented in the help rather than changed: the four auth commands are
-`expo`/`eas` commands, and a wrapper that started rejecting their flags would be a wrapper that has
-to track them.
+of every other option is documented in the help rather than changed. The four auth commands are
+`expo` and `eas` commands, and a wrapper that started rejecting their flags would be a wrapper that
+has to track them.
 
 ## Read the tool's own sentence before guessing
 
@@ -336,16 +336,16 @@ somebody who was signed in. The real cause was in the raw output: `EAS project n
 the `eas init` that fixes it [S2, F67]. The diagnosis came from the *exit signature* alone.
 
 **The decision.** `classifyEasDeployFailure` (`src/deploy/easFailure.ts`) matches the two stable
-sentences observed live — the unlinked project and the signed-out machine — and supplies the `Why:`,
+sentences observed live, the unlinked project and the signed-out machine, and supplies the `Why:`,
 the `How:` and the command. Nothing recognised keeps the old sentence and **says that it is a
-guess**. It is not a needs-human classification: that is `src/needsHuman/` and it is still asked
+guess**. It is not a needs-human classification. That is `src/needsHuman/` and it is still asked
 separately, because an unlinked project and a signed-out machine are both diagnosable and only one
 of them needs a person.
 
 ## Route around a binary that is not the CLI
 
 The same run printed the shim's Rust backtrace verbatim, ahead of anything this CLI said, and ended
-with `Try: <the broken binary> whoami` — a recovery that reproduces the panic [F67].
+with `Try: <the broken binary> whoami`, a recovery that reproduces the panic [F67].
 
 **Three decisions.**
 
@@ -354,7 +354,7 @@ with `Try: <the broken binary> whoami` — a recovery that reproduces the panic 
    `passthrough/auth.ts` already did. The note on stderr names the file that failed and the runner
    that is being tried instead.
 2. **Never suggest the broken binary.** A `Try:` line names the fix the CLI's own words asked for,
-   or — after a wrapper crash — the real CLI through the runner.
+   or, after a wrapper crash, the real CLI through the runner.
 3. **Fence a tool's stream.** [[0008-guardrails]] §Untrusted-content marking applies to a tool's
    bytes as much as to an app's. The captured tail is wrapped, and the *streamed* output is bracketed
    by the markers with a per-line filter that neutralizes forged ones.
@@ -368,40 +368,40 @@ follow-up said *"Fix the diagnostics above"* — advice for a problem the caller
 either file named.
 
 **The decision, and why it is the second-best one.** The preference was for `typecheck` to *perform*
-the typegen through a subprocess. There is no such subprocess: `expo-env.d.ts` is written by
+the typegen through a subprocess. There is no such subprocess. `expo-env.d.ts` is written by
 `startTypescriptTypeGenerationAsync` when Metro instantiates, and the command table of
 `@expo/cli/src/index.ts` has no typegen verb [observed — SDK 57]. Writing the file here instead
 would be this CLI keeping a copy of another package's template, which [[0001-agentic-cli-on-expo-cli]] §Constraints exists
-to prevent. So the case is **recognised** and reported as what it is: the report names the file, what
+to prevent. So the case is **recognised** and reported as what it is. The report names the file, what
 generates it, and `npx exagent dev --detach --wait-ready`, and that command *replaces* the "fix the
 diagnostics" rung. The note is printed above the diagnostics, because it changes what they mean.
 
 Detection is two cheap facts: `tsconfig.json` mentions the file, and the file is absent. The mention
-is looked for in the text rather than in a parse, because a `tsconfig` may hold comments — and being
-wrong can only cost the note, never produce a false one.
+is looked for in the text rather than in a parse, because a `tsconfig` may hold comments, and being
+wrong can only cost the note rather than produce a false one.
 
 **Upstream ask:** a standalone `expo` command that runs the typegen ([[0010-agent-conventions]]
 §Upstream asks).
 
 ## The next action is this CLI's
 
-`doctor`'s follow-up was `npx expo install --check`, quoted out of expo-doctor's advice [F78]. The
-advice is written for a person; the reader of a `Suggested next:` line is usually an agent driving
+`doctor`'s follow-up was `npx expo install --check`, quoted out of expo-doctor's advice [F78]. That
+advice is written for a person. The reader of a `Suggested next:` line is usually an agent driving
 this CLI, and `exagent install --check` runs the same check and adds the structured `check` object
-the rest of the surface expects. The advice itself is still quoted verbatim above — those are
-expo-doctor's words — and only the offered command is rewritten. The mapping is a table of two rows
-(`--check`, `--fix`), because a rewrite is a claim that two commands do the same thing and that is
+the rest of the surface expects. The advice itself is still quoted verbatim above, because those are
+expo-doctor's words, and only the offered command is rewritten. The mapping is a table of two rows,
+`--check` and `--fix`, because a rewrite is a claim that two commands do the same thing, and that is
 the only pair where it has been verified.
 
 ## Freshness has two axes
 
 `status` in Kudo's cloud loop reported `freshness ios: stale (no recorded build)` for a project whose
-fingerprint matched a **finished development-simulator EAS build**, `device none`, and a `next` line
-naming `smoke` and `navigate /` — three answers about a machine that was not where the app was
+fingerprint matched a **finished development-simulator EAS build**, plus `device none`, plus a `next`
+line naming `smoke` and `navigate /`. Three answers about a machine that was not where the app was
 running [observed — 2026-08-27, K7].
 
-The freshness half is one axis answering for two. "Does this need a native build" has two sources —
-what this machine built, and what EAS has — and the section only ever read the first.
+The freshness half is one axis answering for two. "Does this need a native build" has two sources,
+what this machine built and what EAS has, and the section only ever read the first.
 
 **The decision** [design direction — Kudo, 2026-08-27: *"maybe we should split local and eas for the
 freshness. local/eas x ios/android = 2 x 2 = 4 combos"*]: `freshness.platforms` carries one entry per
@@ -417,41 +417,42 @@ freshness   ios      local stale (no recorded build) · eas fresh (simulator bui
 Three rules keep the four honest:
 
 - **The `eas` axis costs nothing extra.** It is folded in from the lookup `readEasBuildsStatusAsync`
-  already performs, whose key *is* the working tree's per-platform fingerprint — so a `found` is the
-  definition of fresh here, and there is no second network call and no second source of truth.
+  already performs, whose key *is* the working tree's per-platform fingerprint. So a `found` is the
+  definition of fresh here, with no second network call and no second source of truth.
 - **`unknown`, not `stale`, before anything asks.** A default run does not pay for the lookup. Saying
   so is cheaper and truer than either verdict, and it is the exact confusion the finding is about.
 - **`--build <id>` replaces the `eas` axis of the platform it names**, and leaves `local` alone. This
-  is where §One build is one platform lands: the comparison the caller asked for is an answer about
-  EAS, and the local record was never what they asked about. `--assert` follows the same rule — under
+  is where §One build is one platform lands. The comparison the caller asked for is an answer about
+  EAS, and the local record was never what they asked about. `--assert` follows the same rule: under
   `--build` it gates on the `eas` axis only.
 
-**Who reads which.** The *effective* answer — the freshest axis — is what a consumer branching on
-"does this need a build" wants, and that is what `effectivePlatformFreshness` returns and what the
-`cli:status` event carries. One consumer deliberately does **not** use it: the download follow-up
-exists exactly for `local stale` + `eas found`, and reading the effective answer there would hide the
-rung in the one state it is for.
+**Who reads which.** The *effective* answer, meaning the freshest axis, is what a consumer branching
+on "does this need a build" wants, and that is what `effectivePlatformFreshness` returns and what the
+`cli:status` event carries. One consumer deliberately does **not** use it. The download follow-up
+exists exactly for `local stale` plus `eas found`, and reading the effective answer there would hide
+the rung in the one state it is for.
 
 ## Advice for the device the loop is actually on
 
 The other half of K7. Every rung of `next` drives a local simulator or an attached device, and the
-section chose between them from the local device probe alone — so a run whose app was on an EAS
-Simulator over a tunnel was told `exagent smoke` (looks for a simulator here) and `exagent navigate /`
-(opens one here).
+section chose between them from the local device probe alone. So a run whose app was on an EAS
+Simulator over a tunnel was told `exagent smoke`, which looks for a simulator here, and
+`exagent navigate /`, which opens one here.
 
 **The decision.** A cloud session on record plus a local device that is not `present` is a **cloud
-loop**, and every rung takes `--cloud`: `smoke --cloud` when an app is connected, `navigate / --cloud`
-when none is. `!== 'present'` rather than `=== 'absent'` on purpose: with a session on record, a
-device probe that could not run is not a reason to name the local path — the caller has *told* this
-project where its device is, and that outranks a missing `simctl`. Without a session, an unanswered
-probe keeps the local rung exactly as before: nothing has shown there is no device here.
+loop**, and every rung takes `--cloud`: `smoke --cloud` when an app is connected, and
+`navigate / --cloud` when none is. It is `!== 'present'` rather than `=== 'absent'` on purpose. With a
+session on record, a device probe that could not run is not a reason to name the local path, because
+the caller has *told* this project where its device is, and that outranks a missing `simctl`. Without
+a session, an unanswered probe keeps the local rung exactly as before, because nothing has shown
+there is no device here.
 
 ## The scheme in "Waiting on" is not the dev server's
 
 K8, and it is an upstream bug with an exagent-side consequence.
 
 **What Kudo saw.** Metro's stdout on a tunnelled run printed
-`Waiting on exp+dailywords-grok://<host>.on.staging.expo.app` — a URL that opens the dev-client
+`Waiting on exp+dailywords-grok://<host>.on.staging.expo.app`, a URL that opens the dev-client
 *launcher* rather than the app, so an agent copying stdout fails. Locally, in a terminal, the same
 command printed the correct URLs and no `Waiting on` line at all.
 
@@ -468,28 +469,29 @@ The chain, in four steps:
 
 1. `resolveOptions.ts` resolves `location.scheme` to the app's **deep-link** scheme whenever the
    project has `expo-dev-client` (or `--scheme` was passed), and that becomes `UrlCreator.defaults.scheme`.
-2. `BundlerDevServer.getDevServerUrl()` returns `this.getUrlCreator().constructUrl()` — **with no
-   scheme option** — whenever an `AsyncWsTunnel` is active, i.e. under `EXPO_UNSTABLE_TUNNEL_V2=1` or
+2. `BundlerDevServer.getDevServerUrl()` returns `this.getUrlCreator().constructUrl()`, **with no
+   scheme option**, whenever an `AsyncWsTunnel` is active, meaning under `EXPO_UNSTABLE_TUNNEL_V2=1` or
    in a webcontainer. The sibling branch returns `instance.location.url`, an `http://` URL, and
    `getJsInspectorBaseUrl` passes `{ scheme: 'http' }` explicitly.
 3. `getUrlComponents` then uses `options.scheme ?? 'http'`, and `options` *is* the defaults, so the
    protocol is the app's scheme.
-4. `startAsync` prints that string as `Waiting on <url>` — **only in non-interactive mode**. A
+4. `startAsync` prints that string as `Waiting on <url>`, **only in non-interactive mode**. A
    terminal gets the Terminal UI instead and no such line, which is exactly why the local repro
    showed none.
 
-**It is upstream, and it is one option wide**: `constructUrl({ scheme: 'http' })` in step 2 makes it
+**It is upstream, and it is one option wide.** `constructUrl({ scheme: 'http' })` in step 2 makes it
 the URL every other branch produces. Filed in [[0010-agent-conventions]] §Upstream asks with this
 repro. Everything that reads `getDevServerUrl()` under a v2 tunnel is affected, not only the printed
-line — the MCP server's `devServerUrl` and the non-native `DevelopmentSession` URL take the same
+line. The MCP server's `devServerUrl` and the non-native `DevelopmentSession` URL take the same
 string.
 
 **What was ours.** `parseWaitingOn` read `URL.origin` of that line, and `origin` is the string
-`"null"` for every non-special scheme — so `status`, `dev:logs` and `dev --detach` reported
+`"null"` for every non-special scheme. So `status`, `dev:logs` and `dev --detach` reported
 `tunnelUrl: "null"`, a field carrying the word rather than a null. The host is the fact the line
-carries, so the host is what is kept, and the origin is rebuilt: `http`/`https` when the line had
-one, `https` for a tunnel host otherwise (a tunnel terminates TLS), `http` for a LAN one. A line with
-no authority at all — `exp+app:///--/route`, a route link — names no dev server and answers null.
+carries, so the host is what is kept, and the origin is rebuilt: `http` or `https` when the line had
+one, `https` for a tunnel host otherwise because a tunnel terminates TLS, and `http` for a LAN one. A
+line with no authority at all, such as the route link `exp+app:///--/route`, names no dev server and
+answers null.
 
 And since the address a device needs was the thing being got wrong, `status` now prints the one that
 works next to the one the dev server listens on [K7(c)]:
@@ -499,11 +501,11 @@ dev server  running on http://127.0.0.1:8081 · tunnel https://x8fj2.on.staging.
             open in development build: exp+dailywords-grok://expo-development-client/?url=https%3A%2F%2Fx8fj2.on.staging.expo.app
 ```
 
-`DevServerStatus.openUrls` carries the whole list (one per app, because a development build and Expo
-Go take different URLs), the `cli:status` event carries the best one as `openUrl`, and both come from
-`buildConnectUrls` — the same builder `navigate --print-url` uses, so no reader is ever given two
-different strings for the same thing. Printed only for a dev server a device off this machine can
-reach: on a local run the listen address is the whole answer.
+`DevServerStatus.openUrls` carries the whole list, one per app, because a development build and Expo
+Go take different URLs. The `cli:status` event carries the best one as `openUrl`. Both come from
+`buildConnectUrls`, the same builder `navigate --print-url` uses, so no reader is ever given two
+different strings for the same thing. It is printed only for a dev server a device off this machine
+can reach, because on a local run the listen address is the whole answer.
 
 ## An observed signal, or the band
 
@@ -511,14 +513,14 @@ reach: on a local run the listen address is the whole answer.
 twice on the merged tree [F95, live tier, 2026-08-27]. Both numbers were true of the run. The report
 was still not honest, and the reason is the interesting part: **`appsReconnected` is a different
 signal's evidence.** It counts debugger targets the dev server had not listed before, which is what
-`fresh-debugger-target` rests on; the peer churn's own count was nowhere in the payload. So the only
-number a reader could reconcile the label against was one that says nothing about it — and the
+`fresh-debugger-target` rests on, and the peer churn's own count was nowhere in the payload. So the
+only number a reader could reconcile the label against was one that says nothing about it. The
 reconciliation it invites, "verified by the peers, and none reconnected", is a contradiction the
 command never meant to state.
 
-It was not a false attribution: the churn had fired, and the label was earned. It was **a label with
-no evidence in the payload**, which is the same defect one step earlier: a claim nobody can check is
-indistinguishable from a claim that is wrong.
+It was not a false attribution, because the churn had fired and the label was earned. It was **a
+label with no evidence in the payload**, which is the same defect one step earlier: a claim nobody
+can check is indistinguishable from a claim that is wrong.
 
 **The decision.** Every label names a field, and the field is in the payload:
 
@@ -530,17 +532,17 @@ indistinguishable from a claim that is wrong.
 | `app-relaunch` | an `attempts` entry with `method: "device"` and `ok: true` |
 
 `hasEvidenceFor` (`src/runtime/reload/reloadAsync.ts`) is that table as code, and the label is
-**chosen** through it rather than checked after the fact: the candidates are tried in order of
-strength — the mechanism's own observation first, as before — and the first one that can show itself
-wins. A run where none can is `verifiedBy: null`, which makes `reloaded` false. That is the band, and
-it is the right answer: the exit code is still decided by the observations (llp/0005 §One ladder), so
-such a run exits 22 with what it did watch for, rather than 0 with a name.
+**chosen** through it rather than checked after the fact. The candidates are tried in order of
+strength, with the mechanism's own observation first as before, and the first one that can show
+itself wins. A run where none can is `verifiedBy: null`, which makes `reloaded` false. That is the
+band, and it is the right answer: the exit code is still decided by the observations (llp/0005 §One
+ladder), so such a run exits 22 with what it did watch for, rather than 0 with a name.
 
 Two accounting fixes came with it, both of them a number that was true and unreadable.
 
-**A zero needs a story.** `appsReconnected: 0` is three different facts — nothing was reloaded, the
+**A zero needs a story.** `appsReconnected: 0` is three different facts: nothing was reloaded, the
 wait ran out, or *the other proof answered first and this watch stopped asking*. The third is by
-design: the two watches share one budget and whichever answers ends both
+design, because the two watches share one budget and whichever answers ends both
 (`waitForReloadEvidenceAsync`), which is what made the live report flaky rather than wrong. So
 `appsReconnectedReason` says which one, the way `bundlesAfterReload.reason` already did on the other
 side, and the human report prints the sentence instead of the bare zero.
@@ -548,12 +550,12 @@ side, and the human report prints the sentence instead of the bare zero.
 **A list that changed is not a client that came back.** The peer wait returned as soon as
 `peersChanged` was true, and a list changes in two directions: an app that had dropped its connection
 and not yet returned satisfied it. The rung could therefore report the reload as observed off a
-client *leaving* — rule 10 broken at the source rather than in the report. It now waits for an **id
-the dev server had not used before**, which is both the honest test and the count the payload needs;
-the dev server's ids come from a counter it never rewinds, so a reconnection is always a new one. The
-wait is additionally bounded by the command's own `--timeout`, because waiting for a new id can take
-the whole churn window where waiting for any change could not, and a step inside a deadline must not
-outlive it.
+client *leaving*, which is rule 10 broken at the source rather than in the report. It now waits for
+an **id the dev server had not used before**, which is both the honest test and the count the payload
+needs. The dev server's ids come from a counter it never rewinds, so a reconnection is always a new
+one. The wait is additionally bounded by the command's own `--timeout`, because waiting for a new id
+can take the whole churn window where waiting for any change could not, and a step inside a deadline
+must not outlive it.
 
 ## The runner is not the service
 
@@ -562,39 +564,40 @@ outlive it.
 what EAS said about the caller's builds.
 
 This is [[0019-backend-parity-audit]] bug 3 one process boundary further out. There, the bytes were a
-wrapper's panic under the name `eas` — somebody else's binary, which the machine had chosen. Here they
+wrapper's panic under the name `eas`: somebody else's binary, which the machine had chosen. Here they
 are the **package runner's**, which *this CLI* chose (llp/0015 §Resolving the EAS CLI). That makes it
-worse rather than better: the third party in the sentence is a tool the design reached for.
+worse rather than better, because the third party in the sentence is a tool the design reached for.
 
 The cause is a property of the runners and is worth writing down, because every caller of the single
-rung inherits it: **a runner keeps one scratch directory per package spec**
+rung inherits it. **A runner keeps one scratch directory per package spec**
 (`$TMPDIR/bunx-<uid>-eas-cli@latest`) and does not queue for it. Two spawns of one spec started
 milliseconds apart are two writers of one directory, and the loser exits 1 with empty stdout and its
-own progress on stderr. `status --explain` starts exactly such a pair, by design (`Promise.all` over
-the two platforms), and it is not the only one: `status --explain --build <id>` runs
+own progress on stderr. `status --explain` starts exactly such a pair by design, via `Promise.all`
+over the two platforms, and it is not the only one. `status --explain --build <id>` runs
 `fingerprint:compare` and `build:view` together, and the OTA safety read runs beside the build lookups.
 
 **Two decisions, and neither alone is enough.**
 
-1. **Serialize per spec, in the spawn layer.** `src/utils/runnerLock.ts` derives the key from the argv
-   — runner name plus package spec — so no call site has to remember, and all three spawn helpers that
-   can start a runner go through it (`subprocess.ts`, `spawnCapture.ts`, `inheritedRun.ts`). Two
-   different specs still run at once, and nothing that is not a runner is touched. The alternative
-   considered and rejected was a private cache per spawn: it buys concurrency by making every lookup a
-   cold download, which is the cost llp/0015 §What the first run costs is careful to pay once per
-   machine, and it rests on two other tools' undocumented environment variables.
+1. **Serialize per spec, in the spawn layer.** `src/utils/runnerLock.ts` derives the key from the
+   argv, meaning the runner name plus the package spec, so no call site has to remember. All three
+   spawn helpers that can start a runner go through it (`subprocess.ts`, `spawnCapture.ts`,
+   `inheritedRun.ts`). Two different specs still run at once, and nothing that is not a runner is
+   touched. The alternative considered and rejected was a private cache per spawn. It buys concurrency
+   by making every lookup a cold download, which is the cost llp/0015 §What the first run costs is
+   careful to pay once per machine, and it rests on two other tools' undocumented environment
+   variables.
 2. **Guard the report anyway.** A mutex is a claim about *this process*, and the directory can be held
-   by a sibling that crashed. So `describeLookupFailure` will not quote a line the runner wrote:
+   by a sibling that crashed. So `describeLookupFailure` will not quote a line the runner wrote.
    `looksLikeRunnerNoise` (`src/utils/wrapperCrash.ts`) recognises the two runners' install vocabulary
    the way `looksLikeWrapperCrash` recognises a wrapper's death, and the reason becomes
-   `"bunx eas-cli@latest" failed to deliver the eas CLI …` — a sentence about the runner, with the
+   `"bunx eas-cli@latest" failed to deliver the eas CLI …`, a sentence about the runner, with the
    runner's line quoted **as the runner's**.
 
-The guard's two halves are different from the wrapper guard's, and the difference is instructive: the
+The guard's two halves are different from the wrapper guard's, and the difference is instructive. The
 runner's noise *names the package*, so `npm warn exec … will be installed: eas-cli@latest` matches an
-EAS marker and the marker veto would clear it every time. What is required instead is nothing on
-stdout — the CLI's own refusals go there — and the runner's vocabulary as the **first** thing on
-stderr, because the runner prints before it hands over. A first line the list does not recognise is
+EAS marker, and the marker veto would clear it every time. What is required instead is nothing on
+stdout, because the CLI's own refusals go there, plus the runner's vocabulary as the **first** thing
+on stderr, because the runner prints before it hands over. A first line the list does not recognise is
 left alone and quoted, which is the conservative direction: a vaguer reason costs a re-run, and a
 wrong attribution costs the truth.
 
@@ -616,23 +619,24 @@ node -e "process.on('uncaughtException',(e)=>{throw e}); setImmediate(()=>{throw
 → exit 7
 ```
 
-**The decision.** The handler does not rethrow. A crash prints what/why/how on stderr **with the
-stack** — `exception` withholds it outside `EXPO_DEBUG`, and the stack is the only report a crash has
-— prints the ordinary error envelope on stdout under `--json` with `code: "UNCAUGHT_EXCEPTION"` and
-the stack under `error.data`, and exits 1. The `EMFILE` recovery keeps its own path.
+**The decision.** The handler does not rethrow. A crash does three things. It prints what, why and
+how on stderr **with the stack**, because `exception` withholds it outside `EXPO_DEBUG` and the stack
+is the only report a crash has. It prints the ordinary error envelope on stdout under `--json`, with
+`code: "UNCAUGHT_EXCEPTION"` and the stack under `error.data`. And it exits 1. The `EMFILE` recovery
+keeps its own path.
 
-Synchronous throughout, deliberately: a handler that scheduled an async flush would hand control back
-to an event loop that may have nothing left in it, and Node would then exit **0** for a crash. So the
-JSONL `cli:error` event is *not* emitted here, which is the one thing this path gives up and is the
-right trade — an envelope on stdout and a stack on stderr, over an event that would cost the exit code
-its meaning.
+It is synchronous throughout, deliberately. A handler that scheduled an async flush would hand control
+back to an event loop that may have nothing left in it, and Node would then exit **0** for a crash. So
+the JSONL `cli:error` event is *not* emitted here. That is the one thing this path gives up, and it is
+the right trade: an envelope on stdout and a stack on stderr, over an event that would cost the exit
+code its meaning.
 
 **One object on stdout wins over an envelope.** Found by running the fix against the published bundle
-rather than by reasoning about it [2026-08-27]: a crash can land *after* the command has printed, and a
-`status --json` that had finished printing then left **two** objects on stdout — so `JSON.parse(stdout)`
-failed on output that was otherwise complete, which is strictly worse than no envelope. The envelope is
+rather than by reasoning about it [2026-08-27]. A crash can land *after* the command has printed, and a
+`status --json` that had finished printing then left **two** objects on stdout, so `JSON.parse(stdout)`
+failed on output that was otherwise complete. That is strictly worse than no envelope. The envelope is
 printed only when stdout is still empty (`hasWrittenToStdout`, `src/log.ts`), and stderr says why there
-is none when it is not; the crash report and the exit code are the same either way. The rule underneath
+is none when it is not. The crash report and the exit code are the same either way. The rule underneath
 is llp/0010's and it is the stronger one: a caller told to `JSON.parse` stdout must always be able to.
 
 ## Testing
@@ -645,24 +649,25 @@ Every finding above has a test that fails against the code as it shipped:
   `status` section note and the unclipped reason.
 - Unit, wave 17's second half: the four freshness combos and the fold that fills the `eas` axis,
   `effectivePlatformFreshness`, the cloud rungs of `next` (including the unanswered device probe both
-  ways), `applyOpenUrls`, and four `Waiting on` shapes — the app-scheme line, the `exp://` line, the
-  route link, and the assertion that the word `null` never reaches a URL field.
+  ways), `applyOpenUrls`, and four `Waiting on` shapes, which are the app-scheme line, the `exp://`
+  line, the route link, and the assertion that the word `null` never reaches a URL field.
 - e2e, through the published bin: `dev:stop --port` against a real lock and a real signal recorder;
   a detached child that dies inside the tunnel wait, asserted at exit 7 with the relayed scenario;
   `dev --plan --tunnel`; `doctor` at exit 20; `typecheck` naming the generated file; `whoami --json`
   and the staging session file; `status --explain` reporting a stub EAS build as fresh on the `eas`
   axis while the `local` axis answers its own question; and `deploy` falling back through a stub
-  `npx` — a stub, because a test that reached the registry would be testing the network.
+  `npx`, a stub because a test that reached the registry would be testing the network.
 - Unit, wave 22: `handleUncaughtException` pinned at exit 1 for an injected crash and for a
   non-`Error` throw, with the `EMFILE` path asserted separately; `runnerSpawnKey` and the lock's
   exclusion, ordering, fairness and give-up-on-deadline; `looksLikeRunnerNoise` on both runners'
   vocabulary and on a real refusal that also carries it; `describeLookupFailure` never returning the
   runner's line; and the reload payload invariant applied to every rung of the ladder, including the
   rung that must now refuse its label because the only churn was a client leaving.
-- e2e, wave 22: a stub package runner that holds its scratch directory the way a real one does — `mkdir`
-  without `recursive`, held 250 ms — so `status --explain`'s two lookups collide deterministically; the
-  same stub with the directory taken behind its back, which is the collision no mutex can serialize
-  away; and the reload payload invariant across all three of the stub dev server's reload modes.
+- e2e, wave 22: a stub package runner that holds its scratch directory the way a real one does, via
+  `mkdir` without `recursive` held for 250 ms, so `status --explain`'s two lookups collide
+  deterministically; the same stub with the directory taken behind its back, which is the collision no
+  mutex can serialize away; and the reload payload invariant across all three of the stub dev server's
+  reload modes.
 - K8's upstream half is reproduced by a script rather than by a test: it is another package's
   behaviour, and a test in this package asserting it would fail on the day it is fixed. The chain is
   recorded above with the file and line of each step.
