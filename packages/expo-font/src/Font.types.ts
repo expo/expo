@@ -21,13 +21,6 @@ export type FontResource = {
   display?: FontDisplay;
   default?: string;
   /**
-   * @deprecated Unused. Font loading completion is detected with the
-   * [CSS Font Loading API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Font_Loading_API),
-   * which needs no test string.
-   * @platform web
-   */
-  testString?: string;
-  /**
    * Sets the face's `weight` when the resource is the `path` of a
    * [`FontFaceDefinition`](#fontfacedefinition) and the face doesn't declare its own. Outside of
    * a font family definition, only the browser uses this value, as the CSS `font-weight` property.
