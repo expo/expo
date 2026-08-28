@@ -254,7 +254,9 @@ export async function exportEmbedBundleAndAssetsAsync(
             dev: options.dev,
             devServer,
             isHermes,
-            includeSourceMaps: !!sourceMapUrl,
+            // Unlike the native bundle's source map, DOM source maps are written inside the app
+            // binary, so `--sourcemap-output` must not turn them on here.
+            includeSourceMaps: false,
             exp,
             files,
           });
