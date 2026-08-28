@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Use an explicit development or production mode when Expo Updates commands load app config.
+- Use an explicit development or production mode when Expo Updates commands load app config. ([#49508](https://github.com/expo/expo/pull/49508) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🎉 New features
 
