@@ -331,6 +331,11 @@ Three honest readings of that table:
    runs in parallel with. Pinning the dev-server probe out of the way exposes the same saving
    plainly: 1.16–1.27 s becomes 0.27–0.28 s, **about 0.9 s and 77%**. The fingerprint was never the
    critical path of a default `status`; the port scan is, and that is the next thing worth a wave.
+
+   [corrected — 2026-08-27] The 1.3 s and the 0.9 s the cache recovers behind it are both as measured.
+   The attribution is not: the scan's probes cost about a millisecond, and the 1.3 s was the unfired
+   timers behind them, which a *lock hit* paid in full too. See open question 1 below and
+   [[0004-smart-start-and-project-state]] §The discovery ladder.
 3. **The first run costs about 40 ms more**, per the isolation above. Paid once per change, recovered
    on the next run. Moving from sha256 to stamps is what made this number small enough to state: one
    manifest pass over this project's nine pinned files and 1.2 MB went from 0.595 ms to 0.025 ms.
@@ -380,8 +385,21 @@ a real project moves its hash.
 
 ## Open questions
 
-1. **The dev-server port scan.** Reading 2 above: it is now the largest single cost in a default
-   `status`, at about 1.3 s. Worth its own wave.
+1. ~~**The dev-server port scan.**~~ **Answered — 2026-08-27, and the premise was wrong.**
+   The 1.3 s was real and the scan was not spending it. Discovery's probes cost about a millisecond
+   each; what cost 1.3 s was the `setTimeout` behind each probe's timeout, never cleared and never
+   `unref`ed, keeping the event loop alive long after the report was printed. A default `status`
+   printed a complete report at 263 ms and exited at 1584 ms. The tell that settles it: a **lock
+   hit**, which probes once and skips the scan altogether, cost the same 1.58 s as a five-port scan —
+   so no amount of scanning less would have moved it. Clearing the timer (and aborting the request the
+   timeout abandoned) brings a default `status` to 0.27–0.32 s against a 0.28 s floor. Every
+   `discoverDevServerAsync` caller was paying its whole budget the same way. Design, the ladder, all
+   seven measured scenarios and two remaining limits: [[0004-smart-start-and-project-state]] §The
+   discovery ladder.
+
+   Reading 2 of §What it bought should be read with that correction: the fingerprint cache's saving on
+   a default `status` was real and hidden, exactly as recorded — but the thing hiding it was a timer,
+   not a scan.
 2. **Should the record be shared between the `all` key and the per-platform keys?** The whole-project
    hash dominates the per-platform ones — `--platform` filters the same source list — which is
    already why the EAS build cache is keyed on the project hash (`src/status/easBuilds.ts`). It

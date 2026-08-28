@@ -113,6 +113,108 @@ persists.
 
 Contract: human-readable sections by default (like `git status` short prose), `--json` for the machine shape, exit 0 always (status is information, not judgment). Fast: no subprocess heavier than the fingerprint CLI; dev-server probe with a short timeout.
 
+### The discovery ladder
+
+[added — 2026-08-27] The five steps, in order, in `discoverDevServerAsync` (`src/runtime/devServer.ts`),
+with what each one proves and the `source` it reports:
+
+| # | Step | Reports | Proves |
+| - | ---- | ------- | ------ |
+| 0 | An explicit `--dev-server-url` or `--port` | `flag` | the caller named it; nothing else is tried |
+| 1 | The project's dev-server lock | `lock` | an `exagent`-started wrapper is alive **and** its URL answered |
+| 2 | The port `.expo/dev/logs/start.log` last named | `log` | this project started a server there once, and it answered now |
+| 3 | 8081 | `default` | Metro's default answered |
+| 4 | 8082–8085, in parallel | `scan` | *a* Metro answered; not that it is this project's |
+
+Steps 1 and 2 are the fast paths and step 4 is the completeness guarantee, and the order is the whole
+design: a hit at 1 or 2 names a server on purpose, and 3 and 4 are guesses that happened to answer, so
+the step is reported rather than kept private. **Nothing may be skipped on the strength of a fast
+path**: an `expo start` a developer ran by hand holds no lock, and a project whose `.expo` was cleaned
+names no port, so the scan is what finds it. Every step probes; none trusts. `default` is also the
+reported source when nothing answered anywhere, because the caller still needs a URL to name in its
+error.
+
+#### The ladder was never the cost — the timers it left running were
+
+llp/0023 §What it bought, reading 2, closed with the port scan as "the largest single cost in a default
+`status`, at about 1.3 s". That was right about the 1.3 s and wrong about what was spending it. Measured
+end to end [observed — `friction/run7/tapapp`, 2026-08-27], a default `status` printed a complete report
+at **263 ms** and the process exited at **1584 ms**. Naming a dead port with `--dev-server-url` printed
+at 290 ms and exited at **296 ms**. The work either way is the same 270-odd milliseconds; what differed
+was 1.3 s of nothing, after the answer.
+
+Two things outlive a probe nobody cleans up after, and a Node process exits when its event loop empties,
+so both were paid at exit rather than in the answer:
+
+1. **The timeout's own timer.** Each candidate was raced against a `setTimeout` that was neither
+   cleared when the race resolved nor `unref`ed. The probes answer in about a millisecond —
+   `ECONNREFUSED` on localhost is immediate — so every probe left its whole budget pending. This is
+   the 1.3 s, and it is the *budget*, not the number of probes: a **lock hit, which probes exactly
+   once and skips the scan entirely, cost the same 1.58 s** as a five-port scan. That measurement is
+   the reason none of the obvious optimisations was implemented — parallelising the scan (it was
+   already parallel), consulting the lock first (it already did), caching the last-seen port (a cache
+   hit is one probe, which is what the lock hit already was). Every one of them would have removed
+   probes that cost nothing and left the 1.3 s where it was.
+2. **The request the timeout gave up on.** `no answer within Nms` was a claim about the report and not
+   about the socket. Against a dev server that accepts the connection and then never answers — a Metro
+   mid-restart, from the client's side — the report was complete at 3.07 s and the process was **still
+   alive at 45 s**, waiting out undici's 300 s header timeout. It now exits at 3.12 s
+   [observed — 2026-08-27].
+
+Both fixed in `discoverDevServerAsync`: the timer is cleared on the way out and `unref`ed while it
+runs, and the timeout aborts the request it abandoned. `probeDevServerAsync` takes an optional
+`signal` for that, and `status` passes one of its own so its outer deadline reaches the socket too
+(`src/status/statusAsync.ts`).
+
+What a default `status` costs now, five runs each, alternating between the two builds so machine drift
+cancels [observed — 2026-08-27, ports 8081–8085 otherwise idle]:
+
+| Scenario | Discovery step | Before | After |
+| -------- | -------------- | ------ | ----- |
+| Dead port named with `--dev-server-url` (the floor: no discovery at all) | `flag` | 0.28–0.30 s | 0.27–0.34 s |
+| No dev server anywhere; project's `start.log` names a dead port (6 probes) | `default` | 1.59–1.60 s | **0.27–0.32 s** |
+| An `exagent dev --detach` server on 8399 (1 probe) | `lock` | 1.58–1.59 s | **0.31–0.33 s** |
+| A hand-started `expo start --port 8083`, no lock | `log` | 1.57–1.58 s | **0.29–0.33 s** |
+| The same, with `start.log` emptied so nothing knows the port | `scan` | 1.57–1.62 s | **0.29–0.42 s** |
+| A hand-started `expo start` on 8081, no state anywhere | `default` | 1.57–1.59 s | **0.27–0.32 s** |
+| Nothing on any port, project with no `.expo` at all (5 probes) | `default` | 1.58–1.62 s | **0.29–0.32 s** |
+
+Two readings, and the second is the one worth keeping:
+
+- **A default `status` is about 1.3 s faster, and now costs what naming the dev server costs.** The
+  discovery ladder is inside the noise of a single run: 0.29 s against the 0.28 s floor.
+- **The time to the *report* did not move.** It was 260–320 ms before and 260–320 ms after, in every
+  row. Nothing was made faster; something was stopped from being paid twice. The report was always
+  this quick and the command was not, which is why no output and no test caught it — only the exit did.
+
+#### Everyone who discovers pays it, and it was one function
+
+Every caller of `discoverDevServerAsync` inherits the fix: `status`, `navigate` (`openRoute.ts`),
+`preflight.ts` and through it every `runtime:*` action, `smoke`, and the deferred `dev:wait`.
+`dev:stop` does not — it reads the lock directly (`readDevServerLockAsync`) and never enters the
+ladder, so it never paid this.
+
+The tail was only ever *visible* on `status`, and the reason is worth writing down because it is what
+kept the bug hidden: a command that refuses ends through `logCmdError`, which calls `process.exit`, and
+that discards pending timers. `status` exits 0 by contract, and a success path sets `process.exitCode`
+and lets the loop drain. So `runtime:errors` with no dev server exited in 58 ms with the leak intact,
+while `status` sat for 1.3 s. Measured on the shared function alone at its default 800 ms budget: the
+answer arrived at 13 ms and the process exited at **813 ms** before, and at **13 ms** after
+[observed — 2026-08-27]. Every discovery caller was paying its whole budget on every success.
+
+#### Two limits, stated
+
+- **An explicit URL still gets no timeout of its own**, and that is deliberate: a dev server on another
+  host or behind a tunnel may legitimately be slow, and cutting it off would report a running server as
+  unreachable. The caller's `signal` is the only thing that stops it, which is why `status` passes one.
+- **An abort does not free a socket that is still connecting.** `fetch` rejects immediately, but undici
+  leaves the `ConnectWrap` in place until its own 10 s connect ceiling. So
+  `status --dev-server-url http://240.0.0.1:8081` — a host that drops packets rather than refusing —
+  still prints at 3.1 s and still exits at 10.6 s, unchanged by this wave [observed — 2026-08-27].
+  Nothing in the ladder can meet that case, because the ladder only ever probes localhost, where a
+  refusal is immediate. Fixing it needs a connect timeout undici does not expose to `fetch`, or a
+  `net.connect` pre-check with a budget of our own.
+
 ### The dev-server lock
 
 [confirmed — Kudo, 2026-08-22: socket lock in exagent, expo-cli unchanged] The legacy `packager-info.json` is gone from the modern CLI [observed], and its replacement lives in `exagent`, not upstream: `src/devLock/`, taken by the dev-server wrapper `runDevServerAsync` and therefore by both `exagent start` and the final step of an `exagent dev` plan.
