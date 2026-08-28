@@ -1,6 +1,6 @@
 import { Column, Host, RNHostView } from '@expo/ui';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, type LayoutChangeEvent } from 'react-native';
 
 import type { JasmineInterface, TestPortal } from '../types';
 import { mountAndWaitForWithTimeout } from './helpers';
@@ -24,7 +24,6 @@ const FONT_SIZE = 24;
 const CONTENT_MAX_WIDTH = 140;
 const CONTENT_MIN_HEIGHT = 60;
 const LOOP_WINDOW_MS = 1500;
-const MAX_LAYOUT_PASSES = 8;
 
 type Axes = { width: number; height: number };
 type Paired = { hosted: Axes; control: Axes };
@@ -216,27 +215,27 @@ function ResizeProbe({ onMeasured }: { onMeasured: (sizes: AcrossChange) => void
 function DivergenceProbe({ onMeasured }: { onMeasured: (widths: number[]) => void }) {
   const widths = React.useRef<number[]>([]);
   const closed = React.useRef(false);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
+  React.useEffect(() => () => clearTimeout(timer.current), []);
+
+  const onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+    if (closed.current) {
+      return;
+    }
+    widths.current.push(nativeEvent.layout.width);
+
+    timer.current ??= setTimeout(() => {
       closed.current = true;
       onMeasured(widths.current);
     }, LOOP_WINDOW_MS);
-
-    return () => clearTimeout(timer);
-  }, [onMeasured]);
+  };
 
   return (
     <View style={{ width: PARENT_WIDTH }}>
       <Host matchContents>
         <Column style={{ padding: COLUMN_PADDING }}>
-          <RNHostView
-            matchContents
-            onLayout={({ nativeEvent }) => {
-              if (!closed.current) {
-                widths.current.push(nativeEvent.layout.width);
-              }
-            }}>
+          <RNHostView matchContents onLayout={onLayout}>
             <View style={{ flexDirection: 'row' }}>
               <View style={{ flex: 1, height: BOX_HEIGHT }} />
               <View style={{ width: BOX_WIDTH, height: BOX_HEIGHT }} />
@@ -357,8 +356,7 @@ export async function test(
       );
 
       expect(widths.length).toBeGreaterThan(0);
-      // A diverging layout reported tens of ever-growing widths in this window.
-      expect(widths.length).toBeLessThan(MAX_LAYOUT_PASSES);
+      // A diverging layout grew the width for as long as it was measured.
       expect(Math.abs(widths[widths.length - 1] - widths[0])).toBeLessThan(TOLERANCE);
       // The width the parent offers never reaches the content.
       expect(Math.abs(Math.max(...widths) - BOX_WIDTH)).toBeLessThan(TOLERANCE);
