@@ -534,7 +534,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (55.0.2)
   - EXStructuredHeaders/Tests (55.0.2)
-  - EXUpdates (55.0.28):
+  - EXUpdates (55.0.29):
     - boost
     - DoubleConversion
     - EASClient
@@ -568,7 +568,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdates/Tests (55.0.28):
+  - EXUpdates/Tests (55.0.29):
     - boost
     - DoubleConversion
     - EASClient
@@ -4953,7 +4953,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: fb9cf50206b8707cb32b1f79b098430f70a39489
   ExpoWebBrowser: d8f05a76ddf8aded64ca5972b577f6a8ccc0be2d
   EXStructuredHeaders: 93ad4f31a2eec124428675e28aca11de243ee1e4
-  EXUpdates: 918fa10f2cecedab819a63a417cab8037f0b8c9e
+  EXUpdates: 6a624a5cb41c4c19d644568dd7db8da0061fc497
   EXUpdatesInterface: 33cfb4116f9ddd0ee1732484248495d4fece9744
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 07433c4ab85da44d0b5ceac374ff4e1d57c7aa23
