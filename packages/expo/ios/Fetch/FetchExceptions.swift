@@ -8,6 +8,12 @@ internal final class FetchUnknownException: Exception {
   }
 }
 
+internal final class FetchTaskUnavailableException: Exception {
+  override var reason: String {
+    "Unable to create a network task for this request"
+  }
+}
+
 internal final class FetchRequestCanceledException: Exception {
   override var reason: String {
     "Fetch request has been canceled"
