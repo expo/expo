@@ -1,18 +1,18 @@
 # @ref llp/0002-testing-and-evals.plan.md
-name: Exagent
+name: Expo Agent CLI
 
 on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
     paths:
-      - .github/workflows/exagent.yml
-      - packages/exagent/**
+      - .github/workflows/agent-cli.yml
+      - packages/@expo/agent-cli/**
       - pnpm-lock.yaml
   pull_request:
     paths:
-      - .github/workflows/exagent.yml
-      - packages/exagent/**
+      - .github/workflows/agent-cli.yml
+      - packages/@expo/agent-cli/**
       - pnpm-lock.yaml
   schedule:
     # Weekly, Monday 15:00 UTC — only the report-only tier 1 job runs on this trigger.
@@ -41,26 +41,26 @@ jobs:
           cache: 'pnpm'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
-      - name: 🛠 Build exagent
-        run: pnpm turbo build --filter exagent...
+      - name: 🛠 Build @expo/agent-cli
+        run: pnpm turbo build --filter @expo/agent-cli...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      - name: 🔎 Typecheck exagent
+      - name: 🔎 Typecheck @expo/agent-cli
         run: pnpm typecheck
-        working-directory: packages/exagent
-      - name: 🚨 Lint exagent
+        working-directory: packages/@expo/agent-cli
+      - name: 🚨 Lint @expo/agent-cli
         run: pnpm lint
-        working-directory: packages/exagent
-      - name: 🧪 Test exagent
+        working-directory: packages/@expo/agent-cli
+      - name: 🧪 Test @expo/agent-cli
         run: pnpm test --ci
-        working-directory: packages/exagent
-      - name: 🧪 E2E Test exagent
+        working-directory: packages/@expo/agent-cli
+      - name: 🧪 E2E Test @expo/agent-cli
         run: pnpm test:e2e --ci --runInBand
-        working-directory: packages/exagent
+        working-directory: packages/@expo/agent-cli
       - name: 🎯 Tier 0 evals
         run: node evals/run.mjs --tier 0
-        working-directory: packages/exagent
+        working-directory: packages/@expo/agent-cli
 
   # Windows coverage: the skills linker uses directory junctions instead of symlinks on
   # win32 and nothing else exercises that path (junction code shipped untested until now).
@@ -82,17 +82,17 @@ jobs:
           cache: 'pnpm'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
-      - name: 🛠 Build exagent
-        run: pnpm turbo build --filter exagent...
+      - name: 🛠 Build @expo/agent-cli
+        run: pnpm turbo build --filter @expo/agent-cli...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      - name: 🧪 Test exagent
+      - name: 🧪 Test @expo/agent-cli
         run: pnpm test --ci
-        working-directory: packages/exagent
-      - name: 🧪 E2E Test exagent
+        working-directory: packages/@expo/agent-cli
+      - name: 🧪 E2E Test @expo/agent-cli
         run: pnpm test:e2e --ci --runInBand
-        working-directory: packages/exagent
+        working-directory: packages/@expo/agent-cli
 
   # Tier 1 of LLP 0002: agent-in-the-loop, best-effort, report-only.
   # `continue-on-error` keeps it non-blocking until its pass rate is stable over a
@@ -122,8 +122,8 @@ jobs:
           cache: 'pnpm'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
-      - name: 🛠 Build exagent
-        run: pnpm turbo build --filter exagent...
+      - name: 🛠 Build @expo/agent-cli
+        run: pnpm turbo build --filter @expo/agent-cli...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
@@ -144,14 +144,14 @@ jobs:
             curl -fsS http://127.0.0.1:11434/api/version && break
             sleep 1
           done
-          ollama pull "$EXAGENT_EVAL_MODEL"
+          ollama pull "$AGENT_CLI_EVAL_MODEL"
         env:
-          EXAGENT_EVAL_MODEL: qwen3:4b
+          AGENT_CLI_EVAL_MODEL: qwen3:4b
       # Per-PR runs use only the cheapest scenario: CPU inference on the standard runner is
       # too variable for the longer ones (observed: start-plan turn-2 ranging 23s local to
       # >900s on a slow runner). The full set runs on the weekly cron and manual dispatch.
       - name: 🤖 Tier 1 evals (report-only)
         run: node evals/run.mjs --tier 1 ${{ github.event_name == 'pull_request' && '--scenario skills-sync' || '' }}
-        working-directory: packages/exagent
+        working-directory: packages/@expo/agent-cli
         env:
-          EXAGENT_EVAL_MODEL: qwen3:4b
+          AGENT_CLI_EVAL_MODEL: qwen3:4b

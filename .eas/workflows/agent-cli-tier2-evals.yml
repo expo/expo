@@ -1,17 +1,17 @@
-# Tier 2 evals for exagent (llp/0002 in packages/exagent): a frontier agent (Claude Code
+# Tier 2 evals for @expo/agent-cli (llp/0002 in packages/@expo/agent-cli): a frontier agent (Claude Code
 # headless) drives the eval scenarios for real. Advisory, never blocks merge — the eval
 # step reports its result through the PR comment instead of failing the job.
 #
-# Trigger: label a PR with "exagent-eval" (mirrors expo/skills' label-triggered evals),
+# Trigger: label a PR with "agent-cli-eval" (mirrors expo/skills' label-triggered evals),
 # or dispatch manually.
 #
 # Prerequisite: ANTHROPIC_API_KEY must exist in the EAS "production" environment.
-name: exagent-tier2-evals
+name: agent-cli-tier2-evals
 
 on:
   pull_request_labeled:
     labels:
-      - exagent-eval
+      - agent-cli-eval
   workflow_dispatch: {}
 
 jobs:
@@ -26,10 +26,10 @@ jobs:
       - uses: eas/checkout
 
       - name: Install dependencies
-        run: npx --yes pnpm@10.33.0 install --ignore-scripts --frozen-lockfile --filter exagent...
+        run: npx --yes pnpm@10.33.0 install --ignore-scripts --frozen-lockfile --filter @expo/agent-cli...
 
-      - name: Build exagent
-        run: npx --yes pnpm@10.33.0 --dir packages/exagent build
+      - name: Build @expo/agent-cli
+        run: npx --yes pnpm@10.33.0 --dir packages/@expo/agent-cli build
 
       - name: Install Claude Code
         run: npm install --global @anthropic-ai/claude-code
@@ -39,7 +39,7 @@ jobs:
         # Report-only: capture the outcome for the PR comment, do not fail the job.
         run: |
           set +e
-          node packages/exagent/evals/run.mjs --tier 2 | tee /tmp/tier2.log
+          node packages/@expo/agent-cli/evals/run.mjs --tier 2 | tee /tmp/tier2.log
           code=$?
           set-output result "$([ "$code" -eq 0 ] && echo pass || echo fail)"
           set-output summary "$(tail -n 20 /tmp/tier2.log | head -c 1500)"
@@ -51,8 +51,8 @@ jobs:
     type: github-comment
     params:
       payload: |
-        <!-- exagent-tier2-evals -->
-        ## exagent tier 2 evals (Claude Code headless)
+        <!-- agent-cli-tier2-evals -->
+        ## @expo/agent-cli tier 2 evals (Claude Code headless)
 
         Result: **${{ after.tier2.outputs.result }}**
 

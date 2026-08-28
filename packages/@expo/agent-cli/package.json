@@ -1,5 +1,5 @@
 {
-  "name": "exagent",
+  "name": "@expo/agent-cli",
   "version": "0.0.2",
   "description": "Agent-native CLI on top of the Expo CLI family",
   "keywords": [
@@ -14,10 +14,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/exagent"
+    "directory": "packages/@expo/agent-cli"
   },
   "bin": {
-    "exagent": "./bin/exagent.js"
+    "expo-agent-cli": "./bin/cli.js"
   },
   "files": [
     "bin",
