@@ -24,12 +24,22 @@ import { promptForDeviceAsync } from './promptAndroidDevice';
 const EXPO_GO_APPLICATION_IDENTIFIER = 'host.exp.exponent';
 
 export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Device> {
-  static async resolveFromNameAsync(name: string): Promise<AndroidDeviceManager> {
+  static async resolveFromNameAsync(query: string): Promise<AndroidDeviceManager> {
     const devices = await getDevicesAsync();
-    const device = devices.find((device) => device.name === name);
+    const device =
+      devices.find((device) => device.pid === query) ??
+      devices.find((device) => device.name === query);
 
     if (!device) {
-      throw new CommandError('Could not find device with name: ' + name);
+      const message = [
+        `No connected Android device or emulator matched "${query}" by serial or name.`,
+        'Available devices:',
+        ...devices.map(
+          (device) => `  ${device.name} (${device.pid ?? 'not attached'}, ${device.type})`
+        ),
+        'Pass a device serial from `adb devices` or a name from the list above to --device.',
+      ].join('\n');
+      throw new CommandError('BAD_ARGS', message);
     }
     return AndroidDeviceManager.resolveAsync({ device, shouldPrompt: false });
   }
