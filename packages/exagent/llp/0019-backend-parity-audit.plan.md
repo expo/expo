@@ -9,19 +9,19 @@
 
 ## Summary
 
-[[0016-v1-scope]] fixed what ships. This is the audit that asks whether it is *tested* — specifically
-whether the two backends behind the v1 surface are tested at comparable depth. They were not, and
-the asymmetry was not random: **everything that runs on this machine had an e2e suite, and most of
-what runs somewhere else had a unit test and a plan.**
+[[0016-v1-scope]] fixed what ships. This is the audit that asks whether it is *tested*. The question
+is narrower than it sounds: are the two backends behind the v1 surface tested at comparable depth.
+They were not, and the asymmetry was not random. **Everything that runs on this machine had an e2e
+suite, and most of what runs somewhere else had a unit test and a plan.**
 
 Five real bugs came out of closing it, all of them in code that no test had ever executed end to
-end. Four are on the EAS side; the fifth is a follow-up ladder that walked a caller off the backend
+end. Four are on the EAS side. The fifth is a follow-up ladder that walked a caller off the backend
 they chose.
 
-The general shape, and the thing worth carrying forward: **a backend is not a flag, it is a second
+The general shape is the thing worth carrying forward: **a backend is not a flag, it is a second
 process boundary.** A command that "supports EAS" spawns a different binary, reads a different
-failure vocabulary and needs a different recovery sentence, and none of that is exercised by a test
-that pins the *plan* an EAS run would produce.
+failure vocabulary and needs a different recovery sentence. A test that pins the *plan* an EAS run
+would produce exercises none of that.
 
 ## The matrix
 
@@ -60,26 +60,28 @@ that pins the *plan* an EAS run would produce.
 ## The live matrix
 
 [added 2026-08-27, wave 20 — [[0022-live-tier]]] The matrix above asks whether a command ran against a
-**stub** of its backend's binary. This one asks the next question, which is the one §What is still not
-tested left open in as many words: **has it ever run for real, and where is the evidence.**
+**stub** of its backend's binary. This one asks the next question, the one §What is still not tested
+left open in as many words: **has it ever run for real, and where is the evidence.**
 
-One row per v1 command, seven columns. What each cell means, and the distinctions are load-bearing:
+One row per v1 command, seven columns. Here is what each cell means, and the distinctions are
+load-bearing.
 
 - **`stub-e2e`** — a whole `exagent` process ran against a stub `expo`/`eas`/dev server (`e2e/`).
 - **`live-project`** [added 2026-08-28, wave 31] — ran against the **real npm registry** and the
   project's **own `expo` CLI**, and against no device at all. That is the whole gate: `registryGate()`
-  and nothing else. The column exists because the row it fills — the commands whose backend is the
-  project on disk — was `open — stub-only, by choice` in every other column, and the claim behind that
+  and nothing else. The column exists because the row it fills, the commands whose backend is the
+  project on disk, was `open — stub-only, by choice` in every other column. The claim behind that
   ("argv assembly or filesystem work with no second process boundary") turned out to be wrong in five
   places. A cell reading `n/a — no device` means the command's answer is about a runtime, which this
   suite has none of.
 - **`live-local`** — ran against a real Metro, a real booted iOS simulator, real Expo Go, real Hermes.
 - **`live-devclient`** [added 2026-08-28, wave 29] — ran against a real Metro and a real
   **development build** on a real Android emulator. `by hand` in this column means the row was
-  measured live in wave 29 and no suite asserts it, which is what every iOS development-build row
-  is: `simctl openurl` of a dev build's scheme raises a confirmation dialog nothing here can answer.
+  measured live in wave 29 and no suite asserts it. That is what every iOS development-build row is,
+  because `simctl openurl` of a dev build's scheme raises a confirmation dialog nothing here can
+  answer.
 - **`live-android`** [added 2026-08-27, wave 25] — ran against a real Metro and the real Expo Go APK on
-  a real Android emulator. It is not a duplicate of the column to its left: Expo Go for Android has no
+  a real Android emulator. It is not a duplicate of the column to its left. Expo Go for Android has no
   CDP debugger, so every cell here is either a **refusal** the iOS column cannot reach or a claim about
   a platform-scoped read that only a machine with two platforms attached can put at risk. A cell
   reading `open — same reason as the column left` means the command has no platform dimension and
@@ -92,19 +94,19 @@ One row per v1 command, seven columns. What each cell means, and the distinction
   wave. It becomes `filled` when the lead runs it.
 - **`open`** — this tier could test it and does not yet. The reason is in the cell.
 - **`n/a`** — the command has no such backend, so the column is not a gap.
-- **`unreachable`** — the tier cannot cross the boundary. Reason in the cell, and these are the rows
-  that matter most, because they are the ones a "fully tested" claim would be quietly wrong about.
-  `smoke (pass)` under `live-android` is the clearest of them: the gate is *asserted* to exit 22 on a
-  working app, because a runtime it cannot read is a phase it may not pass.
+- **`unreachable`** — the tier cannot cross the boundary, with the reason in the cell. These are the
+  rows that matter most, because they are the ones a "fully tested" claim would be quietly wrong
+  about. `smoke (pass)` under `live-android` is the clearest of them: the gate is *asserted* to exit
+  22 on a working app, because a runtime it cannot read is a phase it may not pass.
 
 [**A sixth column, 2026-08-28, wave 29.** `live-devclient` runs a real **development build** on the
-emulator `live-android` uses. It is not a duplicate of the column to its left and it is the reason
-that column reads the way it does: `live-android` is Expo Go, whose Android engine carries no CDP
+emulator `live-android` uses. It is not a duplicate of the column to its left, and it is the reason
+that column reads the way it does. `live-android` is Expo Go, whose Android engine carries no CDP
 debugger, and `live-devclient` is the app that does. Every `unreachable — no debugger` cell in the
-`live-android` column has a **filled** cell here, which is what turns those refusals from a claim
-about the platform into a claim about the app. The column is **Android only**, and the reason is a
-wall rather than a gap: on iOS 26.5 every `simctl openurl` of a development build's scheme raises
-`Open in "<app>"?`, on every call, and nothing in this tier can answer it — so the iOS development
+`live-android` column has a **filled** cell here, which turns those refusals from a claim about the
+platform into a claim about the app. The column is **Android only**, and the reason is a wall rather
+than a gap. On iOS 26.5 every `simctl openurl` of a development build's scheme raises
+`Open in "<app>"?`, on every call, and nothing in this tier can answer it. So the iOS development
 build rows say `by hand` with their evidence, which is a weaker claim than `filled` and is said so.]
 
 | Command | stub-e2e | live-project | live-local | live-android | live-devclient | live-eas | live-cloud |
@@ -167,10 +169,10 @@ build rows say `by hand` with their evidence, which is a weaker claim than `fill
 [2026-08-28, wave 29. iPhone 17 Pro `C159CF99-…`, iOS 26.5, an SDK 57 project built with
 `npx expo run:ios`, dev server on 8901. Evidence under `wave29-devclient/evidence/`.]
 
-These rows are **`by hand`**, which is a weaker claim than `filled` and is written as one: they were
+These rows are **`by hand`**, which is a weaker claim than `filled` and is written as one. They were
 run live, once, by a person answering a springboard dialog, and no suite asserts them. The reason
 there is no suite is in `live-devclient`'s header and in [[0005-runtime-loop-tools]] §The wall was
-Expo Go's, not Android's — `xcrun simctl openurl` of a development build's scheme raises
+Expo Go's, not Android's. `xcrun simctl openurl` of a development build's scheme raises
 `Open in "<app>"?` on **every** call, and this tier cannot tap.
 
 | Command | Result |
@@ -191,57 +193,59 @@ Expo Go's, not Android's — `xcrun simctl openurl` of a development build's sch
 | `runtime:stop --ios` | exit 0, `bundleId: com.kudochien.dcapp` from `bundleIdSource: "dev-server"` |
 
 Two rows are worth reading twice. **`navigate /lab` at exit 0 having navigated nothing** is F123's
-other face: `attached: true` is satisfied by an app that was connected *before* the command ran, so
+other face. `attached: true` is satisfied by an app that was connected *before* the command ran, so
 on a platform where the open silently does nothing the command has no evidence left that is about
-itself. And **`commandSocketClients` climbs on a dev client** — 7 → 8 → 9 across three reloads, where
-Expo Go held a steady 2 — which is the number the reload ladder picks its rung on
-([[0005-runtime-loop-tools]] §One ladder, chosen by the command socket). Nothing was observed to go
-wrong because of it; it is written down because the ladder reads that count as "somebody is
+itself. The second is that **`commandSocketClients` climbs on a dev client**: 7, then 8, then 9
+across three reloads, where Expo Go held a steady 2. That is the number the reload ladder picks its
+rung on ([[0005-runtime-loop-tools]] §One ladder, chosen by the command socket). Nothing was observed
+to go wrong because of it. It is written down because the ladder reads that count as "somebody is
 listening".
 
 ### What the live columns changed
 
 **The feature with no reach, found by trying to test it** [added 2026-08-28, wave 31]. `skills:*`
 distributes the skills that **SDK packages ship** ([[0003-knowledge-tools-and-skills]] §Skills shipped
-from Expo modules). Ten packages were probed against the registry and a real scaffold — `expo-camera`,
+from Expo modules). Ten packages were probed against the registry and a real scaffold: `expo-camera`,
 `@expo/ui`, `expo-router`, `expo-image`, `expo-build-properties`, `react-native-mmkv`, `expo-sqlite`,
-`expo-notifications`, `expo-updates`, `expo-audio` — and **not one ships `skills/*/SKILL.md`**. So
+`expo-notifications`, `expo-updates` and `expo-audio`. **Not one ships `skills/*/SKILL.md`.** So
 every live `skills:list` in a real project today answers `{"skills": []}`, and the four commands have
-nothing to act on. That is not a defect in this CLI and it is not a gap in this tier: the four
-reference PRs are unmerged by decision ([[0003]] §Resolved item 2), so the *producing* half of the
-feature has not shipped anywhere. It is recorded here because a matrix cell reading `filled` for
-`skills:sync` would otherwise imply the feature does something in a real project, and today it does
-not. `live-project` asserts the empty result **first**, then writes a `SKILL.md` into its own scratch
-`node_modules` the way a module author would, which is the only way to exercise the discovery for
-real — and if a published module starts shipping one, that first test is what goes red.
+nothing to act on.
 
-**Provably real now, and was stub-only before** — 23 cells, and the four that could not have been
+That is not a defect in this CLI and it is not a gap in this tier. The four reference PRs are
+unmerged by decision ([[0003]] §Resolved item 2), so the *producing* half of the feature has not
+shipped anywhere. It is recorded here because a matrix cell reading `filled` for `skills:sync` would
+otherwise imply the feature does something in a real project, and today it does not. `live-project`
+asserts the empty result **first**, then writes a `SKILL.md` into its own scratch `node_modules` the
+way a module author would, which is the only way to exercise the discovery for real. If a published
+module starts shipping one, that first test is what goes red.
+
+**Provably real now, and was stub-only before.** 23 cells, four of which could not have been
 reached at any lower tier at all: a successful `runtime:eval`; `--verify` seeing a text diff;
 `runtime:errors` proving a runtime answered rather than that a list was empty; and `smoke` passing with
 a screenshot on disk. [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app named all
-four as the cost of that boundary; this is the tier that pays it.
+four as the cost of that boundary, and this is the tier that pays it.
 
 **~~Still stub-only, by choice~~ — the claim, and what happened when somebody ran it** [rewritten
 2026-08-28, wave 31]. This paragraph used to read: *`install` adding a package, `start`, `dev`
 attached, `inspect:config-plugins`, `skills:*`, `agents:setup`, the forwarded set. Each is argv
 assembly or filesystem work with no second process boundary, which is exactly what the stub tier is
-good at. These are `open`, not gaps.* Every one of them is `filled` now — the `live-project` column —
-and the paragraph was wrong in a way worth keeping on the page, because it is the same mistake this
-whole document is about, one boundary further in.
+good at. These are `open`, not gaps.* Every one of them is `filled` now, in the `live-project`
+column. The paragraph was wrong in a way worth keeping on the page, because it is the same mistake
+this whole document is about, one boundary further in.
 
 **Five findings, F130–F134, and none of them is in the argv.** The premise was that these commands
 *assemble* rather than *converse*, so a stub is a faithful double. What the runs showed is that four
 of the five defects are in **reading what came back**, and the fifth is in a sentence about what the
-reading meant:
+reading meant.
 
 - **F130.** `install --check --json` dropped the Expo CLI's report on the only run that has an answer
-  in it, because the CLI prints the *passing* report on one line and the *failing* one
-  pretty-printed, and the parse read one line at a time. The stub had been handed a single-line
-  report for **both** cases — so the double was of what this code accepted, not of what the CLI
-  writes. That is the sharpest instance of §The rule this states in the whole file: the fixture was
-  written from the type, and the tool on the other side has two shapes.
+  in it. The CLI prints the *passing* report on one line and the *failing* one pretty-printed, and the
+  parse read one line at a time. The stub had been handed a single-line report for **both** cases, so
+  the double was of what this code accepted rather than of what the CLI writes. That is the sharpest
+  instance of §The rule this states in the whole file: the fixture was written from the type, and the
+  tool on the other side has two shapes.
 - **F131.** `skills:sync --json` answered `linked: []`, `removed: []` for a run that could not link a
-  skill because the user owns the name — the warning was prose on stderr, and the object read as
+  skill because the user owns the name. The warning was prose on stderr, and the object read as
   "nothing to do".
 - **F132.** `inspect:config-plugins` reported `1 declared` for a config declaring three, naming
   neither of the two `_internal.pluginHistory` has no entry for.
@@ -253,60 +257,62 @@ reading meant:
 **And two facts a stub could not have had.** A real `expo install expo-build-properties` **rewrites
 the caller's `app.json`** ("Added config plugin: expo-build-properties"), which is the only way the
 classifier's own `is listed in the app.json plugins` reason is reachable at all. And a real
-`bundledNativeModules.json` is what makes `expo-haptics` a `native-module` whose action is `reload` —
+`bundledNativeModules.json` is what makes `expo-haptics` a `native-module` whose action is `reload`,
 the exact row that made F134's sentence a contradiction. Neither is argv.
 
 **What is genuinely `open` in this column now** is `dev` attached, which `start` covers with the same
 subprocess and a smaller wrapper, and the rows whose answer is about a runtime (`n/a — no device`).
 
-**Unreachable, and worth saying out loud** — build creation (impossible in v1); `login`/`logout`/
-`register` (a suite must not mutate the machine's session); the `/message` reload broadcast on a cloud
-simulator (upstream; the narrowed remains of S11);
-`expo start --tunnel` on this machine at all (`@expo/ngrok` exits 1); Windows at the live tier. A claim
-that the v1 surface is "fully tested live" would be wrong about every one of these, which is why they
-have rows.
+**Unreachable, and worth saying out loud.** Build creation, which is impossible in v1.
+`login`/`logout`/`register`, because a suite must not mutate the machine's session. The `/message`
+reload broadcast on a cloud simulator, which is upstream and is the narrowed remains of S11.
+`expo start --tunnel` on this machine at all, because `@expo/ngrok` exits 1. And Windows at the live
+tier. A claim that the v1 surface is "fully tested live" would be wrong about every one of these,
+which is why they have rows.
 
 **The Android column split in two, and the half that was missing was the app** [added 2026-08-28,
 wave 29]. `live-android` said `unreachable — no debugger` in nine cells, and that was read for three
-waves as a fact about Android. It is a fact about **Expo Go**: the same nine commands on a
-development build on the same emulator are `filled` in the `live-devclient` column — `runtime:eval`
+waves as a fact about Android. It is a fact about **Expo Go**. The same nine commands on a
+development build on the same emulator are `filled` in the `live-devclient` column: `runtime:eval`
 returning 2, `runtime:tap`'s three bands, a `--verify` diff, `runtime:type`, and `smoke --android`
-at exit 0 with all eight phases `ok`. Nothing in the CLI changed to make that true, which is the
-result: the refusal is reached by asking the runtime what it carries rather than by knowing the
-platform, so the design was already right and only the measurement was missing. Filling the column
-cost six findings — **F120**, **F122** and **F126** fixed in the wave, **F121**, **F123** and
-**F125** left open for a contract decision and all three fixed in **wave 30** [2026-08-28] — and
-three of them are reachable only through a dev-client plan, because a development build makes the
-plan's **last step a build rather than a dev server** and every assumption `dev` makes about that
-step was written for `expo start`.
+at exit 0 with all eight phases `ok`.
+
+Nothing in the CLI changed to make that true, and that is the result. The refusal is reached by asking
+the runtime what it carries rather than by knowing the platform, so the design was already right and
+only the measurement was missing. Filling the column cost six findings. **F120**, **F122** and
+**F126** were fixed in the wave; **F121**, **F123** and **F125** were left open for a contract
+decision and all three fixed in **wave 30** [2026-08-28]. Three of the six are reachable only through
+a dev-client plan, because a development build makes the plan's **last step a build rather than a dev
+server**, and every assumption `dev` makes about that step was written for `expo start`.
 
 **The Android column was the emptiest row in this table, and filling it cost seven findings**
 [added 2026-08-27, wave 25]. `Android, anywhere` read `unreachable today — the harness has no Android
-gate yet`, and that row was carrying more than it looked like: **F100**, **F101** and **F105** were three
-commands reading the iOS app while reporting about Android, **F102** was `wasRunning: true` on no
-evidence, **F103** was three follow-up builders dropping the platform flag, **F104** was advice an
-Android caller cannot follow, and **F107** is the one gap left open. Every one of them needed two
-platforms attached to one dev server to see, which is a state no other suite in this tier can reach and
-no stub can double — the stub tier has a `no-debugger` socket, and what it has not got is a *second*
-socket that answers. The two `--android` rows that were already green stayed green, which is the other
-half of what a column is for.
+gate yet`, and that row was carrying more than it looked like. **F100**, **F101** and **F105** were
+three commands reading the iOS app while reporting about Android. **F102** was `wasRunning: true` on
+no evidence. **F103** was three follow-up builders dropping the platform flag. **F104** was advice an
+Android caller cannot follow, and **F107** is the one gap left open.
+
+Every one of them needed two platforms attached to one dev server to see. That is a state no other
+suite in this tier can reach and no stub can double: the stub tier has a `no-debugger` socket, and
+what it has not got is a *second* socket that answers. The two `--android` rows that were already
+green stayed green, which is the other half of what a column is for.
 
 **The cloud column is `runnable`, and its expectations came from a live run rather than from a type**
-[rewritten 2026-08-27, after wave 19 landed]. Wave 19 changed what a cloud reload *is* — a two-verb
+[rewritten 2026-08-27, after wave 19 landed]. Wave 19 changed what a cloud reload *is*: a two-verb
 relaunch verified by `verifiedBy: "dev-server-bundle"`, with `commandSocketClients` beside
-`appsConnected` because the two disagree exactly there — and it changed how the dev server becomes
-reachable at all, because the tunnel this column originally assumed does not start on this machine. Both
-rewrites were made against wave 19's captured payloads (`wave19-live/`), not against the new source. The
-distinction matters for the same reason this whole audit does: a test written from a type pins what
-somebody meant, and a test written from a captured payload pins what happened. The column stayed
-`runnable` until somebody had run it — a row filled by its own author's confidence is the thing the
-`runnable`/`filled` split exists to make impossible.
+`appsConnected` because the two disagree exactly there. It also changed how the dev server becomes
+reachable at all, because the tunnel this column originally assumed does not start on this machine.
+Both rewrites were made against wave 19's captured payloads (`wave19-live/`) rather than against the
+new source. The distinction matters for the same reason this whole audit does: a test written from a
+type pins what somebody meant, and a test written from a captured payload pins what happened. The
+column stayed `runnable` until somebody had run it, because a row filled by its own author's
+confidence is the thing the `runnable`/`filled` split exists to make impossible.
 
 **Wave 23 ran it, and the split earned its keep** [2026-08-27, its three sessions, taking the suite
 from 4/7 to 6/7;
 [[0022-live-tier]] §What the first four runs of it found]. Every red was a defect: four of them (F96,
-F97, F98, F99), all fixed in that wave. And the column's *premises* moved, which is the part worth
-carrying here — **three of the four facts the suite was built on were about the state of one session
+F97, F98, F99), all fixed in that wave. The column's *premises* moved too, which is the part worth
+carrying here. **Three of the four facts the suite was built on were about the state of one session
 rather than about cloud sessions.** A session started `--expo-go` but never opened on the project holds
 no command-socket client and shows no attach; one started with `--open-url` holds both. So `method:
 "device"` was never a property of the cloud, and neither was S11. The rows below are corrected, and
@@ -318,39 +324,40 @@ has not been run.
 ([[0022-live-tier]] §The findings this tier arrived with):
 
 - **F93.** `status --explain` reports bun's install progress as EAS's answer about the caller's builds,
-  on 3 of 6 runs. Same class as bug 3 below, one process boundary further out — and it is the fifth
+  on 3 of 6 runs. Same class as bug 3 below, one process boundary further out. It is also the fifth
   time this audit has found that **the reason a lookup prints is whatever the tool on the other side of
   the spawn last said**, which is a pattern now rather than an incident. What is new is that the tool
-  on the other side is this CLI's *own* choice of package runner, not something it found on the machine.
-- **F94.** Every uncaught exception exits **7** — the code the exit table reserves for needs-human —
-  with a raw Node stack and no envelope, because the `uncaughtException` handler rethrows everything it
-  does not recognise. No fixture can produce the input (the crash observed came out of Node's socket
-  layer), so this row could not have been filled at any lower tier and was not a gap anybody could have
+  on the other side is this CLI's *own* choice of package runner rather than something it found on the
+  machine.
+- **F94.** Every uncaught exception exits **7**, the code the exit table reserves for needs-human, with
+  a raw Node stack and no envelope. The `uncaughtException` handler rethrows everything it does not
+  recognise. No fixture can produce the input, because the crash observed came out of Node's socket
+  layer, so this row could not have been filled at any lower tier and was not a gap anybody could have
   closed there.
 
 ## The bugs
 
 Each was found by a test written before the fix, and each is a case no unit test could have
-produced on its own — the tool on the other side of the spawn is the variable.
+produced on its own. The tool on the other side of the spawn is the variable.
 
 1. **`dev` reported an EAS stop with the Expo CLI's code and the Expo CLI's prose.**
    `stopPromptFor` spelled `code: 'EXPO_NEEDS_INPUT'` for every recognised stop, so an `eas build`
    that stopped for a login exited 7 carrying `EXPO_NEEDS_INPUT` and a message reading *"the Expo
    CLI asks before it does something it cannot decide"* with a `How:` line about `exagent dev`
-   flags. The `needsHuman` block was right — `npx eas login` — and the code and the prose beside it
-   were not, which is worse than either being wrong alone. [[0015-backend-selection-and-config]]
-   §Running an `eas` step is the paragraph that says these are different scenarios; the registry
+   flags. The `needsHuman` block was right, and said `npx eas login`. The code and the prose beside
+   it were not, which is worse than either being wrong alone. [[0015-backend-selection-and-config]]
+   §Running an `eas` step is the paragraph that says these are different scenarios, and the registry
    already held the right code for each. Fixed: the row's own code stands, and the sentence names
    the CLI that stopped.
 
 2. **`dev` quoted a wrapper's panic under "What the tool printed".** `src/utils/wrapperCrash.ts`
    exists so that a shim, a stale link or a binary from another project under the name `expo` or
    `eas` is *named* rather than quoted, and `planStepFailedError` did not apply it. Fixed by
-   carrying the resolved binary path on the step failure — which is the fact that resolves it, and
+   carrying the resolved binary path on the step failure, which is the fact that resolves it and
    which nothing had.
 
 3. **`status --explain` reported a wrapper's panic as EAS's answer about the caller's builds.**
-   `lookUpCachedBuildAsync` never fails a command; every failure is an `unknown` with a `reason`,
+   `lookUpCachedBuildAsync` never fails a command. Every failure is an `unknown` with a `reason`,
    and that reason is printed as what the service said. On the machine this was written on, `eas` is
    a shim, and the reason read `thread 'main' panicked at src/main.rs:41:9:`.
 
@@ -359,14 +366,14 @@ produced on its own — the tool on the other side of the spawn is the variable.
 
 5. **`smoke --cloud` walked the caller off the backend they chose.** `buildSmokeFollowUps` had no
    notion of `--cloud`, so a cloud run that found no session was answered with
-   `npx exagent navigate / --ios` — *"this is what opens one on a booted device"* — and
-   `npx exagent smoke --ios`. A host that reached for the cloud is very often a host with no booted
-   device at all. `src/followups/reload.ts` already carried the flag; this did not. The rule is the
-   one the `platform` field's own comment states ("a re-run that drops the platform is a different
-   run", F58) applied to the other half of "which device is this run about".
+   `npx exagent navigate / --ios`, described as *"this is what opens one on a booted device"*, and
+   with `npx exagent smoke --ios`. A host that reached for the cloud is very often a host with no
+   booted device at all. `src/followups/reload.ts` already carried the flag and this did not. The
+   rule is the one the `platform` field's own comment states ("a re-run that drops the platform is a
+   different run", F58) applied to the other half of "which device is this run about".
 
 6. **`NO_PROJECT` was a dead end.** The most common wrong-directory failure there is, answered with
-   one clause — *"Project root directory not found"* — no reason, no next step, and a null
+   one clause: *"Project root directory not found"*. No reason, no next step, and a null
    `suggestedCommand`, so the `Try:` line an agent reads for its recovery was empty.
 
 ## What is still not tested, and why
@@ -375,31 +382,31 @@ Recorded rather than fixed, because each is either a design question or a bounda
 cross.
 
 - ~~**`dev` in a directory that is not an Expo app plans `expo install expo-dev-client`.**~~
-  **Closed** [2026-08-26] — the design call and the implementation are [[0020-not-an-expo-app]]. The
+  **Closed** [2026-08-26]. The design call and the implementation are [[0020-not-an-expo-app]]. The
   decision table read "no `expo` dependency" as "lacks a dev client", so an agent that ran `dev` one
   directory too high got a plan to install packages into the wrong repository. It is a `not-expo-app`
   row above every other now, nine commands stop at the entry with `NOT_EXPO_APP`, and the skipped test
   in `e2e/__tests__/project-shapes-test.ts` is unskipped with eight rows beside it.
-- ~~**Exit 21 is reserved and reachable from nothing.**~~ **Closed as documentation** [2026-08-26] —
+- ~~**Exit 21 is reserved and reachable from nothing.**~~ **Closed as documentation** [2026-08-26].
   [[0010-agent-conventions]] §Exit codes says so in the table and in the paragraph under it, and
   `src/__tests__/exitCodes-test.ts` sweeps the loadable source so the claim cannot quietly stop being
   true. Nothing was wrong with the code: `build:wait` is deferred, and a declined plan exits 0 by
   explicit decision ([[0008-guardrails]] §Plan-with-cost dry run). The constant stays defined.
-- ~~**A successful `runtime:eval` is unreachable at tier 0**~~ — still true *at tier 0*, and no longer
+- ~~**A successful `runtime:eval` is unreachable at tier 0**~~. Still true *at tier 0*, and no longer
   untested: **closed** [2026-08-27] by `e2e-live`, where it returns `2` from real Hermes
   ([[0022-live-tier]] §live-local). The tier-0 statement stands unchanged from
-  [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app — what changed is that the
+  [[0002-testing-and-evals]] §Tier 0 doubles the dev server, not the app. What changed is that the
   boundary now has a tier on the other side of it rather than a note. What the earlier wave added at
-  tier 0 is the third inspector state — a socket that answers every method `-32601` — which is a double
-  for a runtime having no debugger rather than for a runtime, and is what makes the 22-not-0 rule
+  tier 0 is the third inspector state, a socket that answers every method `-32601`. That is a double
+  for a runtime having no debugger rather than for a runtime, and it is what makes the 22-not-0 rule
   testable at this tier.
-- ~~**No live `eas build`, `eas deploy` or simulator session runs anywhere in this suite**~~ —
-  **closed for `eas deploy` and the read side, and reclassified for the rest** [2026-08-27]:
+- ~~**No live `eas build`, `eas deploy` or simulator session runs anywhere in this suite**~~.
+  **Closed for `eas deploy` and the read side, and reclassified for the rest** [2026-08-27].
   [[0022-live-tier]] is the tier, §The live matrix is the accounting, and `pnpm test:live:eas` runs
   `deploy --web` and the whole build read side against staging on demand. Two parts do not close and
   are now recorded as unreachable rather than untested: **build creation**, which no v1 command does,
   and the **cloud session**, whose suite is written and not yet run. §A flag is not shipped until it has
-  run against the published binary is still a manual step for the *published version* — the live tier
+  run against the published binary is still a manual step for the *published version*. The live tier
   runs the published *surface* from this tree, which narrows what that run has to discover rather than
   replacing it.
 - **The `--cloud` platform mismatch.** A session has one platform; `smoke --cloud --android` against
@@ -413,5 +420,5 @@ cross.
 
 **Every backend a command has is a separate row of its test matrix, and the row is only filled by a
 test that ran the command against a stub of that backend's binary.** A test that pins the plan, the
-argv or the options an EAS run would use fills no row: the four EAS bugs above were all in code that
+argv or the options an EAS run would use fills no row. The four EAS bugs above were all in code that
 had a passing unit test one call frame away.
