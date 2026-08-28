@@ -6,6 +6,14 @@ DEST="$CONFIGURATION_BUILD_DIR"
 RESOURCE_BUNDLE_NAME="EXConstants.bundle"
 EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
+if [[ -n "$__EXPO_CONFIG_MODE" ]]; then
+  CONFIG_MODE="$__EXPO_CONFIG_MODE"
+elif [[ "$CONFIGURATION" == *Debug* ]]; then
+  CONFIG_MODE="development"
+else
+  CONFIG_MODE="production"
+fi
+
 # For classic main project build phases integration, will be no-op to prevent duplicated app.config creation.
 #
 # `$PROJECT_DIR` is passed by Xcode as the directory to the xcodeproj file.
@@ -32,4 +40,4 @@ else
   exit 1
 fi
 
-"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST"
+__EXPO_CONFIG_MODE="$CONFIG_MODE" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST"
