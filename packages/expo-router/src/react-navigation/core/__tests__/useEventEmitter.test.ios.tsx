@@ -274,7 +274,7 @@ test('fires focus and blur events in nested navigator', () => {
   act(() => parent.current.navigate('first'));
 
   expect(firstFocusCallback).toHaveBeenCalledTimes(2);
-  expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
+  expect(thirdBlurCallback).toHaveBeenCalledTimes(1);
 
   act(() => {
     child.current.navigate('fourth');
@@ -282,7 +282,7 @@ test('fires focus and blur events in nested navigator', () => {
   });
 
   expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
-  expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
+  expect(thirdBlurCallback).toHaveBeenCalledTimes(1);
   expect(firstBlurCallback).toHaveBeenCalledTimes(2);
 
   act(() => child.current.navigate('third'));
@@ -298,7 +298,7 @@ test('fires focus and blur events in nested navigator', () => {
   expect(secondBlurCallback).toHaveBeenCalledTimes(1);
 
   expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
-  expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
+  expect(thirdBlurCallback).toHaveBeenCalledTimes(1);
 
   expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
   expect(fourthBlurCallback).toHaveBeenCalledTimes(3);

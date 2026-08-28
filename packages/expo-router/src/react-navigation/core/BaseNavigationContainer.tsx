@@ -27,6 +27,7 @@ import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationStateContext } from './NavigationStateContext';
+import { RootNavigationStateContext } from './RootNavigationStateContext';
 import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
 import { checkSerializable } from './checkSerializable';
 import { NOT_INITIALIZED_ERROR } from './createNavigationContainerRef';
@@ -113,15 +114,14 @@ function BaseNavigationContainerInner({
   });
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, getState, getStateForKey, resetNavigator, handleAction, processIntent } =
-    useNavigationTreeReducer({
-      initialState,
-      routeNode: UNSTABLE_routeNode,
-      registry,
-      linking: store?.linking,
-      redirects: store?.redirects,
-      onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
-    });
+  const { state, resetNavigator, handleAction, processIntent } = useNavigationTreeReducer({
+    initialState,
+    routeNode: UNSTABLE_routeNode,
+    registry,
+    linking: store?.linking,
+    redirects: store?.redirects,
+    onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
+  });
 
   const hasNotifiedInitialStateRef = React.useRef(false);
   const lastNotifiedStateRef = React.useRef<NavigationState | undefined>(undefined);
@@ -156,9 +156,7 @@ function BaseNavigationContainerInner({
     }
   });
 
-  const getRootState = useLatestCallback(() => {
-    return getState();
-  });
+  const getRootState = useLatestCallback(() => state);
 
   const getCurrentRoute = useLatestCallback(() => {
     const state = getRootState();
@@ -172,9 +170,8 @@ function BaseNavigationContainerInner({
     return route as Route<string> | undefined;
   });
 
-  const isReady = useLatestCallback(
-    () => listeners.focus[0] != null && registry.has(getState().key)
-  );
+  // TODO(@ubax): check if this is still needed anywhere
+  const isReady = useLatestCallback(() => listeners.focus[0] != null && registry.has(state.key));
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -192,7 +189,7 @@ function BaseNavigationContainerInner({
       isFocused: () => true,
       canGoBack,
       getParent: () => undefined,
-      getState,
+      getState: getRootState,
       getRootState,
       getCurrentRoute,
       getCurrentOptions,
@@ -209,7 +206,6 @@ function BaseNavigationContainerInner({
       getCurrentOptions,
       getCurrentRoute,
       getRootState,
-      getState,
       isReady,
     ]
   );
@@ -244,21 +240,12 @@ function BaseNavigationContainerInner({
       addListener,
       addKeyedListener,
       handleAction,
-      getStateForKey,
       resetNavigator,
       onDispatchAction,
       onOptionsChange,
       stackRef,
     }),
-    [
-      addListener,
-      addKeyedListener,
-      getStateForKey,
-      handleAction,
-      onDispatchAction,
-      onOptionsChange,
-      resetNavigator,
-    ]
+    [addListener, addKeyedListener, handleAction, onDispatchAction, onOptionsChange, resetNavigator]
   );
 
   const context = React.useMemo(
@@ -388,10 +375,12 @@ function BaseNavigationContainerInner({
       <NavigationBuilderContext.Provider value={builderContext}>
         <NavigationStateContext.Provider value={context}>
           <RouteInfoContext.Provider value={routeInfo}>
-            <EnsureSingleNavigator>
-              <ThemeProvider value={theme}>{children}</ThemeProvider>
-            </EnsureSingleNavigator>
-            <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+            <RootNavigationStateContext.Provider value={state}>
+              <EnsureSingleNavigator>
+                <ThemeProvider value={theme}>{children}</ThemeProvider>
+              </EnsureSingleNavigator>
+              <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+            </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>
       </NavigationBuilderContext.Provider>

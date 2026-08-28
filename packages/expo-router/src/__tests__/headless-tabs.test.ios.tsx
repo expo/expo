@@ -1190,6 +1190,14 @@ it('can reference a parent trigger from nested tabs', () => {
   expect(screen.getByTestId('current-parent')).toHaveProp('isFocused', true);
   expect(screen.getByTestId('goto-parent')).toHaveProp('isFocused', false);
   fireEvent.press(screen.getByTestId('goto-parent'));
+  expect(screen.getByTestId('current-parent', { includeHiddenElements: true })).toHaveProp(
+    'isFocused',
+    false
+  );
+  expect(screen.getByTestId('goto-parent', { includeHiddenElements: true })).toHaveProp(
+    'isFocused',
+    true
+  );
   expect(screen.getByTestId('index')).toBeVisible();
 });
 

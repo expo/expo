@@ -14,7 +14,7 @@ import type { NavigationEventEmitter } from './useEventEmitter';
 import type { IsRoutePrevented } from './usePreventRemoveState';
 
 type Options = {
-  getState: () => NavigationState;
+  state: NavigationState;
   isRoutePrevented: IsRoutePrevented;
   emitter: NavigationEventEmitter<EventMapCore<any>>;
   preventRemoveListeners: Record<string, ChildPreventRemoveListener | undefined>;
@@ -120,7 +120,7 @@ export const emitBeforeRemove = (
 };
 
 export function useOnPreventRemove({
-  getState,
+  state,
   isRoutePrevented,
   emitter,
   preventRemoveListeners,
@@ -135,7 +135,6 @@ export function useOnPreventRemove({
     }
 
     return addKeyedListener?.('preventRemove', routeKey, (action) => {
-      const state = getState();
       return shouldPreventRemove(
         emitter,
         preventRemoveListeners,
@@ -145,7 +144,7 @@ export function useOnPreventRemove({
         action
       );
     });
-  }, [addKeyedListener, emitter, getState, isRoutePrevented, preventRemoveListeners, routeKey]);
+  }, [addKeyedListener, emitter, isRoutePrevented, preventRemoveListeners, routeKey, state]);
 
   React.useEffect(() => {
     if (!routeKey) {
@@ -154,8 +153,7 @@ export function useOnPreventRemove({
 
     // Forward beforeRemove into nested navigators when an ancestor removes their route.
     return addKeyedListener?.('beforeRemove', routeKey, (action) => {
-      const state = getState();
       emitBeforeRemove(emitter, beforeRemoveListeners, getPreventableRoutes(state), [], action);
     });
-  }, [addKeyedListener, beforeRemoveListeners, emitter, getState, routeKey]);
+  }, [addKeyedListener, beforeRemoveListeners, emitter, routeKey, state]);
 }

@@ -12,7 +12,7 @@ import { stripGroupSegmentsFromPath } from '../matchers';
 import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
-import { TabTriggerMapContext } from './TabContext';
+import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
 import { buildTabAction, type TriggerMap } from './common';
 
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
@@ -149,6 +149,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const { state, navigation, contextKey, descriptors } = useNavigatorContext();
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
+  const navigatorStates = use(TabNavigatorStatesContext);
   const registry = use(RouterRegistryContext);
 
   const getTrigger = useCallback(
@@ -172,9 +173,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       // Parent triggers are inherited, so read the state of the navigator that registered them.
       const owningState =
-        config.type === 'internal' && config.contextKey !== contextKey
-          ? navigation?.getParent(config.contextKey)?.getState()
-          : state;
+        config.type === 'internal' ? navigatorStates[config.contextKey] : undefined;
       const routeIndex =
         config.type === 'internal'
           ? (owningState?.routes.findIndex((route) => route.name === config.routeNode.route) ?? -1)
@@ -188,7 +187,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         ...config,
       };
     },
-    [contextKey, descriptors, navigation, state, triggerMap]
+    [descriptors, navigatorStates, state, triggerMap]
   );
 
   const trigger = name !== undefined ? getTrigger(name) : undefined;
@@ -204,10 +203,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
           if (!registry) {
             throw new Error('Router registry is unavailable. This is likely a bug in expo-router.');
           }
-          const owningState =
-            config.contextKey !== contextKey
-              ? navigation?.getParent(config.contextKey)?.getState()
-              : state;
+          const owningState = navigatorStates[config.contextKey];
           if (!owningState) {
             return;
           }
@@ -227,7 +223,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         });
       }
     },
-    [contextKey, navigation, registry, state, triggerMap]
+    [contextKey, navigation, navigatorStates, registry, triggerMap]
   );
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(

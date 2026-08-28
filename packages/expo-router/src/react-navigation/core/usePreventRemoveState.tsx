@@ -10,7 +10,6 @@ import { NavigationRouteContext } from './NavigationProvider';
 import { type PreventedRoutes, PreventRemoveContext } from './PreventRemoveContext';
 
 type Props = {
-  getState: () => NavigationState;
   state: NavigationState;
 };
 
@@ -33,7 +32,7 @@ const transformPreventedRoutes = (entries: PreventedRouteEntry[]): PreventedRout
 /**
  * Hook used for exposing removal prevention state to navigator views.
  */
-export function usePreventRemoveState({ getState, state }: Props) {
+export function usePreventRemoveState({ state }: Props) {
   'use no memo';
   const [parentId] = React.useState(() => nanoid());
   const entriesRef = React.useRef(new Map<string, PreventedRouteEntry>());
@@ -43,9 +42,9 @@ export function usePreventRemoveState({ getState, state }: Props) {
   const parentContext = use(PreventRemoveContext);
   const setParentPrevented = parentContext?.setPreventRemove;
 
-  const setPreventRemove = useLatestCallback(
+  const setPreventRemove = React.useCallback(
     (id: string, routeKey: string, preventRemove: boolean): void => {
-      if (preventRemove && getState().routes.every((route) => route.key !== routeKey)) {
+      if (preventRemove && state.routes.every((route) => route.key !== routeKey)) {
         throw new Error(
           `Couldn't find a route with the key ${routeKey}. Is your component inside NavigationContent?`
         );
@@ -70,13 +69,13 @@ export function usePreventRemoveState({ getState, state }: Props) {
       setEntries(next);
 
       if (route?.key !== undefined && setParentPrevented !== undefined) {
-        const state = getState();
         const hasActiveEntry = [...next.values()].some(
           (entry) => entry.preventRemove && !isRoutePreloadedInStack(state, { key: entry.routeKey })
         );
         setParentPrevented(parentId, route.key, hasActiveEntry);
       }
-    }
+    },
+    [parentId, route?.key, setParentPrevented, state]
   );
 
   const activeEntries = React.useMemo(
@@ -93,7 +92,7 @@ export function usePreventRemoveState({ getState, state }: Props) {
       (entry) =>
         entry.routeKey === routeKey &&
         entry.preventRemove &&
-        !isRoutePreloadedInStack(getState(), { key: routeKey })
+        !isRoutePreloadedInStack(state, { key: routeKey })
     )
   );
 

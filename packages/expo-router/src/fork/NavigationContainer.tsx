@@ -147,21 +147,6 @@ function NavigationContainerInner(
   });
 
   const [isResolved, initialState] = useThenable(getInitialState);
-  if (
-    store &&
-    // Linking state remains the initial state forever. Once navigation is ready,
-    // `onStateChange` owns the store and this must not restore stale state.
-    !refContainer.current?.isReady() &&
-    // Async linking may not have produced its initial state yet.
-    initialState &&
-    // Avoid recalculating route info when the store already has this exact state.
-    initialState !== store.state
-  ) {
-    // TODO(@ubax): remove this render-phase global write with store ownership teardown.
-    // https://linear.app/expo/issue/ENG-26124
-    // Children read route info during this render, so an effect would update the store too late.
-    syncStoreNavigationState(initialState);
-  }
 
   React.useImperativeHandle(ref, () => refContainer.current!);
 

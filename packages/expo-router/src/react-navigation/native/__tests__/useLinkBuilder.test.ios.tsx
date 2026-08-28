@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react-native';
 
-import { NavigationRouteContext } from '../../core';
+import { NavigationHelpersContext, NavigationRouteContext } from '../../core';
+import type { NavigationHelpers, ParamListBase } from '../../core';
 import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import {
   createTestState,
@@ -104,10 +105,10 @@ test('builds href in route context', () => {
   );
 });
 
-test('builds href in stack navigator screen', () => {
+test('builds href in stack navigator screen without reading navigation state imperatively', () => {
   expect.assertions(2);
 
-  const Test = () => {
+  const HrefProbe = () => {
     const { buildHref } = useLinkBuilder();
 
     const href = buildHref('Foo');
@@ -116,6 +117,18 @@ test('builds href in stack navigator screen', () => {
 
     return null;
   };
+
+  const Test = ({ navigation }: { navigation: NavigationHelpers<ParamListBase> }) => (
+    <NavigationHelpersContext.Provider
+      value={{
+        ...navigation,
+        getState() {
+          throw new Error('navigation.getState must not be read');
+        },
+      }}>
+      <HrefProbe />
+    </NavigationHelpersContext.Provider>
+  );
 
   const StackA = createStackNavigator<{ Foo: undefined }>();
 

@@ -9,7 +9,6 @@ import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { resetNavigatorState } from '../../global-state/stateUtils';
-import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
   type NavigationAction,
@@ -263,7 +262,6 @@ export function useNavigationBuilder<
   useRegisterNavigator();
   const routeNode = useRouteNode();
   const enqueue = useEnqueueRoutingIntent();
-
   const {
     children,
     layout,
@@ -333,7 +331,7 @@ export function useNavigationBuilder<
 
   const { state: currentState } = use(NavigationStateContext);
 
-  const { getStateForKey, resetNavigator, handleAction } = use(NavigationBuilderContext);
+  const { resetNavigator, handleAction } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -375,22 +373,6 @@ export function useNavigationBuilder<
       }),
     [routeNamesKey, router]
   );
-  const getState = useLatestCallback((): State => {
-    const currentState = getStateForKey(stateKeyRef.current);
-    if (currentState === undefined) {
-      return committedState;
-    }
-    if (currentState.stale !== false) {
-      throw new Error(
-        'The mounted navigator no longer has complete state in the global navigation tree.'
-      );
-    }
-    if (currentState.type !== undefined && currentState.type !== router.type) {
-      // The reset keeps the complete fields required by every navigator state.
-      return resetNavigatorState(currentState, router.type) as State;
-    }
-    return currentState as State;
-  });
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
 
@@ -463,12 +445,11 @@ export function useNavigationBuilder<
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
   const { isRoutePrevented, preventRemoveContextValue } = usePreventRemoveState({
-    getState,
-    state,
+    state: committedState,
   });
 
   useOnPreventRemove({
-    getState,
+    state: committedState,
     isRoutePrevented,
     emitter,
     preventRemoveListeners: keyedListeners.preventRemove,
@@ -525,9 +506,7 @@ export function useNavigationBuilder<
     if (isForeignType) {
       return;
     }
-    const committed = getState();
-
-    if (isArrayEqual(committed.routeNames, routeNames)) {
+    if (isArrayEqual(committedState.routeNames, routeNames)) {
       pendingRouteNamesRef.current = undefined;
     } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
       pendingRouteNamesRef.current = routeNames;
@@ -537,9 +516,9 @@ export function useNavigationBuilder<
           action: {
             type: 'ROUTE_NAMES_CHANGED',
             payload: { routeNames },
-            target: committed.key,
+            target: committedState.key,
           },
-          originKey: committed.key,
+          originKey: committedState.key,
         },
       });
     }
@@ -548,7 +527,7 @@ export function useNavigationBuilder<
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
     handleAction: onAction,
-    getState,
+    state: committedState,
     emitter,
     router,
   });
@@ -565,7 +544,7 @@ export function useNavigationBuilder<
     navigation,
     screenOptions,
     screenLayout,
-    getState,
+    state: committedState,
     addListener,
     addKeyedListener,
     router,

@@ -303,23 +303,3 @@ it('throws for an incomplete initial state', () => {
     )
   ).toThrow('incomplete initial state');
 });
-
-it('reads the latest root state by key', () => {
-  const result = renderReducer({
-    registry: new Map([
-      [
-        'root',
-        entry((state) => ({
-          state: { ...state, index: 1 },
-          affectedRouteKey: state.routes[1]!.key,
-        })),
-      ],
-    ]),
-  });
-
-  act(() => result.result.current.handleAction({ type: 'NEXT' }));
-
-  expect(result.result.current.getState()).toBe(result.result.current.state);
-  expect(result.result.current.getStateForKey('root')).toBe(result.result.current.state);
-  expect(result.result.current.getStateForKey('missing')).toBeUndefined();
-});

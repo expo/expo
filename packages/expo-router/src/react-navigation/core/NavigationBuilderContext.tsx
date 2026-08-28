@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 
-import type { NavigationAction, NavigationState, ParamListBase } from '../routers';
+import type { NavigationAction, ParamListBase } from '../routers';
 import type { NavigationHelpers } from './types';
 
 export type ListenerMap = {
@@ -37,7 +37,6 @@ export type ChildBeforeRemoveListener = (action: NavigationAction) => void;
  */
 export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
-  getStateForKey: (key: string) => NavigationState | undefined;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
   addListener?: AddListener;
   addKeyedListener?: AddKeyedListener;
@@ -46,7 +45,6 @@ export const NavigationBuilderContext = React.createContext<{
   stackRef?: React.MutableRefObject<string | undefined>;
 }>({
   handleAction: () => undefined,
-  getStateForKey: () => undefined,
   resetNavigator: () => undefined,
   onDispatchAction: () => undefined,
   onOptionsChange: () => undefined,
