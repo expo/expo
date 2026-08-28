@@ -3146,7 +3146,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-widgets:
-        specifier: workspace:^57.0.13
+        specifier: workspace:^57.0.14
         version: link:../expo-widgets
     devDependencies:
       '@babel/core':

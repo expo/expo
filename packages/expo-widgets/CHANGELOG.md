@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Resolve deep `react-native/*` imports as empty modules when bundling widget layouts, fixing every widget failing with "Could not create context for layout evaluation" after `@expo/ui` 57.0.14 introduced such an import. ([#49491](https://github.com/expo/expo/pull/49491) by [@usmsam](https://github.com/usmsam))
-
 ### 💡 Others
+
+## 57.0.14 — 2026-08-28
+
+### 🐛 Bug fixes
+
+- Resolve deep `react-native/*` imports as empty modules when bundling widget layouts, fixing every widget failing with "Could not create context for layout evaluation" after `@expo/ui` 57.0.14 introduced such an import. ([#49491](https://github.com/expo/expo/pull/49491) by [@usmsam](https://github.com/usmsam))
 
 ## 57.0.13 — 2026-08-26
 
