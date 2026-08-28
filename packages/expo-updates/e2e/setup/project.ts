@@ -218,8 +218,8 @@ async function copyCommonFixturesToProject(
   // react/runtime), which fails module precompilation with
   // -Werror,-Wnon-modular-include-in-framework-module in pods that import React
   // as a framework module. Allow non-modular includes across the pods project.
-  const nonModularPodfilePath = path.resolve(projectRoot, 'ios', 'Podfile');
-  const nonModularPodfileText = await readFile(nonModularPodfilePath, { encoding: 'utf-8' });
+  const nonModularPodfilePath = path.resolve(projectRoot, isTV ? 'tvos' : 'ios', 'Podfile');
+  const nonModularPodfileText = await fs.readFile(nonModularPodfilePath, { encoding: 'utf-8' });
   const postInstallAnchor = 'post_install do |installer|';
   if (!nonModularPodfileText.includes(postInstallAnchor)) {
     throw new Error(`Could not find a post_install block to patch in ${nonModularPodfilePath}`);
