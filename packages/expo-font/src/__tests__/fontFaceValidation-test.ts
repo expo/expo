@@ -1,6 +1,7 @@
 import {
   assertValidFontFaces,
   assertValidFontFamilyDefinitions,
+  normalizeStyle,
   normalizeWeight,
   resolveFaceStyle,
   resolveFaceWeight,
@@ -60,6 +61,14 @@ describe('normalizeWeight', () => {
   it('returns undefined for a range or an unparseable value', () => {
     expect(normalizeWeight('100 900')).toBeUndefined();
     expect(normalizeWeight('400abc')).toBeUndefined();
+  });
+});
+
+describe('normalizeStyle', () => {
+  it('matches the CSS keyword case-insensitively', () => {
+    // @ts-expect-error: testing an untyped caller's casing
+    expect(normalizeStyle('Italic')).toBe('italic');
+    expect(normalizeStyle('normal')).toBe('normal');
   });
 });
 
