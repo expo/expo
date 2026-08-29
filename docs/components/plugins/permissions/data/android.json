@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "https://developer.android.com/reference/android/Manifest.permission",
-    "scrapedAt": "2026-08-15T08:06:18.690Z"
+    "scrapedAt": "2026-08-29T08:11:31.357Z"
   },
   "data": {
     "ACCEPT_HANDOVER": {
@@ -379,7 +379,7 @@
       "warning": null
     },
     "BIND_CONTENT_RESTRICTION_SERVICE": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "BIND_CONTENT_RESTRICTION_SERVICE",
@@ -390,7 +390,7 @@
       "warning": null
     },
     "BIND_CONTENT_SAFETY_SERVICE": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "BIND_CONTENT_SAFETY_SERVICE",
@@ -511,7 +511,7 @@
       "warning": null
     },
     "BIND_PCC_EGRESS_SERVICE": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "BIND_PCC_EGRESS_SERVICE",
@@ -1402,7 +1402,7 @@
       "warning": null
     },
     "INSTALL_PACKAGES_AS_REGISTERED_APP_STORE": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "INSTALL_PACKAGES_AS_REGISTERED_APP_STORE",
@@ -1512,7 +1512,7 @@
       "warning": null
     },
     "LOCK_APPS": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "LOCK_APPS",
@@ -1523,7 +1523,7 @@
       "warning": null
     },
     "MANAGE_ASSISTANT_AUDIO": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "MANAGE_ASSISTANT_AUDIO",
@@ -1534,7 +1534,7 @@
       "warning": null
     },
     "MANAGE_CONTACTS": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "MANAGE_CONTACTS",
@@ -2381,7 +2381,7 @@
       "warning": null
     },
     "MANAGE_DEVICE_POLICY_UNIVERSAL_CLIPBOARD": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "MANAGE_DEVICE_POLICY_UNIVERSAL_CLIPBOARD",
@@ -2821,7 +2821,7 @@
       "warning": null
     },
     "QUERY_APP_USAGE": {
-      "apiAdded": 10000,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "QUERY_APP_USAGE",
@@ -2950,6 +2950,17 @@
       "explanation": null,
       "constant": "android.permission.READ_HOME_APP_SEARCH_DATA",
       "protection": null,
+      "warning": null
+    },
+    "READ_HOME_TIME_ZONE": {
+      "apiAdded": 37.2,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "READ_HOME_TIME_ZONE",
+      "description": "Allows applications to read the home time zone.",
+      "explanation": null,
+      "constant": "android.permission.READ_HOME_TIME_ZONE",
+      "protection": "signature|privileged|role",
       "warning": null
     },
     "READ_INPUT_STATE": {
