@@ -25,10 +25,24 @@ function getFontFaceRules() {
     }
     return [];
 }
+// `_createWebFontTemplate` writes the family name quoted, but engines disagree about whether
+// the CSSOM keeps the quotes (Firefox always does), so normalize them away before comparing.
+function normalizeFontFamilyName(fontFamily) {
+    // jsdom leaves `style.fontFamily` undefined on the `@font-face` rules it parses.
+    const trimmed = fontFamily?.trim();
+    if (!trimmed) {
+        return '';
+    }
+    const quote = trimmed[0];
+    if (trimmed.length >= 2 && (quote === '"' || quote === "'") && trimmed.endsWith(quote)) {
+        return trimmed.slice(1, -1).replace(/\\(.)/g, '$1');
+    }
+    return trimmed;
+}
 function getFontFaceRulesMatchingResource(fontFamilyName, options) {
     const rules = getFontFaceRules();
     return rules.filter(({ rule }) => {
-        return (rule.style.fontFamily === fontFamilyName &&
+        return (normalizeFontFamilyName(rule.style.fontFamily) === fontFamilyName &&
             (options && options.display ? options.display === rule.style.fontDisplay : true));
     });
 }
@@ -46,7 +60,7 @@ const ExpoFontLoader = {
         if (!sheet)
             return;
         const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
-        for (const item of items) {
+        for (const item of items.reverse()) {
             sheet.deleteRule(item.index);
         }
     },
@@ -73,7 +87,7 @@ const ExpoFontLoader = {
             return getLoadedServerFonts();
         }
         const rules = getFontFaceRules();
-        return rules.map(({ rule }) => rule.style.fontFamily);
+        return rules.map(({ rule }) => normalizeFontFamilyName(rule.style.fontFamily));
     },
     isLoaded(fontFamilyName, resource = {}) {
         if (typeof window === 'undefined') {

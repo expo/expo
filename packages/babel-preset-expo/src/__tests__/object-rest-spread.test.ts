@@ -57,6 +57,7 @@ describe('computed object-rest exclusions', () => {
 
   it.each(profiles)('%s preserves the computed exclusion key', (_name, caller) => {
     const code = transformObjectRest(caller);
+    // eslint-disable-next-line no-new-func
     const omit = new Function(`${code}; return omit;`)() as (
       obj: Record<string, number>,
       spec: { key: string }
