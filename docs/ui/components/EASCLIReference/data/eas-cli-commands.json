@@ -1,7 +1,7 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-08-28T11:26:04.819Z",
+    "fetchedAt": "2026-08-29T08:11:20.762Z",
     "cliVersion": "23.0.0"
   },
   "totalCommands": 147,
@@ -434,7 +434,7 @@
     {
       "command": "eas new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
-      "usage": "USAGE\n  $ eas new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
+      "usage": "USAGE\n  $ eas new [PATH] [-p bun|npm|pnpm|yarn] [--sdk-version <value>]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n      --sdk-version=<value>       Expo SDK version to use for the new project (e.g. 57, or \"latest\")\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
     },
     {
       "command": "eas observe:events [EVENTNAME]",
@@ -489,7 +489,7 @@
     {
       "command": "eas project:new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
-      "usage": "USAGE\n  $ eas project:new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
+      "usage": "USAGE\n  $ eas project:new [PATH] [-p bun|npm|pnpm|yarn] [--sdk-version <value>]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n      --sdk-version=<value>       Expo SDK version to use for the new project (e.g. 57, or \"latest\")\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
     },
     {
       "command": "eas sim",
