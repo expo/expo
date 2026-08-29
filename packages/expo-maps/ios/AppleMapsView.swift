@@ -14,6 +14,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   @Field var colorScheme: MapColorScheme = .automatic
+  @Field var cameraUpdateFrequency: CameraUpdateFrequency = .onEnd
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
   let onAnnotationClick = EventDispatcher()

@@ -1,6 +1,6 @@
 import { AppleMaps, Coordinates } from 'expo-maps';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Switch, Text, View } from 'react-native';
 
 import ConsoleBox from '../../../components/ConsoleBox';
 
@@ -40,6 +40,8 @@ export default function MapsEventsScreen() {
   const [lastEvent, setLastEvent] = React.useState<string>('');
   const [visibleCount, setVisibleCount] = React.useState<number | null>(null);
   const [viewportSize, setViewportSize] = React.useState<string>('—');
+  const [continuousCameraUpdates, setContinuousCameraUpdates] = React.useState(false);
+  const [cameraMoveCount, setCameraMoveCount] = React.useState(0);
 
   return (
     <View style={{ flex: 1 }}>
@@ -53,6 +55,11 @@ export default function MapsEventsScreen() {
             },
             zoom: 8,
           }}
+          cameraUpdateFrequency={
+            continuousCameraUpdates
+              ? AppleMaps.CameraUpdateFrequency.CONTINUOUS
+              : AppleMaps.CameraUpdateFrequency.ON_END
+          }
           onMapClick={(e) => {
             setLastEvent(JSON.stringify({ type: 'onMapClick', data: e }, null, 2));
           }}
@@ -61,6 +68,7 @@ export default function MapsEventsScreen() {
           }}
           onCameraMove={(e) => {
             setLastEvent(JSON.stringify({ type: 'onCameraMove', data: e }, null, 2));
+            setCameraMoveCount((count) => count + 1);
 
             const count = SAMPLE_MARKERS.filter((m) =>
               isInViewport(m.coordinates, e.coordinates, e.latitudeDelta, e.longitudeDelta)
@@ -72,6 +80,11 @@ export default function MapsEventsScreen() {
         />
       </View>
       <View style={{ paddingHorizontal: 10, paddingTop: 10 }}>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text>Continuous camera updates ({cameraMoveCount} onCameraMove events)</Text>
+          <Switch value={continuousCameraUpdates} onValueChange={setContinuousCameraUpdates} />
+        </View>
         <Text>Viewport size: {viewportSize}</Text>
         <Text>
           Markers in viewport: {visibleCount ?? '—'} / {SAMPLE_MARKERS.length}
