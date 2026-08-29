@@ -254,10 +254,11 @@ describe('BottomSheetDialog drag cancel', () => {
   it('should not start a drag from a button press', async () => {
     const onClick = jest.fn();
     const onDragEnd = jest.fn();
+    const onOpenChange = jest.fn();
     render(
       <BottomSheetDialog
         open
-        onOpenChange={() => {}}
+        onOpenChange={onOpenChange}
         onDragEnd={onDragEnd}
         height={400}
         minSnapHeight={200}>
@@ -270,11 +271,13 @@ describe('BottomSheetDialog drag cancel', () => {
     const button = await waitFor(() => screen.getByRole('button', { name: 'Snap 2' }));
     act(() => {
       dispatchPointer(button, 'pointerdown', { pointerId: 1, clientY: 100, button: 0 });
-      dispatchPointer(button, 'pointerup', { pointerId: 1, clientY: 100 });
+      dispatchPointer(window, 'pointermove', { pointerId: 1, clientY: 400 });
+      dispatchPointer(window, 'pointerup', { pointerId: 1, clientY: 400 });
       button.click();
     });
 
     expect(onDragEnd).not.toHaveBeenCalled();
+    expect(onOpenChange).not.toHaveBeenCalled();
     expect(onClick).toHaveBeenCalled();
   });
 

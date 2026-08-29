@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, useColorScheme, useWindowDimensions } from 'react-native';
 
 import { BottomSheetDialog } from '../../web/BottomSheetDialog';
@@ -50,10 +50,18 @@ export function BottomSheet({
     return snapPoints.map((point) => snapPointToHeightPx(point, viewportHeight));
   }, [snapPoints, viewportHeight]);
   const [snapIndex, setSnapIndex] = useState(0);
+  const [wasPresented, setWasPresented] = useState(isPresented);
+  if (isPresented !== wasPresented) {
+    setWasPresented(isPresented);
+    if (isPresented) {
+      setSnapIndex(0);
+    }
+  }
 
-  useEffect(() => {
-    if (isPresented) setSnapIndex(0);
-  }, [isPresented]);
+  const height =
+    snapHeights && snapHeights.length > 0
+      ? snapHeights[Math.min(snapIndex, snapHeights.length - 1)]
+      : undefined;
 
   const bodyStyle = useMemo(
     () => ({
@@ -72,7 +80,7 @@ export function BottomSheet({
         if (!open) onDismiss();
       }}
       showHandle={showDragIndicator}
-      height={snapHeights?.[snapIndex]}
+      height={height}
       minSnapHeight={snapHeights?.length ? Math.min(...snapHeights) : undefined}
       onDragEnd={
         snapHeights
