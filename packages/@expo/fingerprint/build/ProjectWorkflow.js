@@ -56,16 +56,20 @@ async function resolveProjectWorkflowPerPlatformAsync(projectRoot, fingerprintIg
     return { android, ios };
 }
 async function getVCSClientAsync(projectRoot) {
-    if (await isGitInstalledAndConfiguredAsync()) {
-        return new GitClient();
+    if (await isGitInstalledAndConfiguredAsync(projectRoot)) {
+        return new GitClient(projectRoot);
     }
     else {
         return new NoVCSClient(projectRoot);
     }
 }
 class GitClient {
+    projectRoot;
+    constructor(projectRoot) {
+        this.projectRoot = projectRoot;
+    }
     async getRootPathAsync() {
-        return (await (0, spawn_async_1.default)('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
+        return (await (0, spawn_async_1.default)('git', ['rev-parse', '--show-toplevel'], { cwd: this.projectRoot })).stdout.trim();
     }
     async isFileIgnoredAsync(filePath) {
         try {
@@ -93,7 +97,7 @@ class NoVCSClient {
         return ignore.ignores(filePath);
     }
 }
-async function isGitInstalledAndConfiguredAsync() {
+async function isGitInstalledAndConfiguredAsync(projectRoot) {
     try {
         await (0, spawn_async_1.default)('git', ['--help']);
     }
@@ -104,7 +108,7 @@ async function isGitInstalledAndConfiguredAsync() {
         throw error;
     }
     try {
-        await (0, spawn_async_1.default)('git', ['rev-parse', '--show-toplevel']);
+        await (0, spawn_async_1.default)('git', ['rev-parse', '--show-toplevel'], { cwd: projectRoot });
     }
     catch {
         return false;
