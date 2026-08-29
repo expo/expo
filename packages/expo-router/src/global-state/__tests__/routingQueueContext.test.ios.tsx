@@ -4,6 +4,7 @@ import { use, type ContextType } from 'react';
 import { router } from '../router';
 import type { RoutingIntent } from '../routingQueue';
 import {
+  NavigationPendingContext,
   PendingIntentsContext,
   RoutingQueueApiContext,
   RoutingQueueProvider,
@@ -64,11 +65,13 @@ it('warns when a second root binds the imperative router', () => {
 
 it('preserves enqueue order and drains on the following render', () => {
   const snapshots: RoutingIntent[][] = [];
+  const pendingSnapshots: boolean[] = [];
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
   function Consumer() {
     enqueue = useEnqueueRoutingIntent();
     snapshots.push(use(PendingIntentsContext));
+    pendingSnapshots.push(use(NavigationPendingContext));
     return null;
   }
 
@@ -84,6 +87,7 @@ it('preserves enqueue order and drains on the following render', () => {
   });
 
   expect(snapshots).toEqual([[], [actionIntent('FIRST'), actionIntent('SECOND')]]);
+  expect(pendingSnapshots).toEqual([false, true]);
 });
 
 it('keeps intents added while a batch is being dequeued', () => {
