@@ -81,19 +81,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
             coordinate: annotation.clLocationCoordinate2D,
             anchor: annotation.unitPoint
           ) {
-            ZStack {
-              if let icon = annotation.icon {
-                Image(uiImage: icon.ref)
-                  .resizable()
-                  .frame(width: 50, height: 50)
-              } else {
-                RoundedRectangle(cornerRadius: 5)
-                  .fill(annotation.backgroundColor)
-              }
-              Text(annotation.text)
-                .foregroundStyle(annotation.textColor)
-                .padding(5)
-            }
+            AnnotationContent(
+              annotation: annotation,
+              appearances: props.animateAnnotations ? state.annotationAppearances : nil
+            )
           }
         }
 
@@ -127,6 +118,9 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       }
       .onChange(of: props.cameraPosition) { _, newValue in
         state.mapCameraPosition = convertToMapCamera(position: newValue)
+      }
+      .onChange(of: props.annotations.map(\.id)) { _, ids in
+        state.annotationAppearances.retain(ids)
       }
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center
