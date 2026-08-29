@@ -6,9 +6,11 @@ import { vol } from 'memfs';
 import type { ExportAssetMap } from '../../../../export/saveAssets';
 import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';
 import type { BundlerStartOptions } from '../../BundlerDevServer';
+import { evalMetroNoHandling } from '../../getStaticRenderFunctions';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
+import * as ErrorInterface from '../metroErrorInterface';
 import { warnInvalidWebOutput } from '../router';
 import { observeAnyFileChanges, observeFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
@@ -46,6 +48,10 @@ jest.mock('../instantiateMetro', () => ({
     middleware: { use: jest.fn() },
     server: { listen: jest.fn(), close: jest.fn() },
   })),
+}));
+jest.mock('../../getStaticRenderFunctions', () => ({
+  ...jest.requireActual('../../getStaticRenderFunctions'),
+  evalMetroNoHandling: jest.fn(),
 }));
 
 jest.mock('../../middleware/mutations');
@@ -545,5 +551,76 @@ describe('exportServerRouteAsync', () => {
       ].join('\n')
     );
     expect(files.has('_expo/server/render.js.map')).toBe(true);
+  });
+});
+
+describe('ssrImportApiRoute', () => {
+  // https://github.com/expo/expo/issues/33857
+  // In development, `ssrImportApiRoute` re-evaluated the API route module on every
+  // request, resetting any module-scope state (e.g. counters, long-lived connections)
+  // between requests, unlike the production `@expo/server` runtime which evaluates the
+  // module once and reuses it.
+  function setupApiRouteDevServer() {
+    const devServer = createDevServerForStaticPageTests();
+    devServer['ssrLoadModuleContents'] = jest.fn(async (filePath: string) => ({
+      src: `module.exports = { GET: () => {} };`,
+      filename: filePath,
+      map: '',
+    })) as any;
+    jest.mocked(evalMetroNoHandling).mockClear();
+    jest.mocked(evalMetroNoHandling).mockImplementation(() => ({ GET: jest.fn() }) as any);
+    return devServer;
+  }
+
+  it('evaluates the module once and reuses it across requests', async () => {
+    const devServer = setupApiRouteDevServer();
+
+    const first = await devServer['ssrImportApiRoute']('/app/foo+api.ts', { platform: 'web' });
+    const second = await devServer['ssrImportApiRoute']('/app/foo+api.ts', { platform: 'web' });
+
+    expect(evalMetroNoHandling).toHaveBeenCalledTimes(1);
+    expect(devServer['ssrLoadModuleContents']).toHaveBeenCalledTimes(1);
+    expect(first).toBe(second);
+  });
+
+  it('evaluates each API route file independently', async () => {
+    const devServer = setupApiRouteDevServer();
+
+    await devServer['ssrImportApiRoute']('/app/foo+api.ts', { platform: 'web' });
+    await devServer['ssrImportApiRoute']('/app/bar+api.ts', { platform: 'web' });
+
+    expect(evalMetroNoHandling).toHaveBeenCalledTimes(2);
+  });
+
+  it('rebuilds a fresh error Response on every request instead of reusing a consumed one', async () => {
+    // A cached error `Response` would have its one-shot body stream already read by the
+    // first request, so a second request reusing the same instance must still work.
+    const devServer = createDevServerForStaticPageTests();
+    devServer['ssrLoadModuleContents'] = jest.fn(async () => {
+      throw new Error('boom');
+    }) as any;
+    jest.spyOn(ErrorInterface, 'getErrorOverlayHtmlAsync').mockResolvedValue('<html>error</html>');
+
+    const first = await devServer['ssrImportApiRoute']('/app/broken+api.ts', { platform: 'web' });
+    const second = await devServer['ssrImportApiRoute']('/app/broken+api.ts', {
+      platform: 'web',
+    });
+
+    expect(first).toBeInstanceOf(Response);
+    expect(second).toBeInstanceOf(Response);
+    expect(first).not.toBe(second);
+    // Both response bodies must still be independently readable.
+    await expect((first as Response).text()).resolves.toBe('<html>error</html>');
+    await expect((second as Response).text()).resolves.toBe('<html>error</html>');
+  });
+
+  it('re-evaluates the module after the route cache is invalidated', async () => {
+    const devServer = setupApiRouteDevServer();
+
+    await devServer['ssrImportApiRoute']('/app/foo+api.ts', { platform: 'web' });
+    devServer['invalidateApiRouteCache']();
+    await devServer['ssrImportApiRoute']('/app/foo+api.ts', { platform: 'web' });
+
+    expect(evalMetroNoHandling).toHaveBeenCalledTimes(2);
   });
 });

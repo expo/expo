@@ -1809,18 +1809,42 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return route;
   }
 
+  // Evaluated API route modules, keyed by file path. Unlike `pendingRouteOperations` (which
+  // only caches the bundled source), this keeps the module's live exports around between
+  // requests so module-scope state behaves like it does in production (`@expo/server`
+  // evaluates a route module once and reuses it), instead of resetting on every request.
+  // Only successfully evaluated modules are cached here: the `Response` returned on error is a
+  // one-shot object (its body stream can only be read once), so it's always rebuilt per-request,
+  // matching prior behavior and avoiding a "body stream already read" failure on a later request.
+  // https://github.com/expo/expo/issues/33857
+  private evaluatedApiRoutes = new Map<string, Promise<Record<string, Function>>>();
+
   private async ssrImportApiRoute(
     filePath: string,
     { platform }: { platform: string }
   ): Promise<null | Record<string, Function> | Response> {
-    // TODO: Cache the evaluated function.
+    if (this.evaluatedApiRoutes.has(filePath)) {
+      return this.evaluatedApiRoutes.get(filePath)!;
+    }
+
     try {
       const apiRoute = await this.bundleApiRoute(filePath, { platform });
 
       if (!apiRoute?.src) {
         return null;
       }
-      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename, apiRoute.map);
+
+      // Re-check the cache after the (async) bundle step so concurrent first requests for the
+      // same route share a single evaluated module instance instead of racing to overwrite it.
+      if (!this.evaluatedApiRoutes.has(filePath)) {
+        this.evaluatedApiRoutes.set(
+          filePath,
+          Promise.resolve(
+            evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename, apiRoute.map)
+          )
+        );
+      }
+      return this.evaluatedApiRoutes.get(filePath)!;
     } catch (error) {
       // Format any errors that were thrown in the global scope of the evaluation.
       if (error instanceof Error) {
@@ -1851,6 +1875,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
+    this.evaluatedApiRoutes.clear();
   }
 
   /**
