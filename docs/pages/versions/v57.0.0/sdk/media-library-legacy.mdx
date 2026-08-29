@@ -222,10 +222,6 @@ Therefore, when creating a new asset, instead of creating the asset and then mov
 
 On Android, when using `getAssetsAsync` without `resolveWithFullInfo: true`, image orientation may be incorrect because EXIF data (which includes orientation) is only read when that option is enabled.
 
-### Performance impact of `resolveWithFullInfo`
-
-On Android, enabling `resolveWithFullInfo: true` in `getAssetsAsync` significantly increases request time (~5×), because the library fetches EXIF and location data per image. The library resolves location and EXIF data for image assets only. iOS includes GPS location for all asset types in batch results, and this option does nothing.
-
 ## API
 
 ```js

@@ -33,7 +33,7 @@ func exportAssetInfo(asset: PHAsset) -> [String: Any?] {
 
 func exportAsset(asset: PHAsset) -> [String: Any?] {
   let fileName = asset.value(forKey: "filename")
-  return [
+  var assetDict: [String: Any?] = [
     "id": asset.localIdentifier,
     "filename": fileName,
     "uri": assetUriForLocalId(localId: asset.localIdentifier),
@@ -46,11 +46,14 @@ func exportAsset(asset: PHAsset) -> [String: Any?] {
     // Uses required reason API based on the following reason: 0A2A.1
     "modificationTime": exportDate(asset.modificationDate),
     "duration": asset.duration,
-    // `PHAsset.location` is already loaded; including it here avoids N calls to
-    // `getAssetInfoAsync` when batch-fetching assets that need GPS coordinates.
-    "location": exportLocation(location: asset.location),
     "pairedVideoAsset": nil
   ]
+  // Including location here avoids N calls to `getAssetInfoAsync` when
+  // batch-fetching assets that need GPS coordinates. Assigned via subscript so
+  // the key is omitted (JS `undefined`, matching `location?: Location`) when
+  // the asset has no GPS data — a dictionary literal would bridge nil to JS `null`.
+  assetDict["location"] = exportLocation(location: asset.location)
+  return assetDict
 }
 
 func exportLocation(location: CLLocation?) -> [String: Double]? {
