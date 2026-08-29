@@ -37,7 +37,11 @@ export type BottomSheetDialogProps = {
   showHandle?: boolean;
   /** Pixel height for snap-point sheets. Omit to size to content. */
   height?: number;
-  /** Close when a drag ends below this height. Defaults to a small px threshold. */
+  /**
+   * Lowest snap height in pixels.
+   * A drag closes once it ends far enough below this value (a small px margin).
+   * Without it, that same margin is measured from 0.
+   */
   minSnapHeight?: number;
   /** Called after a drag that did not dismiss, with the predicted pixel height. */
   onDragEnd?: (height: number) => void;
