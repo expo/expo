@@ -152,7 +152,6 @@
     "expo-module-scripts": "workspace:*",
     "expo-modules-autolinking": "workspace:*",
     "expo-router": "workspace:*",
-    "find-process": "^1.4.7",
     "jest-matcher-utils": "^29.7.0",
     "klaw-sync": "^6.0.0",
     "memfs": "^3.2.0",
