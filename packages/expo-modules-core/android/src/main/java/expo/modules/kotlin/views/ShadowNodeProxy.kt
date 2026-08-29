@@ -28,6 +28,20 @@ class ShadowNodeProxy(expoView: ExpoView) {
     }
   }
 
+  /**
+   * Reports where the native layout system drew this view inside its `Host`, in dp relative to the
+   * `Host`'s origin.
+   */
+  fun setContentOrigin(x: Double, y: Double) {
+    val view = weakExpoView.get() ?: return
+    stateUpdater.setContentOrigin(view.id, x, y)
+  }
+
+  fun clearContentOrigin() {
+    val view = weakExpoView.get() ?: return
+    stateUpdater.clearContentOrigin(view.id)
+  }
+
   private fun scheduleFlush(flush: (stateWrapper: Any) -> Unit) {
     pendingFlush = flush
     val view = weakExpoView.get() ?: return

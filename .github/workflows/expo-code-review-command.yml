@@ -51,26 +51,34 @@ jobs:
   command:
     # Manual dispatch (write access required), or PR comments starting with
     # /review, /expo-review, @expo-bot review, or @expo-bot check.
+    # PREFIX matching, deliberately loose (see agent-commands.yml): expression
+    # literals cannot express a newline, so an exact-body or trailing-space
+    # match misses `@expo-bot review\n` and the command dies without a trace.
+    # This gate only decides "command-shaped, from a maintainer"; the parse
+    # step owns exact shapes. The parse step stays silent for prefix-matched
+    # shapes that agent-commands.yml owns (`@expo-bot review-feedback` is a
+    # work task, `@expo-bot reviewed` is prose) and replies to the thread when
+    # it rejects a mangled slash form (`/reviewx`) that nothing else owns.
     # @ref LLP 0009#workflow-security-posture [implements] — gate controls who triggers, not what code runs
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.issue.pull_request != null &&
       github.event.comment.user.login != 'expo-bot' &&
-      (github.event.comment.body == '/review' ||
-      startsWith(github.event.comment.body, '/review ') ||
-      github.event.comment.body == '/expo-review' ||
-      startsWith(github.event.comment.body, '/expo-review ') ||
-      github.event.comment.body == '@expo-bot review' ||
-      startsWith(github.event.comment.body, '@expo-bot review ') ||
-      github.event.comment.body == '@expo-bot check' ||
-      startsWith(github.event.comment.body, '@expo-bot check ')) &&
+      (startsWith(github.event.comment.body, '/review') ||
+      startsWith(github.event.comment.body, '/expo-review') ||
+      startsWith(github.event.comment.body, '@expo-bot review') ||
+      startsWith(github.event.comment.body, '@expo-bot check')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
-    # Job-level so a prose comment that the gate rejects cannot claim this
-    # group at workflow creation and cancel a real review already in flight.
+    # Job-level so a comment the gate rejects cannot claim this group at
+    # workflow creation. cancel-in-progress must stay FALSE now that the gate
+    # is prefix-loose: it admits shapes the parse step rejects (`@expo-bot
+    # reviewed`, `@expo-bot review-feedback`), and with `true` any of them
+    # would cancel a real review already in flight. The cost: a duplicate
+    # /review queues behind the running one instead of superseding it.
     concurrency:
       group: ai-code-review-cmd-${{ github.event.issue.number || inputs.pr }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     # Bound the run so a slow/stalled review fails fast rather than hanging. Keep it
     # above the passes budget (budget.totalPassesMinutes, 55m) + coordinator (10m) +
     # verification + setup, like the auto-review workflow's cap.
@@ -121,13 +129,25 @@ jobs:
                 rest=""
                 ;;
               *)
+                # Prefix-matched but not this workflow's verb: a work task
+                # (`review-feedback`, `checkout …`) or prose (`reviewed`).
+                # agent-commands.yml owns those shapes — stay silent.
                 echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
                 ;;
             esac
           else
             case "$first" in
               /review|/expo-review) rest=$(printf '%s' "$line" | cut -s -d' ' -f2-) ;;
-              *) echo "run=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              *)
+                # The prefix-loose gate admits mangled slash forms
+                # (`/reviewx`). Nothing else owns them, and a maintainer
+                # typed a command, so the rejection must not be silent: the
+                # reply step below posts `reject` to the thread. The reason
+                # must be a single line — it passes through GITHUB_OUTPUT.
+                echo "reject=\`$first\` is not a command — did you mean \`/review\`? Agent ids go after a space, e.g. \`/review correctness security\`." >> "$GITHUB_OUTPUT"
+                echo "::error::not a review command: $first"
+                exit 1
+                ;;
             esac
           fi
           # A bare command -> router picks; "all" -> every agent; names -> subset.
@@ -144,6 +164,18 @@ jobs:
             echo "agents=$agents"
             echo "route=$route"
           } >> "$GITHUB_OUTPUT"
+
+      # A maintainer typed a command and it did not launch — say so where it
+      # was typed (same contract as agent-commands.yml). Only mangled slash
+      # forms set `reject`; rejected @expo-bot shapes stay silent because
+      # agent-commands.yml owns them as work tasks or prose.
+      - name: Reply to a rejected command
+        if: always() && github.event_name == 'issue_comment' && steps.cmd.outputs.reject != ''
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          REJECT: ${{ steps.cmd.outputs.reject }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
 
       - name: Acknowledge
         # Comment path only — a manual dispatch has no comment to react to.

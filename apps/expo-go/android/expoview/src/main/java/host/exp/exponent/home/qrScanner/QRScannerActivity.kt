@@ -107,7 +107,7 @@ class QRScannerActivity : ComponentActivity() {
         cameraProviderFuture.addListener({
           val cameraProvider = cameraProviderFuture.get()
           val preview = Preview.Builder().build()
-          preview.surfaceProvider = previewView.surfaceProvider
+          preview.setSurfaceProvider(previewView.surfaceProvider)
 
           val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)

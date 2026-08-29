@@ -1,3 +1,4 @@
+import type { RouteState } from './attachRouteState';
 import type { NavigationState, PartialState, Route } from './types';
 
 type ResetState =
@@ -21,17 +22,7 @@ export type NavigateAction = {
     path?: string;
     merge?: boolean;
     pop?: boolean;
-  };
-  source?: string;
-  target?: string;
-};
-
-type NavigateDeprecatedAction = {
-  type: 'NAVIGATE_DEPRECATED';
-  payload: {
-    name: string;
-    params?: object;
-    merge?: boolean;
+    state?: RouteState;
   };
   source?: string;
   target?: string;
@@ -63,6 +54,7 @@ type PreloadAction = {
   payload: {
     name: string;
     params?: object;
+    state?: RouteState;
   };
   source?: string;
   target?: string;
@@ -80,7 +72,6 @@ export type InternalRouteNamesChangedAction = {
 export type Action =
   | GoBackAction
   | NavigateAction
-  | NavigateDeprecatedAction
   | ResetAction
   | SetParamsAction
   | ReplaceParamsAction
@@ -136,30 +127,6 @@ export function navigate(...args: any): Action {
     }
 
     return { type: 'NAVIGATE', payload };
-  }
-}
-
-export function navigateDeprecated(
-  ...args:
-    | [name: string]
-    | [name: string, params: object | undefined]
-    | [options: { name: string; params?: object }]
-): Action {
-  if (typeof args[0] === 'string') {
-    return {
-      type: 'NAVIGATE_DEPRECATED',
-      payload: { name: args[0], params: args[1] },
-    };
-  } else {
-    const payload = args[0] || {};
-
-    if (!('name' in payload)) {
-      throw new Error(
-        'You need to specify a name when calling navigateDeprecated with an object as the argument. See https://reactnavigation.org/docs/navigation-actions#navigatelegacy for usage.'
-      );
-    }
-
-    return { type: 'NAVIGATE_DEPRECATED', payload };
   }
 }
 

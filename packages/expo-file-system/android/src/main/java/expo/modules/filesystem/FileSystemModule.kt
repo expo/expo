@@ -293,9 +293,9 @@ class FileSystemModule : Module() {
 
       Property("size") { file ->
         try {
-          file.size
+          file.size ?: 0
         } catch (e: Exception) {
-          null
+          0
         }
       }
 

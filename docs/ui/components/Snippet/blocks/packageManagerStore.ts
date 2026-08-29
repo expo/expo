@@ -1,8 +1,11 @@
 export type PackageManagerKey = 'npm' | 'yarn' | 'pnpm' | 'bun';
 
-const STORAGE_KEY = 'expo-docs-terminal-package-manager';
+export const PACKAGE_MANAGER_STORAGE_KEY = 'expo-docs-terminal-package-manager';
 export const PACKAGE_MANAGER_ORDER: PackageManagerKey[] = ['npm', 'yarn', 'pnpm', 'bun'];
+export const DEFAULT_PACKAGE_MANAGER: PackageManagerKey = 'npm';
 const PACKAGE_MANAGER_SET = new Set<PackageManagerKey>(PACKAGE_MANAGER_ORDER);
+
+export const packageManagerClass = (manager: PackageManagerKey) => `pm-${manager}`;
 
 type PackageManagerStore = {
   value: PackageManagerKey | null;
@@ -22,7 +25,7 @@ const getStoredManager = () => {
   if (typeof window === 'undefined') {
     return null;
   }
-  const stored = window.localStorage.getItem(STORAGE_KEY);
+  const stored = window.localStorage.getItem(PACKAGE_MANAGER_STORAGE_KEY);
   return stored && PACKAGE_MANAGER_SET.has(stored as PackageManagerKey)
     ? (stored as PackageManagerKey)
     : null;
@@ -39,6 +42,16 @@ const initPackageManagerStore = () => {
   }
 };
 
+const applyPackageManagerClass = (manager: PackageManagerKey) => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  const { classList } = document.documentElement;
+  PACKAGE_MANAGER_ORDER.forEach(key => {
+    classList.toggle(packageManagerClass(key), key === manager);
+  });
+};
+
 const notifyPackageManagerStore = () => {
   packageManagerStore.listeners.forEach(listener => {
     listener();
@@ -50,6 +63,7 @@ const updatePackageManagerStore = (manager: PackageManagerKey | null) => {
     return;
   }
   packageManagerStore.value = manager;
+  applyPackageManagerClass(manager ?? DEFAULT_PACKAGE_MANAGER);
   notifyPackageManagerStore();
 };
 
@@ -59,7 +73,7 @@ const ensureStorageListener = () => {
   }
   packageManagerStore.storageListenerAttached = true;
   window.addEventListener('storage', event => {
-    if (event.key !== STORAGE_KEY) {
+    if (event.key !== PACKAGE_MANAGER_STORAGE_KEY) {
       return;
     }
     const nextValue =
@@ -88,7 +102,7 @@ export const getPackageManagerServerSnapshot = () => null;
 
 export const setPackageManagerPreference = (manager: PackageManagerKey) => {
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(STORAGE_KEY, manager);
+    window.localStorage.setItem(PACKAGE_MANAGER_STORAGE_KEY, manager);
   }
   updatePackageManagerStore(manager);
 };

@@ -13,6 +13,19 @@ import { getHeaderFilesFromPodspecs } from './ReactHeaderMappings';
 
 const ROOT_PATH_PLACEHOLDER = '${ROOT_PATH}';
 
+/**
+ * Resolves a header's physical location for VFS `external-contents`.
+ * Receives the VFS key (the import path, e.g. `yoga/algorithm/FlexDirection.h`),
+ * the normalized pod spec name, and the podspec-declared target path.
+ * Returns a `${ROOT_PATH}`-based path, or null when the header is not present
+ * in the prebuilt artifacts and must be staged from the RN source tree.
+ */
+export type HeaderSourceResolver = (
+  key: string,
+  podSpecName: string,
+  target: string
+) => string | null;
+
 interface HeaderMapping {
   key: string;
   path: string;
@@ -40,6 +53,20 @@ interface VFSOverlay {
 
 function toPosix(value: string): string {
   return value.split(/[\\/]/).join('/');
+}
+
+/**
+ * Computes the VFS key (virtual import path) for a header, matching how code
+ * imports it (e.g. `<yoga/algorithm/FlexDirection.h>`). Headers without a
+ * directory component and without a `header_dir` are prefixed with the pod
+ * spec name to avoid collisions.
+ */
+export function vfsKeyFor(target: string, headerDir: string, podSpecName: string): string {
+  let key = toPosix(target);
+  if (!key.includes('/') && (!headerDir || headerDir === '')) {
+    key = `${podSpecName}/${key}`;
+  }
+  return key;
 }
 
 /**
@@ -195,11 +222,13 @@ function generateEntryYAML(entry: VFSEntry, indent: number): string {
 function createVFSOverlayContents(
   rootFolder: string,
   stockHeaders?: Map<string, Set<string>>,
-  duplicateBasenames?: Map<string, Set<string>>
+  duplicateBasenames?: Map<string, Set<string>>,
+  resolveSourcePath?: HeaderSourceResolver,
+  extraMappings?: { key: string; path: string }[]
 ): VFSOverlay {
   const podSpecsWithHeaderFiles = getHeaderFilesFromPodspecs(rootFolder);
 
-  const mappings: HeaderMapping[] = [];
+  const mappings: HeaderMapping[] = [...(extraMappings ?? [])];
 
   Object.keys(podSpecsWithHeaderFiles).forEach((podspecPath) => {
     const headerMaps = podSpecsWithHeaderFiles[podspecPath];
@@ -207,16 +236,17 @@ function createVFSOverlayContents(
 
     headerMaps.forEach((headerMap) => {
       headerMap.headers.forEach((header) => {
-        let key = toPosix(header.target);
-
-        // If no headerDir, prefix with podSpecName to avoid collisions
-        if (!key.includes('/') && (!headerMap.headerDir || headerMap.headerDir === '')) {
-          key = `${podSpecName}/${key}`;
-        }
+        const key = vfsKeyFor(header.target, headerMap.headerDir, podSpecName);
 
         let sourcePath: string;
 
-        if (stockHeaders) {
+        if (resolveSourcePath) {
+          // Resolver mode (RN 0.87+ composed layout): the resolver locates the header
+          // in the prebuilt artifacts; null means it must come from the staging dir.
+          sourcePath =
+            resolveSourcePath(key, podSpecName, toPosix(header.target)) ??
+            `${ROOT_PATH_PLACEHOLDER}/../React-extra-headers/${podSpecName}/${toPosix(header.target)}`;
+        } else if (stockHeaders) {
           // VFS-only mode: map to flat stock location or staging dir
           const podStockHeaders = stockHeaders.get(podSpecName);
           const podDuplicates = duplicateBasenames?.get(podSpecName);
@@ -267,8 +297,16 @@ function createVFSOverlayContents(
 export function createVFSOverlay(
   rootFolder: string,
   stockHeaders?: Map<string, Set<string>>,
-  duplicateBasenames?: Map<string, Set<string>>
+  duplicateBasenames?: Map<string, Set<string>>,
+  resolveSourcePath?: HeaderSourceResolver,
+  extraMappings?: { key: string; path: string }[]
 ): string {
-  const overlay = createVFSOverlayContents(rootFolder, stockHeaders, duplicateBasenames);
+  const overlay = createVFSOverlayContents(
+    rootFolder,
+    stockHeaders,
+    duplicateBasenames,
+    resolveSourcePath,
+    extraMappings
+  );
   return generateVFSOverlayYAML(overlay);
 }

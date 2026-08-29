@@ -246,6 +246,8 @@ From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true`
 
 From **SDK 55**, this is enabled automatically for apps in monorepos.
 
+Packages that aren't native modules can break when they're duplicated too. A library that creates a React context is a common example. To apply the same checks and resolution to those packages, see [Checking packages that aren't native modules](/modules/autolinking/#checking-packages-that-arent-native-modules).
+
 #### Monorepos with TV projects
 
 See the [Building for TV](/guides/building-for-tv/#modify-dependencies-for-tv) dependencies section for the special `react-native` dependency requirements when a TV project is contained in a monorepo with other Expo projects.

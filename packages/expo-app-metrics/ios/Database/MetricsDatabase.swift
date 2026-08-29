@@ -332,14 +332,14 @@ final class MetricsDatabase: Sendable {
   /// Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Dispatch uses
   /// this with the persisted "last dispatched metric id" cursor to fetch only new rows.
   @AppMetricsActor
-  func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
+  func getMetrics(afterId cursor: Int64, limit: Int? = nil) throws -> [MetricRow] {
     let statement = try database.prepare(
       """
       SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params
-      FROM metrics WHERE id > ?1 ORDER BY id ASC
+      FROM metrics WHERE id > ?1 ORDER BY id ASC LIMIT ?2
       """
     )
-    try statement.bindAll([cursor])
+    try statement.bindAll([cursor, limit ?? -1])
     var rows: [MetricRow] = []
     try statement.forEachRow { row in
       rows.append(MetricRow(row: row))
@@ -349,14 +349,14 @@ final class MetricsDatabase: Sendable {
 
   /// Returns log rows whose `id` is greater than `cursor`, in ascending id order.
   @AppMetricsActor
-  func getLogs(afterId cursor: Int64) throws -> [LogRow] {
+  func getLogs(afterId cursor: Int64, limit: Int? = nil) throws -> [LogRow] {
     let statement = try database.prepare(
       """
       SELECT id, sessionId, timestamp, severity, name, body, attributes, droppedAttributesCount
-      FROM logs WHERE id > ?1 ORDER BY id ASC
+      FROM logs WHERE id > ?1 ORDER BY id ASC LIMIT ?2
       """
     )
-    try statement.bindAll([cursor])
+    try statement.bindAll([cursor, limit ?? -1])
     var rows: [LogRow] = []
     try statement.forEachRow { row in
       rows.append(LogRow(row: row))

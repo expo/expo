@@ -38,7 +38,7 @@ export function requireOptionalNativeModule<ModuleType = any>(
     return (
       globalThis.expo?.modules?.[moduleName] ??
       NativeModulesProxy[moduleName] ??
-      createTurboModuleToExpoProxy(TurboModuleRegistry.get(moduleName), moduleName) ??
+      createTurboModuleToExpoProxy(TurboModuleRegistry.get(moduleName) ?? null, moduleName) ??
       null
     );
   } catch (e) {

@@ -8,6 +8,7 @@ import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
+import io.mockk.coEvery
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
@@ -48,7 +49,7 @@ internal class GetAssetsTest {
     every { getQueryFromOptions(any()) } returns GetAssetsQuery(selection = "", order = "", limit = 10.0, offset = 0)
 
     mockkStatic(::putAssetsInfo)
-    every { putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs
+    coEvery { putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs
   }
 
   @After

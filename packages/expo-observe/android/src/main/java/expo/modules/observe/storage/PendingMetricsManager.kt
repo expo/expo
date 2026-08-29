@@ -17,7 +17,11 @@ class PendingMetricsManager(
     database.pendingMetricDao().insertAll(pendingMetrics)
   }
 
-  suspend fun getAllPendingMetricIds(): List<String> = database.pendingMetricDao().getAllMetricIds()
+  suspend fun getPendingMetricIds(limit: Int): List<String> = database.pendingMetricDao().getMetricIds(limit)
+
+  suspend fun hasPendingMetrics(): Boolean = database.pendingMetricDao().hasMetricIds()
+
+  suspend fun removeAllPendingMetrics() = database.pendingMetricDao().deleteAll()
 
   suspend fun removePendingMetrics(metricIds: List<String>) {
     database.withTransaction {

@@ -215,12 +215,16 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       });
     });
 
-    it('Allows reading files from assets', () => {
+    it('Allows reading files from assets', async () => {
       const dir = new Directory(Paths.bundle);
 
       if (Platform.OS === 'ios') {
         expect(dir.list().map((i) => i.name)).toContain('Info.plist');
         expect(new File(Paths.bundle, 'Info.plist').size > 2000).toBe(true);
+
+        const privacyManifest = new File(Paths.bundle, 'PrivacyInfo.xcprivacy');
+        expect(await privacyManifest.text()).toContain('<key>NSPrivacyAccessedAPITypes</key>');
+        expect((await privacyManifest.bytes()).length).toBeGreaterThan(100);
       } else {
         expect(dir.list().map((i) => i.name)).toContain('expo-root.pem');
         expect(new File(Paths.bundle, 'expo-root.pem').size > 1000).toBe(true);
@@ -1871,11 +1875,9 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(error).not.toBeNull();
       });
 
-      it('returns null size and md5 for nonexistent files', async () => {
+      it('returns zero size and null md5 for nonexistent files', async () => {
         const file = new File(testDirectory, 'file2.txt');
-        // @ts-expect-error `size` is typed `number`, but a nonexistent file reports
-        // `null`, which is what this spec checks.
-        expect(file.size).toBe(null);
+        expect(file.size).toBe(0);
         expect(file.md5).toBe(null);
       });
     });
