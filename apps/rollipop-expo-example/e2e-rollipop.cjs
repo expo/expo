@@ -12,7 +12,10 @@ const path = require('node:path');
 const vm = require('node:vm');
 const http = require('node:http');
 
-const ROOT = '/Users/adm/Documents/Repos/rollipop-expo-integration';
+// Derive the monorepo root from this file's location so the harness runs from
+// any clone, not just one developer's working directory.
+// Layout: <root>/packages/expo/apps/rollipop-expo-example/e2e-rollipop.cjs
+const ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 const EXPO_CLI = path.join(ROOT, 'packages/expo/packages/@expo/cli/bin/cli.js');
 const ROLLIPOP = path.join(ROOT, 'packages/rollipop/packages/rollipop');
 const APP = path.join(ROOT, 'apps/rollipop-expo-example');
