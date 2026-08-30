@@ -110,7 +110,7 @@ async function startStaticServerAsync(dist: string, options: Options) {
 
 /**
  * Whether the request is a document navigation, such as opening a URL or reloading a page.
- * Only navigations may fall back to the single-page app shell — a missing script, stylesheet,
+ * Only navigations may fall back to the single-page app shell. A missing script, stylesheet,
  * or image must still 404 instead of resolving to HTML.
  */
 function isNavigationRequest(req: http.IncomingMessage): boolean {
