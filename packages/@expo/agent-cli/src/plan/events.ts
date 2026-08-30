@@ -28,11 +28,14 @@ declare module '2g' {
       buildLocation: PlanBuildLocation | null;
     };
     /**
-     * An interactive run was offered a plan with build-class steps and said no, so nothing ran.
+     * A plan with build-class steps was printed to a terminal without `--yes`, so nothing ran.
      *
-     * @see llp/0008-guardrails.rfc.md §Plan-with-cost dry run
+     * `rerun` is the command that runs it: the caller's own invocation plus the flag, which is
+     * what consent looks like now that this CLI asks no questions.
+     *
+     * @see llp/0008-guardrails.rfc.md §Consent is a re-run, never a prompt
      */
-    'cli:start_plan_declined': { rule: string; steps: number };
+    'cli:start_plan_needs_consent': { rule: string; steps: number; rerun: string };
     /** One plan step is about to be spawned. */
     'cli:start_plan_step': { id: string; argv: string[]; index: number; total: number };
     /** One plan step finished. A non-zero code stops the plan. */

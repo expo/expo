@@ -4,7 +4,6 @@ import type { SerializedError } from '2g';
 declare module '2g' {
   interface EventRegistry {
     'utils:agent_detect_failed': { error: SerializedError };
-    'utils:prompt_filter_error': { error: SerializedError };
   }
 }
 

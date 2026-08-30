@@ -88,14 +88,21 @@ describe('@expo/agent-cli dev', () => {
     expect(result.all).not.toContain('--passthrough');
   });
 
-  // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run
-  it('runs a plan that builds without asking, with no TTY to ask on', async () => {
-    // An agent and a CI job get the plan and its execution, never a prompt; the guardrail of
-    // llp/0008 is for a person watching a terminal.
+  // @ref llp/0008-guardrails.rfc.md §Consent is a re-run, never a prompt
+  it('runs a plan that builds, with no terminal watching it go by', async () => {
+    // An agent and a CI job get the plan and its execution. The guardrail of llp/0008 is for a
+    // person watching a terminal, and since wave 41 it is a stop rather than a question — so this
+    // run must show neither. The question is gone from the program entirely; the stop belongs to
+    // the interactive branch, which no e2e can reach (`spawnAgentCli` closes stdin, pipes stdout
+    // and sets `CI=1`, and `isInteractive()` needs all three the other way). Its own contract is
+    // pinned in `src/dev/__tests__/planConsent-test.ts`.
     const projectRoot = await setupAsync('dev-client-app');
     const result = await executeAgentCliAsync(projectRoot, ['dev', '--ios']);
 
     expect(result.all).not.toContain('Run this plan?');
+    expect(result.all).not.toContain('Nothing ran');
+    // Not merely un-asked: the plan it printed is the plan it ran.
+    expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
   });
 
   describe('dev-client-app — a plan of two steps', () => {

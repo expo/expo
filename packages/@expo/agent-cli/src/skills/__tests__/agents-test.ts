@@ -2,8 +2,6 @@ import { vol } from 'memfs';
 
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
-import { isInteractive } from '../../utils/interactive';
-import { promptAsync } from '../../utils/prompts';
 import {
   detectInstalledAgentsAsync,
   getAllAgents,
@@ -13,8 +11,6 @@ import {
 } from '../agents';
 
 jest.mock('../../log');
-jest.mock('../../utils/interactive', () => ({ isInteractive: jest.fn() }));
-jest.mock('../../utils/prompts', () => ({ promptAsync: jest.fn() }));
 
 const projectRoot = '/project';
 
@@ -32,10 +28,6 @@ function writeSkillsCache(json: object) {
 beforeEach(() => {
   vol.reset();
   createDirectories(projectRoot);
-  jest.mocked(isInteractive).mockReturnValue(false);
-  jest
-    .mocked(promptAsync)
-    .mockImplementation(async (question: any) => ({ [question.name]: [] }) as any);
 });
 
 describe('Listing agents', () => {
@@ -127,40 +119,17 @@ describe('Resolving agents', () => {
     });
   });
 
-  it('should use the persisted config over the prompt', async () => {
-    jest.mocked(isInteractive).mockReturnValue(true);
+  it('should use the persisted config over detection', async () => {
+    createDirectories(`${projectRoot}/.claude`);
     writeSkillsCache({ agents: ['cursor'] });
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
       agents: [{ id: 'cursor', displayName: 'Cursor', skillsDir: '.agents/skills' }],
       source: 'cache',
     });
-    expect(promptAsync).not.toHaveBeenCalled();
   });
 
-  it('should prompt with detected agents preselected when interactive', async () => {
-    jest.mocked(isInteractive).mockReturnValue(true);
-    createDirectories(`${projectRoot}/.claude`);
-    jest
-      .mocked(promptAsync)
-      .mockImplementation(async (question: any) => ({ [question.name]: ['claude-code'] }) as any);
-
-    await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
-      agents: [{ id: 'claude-code', displayName: 'Claude Code', skillsDir: '.claude/skills' }],
-      source: 'prompt',
-    });
-    expect(promptAsync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'multiselect',
-        choices: expect.arrayContaining([
-          expect.objectContaining({ value: 'claude-code', selected: true }),
-          expect.objectContaining({ value: 'cursor', selected: false }),
-        ]),
-      })
-    );
-  });
-
-  it('should fall back to the detected agents when non-interactive', async () => {
+  it('should fall back to the detected agents', async () => {
     createDirectories(`${projectRoot}/.cursor`, '/home/.gemini');
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
@@ -170,19 +139,15 @@ describe('Resolving agents', () => {
       ],
       source: 'detected',
     });
-    expect(promptAsync).not.toHaveBeenCalled();
   });
 
-  it('should prompt when the persisted list only contains unknown ids', async () => {
-    jest.mocked(isInteractive).mockReturnValue(true);
+  it('should detect when the persisted list only contains unknown ids', async () => {
     writeSkillsCache({ agents: ['not-an-agent'] });
-    jest
-      .mocked(promptAsync)
-      .mockImplementation(async (question: any) => ({ [question.name]: ['codex'] }) as any);
+    createDirectories(`${projectRoot}/.cursor`);
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
-      agents: [{ id: 'codex', displayName: 'Codex', skillsDir: '.agents/skills' }],
-      source: 'prompt',
+      agents: [{ id: 'cursor', displayName: 'Cursor', skillsDir: '.agents/skills' }],
+      source: 'detected',
     });
   });
 
@@ -197,17 +162,21 @@ describe('Resolving agents', () => {
     expect(error.message).toMatch(/claude-code, cursor, codex, opencode, windsurf, gemini-cli/);
   });
 
-  it('should throw when nothing is selected in the prompt', async () => {
-    jest.mocked(isInteractive).mockReturnValue(true);
+  // @ref llp/0008-guardrails.rfc.md §Consent is a re-run, never a prompt — the terminal used to
+  // get a checklist here, so the same project answered two different ways depending on who ran it.
+  it('should answer the same with a terminal watching as without one', async () => {
+    createDirectories(`${projectRoot}/.claude`);
+    const resolved = await resolveAgentsAsync(projectRoot, {});
 
-    const error = await resolveAgentsAsync(projectRoot, {}).catch((error) => error);
-
-    expect(error).toBeInstanceOf(CommandError);
-    expect(error.code).toBe('BAD_ARGS');
-    expect(error.message).toMatch(/--agent/);
+    process.stdout.isTTY = true;
+    try {
+      await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual(resolved);
+    } finally {
+      process.stdout.isTTY = false;
+    }
   });
 
-  it('should throw when non-interactive and no agent is detected', async () => {
+  it('should throw when no agent is detected', async () => {
     const error = await resolveAgentsAsync(projectRoot, {}).catch((error) => error);
 
     expect(error).toBeInstanceOf(CommandError);

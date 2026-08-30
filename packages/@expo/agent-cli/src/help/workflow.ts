@@ -80,6 +80,11 @@ ${stepLines(oneTimeSetup, null)}
     A failure under --json is still one object on stdout, and always this shape:
       { "error": { "code", "message", "suggestedCommand", "needsHuman", "data" } }
 
+  ${color.heading('Nothing here asks you a question')}
+    No command opens a prompt, so nothing can block waiting for a keystroke. A step that costs
+    minutes stops instead, prints what it would have done, and prints the line that does it —
+    your own command with --yes on the end. Run that line to consent; nothing ran until you do.
+
   ${color.heading('Errors are prompts — the recovery is on the last lines, under one of three names')}
     Try: <command>        the tool did not work (1, and any failure it raised itself)
     Ask the user <...>    a person has to finish it (7), under "Needs a human <scenario>"

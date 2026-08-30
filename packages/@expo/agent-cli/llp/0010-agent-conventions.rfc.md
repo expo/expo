@@ -35,9 +35,20 @@ Rationale for the shape [inferred]:
 **`21` is reserved and no v1 command emits it** [added — 2026-08-26; the gap was found by
 [[0019-backend-parity-audit]] §What is still not tested]. Two things emptied it and neither is a
 bug. `build:wait` was the one command whose outcomes reached it, and it is deferred out of v1
-([[0016-v1-scope]] §The decision table, code in `src/deferred/build-wait/`). And a **declined plan
-exits `0`** by explicit decision, because nothing ran so nothing failed ([[0008-guardrails]]
-§Plan-with-cost dry run). That is the other cancellation a caller would expect to find here. The row
+([[0016-v1-scope]] §The decision table, code in `src/deferred/build-wait/`). And a **plan that
+stopped for consent exits `0`** by explicit decision, because nothing ran so nothing failed
+([[0008-guardrails]] §Consent is a re-run, never a prompt). That is the other cancellation a caller
+would expect to find here.
+
+The `0` there is the one place in this table where the code alone is not the whole answer, and it is
+recorded rather than hidden [wave 41, 2026-08-29]. `@expo/agent-cli dev` on a plan that builds prints
+the plan, prints `Run it: … --yes` and exits `0` without a dev server, so an agent that reads only
+the exit code reads a success it did not get — the "silent no-op" failure mode of §(a) Options
+without an action are an error, not help. Three things bound it: it needs a TTY, so it cannot
+happen to an agent driving a pipe; the text leads with `Nothing ran`; and `cli:start_plan_needs_consent`
+carries the fact and the `rerun` command on the event stream. An agent that has a pty and gates on
+the exit code alone is the residual case. Raising it to `21` would fix that and would also re-code
+every existing caller of a command that ran nothing, so it stays `0` until somebody is bitten. The row
 above says so because a table that lists a code an agent can never observe is an instruction to write
 a branch that never runs, and a wrong branch is worse than a missing one. The constant stays defined.
 The number keeps its meaning for the command that brings it back, and removing it would let a future

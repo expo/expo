@@ -38,7 +38,7 @@ import {
   type WrapperCrashTool,
 } from '../utils/wrapperCrash';
 import { appReachedDevice } from './buildEvidence';
-import { confirmPlanAsync } from './confirmPlan';
+import { hasPlanConsent } from './planConsent';
 import { event as devEvent } from './events';
 import { forwardedStepArgs, withForwardedExpoArgs } from './forwardedArgs';
 import {
@@ -136,10 +136,10 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
     reportFollowUps('dev', await resolveRunFollowUpsAsync(projectRoot, plan, options, null), {});
   }
 
-  // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run — the plan was printed above, so the
-  // person answering has seen what they are approving. Declining is not a failure: nothing ran,
-  // and nothing is wrong, so the command exits 0.
-  if (!(await confirmPlanAsync(plan, options))) {
+  // @ref llp/0008-guardrails.rfc.md §Consent is a re-run, never a prompt — the plan was printed
+  // above, so a run that stops here has already shown what it stopped short of. Stopping is not a
+  // failure: nothing ran, and nothing is wrong, so the command exits 0.
+  if (!hasPlanConsent(plan, options)) {
     return 0;
   }
 

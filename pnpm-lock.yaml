@@ -1805,9 +1805,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
-      '@types/prompts':
-        specifier: ^2.4.9
-        version: 2.4.9
       '@types/ws':
         specifier: ^8.5.4
         version: 8.18.1
@@ -1835,9 +1832,6 @@ importers:
       memfs:
         specifier: ^3.2.0
         version: 3.6.0
-      prompts:
-        specifier: ^2.3.2
-        version: 2.4.2
       typescript:
         specifier: ~6.0.3
         version: 6.0.3

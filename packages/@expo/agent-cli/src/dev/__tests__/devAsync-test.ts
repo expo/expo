@@ -12,12 +12,12 @@ import type { ProjectState } from '../../project/types';
 import { runDevServerAsync, type DevServerRun } from '../../start/startAsync';
 import { runExpoAsync, spawnExpoAsync } from '../../utils/expoCli';
 import { isInteractive } from '../../utils/interactive';
-import { confirmPlanAsync } from '../confirmPlan';
+import { hasPlanConsent } from '../planConsent';
 import { devAsync } from '../devAsync';
 import { resolveDevOptions } from '../resolveOptions';
 
 jest.mock('../../log');
-jest.mock('../confirmPlan', () => ({ confirmPlanAsync: jest.fn() }));
+jest.mock('../planConsent', () => ({ hasPlanConsent: jest.fn() }));
 jest.mock('../../plan/emit', () => ({ emitStartPlan: jest.fn() }));
 jest.mock('../../plan/events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 jest.mock('../../plan/lastBuild', () => ({
@@ -145,7 +145,7 @@ beforeEach(() => {
     result: { exitCode: 0, stdout: '', stderr: '' },
   });
   jest.mocked(runDevServerAsync).mockResolvedValue(devServerRun());
-  jest.mocked(confirmPlanAsync).mockResolvedValue(true);
+  jest.mocked(hasPlanConsent).mockReturnValue(true);
   mockLanAddress('192.168.1.5');
 });
 
@@ -216,22 +216,22 @@ describe(devAsync, () => {
     });
   });
 
-  // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run
-  describe('confirmation', () => {
-    it(`should ask about the plan before anything runs`, async () => {
+  // @ref llp/0008-guardrails.rfc.md §Consent is a re-run, never a prompt
+  describe('consent', () => {
+    it(`should check the plan for consent before anything runs`, async () => {
       mockStaleDevClientState();
 
       await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
-      expect(confirmPlanAsync).toHaveBeenCalledWith(
+      expect(hasPlanConsent).toHaveBeenCalledWith(
         expect.objectContaining({ rule: 'dev-client-stale' }),
         expect.objectContaining({ mode: 'run' })
       );
     });
 
-    it(`should run nothing and exit 0 when the plan is declined`, async () => {
+    it(`should run nothing and exit 0 when the plan has no consent`, async () => {
       mockStaleDevClientState();
-      jest.mocked(confirmPlanAsync).mockResolvedValue(false);
+      jest.mocked(hasPlanConsent).mockReturnValue(false);
 
       await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(0);
 
@@ -239,12 +239,12 @@ describe(devAsync, () => {
       expect(runDevServerAsync).not.toHaveBeenCalled();
     });
 
-    it(`should never ask in --plan mode, which runs nothing anyway`, async () => {
+    it(`should never check in --plan mode, which runs nothing anyway`, async () => {
       mockStaleDevClientState();
 
       await devAsync(projectRoot, resolveDevOptions(['--plan', '--ios']));
 
-      expect(confirmPlanAsync).not.toHaveBeenCalled();
+      expect(hasPlanConsent).not.toHaveBeenCalled();
     });
   });
 

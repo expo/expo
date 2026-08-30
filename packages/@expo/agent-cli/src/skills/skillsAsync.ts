@@ -69,8 +69,10 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
   }
 
   const { agents, source } = await resolveAgentsAsync(projectRoot, { agents: options.agents });
-  // Explicit selections become the new cache, so `--agent` can also update an outdated one.
-  if ((source === 'prompt' || source === 'flags') && !options.dryRun) {
+  // The explicit selection becomes the new cache, so `--agent` also updates an outdated one. It is
+  // the only source that does: detection is cheap and recomputed every run, and freezing its
+  // answer would outlive the marker directory it read.
+  if (source === 'flags' && !options.dryRun) {
     await persistAgentSelectionAsync(projectRoot, agents);
   }
 

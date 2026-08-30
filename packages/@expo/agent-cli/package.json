@@ -49,7 +49,6 @@
     "2g": "^0.4.3",
     "@types/getenv": "^1.0.0",
     "@types/node": "^22.14.0",
-    "@types/prompts": "^2.4.9",
     "@types/ws": "^8.5.4",
     "@vercel/ncc": "^0.38.3",
     "agent-cli-detector": "0.1.6",
@@ -59,7 +58,6 @@
     "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "memfs": "^3.2.0",
-    "prompts": "^2.3.2",
     "typescript": "~6.0.3",
     "ws": "^8.12.1"
   }

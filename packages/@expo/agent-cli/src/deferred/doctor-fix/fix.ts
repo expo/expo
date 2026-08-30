@@ -42,7 +42,7 @@ export const agentCliDoctorFix: Command = async (argv) => {
         `--apply                Actually do it. Without this, nothing is touched.`,
         `--platform <name>      ios, android or all. Default: the platforms with native dirs`,
         `--allow-machine-wide   Include the steps that affect every project on this machine`,
-        `-y, --yes              Skip the confirmation an interactive terminal is asked`,
+        `-y, --yes              Consent up front to a reset that would otherwise stop`,
         `--no-checkpoint        Do not snapshot the tracked files before applying`,
         `--json                 Print the plan and the results as one JSON object`,
         `--no-followups         Leave the suggested follow-up commands out of the report`,

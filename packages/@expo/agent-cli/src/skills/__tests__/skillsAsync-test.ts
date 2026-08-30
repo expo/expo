@@ -93,17 +93,17 @@ describe('syncSkillsAsync', () => {
     );
   });
 
-  it('should persist agent selection when it came from the prompt', async () => {
+  it('should not persist a selection that came from detection, which is recomputed each run', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent],
-      source: 'prompt',
+      source: 'detected',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [], skipped: [] });
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
-    expect(persistAgentSelectionAsync).toHaveBeenCalledWith('/root', [claudeAgent]);
+    expect(persistAgentSelectionAsync).not.toHaveBeenCalled();
   });
 
   it('should persist the selection from --agent flags as the new cache', async () => {
@@ -154,7 +154,7 @@ describe('syncSkillsAsync', () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent],
-      source: 'prompt',
+      source: 'flags',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [], skipped: [] });
 

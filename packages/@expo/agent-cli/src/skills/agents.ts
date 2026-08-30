@@ -6,8 +6,6 @@ import * as Log from '../log';
 import { directoryExistsAsync } from '../utils/dir';
 import { ensureDotExpoProjectDirectoryInitialized } from '../utils/dotExpo';
 import { CommandError } from '../utils/errors';
-import { isInteractive } from '../utils/interactive';
-import { promptAsync } from '../utils/prompts';
 import { type SkillsAgent } from './types';
 
 interface AgentDefinition extends SkillsAgent {
@@ -114,12 +112,19 @@ export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<st
   return knownIds;
 }
 
-/** Where a resolved agent selection came from, `flags` and `prompt` become the new cache. */
-export type AgentSelectionSource = 'flags' | 'cache' | 'prompt' | 'detected';
+/** Where a resolved agent selection came from. `flags` becomes the new cache. */
+export type AgentSelectionSource = 'flags' | 'cache' | 'detected';
 
 /**
- * Resolve which agents to link skills for, in order: `--agent` flags, the cached
- * selection in `.expo/agent-skill-links.json`, an interactive prompt, then marker detection.
+ * Resolve which agents to link skills for, in order: `--agent` flags, the cached selection in
+ * `.expo/agent-skill-links.json`, then marker detection.
+ *
+ * @ref llp/0008-guardrails.rfc.md §Consent is a re-run, never a prompt
+ * A terminal used to get a checklist of agents here, with the detected ones ticked. It is gone: a
+ * question this CLI cannot ask is a question it must not have, and the answer it was collecting is
+ * the one the non-interactive path had already been giving for free. The same project now answers
+ * the same way whoever runs it, and `--agent` is how a caller overrides the detection — once, into
+ * the cache that the next run reads.
  */
 export async function resolveAgentsAsync(
   projectRoot: string,
@@ -135,22 +140,10 @@ export async function resolveAgentsAsync(
   }
 
   const detected = await detectInstalledAgentsAsync(projectRoot);
-
-  if (isInteractive()) {
-    const agents = await promptAgentsAsync(detected);
-    if (!agents.length) {
-      throw new CommandError(
-        'BAD_ARGS',
-        `No agent was selected, so there is nowhere to link the skills to. Run the command again and select at least one agent with the space bar, or pass them directly, e.g. --agent claude-code. Valid agents: ${getAgentIds().join(', ')}.`
-      );
-    }
-    return { agents, source: 'prompt' };
-  }
-
   if (!detected.length) {
     throw new CommandError(
       'BAD_ARGS',
-      `No coding agent was found in this project and the terminal is non-interactive, so the agents cannot be selected. Pass the agents to link skills for, e.g. --agent claude-code, or run the command once in an interactive terminal to save a selection. Valid agents: ${getAgentIds().join(', ')}.`
+      `No coding agent was found in this project, so there is nowhere to link the skills to. Pass the agents to link skills for, e.g. --agent claude-code, which is saved for the runs after it. Valid agents: ${getAgentIds().join(', ')}.`
     );
   }
 
@@ -171,25 +164,6 @@ export async function persistAgentSelectionAsync(
     existing = JSON.parse(await fs.promises.readFile(cachePath, 'utf8'));
   } catch {}
   await fs.promises.writeFile(cachePath, JSON.stringify({ ...existing, agents: ids }, null, 2));
-}
-
-async function promptAgentsAsync(detected: SkillsAgent[]): Promise<SkillsAgent[]> {
-  const detectedIds = new Set(detected.map((agent) => agent.id));
-  const { agents } = await promptAsync({
-    type: 'multiselect',
-    name: 'agents',
-    message: 'Which coding agents should have access to the skills?',
-    hint: '- Space to select. Return to submit',
-    instructions: '',
-    limit: AGENTS.length,
-    choices: AGENTS.map((agent) => ({
-      title: agent.displayName,
-      value: agent.id,
-      selected: detectedIds.has(agent.id),
-    })),
-  });
-
-  return (agents ?? []).map(assertAgent);
 }
 
 function assertAgent(id: string): SkillsAgent {
