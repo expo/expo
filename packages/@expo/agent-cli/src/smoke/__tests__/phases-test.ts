@@ -14,7 +14,15 @@ import type { OpenRouteResult } from '../../navigate/openRoute';
 import type { BundleCheckResult } from '../../runtime/bundleCheck';
 import type { DevServerDiscovery } from '../../runtime/devServer';
 import type { RuntimeErrorRecord } from '../../runtime/runtimeErrorCollector';
-import { runSmokePhasesAsync, smokeExitCode, type SmokeDeps, type SmokeRun } from '../phases';
+import {
+  APP_ATTACH_TIMEOUT_MS,
+  APP_SETTLE_MS,
+  FIRST_BUNDLE_TIMEOUT_MS,
+  runSmokePhasesAsync,
+  smokeExitCode,
+  type SmokeDeps,
+  type SmokeRun,
+} from '../phases';
 import type { SmokeOptions } from '../resolveOptions';
 import type { SmokePhaseId, SmokePhaseStatus } from '../types';
 
@@ -582,6 +590,336 @@ describe(runSmokePhasesAsync, () => {
       // The wait after the app was opened is the first one the boot could have eaten, and it still
       // has most of the minute the caller asked for.
       expect(budgets[1]).toBeGreaterThan(50_000);
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What a cold start costs, and who pays for it —
+  // Kudo's directive of 2026-08-30. Coming up is not reading. A run that starts a dev server pays
+  // for that dev server's **first compile**, and a run that boots a simulator pays for the app's
+  // **first launch** on it; neither is a measurement of the app, and charging them to the window
+  // meant for measuring it leaves the measurement with nothing.
+  describe('what a cold start costs', () => {
+    /** The budget each dependency was given, so the accounting is readable as a table. */
+    function budgets() {
+      const given: { bundlerReady: number[]; bundle: number[]; attach: number[]; settle: number[] } =
+        { bundlerReady: [], bundle: [], attach: [], settle: [] };
+      return {
+        given,
+        deps: (clock: { ms: number }): Partial<SmokeDeps> => ({
+          waitForBundlerReady: async (_url, timeoutMs) => {
+            given.bundlerReady.push(timeoutMs);
+            return {
+              ready: true,
+              projectRootMatched: true,
+              reportedProjectRoot: '/project',
+              timedOut: false,
+              waitedMs: 5,
+            };
+          },
+          checkEntryBundle: async (_url, timeoutMs) => {
+            given.bundle.push(timeoutMs);
+            // A cold first compile, on the clock this run reads.
+            clock.ms += 100_000;
+            return bundle();
+          },
+          waitForAppConnection: async (_url, timeoutMs) => {
+            given.attach.push(timeoutMs);
+            return { appsConnected: given.attach.length > 1 ? 1 : 0, timedOut: false, waitedMs: 3 };
+          },
+          waitForStableTargets: async (_url, timeoutMs) => {
+            given.settle.push(timeoutMs);
+            return { stable: true };
+          },
+        }),
+      };
+    }
+
+    it(`gives the first compile of a dev server it started a budget of its own`, async () => {
+      const clock = { ms: 0 };
+      const { given, deps: budgeted } = budgets();
+      let reachable = false;
+
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...budgeted(clock),
+          discoverDevServer: async () => {
+            const found = discovery({ reachable });
+            reachable = true;
+            return found;
+          },
+          probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
+          now: () => (clock.ms += 10),
+        }),
+        options({ bootstrap: true, timeoutMs: 60_000 })
+      );
+
+      expect(run.environment.devServer).toBe('started');
+      // Its own generous budget, like the boot — not the sixty seconds the caller gave the reads.
+      expect(given.bundle[0]).toBe(FIRST_BUNDLE_TIMEOUT_MS);
+      expect(given.bundlerReady[0]).toBe(FIRST_BUNDLE_TIMEOUT_MS);
+      // …and the hundred seconds it spent are not taken off them: the run still passes, and the
+      // settle wait after it still has a budget to wait with.
+      expect(run.outcome).toBe('passed');
+      expect(given.settle[0]).toBeGreaterThan(0);
+    });
+
+    // The other half. A dev server somebody else started has bundled already, or has not and that
+    // is a fact about their dev server: this run is reading it, so `--timeout` is the right bound.
+    it(`charges the compile of a dev server it found to the reading window`, async () => {
+      const clock = { ms: 0 };
+      const { given, deps: budgeted } = budgets();
+
+      await runSmokePhasesAsync(
+        deps({ ...budgeted(clock), now: () => (clock.ms += 10) }),
+        options({ bootstrap: true, timeoutMs: 60_000 })
+      );
+
+      // What is left of the minute, rather than a minute: the phases before it spent a little.
+      expect(given.bundle[0]).toBeGreaterThan(50_000);
+      expect(given.bundle[0]).toBeLessThanOrEqual(60_000);
+    });
+
+    it(`gives the first launch onto a device it booted a budget of its own`, async () => {
+      const clock = { ms: 0 };
+      const { given, deps: budgeted } = budgets();
+      let booted = false;
+
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...budgeted(clock),
+          probeDevice: async () => ({
+            deviceId: booted ? 'SIM-BOOTED' : null,
+            backend: booted ? ('local-ios' as const) : null,
+            reason: booted ? null : 'no simulator',
+          }),
+          bootDevice: async (register) => {
+            register({ deviceId: 'SIM-BOOTED', backend: 'local-ios' });
+            // A cold boot, on the clock.
+            clock.ms += 60_000;
+            booted = true;
+            return { ok: true, deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null };
+          },
+          now: () => (clock.ms += 10),
+        }),
+        options({ bootstrap: true, timeoutMs: 60_000 })
+      );
+
+      expect(run.environment.device).toBe('booted');
+      // The wait after the deep link, which is the app's first launch on a simulator that has just
+      // come up. The probe before it is the short look, unchanged.
+      expect(given.attach[1]).toBe(APP_ATTACH_TIMEOUT_MS);
+      expect(run.outcome).toBe('passed');
+    });
+
+    // An app that is slow to attach to a dev server and a device that were both already there is
+    // this run *reading* a slow app, and that is what the caller's budget is for.
+    it(`charges the attach to the reading window when nothing was cold`, async () => {
+      const clock = { ms: 0 };
+      const { given, deps: budgeted } = budgets();
+
+      await runSmokePhasesAsync(
+        deps({
+          ...budgeted(clock),
+          // A warm dev server, so its compile is a lookup rather than the hundred seconds the
+          // shared fake spends: the point of this case is what the *attach* is given.
+          checkEntryBundle: async (_url, timeoutMs) => {
+            given.bundle.push(timeoutMs);
+            return bundle();
+          },
+          probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
+          now: () => (clock.ms += 10),
+        }),
+        options({ bootstrap: true, timeoutMs: 60_000 })
+      );
+
+      expect(given.attach[1]).toBeLessThanOrEqual(60_000);
+      expect(given.attach[1]).toBeGreaterThan(50_000);
+    });
+
+    // The whole point of the accounting, stated as the property rather than as a budget: after a
+    // cold start *and* a cold boot, the phases that read the app still have the window the caller
+    // asked for.
+    it(`leaves the reading window intact after a cold start and a cold boot`, async () => {
+      const clock = { ms: 0 };
+      const { given, deps: budgeted } = budgets();
+      let reachable = false;
+      let booted = false;
+
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...budgeted(clock),
+          discoverDevServer: async () => {
+            const found = discovery({ reachable });
+            reachable = true;
+            return found;
+          },
+          startDevServer: async () => {
+            clock.ms += 20_000;
+            return { ok: true, devServerUrl: 'http://127.0.0.1:8081', reason: null };
+          },
+          probeDevice: async () => ({
+            deviceId: booted ? 'SIM-BOOTED' : null,
+            backend: booted ? ('local-ios' as const) : null,
+            reason: booted ? null : 'no simulator',
+          }),
+          bootDevice: async (register) => {
+            register({ deviceId: 'SIM-BOOTED', backend: 'local-ios' });
+            clock.ms += 60_000;
+            booted = true;
+            return { ok: true, deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null };
+          },
+          now: () => (clock.ms += 10),
+        }),
+        options({ bootstrap: true, timeoutMs: 60_000 })
+      );
+
+      // Three minutes of coming up — a start, a compile and a boot — against a one-minute window.
+      expect(run.outcome).toBe('passed');
+      expect(given.settle[0]).toBe(APP_SETTLE_MS);
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What a cold start costs, and who pays for it. The
+  // deep link is a request, not a result: `simctl openurl` exits 0 as soon as the URL is handed
+  // over, and on a simulator this run has just booted the app behind it may be a minute from
+  // registering a debugger target — or may never register one, because it is not installed.
+  describe('what counts as an app being there', () => {
+    it(`never passes on the deep link alone: a target has to appear`, async () => {
+      const run = await runSmokePhasesAsync(
+        deps({
+          probeDevice: async () => ({ deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null }),
+          // The open succeeds — exit code 0, a URL handed to the device — and nothing ever
+          // attaches. This is Expo Go missing from a simulator, exactly.
+          waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 1 }),
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(statusOf(run, 'app')).toBe('inconclusive');
+      expect(run.outcome).toBe('inconclusive');
+      expect(run.appsConnected).toBe(0);
+      // And nothing after it claims to have read anything.
+      for (const id of ['route', 'runtime', 'errors'] as SmokePhaseId[]) {
+        expect(statusOf(run, id)).toBe('skipped');
+      }
+    });
+
+    it(`passes only once the target list answers, and reports what opened it`, async () => {
+      const seen: number[] = [];
+      const run = await runSmokePhasesAsync(
+        deps({
+          probeDevice: async () => ({ deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null }),
+          waitForAppConnection: async () => {
+            seen.push(seen.length);
+            // Nothing on the first look; one target once the deep link has been opened.
+            return { appsConnected: seen.length > 1 ? 1 : 0, timedOut: false, waitedMs: 3 };
+          },
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(statusOf(run, 'app')).toBe('ok');
+      expect(run.phases.find((phase) => phase.id === 'app')?.reason).toContain('to connect one');
+      expect(run.appsConnected).toBe(1);
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §An app that has attached is not an app that is ready.
+  // A cold Expo Go attaches to the dev server, *then* downloads and runs the bundle — and the
+  // debugger target it registered on the way in goes away and comes back when the JS runtime is
+  // created. A single read landing in that gap answers "No target found" about an app that is
+  // running perfectly well.
+  describe('the runtime of an app this run opened', () => {
+    /** Deps for a run that opens the app itself, with an evaluate that answers on the nth try. */
+    function readableOnAttempt(attempt: number, overrides: Partial<SmokeDeps> = {}) {
+      let tries = 0;
+      const seen = { tries: () => tries };
+      return {
+        seen,
+        deps: deps({
+          probeDevice: async () => ({ deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null }),
+          waitForAppConnection: jest
+            .fn()
+            .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+            .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 1 }),
+          evaluate: async () => {
+            tries += 1;
+            return tries >= attempt
+              ? { ok: true, unsupported: false, reason: null }
+              : { ok: false, unsupported: false, reason: 'No target found.' };
+          },
+          ...overrides,
+        }),
+      };
+    }
+
+    it(`waits for the runtime to answer rather than deciding on one read`, async () => {
+      const { seen, deps: fakes } = readableOnAttempt(3);
+
+      const run = await runSmokePhasesAsync(fakes, options({ bootstrap: true }));
+
+      expect(seen.tries()).toBe(3);
+      expect(statusOf(run, 'runtime')).toBe('ok');
+      expect(run.outcome).toBe('passed');
+      expect(run.runtimeSupported).toBe(true);
+    });
+
+    // The limit stays: a wait that never answers is still `inconclusive`, and the reason is the
+    // runtime's own rather than a sentence about waiting.
+    it(`still reports a runtime that never answers, with its own reason`, async () => {
+      // A clock that runs a minute per read, so the budget is spent in two of them rather than in
+      // sixty real seconds of this suite's time.
+      let clock = 0;
+      const { deps: fakes } = readableOnAttempt(Number.MAX_SAFE_INTEGER, {
+        now: () => (clock += 60_000),
+      });
+
+      const run = await runSmokePhasesAsync(fakes, options({ bootstrap: true }));
+
+      expect(statusOf(run, 'runtime')).toBe('inconclusive');
+      expect(run.phases.find((phase) => phase.id === 'runtime')?.reason).toContain(
+        'No target found.'
+      );
+    });
+
+    // @ref llp/0005 §Android pass. A runtime with no debugger has *decided*, and asking it again
+    // for thirty seconds would turn the one case this command exists to report into a hang.
+    it(`asks a runtime with no debugger exactly once`, async () => {
+      let tries = 0;
+      const run = await runSmokePhasesAsync(
+        deps({
+          probeDevice: async () => ({ deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null }),
+          waitForAppConnection: jest
+            .fn()
+            .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+            .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 1 }),
+          evaluate: async () => {
+            tries += 1;
+            return { ok: false, unsupported: true, reason: 'method not found' };
+          },
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(tries).toBe(1);
+      expect(run.runtimeSupported).toBe(false);
+    });
+
+    // An app that was already attached when this run arrived is not one this run is waiting on.
+    // Reading it once and reporting the answer is what every previous version did, and is right.
+    it(`asks once when the app was already there`, async () => {
+      let tries = 0;
+      await runSmokePhasesAsync(
+        deps({
+          evaluate: async () => {
+            tries += 1;
+            return { ok: false, unsupported: false, reason: 'No target found.' };
+          },
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(tries).toBe(1);
     });
   });
 

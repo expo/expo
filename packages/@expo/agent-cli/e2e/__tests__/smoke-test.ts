@@ -45,7 +45,18 @@ const PNG_HEADER_ESCAPE = '\\x89PNG\\r\\n\\x1a\\n';
  *
  * @returns a reader for the recorded argv
  */
-async function installStubXcrunAsync(projectRoot: string): Promise<() => string[][]> {
+async function installStubXcrunAsync(
+  projectRoot: string,
+  /**
+   * A file the stub writes when it is asked to open a URL, or null.
+   *
+   * Paired with the stub dev server's `targetsAppearWithFile`, it is what makes "the app attached"
+   * a **consequence of the deep link** rather than a fixture that was true all along — which is
+   * the only way this tier can show that the gate waits for a real target instead of passing on
+   * the exit code of `simctl openurl`.
+   */
+  opensMarker: string | null = null
+): Promise<() => string[][]> {
   const logPath = path.join(projectRoot, '.stub-xcrun.jsonl');
   const scriptPath = path.join(projectRoot, '.stub-bin', 'xcrun-stub.js');
   await fs.promises.mkdir(path.dirname(scriptPath), { recursive: true });
@@ -55,6 +66,13 @@ async function installStubXcrunAsync(projectRoot: string): Promise<() => string[
       `const fs = require('fs');`,
       `const args = process.argv.slice(2);`,
       `fs.appendFileSync(${JSON.stringify(logPath)}, JSON.stringify(args) + '\\n');`,
+      ...(opensMarker
+        ? [
+            `if (args[1] === 'openurl') {`,
+            `  fs.writeFileSync(${JSON.stringify(opensMarker)}, 'opened');`,
+            `}`,
+          ]
+        : []),
       `if (args[1] === 'list') {`,
       `  process.stdout.write(JSON.stringify({ devices: { 'com.apple.CoreSimulator.SimRuntime.iOS-26-0': [{ udid: ${JSON.stringify(SIMULATOR_UDID)}, name: 'iPhone 17 Pro', state: 'Booted' }] } }));`,
       `}`,
@@ -113,6 +131,19 @@ async function writeRoutesAsync(projectRoot: string, files: string[]): Promise<v
     await fs.promises.mkdir(path.dirname(target), { recursive: true });
     await fs.promises.writeFile(target, 'export default function Route() { return null; }\n');
   }
+}
+
+/**
+ * The stub `expo` and **no device tools at all**, for the cases that are about the dev server.
+ *
+ * `stubExpoEnv` inherits this machine's `PATH`, so `xcrun` on it is the real one — and once a run
+ * gets past the readiness check it will happily boot the developer's own simulator and wait two
+ * minutes for an app that was never installed on it. The stub `expo` is resolved through the
+ * project's `node_modules` rather than through `PATH`, so dropping the inherited entries costs
+ * these cases nothing and keeps them tests of the code rather than of the machine.
+ */
+function devServerOnlyEnv(projectRoot: string): Record<string, string> {
+  return { PATH: path.join(projectRoot, '.no-bin') };
 }
 
 /** Point the project's dev-server lock at the stub, the way an `@expo/agent-cli`-started server does. */
@@ -251,7 +282,7 @@ describe('@expo/agent-cli smoke', () => {
           ['smoke', '--json', '--no-screenshot', '--port', '9351', '--timeout', '10s'],
           {
             env: {
-              ...stubExpoEnv(projectRoot),
+              ...devServerOnlyEnv(projectRoot),
               STUB_EXPO_DELAY_MS: '30000',
               STUB_EXPO_DEV_SERVER_PORT: '9351',
               // The stub binds the port and answers `GET /status`, which is what `--wait-ready`
@@ -274,6 +305,47 @@ describe('@expo/agent-cli smoke', () => {
           expect.objectContaining({ resource: 'dev-server', ok: true })
         );
         expect(await lockHeldAsync(projectRoot)).toBe(false);
+      } finally {
+        await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
+          env: stubExpoEnv(projectRoot),
+          reject: false,
+        });
+      }
+    });
+
+    // @ref llp/0005-runtime-loop-tools.rfc.md §What a cold start costs, and who pays for it.
+    //
+    // The deterministic form of the whole finding, through the published bin and a real second
+    // process. The stub answers the entry bundle **four seconds late**, which is what a dev server
+    // that has never bundled does, and `--timeout 2s` is the window the caller gave the *reads*.
+    // A run that charged the first compile to that window would report `bundle: inconclusive`
+    // after two seconds and go no further; this one waits it out on the bootstrap's own budget.
+    it('does not charge the first compile of a dev server it started to --timeout', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['smoke', '--json', '--no-screenshot', '--port', '9352', '--timeout', '2s'],
+          {
+            env: {
+              ...devServerOnlyEnv(projectRoot),
+              STUB_EXPO_DELAY_MS: '30000',
+              STUB_EXPO_DEV_SERVER_PORT: '9352',
+              STUB_EXPO_LISTEN: '1',
+              STUB_EXPO_BUNDLE_DELAY_MS: '4000',
+            },
+            reject: false,
+          }
+        );
+
+        const report = JSON.parse(result.stdout);
+        expect(report.environment.devServer).toBe('started');
+        const bundlePhase = report.phases.find((phase: any) => phase.id === 'bundle');
+        // It compiled, and it took longer than the whole reading window to do it.
+        expect(bundlePhase).toMatchObject({ status: 'ok' });
+        expect(bundlePhase.ms).toBeGreaterThan(2_000);
+        expect(report.bundle).toMatchObject({ checked: true, ok: true });
       } finally {
         await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
           env: stubExpoEnv(projectRoot),
@@ -367,6 +439,86 @@ describe('@expo/agent-cli smoke', () => {
         // The root route needs the `?` marker for Expo Go, per llp/0005 §The root route.
         `exp://127.0.0.1:${stub.port}/--/?`,
       ]);
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What a cold start costs, and who pays for it.
+  //
+  // `xcrun simctl openurl` exits 0 the moment the URL is handed to the device, and the app behind
+  // it may be a minute from registering a debugger target — or may never register one, because it
+  // is not installed on the simulator that was booted. What the gate waits for is the *target*,
+  // and this tier is the only one that can show it: the dev server lists nothing until the stub
+  // `xcrun` writes the file the open produces, so an attach here is a **consequence of the link**
+  // rather than a fixture that was true all along.
+  describe('what counts as the app being there', () => {
+    it('reports the app connected only after the deep link produced a target', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const opened = path.join(projectRoot, '.app-opened');
+      await installStubXcrunAsync(projectRoot, opened);
+      const stub = await startStubDevServerAsync({
+        projectRoot,
+        targets: [EXPO_GO_TARGET],
+        targetsAppearWithFile: opened,
+      });
+      const release = await holdLockForAsync(projectRoot, stub);
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['smoke', '--ios', '--json', '--no-screenshot', '--timeout', '20s'],
+          { env: stubExpoEnv(projectRoot), reject: false }
+        );
+
+        const report = JSON.parse(result.stdout);
+        const app = report.phases.find((phase: any) => phase.id === 'app');
+        expect(app).toMatchObject({ status: 'ok' });
+        expect(app.reason).toContain('to connect one');
+        expect(report.appsConnected).toBe(1);
+        // The file is the proof that the target arrived because of the open, not before it.
+        expect(fs.existsSync(opened)).toBe(true);
+      } finally {
+        release();
+        await stub.close();
+      }
+    });
+
+    // Expo Go missing from the simulator, exactly: the link is accepted and nothing ever attaches.
+    it('never passes on the deep link alone when nothing attaches', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const readXcrun = await installStubXcrunAsync(projectRoot);
+      const stub = await startStubDevServerAsync({
+        projectRoot,
+        targets: [EXPO_GO_TARGET],
+        // A file the stub `xcrun` above is not writing, so no target ever appears.
+        targetsAppearWithFile: path.join(projectRoot, '.never-written'),
+      });
+      const release = await holdLockForAsync(projectRoot, stub);
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['smoke', '--ios', '--json', '--no-screenshot', '--timeout', '4s'],
+          { env: stubExpoEnv(projectRoot), reject: false }
+        );
+
+        // The link really was opened, and exit 22 rather than 0 all the same.
+        expect(readXcrun().some((argv) => argv.includes('openurl'))).toBe(true);
+        expect(result.exitCode).toBe(22);
+        const report = JSON.parse(result.stdout);
+        expect(report.phases.find((phase: any) => phase.id === 'app')).toMatchObject({
+          status: 'inconclusive',
+        });
+        expect(report.appsConnected).toBe(0);
+        // And nothing after it claims to have read the app it never reached.
+        for (const id of ['route', 'runtime', 'errors']) {
+          expect(report.phases.find((phase: any) => phase.id === id)).toMatchObject({
+            status: 'skipped',
+          });
+        }
+      } finally {
+        release();
+        await stub.close();
+      }
     });
   });
 

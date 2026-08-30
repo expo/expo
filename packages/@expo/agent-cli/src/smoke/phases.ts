@@ -241,7 +241,59 @@ const APP_PROBE_MS = 2_000;
  * bootstrap is what made that window common — before it, the app was nearly always opened onto a
  * simulator that was already warm.
  */
-const APP_SETTLE_MS = 4_000;
+export const APP_SETTLE_MS = 4_000;
+
+/**
+ * How long the **first** compile of a dev server this run started gets, out of a budget of its own.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §What a cold start costs, and who pays for it
+ * Coming up is not reading, and this is the phase where the difference is largest: a dev server
+ * that has never bundled has to transform the whole dependency graph, which is minutes on a real
+ * app and milliseconds on the second run. Charging that to `--timeout` — the window meant for
+ * measuring the app — is the same mistake as charging it the simulator boot, and it fails in the
+ * same way: the measurement gets what the setup left over, which on a cold machine is nothing.
+ *
+ * Only for a dev server **this run started**. One somebody else started has either bundled
+ * already or has not, and either way this run is reading their dev server rather than warming its
+ * own — so `--timeout` is the honest bound there.
+ */
+export const FIRST_BUNDLE_TIMEOUT_MS = 180_000;
+
+/**
+ * How long an app this run opened onto a cold environment gets to attach, out of its own budget.
+ *
+ * The same rule one phase later. `simctl openurl` exits 0 as soon as the URL is handed over, so
+ * the wait that follows is the app *launching* — and on a simulator this run booted a moment ago
+ * that is a cold Expo Go start, a manifest fetch and the first bundle download before anything
+ * registers a debugger target.
+ *
+ * Only when this run made the environment cold, by starting the dev server or booting the device.
+ * An app that is slow to attach to a dev server and a device that were both already there is a
+ * slow app, which is exactly what the caller's budget is for.
+ */
+export const APP_ATTACH_TIMEOUT_MS = 120_000;
+
+/**
+ * How long an app this run opened gets to become *readable*, after it has attached.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §An app that has attached is not an app that is ready
+ * The third window of a cold launch, and the one nothing was waiting for. Expo Go attaches to the
+ * dev server, and *then* downloads and runs the bundle — so the debugger target it registered on
+ * the way in goes away and comes back when the JS runtime is created. A single read landing in
+ * that gap answers `No target found` about an app that is running perfectly well, which is what a
+ * cold run of a real app did: `app` `ok` at 4.2 s, `runtime` `No target found` two seconds later,
+ * and the run's own screenshot showing the app on screen [observed — 2026-08-30, `friction/run7/
+ * tapapp` on a simulator this run booted].
+ *
+ * Waiting is not a softer verdict. The question the phase asks is "can this runtime be read at
+ * all", and a runtime that answers at eight seconds *can* be. What does not change: a runtime with
+ * no debugger has **decided** and is asked once, and a wait that ends with no answer reports the
+ * runtime's own reason exactly as it did before.
+ */
+export const RUNTIME_READY_TIMEOUT_MS = 30_000;
+
+/** How often the runtime is asked again while that wait runs. */
+const RUNTIME_READY_POLL_MS = 500;
 
 /**
  * How long the run gives a dev server to come up, out of a budget of its own.
@@ -452,10 +504,15 @@ async function runPhasesAsync(
     return value;
   };
 
-  /** The same, for a bootstrap phase: what it spends comes off the budget rather than out of it. */
+  /** Take the phase that was just recorded off the reading budget rather than out of it. */
+  const chargeToBootstrap = (): void => {
+    bootstrapMs += phases[phases.length - 1]!.ms;
+  };
+
+  /** The same, for a phase that is always bootstrap. */
   const recordBootstrap: typeof record = async (id, run) => {
     const value = await record(id, run);
-    bootstrapMs += phases[phases.length - 1]!.ms;
+    chargeToBootstrap();
     return value;
   };
 
@@ -575,9 +632,16 @@ async function runPhasesAsync(
   const devServerUrl = discovery.devServerUrl;
 
   // ---- Phase 2: has its bundler finished, and is it this project's? -------------------------
+  //
+  // @ref ./phases §FIRST_BUNDLE_TIMEOUT_MS. On a dev server this run started, this and the phase
+  // below are the dev server *coming up* rather than this run reading it, so they get the cold
+  // budget and what they spend is not taken off the window the caller gave the reads.
+
+  const warming = environment.devServer === 'started';
+  const warmingBudget = () => (warming ? FIRST_BUNDLE_TIMEOUT_MS : remaining());
 
   const readiness = await record('bundler-ready', async () => {
-    const result = await deps.waitForBundlerReady(devServerUrl, remaining());
+    const result = await deps.waitForBundlerReady(devServerUrl, warmingBudget());
     // Checked before the timeout, because it is decided rather than pending: no amount of looking
     // again turns another project's dev server into this one's (llp/0010 §The second).
     if (result.projectRootMatched === false) {
@@ -596,6 +660,9 @@ async function runPhasesAsync(
       value: result,
     };
   });
+  if (warming) {
+    chargeToBootstrap();
+  }
 
   const base = {
     devServerUrl,
@@ -624,7 +691,7 @@ async function runPhasesAsync(
   // ---- Phase 3: does this project's own code compile? ---------------------------------------
 
   const bundle = await record('bundle', async () => {
-    const result = await deps.checkEntryBundle(devServerUrl, remaining());
+    const result = await deps.checkEntryBundle(devServerUrl, warmingBudget());
     switch (result.outcome) {
       case 'ok':
         return { status: 'ok' as const, value: result };
@@ -646,6 +713,9 @@ async function runPhasesAsync(
         };
     }
   });
+  if (warming) {
+    chargeToBootstrap();
+  }
 
   if (bundle.outcome === 'broken') {
     // Nothing after this is worth doing: the app cannot be running code that does not compile, and
@@ -753,6 +823,16 @@ async function runPhasesAsync(
   let appOpenedByThisRun = false;
 
   /**
+   * Whether this run is the reason the thing it is now waiting for is cold.
+   *
+   * @ref ./phases §APP_ATTACH_TIMEOUT_MS. A dev server it started has never served this app's
+   * bundle; a simulator it booted has never launched it. Either one makes the next wait a first
+   * launch rather than a measurement.
+   */
+  const coldEnvironment = () =>
+    environment.devServer === 'started' || environment.device === 'booted';
+
+  /**
    * Wait for the app this run opened to stop re-registering. At most once, and never otherwise.
    *
    * @ref ./phases §APP_SETTLE_MS. Shared by the runtime read and the picture because it is one
@@ -811,7 +891,15 @@ async function runPhasesAsync(
       };
     }
 
-    const second = await deps.waitForAppConnection(devServerUrl, remaining());
+    // @ref ./phases §APP_ATTACH_TIMEOUT_MS. The deep link is a request and not a result: the open
+    // exited 0 above, and what is waited for here is a **debugger target appearing** — the app
+    // launching, fetching the manifest and downloading its bundle. On an environment this run made
+    // cold that is its own cost and gets its own budget; on a warm one it is a slow app, which is
+    // what the caller's `--timeout` is for.
+    const second = await deps.waitForAppConnection(
+      devServerUrl,
+      coldEnvironment() ? APP_ATTACH_TIMEOUT_MS : remaining()
+    );
     return second.appsConnected > 0
       ? { status: 'ok' as const, reason: `opened ${opened.url} to connect one`, value: second }
       : {
@@ -820,6 +908,10 @@ async function runPhasesAsync(
           value: second,
         };
   });
+  // The whole phase, because on this path almost all of it is the wait above.
+  if (appOpenedByThisRun && coldEnvironment()) {
+    chargeToBootstrap();
+  }
 
   const appsConnected = connection.appsConnected;
   const withApp = { ...base, bundle, appsConnected };
@@ -903,8 +995,33 @@ async function runPhasesAsync(
   // debugger target list mid-churn answers "No target found" about an app that is running fine.
   await settleIfOpenedAsync();
 
+  /**
+   * Ask the runtime until it answers, for an app this run opened.
+   *
+   * @ref ./phases §RUNTIME_READY_TIMEOUT_MS. The settle above waits for the target *list* to stop
+   * changing, which is a fact about registration and turned out to be too weak a proxy for "the
+   * bundle has run": two reads of one id 500 ms apart are alike whether the app is ready or about
+   * to reload. This asks the runtime itself, which is the thing the phase is about.
+   *
+   * An app that was already there when this run arrived is asked **once**, exactly as before: it
+   * is not coming up, so a second look would answer the same and cost the caller a wait.
+   */
+  const evaluateUntilReadableAsync = async (): Promise<SmokeEvaluateResult> => {
+    const deadline = deps.now() + (appOpenedByThisRun ? RUNTIME_READY_TIMEOUT_MS : 0);
+    for (;;) {
+      const result = await deps.evaluate(devServerUrl);
+      // Both of these are decided. `unsupported` is llp/0005 §Android pass — a runtime with no
+      // debugger will not grow one, and asking it again for thirty seconds would turn the one
+      // case this command exists to report into a hang.
+      if (result.ok || result.unsupported || deps.now() >= deadline) {
+        return result;
+      }
+      await new Promise((resolve) => setTimeout(resolve, RUNTIME_READY_POLL_MS));
+    }
+  };
+
   const runtime = await record('runtime', async () => {
-    const result = await deps.evaluate(devServerUrl);
+    const result = await evaluateUntilReadableAsync();
     if (result.ok) {
       return { status: 'ok' as const, value: result };
     }

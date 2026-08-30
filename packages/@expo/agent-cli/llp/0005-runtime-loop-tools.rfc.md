@@ -1926,6 +1926,78 @@ Two things the round found that no fixture had shown:
   "which simulator has the app" cannot be asked before the minute has been spent. A run that boots
   the wrong one is honest and slow, which is the right way round.
 
+### What a cold start costs, and who pays for it
+
+Amendment [confirmed — Kudo, 2026-08-30]: *"after simulator/emulator start, should wait some time
+for connection and bundling? we should wait for bundle ready and app connected."*
+
+The bootstrap above got the *ordering* right and the *accounting* wrong. §The run brings its own
+environment took the two acts it added — the start and the boot — off `--timeout`, and left
+everything downstream of them on it. But a cold start does not stop costing when the dev server is
+listening. Three more waits follow, and each of them is this run's own setup rather than a
+measurement of the app:
+
+| what is waited for | when it is a setup cost | budget |
+| --- | --- | --- |
+| the dev server's **first compile** | it started that dev server | `FIRST_BUNDLE_TIMEOUT_MS`, 3 min |
+| the app's **first launch and attach** | it started the dev server or booted the device | `APP_ATTACH_TIMEOUT_MS`, 2 min |
+| the app becoming **readable** | it opened the app | `RUNTIME_READY_TIMEOUT_MS`, 30 s |
+
+The condition on each row is what keeps `--timeout` meaningful. A dev server somebody else started
+has either bundled or not, and either way this run is *reading* their dev server; an app that is
+slow to attach to a warm dev server on a booted device is a slow app. Those are measurements, and
+the caller's budget is exactly the right bound for them. The rule is: **this run pays for the cold
+it caused, and `--timeout` bounds the reads.**
+
+`--timeout`'s own defaults do not change, so nothing that was charged to it before is charged more.
+What changes is that a run which starts everything from nothing now reaches its reading phases with
+the whole window intact, rather than with whatever three minutes of setup left over.
+
+#### An app that has attached is not an app that is ready
+
+The finding underneath the third row, and the one that took a live run to see. `smoke` waits for a
+**debugger target** to appear, which is the honest signal for "an app connected" and is what
+`navigate` confirms too — the deep link itself proves nothing, since `simctl openurl` exits 0 the
+moment the URL is handed over. But a target appearing is not the app being *readable*: Expo Go
+attaches to the dev server, and then downloads and runs the bundle, and the target it registered on
+the way in goes away and comes back when the JS runtime is created.
+
+A single read landing in that gap answers `No target found` about an app that is running perfectly
+well. [observed — 2026-08-30, `friction/run7/tapapp`, a real Expo Router app with Reanimated and
+several screens, on a simulator the run had just booted: `app` `ok` at 4.2 s, `runtime`
+`No target found` at 6.2 s, and the run's own screenshot showing the app rendered with its tab bar.]
+
+Two fixes were tried, and only the second is right:
+
+- §`APP_SETTLE_MS` — wait for the target *list* to stop changing. It is a fact about registration,
+  and too weak: two reads of one id 500 ms apart look alike whether the app is ready or about to
+  reload. It stays, because the picture needs it (F57), and it is not enough on its own.
+- §`RUNTIME_READY_TIMEOUT_MS` — **ask the runtime until it answers.** That is the thing the phase
+  is about, asked through the same `Runtime.evaluate('1')` it always used, so there is no second
+  reading of "readable" to drift.
+
+Waiting is not a softer verdict. A runtime that answers at eight seconds *can* be read, which is
+the whole question. What does not change: a runtime with **no debugger** has decided, and is asked
+exactly once — llp/0005 §Android pass is the case this command exists to report, and polling it for
+thirty seconds would turn it into a hang. A wait that ends with no answer reports the runtime's own
+reason, unchanged.
+
+#### Live evidence
+
+[observed — 2026-08-30, `friction/run7/tapapp` on SDK 57 in Expo Go, iPhone 17 Pro `C159CF99-…`.
+Every simulator shut down and the Metro cache cleared before the first run.]
+
+| Case | Result |
+| --- | --- |
+| Before the fix, cold | `22` at `runtime`, `No target found` — `app` had answered `ok` two seconds earlier |
+| After, three cold runs | `0` in **37 s**, 32 s, 31 s, every phase `ok` |
+| Phase timings, run 3 | start 2.6 s · dev-server 14 ms · bundler-ready 2 ms · bundle 360 ms · **boot 9.4 s** · **app 6.9 s** · runtime 1.1 s · errors 3.1 s · screenshot 233 ms |
+| Every run | `devServer: "started"`, `device: "booted"`, both cleanups `ok`, nothing left running |
+| A machine with everything already up (`live-local`, 31/31) | unchanged: `reused`, no cleanup, one read per phase |
+
+The `app` phase at 6.9 s and `runtime` at 1.1 s are the two numbers this section is about. Neither
+fits in a reading window that had already paid for a 9.4 s boot out of it.
+
 ## Android
 
 Everything in this document above was designed against iOS and read on iOS. The first Android
