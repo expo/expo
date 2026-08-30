@@ -350,8 +350,9 @@ export const commandGroups: { [group: string]: CommandGroup } = {
  * forward that quietly does less than the command it looks like. An alias resolves to its target's
  * name, so the event stream and the follow-ups only ever name the command that ran.
  *
- * An alias is documented in its target's `--help`, not as a command of its own: the top-level
- * listing names capabilities, and an alias adds none.
+ * An alias is documented in its target's `--help`, and it may also be listed in the top-level
+ * sections where its absence would be a hole a reader trips on — `stop` sits under `start`
+ * [confirmed — Kudo, 2026-08-30] — with a summary that names whose name the work happens under.
  */
 export const commandAliases: { [alias: string]: string } = {
   add: 'install',
@@ -532,6 +533,12 @@ function actionNames(group: string): string[] {
  * read when they get there.
  */
 export function commandSummary(name: string): string {
+  // An alias listed in the help says whose name the work happens under, so a reader who later
+  // sees `dev:stop` in a report knows it was this command [confirmed — Kudo, 2026-08-30].
+  const aliased = commandAliases[name];
+  if (aliased) {
+    return `${commandSummary(aliased)} (alias of ${aliased})`;
+  }
   const [group, action] = name.split(':');
   if (action != null) {
     return commandGroups[group!]!.actions[action]!.summary;
@@ -658,7 +665,7 @@ export interface HelpSection {
 export const helpSections: HelpSection[] = [
   {
     title: 'Develop',
-    commands: ['dev', 'dev:logs', 'dev:stop', 'start', 'install', 'typecheck'],
+    commands: ['dev', 'dev:logs', 'dev:stop', 'start', 'stop', 'install', 'typecheck'],
     note: 'dev blocks this terminal; dev --detach does not, and dev:logs reads what it printed.',
   },
   {
