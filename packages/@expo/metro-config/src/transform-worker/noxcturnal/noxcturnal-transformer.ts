@@ -678,8 +678,6 @@ function createProfilePreflight(
   const hasAsyncCandidate = sourceFacts.hasAsync;
   const hasRegexpLiteralCandidate = sourceFacts.hasSlash;
   const hasDecoratorCandidate = /@\w/.test(input.source);
-  const nonHermes = options.customTransformOptions?.engine !== 'hermes';
-  const hasObjectRestSpread = nonHermes && hasSpreadCandidate;
   const profileTransforms = getProfilePreflightConfig(input, {
     hasAsync: hasAsyncCandidate,
     hasAsyncGenerator,
@@ -688,15 +686,12 @@ function createProfilePreflight(
     hasForOf: hasForOfCandidate,
     hasPrivateSyntax: sourceFacts.hasPrivateSyntax,
     hasRegexpLiteral: hasRegexpLiteralCandidate,
+    hasSpread: hasSpreadCandidate,
     hasStaticBlock,
   });
   const hasProfileWork = Object.values(profileTransforms).some(Boolean);
   const hasOtherLanguageWork =
-    isTypeScript ||
-    enableReactRefresh ||
-    hasProfileWork ||
-    hasDecoratorCandidate ||
-    hasObjectRestSpread;
+    isTypeScript || enableReactRefresh || hasProfileWork || hasDecoratorCandidate;
   // Avoid a parse/codegen boundary for the overwhelmingly common file that has
   // none of this recipe's language work. Flow without JSX is already rendered by
   // its focused native erasure and does not need a second print.
@@ -706,7 +701,6 @@ function createProfilePreflight(
     !mayContainJsx &&
     !hasProfileWork &&
     !hasDecoratorCandidate &&
-    !hasObjectRestSpread &&
     !enableReactRefresh
   ) {
     return null;
@@ -715,12 +709,6 @@ function createProfilePreflight(
     transforms: {
       ...profileTransforms,
       legacyDecorators: hasDecoratorCandidate,
-      objectRestSpread: hasObjectRestSpread
-        ? {
-            loose: true,
-            useBuiltIns: true,
-          }
-        : undefined,
     },
     // Expo owns this recipe. These choices mirror its Hermes-v1 and React configs
     // without exposing either config name through Noxcturnal's capability API.

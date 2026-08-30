@@ -1,30 +1,137 @@
 import isEqual from 'fast-deep-equal';
-import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
+import { type RefObject, use, useEffect, useRef, useState } from 'react';
 
-import { ServerContext } from '../global-state/serverLocationContext';
-import { useExpoRouterStore } from '../global-state/storeContext';
+import {
+  completeParsedState,
+  createSeededRootState,
+} from '../global-state/createSeededNavigationState';
+import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
+import type { RoutingIntent } from '../global-state/routingQueue';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
   type LinkingOptions,
   findFocusedRoute,
-  getActionFromState as getActionFromStateDefault,
   getPathFromState as getPathFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
   type NavigationState,
   type ParamListBase,
-  useNavigationIndependentTree,
+  type PartialState,
 } from '../react-navigation/native';
+import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
+import { extractExpoPathFromURL } from './extractPathFromURL';
 import { appendBaseUrl } from './getPathFromState';
 
-type ResultState = ReturnType<typeof getStateFromPathDefault>;
+const linkingHandlers: symbol[] = [];
 
-/**
- * Find the matching navigation state that changed between 2 navigation states
- * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
- */
+type Options = LinkingOptions<ParamListBase>;
+type GetStateFromPath = NonNullable<LinkingOptions<ParamListBase>['getStateFromPath']>;
+type GetPathFromState = NonNullable<LinkingOptions<ParamListBase>['getPathFromState']>;
+type ResetState = NavigationState | PartialState<NavigationState>;
+
+export function useLinking(
+  ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
+  {
+    prefixes,
+    config,
+    getInitialURL = getInitialURLWithTimeout,
+    getStateFromPath = getStateFromPathDefault,
+    getPathFromState = getPathFromStateDefault,
+  }: Options,
+  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
+) {
+  const routerConfig = use(RouterConfigContext);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      return undefined;
+    }
+
+    if (linkingHandlers.length) {
+      console.error(
+        [
+          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
+          "- You don't have multiple NavigationContainers in the app",
+          '- Only a single instance of the root component is rendered',
+        ]
+          .join('\n')
+          .trim()
+      );
+    }
+
+    const handler = Symbol();
+
+    linkingHandlers.push(handler);
+
+    return () => {
+      const index = linkingHandlers.indexOf(handler);
+
+      if (index > -1) {
+        linkingHandlers.splice(index, 1);
+      }
+    };
+  }, []);
+
+  // `useThenable` only consumes this function from the first render, keeping initialization options consistent.
+  const getInitialState = () => {
+    const getStateFromURL = (url: string | null | undefined) => {
+      let path = url ? extractExpoPathFromURL(prefixes, url) : undefined;
+      if (path !== undefined && !path.startsWith('/')) {
+        path = `/${path}`;
+      }
+
+      const parsedState = path ? getStateFromPath(path, config) : undefined;
+      const routeNode = routerConfig?.routeNode;
+      const state = routeNode
+        ? createSeededRootState(parsedState, routeNode)
+        : completeParsedState(parsedState, ROOT_CHAIN);
+
+      // If the link were handled, it gets cleared in NavigationContainer
+      onUnhandledLinking(path);
+      return state;
+    };
+    const url = getInitialURL();
+
+    if (typeof url !== 'string' && url != null) {
+      return url.then(getStateFromURL);
+    }
+
+    const state = getStateFromURL(url);
+
+    const thenable = {
+      then(onfulfilled?: (state: NavigationState | undefined) => void) {
+        return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
+      },
+      catch() {
+        return thenable;
+      },
+    };
+
+    return thenable as PromiseLike<NavigationState | undefined>;
+  };
+
+  useBrowserHistorySync({
+    ref,
+    config,
+    getStateFromPath,
+    getPathFromState,
+    onUnhandledLinking,
+  });
+
+  return {
+    getInitialState,
+  };
+}
+
+export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
+  return typeof window === 'undefined' ? '' : window.location.href;
+}
+
+/** Find the matching navigation state that changed between two navigation states. */
 const findMatchingState = <T extends NavigationState>(
   a: T | undefined,
   b: T | undefined
@@ -33,21 +140,13 @@ const findMatchingState = <T extends NavigationState>(
     return [undefined, undefined];
   }
 
-  // Tab and drawer will have `history` property, but stack will have history in `routes`
   const aHistoryLength = getHistoryLength(a);
   const bHistoryLength = getHistoryLength(b);
-
   const aRoute = a.routes[a.index]!;
   const bRoute = b.routes[b.index]!;
-
   const aChildState = aRoute.state as T | undefined;
   const bChildState = bRoute.state as T | undefined;
 
-  // Stop here if this is the state object that changed:
-  // - history length is different
-  // - focused routes are different
-  // - one of them doesn't have child state
-  // - child state keys are different
   if (
     aHistoryLength !== bHistoryLength ||
     aRoute.key !== bRoute.key ||
@@ -61,256 +160,152 @@ const findMatchingState = <T extends NavigationState>(
   return findMatchingState(aChildState, bChildState);
 };
 
-/**
- * Run async function in series as it's called.
- */
-export const series = (cb: () => Promise<void>) => {
+const series = (cb: () => Promise<void>) => {
   let queue = Promise.resolve();
-  const callback = () => {
+  return () => {
     queue = queue.then(cb);
   };
-  return callback;
 };
 
-const linkingHandlers: symbol[] = [];
-
-type Options = LinkingOptions<ParamListBase>;
-
-export function useLinking(
-  ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
-  options: Options | undefined,
-  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
-) {
-  const enabled = options !== undefined;
-  const config = options?.config;
-  const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
-  const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
-  const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
-  const independent = useNavigationIndependentTree();
-
-  const store = useExpoRouterStore();
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      return undefined;
-    }
-
-    if (independent) {
-      return undefined;
-    }
-
-    if (enabled && linkingHandlers.length) {
-      console.error(
-        [
-          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-          "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-          '- Only a single instance of the root component is rendered',
-        ]
-          .join('\n')
-          .trim()
-      );
-    }
-
-    const handler = Symbol();
-
-    if (enabled) {
-      linkingHandlers.push(handler);
-    }
-
-    return () => {
-      const index = linkingHandlers.indexOf(handler);
-
-      if (index > -1) {
-        linkingHandlers.splice(index, 1);
-      }
-    };
-  }, [enabled, independent]);
-
+function useBrowserHistorySync({
+  ref,
+  config,
+  getStateFromPath,
+  getPathFromState,
+  onUnhandledLinking,
+}: {
+  ref: RefObject<NavigationContainerRef<ParamListBase> | null>;
+  config: LinkingOptions<ParamListBase>['config'];
+  getStateFromPath: GetStateFromPath;
+  getPathFromState: GetPathFromState;
+  onUnhandledLinking: (path: string | undefined) => void;
+}) {
+  const routerConfig = use(RouterConfigContext);
+  const enqueue = useEnqueueRoutingIntent();
   const [history] = useState(createMemoryHistory);
-
-  // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
-  // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
-  // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  const enabledRef = useRef(enabled);
   const configRef = useRef(config);
   const getStateFromPathRef = useRef(getStateFromPath);
   const getPathFromStateRef = useRef(getPathFromState);
-  const getActionFromStateRef = useRef(getActionFromState);
+  const previousIndexRef = useRef<number | undefined>(undefined);
+  const previousStateRef = useRef<NavigationState | undefined>(undefined);
+  // TODO(@ubax): buffer history intent metadata in the reducer and flush it immediately before
+  // the matching state event so each operation is correlated with its commit.
+  // https://linear.app/expo/issue/ENG-22046
+  const pendingHistoryOperationsRef = useRef<{ path: string }[]>([]);
 
   useEffect(() => {
-    enabledRef.current = enabled;
     configRef.current = config;
     getStateFromPathRef.current = getStateFromPath;
     getPathFromStateRef.current = getPathFromState;
-    getActionFromStateRef.current = getActionFromState;
   });
-
-  const validateRoutesNotExistInRootState = useCallback(
-    (state: ResultState) => {
-      // START FORK
-      // Instead of using the rootState, we use INTERNAL_SLOT_NAME, which is the only route in the root navigator in Expo Router
-      // const navigation = ref.current;
-      // const rootState = navigation?.getRootState();
-      const routeNames = getRootStackRouteNames();
-      // END FORK
-
-      // Make sure that the routes in the state exist in the root navigator
-      // Otherwise there's an error in the linking configuration
-      // START FORK
-      // return state?.routes.some((r) => !rootState?.routeNames?.includes(r.name));
-      return state?.routes.some((r) => !routeNames.includes(r.name));
-      // END FORK
-    },
-    [ref]
-  );
-
-  const server = use(ServerContext);
-
-  const getInitialState = useCallback(() => {
-    let value: ResultState | undefined;
-
-    if (enabledRef.current) {
-      const location =
-        server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
-
-      const path = location
-        ? location.pathname + location.search + (location.hash ?? '')
-        : undefined;
-
-      if (path) {
-        value = getStateFromPathRef.current(path, configRef.current);
-      }
-
-      // If the link were handled, it gets cleared in NavigationContainer
-      onUnhandledLinking(path);
-    }
-
-    const thenable = {
-      then(onfulfilled?: (state: ResultState | undefined) => void) {
-        return Promise.resolve(onfulfilled ? onfulfilled(value) : value);
-      },
-      catch() {
-        return thenable;
-      },
-    };
-
-    return thenable as PromiseLike<ResultState | undefined>;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const previousIndexRef = useRef<number | undefined>(undefined);
-  const previousStateRef = useRef<NavigationState | undefined>(undefined);
-  const pendingPopStatePathRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     previousIndexRef.current = history.index;
 
-    return history.listen(() => {
+    const unsubscribe = history.listen(() => {
       const navigation = ref.current;
 
-      if (!navigation || !enabled) {
+      if (!navigation) {
         return;
       }
 
       const { location } = window;
-
       const path = location.pathname + location.search + location.hash;
       const index = history.index;
-
       const previousIndex = previousIndexRef.current ?? 0;
 
       previousIndexRef.current = index;
-      pendingPopStatePathRef.current = path;
+      const operation = { path };
+      const queueHistoryIntent = (intent: RoutingIntent) => {
+        intent.metadata = { history: operation };
+        intent.onDispatch = (metadata) => {
+          if (metadata?.history) {
+            pendingHistoryOperationsRef.current.push(metadata.history);
+          }
+        };
+        enqueue(intent);
+      };
+      const reset = (state: ResetState) => ({
+        type: 'RESET',
+        payload: state,
+        target: ('key' in state ? state.key : undefined) ?? navigation.getRootState()?.key,
+      });
 
-      // When browser back/forward is clicked, we first need to check if state object for this index exists
-      // If it does we'll reset to that state object
-      // Otherwise, we'll handle it like a regular deep link
+      // Saved state is authoritative: parsing its URL again would lose route keys and nested history.
       const record = history.get(index);
-
       if (record?.path === path && record?.state) {
-        navigation.resetRoot(record.state);
+        queueHistoryIntent({
+          type: 'ACTION',
+          payload: { action: reset(record.state) },
+        });
         return;
       }
 
-      const state = getStateFromPathRef.current(path, configRef.current);
-
-      // We should only dispatch an action when going forward
-      // Otherwise the action will likely add items to history, which would mess things up
-      if (state) {
-        // If the link were handled, it gets cleared in NavigationContainer
+      // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
+      const segments = getRouteInfoFromState(navigation.getRootState()).segments;
+      const parsedState = getStateFromPathRef.current(path, configRef.current, segments);
+      if (parsedState) {
         onUnhandledLinking(path);
-        // Make sure that the routes in the state exist in the root navigator
-        // Otherwise there's an error in the linking configuration
-        if (validateRoutesNotExistInRootState(state)) {
+        const routeNames = getRootStackRouteNames();
+        if (parsedState.routes.some((route) => !routeNames.includes(route.name))) {
+          return;
+        }
+        const state = routerConfig?.routeNode
+          ? createSeededRootState(parsedState, routerConfig.routeNode)
+          : completeParsedState(parsedState, ROOT_CHAIN);
+        if (!state) {
           return;
         }
 
         if (
           index > previousIndex ||
-          /* START FORK
-           *
-           * This is a workaround for React Navigation's handling of hashes (it doesn't handle them)
-           * When you click on <a href="#hash">, the browser will first fire a popstate event
-           * and this callback will be called.
-           *
-           * From React Navigation's perspective, it's treating the new hash change like a back/forward
-           * button press, so it thinks it should reset the state. When we should
-           * be to be pushing the new state
-           *
-           * Our fix is to check if the index is the same as the previous index
-           * and if the incoming path is the same as the old path but with the hash added,
-           * then treat it as a push instead of a reset
-           *
-           * This also works for subsequent hash changes, as internally RN
-           * doesn't store the hash in the history state.
-           *
-           * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
-           */
+          // Hash links emit popstate without changing the memory-history index.
           (index === previousIndex && (!record || `${record?.path}${location.hash}` === path))
-          // END FORK
         ) {
-          const action = getActionFromStateRef.current(state, configRef.current);
-
-          if (action !== undefined) {
-            try {
-              navigation.dispatch(action);
-            } catch (e) {
-              // Ignore any errors from deep linking.
-              // This could happen in case of malformed links, navigation object not being initialized etc.
-              console.warn(
-                `An error occurred when trying to handle the link '${path}': ${
-                  typeof e === 'object' && e != null && 'message' in e ? e.message : e
-                }`
-              );
-            }
-          } else {
-            navigation.resetRoot(state);
-          }
+          queueHistoryIntent({
+            type: 'NAVIGATE_TO_HREF',
+            payload: { href: path, options: { event: 'NAVIGATE' } },
+          });
         } else {
-          navigation.resetRoot(state);
+          queueHistoryIntent({
+            type: 'ACTION',
+            payload: { action: reset(state) },
+          });
         }
       } else {
-        // if current path didn't return any state, we should revert to initial state
-        navigation.resetRoot(state);
+        const initialState = history.get(0)?.state;
+        if (initialState) {
+          queueHistoryIntent({
+            type: 'ACTION',
+            payload: { action: reset(initialState) },
+          });
+        } else {
+          pendingHistoryOperationsRef.current = [];
+        }
       }
     });
-  }, [enabled, history, onUnhandledLinking, ref, validateRoutesNotExistInRootState]);
+
+    return () => {
+      unsubscribe();
+      pendingHistoryOperationsRef.current = [];
+    };
+  }, [enqueue, history, onUnhandledLinking, ref]);
 
   useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-
     const getPathForRoute = (
       route: ReturnType<typeof findFocusedRoute>,
       state: NavigationState
     ): string => {
       let path;
 
-      // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
-      // This makes sure that we preserve the original URL for wildcard routes
+      // Preserve the original URL for wildcard routes while the route and params still match.
       if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
+        const stateForPath = getStateFromPathRef.current(
+          route.path,
+          configRef.current,
+          // TODO(@Ubax): Check if there is a way to do it in a more performant way
+          getRouteInfoFromState(state).segments
+        );
 
         if (stateForPath) {
           const focusedRoute = findFocusedRoute(stateForPath);
@@ -320,119 +315,64 @@ export function useLinking(
             focusedRoute.name === route.name &&
             isEqual({ ...focusedRoute.params }, { ...route.params })
           ) {
-            // START FORK - Ensure paths coming from events (e.g refresh) have the base URL
-            // path = route.path;
             path = appendBaseUrl(route.path);
-            // END FORK
           }
         }
       }
 
-      if (path == null) {
-        path = getPathFromStateRef.current(state, configRef.current);
-      }
-
-      // START FORK - ExpoRouter manually handles hashes. This code is intentionally removed
-      // const previousRoute = previousStateRef.current
-      //   ? findFocusedRoute(previousStateRef.current)
-      //   : undefined;
-
-      // Preserve the hash if the route didn't change
-      // if (
-      //   previousRoute &&
-      //   route &&
-      //   'key' in previousRoute &&
-      //   'key' in route &&
-      //   previousRoute.key === route.key
-      // ) {
-      //   path = path + location.hash;
-      // }
-      // END FORK
-
-      return path;
+      return path ?? getPathFromStateRef.current(state, configRef.current);
     };
 
     if (ref.current) {
-      // We need to record the current metadata on the first render if they aren't set
-      // This will allow the initial state to be in the history entry
-
-      // START FORK
-      // Instead of using the rootState (which might be stale) we should use the focused state
-      // const state = ref.current.getRootState();
+      // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
       const rootState = ref.current.getRootState();
-      const state = store.state as NavigationState;
-
-      // END FORK
-
-      if (state) {
-        const route = findFocusedRoute(state);
-        const path = getPathForRoute(route, state);
-
-        if (previousStateRef.current === undefined) {
-          // START FORK
-          // previousStateRef.current = state;
-          previousStateRef.current = rootState;
-          // END FORK
-        }
-
-        history.replace({ path, state });
+      if (rootState) {
+        const path = getPathForRoute(findFocusedRoute(rootState), rootState);
+        previousStateRef.current ??= rootState;
+        history.replace({ path, state: rootState });
       }
     }
 
     const onStateChange = async () => {
       const navigation = ref.current;
 
-      if (!navigation || !enabled) {
+      if (!navigation) {
         return;
       }
 
       const previousState = previousStateRef.current;
-      // START FORK
-      // Instead of using the rootState (which might be stale) we should use the focused state
-      // const state = navigation.getRootState();
+      // TODO(@ubax): check if navigation.getRootState() can be replaced with the context read
       const rootState = navigation.getRootState();
-      const state = store.state as NavigationState;
-
-      // END FORK
-
-      // root state may not available, for example when root navigators switch inside the container
-      if (!state) {
+      if (!rootState) {
         return;
       }
 
-      const pendingPath = pendingPopStatePathRef.current;
-      const route = findFocusedRoute(state);
-      const path = getPathForRoute(route, state);
+      const path = getPathForRoute(findFocusedRoute(rootState), rootState);
+      let pendingOperation: { path: string } | undefined;
 
-      // START FORK
-      // previousStateRef.current = state;
+      // React may batch multiple queued actions into one state event, so use the latest match.
+      const pendingOperationIndex = pendingHistoryOperationsRef.current.findLastIndex(
+        (operation) => operation.path === path
+      );
+      if (pendingOperationIndex !== -1) {
+        pendingOperation = pendingHistoryOperationsRef.current[pendingOperationIndex];
+        pendingHistoryOperationsRef.current.splice(0, pendingOperationIndex + 1);
+      }
+      if (!pendingOperation) {
+        // A failed or redirected operation must not affect later navigation.
+        pendingHistoryOperationsRef.current.shift();
+      }
+
       previousStateRef.current = rootState;
-      // END FORK
-      pendingPopStatePathRef.current = undefined;
+      const [previousFocusedState, focusedState] = findMatchingState(previousState, rootState);
 
-      // To detect the kind of state change, we need to:
-      // - Find the common focused navigation state in previous and current state
-      // - If only the route keys changed, compare history/routes.length to check if we go back/forward/replace
-      // - If no common focused navigation state found, it's a replace
-      const [previousFocusedState, focusedState] = findMatchingState(previousState, state);
-
-      if (
-        previousFocusedState &&
-        focusedState &&
-        // We should only handle push/pop if path changed from what was in last `popstate`
-        // Otherwise it's likely a change triggered by `popstate`
-        path !== pendingPath
-      ) {
+      if (previousFocusedState && focusedState && !pendingOperation) {
         const historyDelta =
           getHistoryLength(focusedState) - getHistoryLength(previousFocusedState);
 
         if (historyDelta > 0) {
-          // If history length is increased, we should pushState
-          // Note that path might not actually change here, for example, drawer open should pushState
-          history.push({ path, state });
+          history.push({ path, state: rootState });
         } else if (historyDelta < 0) {
-          // If history length is decreased, i.e. entries were removed, we want to go back
-
           const nextIndex = history.backIndex({ path });
           const currentIndex = history.index;
 
@@ -440,45 +380,26 @@ export function useLinking(
             if (
               nextIndex !== -1 &&
               nextIndex < currentIndex &&
-              // We should only go back if the entry exists and it's less than current index
               history.get(nextIndex - currentIndex)
             ) {
-              // An existing entry for this path exists and it's less than current index, go back to that
               await history.go(nextIndex - currentIndex);
             } else {
-              // We couldn't find an existing entry to go back to, so we'll go back by the delta
-              // This won't be correct if multiple routes were pushed in one go before
-              // Usually this shouldn't happen and this is a fallback for that
               await history.go(historyDelta);
             }
 
-            // Store the updated state as well as fix the path if incorrect
-            history.replace({ path, state });
+            history.replace({ path, state: rootState });
           } catch {
-            // The navigation was interrupted
+            // The navigation was interrupted.
           }
         } else {
-          // If history length is unchanged, we want to replaceState
-          history.replace({ path, state });
+          history.replace({ path, state: rootState });
         }
       } else {
-        // If no common navigation state was found, assume it's a replace
-        // This would happen if the user did a reset/conditionally changed navigators
-        history.replace({ path, state });
+        history.replace({ path, state: rootState });
       }
     };
 
-    // We debounce onStateChange coz we don't want multiple state changes to be handled at one time
-    // This could happen since `history.go(n)` is asynchronous
-    // If `pushState` or `replaceState` were called before `history.go(n)` completes, it'll mess stuff up
+    // Serialize writes because `history.go` is asynchronous and can be interrupted by another write.
     return ref.current?.addListener('state', series(onStateChange));
-  }, [enabled, history, ref]);
-
-  return {
-    getInitialState,
-  };
-}
-
-export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
-  return typeof window === 'undefined' ? '' : window.location.href;
+  }, [history, ref]);
 }

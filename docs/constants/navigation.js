@@ -641,6 +641,7 @@ export const eas = [
     makeGroup('Integrations', [
       makePage('eas/observe/integrations/expo-router.mdx'),
       makePage('eas/observe/integrations/react-navigation.mdx'),
+      makePage('eas/observe/integrations/expo-image.mdx'),
       makePage('eas/observe/integrations/third-party.mdx'),
     ]),
     makeGroup('Reference', [
