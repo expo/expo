@@ -400,11 +400,23 @@ describe(resolveCommand, () => {
 
   it('names every alias target, and nothing else', () => {
     for (const [alias, target] of Object.entries(commandAliases)) {
-      expect(topLevelCommands[target]).toBeDefined();
+      // A target may be a top-level command or a group action; either way it must resolve to a
+      // real command, and the alias itself may claim no name of its own anywhere.
+      expect(resolveCommand(target, [])).toMatchObject({ kind: 'command' });
       expect(topLevelCommands[alias]).toBeUndefined();
       expect(forwardedCommands).not.toContain(alias);
       expect(commandGroups[alias]).toBeUndefined();
     }
+  });
+
+  // `start` has a top-level name, so its counterpart answers to one too [confirmed — Kudo,
+  // 2026-08-30]. The alias resolves to the dev server's stop, not the app's.
+  it('resolves stop to dev:stop, with the caller’s own flags', () => {
+    expect(resolveCommand('stop', ['--force', '--json'])).toMatchObject({
+      kind: 'command',
+      name: 'dev:stop',
+      argv: ['--force', '--json'],
+    });
   });
 
   // `context` was merged into `status --json`, which carries the whole probe.
@@ -843,8 +855,9 @@ describe('helpSections', () => {
 // feature is entirely in *which* names it picks, so the table pins them.
 describe(suggestCommandNames, () => {
   it.each([
-    // The action name on its own: not a typo, a caller that does not know which group owns it.
-    ['stop', ['dev:stop', 'runtime:stop']],
+    // The action name on its own resolves now — `stop` is an alias of `dev:stop` — so this row
+    // matters only for near-misses; the alias joins the list it used to be the question for.
+    ['stop', ['dev:stop', 'runtime:stop', 'stop']],
     ['sync', ['skills:sync']],
     ['setup', ['agents:setup']],
     ['config-plugins', ['inspect:config-plugins']],

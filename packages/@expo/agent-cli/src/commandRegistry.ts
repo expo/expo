@@ -355,6 +355,10 @@ export const commandGroups: { [group: string]: CommandGroup } = {
  */
 export const commandAliases: { [alias: string]: string } = {
   add: 'install',
+  // `start` has a top-level name, so its counterpart answers to one too [confirmed — Kudo,
+  // 2026-08-30]. It stops the DEV SERVER: the ambiguity worth a sentence is `runtime:stop`,
+  // which stops the app on the device, and `dev:stop`'s help says which is which.
+  stop: 'dev:stop',
 };
 
 /**
@@ -501,12 +505,10 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
 
   const aliased = commandAliases[command];
   if (aliased) {
-    return {
-      kind: 'command',
-      name: aliased,
-      argv,
-      load: topLevelCommands[aliased]!.load,
-    };
+    // Re-resolve under the target's own name, so an alias may point at a group action
+    // (`stop` -> `dev:stop`) as well as at a top-level command, and every downstream rule —
+    // events, follow-ups, help — sees only the name that ran.
+    return resolveCommand(aliased, argv);
   }
 
   if (forwardedCommands.includes(command)) {

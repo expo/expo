@@ -54,6 +54,8 @@ export const devStopHelp: CommandHelp = {
     ],
   },
   notes: [
+    `${PROGRAM_PREFIX} stop is this same command. It stops the DEV SERVER; stopping the app`,
+    `on the device is "${PROGRAM_PREFIX} runtime:stop", which is a different thing to stop.`,
     `It signals the process named by this project's dev-server lock, so there is no port to`,
     `guess at. A port with no lock behind it is another project's server: reported, left alone,`,
     `and stopped only by --force, and only when the port and the process both look like one.`,

@@ -367,15 +367,26 @@ describe('expo passthrough', () => {
   });
 
   // A name that is only the *action* half is a caller that knows what it wants and not which
-  // group owns it, so the error names every group that has an action by that name.
+  // group owns it, so the error names every group that has an action by that name. `stop` left
+  // this case when it became an alias of `dev:stop`; `eval` is the case now.
   it('names the closest commands for a name that is only an action', async () => {
-    const result = await executeAgentCliAsync(projectRoot, ['stop'], { reject: false });
+    const result = await executeAgentCliAsync(projectRoot, ['eval'], { reject: false });
 
     expect(result.exitCode).toBe(1);
-    expect(result.all).toContain('npx @expo/agent-cli dev:stop');
-    expect(result.all).toContain('npx @expo/agent-cli runtime:stop');
-    // Two candidates are a choice, so the last line stays the full listing.
-    expect(result.all).toContain('Try: npx @expo/agent-cli --help');
+    expect(result.all).toContain('npx @expo/agent-cli runtime:eval');
+    // One candidate is not a choice, so the Try: line is that command's help directly.
+    expect(result.all).toContain('Try: npx @expo/agent-cli runtime:eval --help');
+  });
+
+  // The alias, at the process boundary: `stop` runs `dev:stop` and reports under that name.
+  it('runs dev:stop for the bare stop', async () => {
+    const result = await executeAgentCliAsync(projectRoot, ['stop', '--json']);
+
+    expect(result.exitCode).toBe(0);
+    const report = JSON.parse(result.stdout);
+    expect(report.stopped).toBe(false);
+    // Nothing was forwarded to `expo`: the alias resolved inside this CLI.
+    expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 
   it('recovers into the one close command for a mistyped name', async () => {
