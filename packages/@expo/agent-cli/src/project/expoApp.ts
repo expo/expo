@@ -6,11 +6,12 @@
 import fs from 'fs';
 import path from 'path';
 
+import { PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 
 /** The command that creates an app, named on the `Try:` line and in the `How:` sentence. */
-const NEW_APP_COMMAND = 'npx @expo/agent-cli new my-app';
+const NEW_APP_COMMAND = `${PROGRAM_PREFIX} new my-app`;
 
 /**
  * Whether the package at this root declares `expo` as a dependency.
@@ -26,9 +27,7 @@ export function declaresExpoSync(projectRoot: string): boolean {
     const packageJson = JSON.parse(
       fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8')
     ) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
-    return (
-      packageJson?.dependencies?.expo != null || packageJson?.devDependencies?.expo != null
-    );
+    return packageJson?.dependencies?.expo != null || packageJson?.devDependencies?.expo != null;
   } catch {
     return false;
   }
@@ -55,7 +54,7 @@ export function assertExpoAppSync(projectRoot: string): void {
     [
       `This directory is not an Expo app, so this command has nothing to act on.`,
       `Why: ${path.join(projectRoot, 'package.json')} declares no "expo" dependency, which is what makes a package an Expo app. The likeliest cause is a command run one directory too high — a repository or workspace root above the app.`,
-      `How: change to the app's own directory and run this again; create an app here with "${NEW_APP_COMMAND}"; or, if you really mean to add Expo to this package, run "npx @expo/agent-cli install expo" first.`,
+      `How: change to the app's own directory and run this again; create an app here with "${NEW_APP_COMMAND}"; or, if you really mean to add Expo to this package, run "${PROGRAM_PREFIX} install expo" first.`,
     ].join('\n')
   );
   error.suggestedCommand = NEW_APP_COMMAND;

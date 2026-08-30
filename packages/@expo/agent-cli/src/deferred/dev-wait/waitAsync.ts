@@ -12,20 +12,21 @@
 // they are reported and exited with rather than thrown.
 
 import { readCloudSessionIdSync } from '../../device/cloudSimulator';
+import { probeLocalDeviceAsync } from '../../device/localDevice';
 import { event } from '../../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
 import { followUpsEnabled, reportFollowUps } from '../../followups';
-import { buildDevWaitFollowUps } from './followups';
 import * as Log from '../../log';
+import { PROGRAM_PREFIX } from '../../programName';
 import {
   checkEntryBundleAsync,
   resolveBundleCheckPlatformsAsync,
   type BundleCheckResult,
 } from '../../runtime/bundleCheck';
-import { probeLocalDeviceAsync } from '../../device/localDevice';
 import { discoverDevServerAsync, howToNameTheDevServer } from '../../runtime/devServer';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../../runtime/waitReady';
 import { CommandError } from '../../utils/errors';
+import { buildDevWaitFollowUps } from './followups';
 import type { DevWaitOptions } from './resolveWaitOptions';
 import {
   devWaitResultToJson,
@@ -237,10 +238,10 @@ function noDevServerError(
           ? ''
           : ` The project's dev-server lock, the port in its start.log, 8081 and the ports "expo start" falls back to were all tried.`
       }`,
-      `How: start a dev server with "npx @expo/agent-cli dev" and run this command again. ${howToNameTheDevServer(explicit)}`,
+      `How: start a dev server with "${PROGRAM_PREFIX} dev" and run this command again. ${howToNameTheDevServer(explicit)}`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli dev';
+  error.suggestedCommand = `${PROGRAM_PREFIX} dev`;
   return error;
 }
 

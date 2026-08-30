@@ -4,6 +4,7 @@
 // found. No I/O, so the whole matrix is a table in a unit test.
 
 import type { NativePlatform } from '../plan/types';
+import { PROGRAM_NAME } from '../programName';
 import type { BuildBackend } from '../settings/types';
 import { localTool, EAS_WHERE, LOCAL_WHERE } from './runsOn';
 import type { RunsOn } from './runsOn';
@@ -87,14 +88,19 @@ export function selectBuildBackend({
     : '';
 
   if (requested) {
-    return choice(requested, 'flag', `${requested === 'eas' ? '--eas' : '--local'} was passed on the command line.${anyway}`, requested === 'local' && impossible);
+    return choice(
+      requested,
+      'flag',
+      `${requested === 'eas' ? '--eas' : '--local'} was passed on the command line.${anyway}`,
+      requested === 'local' && impossible
+    );
   }
 
   if (configured) {
     return choice(
       configured,
       'config',
-      `the @expo/agent-cli config asks for it — "expo.agentCli" in package.json.${anyway}`,
+      `the ${PROGRAM_NAME} config asks for it — "expo.agentCli" in package.json.${anyway}`,
       configured === 'local' && impossible
     );
   }

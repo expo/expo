@@ -13,6 +13,8 @@
 // happens to be in — `npx @expo/agent-cli` runs in a Bun project exactly as it does anywhere else. The
 // substitution is for the terminal, which is the one place the mismatch is read as an instruction.
 
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
+
 /** How the caller reached this CLI, in the spelling their project uses. */
 export type Invoker = 'npx' | 'bunx';
 
@@ -68,8 +70,19 @@ export function currentInvoker(): Invoker {
   return cached;
 }
 
-/** What every suggestion in this CLI is written as. */
-const WRITTEN_AS = /\bnpx @expo\/agent-cli\b/g;
+/**
+ * What every suggestion in this CLI is written as.
+ *
+ * Built from {@link PROGRAM_PREFIX} rather than written out, because the name is read from
+ * `package.json` at runtime (`src/programName.ts`) and a pattern that spelled it would stop
+ * matching the moment the two disagreed — silently, since a substitution that matches nothing looks
+ * exactly like a caller who is not on Bun. The name goes into a character class-free pattern, so it
+ * is escaped: a scoped name has a `/` in it and any future one may have a `.`.
+ */
+const WRITTEN_AS = new RegExp(
+  `\\b${PROGRAM_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`,
+  'g'
+);
 
 /**
  * Rewrite the suggested commands in a line for the runner that is actually in use.
@@ -80,5 +93,5 @@ const WRITTEN_AS = /\bnpx @expo\/agent-cli\b/g;
  * case where the two spellings name the same thing.
  */
 export function renderForInvoker(text: string, invoker: Invoker = currentInvoker()): string {
-  return invoker === 'npx' ? text : text.replace(WRITTEN_AS, 'bunx @expo/agent-cli');
+  return invoker === 'npx' ? text : text.replace(WRITTEN_AS, `bunx ${PROGRAM_NAME}`);
 }

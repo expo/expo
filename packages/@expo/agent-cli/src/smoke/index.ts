@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../utils/args';
 
 export const smokeHelp: CommandHelp = {
   command: 'smoke',
-  usage: 'npx @expo/agent-cli smoke',
+  usage: `${PROGRAM_PREFIX} smoke`,
   options: [
     `--route <route>            Open this route before the error window`,
     `--ios, --android           Platform to drive; the host decides when none is named`,
@@ -25,15 +26,15 @@ export const smokeHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli smoke',
+      run: `${PROGRAM_PREFIX} smoke`,
       gets: 'the whole gate: bundle, boot, error window, screenshot, and one exit code',
     },
     {
-      run: 'npx @expo/agent-cli smoke --route /notes --json',
+      run: `${PROGRAM_PREFIX} smoke --route /notes --json`,
       gets: 'the same on that route, as one object with a phase-by-phase record',
     },
     {
-      run: 'npx @expo/agent-cli smoke --start --window 5s',
+      run: `${PROGRAM_PREFIX} smoke --start --window 5s`,
       gets: 'the same, starting a dev server first and watching five seconds for errors',
     },
   ],
@@ -109,8 +110,7 @@ export const agentCliSmoke: Command = async (argv) => {
   const { findUpExpoAppRootOrAssert } =
     require('../project/expoApp') as typeof import('../project/expoApp');
   const { EXIT_OK, exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
-  const { resolveSmokeOptions } =
-    require('./resolveOptions') as typeof import('./resolveOptions');
+  const { resolveSmokeOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
 
   return (async () => {
     const options = resolveSmokeOptions(argv ?? []);

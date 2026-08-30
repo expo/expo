@@ -4,6 +4,7 @@
 // unit-testable without a project.
 
 import { IMPACT_CLASS_ORDER, type ImpactClass } from '../impact/types';
+import { PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
 
 /**
@@ -59,10 +60,10 @@ export function resolveBuildId(value: unknown, { explain }: { explain: boolean }
       [
         `--build needs --explain.`,
         `Why: comparing against an EAS build fetches a fingerprint from the service, and --explain is what says this run may make a network call. The default report is built from what is already on this machine, and a flag that spent a round trip without being asked would take that promise away.`,
-        `How: run "npx @expo/agent-cli status --explain --build ${buildId}".`,
+        `How: run "${PROGRAM_PREFIX} status --explain --build ${buildId}".`,
       ].join('\n')
     );
-    error.suggestedCommand = `npx @expo/agent-cli status --explain --build ${buildId}`;
+    error.suggestedCommand = `${PROGRAM_PREFIX} status --explain --build ${buildId}`;
     throw error;
   }
   return buildId;

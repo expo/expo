@@ -2,6 +2,7 @@
 // @ref llp/0009-smart-followups.rfc.md §Wider ideas — teachable warnings: a mismatch the command
 // detected is attached as the correction, instead of failing later on a device.
 
+import { PROGRAM_PREFIX } from '../programName';
 import type { InstallImpactReport } from '../project/types';
 import { capFollowUps, type FollowUp } from './types';
 
@@ -37,7 +38,7 @@ export function buildInstallFollowUps({
     const names = rebuild.map((report) => report.packageName).join(', ');
     followups.push({
       id: 'dev',
-      command: 'npx @expo/agent-cli dev',
+      command: `${PROGRAM_PREFIX} dev`,
       why: `The app that is running now cannot load ${names}, which changed the native surface: this plans and makes the development build that can.`,
     });
   } else {
@@ -47,7 +48,7 @@ export function buildInstallFollowUps({
     // follow-ups lead to the error window afterwards.
     followups.push({
       id: 'reload-app',
-      command: 'npx @expo/agent-cli runtime:reload',
+      command: `${PROGRAM_PREFIX} runtime:reload`,
       why: reloadReason(reports),
     });
   }
@@ -55,13 +56,13 @@ export function buildInstallFollowUps({
   if (packagesWithSkills.length === 1) {
     followups.push({
       id: 'skills-show',
-      command: `npx @expo/agent-cli skills:show ${packagesWithSkills[0]}`,
+      command: `${PROGRAM_PREFIX} skills:show ${packagesWithSkills[0]}`,
       why: `${packagesWithSkills[0]} ships an agent skill: read it before writing code against the package.`,
     });
   } else if (packagesWithSkills.length > 1) {
     followups.push({
       id: 'skills-list',
-      command: 'npx @expo/agent-cli skills:list',
+      command: `${PROGRAM_PREFIX} skills:list`,
       why: `${packagesWithSkills.length} of the installed packages ship agent skills: read them before writing code against the packages.`,
     });
   }
@@ -72,7 +73,7 @@ export function buildInstallFollowUps({
   // whether the code compiles against the types the new package brought with it.
   followups.push({
     id: 'typecheck',
-    command: 'npx @expo/agent-cli typecheck',
+    command: `${PROGRAM_PREFIX} typecheck`,
     why: 'A new package brings its own types with it: this is the gate that sees a call that does not match them, which neither the bundler nor the running app reports.',
   });
 

@@ -6,6 +6,7 @@
 // command, so nothing else moved with it.
 
 import { capFollowUps, type FollowUp } from '../../followups/types';
+import { PROGRAM_PREFIX } from '../../programName';
 import type { FixPlanPayload } from './fixTypes';
 
 /**
@@ -22,13 +23,13 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
     if (payload.steps.length) {
       followups.push({
         id: 'doctor-fix-apply',
-        command: `npx @expo/agent-cli doctor:fix --tier ${payload.tier} --apply`,
+        command: `${PROGRAM_PREFIX} doctor:fix --tier ${payload.tier} --apply`,
         why: `Nothing was deleted. This runs the ${payload.steps.length} ${payload.steps.length === 1 ? 'step' : 'steps'} above.`,
       });
     } else {
       followups.push({
         id: 'doctor-check',
-        command: 'npx @expo/agent-cli doctor:check',
+        command: `${PROGRAM_PREFIX} doctor:check`,
         why: 'This tier found nothing stale, so whatever is wrong is not a cache.',
       });
     }
@@ -39,7 +40,7 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
     if (next && !payload.steps.length) {
       followups.push({
         id: 'doctor-fix-next-tier',
-        command: `npx @expo/agent-cli doctor:fix --tier ${next}`,
+        command: `${PROGRAM_PREFIX} doctor:fix --tier ${next}`,
         why: `The ${next} tier also resets ${next === 'moderate' ? 'the installed packages' : 'the generated native projects'}.`,
       });
     }
@@ -50,7 +51,7 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
   if (failed) {
     followups.push({
       id: 'doctor-fix-retry-step',
-      command: `npx @expo/agent-cli doctor:fix --tier ${payload.tier} --apply`,
+      command: `${PROGRAM_PREFIX} doctor:fix --tier ${payload.tier} --apply`,
       why: `The "${failed.id}" step failed and the steps after it did not run. Fix what it reported, then run the rest.`,
     });
     return capFollowUps(followups);
@@ -60,13 +61,13 @@ export function buildDoctorFixFollowUps(payload: FixPlanPayload): FollowUp[] {
   // find out whether it helped. `dev` is what decides whether a rebuild is needed first.
   followups.push({
     id: 'dev',
-    command: 'npx @expo/agent-cli dev',
+    command: `${PROGRAM_PREFIX} dev`,
     why: 'The caches are gone; this rebuilds what the app needs and starts the dev server.',
   });
   if (payload.steps.some((step) => step.id === 'node-modules')) {
     followups.push({
       id: 'doctor-check',
-      command: 'npx @expo/agent-cli doctor:check',
+      command: `${PROGRAM_PREFIX} doctor:check`,
       why: 'The packages were reinstalled, so this is the moment to check them against the SDK.',
     });
   }

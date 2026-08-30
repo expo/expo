@@ -3,6 +3,7 @@
 // a user can get wrong. Which target a bare `@expo/agent-cli deploy` ships is decided from the project, not
 // here, because that needs a probe.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
 import { CommandError } from '../utils/errors';
 
@@ -40,7 +41,7 @@ const DEPLOY_ARGS = {
 };
 
 /** The usage line, which is the recovery path for every argument error of this command. */
-const USAGE_COMMAND = 'npx @expo/agent-cli deploy';
+const USAGE_COMMAND = `${PROGRAM_PREFIX} deploy`;
 
 function badArgs(message: string, suggestedCommand: string): CommandError {
   const error = new CommandError('BAD_ARGS', message);

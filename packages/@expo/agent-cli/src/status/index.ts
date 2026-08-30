@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const statusHelp: CommandHelp = {
   command: 'status',
-  usage: 'npx @expo/agent-cli status',
+  usage: `${PROGRAM_PREFIX} status`,
   options: [
     `--json                    Print the whole report as JSON, raw project probe included`,
     `--explain                 The deep dive: which sources changed, whether an update can\n` +
@@ -22,19 +23,19 @@ export const statusHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli status',
+      run: `${PROGRAM_PREFIX} status`,
       gets: 'the brief: what this project is, what is running, and the command to run next',
     },
     {
-      run: 'npx @expo/agent-cli status --json',
+      run: `${PROGRAM_PREFIX} status --json`,
       gets: 'the same as one object, with the raw project probe under probe',
     },
     {
-      run: 'npx @expo/agent-cli status --explain',
+      run: `${PROGRAM_PREFIX} status --explain`,
       gets: 'the sources that changed, the OTA verdict, and what EAS already has built',
     },
     {
-      run: 'npx @expo/agent-cli status --assert js-only',
+      run: `${PROGRAM_PREFIX} status --assert js-only`,
       gets: 'exit 20 when the change needs more than a reload; a gate for a script',
     },
   ],

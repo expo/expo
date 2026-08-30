@@ -2,6 +2,7 @@
 //
 import chalk from 'chalk';
 
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
@@ -35,7 +36,7 @@ export const agentCliDoctorFix: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Reset this project's caches and build state. Dry run by default`,
-      chalk`npx @expo/agent-cli doctor:fix {dim [options]}`,
+      chalk`${PROGRAM_PREFIX} doctor:fix {dim [options]}`,
       [
         `--tier <name>          safe, moderate or aggressive. Tiers are cumulative. Default: safe`,
         `--apply                Actually do it. Without this, nothing is touched.`,
@@ -49,7 +50,7 @@ export const agentCliDoctorFix: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  {bold The dry run is the default.} {bold @expo/agent-cli dev} executes what it plans; this does not,`,
+        chalk`  {bold The dry run is the default.} {bold ${PROGRAM_NAME} dev} executes what it plans; this does not,`,
         chalk`  because {bold dev} adds things and this deletes them. Read the plan, then pass {bold --apply}.`,
         '',
         chalk`  {bold safe}        .expo/web/cache, .expo/dev/logs, node_modules/.cache, this project's`,

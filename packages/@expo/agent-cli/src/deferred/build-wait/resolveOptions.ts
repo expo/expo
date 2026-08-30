@@ -4,6 +4,7 @@
 // Argument resolution for `@expo/agent-cli build:wait`. Pure: argv in, options out, `CommandError` for
 // anything a caller can get wrong, so every combination is unit-testable without an EAS account.
 
+import { PROGRAM_PREFIX } from '../../programName';
 import { parseArgsOrThrow, resolveDuration } from '../../utils/args';
 import { CommandError } from '../../utils/errors';
 import type { BuildWaitKind } from './types';
@@ -79,7 +80,7 @@ export function resolveBuildWaitOptions(argv: string[]): BuildWaitOptions {
       [
         `Expected one build id, but got ${positional.length} (${positional.join(', ')}).`,
         `Why: a wait attaches to exactly one build, and picking one of several for you would mean reporting an outcome for a build you did not name.`,
-        `How: run this once per id, or wait on them in parallel: npx @expo/agent-cli build:wait ${positional[0]}`,
+        `How: run this once per id, or wait on them in parallel: ${PROGRAM_PREFIX} build:wait ${positional[0]}`,
       ].join('\n')
     );
   }
@@ -128,8 +129,8 @@ function missingId(kind: BuildWaitKind): CommandError {
   const buildListing = 'npx eas build:list --limit 5 --json --non-interactive';
   const how =
     kind === 'submission'
-      ? `How: run "npx @expo/agent-cli build:wait <submission-id> --submission". The id is the one "npx eas submit" printed when it started, and the one the submission's page on expo.dev shows.`
-      : `How: run "npx @expo/agent-cli build:wait <build-id>". List the recent builds with "${buildListing}".`;
+      ? `How: run "${PROGRAM_PREFIX} build:wait <submission-id> --submission". The id is the one "npx eas submit" printed when it started, and the one the submission's page on expo.dev shows.`
+      : `How: run "${PROGRAM_PREFIX} build:wait <build-id>". List the recent builds with "${buildListing}".`;
 
   const error = new CommandError(
     'BAD_ARGS',
@@ -139,6 +140,7 @@ function missingId(kind: BuildWaitKind): CommandError {
       how,
     ].join('\n')
   );
-  error.suggestedCommand = kind === 'submission' ? 'npx @expo/agent-cli build:wait --help' : buildListing;
+  error.suggestedCommand =
+    kind === 'submission' ? `${PROGRAM_PREFIX} build:wait --help` : buildListing;
   return error;
 }

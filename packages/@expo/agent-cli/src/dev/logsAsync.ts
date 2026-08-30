@@ -20,6 +20,7 @@ import { readDevServerLockAsync } from '../devLock';
 import { event as cliEvent } from '../events';
 import { followUpsEnabled, reportFollowUps, type FollowUp } from '../followups';
 import * as Log from '../log';
+import { PROGRAM_PREFIX } from '../programName';
 import { wrapUntrustedAppOutput } from '../runtime/untrusted';
 import { CommandError } from '../utils/errors';
 import {
@@ -146,7 +147,7 @@ function buildFollowUps(report: DevLogsResultJson): FollowUp[] {
     return [
       {
         id: 'dev-detach',
-        command: 'npx @expo/agent-cli dev --detach --wait-ready',
+        command: `${PROGRAM_PREFIX} dev --detach --wait-ready`,
         why: 'These lines are from a dev server that is no longer running, so nothing is serving this project now.',
       },
     ];
@@ -154,7 +155,7 @@ function buildFollowUps(report: DevLogsResultJson): FollowUp[] {
   return [
     {
       id: 'smoke',
-      command: 'npx @expo/agent-cli smoke',
+      command: `${PROGRAM_PREFIX} smoke`,
       why: 'The log says what the bundler printed; this says whether it finished, whether this project still compiles, and whether the app comes up on it.',
     },
   ];
@@ -175,17 +176,17 @@ function noLogError(projectRoot: string, serverRunning: boolean): CommandError {
     serverRunning
       ? [
           `This project has a dev server running, but no log to read: it was started attached.`,
-          `Why: only "npx @expo/agent-cli dev --detach" writes to ${logFile}. A dev server started in a terminal writes to that terminal, and nothing captured it — so its output is there and nowhere else.`,
-          `How: read it in the terminal it is running in. To get a log next time, stop it with "npx @expo/agent-cli dev:stop" and start it again with "npx @expo/agent-cli dev --detach". For what the bundler is doing right now, "npx @expo/agent-cli smoke" answers without a log.`,
+          `Why: only "${PROGRAM_PREFIX} dev --detach" writes to ${logFile}. A dev server started in a terminal writes to that terminal, and nothing captured it — so its output is there and nowhere else.`,
+          `How: read it in the terminal it is running in. To get a log next time, stop it with "${PROGRAM_PREFIX} dev:stop" and start it again with "${PROGRAM_PREFIX} dev --detach". For what the bundler is doing right now, "${PROGRAM_PREFIX} smoke" answers without a log.`,
         ].join('\n')
       : [
           `This project has no detached dev server log, so there is nothing to read.`,
-          `Why: nothing has been written to ${logFile}, which means no "npx @expo/agent-cli dev --detach" has run in this project.`,
-          `How: start one with "npx @expo/agent-cli dev --detach --wait-ready", then run this command again.`,
+          `Why: nothing has been written to ${logFile}, which means no "${PROGRAM_PREFIX} dev --detach" has run in this project.`,
+          `How: start one with "${PROGRAM_PREFIX} dev --detach --wait-ready", then run this command again.`,
         ].join('\n')
   );
   error.suggestedCommand = serverRunning
-    ? 'npx @expo/agent-cli smoke'
-    : 'npx @expo/agent-cli dev --detach --wait-ready';
+    ? `${PROGRAM_PREFIX} smoke`
+    : `${PROGRAM_PREFIX} dev --detach --wait-ready`;
   return error;
 }

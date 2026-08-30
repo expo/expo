@@ -2,6 +2,7 @@
 // The whole of the config's validation, as one pure function over the parsed JSON value. No file
 // is read here, so every rejection is unit-testable without a project.
 
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
 import {
   EMPTY_SETTINGS,
@@ -117,7 +118,7 @@ function readEnum<T extends string>(
     throw reject(
       `${where} › ${key} is ${describe(value)}, and the only values it takes are ${quoteList(allowed)}.`,
       `Why: ${KEY_HELP[key] ?? 'it names one of a fixed set of choices'}`,
-      `How: change it to one of ${quoteList(allowed)}, or remove the key to let this CLI decide for itself — "npx @expo/agent-cli dev --plan" prints what it decides and why.`
+      `How: change it to one of ${quoteList(allowed)}, or remove the key to let this CLI decide for itself — "${PROGRAM_PREFIX} dev --plan" prints what it decides and why.`
     );
   }
   return value as T;
@@ -136,11 +137,11 @@ function assertKnownKeys(
     .map((key) => ({ key, match: closestKey(key, allowed) }))
     .filter((entry) => entry.match);
   throw reject(
-    `${where} names ${unknown.length > 1 ? 'keys' : 'a key'} this version of @expo/agent-cli does not know: ${quoteList(unknown)}.`,
+    `${where} names ${unknown.length > 1 ? 'keys' : 'a key'} this version of ${PROGRAM_NAME} does not know: ${quoteList(unknown)}.`,
     `Why: every key of this config changes what a plan does, so an unrecognised one is refused rather than ignored — a preference that was silently dropped would leave you approving a plan you did not ask for.`,
     near.length
       ? `How: ${near.map((entry) => `"${entry.key}" looks like "${entry.match}"`).join(', ')}. The keys this version takes are ${quoteList(allowed)}.`
-      : `How: remove ${unknown.length > 1 ? 'them' : 'it'}, or upgrade @expo/agent-cli if a newer version added ${unknown.length > 1 ? 'them' : 'it'}. The keys this version takes are ${quoteList(allowed)}.`
+      : `How: remove ${unknown.length > 1 ? 'them' : 'it'}, or upgrade ${PROGRAM_NAME} if a newer version added ${unknown.length > 1 ? 'them' : 'it'}. The keys this version takes are ${quoteList(allowed)}.`
   );
 }
 

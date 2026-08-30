@@ -2,6 +2,7 @@
 // The decision table of LLP 0004, as one pure function: probed state in, plan out. No I/O
 // happens here, so every row is exhaustively unit-testable without a project or a device.
 
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { easBuildLocation, localBuildLocation } from '../toolchain/planLocation';
 import {
@@ -52,10 +53,15 @@ export function decideStartPlan(
   // stops before reaching here; this row is what the commands that only *describe* the directory
   // print, so the engine and the guard never disagree.
   if (!state.isExpoApp) {
-    return plan('not-expo-app', 'none', [], [
-      `This directory is not an Expo app: its package.json declares no "expo" dependency.`,
-      `There is nothing here to get onto a device, so the plan is empty. The app is most likely one directory down, or "npx @expo/agent-cli new my-app" would create one here.`,
-    ]);
+    return plan(
+      'not-expo-app',
+      'none',
+      [],
+      [
+        `This directory is not an Expo app: its package.json declares no "expo" dependency.`,
+        `There is nothing here to get onto a device, so the plan is empty. The app is most likely one directory down, or "${PROGRAM_PREFIX} new my-app" would create one here.`,
+      ]
+    );
   }
 
   // Web needs no native app at all, so it short-circuits every native row. The web target is
@@ -158,12 +164,7 @@ export function decideStartPlan(
   // development build, and nothing a config says can make an incompatible project run in Expo Go —
   // so `dev-build` is the only value that changes a plan here, and it changes exactly this one.
   if (state.expoGo.compatible && runTarget?.target !== 'dev-build') {
-    return plan(
-      'expo-go',
-      'expo-go',
-      [startExpoGoStep(options)],
-      [...facts, ...targetFacts]
-    );
+    return plan('expo-go', 'expo-go', [startExpoGoStep(options)], [...facts, ...targetFacts]);
   }
 
   // Not compatible with Expo Go — or compatible and passed over, because a development build was
@@ -229,7 +230,7 @@ function startExpoGoStep(options: DecideStartPlanOptions): PlanStep {
     'seconds',
     opensOn
       ? `Serves the project to Expo Go and opens it on ${deviceNoun(opensOn)}, booting one and installing Expo Go if it has to. No native build is needed.`
-      : `Serves the project to Expo Go, which needs no native build. It opens nothing on its own — run "@expo/agent-cli navigate /" once it is up, or pass --ios or --android.`
+      : `Serves the project to Expo Go, which needs no native build. It opens nothing on its own — run "${PROGRAM_NAME} navigate /" once it is up, or pass --ios or --android.`
   );
 }
 
@@ -241,7 +242,7 @@ function startDevClientStep(reason: string, options: DecideStartPlanOptions = {}
     'seconds',
     opensOn
       ? `Starts the dev server and opens the development build on ${deviceNoun(opensOn)}. ${reason}`
-      : `Starts the dev server for the existing development build. It opens nothing on its own — run "@expo/agent-cli navigate /" once it is up, or pass --ios or --android. ${reason}`
+      : `Starts the dev server for the existing development build. It opens nothing on its own — run "${PROGRAM_NAME} navigate /" once it is up, or pass --ios or --android. ${reason}`
   );
 }
 
@@ -439,7 +440,7 @@ function describeTargetPlatform(
   }
   return actsOnPlatform
     ? `No platform was named; this host suggests ${platform}, and the plan builds for it.`
-    : `No platform was named; this host suggests ${platform}, and the plan opens nothing on it — pass --ios or --android, or run "@expo/agent-cli navigate /" once the dev server is up.`;
+    : `No platform was named; this host suggests ${platform}, and the plan opens nothing on it — pass --ios or --android, or run "${PROGRAM_NAME} navigate /" once the dev server is up.`;
 }
 
 function describeSdk(state: ProjectState): string {

@@ -29,6 +29,7 @@ import {
   readControllerError,
 } from '../device/cloudSimulator';
 import { event as cliEvent } from '../events';
+import { PROGRAM_PREFIX } from '../programName';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
 import {
   isInstalledDependencyAsync,
@@ -315,7 +316,9 @@ export async function resolveRouteUrlAsync(
     // and substituting this project's tunnel host for it would quietly answer a different question —
     // the flag may well name a dev server that is not this project's at all. A URL a *step of this
     // run* found is not that (F96, `devServerUrlSource`), so it is asked for.
-    isCallerNamedDevServer(options) ? namedDevServerReach() : resolveDevServerReachAsync(projectRoot),
+    isCallerNamedDevServer(options)
+      ? namedDevServerReach()
+      : resolveDevServerReachAsync(projectRoot),
   ]);
   const devServerUrl = devServer.devServerUrl;
 
@@ -516,7 +519,9 @@ export async function openRouteAsync(
     // route link has only just been delivered, and `checked: false` would report a wait that did
     // happen as one that did not.
     budgetMs:
-      launch == null ? budgetMs : Math.max(budgetMs - (Date.now() - startedAt), ROUTE_ATTACH_FLOOR_MS),
+      launch == null
+        ? budgetMs
+        : Math.max(budgetMs - (Date.now() - startedAt), ROUTE_ATTACH_FLOOR_MS),
   });
 
   cliEvent('navigate', {
@@ -1096,9 +1101,9 @@ function unreachableNamedDevServerError(
     [
       `No Expo dev server answered at ${devServerUrl}, which --dev-server-url named, so nothing was opened.`,
       `Why: the request for its debugger target list failed (${reason ?? 'no answer'}). Opening a route against a dev server that is not running loads the app onto the device with nothing to bundle for it, which looks like a crash rather than like a wrong URL.`,
-      `How: start the dev server ("npx @expo/agent-cli dev --detach --wait-ready${platformFlag}"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
+      `How: start the dev server ("${PROGRAM_PREFIX} dev --detach --wait-ready${platformFlag}"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
     ].join('\n')
   );
-  error.suggestedCommand = `npx @expo/agent-cli dev --detach --wait-ready${platformFlag}`;
+  error.suggestedCommand = `${PROGRAM_PREFIX} dev --detach --wait-ready${platformFlag}`;
   return error;
 }

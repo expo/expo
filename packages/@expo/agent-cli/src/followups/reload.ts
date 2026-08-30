@@ -4,6 +4,7 @@
 
 import { AGENT_DEVICE_SPEC } from '../device/cloudSimulator';
 import type { DeviceBackend } from '../navigate/device';
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ReloadFollowUpInput {
@@ -52,7 +53,7 @@ export function buildReloadFollowUps({
   const followups: FollowUp[] = [
     {
       id: 'runtime-errors',
-      command: `npx @expo/agent-cli runtime:errors${flag} --fail-on-error`,
+      command: `${PROGRAM_PREFIX} runtime:errors${flag} --fail-on-error`,
       why: 'The app is running the current code now, so the errors it reports are about that code and not about the run this reload replaced.',
     },
   ];
@@ -79,7 +80,7 @@ export function buildReloadFollowUps({
       id: 'navigate',
       // The backend the reload used, carried on: `navigate /` without it looks for a device on
       // this machine, which is the machine a cloud run has none on.
-      command: `npx @expo/agent-cli navigate /${flag}${on === 'cloud' ? ' --cloud' : ''}`,
+      command: `${PROGRAM_PREFIX} navigate /${flag}${on === 'cloud' ? ' --cloud' : ''}`,
       why: 'The app resumed on the route it was launched with; this puts it back on the root route.',
     });
   }

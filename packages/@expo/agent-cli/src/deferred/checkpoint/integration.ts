@@ -10,6 +10,7 @@
 import chalk from 'chalk';
 
 import * as Log from '../../log';
+import { PROGRAM_PREFIX } from '../../programName';
 import { env } from '../../utils/env';
 import { createCheckpointAsync, shortId } from './create';
 import { event } from './events';
@@ -68,7 +69,7 @@ export async function checkpointBeforeAsync(
   if (result.record && !options.silent) {
     Log.log(
       `${chalk.dim('Checkpoint'.padEnd(LABEL_WIDTH))}${chalk.bold(shortId(result.record.id))}  ${chalk.dim(
-        `${result.files} ${result.files === 1 ? 'file' : 'files'} — restore with "npx @expo/agent-cli checkpoint:undo"`
+        `${result.files} ${result.files === 1 ? 'file' : 'files'} — restore with "${PROGRAM_PREFIX} checkpoint:undo"`
       )}`
     );
   } else if (result.skipped === 'git-failed') {

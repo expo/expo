@@ -23,11 +23,12 @@
 import chalk from 'chalk';
 
 import { followUpsEnabled, reportFollowUps } from '../../followups';
-import { buildUndoFollowUps } from './followups';
 import * as Log from '../../log';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import { CommandError } from '../../utils/errors';
 import { shortId } from './create';
 import { debugEvent, event } from './events';
+import { buildUndoFollowUps } from './followups';
 import {
   diffTreesAsync,
   objectExistsAsync,
@@ -60,9 +61,9 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
   if (!records.length) {
     const error = new CommandError(
       'NO_CHECKPOINTS',
-      `No checkpoint is recorded for this project. "@expo/agent-cli install", "@expo/agent-cli agents:setup" and "@expo/agent-cli dev" record one before they change anything, and "@expo/agent-cli checkpoint" records one now.`
+      `No checkpoint is recorded for this project. "${PROGRAM_NAME} install", "${PROGRAM_NAME} agents:setup" and "${PROGRAM_NAME} dev" record one before they change anything, and "${PROGRAM_NAME} checkpoint" records one now.`
     );
-    error.suggestedCommand = 'npx @expo/agent-cli checkpoint';
+    error.suggestedCommand = `${PROGRAM_PREFIX} checkpoint`;
     throw error;
   }
 
@@ -70,9 +71,9 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
   if (!record) {
     const error = new CommandError(
       'CHECKPOINT_NOT_FOUND',
-      `No checkpoint of this project has the id "${options.id}". The ids of the ${records.length} recorded checkpoints are listed by "@expo/agent-cli checkpoint:list".`
+      `No checkpoint of this project has the id "${options.id}". The ids of the ${records.length} recorded checkpoints are listed by "${PROGRAM_NAME} checkpoint:list".`
     );
-    error.suggestedCommand = 'npx @expo/agent-cli checkpoint:list';
+    error.suggestedCommand = `${PROGRAM_PREFIX} checkpoint:list`;
     throw error;
   }
 
@@ -89,7 +90,7 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
       'CHECKPOINT_OBJECT_MISSING',
       `Git no longer has the snapshot ${shortId(record.id)}. A checkpoint is an unreferenced git object, so "git gc --prune=now" deletes it. Restore an older checkpoint, or recover the files from git history.`
     );
-    error.suggestedCommand = 'npx @expo/agent-cli checkpoint:list';
+    error.suggestedCommand = `${PROGRAM_PREFIX} checkpoint:list`;
     throw error;
   }
 
@@ -220,7 +221,7 @@ export async function printCheckpointListAsync(
   if (!records.length) {
     Log.log(
       chalk.dim(
-        'No checkpoint is recorded for this project. Record one with "npx @expo/agent-cli checkpoint".'
+        `No checkpoint is recorded for this project. Record one with "${PROGRAM_PREFIX} checkpoint".`
       )
     );
     return;

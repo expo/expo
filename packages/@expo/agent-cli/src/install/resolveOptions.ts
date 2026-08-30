@@ -1,3 +1,4 @@
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
 
 /** Flags that `@expo/agent-cli install` handles itself and does not forward to `expo install`. */
@@ -85,7 +86,7 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
   if (check && own.includes('--fix')) {
     throw badArgs(
       `--check and --fix cannot both apply, so nothing ran. Why: --check only reports what is out of date, and --fix rewrites it. How: pass one of them.`,
-      'npx @expo/agent-cli install --check'
+      `${PROGRAM_PREFIX} install --check`
     );
   }
 
@@ -137,11 +138,11 @@ function assertKnownFlags(own: string[]): void {
   const forwarded = EXPO_INSTALL_FLAGS.filter((flag) => flag.startsWith('--') && flag !== '--help');
   throw badArgs(
     [
-      `"${unknown}" is not an option of "@expo/agent-cli install", so nothing ran.`,
+      `"${unknown}" is not an option of "${PROGRAM_NAME} install", so nothing ran.`,
       `Why: this command forwards to "expo install", which takes ${forwarded.join(', ')}; the wrapper adds ${AGENT_CLI_ONLY_FLAGS.join(', ')}. "${unknown}" is in neither set.`,
-      `How: drop it, or hand it to the package manager instead — everything after a "--" separator is forwarded untouched, as in "npx @expo/agent-cli install react -- ${unknown}".`,
+      `How: drop it, or hand it to the package manager instead — everything after a "--" separator is forwarded untouched, as in "${PROGRAM_PREFIX} install react -- ${unknown}".`,
     ].join('\n'),
-    'npx @expo/agent-cli install --help'
+    `${PROGRAM_PREFIX} install --help`
   );
 }
 

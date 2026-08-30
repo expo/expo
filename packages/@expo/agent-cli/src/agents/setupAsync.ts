@@ -5,6 +5,7 @@
 import chalk from 'chalk';
 
 import * as Log from '../log';
+import { PROGRAM_PREFIX } from '../programName';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
 import { probeProjectStateAsync } from '../project/probe';
 import {
@@ -150,7 +151,7 @@ function summaryLines(report: SetupReport): string[] {
     row('AGENTS.md', chalk.dim('skipped (--no-agents-md)'));
   }
 
-  row('Next', chalk.bold('npx @expo/agent-cli status'));
+  row('Next', chalk.bold(`${PROGRAM_PREFIX} status`));
 
   return lines;
 }

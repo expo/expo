@@ -3,6 +3,7 @@
 // because a rule that knows the failure knows the fix better than any general ladder does.
 
 import type { Failure, PhaseName } from '../builds/explain/types';
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ExplainFollowUpInput {
@@ -40,7 +41,7 @@ export function buildExplainFollowUps({
   source,
 }: ExplainFollowUpInput): FollowUp[] {
   const followups: FollowUp[] = [];
-  const rerun = `npx @expo/agent-cli inspect:build-log ${sourceArgs(source)}`;
+  const rerun = `${PROGRAM_PREFIX} inspect:build-log ${sourceArgs(source)}`;
 
   if (!failure) {
     // Nothing was located, and the honest next step is the one that reads more of the log rather
@@ -74,13 +75,13 @@ export function buildExplainFollowUps({
   if (phase === 'bundle-js') {
     followups.push({
       id: 'typecheck',
-      command: 'npx @expo/agent-cli typecheck',
+      command: `${PROGRAM_PREFIX} typecheck`,
       why: 'The bundle failed on a source file; this reports every other one before the next build.',
     });
   } else if (phase === 'prebuild') {
     followups.push({
       id: 'config-effective',
-      command: 'npx @expo/agent-cli inspect:config-plugins',
+      command: `${PROGRAM_PREFIX} inspect:config-plugins`,
       why: 'Prebuild failed while resolving the app config; this prints what the plugins produced.',
     });
   }

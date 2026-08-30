@@ -1,5 +1,6 @@
 import { resolvePlatformFlag } from '../plan/platformFlags';
 import type { PlanPlatform } from '../plan/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { BuildBackend, RunTarget } from '../settings/types';
 import { CommandError } from '../utils/errors';
 import { DEFAULT_DETACH_TIMEOUT_MS } from './detachAsync';
@@ -167,7 +168,7 @@ function resolveBuildBackend(argv: readonly string[]): BuildBackend | null {
       '--eas and --local name two different places for one build, so this run has no build to plan.',
       'Why: --eas builds in the cloud on EAS, which needs an Expo account; --local builds on this machine, which needs Xcode or the Android SDK. A plan contains one build, and it happens in one place.',
       'How: pass whichever you meant. Passing neither lets this command choose — the plan says which place it picked and why, before anything runs.',
-      'npx @expo/agent-cli dev --plan --eas'
+      `${PROGRAM_PREFIX} dev --plan --eas`
     );
   }
   return eas ? 'eas' : local ? 'local' : null;
@@ -190,19 +191,14 @@ function resolveRunTarget(argv: readonly string[]): RunTarget | null {
       '--go and --dev-client name two different apps to run the project in, so this run has no target to plan for.',
       'Why: --go runs the project inside Expo Go, which needs no native build; --dev-client runs it inside a development build of this project, which needs one. A plan aims at one of them.',
       'How: pass whichever you meant. Passing neither lets this command choose — Expo Go when it can run the project, a development build when it cannot.',
-      'npx @expo/agent-cli dev --plan --dev-client'
+      `${PROGRAM_PREFIX} dev --plan --dev-client`
     );
   }
   return go ? 'expo-go' : devClient ? 'dev-build' : null;
 }
 
 /** Two flags that ask for opposite things, in the three sentences every error here is made of. */
-function opposite(
-  what: string,
-  why: string,
-  how: string,
-  suggestedCommand: string
-): CommandError {
+function opposite(what: string, why: string, how: string, suggestedCommand: string): CommandError {
   const error = new CommandError('BAD_ARGS', [what, why, how].join('\n'));
   error.suggestedCommand = suggestedCommand;
   return error;
@@ -215,10 +211,10 @@ function waitReadyWithoutDetach(): CommandError {
     [
       `--wait-ready only means something with --detach, and --detach was not passed.`,
       `Why: without --detach this command runs the dev server in the foreground and does not return until it stops, so there is no moment at which it could report that the bundler is ready.`,
-      `How: pass both ("npx @expo/agent-cli dev --detach --wait-ready"), or check a dev server that is already running with "npx @expo/agent-cli smoke".`,
+      `How: pass both ("${PROGRAM_PREFIX} dev --detach --wait-ready"), or check a dev server that is already running with "${PROGRAM_PREFIX} smoke".`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli dev --detach --wait-ready';
+  error.suggestedCommand = `${PROGRAM_PREFIX} dev --detach --wait-ready`;
   return error;
 }
 
@@ -229,10 +225,10 @@ function detachWithPlan(): CommandError {
     [
       `--plan and --detach ask for opposite things, so this run would do nothing.`,
       `Why: --plan prints what would run and exits without running it, and --detach is about where the run goes. There is no plan-shaped thing to put in the background.`,
-      `How: run "npx @expo/agent-cli dev --plan" to see the plan, then "npx @expo/agent-cli dev --detach --yes" to run it in the background.`,
+      `How: run "${PROGRAM_PREFIX} dev --plan" to see the plan, then "${PROGRAM_PREFIX} dev --detach --yes" to run it in the background.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli dev --plan';
+  error.suggestedCommand = `${PROGRAM_PREFIX} dev --plan`;
   return error;
 }
 
@@ -277,9 +273,9 @@ function badPort(raw: string): CommandError {
     [
       `--port must be a port number from 1 to 65535, but got ${raw || '(nothing)'}.`,
       `Why: the value is handed to "expo start", which listens on it.`,
-      `How: pass one, as in "npx @expo/agent-cli dev --port 8082". Leaving --port out lets the Expo CLI pick, which works when 8081 is free.`,
+      `How: pass one, as in "${PROGRAM_PREFIX} dev --port 8082". Leaving --port out lets the Expo CLI pick, which works when 8081 is free.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli dev --port 8082';
+  error.suggestedCommand = `${PROGRAM_PREFIX} dev --port 8082`;
   return error;
 }

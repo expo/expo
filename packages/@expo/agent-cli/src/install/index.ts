@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const installHelp: CommandHelp = {
   command: 'install',
-  usage: 'npx @expo/agent-cli install <package>...',
+  usage: `${PROGRAM_PREFIX} install <package>...`,
   options: [
     `--check             Report which installed packages are out of date, and install nothing`,
     `--json              Print the result as JSON`,
@@ -17,19 +18,19 @@ export const installHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli install expo-sqlite',
+      run: `${PROGRAM_PREFIX} install expo-sqlite`,
       gets: 'the version this SDK wants, installed, and any skills it ships linked',
     },
     {
-      run: 'npx @expo/agent-cli install --check',
+      run: `${PROGRAM_PREFIX} install --check`,
       gets: 'which installed packages are out of date; nothing is installed',
     },
     {
-      run: 'npx @expo/agent-cli install expo-router --json',
+      run: `${PROGRAM_PREFIX} install expo-router --json`,
       gets: 'one object: what was installed, what must rerun, which packages ship skills',
     },
     {
-      run: 'npx @expo/agent-cli install react -- --verbose',
+      run: `${PROGRAM_PREFIX} install react -- --verbose`,
       gets: 'the same install, with everything after -- handed to the package manager',
     },
   ],
@@ -51,7 +52,7 @@ export const installHelp: CommandHelp = {
   notes: [
     `The expo install flags are forwarded to the project's Expo CLI: --check, --dev, --fix,`,
     `--npm, --pnpm, --yarn, --bun. Run "npx expo install --help" for what they do.`,
-    `npx @expo/agent-cli add is this same command, because expo add is expo install.`,
+    `${PROGRAM_PREFIX} add is this same command, because expo add is expo install.`,
   ],
 };
 

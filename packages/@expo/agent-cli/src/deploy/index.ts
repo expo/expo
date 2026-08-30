@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const deployHelp: CommandHelp = {
   command: 'deploy',
-  usage: 'npx @expo/agent-cli deploy',
+  usage: `${PROGRAM_PREFIX} deploy`,
   options: [
     `--web                Deploy the web export to EAS Hosting`,
     `--native             Launch the native app with create-launch (launch.expo.dev)`,
@@ -16,19 +17,19 @@ export const deployHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli deploy',
+      run: `${PROGRAM_PREFIX} deploy`,
       gets: 'a project with web support deploys its web app; no target flag needed',
     },
     {
-      run: 'npx @expo/agent-cli deploy --web --json',
+      run: `${PROGRAM_PREFIX} deploy --web --json`,
       gets: 'the same, as one object: expo export --platform web, then eas deploy',
     },
     {
-      run: 'npx @expo/agent-cli deploy --native',
+      run: `${PROGRAM_PREFIX} deploy --native`,
       gets: 'a launch.expo.dev URL to open — the store steps happen in the browser',
     },
     {
-      run: 'npx @expo/agent-cli deploy --native --upload-root ../..',
+      run: `${PROGRAM_PREFIX} deploy --native --upload-root ../..`,
       gets: 'the same, for an app that lives inside a monorepo',
     },
   ],

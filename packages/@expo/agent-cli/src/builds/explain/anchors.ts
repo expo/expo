@@ -23,6 +23,7 @@
 // Gradle's trailing `* What went wrong:` from burying the Kotlin `e: … error:` line that caused
 // it (llp/0012 §Which match wins).
 
+import { PROGRAM_PREFIX } from '../../programName';
 import type { PhaseName } from './types';
 
 /**
@@ -190,7 +191,7 @@ export const ANCHORS: Anchor[] = [
     // reported `context.before` carries.
     pattern: /^\s*at (\w+) \((?!.*node_modules)\S*\/plugins?\/[^)]*\.js:\d+:\d+\)/,
     message: 'A config plugin in this project threw while the app config was being resolved.',
-    suggestedCommand: () => 'npx @expo/agent-cli inspect:config-plugins',
+    suggestedCommand: () => `${PROGRAM_PREFIX} inspect:config-plugins`,
     docsUrl: 'https://docs.expo.dev/config-plugins/development-and-debugging/',
     provenance: 'captured',
   },
@@ -200,7 +201,7 @@ export const ANCHORS: Anchor[] = [
     kind: 'summary',
     pattern: /^PluginError: (.+)$/,
     message: 'A config plugin failed while the app config was being resolved.',
-    suggestedCommand: () => 'npx @expo/agent-cli inspect:config-plugins',
+    suggestedCommand: () => `${PROGRAM_PREFIX} inspect:config-plugins`,
     docsUrl: 'https://docs.expo.dev/config-plugins/development-and-debugging/',
     provenance: 'captured',
   },
@@ -263,7 +264,7 @@ export const ANCHORS: Anchor[] = [
     kind: 'cause',
     pattern: /^(?:SyntaxError: )?SyntaxError: ([^:]+): (.+)$/,
     message: 'A source file did not parse, so the JavaScript bundle was never produced.',
-    suggestedCommand: () => 'npx @expo/agent-cli typecheck',
+    suggestedCommand: () => `${PROGRAM_PREFIX} typecheck`,
     provenance: 'captured',
   },
   {
@@ -272,7 +273,7 @@ export const ANCHORS: Anchor[] = [
     kind: 'cause',
     pattern: /^(?:Error: )?TransformError (\S+): (.+)$/,
     message: 'A source file failed to transform, so the JavaScript bundle was never produced.',
-    suggestedCommand: () => 'npx @expo/agent-cli typecheck',
+    suggestedCommand: () => `${PROGRAM_PREFIX} typecheck`,
     provenance: 'format',
   },
   {

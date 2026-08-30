@@ -17,9 +17,16 @@
 
 import chalk from 'chalk';
 
+import { isTunnelCurrent, resolveDevServerReachAsync } from '../../dev/advertisedUrl';
 import { AGENT_DEVICE_SPEC } from '../../device/cloudSimulator';
 import { event as cliEvent } from '../../events';
-import { buildReloadFollowUps, followUpsEnabled, reportFollowUps, type FollowUp } from '../../followups';
+import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
+import {
+  buildReloadFollowUps,
+  followUpsEnabled,
+  reportFollowUps,
+  type FollowUp,
+} from '../../followups';
 import * as Log from '../../log';
 import {
   isFullUrlRoute,
@@ -29,10 +36,10 @@ import {
 } from '../../navigate/deepLink';
 import { resolveDeviceAsync, type NavigateDevice } from '../../navigate/device';
 import { isCallerNamedDevServer } from '../../navigate/openRoute';
-import { isTunnelCurrent, resolveDevServerReachAsync } from '../../dev/advertisedUrl';
 import { checkRoute, routeNotFoundError, type RouteCheckJson } from '../../navigate/routeCheck';
 import { decideExpoGoTarget } from '../../navigate/target';
 import type { NativePlatform } from '../../plan/types';
+import { PROGRAM_PREFIX } from '../../programName';
 import { readProjectNativeDirsAsync } from '../../project/nativeCode';
 import {
   isInstalledDependencyAsync,
@@ -40,7 +47,8 @@ import {
   readProjectPackageJsonAsync,
 } from '../../project/nodeModules';
 import { readProjectRoutesAsync } from '../../project/routes';
-
+import { readConfiguredAppId, resolveAppId } from '../appId';
+import { stopAppOnDeviceAsync } from '../appProcess';
 import {
   bundleToJson,
   checkEntryBundleAsync,
@@ -49,22 +57,15 @@ import {
   type BundleCheckResult,
   type BundlePlatformSource,
 } from '../bundleCheck';
-import {
-  APP_RECONNECT_GRACE_MS,
-  probeDevServerAsync,
-  type DevServerSource,
-} from '../devServer';
-import { preflightRuntimeAsync } from '../preflight';
+import { APP_RECONNECT_GRACE_MS, probeDevServerAsync, type DevServerSource } from '../devServer';
 import {
   connectMessageSocketAsync,
   peersChanged,
   type DevServerMessageSocket,
   type MessageSocketPeers,
 } from '../messageSocket';
+import { preflightRuntimeAsync } from '../preflight';
 import { waitForFreshAppConnectionAsync } from '../waitReady';
-import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
-import { readConfiguredAppId, resolveAppId } from '../appId';
-import { stopAppOnDeviceAsync } from '../appProcess';
 import {
   markBundleSignalSync,
   waitForNewBundleAsync,
@@ -402,7 +403,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     before: null,
     after: null,
     reconnected: 0,
-    reason: 'the dev server\'s command socket was not asked on this run',
+    reason: "the dev server's command socket was not asked on this run",
   };
   // Where the dev server's captured output stood before anything was reloaded. Marked on every rung
   // (wave 21): "was the app seen to come back" is one question, and a command that answered it two
@@ -542,7 +543,9 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
       }
     } else if (relaunchRung) {
       const attempt = await reloadOnDeviceAsync(projectRoot, options, devServerUrl);
-      attempts.push(withRelaunchCost(attempt.attempt, observedApps, { climbed: broadcastUnproved }));
+      attempts.push(
+        withRelaunchCost(attempt.attempt, observedApps, { climbed: broadcastUnproved })
+      );
       device = attempt.device;
       if (attempt.attempt.ok) {
         method = 'device';
@@ -594,10 +597,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   // genuinely not there and the report says so in words.
   const appsConnected =
     observed && connection.appsConnected === 0
-      ? await countConnectedAppsAsync(
-          devServerUrl,
-          Math.min(APP_RECONNECT_GRACE_MS, remainingMs())
-        )
+      ? await countConnectedAppsAsync(devServerUrl, Math.min(APP_RECONNECT_GRACE_MS, remainingMs()))
       : connection.appsConnected;
 
   // What the run may claim. The mechanism's own observation is the label when it has one, because
@@ -1189,7 +1189,9 @@ async function reloadOverRuntimeAsync(
     const deviceIndex =
       options.platform == null
         ? undefined
-        : await buildDeviceNameIndexIfNeededAsync((await probeDevServerAsync(devServerUrl)).targets);
+        : await buildDeviceNameIndexIfNeededAsync(
+            (await probeDevServerAsync(devServerUrl)).targets
+          );
     client = new CdpClient({ metroUrl: devServerUrl, platform: options.platform, deviceIndex });
   } catch (error: unknown) {
     return failed(
@@ -1204,7 +1206,9 @@ async function reloadOverRuntimeAsync(
       timeoutMs: RUNTIME_RELOAD_ANSWER_MS,
     });
     if (answer.exceptionText) {
-      return failed(`the app threw while it was asked whether it can reload itself: ${answer.exceptionText}`);
+      return failed(
+        `the app threw while it was asked whether it can reload itself: ${answer.exceptionText}`
+      );
     }
     probe = String(answer.value ?? 'no-answer');
   } catch (error: unknown) {
@@ -1345,7 +1349,12 @@ async function openRouteAsync(
   options: ReloadOptions,
   devServerUrl: string,
   known: NavigateDevice | null
-): Promise<{ url: string; command: string; exitCode: number | null; device: NavigateDevice } | null> {
+): Promise<{
+  url: string;
+  command: string;
+  exitCode: number | null;
+  device: NavigateDevice;
+} | null> {
   const [config, nativeDirs, packageJson, reach] = await Promise.all([
     Promise.resolve(readProjectSchemeConfig(projectRoot)),
     readProjectNativeDirsAsync(projectRoot),
@@ -1442,9 +1451,7 @@ const METHOD_PHRASE: { [method: string]: string } = {
  * this command cannot tell apart. It says that, and hands over the command that ends either one.
  */
 function explainCloudRelaunchRefusal(report: ReloadResultJson): string[] {
-  const failed = report.attempts.find(
-    (attempt) => attempt.method === 'device' && !attempt.ok
-  );
+  const failed = report.attempts.find((attempt) => attempt.method === 'device' && !attempt.ok);
   if (failed == null) {
     return [];
   }
@@ -1479,9 +1486,7 @@ function describeEvidence(report: ReloadResultJson): string {
 function printHumanReport(report: ReloadResultJson, options: ReloadOptions): void {
   const lines = [
     chalk`{bold Reloaded} ${report.reloaded ? chalk.green('yes') : chalk.red('no')}${
-      report.method
-        ? chalk`{dim  · via ${METHOD_PHRASE[report.method] ?? report.method}}`
-        : ''
+      report.method ? chalk`{dim  · via ${METHOD_PHRASE[report.method] ?? report.method}}` : ''
     }`,
   ];
   if (report.verifiedBy) {
@@ -1563,7 +1568,9 @@ function printHumanReport(report: ReloadResultJson, options: ReloadOptions): voi
     );
   }
   if (report.route != null) {
-    lines.push(chalk`{bold Route} ${report.route}${report.url ? chalk`{dim  · ${report.url}}` : ''}`);
+    lines.push(
+      chalk`{bold Route} ${report.route}${report.url ? chalk`{dim  · ${report.url}}` : ''}`
+    );
   }
   for (const attempt of report.attempts) {
     lines.push(chalk`{dim  ${attempt.method}: ${attempt.reason}}`);
@@ -1594,7 +1601,7 @@ function explainStrandedApp(report: ReloadResultJson, options: ReloadOptions): s
       : `The app was left closed: the device fallback stopped ${appId} and the relaunch was refused, so nothing is running on the device now.`,
     options.cloud
       ? `To reopen it by hand, run "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} open ${appId}" — opening the application id rather than a deep link avoids the "Open in Expo Go?" dialog that nothing can answer on a cloud device. "npx eas simulator:stop" ends the session and its billing.`
-      : `Run "npx @expo/agent-cli navigate /" to open it again.`,
+      : `Run "${PROGRAM_PREFIX} navigate /" to open it again.`,
   ];
 }
 
@@ -1614,14 +1621,19 @@ export function explainReloadFailure(report: ReloadResultJson, options: ReloadOp
       ...(error?.snippet ? [error.snippet] : []),
     ].join('\n');
   }
-  if (report.bundle.reason != null && report.bundle.ok == null && options.bundleCheck &&
-      report.method == null && report.attempts.length === 0) {
+  if (
+    report.bundle.reason != null &&
+    report.bundle.ok == null &&
+    options.bundleCheck &&
+    report.method == null &&
+    report.attempts.length === 0
+  ) {
     return [
       chalk.red(
         `The bundler was still building this project's entry bundle after ${options.timeoutMs}ms, so the app was not reloaded.`
       ),
       `Why: ${report.bundle.reason}. Until that build finishes it is not known whether a reload would fetch working code, and nothing was attempted rather than reload onto an answer nobody has.`,
-      `How: run this command again with a longer --timeout — a first build of a large app takes tens of seconds — or run "npx @expo/agent-cli smoke" first and reload once it is green.`,
+      `How: run this command again with a longer --timeout — a first build of a large app takes tens of seconds — or run "${PROGRAM_PREFIX} smoke" first and reload once it is green.`,
     ].join('\n');
   }
   // @ref llp/0005 §Reloading a cloud session. The relaunch ran and nothing was observed: the app
@@ -1634,7 +1646,7 @@ export function explainReloadFailure(report: ReloadResultJson, options: ReloadOp
         `The app was ${report.method === 'device' ? 'relaunched' : 'asked to reload itself'}${options.cloud ? ' on the cloud simulator' : ''}, and nothing was observed to confirm it reloaded.`
       ),
       `Why: two observations were watched for ${options.timeoutMs}ms and neither happened. The dev server listed no debugger target it had not listed before (${report.devServerUrl}/json/list named ${report.appsConnected}), which a cloud simulator often never does — an app has run this project on one with that list empty throughout. And ${report.bundlesAfterReload.reason ?? 'the dev server served no bundle after the relaunch'}. So the app may be running the new code invisibly, or it may not have come back.`,
-      `How: look at the screen — "npx @expo/agent-cli smoke --cloud --no-route-check" photographs it — and at what the dev server was asked for, with "npx @expo/agent-cli dev:logs". A first bundle over a tunnel can take longer than this wait, so a longer --timeout is worth one try. ${report.bundlesAfterReload.observed == null ? 'This project has no captured dev server log, which is where the one usable proof would have been: start it with "npx @expo/agent-cli dev --detach --tunnel" so its output is recorded.' : ''}`.trim(),
+      `How: look at the screen — "${PROGRAM_PREFIX} smoke --cloud --no-route-check" photographs it — and at what the dev server was asked for, with "${PROGRAM_PREFIX} dev:logs". A first bundle over a tunnel can take longer than this wait, so a longer --timeout is worth one try. ${report.bundlesAfterReload.observed == null ? `This project has no captured dev server log, which is where the one usable proof would have been: start it with "${PROGRAM_PREFIX} dev --detach --tunnel" so its output is recorded.` : ''}`.trim(),
     ].join('\n');
   }
   if (!report.reloaded) {
@@ -1648,8 +1660,8 @@ export function explainReloadFailure(report: ReloadResultJson, options: ReloadOp
       // *not* running, and printing it for a connected app is how a reader was sent to start a
       // second copy of an app this command could see all along.
       report.appsConnected > 0
-        ? `How: the app is connected — ${report.devServerUrl}/json/list names ${report.appsConnected === 1 ? 'it' : `${report.appsConnected} of them`} — so this is not a missing app, it is a runtime the broadcast could not reach. Editing a file the app has loaded is the cheapest way in: the dev server pushes that on its own. The two deliberate methods are "npx @expo/agent-cli runtime:reload --method runtime", which asks the app's own expo.reloadAppAsync to do it and on Expo Go closes the app instead, and "npx @expo/agent-cli runtime:reload --method device", which force-stops the app and opens it again — that always works and costs the app's state${options.cloud ? ', and on a cloud session leaves the app closed if the relaunch is refused' : ''}.`
-        : `How: open the app on a device or simulator first ("npx @expo/agent-cli navigate /"), then run this command again. A reload needs an app that is already running: it replaces the JavaScript in one, it does not start one.`,
+        ? `How: the app is connected — ${report.devServerUrl}/json/list names ${report.appsConnected === 1 ? 'it' : `${report.appsConnected} of them`} — so this is not a missing app, it is a runtime the broadcast could not reach. Editing a file the app has loaded is the cheapest way in: the dev server pushes that on its own. The two deliberate methods are "${PROGRAM_PREFIX} runtime:reload --method runtime", which asks the app's own expo.reloadAppAsync to do it and on Expo Go closes the app instead, and "${PROGRAM_PREFIX} runtime:reload --method device", which force-stops the app and opens it again — that always works and costs the app's state${options.cloud ? ', and on a cloud session leaves the app closed if the relaunch is refused' : ''}.`
+        : `How: open the app on a device or simulator first ("${PROGRAM_PREFIX} navigate /"), then run this command again. A reload needs an app that is already running: it replaces the JavaScript in one, it does not start one.`,
     ].join('\n');
   }
   // Two shapes of "not back", and they are told apart by what the target list says. An empty list
@@ -1661,7 +1673,7 @@ export function explainReloadFailure(report: ReloadResultJson, options: ReloadOp
         `The app reloaded, but it had not reconnected to the dev server ${options.timeoutMs}ms later.`
       ),
       `Why: its debugger target list (${report.devServerUrl}/json/list) was empty, so no app is running this project's JavaScript — the app either closed or is still loading a cold bundle, which can take longer than this wait.`,
-      `How: run "npx @expo/agent-cli smoke" to wait for the bundle and the app together, or run this command again with a longer --timeout. If the app is not on screen, "npx @expo/agent-cli navigate /" opens it. Nothing is known to be wrong; the wait ran out first.`,
+      `How: run "${PROGRAM_PREFIX} smoke" to wait for the bundle and the app together, or run this command again with a longer --timeout. If the app is not on screen, "${PROGRAM_PREFIX} navigate /" opens it. Nothing is known to be wrong; the wait ran out first.`,
     ].join('\n');
   }
   return [
@@ -1669,6 +1681,6 @@ export function explainReloadFailure(report: ReloadResultJson, options: ReloadOp
       `The app reloaded, but its JavaScript had not registered again ${options.timeoutMs}ms later.`
     ),
     `Why: ${report.devServerUrl}/json/list still names ${report.appsConnected === 1 ? 'the same debugger target' : `only the same ${report.appsConnected} debugger targets`} it named before the reload, and the dev server never reuses a target id — so the runtime that answers now is the one from before, not a reloaded one. Its errors and its state describe the run this reload was meant to replace.`,
-    `How: run this command again with a longer --timeout, or run "npx @expo/agent-cli smoke" and read the app after it. Do not believe "npx @expo/agent-cli runtime:errors" until a reload reports a reconnected app.`,
+    `How: run this command again with a longer --timeout, or run "${PROGRAM_PREFIX} smoke" and read the app after it. Do not believe "${PROGRAM_PREFIX} runtime:errors" until a reload reports a reconnected app.`,
   ].join('\n');
 }

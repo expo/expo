@@ -2,6 +2,7 @@
 // Argument resolution for `@expo/agent-cli navigate`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { resolveDevServerUrlFlag } from '../runtime/devServer';
 import { parseArgsOrThrow, resolveDuration } from '../utils/args';
 import { CommandError } from '../utils/errors';
@@ -117,7 +118,7 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
   if (positional.length === 0) {
     throw new CommandError(
       'BAD_ARGS',
-      `Missing route. Usage: npx @expo/agent-cli navigate <route>, for example: npx @expo/agent-cli navigate /profile/42`
+      `Missing route. Usage: ${PROGRAM_PREFIX} navigate <route>, for example: ${PROGRAM_PREFIX} navigate /profile/42`
     );
   }
   if (positional.length > 1) {

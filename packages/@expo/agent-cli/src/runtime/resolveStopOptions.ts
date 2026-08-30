@@ -3,6 +3,7 @@
 // anything a user can get wrong.
 
 import type { NavigatePlatform } from '../navigate/device';
+import { PROGRAM_PREFIX } from '../programName';
 import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
 import { resolveDevServerTarget } from './devServer';
 import { resolveDevicePlatform } from './devicePlatform';
@@ -59,7 +60,7 @@ export function resolveRuntimeStopOptions(argv: string[]): RuntimeStopOptions {
   // its own while reporting the id it stopped — which reads like it obeyed.
   if (args._.length > 0) {
     throw strayArgumentError('runtime:stop', args._, {
-      hint: `to stop a particular app, pass its id as a flag: npx @expo/agent-cli runtime:stop --app-id ${args._[0]}`,
+      hint: `to stop a particular app, pass its id as a flag: ${PROGRAM_PREFIX} runtime:stop --app-id ${args._[0]}`,
     });
   }
 

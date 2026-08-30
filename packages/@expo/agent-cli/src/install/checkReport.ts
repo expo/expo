@@ -25,6 +25,7 @@
 // and for the package this was reported against it was **not** in package.json at all. The wrapper
 // can see that for itself, so it says so instead of echoing a claim it can check.
 
+import { PROGRAM_PREFIX } from '../programName';
 import {
   listDependencyNames,
   parsePackageName,
@@ -86,7 +87,7 @@ export async function diagnoseCheckedPackagesAsync(
       notes.push(
         `"${name}" is not in this project's package.json — neither dependencies nor devDependencies — so there is no installed version for --check to compare against. ` +
           `The Expo CLI's message says it "is added as a dependency in your project's package.json", which is not the case here. ` +
-          `Run "npx @expo/agent-cli install ${name}" to add it.`
+          `Run "${PROGRAM_PREFIX} install ${name}" to add it.`
       );
       continue;
     }

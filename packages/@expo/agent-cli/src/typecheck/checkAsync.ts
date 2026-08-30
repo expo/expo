@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
+import { PROGRAM_PREFIX } from '../programName';
 import { fileExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import {
@@ -233,10 +234,10 @@ function compilerMissingError(hasTsConfig: boolean, lookup: ProjectBinLookup): C
     [
       `This project is a TypeScript project with no TypeScript compiler installed, so nothing was type-checked.`,
       `Why: ${hasTsConfig ? 'it has a tsconfig.json' : 'it has .ts or .tsx source files'}, but ${describeProjectBinSearch('tsc', lookup)} — so no copy of it is installed for this project, in its own node_modules or in a workspace's. Nothing here falls back to a compiler from the registry, because a type check is a function of the version this project pinned, its tsconfig.json and its @types — one fetched from elsewhere would answer a question about a project that does not exist.`,
-      `How: add TypeScript to this project with "npx @expo/agent-cli install typescript --dev". If it is already in package.json, then its dependencies have not been installed since — run your package manager's install, at the workspace root when this is a workspace package.`,
+      `How: add TypeScript to this project with "${PROGRAM_PREFIX} install typescript --dev". If it is already in package.json, then its dependencies have not been installed since — run your package manager's install, at the workspace root when this is a workspace package.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli install typescript --dev';
+  error.suggestedCommand = `${PROGRAM_PREFIX} install typescript --dev`;
   return error;
 }
 
@@ -250,7 +251,7 @@ function notRunnableError(cli: TypeScriptCli, why: string): CommandError {
       `How: reinstall the project's dependencies, then run this command again.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli typecheck';
+  error.suggestedCommand = `${PROGRAM_PREFIX} typecheck`;
   return error;
 }
 

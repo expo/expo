@@ -2,6 +2,7 @@
 // Argument resolution for `@expo/agent-cli dev:logs`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
 import { CommandError } from '../utils/errors';
 
@@ -69,7 +70,7 @@ function resolveTail(value: unknown): number {
       [
         `--tail must be a whole number of lines from 1 to ${MAX_LOG_TAIL_LINES}, but got ${String(value) || '(nothing)'}.`,
         `Why: it is how many lines from the end of the log to print, and a log has a whole number of them.`,
-        `How: pass one, as in "npx @expo/agent-cli dev:logs --tail 200". Leaving it out prints the last ${DEFAULT_LOG_TAIL_LINES}.`,
+        `How: pass one, as in "${PROGRAM_PREFIX} dev:logs --tail 200". Leaving it out prints the last ${DEFAULT_LOG_TAIL_LINES}.`,
       ].join('\n')
     );
   }

@@ -7,6 +7,7 @@
 // the socket error it caused, in the same words whichever command asked.
 
 import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../devLock';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
 import type { CdpTarget } from './cdpClient';
 
@@ -74,7 +75,7 @@ export function resolveDevServerTarget(
     throw new CommandError(
       'BAD_ARGS',
       [
-        `--dev-server-url and --port both name a dev server for "@expo/agent-cli ${command}", and they name different ones.`,
+        `--dev-server-url and --port both name a dev server for "${PROGRAM_NAME} ${command}", and they name different ones.`,
         `Why: --port <n> is shorthand for --dev-server-url http://127.0.0.1:<n>, so passing both leaves two answers to one question and no rule for which wins.`,
         `How: pass one. Use --port ${port} for a dev server on this machine, or --dev-server-url ${url} for one anywhere else.`,
       ].join('\n')
@@ -99,7 +100,7 @@ export function resolvePortFlag(value: unknown, command: string): number {
       [
         `--port must be a port number from 1 to 65535, but got ${String(value) || '(nothing)'}.`,
         `Why: it names the port the dev server listens on, which is what this command connects to.`,
-        `How: pass one, as in "npx @expo/agent-cli ${command} --port 8081". Leaving it out lets this command find the dev server of this project on its own.`,
+        `How: pass one, as in "${PROGRAM_PREFIX} ${command} --port 8081". Leaving it out lets this command find the dev server of this project on its own.`,
       ].join('\n')
     );
   }
@@ -119,7 +120,7 @@ export function resolvePortFlag(value: unknown, command: string): number {
  */
 export function howToNameTheDevServer(explicit: boolean): string {
   return explicit
-    ? `The URL above is the one you named, so nothing else was tried — check its host and port against the dev server you meant ("npx @expo/agent-cli status --json" reports this project's).`
+    ? `The URL above is the one you named, so nothing else was tried — check its host and port against the dev server you meant ("${PROGRAM_PREFIX} status --json" reports this project's).`
     : `Pass --dev-server-url, or --port for one on this machine, to reach a dev server on another host or port.`;
 }
 

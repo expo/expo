@@ -14,6 +14,7 @@ import {
   easCliMissingError,
   openUrlOnCloudSimulatorAsync,
 } from '../device/cloudSimulator';
+import { PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import type { DeviceBackend } from './device';
@@ -201,7 +202,7 @@ export function resolveDeepLinkUrl({
         'Why: there is nothing to navigate to.',
         'How: pass a route path such as "/profile/42", or a full URL such as "myapp://profile/42".',
       ].join('\n'),
-      suggestedCommand: `npx @expo/agent-cli navigate /${platformFlag}`,
+      suggestedCommand: `${PROGRAM_PREFIX} navigate /${platformFlag}`,
     };
   }
 
@@ -237,12 +238,12 @@ export function resolveDeepLinkUrl({
         error: [
           'Cannot build an Expo Go URL because the dev server URL is unknown.',
           'Why: Expo Go deep links have the shape exp://<host>/--/<route>, so they need the running dev server host.',
-          `How: start the dev server with \`npx @expo/agent-cli dev --detach${platformFlag}\` and run this command again, or pass --scheme to target a development build instead.`,
+          `How: start the dev server with \`${PROGRAM_PREFIX} dev --detach${platformFlag}\` and run this command again, or pass --scheme to target a development build instead.`,
         ].join('\n'),
         // The How: and the Try: named different commands here, which is a failure telling a reader
         // two things [observed — friction run 5]. Both are the one action that fixes this, and both
         // keep the platform the caller named (F142).
-        suggestedCommand: `npx @expo/agent-cli dev --detach${platformFlag}`,
+        suggestedCommand: `${PROGRAM_PREFIX} dev --detach${platformFlag}`,
       };
     }
     const where = tunnelHost
@@ -296,7 +297,7 @@ export function resolveDeepLinkUrl({
     // The one case where a person has to supply a value this CLI cannot know. The `Try:` is
     // therefore the command that *prints what the project declares* rather than a line with a
     // hole in it: `--scheme <your-app-scheme>` is not something an agent can run.
-    suggestedCommand: 'npx @expo/agent-cli inspect:config-plugins --json',
+    suggestedCommand: `${PROGRAM_PREFIX} inspect:config-plugins --json`,
   };
 }
 

@@ -13,6 +13,7 @@ import { decideExpoGoTarget } from '../navigate/target';
 import { decideStartPlan } from '../plan/decide';
 import type { LastBuildRecord } from '../plan/lastBuild';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import type { FingerprintResult } from '../project/fingerprint';
 import type { ProjectState, StartPlan } from '../project/types';
 import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
@@ -46,7 +47,7 @@ const HASH_DISPLAY_LENGTH = 8;
  * as it prints, so a Bun project reads `bunx @expo/agent-cli dev`; the `--json` value stays as written,
  * exactly as a follow-up's does.
  */
-const NEXT_ACTION_COMMAND = 'npx @expo/agent-cli dev';
+const NEXT_ACTION_COMMAND = `${PROGRAM_PREFIX} dev`;
 
 /**
  * The command the next action names when this directory is not an Expo app.
@@ -55,7 +56,7 @@ const NEXT_ACTION_COMMAND = 'npx @expo/agent-cli dev';
  * that is already here, where adding Expo to this package would write into a repository the caller
  * most likely only walked past (llp/0020 §The recovery is the safe one).
  */
-const NOT_AN_APP_COMMAND = 'npx @expo/agent-cli new my-app';
+const NOT_AN_APP_COMMAND = `${PROGRAM_PREFIX} new my-app`;
 
 /**
  * The gate to put in front of anything that reads the app, once a dev server is up.
@@ -66,7 +67,7 @@ const NOT_AN_APP_COMMAND = 'npx @expo/agent-cli new my-app';
  * the `runtime-errors` follow-up already says it — `next` naming it too would be the duplication
  * that `status` keeps its follow-ups silent to avoid.
  */
-const VERIFY_COMMAND = 'npx @expo/agent-cli smoke';
+const VERIFY_COMMAND = `${PROGRAM_PREFIX} smoke`;
 
 /**
  * The command to name when a dev server is up and nothing is attached to it.
@@ -77,7 +78,7 @@ const VERIFY_COMMAND = 'npx @expo/agent-cli smoke';
  * Nothing was going to do that, so the suggestion was a two-minute wait with one possible ending.
  * This is the command that changes the state the wait is waiting for.
  */
-const OPEN_APP_COMMAND = 'npx @expo/agent-cli navigate /';
+const OPEN_APP_COMMAND = `${PROGRAM_PREFIX} navigate /`;
 
 /**
  * The command to name when there is no local device to open the app on and no URL to hand over.
@@ -85,7 +86,7 @@ const OPEN_APP_COMMAND = 'npx @expo/agent-cli navigate /';
  * It resolves the URL the way `navigate` would — the scheme of a development build, the Expo Go
  * host, the tunnel — and opens nothing, which is the only part of `navigate` that needs a device.
  */
-const PRINT_URL_COMMAND = 'npx @expo/agent-cli navigate / --print-url';
+const PRINT_URL_COMMAND = `${PROGRAM_PREFIX} navigate / --print-url`;
 
 /** What the project is: name, SDK, and how its native side is produced. */
 export function buildProjectStatus(state: ProjectState, packageName: string | null): ProjectStatus {
@@ -152,7 +153,7 @@ export function buildFreshnessStatus(
   // which is also where the network call that would need lives.
   const comparison: FreshnessComparison = {
     kind: 'last-build',
-    label: 'last build recorded by @expo/agent-cli',
+    label: `last build recorded by ${PROGRAM_NAME}`,
     buildId: null,
     // No `--build` was passed, so there is no build whose platform this could be about.
     platform: null,
@@ -264,10 +265,7 @@ function unaskedEasFreshness(platform: NativePlatform): PlatformFreshness {
  *
  * @ref llp/0021-honest-reports.rfc.md §Freshness has two axes
  */
-export function applyEasFreshness(
-  freshness: FreshnessStatus,
-  builds: BuildsStatus | null
-): void {
+export function applyEasFreshness(freshness: FreshnessStatus, builds: BuildsStatus | null): void {
   if (!builds) {
     return;
   }
@@ -512,7 +510,7 @@ export function buildNextActionStatus(
       rule: plan.rule,
       target: plan.target,
       steps: [],
-      why: 'this directory is not an Expo app, so there is nothing here to get onto a device — change to the app\'s own directory, or create one here',
+      why: "this directory is not an Expo app, so there is nothing here to get onto a device — change to the app's own directory, or create one here",
       buildLocation: null,
     };
   }
@@ -586,7 +584,7 @@ function verifyAction(
       why: `no app is connected and ${
         device?.state === 'absent'
           ? 'this machine has no booted simulator or attached device'
-          : 'this machine\'s device tools could not answer'
+          : "this machine's device tools could not answer"
       }, so this opens the app on this project's EAS Simulator session instead — it needs a tunnelled dev server, and the session bills until "npx eas simulator:stop"`,
     };
   }

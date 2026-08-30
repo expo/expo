@@ -12,6 +12,7 @@
 // this builder nothing: it never named that command.
 
 import type { DoctorCheck, DoctorReport } from '../doctor/types';
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 /**
@@ -62,8 +63,8 @@ export function extractAdviceAction(check: DoctorCheck): string | null {
  * (`src/install/`).
  */
 const AGENT_CLI_EQUIVALENTS: readonly { advice: RegExp; command: string }[] = [
-  { advice: /^(?:npx\s+)?expo\s+install\s+--check$/, command: 'npx @expo/agent-cli install --check' },
-  { advice: /^(?:npx\s+)?expo\s+install\s+--fix$/, command: 'npx @expo/agent-cli install --fix' },
+  { advice: /^(?:npx\s+)?expo\s+install\s+--check$/, command: `${PROGRAM_PREFIX} install --check` },
+  { advice: /^(?:npx\s+)?expo\s+install\s+--fix$/, command: `${PROGRAM_PREFIX} install --fix` },
 ];
 
 /** The same action, spelled as this CLI's command when this CLI has one. */

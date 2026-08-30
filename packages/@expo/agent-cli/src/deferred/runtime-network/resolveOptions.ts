@@ -9,8 +9,9 @@
 // schema, the default window, and the branch that built the result.
 
 import type { NavigatePlatform } from '../../navigate/device';
-import { resolveDevicePlatform } from '../../runtime/devicePlatform';
+import { PROGRAM_PREFIX } from '../../programName';
 import { resolveDevServerTarget } from '../../runtime/devServer';
+import { resolveDevicePlatform } from '../../runtime/devicePlatform';
 import {
   DURATION_METAVAR,
   parseArgsOrThrow,
@@ -66,7 +67,7 @@ export function resolveRuntimeNetworkCommand(argv: string[]): RuntimeNetworkOpti
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw strayArgumentError('runtime:network', positional, {
-      hint: `this command listens over a window and takes no target. Usage: npx @expo/agent-cli runtime:network [--duration ${DURATION_METAVAR}]`,
+      hint: `this command listens over a window and takes no target. Usage: ${PROGRAM_PREFIX} runtime:network [--duration ${DURATION_METAVAR}]`,
     });
   }
 

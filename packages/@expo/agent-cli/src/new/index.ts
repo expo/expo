@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const newHelp: CommandHelp = {
   command: 'new',
-  usage: 'npx @expo/agent-cli new <directory>',
+  usage: `${PROGRAM_PREFIX} new <directory>`,
   options: [
     `--name <name>   Display name of the app, written into app.json`,
     `--no-install    Skip installing the dependencies`,
@@ -16,12 +17,15 @@ export const newHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli new my-app',
+      run: `${PROGRAM_PREFIX} new my-app`,
       gets: 'a project in ./my-app, dependencies installed, git initialized',
     },
-    { run: 'npx @expo/agent-cli new my-app --name "My App"', gets: 'the same, with a display name set' },
     {
-      run: 'npx @expo/agent-cli new my-app --json --no-install',
+      run: `${PROGRAM_PREFIX} new my-app --name "My App"`,
+      gets: 'the same, with a display name set',
+    },
+    {
+      run: `${PROGRAM_PREFIX} new my-app --json --no-install`,
       gets: 'one object, and the scaffold without the dependency install',
     },
   ],

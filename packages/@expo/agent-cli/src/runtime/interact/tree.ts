@@ -2,12 +2,13 @@
 // @ref llp/0018-interaction-commands.rfc.md
 import { printCommandHelp } from '../../help/format';
 import type { CommandHelp } from '../../help/types';
+import { PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs } from '../../utils/args';
 
 export const runtimeTreeHelp: CommandHelp = {
   command: 'runtime:tree',
-  usage: 'npx @expo/agent-cli runtime:tree',
+  usage: `${PROGRAM_PREFIX} runtime:tree`,
   options: [
     `--testID <id>             Report this element and its subtree, instead of the screen`,
     `--all                     Every node with a testID, a label, a role, a handler or text`,
@@ -24,12 +25,15 @@ export const runtimeTreeHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli runtime:tree',
+      run: `${PROGRAM_PREFIX} runtime:tree`,
       gets: 'the focused screen’s testIDs and handlers — what a tap could find',
     },
-    { run: 'npx @expo/agent-cli runtime:tree --all --json', gets: 'the full projection of that screen' },
     {
-      run: 'npx @expo/agent-cli runtime:tree --testID add-note',
+      run: `${PROGRAM_PREFIX} runtime:tree --all --json`,
+      gets: 'the full projection of that screen',
+    },
+    {
+      run: `${PROGRAM_PREFIX} runtime:tree --testID add-note`,
       gets: 'that element, its subtree, and the handler a tap on it would call',
     },
   ],

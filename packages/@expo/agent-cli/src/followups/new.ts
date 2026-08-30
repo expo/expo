@@ -2,6 +2,7 @@
 // The one command whose follow-ups do not run where it ran: the project it created is a directory
 // away, so every command here carries the `cd` that makes it pasteable.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface NewFollowUpInput {
@@ -28,17 +29,17 @@ export function buildNewFollowUps({ directory, installed }: NewFollowUpInput): F
   followups.push(
     {
       id: 'status',
-      command: inProject('npx @expo/agent-cli status'),
+      command: inProject(`${PROGRAM_PREFIX} status`),
       why: 'Prints what the new project is and what would happen next, without starting anything.',
     },
     {
       id: 'dev',
-      command: inProject('npx @expo/agent-cli dev'),
+      command: inProject(`${PROGRAM_PREFIX} dev`),
       why: 'Runs the app, deciding between Expo Go, a development build and a plain dev server from the project state.',
     },
     {
       id: 'agents-setup',
-      command: inProject('npx @expo/agent-cli agents:setup'),
+      command: inProject(`${PROGRAM_PREFIX} agents:setup`),
       why: 'Links the agent skills of the installed packages and writes the managed AGENTS.md block.',
     }
   );

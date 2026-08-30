@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const navigateHelp: CommandHelp = {
   command: 'navigate',
-  usage: 'npx @expo/agent-cli navigate <route>',
+  usage: `${PROGRAM_PREFIX} navigate <route>`,
   options: [
     `--scheme <scheme>       URL scheme of the app, instead of the one in app.json`,
     `--ios                   Open the link on the booted iOS simulator`,
@@ -22,17 +23,20 @@ export const navigateHelp: CommandHelp = {
     `-h, --help              Usage info`,
   ],
   examples: [
-    { run: 'npx @expo/agent-cli navigate /', gets: 'the app opens on a booted device, at the root route' },
     {
-      run: 'npx @expo/agent-cli navigate /profile/42 --ios',
+      run: `${PROGRAM_PREFIX} navigate /`,
+      gets: 'the app opens on a booted device, at the root route',
+    },
+    {
+      run: `${PROGRAM_PREFIX} navigate /profile/42 --ios`,
       gets: 'that route opens on the booted iOS simulator',
     },
     {
-      run: 'npx @expo/agent-cli navigate "/search?q=shoes" --json',
+      run: `${PROGRAM_PREFIX} navigate "/search?q=shoes" --json`,
       gets: 'the same as one object: the url, the device, and whether the app attached',
     },
     {
-      run: 'npx @expo/agent-cli navigate / --print-url',
+      run: `${PROGRAM_PREFIX} navigate / --print-url`,
       gets: 'the resolved URL only. Nothing is opened, and no device is needed',
     },
   ],
@@ -69,7 +73,7 @@ export const navigateHelp: CommandHelp = {
   notes: [
     `The URL shape follows the app: Expo Go uses exp://<host>/--/<route>, a development build`,
     `uses <scheme>://<route>. Which one is running is read from the dev server, so start it with`,
-    `"npx @expo/agent-cli dev --detach" first.`,
+    `"${PROGRAM_PREFIX} dev --detach" first.`,
     `--print-url resolves everything and opens nothing. Use it for a device this machine cannot`,
     `drive — a phone, a cloud simulator — and hand the URL to whatever opens it.`,
     `A tunnelled dev server changes the host in the URL, and that host is read from the log a`,

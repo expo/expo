@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs, strayArgumentError } from '../utils/args';
 
 export const skillsSyncHelp: CommandHelp = {
   command: 'skills:sync',
-  usage: 'npx @expo/agent-cli skills:sync',
+  usage: `${PROGRAM_PREFIX} skills:sync`,
   options: [
     `--agent <agent>          Link skills for specific agents (can be used multiple times)`,
     `--dry-run                Print planned changes without modifying the project`,
@@ -15,12 +16,15 @@ export const skillsSyncHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli skills:sync',
+      run: `${PROGRAM_PREFIX} skills:sync`,
       gets: 'the installed packages’ skills linked into the agent directories',
     },
-    { run: 'npx @expo/agent-cli skills:sync --dry-run', gets: 'what would be linked; nothing is written' },
     {
-      run: 'npx @expo/agent-cli skills:sync --agent claude --json',
+      run: `${PROGRAM_PREFIX} skills:sync --dry-run`,
+      gets: 'what would be linked; nothing is written',
+    },
+    {
+      run: `${PROGRAM_PREFIX} skills:sync --agent claude --json`,
       gets: 'the same for one agent, as one object',
     },
   ],
@@ -31,24 +35,24 @@ export const skillsSyncHelp: CommandHelp = {
     keys: ['dryRun', 'agents', 'discovered', 'linked', 'removed', 'skipped', 'followups'],
   },
   notes: [
-    `"npx @expo/agent-cli skills" runs this action. Only symlinks this CLI created are managed, so a`,
+    `"${PROGRAM_PREFIX} skills" runs this action. Only symlinks this CLI created are managed, so a`,
     `file of your own with the same name is reported as skipped rather than replaced.`,
   ],
 };
 
 export const skillsListHelp: CommandHelp = {
   command: 'skills:list',
-  usage: 'npx @expo/agent-cli skills:list',
+  usage: `${PROGRAM_PREFIX} skills:list`,
   options: [
     `--json                   Print the result as one JSON object`,
     `-h, --help               Usage info`,
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli skills:list',
+      run: `${PROGRAM_PREFIX} skills:list`,
       gets: 'the skills the installed packages ship, and where each one is linked',
     },
-    { run: 'npx @expo/agent-cli skills:list --json', gets: 'the same as one object under skills' },
+    { run: `${PROGRAM_PREFIX} skills:list --json`, gets: 'the same as one object under skills' },
   ],
   next: ['skills:show', 'skills:sync'],
   json: {
@@ -60,15 +64,15 @@ export const skillsListHelp: CommandHelp = {
 
 export const skillsShowHelp: CommandHelp = {
   command: 'skills:show',
-  usage: 'npx @expo/agent-cli skills:show <package> [skill]',
+  usage: `${PROGRAM_PREFIX} skills:show <package> [skill]`,
   options: [`-h, --help               Usage info`],
   examples: [
     {
-      run: 'npx @expo/agent-cli skills:show expo-router',
+      run: `${PROGRAM_PREFIX} skills:show expo-router`,
       gets: 'the SKILL.md text of that package, printed as it is on disk',
     },
     {
-      run: 'npx @expo/agent-cli skills:show expo-router expo-router',
+      run: `${PROGRAM_PREFIX} skills:show expo-router expo-router`,
       gets: 'one named skill of that package, when it ships several',
     },
   ],
@@ -81,7 +85,7 @@ export const skillsShowHelp: CommandHelp = {
 
 export const skillsCleanHelp: CommandHelp = {
   command: 'skills:clean',
-  usage: 'npx @expo/agent-cli skills:clean',
+  usage: `${PROGRAM_PREFIX} skills:clean`,
   options: [
     `--dry-run                Print what would be removed without removing it`,
     `--json                   Print the result as one JSON object`,
@@ -89,10 +93,13 @@ export const skillsCleanHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli skills:clean',
+      run: `${PROGRAM_PREFIX} skills:clean`,
       gets: 'every managed skill link is removed; your own files are left alone',
     },
-    { run: 'npx @expo/agent-cli skills:clean --dry-run --json', gets: 'what would go, as one object' },
+    {
+      run: `${PROGRAM_PREFIX} skills:clean --dry-run --json`,
+      gets: 'what would go, as one object',
+    },
   ],
   next: ['skills:sync', 'skills:list'],
   json: {
@@ -143,7 +150,8 @@ export const agentCliSkills: Command = async (argv) => {
   // @ref llp/0020-not-an-expo-app.rfc.md — three of the four actions discover the skills the
   // *installed Expo packages* ship, so they act on the app; without `expo` they used to fail on
   // the module resolution itself and print a raw Node stack trace. `clean` is the exception below.
-  const { assertExpoAppSync } = require('../project/expoApp') as typeof import('../project/expoApp');
+  const { assertExpoAppSync } =
+    require('../project/expoApp') as typeof import('../project/expoApp');
   const skillsAsync = require('./skillsAsync') as typeof import('./skillsAsync');
 
   try {
@@ -164,7 +172,7 @@ export const agentCliSkills: Command = async (argv) => {
       const stray = args._.slice(1);
       if (stray.length > 0) {
         throw strayArgumentError(`skills:${name}`, stray, {
-          hint: `this command acts on the whole project. To read one package's skill, run "npx @expo/agent-cli skills:show ${stray[0]}".`,
+          hint: `this command acts on the whole project. To read one package's skill, run "${PROGRAM_PREFIX} skills:show ${stray[0]}".`,
         });
       }
     };
@@ -188,7 +196,7 @@ export const agentCliSkills: Command = async (argv) => {
         if (!packageName) {
           throw new CommandError(
             'BAD_ARGS',
-            `Missing package name. Usage: npx @expo/agent-cli skills:show <package> [skill]`
+            `Missing package name. Usage: ${PROGRAM_PREFIX} skills:show <package> [skill]`
           );
         }
         return await skillsAsync.showSkillsAsync(projectRoot, packageName, args._[2]);

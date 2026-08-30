@@ -15,6 +15,7 @@
 // `resolveCommand` the launcher uses and runs that command with `--help`, so there is no second
 // place for a help block to come from and no way for this command to answer with a stale one.
 
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 import { printCommandHelp } from './format';
@@ -23,18 +24,18 @@ import type { CommandHelp } from './types';
 
 export const helpHelp: CommandHelp = {
   command: 'help',
-  usage: 'npx @expo/agent-cli help <topic | command>',
+  usage: `${PROGRAM_PREFIX} help <topic | command>`,
   options: [`-h, --help   Usage info`],
   examples: [
     {
-      run: `npx @expo/agent-cli help ${helpTopics[0]!.name}`,
+      run: `${PROGRAM_PREFIX} help ${helpTopics[0]!.name}`,
       gets: 'what to run in order, the exit codes and the --json contract, in one screen',
     },
     {
-      run: 'npx @expo/agent-cli help status',
+      run: `${PROGRAM_PREFIX} help status`,
       gets: 'one command: its options, its examples and its JSON keys',
     },
-    { run: 'npx @expo/agent-cli help', gets: 'every command, grouped by the job it does' },
+    { run: `${PROGRAM_PREFIX} help`, gets: 'every command, grouped by the job it does' },
   ],
   next: ['status', 'dev'],
   // Built from the topic list rather than written out, so a topic added there is documented here
@@ -108,7 +109,8 @@ export const agentCliHelp: Command = async (argv) => {
       }
       // An `expo` command this CLI forwards: its help is that CLI's to print, so it prints it.
       case 'passthrough': {
-        const { agentCliPassthrough } = require('../passthrough') as typeof import('../passthrough');
+        const { agentCliPassthrough } =
+          require('../passthrough') as typeof import('../passthrough');
         await agentCliPassthrough(resolution.command)(['--help']);
         return;
       }
@@ -122,7 +124,7 @@ export const agentCliHelp: Command = async (argv) => {
           'UNKNOWN_ACTION',
           registry.unknownActionMessage(resolution.group, resolution.action)
         );
-        error.suggestedCommand = `npx @expo/agent-cli ${resolution.group} --help`;
+        error.suggestedCommand = `${PROGRAM_PREFIX} ${resolution.group} --help`;
         throw error;
       }
       default: {

@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const typecheckHelp: CommandHelp = {
   command: 'typecheck',
-  usage: 'npx @expo/agent-cli typecheck',
+  usage: `${PROGRAM_PREFIX} typecheck`,
   options: [
     `--json            Print the whole report as JSON, every diagnostic included`,
     `--no-followups    Leave the suggested follow-up commands out of the report`,
@@ -13,11 +14,11 @@ export const typecheckHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli typecheck',
+      run: `${PROGRAM_PREFIX} typecheck`,
       gets: 'one line per type error, and exit 20 when there is one',
     },
     {
-      run: 'npx @expo/agent-cli typecheck --json',
+      run: `${PROGRAM_PREFIX} typecheck --json`,
       gets: 'every diagnostic as data: file, line, column, code, message',
     },
   ],
@@ -69,8 +70,7 @@ export const agentCliTypecheck: Command = async (argv) => {
   const { exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
-  const { printTypeCheckAsync } =
-    require('./typecheckAsync') as typeof import('./typecheckAsync');
+  const { printTypeCheckAsync } = require('./typecheckAsync') as typeof import('./typecheckAsync');
 
   return (async () => {
     const projectRoot = findUpProjectRootOrAssert(process.cwd());

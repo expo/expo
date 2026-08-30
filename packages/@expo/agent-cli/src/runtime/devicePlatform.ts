@@ -8,6 +8,7 @@
 // one line; making the caller translate between two spellings of one fact is not.
 
 import type { NavigatePlatform } from '../navigate/device';
+import { PROGRAM_NAME } from '../programName';
 import { CommandError } from '../utils/errors';
 
 /** The platforms a runtime command can act on, i.e. the ones with a device tool behind them. */
@@ -50,7 +51,7 @@ export function resolveDevicePlatform(
       throw new CommandError(
         'BAD_ARGS',
         [
-          `--platform is "${platform}", which is not a platform "@expo/agent-cli ${command}" can act on.`,
+          `--platform is "${platform}", which is not a platform "${PROGRAM_NAME} ${command}" can act on.`,
           `Why: this command drives the app through a device tool — "xcrun simctl" or "adb" — and only ${RUNTIME_PLATFORMS.join(' and ')} have one.`,
           `How: pass ${RUNTIME_PLATFORMS.map((name) => `--platform ${name}`).join(' or ')}, or leave it out to act on whichever device is booted.`,
         ].join('\n')

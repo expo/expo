@@ -7,6 +7,7 @@
 import chalk from 'chalk';
 
 import * as Log from '../../log';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import { CommandError } from '../../utils/errors';
 import { debugEvent, event } from './events';
 import { commitSnapshotTreeAsync, resolveWorkTreeAsync, writeSnapshotTreeAsync } from './git';
@@ -58,7 +59,11 @@ export async function createCheckpointAsync(
       );
     }
 
-    const id = await commitSnapshotTreeAsync(worktree, tree, `@expo/agent-cli checkpoint: ${label}`);
+    const id = await commitSnapshotTreeAsync(
+      worktree,
+      tree,
+      `${PROGRAM_NAME} checkpoint: ${label}`
+    );
     const record = {
       id,
       label,
@@ -132,7 +137,7 @@ export async function printCheckpointAsync(
   row('Checkpoint', chalk.bold(shortId(record.id)));
   row('Label', record.label);
   row('Covers', result.detail);
-  row('Undo', chalk.bold(`npx @expo/agent-cli checkpoint:undo --id ${shortId(record.id)}`));
+  row('Undo', chalk.bold(`${PROGRAM_PREFIX} checkpoint:undo --id ${shortId(record.id)}`));
 }
 
 /** Turn a skip into the error and the next action that fit it. */

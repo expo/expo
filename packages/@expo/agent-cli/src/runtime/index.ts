@@ -1,5 +1,6 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../utils/args';
 
@@ -15,12 +16,12 @@ const SHARED_RUNTIME_OPTIONS = [
 /** The refusal every action of the family shares, in the two lines a caller has to act on. */
 const RUNTIME_CONNECTION_NOTE = [
   `Needs a dev server with the app connected to it. Without either, exit 1 with NO_DEV_SERVER`,
-  `or NO_APP_CONNECTED: run "npx @expo/agent-cli dev --detach", then "npx @expo/agent-cli navigate /".`,
+  `or NO_APP_CONNECTED: run "${PROGRAM_PREFIX} dev --detach", then "${PROGRAM_PREFIX} navigate /".`,
 ];
 
 export const runtimeEvalHelp: CommandHelp = {
   command: 'runtime:eval',
-  usage: 'npx @expo/agent-cli runtime:eval <expression>',
+  usage: `${PROGRAM_PREFIX} runtime:eval <expression>`,
   options: [
     `--timeout ${DURATION_METAVAR}      How long to wait for the app to answer, and for a\n` +
       `                          promise it returned to settle (default: 5s)`,
@@ -30,15 +31,15 @@ export const runtimeEvalHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli runtime:eval "globalThis.__DEV__"',
+      run: `${PROGRAM_PREFIX} runtime:eval "globalThis.__DEV__"`,
       gets: 'the value the running app has for that expression',
     },
     {
-      run: 'npx @expo/agent-cli runtime:eval "Object.keys(expo)" --json',
+      run: `${PROGRAM_PREFIX} runtime:eval "Object.keys(expo)" --json`,
       gets: 'what this app’s expo global offers, as one object',
     },
     {
-      run: 'npx @expo/agent-cli runtime:eval "store.getState().user" --timeout 30s',
+      run: `${PROGRAM_PREFIX} runtime:eval "store.getState().user" --timeout 30s`,
       gets: 'the same, waiting half a minute for a slow answer',
     },
   ],
@@ -63,7 +64,7 @@ export const runtimeEvalHelp: CommandHelp = {
     `The expression runs in a Hermes runtime: no require, no import(), no process, no fs, so a`,
     `module the app did not already load is out of reach. What is in reach is the app's globals,`,
     `and the useful one is expo — Object.keys(expo) lists what this version offers, and`,
-    `expo.reloadAppAsync() reloads the app. Reach for "npx @expo/agent-cli runtime:reload" instead: it`,
+    `expo.reloadAppAsync() reloads the app. Reach for "${PROGRAM_PREFIX} runtime:reload" instead: it`,
     `makes that call for you, checks the entry bundle first, and reports whether the app is back.`,
     `A promise is awaited and reported under promise; --no-await-promise reports it pending.`,
     `Exit 1 when the expression throws in the app or its promise rejects. Values come from the`,
@@ -74,7 +75,7 @@ export const runtimeEvalHelp: CommandHelp = {
 
 export const runtimeErrorsHelp: CommandHelp = {
   command: 'runtime:errors',
-  usage: 'npx @expo/agent-cli runtime:errors',
+  usage: `${PROGRAM_PREFIX} runtime:errors`,
   options: [
     `--duration ${DURATION_METAVAR}     How long to listen for errors (default: 2s)`,
     `--fail-on-error           Exit 20 when the window caught anything (default: exit 0)`,
@@ -84,15 +85,15 @@ export const runtimeErrorsHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli runtime:errors',
+      run: `${PROGRAM_PREFIX} runtime:errors`,
       gets: 'what the app reported over two seconds, with stacks mapped onto your files',
     },
     {
-      run: 'npx @expo/agent-cli runtime:errors --duration 5s --json',
+      run: `${PROGRAM_PREFIX} runtime:errors --duration 5s --json`,
       gets: 'the same over five seconds, as one object',
     },
     {
-      run: 'npx @expo/agent-cli runtime:errors --fail-on-error',
+      run: `${PROGRAM_PREFIX} runtime:errors --fail-on-error`,
       gets: 'exit 20 when the window caught anything — a gate for a script',
     },
   ],

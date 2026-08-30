@@ -34,6 +34,7 @@ import { event as cliEvent } from '../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED } from '../exitCodes';
 import { followUpsEnabled, reportFollowUps, type FollowUp } from '../followups';
 import * as Log from '../log';
+import { PROGRAM_PREFIX } from '../programName';
 import { PACKAGER_STATUS_READY } from '../runtime/waitReady';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 import { debugEvent, event } from './events';
@@ -516,13 +517,13 @@ function buildFollowUps(report: DevStopResultJson): FollowUp[] {
     if (report.portStillAnswering && report.port != null) {
       followups.push({
         id: 'dev-stop-port',
-        command: `npx @expo/agent-cli dev:stop --port ${report.port}`,
+        command: `${PROGRAM_PREFIX} dev:stop --port ${report.port}`,
         why: `Port ${report.port} still answers, and it is not the process that was just stopped. This asks what is on it and names the pid.`,
       });
     }
     followups.push({
       id: 'dev',
-      command: 'npx @expo/agent-cli dev --yes',
+      command: `${PROGRAM_PREFIX} dev --yes`,
       why: 'The dev server is stopped, so this is what starts one again when the app is needed.',
     });
     return followups;
@@ -531,7 +532,7 @@ function buildFollowUps(report: DevStopResultJson): FollowUp[] {
     return [
       {
         id: 'status',
-        command: 'npx @expo/agent-cli status --json',
+        command: `${PROGRAM_PREFIX} status --json`,
         why: 'Reports which dev server this project would talk to, so the one on that port can be told apart from this project’s.',
       },
     ];
@@ -596,7 +597,7 @@ function explainFailure(report: DevStopResultJson, options: DevStopOptions): str
         ? forceRefusedHow(report, report.forceRefusedBy)
         : answeredAsDevServer
           ? `How: stop it where it was started, or run this command again with --force, which stops it only when the port answers as an Expo dev server ${report.pid != null ? `and pid ${report.pid} looks like one` : 'and its process can be identified'}.`
-          : `How: stop whatever holds that port where it was started, or name the port your dev server is really on with --port. --force would be declined here for the same reason, and "npx @expo/agent-cli status --json" reports which dev server this project would talk to.`,
+          : `How: stop whatever holds that port where it was started, or name the port your dev server is really on with --port. --force would be declined here for the same reason, and "${PROGRAM_PREFIX} status --json" reports which dev server this project would talk to.`,
     ].join('\n');
   }
   // Two failures wear this reason, and only one of them is answered by a bigger hammer. Sending
@@ -606,7 +607,7 @@ function explainFailure(report: DevStopResultJson, options: DevStopOptions): str
     return [
       chalk.red(`This project's dev-server lock is still answering.`),
       `Why: ${report.detail}. The signal did its job — pid ${report.pid} is gone — so what is left is a second holder of the lock, which is what happens when this project has two dev servers running and only one of them was this one.`,
-      `How: run "npx @expo/agent-cli status --json" to see which dev server this project would now talk to, and stop that one where it was started. Nothing here is waiting on a longer --timeout, and --signal SIGKILL has nothing left to signal.`,
+      `How: run "${PROGRAM_PREFIX} status --json" to see which dev server this project would now talk to, and stop that one where it was started. Nothing here is waiting on a longer --timeout, and --signal SIGKILL has nothing left to signal.`,
     ].join('\n');
   }
   return [

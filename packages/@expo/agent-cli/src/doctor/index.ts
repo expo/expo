@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const doctorCheckHelp: CommandHelp = {
   command: 'doctor:check',
-  usage: 'npx @expo/agent-cli doctor:check',
+  usage: `${PROGRAM_PREFIX} doctor:check`,
   options: [
     `--json            Print the whole report as JSON, expo-doctor's full text included`,
     `--no-followups    Leave the suggested follow-up commands out of the report`,
@@ -13,11 +14,11 @@ export const doctorCheckHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli doctor',
+      run: `${PROGRAM_PREFIX} doctor`,
       gets: 'the failed checks and the advice each gave; exit 20 when any failed',
     },
     {
-      run: 'npx @expo/agent-cli doctor:check --json',
+      run: `${PROGRAM_PREFIX} doctor:check --json`,
       gets: 'the same as one object, with everything expo-doctor printed under raw',
     },
   ],

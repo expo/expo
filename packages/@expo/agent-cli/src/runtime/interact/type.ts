@@ -2,12 +2,13 @@
 // @ref llp/0018-interaction-commands.rfc.md
 import { printCommandHelp } from '../../help/format';
 import type { CommandHelp } from '../../help/types';
+import { PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs } from '../../utils/args';
 
 export const runtimeTypeHelp: CommandHelp = {
   command: 'runtime:type',
-  usage: 'npx @expo/agent-cli runtime:type <text> --testID <id>',
+  usage: `${PROGRAM_PREFIX} runtime:type <text> --testID <id>`,
   options: [
     `--testID <id>             The input the text goes into (required)`,
     `--submit                  Call onSubmitEditing after the text`,
@@ -25,15 +26,15 @@ export const runtimeTypeHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli runtime:type "a new note" --testID note-input',
+      run: `${PROGRAM_PREFIX} runtime:type "a new note" --testID note-input`,
       gets: 'the app’s own onChangeText is called with that string',
     },
     {
-      run: 'npx @expo/agent-cli runtime:type "kudo@expo.dev" --testID email --submit',
+      run: `${PROGRAM_PREFIX} runtime:type "kudo@expo.dev" --testID email --submit`,
       gets: 'the same, then onSubmitEditing with the text on nativeEvent.text',
     },
     {
-      run: 'npx @expo/agent-cli runtime:type "" --testID search',
+      run: `${PROGRAM_PREFIX} runtime:type "" --testID search`,
       gets: 'the input is cleared — that is what "delete what is in there" means here',
     },
   ],

@@ -6,6 +6,7 @@
 
 import chalk from 'chalk';
 
+import { PROGRAM_PREFIX } from '../../programName';
 import type { FixPlanPayload, FixStep, FixStepResult } from './fixTypes';
 
 /** Width of the label column, matching `@expo/agent-cli status` and `doctor:check`. */
@@ -117,7 +118,7 @@ function formatStep(step: FixStep, result: FixStepResult | null): string {
 function closing(payload: FixPlanPayload): string {
   if (!payload.applied) {
     return payload.steps.length
-      ? chalk`Nothing was deleted. Run {bold npx @expo/agent-cli doctor:fix --tier ${payload.tier} --apply} to do it.`
+      ? chalk`Nothing was deleted. Run {bold ${PROGRAM_PREFIX} doctor:fix --tier ${payload.tier} --apply} to do it.`
       : `Nothing was deleted, and there was nothing to delete.`;
   }
   const failed = payload.results?.find((result) => result.status === 'failed');

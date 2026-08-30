@@ -14,6 +14,7 @@ import { EXIT_OUTCOME_FAILED } from '../exitCodes';
 import { followUpsEnabled, reportFollowUps, type FollowUp } from '../followups';
 import * as Log from '../log';
 import { resolveDeviceAsync } from '../navigate/device';
+import { PROGRAM_PREFIX } from '../programName';
 import { readConfiguredAppId, resolveAppId } from './appId';
 import { stopAppOnDeviceAsync } from './appProcess';
 import { debugEvent, event } from './events';
@@ -220,11 +221,9 @@ export async function runtimeStopAsync(
     const connected = connectedAppIds.join(', ');
     Log.error(
       [
-        chalk.red(
-          `Nothing was stopped: ${resolved.appId} was not running, and ${connected} is.`
-        ),
+        chalk.red(`Nothing was stopped: ${resolved.appId} was not running, and ${connected} is.`),
         `Why: --app-id names the app to stop and outranks every other piece of evidence, so it was used as given — and ${result.command} found no process under it. Meanwhile the dev server at ${devServer.devServerUrl} reports ${connectedAppIds.length === 1 ? 'a debugger target' : `${connectedAppIds.length} debugger targets`} for ${connected}, which ${connectedAppIds.length === 1 ? 'is' : 'are'} still running. This is exit 20 rather than 0 because the app you can see on the device is untouched: the requested state holds only for an id nothing was using.`,
-        `How: run "npx @expo/agent-cli runtime:stop --app-id ${connectedAppIds[0]}" to stop what is actually running, or leave --app-id out entirely — without it this command reads the id off the dev server. If you did mean ${resolved.appId}, it is already not running and there is nothing to do.`,
+        `How: run "${PROGRAM_PREFIX} runtime:stop --app-id ${connectedAppIds[0]}" to stop what is actually running, or leave --app-id out entirely — without it this command reads the id off the dev server. If you did mean ${resolved.appId}, it is already not running and there is nothing to do.`,
       ].join('\n')
     );
     reportFollowUps('runtime:stop', report.followups, { json: options.json });
@@ -252,7 +251,7 @@ export function buildStopFollowUps(report: RuntimeStopResultJson): FollowUp[] {
     return [
       {
         id: 'stop-connected-app',
-        command: `npx @expo/agent-cli runtime:stop --app-id ${report.connectedAppIds[0]}`,
+        command: `${PROGRAM_PREFIX} runtime:stop --app-id ${report.connectedAppIds[0]}`,
         why: `${report.bundleId} was not running, so nothing was stopped. ${report.connectedAppIds[0]} is the app connected to the dev server, and this is the same command aimed at it.`,
       },
     ];
@@ -269,7 +268,7 @@ export function buildStopFollowUps(report: RuntimeStopResultJson): FollowUp[] {
   return [
     {
       id: 'navigate',
-      command: `npx @expo/agent-cli navigate /${flag}`,
+      command: `${PROGRAM_PREFIX} navigate /${flag}`,
       // Three arms, not two. `wasRunning: null` is the cloud case — the controller closes the app
       // in front and says nothing about which id that was — and a falsy check read it as `false`,
       // so the follow-up asserted "The app was not running" about an app that was [live staging,
@@ -297,12 +296,16 @@ function printHumanReport(report: RuntimeStopResultJson): void {
             : chalk.red('no')
       }${
         report.appIdMismatch
-          ? chalk.dim(` · ${report.bundleId} was not running, and ${report.connectedAppIds.join(', ')} is`)
+          ? chalk.dim(
+              ` · ${report.bundleId} was not running, and ${report.connectedAppIds.join(', ')} is`
+            )
           : // Null rather than false: the cloud verb reported success and said nothing about which
             // app, so the line says that instead of "it was not running" — which would be a claim
             // about the id that nothing established.
             report.stopped && report.wasRunning == null
-            ? chalk.dim(' · the session closed the app in front; whether it was this one is not something the controller reports')
+            ? chalk.dim(
+                ' · the session closed the app in front; whether it was this one is not something the controller reports'
+              )
             : report.stopped && !report.wasRunning
               ? chalk.dim(' · it was not running')
               : ''

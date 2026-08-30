@@ -19,6 +19,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import { PROGRAM_PREFIX } from '../programName';
+
 /** The file the Expo CLI generates, and the one every Expo `tsconfig.json` includes. */
 export const EXPO_ENV_DTS = 'expo-env.d.ts';
 
@@ -58,7 +60,7 @@ export function findMissingGeneratedTypesSync(projectRoot: string): MissingGener
   return {
     file: EXPO_ENV_DTS,
     referencedBy: 'tsconfig.json',
-    command: 'npx @expo/agent-cli dev --detach --wait-ready',
+    command: `${PROGRAM_PREFIX} dev --detach --wait-ready`,
   };
 }
 

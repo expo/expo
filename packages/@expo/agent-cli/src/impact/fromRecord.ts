@@ -16,6 +16,7 @@
 
 import type { LastBuildFingerprint } from '../plan/lastBuild';
 import type { NativePlatform } from '../plan/types';
+import { PROGRAM_NAME } from '../programName';
 import type { FingerprintSource } from '../project/fingerprint';
 import { diffFingerprintSourcesLocally } from '../project/localDiff';
 import { classifyFingerprintDiff } from './classify';
@@ -63,7 +64,7 @@ export function classifyAgainstRecordedBuild(
     // build it ran; a build made by EAS, by Xcode, or on another machine leaves nothing here.
     return undecided(
       null,
-      `no build is recorded for ${platform}, so there is nothing to compare this against — "@expo/agent-cli dev" writes the record after a native build it runs`
+      `no build is recorded for ${platform}, so there is nothing to compare this against — "${PROGRAM_NAME} dev" writes the record after a native build it runs`
     );
   }
 
@@ -138,8 +139,7 @@ export async function refineWithChangedFilesAsync(
   projectRoot: string,
   { timeoutMs = CHANGED_FILES_TIMEOUT_MS }: { timeoutMs?: number } = {}
 ): Promise<FileRefinement | null> {
-  const { listChangedFilesAsync } =
-    require('./changedFiles') as typeof import('./changedFiles');
+  const { listChangedFilesAsync } = require('./changedFiles') as typeof import('./changedFiles');
   const { classifyChangedFiles } = require('./classify') as typeof import('./classify');
 
   let timer: NodeJS.Timeout | undefined;

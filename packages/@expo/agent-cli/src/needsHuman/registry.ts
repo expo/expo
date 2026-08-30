@@ -7,6 +7,8 @@
 // agent sees identical whether the stop was predicted by a preflight or found in a tool's stderr.
 
 /** A tool whose captured output the signatures of a scenario are matched against. */
+import { PROGRAM_PREFIX } from '../programName';
+
 export type NeedsHumanTool = 'expo' | 'eas' | 'create-launch';
 
 export interface NeedsHumanScenario {
@@ -203,7 +205,7 @@ export const needsHumanScenarios: NeedsHumanScenario[] = [
     id: 'agent-selection',
     code: 'NON_INTERACTIVE',
     need: 'Choose which coding agents to set up skills for.',
-    command: 'npx @expo/agent-cli skills --agent claude-code',
+    command: `${PROGRAM_PREFIX} skills --agent claude-code`,
     url: null,
     unattendedEnv: [],
     resumable: true,

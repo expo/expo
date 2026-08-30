@@ -11,6 +11,7 @@
 // One rule runs through all three: never suggest an act the run has already shown would be refused.
 // A disabled element is the case that matters, because tapping it is exit 20 by design.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 /** A testID that a shell passes through as one word, so it needs no quoting on a command line. */
@@ -73,20 +74,22 @@ export function buildTreeFollowUps({ nodes, testID, platform }: TreeFollowUpInpu
 
   // A `--testID` run was about one element, so that is the element to drive.
   const target = testID != null ? nodes.find((node) => node.testID === testID) : undefined;
-  const toTap = testID != null ? (target && tappable(target) ? target : undefined) : nodes.find(tappable);
-  const toType = testID != null ? (target && typeable(target) ? target : undefined) : nodes.find(typeable);
+  const toTap =
+    testID != null ? (target && tappable(target) ? target : undefined) : nodes.find(tappable);
+  const toType =
+    testID != null ? (target && typeable(target) ? target : undefined) : nodes.find(typeable);
 
   if (toTap) {
     followups.push({
       id: 'tap-element',
-      command: `npx @expo/agent-cli runtime:tap ${quoted(toTap.testID!)} --verify${flag}`,
+      command: `${PROGRAM_PREFIX} runtime:tap ${quoted(toTap.testID!)} --verify${flag}`,
       why: 'Calls the onPress this element carries and walks the tree again afterwards, which is the only proof this CLI can offer that the tap did anything.',
     });
   }
   if (toType) {
     followups.push({
       id: 'type-into-input',
-      command: `npx @expo/agent-cli runtime:type ${JSON.stringify(SAMPLE_TEXT)} --testID ${quoted(toType.testID!)}${flag}`,
+      command: `${PROGRAM_PREFIX} runtime:type ${JSON.stringify(SAMPLE_TEXT)} --testID ${quoted(toType.testID!)}${flag}`,
       why: 'This element carries onChangeText, so it is an input: this calls that handler with a string, the way a keyboard would have.',
     });
   }
@@ -98,7 +101,7 @@ export function buildTreeFollowUps({ nodes, testID, platform }: TreeFollowUpInpu
     return capFollowUps([
       {
         id: 'tree-all',
-        command: `npx @expo/agent-cli runtime:tree --all${flag}`,
+        command: `${PROGRAM_PREFIX} runtime:tree --all${flag}`,
         why: 'No element here carries a handler this CLI can call, so the full projection — labels, roles and text — is what is left to read. An element with no testID cannot be addressed by one; add them where you want to drive the app.',
       },
     ]);
@@ -106,7 +109,7 @@ export function buildTreeFollowUps({ nodes, testID, platform }: TreeFollowUpInpu
 
   followups.push({
     id: 'runtime-errors',
-    command: `npx @expo/agent-cli runtime:errors${flag} --fail-on-error`,
+    command: `${PROGRAM_PREFIX} runtime:errors${flag} --fail-on-error`,
     why: 'Reads what the app reported while rendering this screen, which a component tree cannot show.',
   });
   return capFollowUps(followups);
@@ -138,7 +141,7 @@ export function buildTapFollowUps({
   const flag = platformFlag(platform);
   const errors: FollowUp = {
     id: 'runtime-errors',
-    command: `npx @expo/agent-cli runtime:errors${flag} --fail-on-error`,
+    command: `${PROGRAM_PREFIX} runtime:errors${flag} --fail-on-error`,
     why: 'Reads what the app reported after the call, which is where a handler that threw or a failed request shows up.',
   };
 
@@ -146,7 +149,7 @@ export function buildTapFollowUps({
     return capFollowUps([
       {
         id: 'tap-verify',
-        command: `npx @expo/agent-cli runtime:tap ${quoted(testID)} --verify${flag}`,
+        command: `${PROGRAM_PREFIX} runtime:tap ${quoted(testID)} --verify${flag}`,
         why: 'This run reports that the handler was called, never that anything happened; --verify walks the tree before and after and reports what changed.',
       },
       errors,
@@ -158,7 +161,7 @@ export function buildTapFollowUps({
       errors,
       {
         id: 'read-screen',
-        command: `npx @expo/agent-cli runtime:tree --all${flag}`,
+        command: `${PROGRAM_PREFIX} runtime:tree --all${flag}`,
         why: 'The diff reads the component tree, so a change to something it does not project — a network call, a native navigation — is invisible to it. The full projection is the wider look.',
       },
     ]);
@@ -167,7 +170,7 @@ export function buildTapFollowUps({
   return capFollowUps([
     {
       id: 'read-screen',
-      command: `npx @expo/agent-cli runtime:tree${flag}`,
+      command: `${PROGRAM_PREFIX} runtime:tree${flag}`,
       why: 'The screen changed, so this is what it carries now — including any element the tap put there.',
     },
     errors,
@@ -202,7 +205,7 @@ export function buildTypeFollowUps({
   const flag = platformFlag(platform);
   const errors: FollowUp = {
     id: 'runtime-errors',
-    command: `npx @expo/agent-cli runtime:errors${flag} --fail-on-error`,
+    command: `${PROGRAM_PREFIX} runtime:errors${flag} --fail-on-error`,
     why: 'Reads what the app reported while it handled the text, which is where a validator that threw shows up.',
   };
 
@@ -210,7 +213,7 @@ export function buildTypeFollowUps({
     return capFollowUps([
       {
         id: 'read-screen',
-        command: `npx @expo/agent-cli runtime:tree${flag}`,
+        command: `${PROGRAM_PREFIX} runtime:tree${flag}`,
         why: 'The text went in and the submit was made, so this is what the screen carries now.',
       },
       errors,
@@ -221,13 +224,13 @@ export function buildTypeFollowUps({
   if (!submitRequested) {
     followups.push({
       id: 'type-submit',
-      command: `npx @expo/agent-cli runtime:type ${JSON.stringify(text)} --testID ${quoted(testID)} --submit${flag}`,
+      command: `${PROGRAM_PREFIX} runtime:type ${JSON.stringify(text)} --testID ${quoted(testID)} --submit${flag}`,
       why: `The text is in the input and nothing has consumed it. --submit calls onSubmitEditing after the text, which is what the keyboard's return key does.`,
     });
   }
   followups.push({
     id: 'find-button',
-    command: `npx @expo/agent-cli runtime:tree${flag}`,
+    command: `${PROGRAM_PREFIX} runtime:tree${flag}`,
     why: 'If the app submits from a button rather than from the keyboard, this names the testIDs on the screen so runtime:tap can press it.',
   });
   followups.push(errors);

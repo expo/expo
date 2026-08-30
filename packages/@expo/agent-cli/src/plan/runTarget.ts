@@ -2,6 +2,7 @@
 // Which app the project is planned into, when the developer has an opinion. Pure, and tiny: the
 // only question is which of two things said it, and what sentence the plan prints for that.
 
+import { PROGRAM_NAME } from '../programName';
 import type { RunTarget } from '../settings/types';
 
 /** What asked for a run target. */
@@ -48,5 +49,5 @@ function whyOf(target: RunTarget, source: RunTargetSource): string {
   const flag = target === 'dev-build' ? '--dev-client' : '--go';
   return source === 'flag'
     ? `${flag} asked for ${app}.`
-    : `The @expo/agent-cli config asks for ${app}.`;
+    : `The ${PROGRAM_NAME} config asks for ${app}.`;
 }

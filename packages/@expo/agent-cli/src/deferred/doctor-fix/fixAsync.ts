@@ -14,6 +14,7 @@ import { event } from '../../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED } from '../../exitCodes';
 import { buildDoctorFixFollowUps, followUpsEnabled, reportFollowUps } from '../../followups';
 import * as Log from '../../log';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import { isInteractive } from '../../utils/interactive';
 import { confirmAsync } from '../../utils/prompts';
 import { applyFixAsync } from './fixApply';
@@ -99,7 +100,7 @@ export async function printDoctorFixAsync(
     Log.log(formatFixPlan(payload));
     if ((await confirmAsync({ message: `Run this ${plan.tier} reset?` })) !== true) {
       Log.log(
-        chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx @expo/agent-cli doctor:fix --tier ${plan.tier}} to print it again.`
+        chalk`Nothing ran: the plan was not confirmed.\nTry: {bold ${PROGRAM_PREFIX} doctor:fix --tier ${plan.tier}} to print it again.`
       );
       return EXIT_OK;
     }
@@ -142,7 +143,7 @@ async function takeCheckpointAsync(
     return null;
   }
   const result = await checkpointBeforeAsync(projectRoot, {
-    label: `@expo/agent-cli doctor:fix --tier ${options.tier}`,
+    label: `${PROGRAM_NAME} doctor:fix --tier ${options.tier}`,
     enabled: options.checkpoint,
     silent: options.json,
   });

@@ -11,12 +11,13 @@
 
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const inspectBuildLogHelp: CommandHelp = {
   command: 'inspect:build-log',
-  usage: 'npx @expo/agent-cli inspect:build-log --file <path> | --stdin',
+  usage: `${PROGRAM_PREFIX} inspect:build-log --file <path> | --stdin`,
   options: [
     `--file <path>          Read the log from this file`,
     `--stdin                Read the log from stdin. Implied when stdin is not a terminal`,
@@ -29,15 +30,15 @@ export const inspectBuildLogHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli inspect:build-log --file ~/Downloads/xcodebuild.log',
+      run: `${PROGRAM_PREFIX} inspect:build-log --file ~/Downloads/xcodebuild.log`,
       gets: 'the failing phase, the line it failed on, and the lines around it',
     },
     {
-      run: 'npx @expo/agent-cli inspect:build-log --stdin --json',
+      run: `${PROGRAM_PREFIX} inspect:build-log --stdin --json`,
       gets: 'the same from a piped log, as one object',
     },
     {
-      run: 'npx @expo/agent-cli inspect:build-log --file build.log --all',
+      run: `${PROGRAM_PREFIX} inspect:build-log --file build.log --all`,
       gets: 'every rule that matched, not only the failing phase’s first',
     },
   ],
@@ -52,7 +53,7 @@ export const inspectBuildLogHelp: CommandHelp = {
     `and a test. Every answer carries the line it came from.`,
     `Exit codes: 0 a report was produced, "no error located" included · 1 no report could be`,
     `produced · 22 what arrived is not text, most often a log still brotli-compressed.`,
-    `"npx @expo/agent-cli inspect:build-log <build-id>" is reserved and does not work yet: eas-cli has no`,
+    `"${PROGRAM_PREFIX} inspect:build-log <build-id>" is reserved and does not work yet: eas-cli has no`,
     `build:logs, so an EAS build's log has to be saved and passed with --file. Run`,
     `"npx eas build:view" for where those files are.`,
   ],

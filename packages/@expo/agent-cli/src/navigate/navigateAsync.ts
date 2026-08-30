@@ -18,6 +18,7 @@ import {
   type FollowUp,
 } from '../followups';
 import * as Log from '../log';
+import { PROGRAM_PREFIX } from '../programName';
 import type { DevServerSource } from '../runtime/devServer';
 import { openInPhrase } from './connectUrl';
 import {
@@ -517,8 +518,8 @@ function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): 
         ? ` On a cloud session the usual cause is a system dialog nothing answered — read it with "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} alert get" and answer it with "npx eas simulator:exec npx ${AGENT_DEVICE_SPEC} alert accept".`
         : '';
   const look = cloud
-    ? 'npx @expo/agent-cli smoke --cloud --no-route-check'
-    : `npx @expo/agent-cli smoke --platform ${opened.platform} --no-route-check`;
+    ? `${PROGRAM_PREFIX} smoke --cloud --no-route-check`
+    : `${PROGRAM_PREFIX} smoke --platform ${opened.platform} --no-route-check`;
 
   return [
     chalk.red(
@@ -529,6 +530,6 @@ function attachNotConfirmed(opened: OpenRouteResult, options: NavigateOptions): 
         ? ' The app was stopped and the link opened a second time, and that did not attach either.'
         : ''
     }${alertClause}`,
-    `How: look at what the dev server was asked for with "npx @expo/agent-cli dev:logs", and at the screen with "${look}". A first bundle on a cold device can take longer than this wait — raise it with --attach-timeout 90s. Pass --no-wait-attach to report only what the device tool said, which is what this command used to do.${alertHow}`,
+    `How: look at what the dev server was asked for with "${PROGRAM_PREFIX} dev:logs", and at the screen with "${look}". A first bundle on a cold device can take longer than this wait — raise it with --attach-timeout 90s. Pass --no-wait-attach to report only what the device tool said, which is what this command used to do.${alertHow}`,
   ].join('\n');
 }

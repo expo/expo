@@ -20,6 +20,7 @@
 
 import { ON_RAMP_FOOTER, ON_RAMP_POINTER, ON_RAMP_TOPIC } from './help/onRamp';
 import type { CommandHelp } from './help/types';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from './programName';
 import type { Command } from './types';
 import { color } from './utils/color';
 
@@ -808,10 +809,10 @@ export function formatTopLevelHelp(): string {
     .join('\n');
 
   return `
-  ${color.command('@expo/agent-cli')} — ${CLI_SUMMARY}
+  ${color.command(`${PROGRAM_NAME}`)} — ${CLI_SUMMARY}
 
   ${color.heading('Usage')}
-    ${color.muted('$')} npx @expo/agent-cli <command> [options]
+    ${color.muted('$')} ${PROGRAM_PREFIX} <command> [options]
 
   ${ON_RAMP_FOOTER}
     ${color.muted('what to run in order, the exit codes, and the --json contract')}
@@ -824,7 +825,7 @@ ${sections}
     --help, -h      Usage info
 
   The options, examples and JSON keys of one command
-    ${color.muted('$')} npx @expo/agent-cli status --help
+    ${color.muted('$')} ${PROGRAM_PREFIX} status --help
 `;
 }
 
@@ -844,7 +845,7 @@ export function formatGroupHelp(name: string): string {
     ? `\n\n    ${color.muted(EXPERIMENTAL_NOTE)}`
     : '';
   const bare = group.defaultAction
-    ? `\n\n    ${color.command(`npx @expo/agent-cli ${name}`)} runs ${color.command(`${name}:${group.defaultAction}`)}, whose options are below.`
+    ? `\n\n    ${color.command(`${PROGRAM_PREFIX} ${name}`)} runs ${color.command(`${name}:${group.defaultAction}`)}, whose options are below.`
     : '';
   // The example names an action the reader has *not* just been shown the options of: for a group
   // with a default action, `cli.ts` prints that action's own help right under this listing.
@@ -856,13 +857,13 @@ export function formatGroupHelp(name: string): string {
   ${color.command(name)} — ${group.summary}
 
   ${color.heading('Usage')}
-    ${color.muted('$')} npx @expo/agent-cli ${name}:${color.muted('<action> [options]')}
+    ${color.muted('$')} ${PROGRAM_PREFIX} ${name}:${color.muted('<action> [options]')}
 
   ${color.heading('Actions')}
 ${actions}${experimental}${bare}
 
   For the options of one action, run it with the ${color.heading('--help')} flag
-    ${color.muted('$')} npx @expo/agent-cli ${example} --help
+    ${color.muted('$')} ${PROGRAM_PREFIX} ${example} --help
 
   ${ON_RAMP_FOOTER}
 `;
@@ -874,9 +875,9 @@ ${actions}${experimental}${bare}
  */
 export function unknownActionMessage(group: string, action: string): string {
   return (
-    `"${action}" is not an action of "@expo/agent-cli ${group}". ` +
+    `"${action}" is not an action of "${PROGRAM_NAME} ${group}". ` +
     `The actions of the ${group} group are the ones listed above: ${actionNames(group).join(', ')}. ` +
-    `Run one of those, or "npx @expo/agent-cli ${group} --help" for what each of them does.`
+    `Run one of those, or "${PROGRAM_PREFIX} ${group} --help" for what each of them does.`
   );
 }
 
@@ -891,12 +892,12 @@ export function unknownActionMessage(group: string, action: string): string {
 export function flagsWithoutActionMessage(group: string, flags: string[]): string {
   const bare = commandGroups[group]?.bareNameCommand;
   return (
-    `"@expo/agent-cli ${group} ${flags.join(' ')}" names no action, so nothing ran. ` +
+    `"${PROGRAM_NAME} ${group} ${flags.join(' ')}" names no action, so nothing ran. ` +
     `The ${group} group has no default action: its options belong to one of its actions, not to the group itself, so there is nothing here for ${flags[0]} to apply to. ` +
     (bare
-      ? `"@expo/agent-cli ${group}" is not the command that starts one — that is "${bare}", which takes these options. `
+      ? `"${PROGRAM_NAME} ${group}" is not the command that starts one — that is "${bare}", which takes these options. `
       : '') +
-    `Run one of ${actionNames(group).join(', ')} with those options, or "npx @expo/agent-cli ${group} --help" for what each of them does.`
+    `Run one of ${actionNames(group).join(', ')} with those options, or "${PROGRAM_PREFIX} ${group} --help" for what each of them does.`
   );
 }
 
@@ -908,7 +909,7 @@ export function flagsWithoutActionMessage(group: string, flags: string[]): strin
  */
 export function flagsWithoutActionSuggestion(group: string, flags: string[]): string {
   const bare = commandGroups[group]?.bareNameCommand;
-  return bare ? [bare, ...flags].join(' ') : `npx @expo/agent-cli ${group} --help`;
+  return bare ? [bare, ...flags].join(' ') : `${PROGRAM_PREFIX} ${group} --help`;
 }
 
 /**
@@ -1018,13 +1019,13 @@ const absentCapabilities: {
   // to `inspect:build-log` — so the answer moved here, where a name this CLI does not have belongs.
   build: {
     absent: `starting a build is the EAS CLI's job, not this one's`,
-    instead: `Run "npx eas build" with the flags you meant to pass here — this CLI wraps no build verb, and never did. What it has is "npx @expo/agent-cli inspect:build-log", which reads the log a finished build left behind and says what failed in it.`,
+    instead: `Run "npx eas build" with the flags you meant to pass here — this CLI wraps no build verb, and never did. What it has is "${PROGRAM_PREFIX} inspect:build-log", which reads the log a finished build left behind and says what failed in it.`,
     suggestedCommand: 'npx eas build',
   },
   logs: {
-    absent: `the log this CLI keeps is the dev server's, and it is "npx @expo/agent-cli dev:logs"`,
-    instead: `That reads what a dev server started with "npx @expo/agent-cli dev --detach" has printed. For the two questions a log is more often opened for: "npx @expo/agent-cli smoke" says whether the bundler finished, whether this project compiles and whether the app came up, and "npx @expo/agent-cli runtime:errors" collects what the running app threw over a time window.`,
-    suggestedCommand: 'npx @expo/agent-cli dev:logs',
+    absent: `the log this CLI keeps is the dev server's, and it is "${PROGRAM_PREFIX} dev:logs"`,
+    instead: `That reads what a dev server started with "${PROGRAM_PREFIX} dev --detach" has printed. For the two questions a log is more often opened for: "${PROGRAM_PREFIX} smoke" says whether the bundler finished, whether this project compiles and whether the app came up, and "${PROGRAM_PREFIX} runtime:errors" collects what the running app threw over a time window.`,
+    suggestedCommand: `${PROGRAM_PREFIX} dev:logs`,
   },
 };
 // The singular is the same mistake, and the same answer.
@@ -1044,7 +1045,7 @@ absentCapabilities.log = absentCapabilities.logs!;
 // registry — so the table is the only thing that can answer.
 const onRampRecovery = {
   absent: `the on-ramp is a topic you ask "help" for by name`,
-  instead: `Run "${ON_RAMP_POINTER}". "help" takes a positional topic — not a colon action, and not a flag — and anything that is not a topic is read as a command name, so "npx @expo/agent-cli help <command>" prints that command's own help.`,
+  instead: `Run "${ON_RAMP_POINTER}". "help" takes a positional topic — not a colon action, and not a flag — and anything that is not a topic is read as a command name, so "${PROGRAM_PREFIX} help <command>" prints that command's own help.`,
   suggestedCommand: ON_RAMP_POINTER,
 };
 for (const spelling of [
@@ -1062,9 +1063,9 @@ export function unknownCommandMessage(command: string): string {
   const absent = absentCapabilities[command.toLowerCase()];
   if (absent) {
     return (
-      `"@expo/agent-cli ${command}" is not a command, and ${absent.absent}. ` +
+      `"${PROGRAM_NAME} ${command}" is not a command, and ${absent.absent}. ` +
       `${absent.instead} ` +
-      `Run "npx @expo/agent-cli --help" for the whole list.`
+      `Run "${PROGRAM_PREFIX} --help" for the whole list.`
     );
   }
 
@@ -1073,18 +1074,18 @@ export function unknownCommandMessage(command: string): string {
   // `dev:logs`, not a listing of thirty commands to find it in again.
   const didYouMean = suggestions.length
     ? `The closest ${suggestions.length === 1 ? 'name is' : 'names are'} ${suggestions
-        .map((name) => `"npx @expo/agent-cli ${name}"`)
+        .map((name) => `"${PROGRAM_PREFIX} ${name}"`)
         .join(', ')}. `
     : '';
   return (
-    `"@expo/agent-cli ${command}" is not a command. ` +
-    `@expo/agent-cli runs its own commands, the actions of its command groups (${Object.keys(
+    `"${PROGRAM_NAME} ${command}" is not a command. ` +
+    `${PROGRAM_NAME} runs its own commands, the actions of its command groups (${Object.keys(
       commandGroups
     ).join(
       ', '
     )}), and a fixed set of ${forwardedCommands.length} expo commands it forwards; "${command}" is in none of them, so neither CLI has it. ` +
     didYouMean +
-    `Run "npx @expo/agent-cli --help" for the whole list.`
+    `Run "${PROGRAM_PREFIX} --help" for the whole list.`
   );
 }
 
@@ -1102,6 +1103,6 @@ export function unknownCommandSuggestion(command: string): string {
 
   const suggestions = suggestCommandNames(command);
   return suggestions.length === 1
-    ? `npx @expo/agent-cli ${suggestions[0]} --help`
-    : 'npx @expo/agent-cli --help';
+    ? `${PROGRAM_PREFIX} ${suggestions[0]} --help`
+    : `${PROGRAM_PREFIX} --help`;
 }

@@ -8,6 +8,7 @@
 import { event } from '../../events';
 import { followUpsEnabled, reportFollowUps } from '../../followups';
 import * as Log from '../../log';
+import { PROGRAM_PREFIX } from '../../programName';
 import type { CdpTarget } from '../../runtime/cdpClient';
 // The family's one resolution step (`src/runtime/preflight.ts`): the dev server, the app and the
 // platform index in one read. This command asked for all three separately when it shipped.
@@ -119,7 +120,7 @@ export async function runtimeNetworkAsync(
         durationMs,
         requests,
         silence === 'acknowledged-but-blind'
-          ? `CAVEAT: this runtime accepted Network.enable and carries no debugger behind it, so an empty list means nothing about what the app requested. Why: ${collector.capability?.evidence ?? 'it answered no debugger call'}. Read the app's errors with "npx @expo/agent-cli runtime:errors" — that command falls back to the dev server's own log — or open the app on iOS or in a development build.`
+          ? `CAVEAT: this runtime accepted Network.enable and carries no debugger behind it, so an empty list means nothing about what the app requested. Why: ${collector.capability?.evidence ?? 'it answered no debugger call'}. Read the app's errors with "${PROGRAM_PREFIX} runtime:errors" — that command falls back to the dev server's own log — or open the app on iOS or in a development build.`
           : null
       )
     );
@@ -156,14 +157,14 @@ function networkDomainUnavailableError(
 
   // Reading the errors is the answer to all three, because a failing request nearly always throws
   // or logs; only the way to get the network log itself back differs.
-  const readErrorsInstead = `Read the app's runtime errors meanwhile — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "npx @expo/agent-cli runtime:eval".`;
+  const readErrorsInstead = `Read the app's runtime errors meanwhile — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "${PROGRAM_PREFIX} runtime:eval".`;
 
   const { why, how } =
     refusal === 'multiple-hosts'
       ? {
           // Observed in React Native 0.86's HostAgent.cpp; see `classifyNetworkDomainRefusal`.
           why: `${quoted}. The domain attaches only while exactly one React Native host is registered in the app's process, and this app's process has more than one. The count is a property of the app, not of the dev server: stopping another dev server does not lower it, and neither does reconnecting the debugger. Expo Go reaches this state by holding a host for a project it loaded earlier alongside the one for this project.`,
-          how: `Relaunch the app so this project's host is the only one registered — "npx @expo/agent-cli navigate /" after closing the app reloads it from scratch — then run this command again. A development build that runs one host answers the domain directly. ${readErrorsInstead}`,
+          how: `Relaunch the app so this project's host is the only one registered — "${PROGRAM_PREFIX} navigate /" after closing the app reloads it from scratch — then run this command again. A development build that runs one host answers the domain directly. ${readErrorsInstead}`,
         }
       : refusal === 'not-implemented'
         ? {
@@ -183,6 +184,6 @@ function networkDomainUnavailableError(
       `How: ${how}`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli runtime:errors';
+  error.suggestedCommand = `${PROGRAM_PREFIX} runtime:errors`;
   return error;
 }

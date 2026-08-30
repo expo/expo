@@ -20,6 +20,7 @@ import { event as planEvent } from '../plan/events';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../plan/lastBuild';
 import { resolveStartPlanAsync } from '../plan/resolveAsync';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import { clearFingerprintMemo } from '../project/fingerprint';
 import { clearFingerprintCache } from '../project/fingerprintCache';
 import { probeProjectStateAsync } from '../project/probe';
@@ -91,7 +92,7 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   if (dropped.length) {
     const last = plan.steps[plan.steps.length - 1]!;
     Log.warn(
-      `The plan ends with "${last.argv.join(' ')}" instead of "expo start", so these options were not passed on: ${dropped.join(' ')}. Run "@expo/agent-cli start ${dropped.join(' ')}" once the app is installed, or pass them to "npx ${last.argv.join(' ')}" yourself.`
+      `The plan ends with "${last.argv.join(' ')}" instead of "expo start", so these options were not passed on: ${dropped.join(' ')}. Run "${PROGRAM_NAME} start ${dropped.join(' ')}" once the app is installed, or pass them to "npx ${last.argv.join(' ')}" yourself.`
     );
   }
 
@@ -186,7 +187,7 @@ function warnUnbuildable(plan: StartPlan): void {
     location.selection?.source === 'flag'
       ? ' --local asked for this build to run here.'
       : location.selection?.source === 'config'
-        ? ' The @expo/agent-cli config asks for this build to run here.'
+        ? ` The ${PROGRAM_NAME} config asks for this build to run here.`
         : '';
   Log.warn(
     `This plan builds ${LOCAL_WHERE} and this machine does not have ${tool}: ${location.detail}${asked} The build step will fail once it reaches the compiler. To build for ${location.platform} without ${tool}, run "${location.alternativeCommand}", which builds ${EAS_WHERE} and needs ${EAS_REQUIREMENT}.`
@@ -456,16 +457,16 @@ async function portDemandedError(projectRoot: string, port: number): Promise<Com
         ? `Why: this project's own dev server is already on port ${port}, held by ${holder}. Nothing was started, because there is already one there.`
         : `Why: ${holder} is listening on it, and --port ${port} is a requirement rather than a preference — moving the dev server to another port would leave every URL and every command that names ${port} pointing at nothing.`,
       ours
-        ? `How: use the dev server that is running ("npx @expo/agent-cli smoke" checks its bundle and its app), or stop it first with "npx @expo/agent-cli dev:stop".`
-        : `How: free the port with "npx @expo/agent-cli dev:stop --port ${port} --force", which stops it only when it answers as an Expo dev server${listener ? ` and pid ${listener.pid} looks like one` : ''}${free == null ? '' : `, or start on a free port instead with "npx @expo/agent-cli dev --yes --port ${free}"`}. Leaving --port out lets this command pick a free port on its own.`,
+        ? `How: use the dev server that is running ("${PROGRAM_PREFIX} smoke" checks its bundle and its app), or stop it first with "${PROGRAM_PREFIX} dev:stop".`
+        : `How: free the port with "${PROGRAM_PREFIX} dev:stop --port ${port} --force", which stops it only when it answers as an Expo dev server${listener ? ` and pid ${listener.pid} looks like one` : ''}${free == null ? '' : `, or start on a free port instead with "${PROGRAM_PREFIX} dev --yes --port ${free}"`}. Leaving --port out lets this command pick a free port on its own.`,
     ].join('\n')
   );
   // Never the command that just failed: it would stop in exactly the same place.
   error.suggestedCommand = ours
-    ? 'npx @expo/agent-cli smoke'
+    ? `${PROGRAM_PREFIX} smoke`
     : free == null
-      ? `npx @expo/agent-cli dev:stop --port ${port} --force`
-      : `npx @expo/agent-cli dev --yes --port ${free}`;
+      ? `${PROGRAM_PREFIX} dev:stop --port ${port} --force`
+      : `${PROGRAM_PREFIX} dev --yes --port ${free}`;
   error.exitCode = EXIT_OUTCOME_FAILED;
   return error;
 }
@@ -577,13 +578,13 @@ function stopPromptFor(
       message: [
         `The plan stopped at "${failure.step.id}": macOS refused "${invocation}" permission to control Simulator.app.`,
         `Why: --ios makes the Expo CLI drive Simulator.app through AppleScript, and macOS refuses an application that has not been granted Automation permission. The Expo CLI does not catch that rejection, so it ends the whole "expo start" process${failure.devServerStep ? ' — the dev server this run started exited with it, and nothing is listening for this project now' : ''}.`,
-        `How: grant the permission in System Settings › Privacy & Security › Automation, then run this command again. To keep going without it, drop --ios and open the app the way that needs no Automation grant: "npx @expo/agent-cli dev --yes" to start the dev server, then "npx @expo/agent-cli navigate /", which deep-links through "xcrun simctl openurl".`,
+        `How: grant the permission in System Settings › Privacy & Security › Automation, then run this command again. To keep going without it, drop --ios and open the app the way that needs no Automation grant: "${PROGRAM_PREFIX} dev --yes" to start the dev server, then "${PROGRAM_PREFIX} navigate /", which deep-links through "xcrun simctl openurl".`,
         // @ref llp/0004 §What a development build costs the plan — F121. The `How:` above is the
         // recovery that used to walk straight back into a fifteen-minute rebuild, because the build
         // this run finished was not recorded. It is now, and the reader is told so on the line that
         // sends them there.
         failure.buildRecorded
-          ? `Note: the app it built is installed on the simulator already, so that build is recorded and "npx @expo/agent-cli dev --yes" starts a dev server rather than building again.`
+          ? `Note: the app it built is installed on the simulator already, so that build is recorded and "${PROGRAM_PREFIX} dev --yes" starts a dev server rather than building again.`
           : '',
         said ? `\nWhat the tool printed:\n${said}` : '',
       ]
@@ -611,7 +612,7 @@ function stopPromptFor(
     message: [
       `The plan stopped at "${failure.step.id}": "${invocation}" needed an answer and this run has no terminal to give one.`,
       `Why: the ${cli} asks before it does something it cannot decide, and a run with no terminal fails there instead of prompting. The question it asked is quoted below.`,
-      `How: run the command above in a terminal once and answer it. If the answer is a value this CLI takes as a flag, pass that flag instead — "npx @expo/agent-cli dev --help" lists them.`,
+      `How: run the command above in a terminal once and answer it. If the answer is a value this CLI takes as a flag, pass that flag instead — "${PROGRAM_PREFIX} dev --help" lists them.`,
       asked ? `\nWhat it asked for:\n${asked}` : '',
     ]
       .filter(Boolean)
@@ -684,9 +685,9 @@ function planStepFailedError(
       // fact that decides what the next command costs, and nothing in the tool's own output says
       // it. Without this line the reader re-runs a step whose expensive half already worked.
       failure.buildRecorded
-        ? `Note: the app it built is installed on the device, so that build is recorded — the next "npx @expo/agent-cli dev" starts a dev server for it instead of building again.`
+        ? `Note: the app it built is installed on the device, so that build is recorded — the next "${PROGRAM_PREFIX} dev" starts a dev server for it instead of building again.`
         : '',
-      `How: run the command above yourself to see it fail with its whole output, or run "npx @expo/agent-cli dev --plan" to see the steps this plan is made of.`,
+      `How: run the command above yourself to see it fail with its whole output, or run "${PROGRAM_PREFIX} dev --plan" to see the steps this plan is made of.`,
       wrapperCrash
         ? wrapperCrashDetail({ tool, exitCode: failure.exitCode }, failure.binPath!)
         : tail
@@ -733,14 +734,18 @@ async function resolveRunFollowUpsAsync(
     : // Before it: the port the plan's own last step carries, or the one the Expo CLI defaults to.
       resolveDevServerPort(planArgs);
 
-  return await resolveStartFollowUpsAsync(projectRoot, { ...options, expoArgs: planArgs }, {
-    expoGo: plan.target === 'expo-go',
-    web: plan.target === 'web',
-    port,
-    // Whatever the plan's own probe established, and null when it planned no build and probed
-    // nothing. The cloud-build rung reads it to say why the cloud is still worth choosing.
-    localBuild: plan.buildLocation?.status ?? null,
-  });
+  return await resolveStartFollowUpsAsync(
+    projectRoot,
+    { ...options, expoArgs: planArgs },
+    {
+      expoGo: plan.target === 'expo-go',
+      web: plan.target === 'web',
+      port,
+      // Whatever the plan's own probe established, and null when it planned no build and probed
+      // nothing. The cloud-build rung reads it to say why the cloud is still worth choosing.
+      localBuild: plan.buildLocation?.status ?? null,
+    }
+  );
 }
 
 /**
@@ -859,7 +864,7 @@ function assertRunnableStep(step: PlanStep): void {
   if (!RUNNABLE_CLIS.includes(step.argv[0]!)) {
     throw new CommandError(
       'UNSUPPORTED_PLAN_STEP',
-      `Cannot run the plan step "${step.id}": it invokes "${step.argv[0]}", and this version of @expo/agent-cli only runs the ${RUNNABLE_CLIS.map((cli) => `"${cli}"`).join(' and ')} CLIs. Update @expo/agent-cli, or run the step yourself with "npx ${step.argv.join(' ')}".`
+      `Cannot run the plan step "${step.id}": it invokes "${step.argv[0]}", and this version of ${PROGRAM_NAME} only runs the ${RUNNABLE_CLIS.map((cli) => `"${cli}"`).join(' and ')} CLIs. Update ${PROGRAM_NAME}, or run the step yourself with "npx ${step.argv.join(' ')}".`
     );
   }
 }

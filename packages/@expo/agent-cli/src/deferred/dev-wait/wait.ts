@@ -2,6 +2,7 @@
 //
 import chalk from 'chalk';
 
+import { PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import {
   assertWithOptionsArgs,
@@ -33,7 +34,7 @@ export const agentCliDevWait: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Wait for the dev server, and check that this project's code still compiles`,
-      chalk`npx @expo/agent-cli dev:wait {dim [options]}`,
+      chalk`${PROGRAM_PREFIX} dev:wait {dim [options]}`,
       [
         `--timeout ${DURATION_METAVAR}      How long to wait in total (default: 2m)`,
         `--require-app              Also wait for an app to attach to the dev server`,
@@ -47,8 +48,8 @@ export const agentCliDevWait: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  {dim $} npx @expo/agent-cli dev:wait`,
-        chalk`  {dim $} npx @expo/agent-cli dev:wait --require-app --timeout 60s --json`,
+        chalk`  {dim $} ${PROGRAM_PREFIX} dev:wait`,
+        chalk`  {dim $} ${PROGRAM_PREFIX} dev:wait --require-app --timeout 60s --json`,
         '',
         `  ${DURATION_HELP_NOTE}`,
         '',
@@ -87,8 +88,10 @@ export const agentCliDevWait: Command = async (argv) => {
 
   // Load modules after the help prompt so `npx @expo/agent-cli dev:wait -h` shows as fast as possible.
   const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
-  const { findUpProjectRootOrCwd } = require('../../utils/findUp') as typeof import('../../utils/findUp');
-  const { EXIT_OK, exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');
+  const { findUpProjectRootOrCwd } =
+    require('../../utils/findUp') as typeof import('../../utils/findUp');
+  const { EXIT_OK, exitWithCodeAsync } =
+    require('../../exitCodes') as typeof import('../../exitCodes');
   const { resolveDevWaitOptions } =
     require('./resolveWaitOptions') as typeof import('./resolveWaitOptions');
 

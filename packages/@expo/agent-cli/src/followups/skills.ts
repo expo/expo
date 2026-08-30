@@ -2,6 +2,7 @@
 // @ref llp/0009-smart-followups.rfc.md §Wider ideas — agent-aware rendering: a detected agent gets
 // the note that it does not have to load these files itself.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface SkillsSyncFollowUpInput {
@@ -18,7 +19,7 @@ export function buildSkillsSyncFollowUps({
   const followups: FollowUp[] = [
     {
       id: 'skills-list',
-      command: 'npx @expo/agent-cli skills:list',
+      command: `${PROGRAM_PREFIX} skills:list`,
       why: 'Lists every discovered skill and the agent directories it is linked into.',
     },
   ];
@@ -26,7 +27,7 @@ export function buildSkillsSyncFollowUps({
   if (agentId && skillPackages.length) {
     followups.push({
       id: 'skills-show',
-      command: `npx @expo/agent-cli skills:show ${skillPackages[0]}`,
+      command: `${PROGRAM_PREFIX} skills:show ${skillPackages[0]}`,
       why: `${agentId} loads the linked skills automatically, so nothing has to read them here; this prints one on demand.`,
     });
   }

@@ -4,6 +4,7 @@
 // for it.
 
 import type { EffectiveConfigReport } from '../config/types';
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ConfigEffectiveFollowUpInput {
@@ -31,7 +32,7 @@ export function buildConfigEffectiveFollowUps({
   if (report.platforms.ios?.infoPlist != null) {
     followups.push({
       id: 'config-effective-file',
-      command: 'npx @expo/agent-cli inspect:config-plugins --file infoPlist',
+      command: `${PROGRAM_PREFIX} inspect:config-plugins --file infoPlist`,
       why: 'The summary counts the Info.plist keys; --file prints them with their values.',
     });
   }
@@ -39,7 +40,7 @@ export function buildConfigEffectiveFollowUps({
   if (!json) {
     followups.push({
       id: 'config-effective-json',
-      command: 'npx @expo/agent-cli inspect:config-plugins --json',
+      command: `${PROGRAM_PREFIX} inspect:config-plugins --json`,
       why: 'The JSON report carries every introspected value, not just how many of them there are.',
     });
   }

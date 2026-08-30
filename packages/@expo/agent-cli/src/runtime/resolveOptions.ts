@@ -2,16 +2,17 @@
 // Argument resolution for the `@expo/agent-cli runtime:<action>` commands. Pure: argv in, options out,
 // `CommandError` for anything a user can get wrong, so every flag combination is unit-testable.
 
+import type { NavigatePlatform } from '../navigate/device';
+import { PROGRAM_PREFIX } from '../programName';
 import {
   DURATION_METAVAR,
   parseArgsOrThrow,
   resolveDuration,
   strayArgumentError,
 } from '../utils/args';
-import type { NavigatePlatform } from '../navigate/device';
 import { CommandError } from '../utils/errors';
-import { resolveDevicePlatform } from './devicePlatform';
 import { resolveDevServerTarget } from './devServer';
+import { resolveDevicePlatform } from './devicePlatform';
 
 /** Actions of the `runtime` group, in the order the help prints them. */
 export const RUNTIME_ACTIONS = ['eval', 'errors'] as const;
@@ -118,7 +119,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   if (action == null) {
     throw new CommandError(
       'BAD_ARGS',
-      `Missing action. Usage: npx @expo/agent-cli runtime:<${RUNTIME_ACTIONS.join('|')}>`
+      `Missing action. Usage: ${PROGRAM_PREFIX} runtime:<${RUNTIME_ACTIONS.join('|')}>`
     );
   }
   if (!RUNTIME_ACTIONS.includes(action as RuntimeAction)) {
@@ -134,20 +135,24 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     if (positional.length === 0) {
       throw new CommandError(
         'BAD_ARGS',
-        `Missing expression. Usage: npx @expo/agent-cli runtime:eval "<expression>"`
+        `Missing expression. Usage: ${PROGRAM_PREFIX} runtime:eval "<expression>"`
       );
     }
     if (positional.length > 1) {
       throw new CommandError(
         'BAD_ARGS',
-        `Expected one expression, but got ${positional.length} arguments (${positional.join(' ')}). Quote the expression so the shell passes it as one argument: npx @expo/agent-cli runtime:eval "${positional.join(' ')}"`
+        `Expected one expression, but got ${positional.length} arguments (${positional.join(' ')}). Quote the expression so the shell passes it as one argument: ${PROGRAM_PREFIX} runtime:eval "${positional.join(' ')}"`
       );
     }
 
     return {
       action: 'eval',
       expression: positional[0]!,
-      devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:eval'),
+      devServerUrl: resolveDevServerTarget(
+        args['--dev-server-url'],
+        args['--port'],
+        'runtime:eval'
+      ),
       platform: resolveDevicePlatform(args, 'runtime:eval', {
         bothHint: `pass one, or leave both out to read whichever app is connected.`,
       }),
@@ -164,7 +169,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw strayArgumentError('runtime:errors', positional, {
-      hint: `this command listens over a window and takes no target. Usage: npx @expo/agent-cli runtime:errors [--duration ${DURATION_METAVAR}]`,
+      hint: `this command listens over a window and takes no target. Usage: ${PROGRAM_PREFIX} runtime:errors [--duration ${DURATION_METAVAR}]`,
     });
   }
 
@@ -186,4 +191,3 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     failOnError: !!args['--fail-on-error'],
   };
 }
-

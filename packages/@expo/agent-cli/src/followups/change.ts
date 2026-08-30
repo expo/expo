@@ -8,6 +8,7 @@
 // up.
 
 import type { CachedBuild, ImpactClass } from '../impact/types';
+import { PROGRAM_PREFIX } from '../programName';
 import {
   easBuildCommand,
   localTool,
@@ -69,7 +70,7 @@ export function buildChangeFollowUps({
       const runsOnEas = buildBackend?.runsOn === 'eas';
       followups.push({
         id: 'change-native-build',
-        command: `npx @expo/agent-cli dev${platformFlag ? ` --${platform}` : ''}`,
+        command: `${PROGRAM_PREFIX} dev${platformFlag ? ` --${platform}` : ''}`,
         why: runsOnEas
           ? `The native surface changed, so the installed app cannot run this code. This plans the rebuild ${EAS_WHERE} — ${buildBackend!.because} — and prints the plan before it starts anything.`
           : `The native surface changed, so the installed app cannot run this code. This rebuilds it ${LOCAL_WHERE} — the fast route when this machine has ${localTool(platform)}, because the plan engine prebuilds and rebuilds only what has to be.`,
@@ -77,7 +78,7 @@ export function buildChangeFollowUps({
       followups.push({
         id: runsOnEas ? 'change-local-build' : 'change-eas-build',
         command: runsOnEas
-          ? `npx @expo/agent-cli dev${platformFlag ? ` --${platform}` : ''} --local`
+          ? `${PROGRAM_PREFIX} dev${platformFlag ? ` --${platform}` : ''} --local`
           : platform
             ? easBuildCommand(platform)
             : `npx eas build --profile ${EAS_DEVELOPMENT_PROFILE}`,
@@ -89,13 +90,13 @@ export function buildChangeFollowUps({
   } else if (impactClass === 'dev-client-compatible') {
     followups.push({
       id: 'change-restart-metro',
-      command: 'npx @expo/agent-cli dev:stop && npx @expo/agent-cli dev --detach',
+      command: `${PROGRAM_PREFIX} dev:stop && ${PROGRAM_PREFIX} dev --detach`,
       why: 'The installed app is still the right one; what changed is a file the dev server read once at start-up, so only Metro has to come back.',
     });
   } else {
     followups.push({
       id: 'change-reload',
-      command: 'npx @expo/agent-cli runtime:reload',
+      command: `${PROGRAM_PREFIX} runtime:reload`,
       why: 'Nothing native changed, so the running app only has to fetch the new bundle. This also reports whether the entry bundle compiles before it broadcasts anything.',
     });
   }
@@ -103,7 +104,7 @@ export function buildChangeFollowUps({
   if (otaSafe === false) {
     followups.push({
       id: 'change-ota-unsafe',
-      command: `npx @expo/agent-cli status --explain --json`,
+      command: `${PROGRAM_PREFIX} status --explain --json`,
       why: 'An update published now would reach installed builds that cannot run it — read the "ota" section for the runtimeVersion policy that decides this, before running eas update.',
     });
   } else if (otaSafe === true && impactClass !== 'needs-native-build') {
@@ -116,7 +117,7 @@ export function buildChangeFollowUps({
 
   followups.push({
     id: 'change-typecheck',
-    command: 'npx @expo/agent-cli typecheck',
+    command: `${PROGRAM_PREFIX} typecheck`,
     why: 'This classifies what a change costs to run, not whether it is correct: a type error compiles and bundles perfectly.',
   });
 

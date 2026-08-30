@@ -6,6 +6,7 @@
 // stay exactly as they are however many times the gate runs, and the shipped follow-ups of the
 // commands this replaces made that mistake often enough to be worth stating (F41, F48-8).
 
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface SmokeFollowUpInput {
@@ -74,14 +75,14 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'dev-detach',
-        command: 'npx @expo/agent-cli dev --detach --yes --wait-ready',
+        command: `${PROGRAM_PREFIX} dev --detach --yes --wait-ready`,
         why: input.start
           ? 'This run was allowed to start a dev server and could not, so starting one in the foreground shows what stops it.'
           : 'Nothing answered as a dev server, and this run was attach-only. That starts one and gives the terminal back.',
       },
       {
         id: 'smoke-start',
-        command: `npx @expo/agent-cli smoke --start${same}`,
+        command: `${PROGRAM_PREFIX} smoke --start${same}`,
         why: 'Runs the same gate and starts the dev server itself when there is none.',
       },
     ]);
@@ -92,7 +93,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'smoke-dev-server-url',
-        command: 'npx @expo/agent-cli status --json',
+        command: `${PROGRAM_PREFIX} status --json`,
         why: 'The dev server that answered was started for another project; this reports which one this project would talk to, so --dev-server-url can name it.',
       },
     ]);
@@ -104,12 +105,12 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'typecheck',
-        command: 'npx @expo/agent-cli typecheck',
+        command: `${PROGRAM_PREFIX} typecheck`,
         why: `The entry bundle does not compile${input.bundleFile ? ` (${input.bundleFile})` : ''}, and the compiler reports every error in the project rather than only the one the bundler stopped on.`,
       },
       {
         id: 'smoke-again',
-        command: `npx @expo/agent-cli smoke${same}`,
+        command: `${PROGRAM_PREFIX} smoke${same}`,
         why: 'The dev server rebuilds on save, so this is the gate to run again once the file parses.',
       },
     ]);
@@ -119,14 +120,14 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'navigate',
-        command: `npx @expo/agent-cli navigate ${input.route ?? '/'} --${input.platform}${onCloud}`,
+        command: `${PROGRAM_PREFIX} navigate ${input.route ?? '/'} --${input.platform}${onCloud}`,
         why: input.cloud
           ? "No app is connected to the dev server, and this is what opens one on the project's EAS Simulator session."
           : 'No app is connected to the dev server, and this is what opens one on a booted device.',
       },
       {
         id: 'smoke-again',
-        command: `npx @expo/agent-cli smoke${same}`,
+        command: `${PROGRAM_PREFIX} smoke${same}`,
         why: 'Runs the same gate once the app is on screen.',
       },
     ]);
@@ -144,7 +145,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
         // still serve: the plan engine answers `expo start --android` for it and only reaches the
         // development-build path when a native module makes Expo Go incompatible
         // (`src/plan/decide.ts`). What does help is the command that can still see the errors.
-        command: 'npx @expo/agent-cli runtime:errors --android --duration 5s',
+        command: `${PROGRAM_PREFIX} runtime:errors --android --duration 5s`,
         why: "This runtime reports nothing over the debugger, so that command falls back to the dev server's own log, which does carry the app's errors — with a code frame. It needs a dev server started with --detach.",
       },
       // Not on a cloud run: a session is one device, so "the other platform" is a *different*
@@ -156,7 +157,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
         : [
             {
               id: 'smoke-other-platform',
-              command: `npx @expo/agent-cli smoke --${otherPlatform}${sameRoute}`,
+              command: `${PROGRAM_PREFIX} smoke --${otherPlatform}${sameRoute}`,
               why: `Expo Go on ${otherPlatform === 'ios' ? 'iOS' : 'Android'} was measured to answer the debugger, so the same gate has a runtime to read there [observed — 2026-08-25].`,
             },
           ]),
@@ -167,12 +168,12 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     return capFollowUps([
       {
         id: 'runtime-reload',
-        command: `npx @expo/agent-cli runtime:reload --${input.platform}${onCloud}`,
+        command: `${PROGRAM_PREFIX} runtime:reload --${input.platform}${onCloud}`,
         why: 'An error window is a property of the app’s session and the session outlives a fix, so reload before believing a second reading.',
       },
       {
         id: 'runtime-errors',
-        command: `npx @expo/agent-cli runtime:errors --${input.platform} --duration 5s --json`,
+        command: `${PROGRAM_PREFIX} runtime:errors --${input.platform} --duration 5s --json`,
         why: 'Prints the same records with their whole symbolicated stacks, which is more than this summary shows.',
       },
       ...(input.screenshotPath
@@ -194,7 +195,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   const passed: FollowUp[] = [
     {
       id: 'typecheck',
-      command: 'npx @expo/agent-cli typecheck',
+      command: `${PROGRAM_PREFIX} typecheck`,
       why: 'Nothing threw and the bundle compiled, which is not the same as the types being right — a value that is undefined renders rather than throwing.',
     },
   ];
@@ -207,14 +208,14 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   } else if (input.outcome !== 'passed') {
     passed.push({
       id: 'smoke-again',
-      command: `npx @expo/agent-cli smoke${same}`,
+      command: `${PROGRAM_PREFIX} smoke${same}`,
       why: 'Nothing was shown to be wrong and nothing was proved right; this runs the same gate again.',
     });
   }
   if (!input.screenshotTaken && input.outcome === 'passed') {
     passed.push({
       id: 'runtime-errors',
-      command: `npx @expo/agent-cli runtime:errors --${input.platform} --duration 10s --fail-on-error`,
+      command: `${PROGRAM_PREFIX} runtime:errors --${input.platform} --duration 10s --fail-on-error`,
       why: 'This window was short and only catches what happens while it is open, so a longer one covers more of the app settling.',
     });
   }

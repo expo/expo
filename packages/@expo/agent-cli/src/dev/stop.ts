@@ -2,12 +2,13 @@
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../utils/args';
 
 export const devStopHelp: CommandHelp = {
   command: 'dev:stop',
-  usage: 'npx @expo/agent-cli dev:stop',
+  usage: `${PROGRAM_PREFIX} dev:stop`,
   options: [
     `--port <port>         Look at this port when no lock answers for the project`,
     `--signal <signal>     SIGTERM (default), SIGINT, or SIGKILL`,
@@ -19,12 +20,15 @@ export const devStopHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli dev:stop',
+      run: `${PROGRAM_PREFIX} dev:stop`,
       gets: 'this project’s dev server is signalled and gone; exit 0 if none was running',
     },
-    { run: 'npx @expo/agent-cli dev:stop --json', gets: 'the same as one object: pid, port, url, stopped' },
     {
-      run: 'npx @expo/agent-cli dev:stop --port 8081 --force',
+      run: `${PROGRAM_PREFIX} dev:stop --json`,
+      gets: 'the same as one object: pid, port, url, stopped',
+    },
+    {
+      run: `${PROGRAM_PREFIX} dev:stop --port 8081 --force`,
       gets: 'stops a dev server on that port that this CLI did not start',
     },
   ],

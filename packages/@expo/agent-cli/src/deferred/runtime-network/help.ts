@@ -7,6 +7,7 @@
 
 import chalk from 'chalk';
 
+import { PROGRAM_PREFIX } from '../../programName';
 import { DURATION_METAVAR } from '../../utils/args';
 
 /** The action's entry in the `Options` block, printed under `runtime:errors`. */
@@ -18,7 +19,7 @@ export const NETWORK_OPTION_LINES = [
 ];
 
 /** The action's line in the `Examples` block, printed after the `runtime:errors` example. */
-export const NETWORK_EXAMPLE_LINE = chalk`  {dim $} npx @expo/agent-cli runtime:network --duration 10s --json`;
+export const NETWORK_EXAMPLE_LINE = chalk`  {dim $} ${PROGRAM_PREFIX} runtime:network --duration 10s --json`;
 
 /**
  * The paragraph that told a reader why an empty report is not an answer.

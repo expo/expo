@@ -13,6 +13,7 @@ import os from 'os';
 import path from 'path';
 
 import { dirtyTrackedPathsAsync } from '../../checkpoint/git';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import { directoryExistsSync, fileExistsSync } from '../../utils/dir';
 import { CommandError } from '../../utils/errors';
 import { findExecutableOnPath } from '../../utils/subprocess';
@@ -56,10 +57,7 @@ export interface FixPlan {
  * directory holding uncommitted tracked changes, and `DOCTOR_FIX_UNSAFE_PATH` when the table named
  * a target the safety predicate refuses.
  */
-export async function planFixAsync(
-  projectRoot: string,
-  options: FixPlanOptions
-): Promise<FixPlan> {
+export async function planFixAsync(projectRoot: string, options: FixPlanOptions): Promise<FixPlan> {
   const context = probeProject(projectRoot, options.platforms);
   const safety = {
     projectRoot,
@@ -241,10 +239,10 @@ async function assertNativeIsCleanAsync(
     [
       `Nothing was planned: ${subject} ${named.length === 1 ? 'has' : 'have'} uncommitted changes (${dirty.slice(0, 5).join(', ')}${dirty.length > 5 ? `, and ${dirty.length - 5} more` : ''}).`,
       `Why: this tier deletes inside those directories and reinstalls into them, and a checkpoint holds only tracked files that are already committed — so your uncommitted native work would be the one thing no snapshot could put back.`,
-      `How: commit or stash the changes and run this again, or use "npx @expo/agent-cli doctor:fix --tier safe", which never touches the native directories.`,
+      `How: commit or stash the changes and run this again, or use "${PROGRAM_PREFIX} doctor:fix --tier safe", which never touches the native directories.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli doctor:fix --tier safe';
+  error.suggestedCommand = `${PROGRAM_PREFIX} doctor:fix --tier safe`;
   throw error;
 }
 
@@ -292,10 +290,10 @@ export function unsafePathError(stepId: string, rejection: string): CommandError
     [
       `Nothing was deleted: the "${stepId}" step named a path this command refuses to touch.`,
       `Why: ${rejection}`,
-      `How: this is either a bug in @expo/agent-cli or a link planted where a cache directory should be. Check the path by hand, then report it at https://github.com/expo/expo/issues.`,
+      `How: this is either a bug in ${PROGRAM_NAME} or a link planted where a cache directory should be. Check the path by hand, then report it at https://github.com/expo/expo/issues.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli doctor:fix --tier safe';
+  error.suggestedCommand = `${PROGRAM_PREFIX} doctor:fix --tier safe`;
   return error;
 }
 

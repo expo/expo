@@ -7,6 +7,7 @@
 
 import chalk from 'chalk';
 
+import { PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import {
   assertWithOptionsArgs,
@@ -39,7 +40,7 @@ export const agentCliBuildWait: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Wait for an EAS cloud build to finish, and exit with what it did`,
-      chalk`npx @expo/agent-cli build:wait {dim <build-id> [options]}`,
+      chalk`${PROGRAM_PREFIX} build:wait {dim <build-id> [options]}`,
       [
         `--timeout ${DURATION_METAVAR}   Give up after this long. Default: 45m`,
         `--interval ${DURATION_METAVAR}  How often to poll. Default: 10s, backing off to 30s after 5m`,
@@ -61,7 +62,7 @@ export const agentCliBuildWait: Command = async (argv) => {
         chalk`     {bold 7}   nobody is signed in, so no build is visible: a person has to log in`,
         chalk`     {bold 1}   this command could not do its job: bad id, no eas, no answer`,
         '',
-        chalk`    {dim $} npx @expo/agent-cli build:wait $BUILD_ID --json || handle_by_code $?`,
+        chalk`    {dim $} ${PROGRAM_PREFIX} build:wait $BUILD_ID --json || handle_by_code $?`,
         '',
         chalk`  Progress goes to the {bold LOG_EVENTS} JSONL stream as {bold cli:build_wait_poll}, so`,
         chalk`  {bold --json} still prints exactly one object on stdout.`,
@@ -72,7 +73,7 @@ export const agentCliBuildWait: Command = async (argv) => {
         chalk`  in the same command, use {bold npx eas build --wait}. For a workflow run, use`,
         chalk`  {bold npx eas workflow:status <id> --wait}.`,
         '',
-        chalk`  It waits on nothing that runs here. A build on this machine — {bold npx @expo/agent-cli dev},`,
+        chalk`  It waits on nothing that runs here. A build on this machine — {bold ${PROGRAM_PREFIX} dev},`,
         chalk`  {bold npx expo run:ios} — is a foreground process you already have; there is no id to wait on`,
         chalk`  and no queue it is in.`,
         '',

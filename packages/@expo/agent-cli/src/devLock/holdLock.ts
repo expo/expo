@@ -2,6 +2,7 @@
 // The dev-server wrapper's half of the lock: resolve the port, publish it, hold it, report it.
 
 import * as Log from '../log';
+import { PROGRAM_NAME } from '../programName';
 import { lockAddressFor } from './address';
 import { debugEvent, event } from './events';
 import { resolveDevServerPortAsync, type ResolveDevServerPortOptions } from './port';
@@ -79,7 +80,7 @@ export async function holdDevServerLockAsync(
           error: debugEvent.error(result.error),
         });
         Log.warn(
-          `Could not publish the dev server port for this project (${result.error.message}). The dev server is unaffected; other @expo/agent-cli commands may have to scan for its port. Pass --dev-server-url to name it instead.`
+          `Could not publish the dev server port for this project (${result.error.message}). The dev server is unaffected; other ${PROGRAM_NAME} commands may have to scan for its port. Pass --dev-server-url to name it instead.`
         );
         return null;
     }

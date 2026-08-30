@@ -2,9 +2,10 @@
 // Where the two fingerprints being compared come from. One function per mode, each answering the
 // same shape, so `impactAsync` orchestrates without knowing which mode ran.
 
+import { readLastBuildRecord } from '../plan/lastBuild';
+import { PROGRAM_NAME } from '../programName';
 import { diffFingerprintsAsync, generateFingerprintAsync } from '../project/fingerprint';
 import type { FingerprintDiffItem, FingerprintSource } from '../project/fingerprint';
-import { readLastBuildRecord } from '../plan/lastBuild';
 import { easCliArgs, easCliLabel, type EasCli } from '../utils/easCli';
 import { spawnSubprocessAsync } from '../utils/subprocess';
 import {
@@ -56,7 +57,7 @@ export async function compareWithLastBuildAsync(
 
   const headSide: ComparisonSide = { label: 'working tree', hash: head.hash };
   const baseSide: ComparisonSide = {
-    label: 'last build recorded by @expo/agent-cli',
+    label: `last build recorded by ${PROGRAM_NAME}`,
     hash: recorded?.hash ?? null,
   };
 
@@ -80,7 +81,7 @@ export async function compareWithLastBuildAsync(
       // it ran; a build made by EAS, by Xcode, or by another machine leaves nothing here.
       fingerprintChanged: null,
       caveats: [
-        `No build is recorded for ${platform}, so there is nothing to compare against. "@expo/agent-cli dev" writes this record after a native build it runs; for a cloud build, compare against it directly with --build <id>.`,
+        `No build is recorded for ${platform}, so there is nothing to compare against. "${PROGRAM_NAME} dev" writes this record after a native build it runs; for a cloud build, compare against it directly with --build <id>.`,
       ],
       error: null,
     };
@@ -155,7 +156,8 @@ export function describeGenerateFailure(
   platform: string,
   preset: string | undefined
 ): string {
-  const reason = error ?? `The fingerprint of the working tree could not be computed for ${platform}.`;
+  const reason =
+    error ?? `The fingerprint of the working tree could not be computed for ${platform}.`;
   if (preset && /unknown or unexpected option: --preset/.test(reason)) {
     return [
       `The @expo/fingerprint CLI installed in this project does not accept --preset.`,
@@ -213,8 +215,7 @@ export async function compareWithEasBuildAsync(
     // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — the binary under the name `eas`
     // may be a wrapper, a shim or a stale link. Its bytes are not an answer about this build, and
     // the "check the id, check your sign-in" line below is advice about neither problem it has.
-    const wrapperCrash =
-      !result.spawnError && looksLikeWrapperCrash({ tool: 'eas', ...result });
+    const wrapperCrash = !result.spawnError && looksLikeWrapperCrash({ tool: 'eas', ...result });
     // F93, the same guard the build lookup takes: a spawn that printed only the runner's install
     // progress never reached the CLI, so "check the id, check your sign-in" is advice about a
     // problem this run does not have.
@@ -232,18 +233,18 @@ export async function compareWithEasBuildAsync(
             `How: run this command again — the install completes once and the next run is warm. "npm install --save-dev eas-cli" pins the CLI into the project, which removes the download from every run.`,
           ].join('\n')
         : wrapperCrash
-        ? [
-            `Could not compare against EAS build ${buildId}.`,
-            `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}.`,
-            runnerCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
-          ].join('\n')
-        : [
-            `Could not compare against EAS build ${buildId}.`,
-            `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}${
-              result.stderr.trim() ? `: ${outputTail(result.stderr)}` : ''
-            }`,
-            `How: check the id with "npx eas build:list --limit 5 --json --non-interactive", and that this machine is signed in to the account that owns it.`,
-          ].join('\n'),
+          ? [
+              `Could not compare against EAS build ${buildId}.`,
+              `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}.`,
+              runnerCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCliLabel(easCli)),
+            ].join('\n')
+          : [
+              `Could not compare against EAS build ${buildId}.`,
+              `Why: "${[easCliLabel(easCli), ...args].join(' ')}" ${describeExit(result.exitCode, result.spawnError)}${
+                result.stderr.trim() ? `: ${outputTail(result.stderr)}` : ''
+              }`,
+              `How: check the id with "npx eas build:list --limit 5 --json --non-interactive", and that this machine is signed in to the account that owns it.`,
+            ].join('\n'),
     };
   }
 

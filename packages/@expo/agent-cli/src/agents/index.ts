@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const agentsSetupHelp: CommandHelp = {
   command: 'agents:setup',
-  usage: 'npx @expo/agent-cli agents:setup',
+  usage: `${PROGRAM_PREFIX} agents:setup`,
   options: [
     `--agent <agent>     Set up for specific agents (can be used multiple times)`,
     `--no-agents-md      Do not create or update AGENTS.md`,
@@ -15,15 +16,15 @@ export const agentsSetupHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli agents:setup',
+      run: `${PROGRAM_PREFIX} agents:setup`,
       gets: 'AGENTS.md gets a managed block, and the installed packages’ skills are linked',
     },
     {
-      run: 'npx @expo/agent-cli agents:setup --agent claude --json',
+      run: `${PROGRAM_PREFIX} agents:setup --agent claude --json`,
       gets: 'the same for one agent, as one object',
     },
     {
-      run: 'npx @expo/agent-cli agents:setup --no-agents-md',
+      run: `${PROGRAM_PREFIX} agents:setup --no-agents-md`,
       gets: 'the skill links only; AGENTS.md is left alone',
     },
   ],

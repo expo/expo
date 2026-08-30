@@ -17,6 +17,7 @@
 
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import { isStrongerClass, type ImpactClass } from '../impact/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { AssertStatus, FreshnessStatus } from './types';
 
 /**
@@ -94,7 +95,7 @@ export function buildAssertStatus(
       actual: null,
       ok: false,
       exitCode: EXIT_OUTCOME_TIMEOUT,
-      reason: `No class could be established, so "${asserted}" was not verified — ${undecidedCause(freshness)}. A gate that passed on an answer nothing measured would not be a gate; run "npx @expo/agent-cli status --explain" to see what is missing, or "npx @expo/agent-cli dev" once to record a build to compare against.`,
+      reason: `No class could be established, so "${asserted}" was not verified — ${undecidedCause(freshness)}. A gate that passed on an answer nothing measured would not be a gate; run "${PROGRAM_PREFIX} status --explain" to see what is missing, or "${PROGRAM_PREFIX} dev" once to record a build to compare against.`,
     };
   }
 

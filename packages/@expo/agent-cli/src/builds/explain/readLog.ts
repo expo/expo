@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import { stripVTControlCharacters } from 'node:util';
 
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import { CommandError } from '../../utils/errors';
 
 /**
@@ -34,7 +35,7 @@ export const MAX_LINES = 100_000;
 export const MAX_LINE_LENGTH = 4_000;
 
 /** The marker a truncated line ends with, so a reader is never shown a silent cut. */
-export const LINE_TRUNCATION_MARKER = '… [line truncated by @expo/agent-cli]';
+export const LINE_TRUNCATION_MARKER = `… [line truncated by ${PROGRAM_NAME}]`;
 
 /**
  * How many lines are dropped at once when the window overflows.
@@ -104,9 +105,11 @@ const MAX_CONTROL_RATIO = 0.02;
  */
 function isControlCharacter(character: string): boolean {
   const code = character.charCodeAt(0);
-  return (code < 0x20 && character !== '\t' && character !== '\n' && character !== '\r') ||
+  return (
+    (code < 0x20 && character !== '\t' && character !== '\n' && character !== '\r') ||
     code === 0x7f ||
-    code === 0xfffd;
+    code === 0xfffd
+  );
 }
 
 export interface ReadLogResult {
@@ -257,6 +260,6 @@ function unreadable(filePath: string, why: string, how: string): CommandError {
       `How: ${how}`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli inspect:build-log --help';
+  error.suggestedCommand = `${PROGRAM_PREFIX} inspect:build-log --help`;
   return error;
 }

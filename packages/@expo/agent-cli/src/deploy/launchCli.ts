@@ -11,10 +11,10 @@
 // `--json` prints one `{ id, url, framework }` object on stdout, keeps human progress on stderr,
 // answers its own confirmation, and fails before uploading anything when nobody is signed in.
 
-import { resolvePackageRunner } from '../utils/packageRunner';
-
 import { needsHumanError } from '../needsHuman/error';
+import { PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
+import { resolvePackageRunner } from '../utils/packageRunner';
 import { resolveProjectBin } from '../utils/projectBin';
 import { findExecutableOnPath, spawnSubprocessAsync } from '../utils/subprocess';
 import type { LaunchResult } from './types';
@@ -202,7 +202,7 @@ function failureError(
         : `How: fix what it reported above and run the command again. Nothing is submitted until the launch URL is opened, so a retry is safe.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli deploy --native';
+  error.suggestedCommand = `${PROGRAM_PREFIX} deploy --native`;
   return error;
 }
 

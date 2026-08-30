@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { PROGRAM_NAME } from '../../programName';
 import { debugEvent } from './events';
 import type { CheckpointRecord } from './types';
 
@@ -117,7 +118,7 @@ export function findCheckpoint(records: CheckpointRecord[], id?: string): Checkp
  * command name the user typed.
  */
 export function resolveCommandArgv(processArgv: string[]): string[] {
-  return ['@expo/agent-cli', ...processArgv.slice(2)];
+  return [`${PROGRAM_NAME}`, ...processArgv.slice(2)];
 }
 
 /** How long ago a checkpoint was made, in the largest whole unit, e.g. `3h`. */

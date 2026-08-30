@@ -2,6 +2,7 @@
 // The two outcomes of `runtime:errors` need opposite next steps: errors mean "fix, then prove the
 // window is clean"; an empty window means "the failure was probably never reproduced".
 
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface RuntimeErrorsFollowUpInput {
@@ -36,12 +37,12 @@ export function buildRuntimeErrorsFollowUps({
     return capFollowUps([
       {
         id: 'reload-app',
-        command: `npx @expo/agent-cli runtime:reload${flag}`,
+        command: `${PROGRAM_PREFIX} runtime:reload${flag}`,
         why: 'Fix the errors above, then reload: an app whose render threw keeps running the code from before the fix, and this window would keep reporting it.',
       },
       {
         id: 'runtime-errors-rerun',
-        command: `npx @expo/agent-cli runtime:errors${flag} --duration ${durationMs}`,
+        command: `${PROGRAM_PREFIX} runtime:errors${flag} --duration ${durationMs}`,
         why: 'Reproduce the same steps against the reloaded app, and confirm this window stays empty.',
       },
     ]);
@@ -54,12 +55,12 @@ export function buildRuntimeErrorsFollowUps({
   return capFollowUps([
     {
       id: 'runtime-errors-reproduce',
-      command: `npx @expo/agent-cli runtime:errors${flag} --duration ${durationMs * 2}`,
+      command: `${PROGRAM_PREFIX} runtime:errors${flag} --duration ${durationMs * 2}`,
       why: 'Errors thrown before this window are not captured, so reproduce the problem while a longer window listens.',
     },
     {
       id: 'runtime-errors-typecheck',
-      command: 'npx @expo/agent-cli typecheck',
+      command: `${PROGRAM_PREFIX} typecheck`,
       why: 'An empty window is not a healthy app: a property that does not exist is undefined rather than a throw, so the screen renders wrongly and nothing here reports it.',
     },
   ]);

@@ -2,6 +2,7 @@
 // Argument resolution for `@expo/agent-cli dev:stop`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../utils/args';
 import { CommandError } from '../utils/errors';
 
@@ -60,7 +61,7 @@ export function resolveDevStopOptions(argv: string[]): DevStopOptions {
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d).
   if (args._.length > 0) {
     throw strayArgumentError('dev:stop', args._, {
-      hint: `this command stops the dev server of the project it runs in. To name a port, pass it as a flag: npx @expo/agent-cli dev:stop --port ${args._[0]}`,
+      hint: `this command stops the dev server of the project it runs in. To name a port, pass it as a flag: ${PROGRAM_PREFIX} dev:stop --port ${args._[0]}`,
     });
   }
 

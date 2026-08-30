@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const startHelp: CommandHelp = {
   command: 'start',
-  usage: 'npx @expo/agent-cli start',
+  usage: `${PROGRAM_PREFIX} start`,
   options: [
     `--no-agent-skills   Skip linking agent skills from installed packages`,
     `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
@@ -13,22 +14,22 @@ export const startHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli start',
+      run: `${PROGRAM_PREFIX} start`,
       gets: 'expo start in this terminal, plus a sync of this project’s agent skills',
     },
     {
-      run: 'npx @expo/agent-cli start --web --port 8082',
+      run: `${PROGRAM_PREFIX} start --web --port 8082`,
       gets: 'the same, with --web --port 8082 forwarded to expo start untouched',
     },
     {
-      run: 'npx @expo/agent-cli start -- --web --port 8082',
+      run: `${PROGRAM_PREFIX} start -- --web --port 8082`,
       gets: 'the same again: everything after -- goes to the Expo CLI verbatim',
     },
   ],
   next: ['navigate', 'runtime:errors', 'dev'],
   notes: [
     `This is expo start: it probes nothing and plans nothing, and it holds this terminal.`,
-    `To have the prebuild and the native build decided for you, run "npx @expo/agent-cli dev" instead.`,
+    `To have the prebuild and the native build decided for you, run "${PROGRAM_PREFIX} dev" instead.`,
     `It has no --json of its own; run "npx expo start --help" for the arguments it forwards.`,
   ],
 };

@@ -6,6 +6,7 @@
 // `plugins` array, so the reshaping, the plugin join and the honest-gaps list are unit-testable
 // without spawning anything.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { CommandError } from '../utils/errors';
 import type {
   ConfigPlatform,
@@ -63,7 +64,7 @@ export const NOT_ATTRIBUTABLE: string[] = ['ios.xcodeproj', '*.dangerous'];
 export const EXPO_AUTOLINKED_NOTE =
   'Expo modules only — packages that ship an expo-module.config.json. ' +
   'React Native community modules autolink separately and never appear here; ' +
-  'run "npx @expo/agent-cli install <package> --json" and read its impact entry for those.';
+  `run "${PROGRAM_PREFIX} install <package> --json" and read its impact entry for those.`;
 
 /** The `_internal` block of an introspected config, as far as this module reads it. */
 interface IntrospectedInternal {

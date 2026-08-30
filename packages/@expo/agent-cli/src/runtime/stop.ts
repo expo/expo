@@ -1,12 +1,13 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the app
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const runtimeStopHelp: CommandHelp = {
   command: 'runtime:stop',
-  usage: 'npx @expo/agent-cli runtime:stop',
+  usage: `${PROGRAM_PREFIX} runtime:stop`,
   options: [
     `--ios, --platform ios   Stop the app on the booted iOS simulator`,
     `--android               Stop the app on the attached Android device`,
@@ -20,15 +21,15 @@ export const runtimeStopHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli runtime:stop',
+      run: `${PROGRAM_PREFIX} runtime:stop`,
       gets: 'the app on the device stops; exit 0 also when it was not running',
     },
     {
-      run: 'npx @expo/agent-cli runtime:stop --ios --json',
+      run: `${PROGRAM_PREFIX} runtime:stop --ios --json`,
       gets: 'the same on the booted simulator, as one object naming which app it stopped',
     },
     {
-      run: 'npx @expo/agent-cli runtime:stop --app-id com.example.myapp',
+      run: `${PROGRAM_PREFIX} runtime:stop --app-id com.example.myapp`,
       gets: 'stops exactly that application id, whatever the dev server reports',
     },
   ],

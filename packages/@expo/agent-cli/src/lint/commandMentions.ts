@@ -18,8 +18,33 @@
 
 import ts from 'typescript';
 
-/** The prefix a runnable mention of this CLI starts with. */
-export const MENTION_PREFIX = 'npx @expo/agent-cli';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
+
+/**
+ * The prefix a runnable mention of this CLI starts with.
+ *
+ * The same constant the CLI prints with, not a copy of it: the sweep's whole job is to check the
+ * lines this CLI hands a caller, and a prefix that could disagree with the one those lines are
+ * built from would make the sweep read zero mentions and pass.
+ */
+export const MENTION_PREFIX = PROGRAM_PREFIX;
+
+/**
+ * The interpolations that are not unknowns: this CLI's own name, in both of its printed forms.
+ *
+ * @ref llp/0024-cli-ui.rfc.md §The program names itself — a printed command is written
+ * `` `${PROGRAM_PREFIX} dev:stop` ``, so the *source* no longer spells the prefix this sweep looks
+ * for, and reading these two spans as opaque `${…}` would hide every mention in the package from
+ * the check. Substituting the value the CLI will print restores exactly what the sweep used to see,
+ * and it stays right under a rename because both sides read the one module.
+ *
+ * By the expression as written, not by resolving the import: the sweep parses one file at a time
+ * with no type checker, and these two names are not shadowed anywhere in this package.
+ */
+const KNOWN_INTERPOLATIONS: ReadonlyMap<string, string> = new Map([
+  ['PROGRAM_PREFIX', PROGRAM_PREFIX],
+  ['PROGRAM_NAME', PROGRAM_NAME],
+]);
 
 /**
  * What an interpolation is printed as in the text of a mention.
@@ -226,10 +251,15 @@ function readLiteral(node: ts.Node): string | null {
   if (ts.isTemplateExpression(node)) {
     return (
       node.head.text +
-      node.templateSpans.map((span) => INTERPOLATION_MARK + span.literal.text).join('')
+      node.templateSpans.map((span) => spanText(span.expression) + span.literal.text).join('')
     );
   }
   return null;
+}
+
+/** What one `${…}` contributes to the scanned text: its value when it is known, a mark when not. */
+function spanText(expression: ts.Expression): string {
+  return KNOWN_INTERPOLATIONS.get(expression.getText()) ?? INTERPOLATION_MARK;
 }
 
 /** The scanned form of a string, as a reader of a failure message should see it. */

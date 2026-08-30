@@ -1,12 +1,13 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reading the detached dev server's output
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const devLogsHelp: CommandHelp = {
   command: 'dev:logs',
-  usage: 'npx @expo/agent-cli dev:logs',
+  usage: `${PROGRAM_PREFIX} dev:logs`,
   options: [
     `--tail <lines>    How many lines from the end to print (default: 100)`,
     `--json            Print the read as JSON: the file, the lines, and the dev server`,
@@ -15,10 +16,10 @@ export const devLogsHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli dev:logs',
+      run: `${PROGRAM_PREFIX} dev:logs`,
       gets: 'the last 100 lines the detached dev server printed, escape codes stripped',
     },
-    { run: 'npx @expo/agent-cli dev:logs --tail 30 --json', gets: 'the same 30 lines as one object' },
+    { run: `${PROGRAM_PREFIX} dev:logs --tail 30 --json`, gets: 'the same 30 lines as one object' },
   ],
   next: ['dev', 'runtime:errors', 'dev:stop'],
   json: {
@@ -27,7 +28,7 @@ export const devLogsHelp: CommandHelp = {
     keys: ['logFile', 'lines', 'totalLines', 'truncated', 'devServer', 'advertised', 'followups'],
   },
   notes: [
-    `The counterpart of "npx @expo/agent-cli dev --detach", which writes to .expo/dev/logs/ instead of`,
+    `The counterpart of "${PROGRAM_PREFIX} dev --detach", which writes to .expo/dev/logs/ instead of`,
     `to a terminal. A dev server started without --detach has no log, and this says so.`,
     `There is no --follow: a stream with no end is what --detach exists to avoid. Run it again.`,
     `The lines are fenced as untrusted content — a bundler quotes code this CLI did not write.`,

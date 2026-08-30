@@ -2,6 +2,7 @@ import assert from 'assert';
 import type { Choice, Options, PromptObject } from 'prompts';
 import prompts from 'prompts';
 
+import { PROGRAM_PREFIX } from '../programName';
 import { AbortCommandError, CommandError } from './errors';
 import { event } from './events';
 import { isInteractive } from './interactive';
@@ -31,7 +32,7 @@ export default async function prompt(
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
   if (!isInteractive() && questions.length) {
-    let message = `Input is required, but 'npx @expo/agent-cli' is in non-interactive mode.\n`;
+    let message = `Input is required, but '${PROGRAM_PREFIX}' is in non-interactive mode.\n`;
     if (nonInteractiveHelp) {
       message += nonInteractiveHelp;
     } else {

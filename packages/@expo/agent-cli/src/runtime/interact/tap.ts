@@ -2,12 +2,13 @@
 // @ref llp/0018-interaction-commands.rfc.md
 import { printCommandHelp } from '../../help/format';
 import type { CommandHelp } from '../../help/types';
+import { PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs } from '../../utils/args';
 
 export const runtimeTapHelp: CommandHelp = {
   command: 'runtime:tap',
-  usage: 'npx @expo/agent-cli runtime:tap <testID>',
+  usage: `${PROGRAM_PREFIX} runtime:tap <testID>`,
   options: [
     `--index <n>               Which of several matched elements, from 0 (default: the only one)`,
     `--all-screens             Look on every mounted screen, not only the focused one`,
@@ -24,13 +25,16 @@ export const runtimeTapHelp: CommandHelp = {
     `-h, --help                Usage info`,
   ],
   examples: [
-    { run: 'npx @expo/agent-cli runtime:tap add-note', gets: 'the app’s own onPress for that testID is called' },
     {
-      run: 'npx @expo/agent-cli runtime:tap add-note --verify --json',
+      run: `${PROGRAM_PREFIX} runtime:tap add-note`,
+      gets: 'the app’s own onPress for that testID is called',
+    },
+    {
+      run: `${PROGRAM_PREFIX} runtime:tap add-note --verify --json`,
       gets: 'the same, plus the nodes that appeared, vanished or changed text',
     },
     {
-      run: 'npx @expo/agent-cli runtime:tap row --index 2',
+      run: `${PROGRAM_PREFIX} runtime:tap row --index 2`,
       gets: 'the third element carrying that testID, when several do',
     },
   ],
@@ -78,7 +82,7 @@ export const runtimeTapHelp: CommandHelp = {
     `Nothing works on Expo Go for Android, which ships no debugger: use a development build.`,
     `Exit codes: 0 the handler was called · 20 nothing was called, or the app's handler threw,`,
     `or the entry bundle does not compile · 1 the app could not be read at all.`,
-    `Run "npx @expo/agent-cli runtime:tree" for the testIDs this screen carries.`,
+    `Run "${PROGRAM_PREFIX} runtime:tree" for the testIDs this screen carries.`,
   ],
 };
 

@@ -4,6 +4,7 @@
 
 import type { LocalDeviceState } from '../device/localDevice';
 import type { PlanPlatform } from '../plan/types';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import type { ProjectState, StartPlan } from '../project/types';
 import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
 import type { ToolchainStatus } from '../toolchain/types';
@@ -104,7 +105,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
       ? [
           {
             id: 'open-app',
-            command: 'npx @expo/agent-cli navigate /',
+            command: `${PROGRAM_PREFIX} navigate /`,
             why: 'The dev server is up but opens nothing, so this deep-links the app onto the booted simulator or the attached device.',
           },
         ]
@@ -114,7 +115,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
           [
             {
               id: 'open-app-cloud',
-              command: 'npx @expo/agent-cli navigate / --cloud',
+              command: `${PROGRAM_PREFIX} navigate / --cloud`,
               why: 'This machine has no booted simulator and no attached device, and this project has an EAS Simulator session on record — so this deep-links the app onto that instead. It needs a tunnelled dev server, and the session bills until "npx eas simulator:stop".',
             },
           ]
@@ -125,7 +126,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
     realDeviceFollowUp(input),
     {
       id: 'runtime-errors',
-      command: 'npx @expo/agent-cli runtime:errors',
+      command: `${PROGRAM_PREFIX} runtime:errors`,
       why: 'Reads the errors the running app reports; reproduce the problem while it listens.',
     },
     buildEasBuildFollowUp(input.easJson, input.localBuild ?? null),
@@ -151,7 +152,7 @@ function webFollowUps(input: StartFollowUpInput): FollowUp[] {
       }
     : {
         id: 'dev-server-port-unknown',
-        command: 'npx @expo/agent-cli status --json',
+        command: `${PROGRAM_PREFIX} status --json`,
         why: 'The dev server did not report a port, so no URL can be named for it — status says which dev server this project actually has. Pass --port to decide it up front.',
       };
 
@@ -159,12 +160,12 @@ function webFollowUps(input: StartFollowUpInput): FollowUp[] {
     site,
     {
       id: 'web-typecheck',
-      command: 'npx @expo/agent-cli typecheck',
-      why: 'Runs this project\'s own compiler and exits 20 with the file and line of every error, which is the check the browser tab cannot give you.',
+      command: `${PROGRAM_PREFIX} typecheck`,
+      why: "Runs this project's own compiler and exits 20 with the file and line of every error, which is the check the browser tab cannot give you.",
     },
     {
       id: 'deploy-web',
-      command: 'npx @expo/agent-cli deploy --web',
+      command: `${PROGRAM_PREFIX} deploy --web`,
       why: 'Exports the web bundle and deploys it to EAS Hosting, which is where a web build ships.',
     },
   ];
@@ -194,7 +195,7 @@ function realDeviceFollowUp({
   if (tunnel) {
     return {
       id: 'real-device-tunnel',
-      command: 'npx @expo/agent-cli navigate / --print-url',
+      command: `${PROGRAM_PREFIX} navigate / --print-url`,
       why: `${noLocalDevice}This run tunnels the dev server, so its address is a tunnel host rather than this machine's — and the tunnel host is only known once it is up. This prints the exp:// link to open on a phone, a cloud simulator, or anywhere else.`,
     };
   }
@@ -204,7 +205,7 @@ function realDeviceFollowUp({
     // guess sends a device into another project's app and reports it as success.
     return {
       id: 'dev-server-port-unknown',
-      command: 'npx @expo/agent-cli status --json',
+      command: `${PROGRAM_PREFIX} status --json`,
       why: 'The dev server did not report a port, so no URL can be named for it — status says which dev server this project actually has. Pass --port to decide it up front.',
     };
   }
@@ -212,12 +213,12 @@ function realDeviceFollowUp({
     return {
       id: 'real-device',
       command: lanUrl,
-      why: `${noLocalDevice}Open this URL in ${label} on a phone on the same network to run the app on a real device. A device that is not on this network — a cloud simulator — needs "npx @expo/agent-cli dev --detach --tunnel" instead.`,
+      why: `${noLocalDevice}Open this URL in ${label} on a phone on the same network to run the app on a real device. A device that is not on this network — a cloud simulator — needs "${PROGRAM_PREFIX} dev --detach --tunnel" instead.`,
     };
   }
   return {
     id: 'real-device-tunnel',
-    command: 'npx @expo/agent-cli start --tunnel',
+    command: `${PROGRAM_PREFIX} start --tunnel`,
     why: expoGo
       ? `${noLocalDevice}This host reports no LAN address, so a phone reaches the dev server through a tunnel.`
       : `${noLocalDevice}A development build on a phone needs a dev server URL it can reach; a tunnel serves one from any network.`,
@@ -306,22 +307,22 @@ export function buildStartPlanFollowUps(
 
   followups.push({
     id: 'dev',
-    command: `npx @expo/agent-cli dev${platformFlag}`,
+    command: `${PROGRAM_PREFIX} dev${platformFlag}`,
     why: 'Runs the plan above, emitting it again first so nothing runs unannounced.',
   });
 
   if (BUILDING_RULES.includes(plan.rule)) {
     followups.push({
       id: 'build-freshness',
-      command: 'npx @expo/agent-cli status',
-      why: 'The plan builds because no recorded build matches the current fingerprint; a build made by @expo/agent-cli is recorded, so the next plan skips it.',
+      command: `${PROGRAM_PREFIX} status`,
+      why: `The plan builds because no recorded build matches the current fingerprint; a build made by ${PROGRAM_NAME} is recorded, so the next plan skips it.`,
     });
   }
 
   if (!state.expoGo.compatible) {
     followups.push({
       id: 'project-context',
-      command: 'npx @expo/agent-cli status --json',
+      command: `${PROGRAM_PREFIX} status --json`,
       why: 'Expo Go cannot run this project; the probe in that report lists every reason.',
     });
   }

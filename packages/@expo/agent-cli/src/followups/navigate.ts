@@ -5,6 +5,7 @@
 import { AGENT_DEVICE_SPEC } from '../device/cloudSimulator';
 import { openInPhrase } from '../navigate/connectUrl';
 import type { DeviceBackend, NavigatePlatform } from '../navigate/device';
+import { PROGRAM_PREFIX } from '../programName';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface NavigateFollowUpInput {
@@ -96,7 +97,7 @@ export function buildPrintUrlFollowUps({
   if (hostType === 'localhost' || hostType === 'lan') {
     followups.push({
       id: 'tunnel-for-reach',
-      command: 'npx @expo/agent-cli dev --detach --tunnel',
+      command: `${PROGRAM_PREFIX} dev --detach --tunnel`,
       why: `The dev server is only reachable from ${
         hostType === 'localhost' ? 'this machine' : 'this network'
       }, so a device anywhere else cannot load that URL; a tunnel serves the same dev server from any network.`,
@@ -105,7 +106,9 @@ export function buildPrintUrlFollowUps({
 
   followups.push({
     id: 'runtime-errors',
-    command: platform ? `npx @expo/agent-cli runtime:errors --${platform}` : 'npx @expo/agent-cli runtime:errors',
+    command: platform
+      ? `${PROGRAM_PREFIX} runtime:errors --${platform}`
+      : `${PROGRAM_PREFIX} runtime:errors`,
     why: 'Once something opens the URL and the app attaches, this reads what it throws.',
   });
 
@@ -149,8 +152,8 @@ export function buildNavigateFollowUps({
         // screenshot phase waits on the honest neighbouring fact — two reads of the dev server's
         // target list naming the same ids (F57) — and then captures the screen itself.
         (platform === 'android'
-          ? 'wait with "npx @expo/agent-cli smoke --android", which waits for the app and captures the screen itself — this runtime has no debugger, so "runtime:tree" cannot answer there. Otherwise the picture is of the splash.'
-          : 'run "npx @expo/agent-cli runtime:tree" first and capture once it lists the screen — otherwise the picture is of the splash.'),
+          ? `wait with "${PROGRAM_PREFIX} smoke --android", which waits for the app and captures the screen itself — this runtime has no debugger, so "runtime:tree" cannot answer there. Otherwise the picture is of the splash.`
+          : `run "${PROGRAM_PREFIX} runtime:tree" first and capture once it lists the screen — otherwise the picture is of the splash.`),
     },
     {
       id: 'runtime-errors',
@@ -158,7 +161,7 @@ export function buildNavigateFollowUps({
       // with both an iOS simulator and an Android emulator attached to one dev server reads
       // whichever target the dev server lists first — which after `navigate --android` was the
       // simulator [friction run 6, F54 and F51].
-      command: `npx @expo/agent-cli runtime:errors --${platform}`,
+      command: `${PROGRAM_PREFIX} runtime:errors --${platform}`,
       why: `Reads the errors the app on this ${platform} device reported while rendering this route.`,
     },
   ]);

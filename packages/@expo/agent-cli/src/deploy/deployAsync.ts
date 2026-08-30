@@ -12,6 +12,7 @@ import { assertSignedInAsync } from '../needsHuman/assertAuth';
 import { classifySubprocessFailure } from '../needsHuman/detect';
 import { needsHumanErrorFrom } from '../needsHuman/error';
 import type { NeedsHumanTool } from '../needsHuman/registry';
+import { PROGRAM_PREFIX } from '../programName';
 import {
   isInstalledDependencyAsync,
   listDependencyNames,
@@ -153,7 +154,7 @@ function resolveUploadPaths(
         `How: point --upload-root at a parent directory of the project, for example "--upload-root .." from an app in a monorepo, or leave it out to upload the project itself.`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx @expo/agent-cli deploy --native';
+    error.suggestedCommand = `${PROGRAM_PREFIX} deploy --native`;
     throw error;
   }
 
@@ -199,7 +200,7 @@ async function resolveTargetsAsync(
       `How: pass --native to launch the native app, or add web support with "npx expo install react-native-web react-dom" and pass --web.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli deploy --native';
+  error.suggestedCommand = `${PROGRAM_PREFIX} deploy --native`;
   throw error;
 }
 
@@ -377,10 +378,7 @@ function easDeployFailed(
  *
  * @ref llp/0008-guardrails.rfc.md §Untrusted-content marking
  */
-async function withFencedOutputAsync<T>(
-  output: CapturedOutput,
-  run: () => Promise<T>
-): Promise<T> {
+async function withFencedOutputAsync<T>(output: CapturedOutput, run: () => Promise<T>): Promise<T> {
   if (output !== 'tee' && output !== 'capture-stdout') {
     return await run();
   }

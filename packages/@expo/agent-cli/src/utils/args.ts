@@ -6,6 +6,7 @@ import { existsSync } from 'fs';
 import { resolve } from 'path';
 
 import * as Log from '../log';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../programName';
 import { CommandError } from './errors';
 import { argParseError } from './unknownOption';
 
@@ -83,7 +84,11 @@ export function assertWithOptionsArgs(
     // Handle errors caused by user input.
     // Only errors from `arg`, which does not start with `ARG_CONFIG_` are user input errors.
     // See: https://github.com/vercel/arg/releases/tag/5.0.0
-    if (!('code' in error) || !error.code.startsWith('ARG_') || error.code.startsWith('ARG_CONFIG_')) {
+    if (
+      !('code' in error) ||
+      !error.code.startsWith('ARG_') ||
+      error.code.startsWith('ARG_CONFIG_')
+    ) {
       // Not the user's mistake: this CLI's own schema is wrong, and that is a crash.
       throw error;
     }
@@ -127,14 +132,14 @@ export function strayArgumentError(
   const error = new CommandError(
     'BAD_ARGS',
     [
-      `Unexpected argument: ${stray[0]}. "@expo/agent-cli ${command}" reads no positional arguments${stray.length > 1 ? `, and ${stray.length} were passed (${stray.join(' ')})` : ''}.`,
+      `Unexpected argument: ${stray[0]}. "${PROGRAM_NAME} ${command}" reads no positional arguments${stray.length > 1 ? `, and ${stray.length} were passed (${stray.join(' ')})` : ''}.`,
       `Why: nothing in this command consumes it, so it would have been dropped and the command would have run as if it were not there — and reported success.`,
       hint
         ? `How: ${hint}`
-        : `How: run "npx @expo/agent-cli ${command} --help" for the options this command does take.`,
+        : `How: run "${PROGRAM_PREFIX} ${command} --help" for the options this command does take.`,
     ].join('\n')
   );
-  error.suggestedCommand = `npx @expo/agent-cli ${command} --help`;
+  error.suggestedCommand = `${PROGRAM_PREFIX} ${command} --help`;
   return error;
 }
 

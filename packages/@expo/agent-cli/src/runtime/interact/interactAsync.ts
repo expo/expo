@@ -31,6 +31,7 @@ import {
   type FollowUp,
 } from '../../followups';
 import * as Log from '../../log';
+import { PROGRAM_PREFIX } from '../../programName';
 import { CommandError } from '../../utils/errors';
 import {
   bundleToJson,
@@ -59,11 +60,7 @@ import {
   UNTRUSTED_CALL_FIELDS,
   UNTRUSTED_TREE_FIELDS,
 } from './format';
-import type {
-  RuntimeTapOptions,
-  RuntimeTreeOptions,
-  RuntimeTypeOptions,
-} from './resolveOptions';
+import type { RuntimeTapOptions, RuntimeTreeOptions, RuntimeTypeOptions } from './resolveOptions';
 import type {
   RuntimeTapJson,
   RuntimeTreeJson,
@@ -199,9 +196,7 @@ async function openAppAsync(
 }
 
 /** The platform a follow-up carries, which is the one the caller named or none. */
-function followUpPlatform(
-  platform: RuntimeTreeOptions['platform']
-): 'ios' | 'android' | null {
+function followUpPlatform(platform: RuntimeTreeOptions['platform']): 'ios' | 'android' | null {
   return platform === 'ios' || platform === 'android' ? platform : null;
 }
 
@@ -228,7 +223,7 @@ async function askAppAsync(
       [
         `Could not read the app's component tree (dev server ${devServerUrl}).`,
         `Why: ${error instanceof Error ? error.message : String(error)}`,
-        `How: make sure the app is open and connected to the dev server, then run this command again. "npx @expo/agent-cli status" says whether an app is attached.`,
+        `How: make sure the app is open and connected to the dev server, then run this command again. "${PROGRAM_PREFIX} status" says whether an app is attached.`,
       ].join('\n')
     );
   }
@@ -241,7 +236,7 @@ async function askAppAsync(
       [
         `Reading the app's component tree threw inside the app (dev server ${devServerUrl}).`,
         `Why: ${result.exceptionText}`,
-        `How: this is a walk over React's own fibers, so a throw here means the app's React is a shape this command has not met. Report it with the React and React Native versions from "npx @expo/agent-cli status --json".`,
+        `How: this is a walk over React's own fibers, so a throw here means the app's React is a shape this command has not met. Report it with the React and React Native versions from "${PROGRAM_PREFIX} status --json".`,
       ].join('\n')
     );
   }
@@ -253,7 +248,7 @@ async function askAppAsync(
       [
         `The app answered the component-tree walk with something this command cannot read (dev server ${devServerUrl}).`,
         `Why: the expression returns one object with a "supported" flag, and this answer has none.`,
-        `How: check that the connected target is the app rather than another page, with "npx @expo/agent-cli status --json".`,
+        `How: check that the connected target is the app rather than another page, with "${PROGRAM_PREFIX} status --json".`,
       ].join('\n')
     );
   }
@@ -279,10 +274,10 @@ function treeUnsupportedError(devServerUrl: string, reason: string | null): Comm
           ? '__REACT_DEVTOOLS_GLOBAL_HOOK__ is installed and carries no getFiberRoots, so no renderer registered with it'
           : 'the app has no __REACT_DEVTOOLS_GLOBAL_HOOK__ at all'
       }. These commands walk React's own fiber tree through that hook — a development bundle installs it, and a production bundle is expected not to.`,
-      `How: open the app from a development bundle: "npx @expo/agent-cli dev" serves one, and "npx @expo/agent-cli runtime:reload" puts a running app back onto it. "npx @expo/agent-cli runtime:eval" still evaluates JavaScript in this runtime, which is how to read the app's state without the tree.`,
+      `How: open the app from a development bundle: "${PROGRAM_PREFIX} dev" serves one, and "${PROGRAM_PREFIX} runtime:reload" puts a running app back onto it. "${PROGRAM_PREFIX} runtime:eval" still evaluates JavaScript in this runtime, which is how to read the app's state without the tree.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli runtime:eval "typeof __REACT_DEVTOOLS_GLOBAL_HOOK__"';
+  error.suggestedCommand = `${PROGRAM_PREFIX} runtime:eval "typeof __REACT_DEVTOOLS_GLOBAL_HOOK__"`;
   return error;
 }
 
@@ -362,7 +357,7 @@ export async function runtimeTreeAsync(
     return refuseForBundle(unreadTreeReport(options, devServerUrl, bundle, refusal), {
       json: options.json,
       what: 'nothing on the screen was read',
-      rerun: 'npx @expo/agent-cli runtime:tree',
+      rerun: `${PROGRAM_PREFIX} runtime:tree`,
     });
   }
   const answer = await askAppAsync(
@@ -400,13 +395,14 @@ export async function runtimeTreeAsync(
     ok,
     // A run that answered "no" says what to do in its own refusal, so a follow-up ladder there
     // would be a second answer to the same question (llp/0009 §Design).
-    followups: ok && followUpsEnabled(options.followups)
-      ? buildTreeFollowUps({
-          nodes: nodesOf(answer, 'nodes'),
-          testID: options.testID,
-          platform: followUpPlatform(options.platform),
-        })
-      : [],
+    followups:
+      ok && followUpsEnabled(options.followups)
+        ? buildTreeFollowUps({
+            nodes: nodesOf(answer, 'nodes'),
+            testID: options.testID,
+            platform: followUpPlatform(options.platform),
+          })
+        : [],
     untrusted: UNTRUSTED_TREE_FIELDS,
   };
 
@@ -432,14 +428,16 @@ export async function runtimeTreeAsync(
     Log.error(
       [
         `No element carrying the testID ${options.testID} is on ${
-          report.allScreens || report.focusedScreen == null ? 'any mounted screen' : `the focused screen (${report.focusedScreen})`
+          report.allScreens || report.focusedScreen == null
+            ? 'any mounted screen'
+            : `the focused screen (${report.focusedScreen})`
         } (dev server ${devServerUrl}).`,
         `Why: this matches the testID prop as written in the app's JSX, so an element that carries no testID cannot be found by one.${
           report.allScreens || report.focusedScreen == null
             ? ''
             : ' An app keeps its other screens mounted, and --all-screens looks at those too.'
         }`,
-        `How: run "npx @expo/agent-cli runtime:tree" for the testIDs this screen is carrying.`,
+        `How: run "${PROGRAM_PREFIX} runtime:tree" for the testIDs this screen is carrying.`,
       ].join('\n')
     );
     return EXIT_OUTCOME_FAILED;
@@ -555,16 +553,14 @@ export async function runtimeTapAsync(
       {
         json: options.json,
         what: 'nothing was tapped',
-        rerun: `npx @expo/agent-cli runtime:tap ${options.testID}`,
+        rerun: `${PROGRAM_PREFIX} runtime:tap ${options.testID}`,
       }
     );
   }
 
   // Before the tap, because "what changed" needs both halves and only the first one can be read
   // before the call happens.
-  const before = options.verify
-    ? await snapshotAsync(client, devServerUrl, options)
-    : null;
+  const before = options.verify ? await snapshotAsync(client, devServerUrl, options) : null;
 
   const answer = await askAppAsync(
     client,
@@ -653,7 +649,7 @@ export async function runtimeTypeAsync(
       {
         json: options.json,
         what: 'nothing was typed',
-        rerun: `npx @expo/agent-cli runtime:type ${JSON.stringify(options.text)} --testID ${options.testID}`,
+        rerun: `${PROGRAM_PREFIX} runtime:type ${JSON.stringify(options.text)} --testID ${options.testID}`,
       }
     );
   }

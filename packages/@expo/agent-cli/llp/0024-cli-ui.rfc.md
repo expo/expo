@@ -2,9 +2,9 @@
 
 **Type:** RFC
 **Status:** Final — implemented
-**Systems:** the help template (`src/help/types.ts`, `src/help/format.ts`); the on-ramp (`src/help/onRamp.ts`, `src/help/topics.ts`, `src/help/workflow.ts`, `src/help/index.ts`); the registry's summaries, workflow map and listing (`src/commandRegistry.ts`); the palette (`src/utils/color.ts`); the launcher (`src/cli.ts`); the follow-up block (`src/followups/format.ts`); the status report (`src/status/format.ts`); the template lint (`src/help/__tests__/template-test.ts`)
+**Systems:** the help template (`src/help/types.ts`, `src/help/format.ts`); the on-ramp (`src/help/onRamp.ts`, `src/help/topics.ts`, `src/help/workflow.ts`, `src/help/index.ts`); the registry's summaries, workflow map and listing (`src/commandRegistry.ts`); the palette (`src/utils/color.ts`); the program's own name (`src/programName.ts`, `e2e/__tests__/program-name-test.ts`); the launcher (`src/cli.ts`); the follow-up block (`src/followups/format.ts`); the status report (`src/status/format.ts`); the template lint (`src/help/__tests__/template-test.ts`)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-28 · finalized 2026-08-28
+**Date:** 2026-08-28 · finalized 2026-08-28 · §The program names itself added 2026-08-29
 **Related:** [[0006-agent-native-cli-surface]], [[0009-smart-followups]], [[0010-agent-conventions]], [[0001-agentic-cli-on-expo-cli]]
 
 ## Summary
@@ -136,12 +136,12 @@ that asks EAS anything. Every help block ends with `New here? npx @expo/agent-cl
 does the top-level screen.
 
 **A topic is a positional argument, not a flag.** `git help workflows`, `npm help folders`: a topic
-is a thing you ask *for*, and asking for it by name is how every CLI a reader already knows spells
-it. A flag would have made the on-ramp an option *of* the help command rather than a thing the help
-command is *about*, and it would have needed a second flag for every topic that follows. This
+is a thing you ask _for_, and asking for it by name is how every CLI a reader already knows spells
+it. A flag would have made the on-ramp an option _of_ the help command rather than a thing the help
+command is _about_, and it would have needed a second flag for every topic that follows. This
 replaced a `--how-to` flag that existed for one unpublished day [confirmed — Kudo, 2026-08-28].
 
-**And it is `workflow`, not `how-to`.** A topic is named after what it is *about*; `how-to` names
+**And it is `workflow`, not `how-to`.** A topic is named after what it is _about_; `how-to` names
 the genre of the document instead, which tells a reader nothing about whether it is the one they
 want.
 
@@ -194,13 +194,68 @@ The report was already one fact per line, so this is a narrow pass rather than a
 `--json` shape does not move:
 
 - **A detail every platform shares is said once**, under the rows it explains. `EAS was not asked —
-  pass --explain` was printed on the ios row and again on the android row, which is the same
+pass --explain` was printed on the ios row and again on the android row, which is the same
   sentence twice on a report whose whole shape is one fact per line. A detail only one platform has
   stays on that platform's row, where it is the thing that tells the two apart.
 - **The `Suggested next:` block uses the same three roles** as a help block's `Typically next`, so
   the state-aware one and the static one read as the same kind of thing. They stay different
   sections: one is computed from what just happened ([[0009-smart-followups]]), the other is the
   path most callers take.
+
+## The program names itself
+
+**Program output never hardcodes the program's name.** A line that names this CLI reads it from
+`package.json`, through `src/programName.ts`, at runtime.
+
+The rule comes from the cost of the alternative. The name was written out in every usage line, every
+example, every `Try:` line, every `Next:` rung, every recovery sentence and the `AGENTS.md` block
+this CLI writes — a copy, in each of those places, of a fact that lives in exactly one: `name` in
+`package.json`. Nothing fails when a copy goes stale, because a name in a string is data and not a
+call, so the CLI goes on printing commands that cannot be run. The package has been renamed twice
+already and the second sweep was 3431 edits, of which the ones that mattered were indistinguishable
+from the ones that did not [confirmed — Kudo, 2026-08-29: "all help or next hint should follow the
+program name as the name in package.json"].
+
+Two constants, because output needs two forms:
+
+- `PROGRAM_NAME` — the name on its own, for a sentence *about* the program (`"@expo/agent-cli dev"
+  is not a command`).
+- `PROGRAM_PREFIX` — `npx <name>`, the head of every line the reader is meant to **run**. `npx`
+  rather than the declared bin, because that is what works without an install, and it is the one
+  invocation that is spelled the same for a scoped and an unscoped name.
+
+**At runtime, not at build time.** This is the whole of the design and the reason the module reads
+a file instead of importing one: `import { name } from '../package.json'` is inlined by ncc, so the
+bundle would answer with whatever the build machine was called, and every in-process test would
+still pass. The resolution is a walk up from the module's own directory to the nearest
+`package.json` **that has a `name`** — `src/` under a test, `build/cli/` in the bundle, and the
+extra condition is there because a bundler may leave a `{"type":"commonjs"}` manifest beside its
+output. An unreadable installation falls back to the published name and says nothing: help that
+crashes over its own banner is worse than help that prints a stale name.
+
+The acceptance test is the one thing an in-process check cannot be: `e2e/__tests__/program-name-test.ts`
+copies the built package out of the tree, edits `name` in the copy's `package.json` **after** the
+build, and asserts that `-h`, one command's help, the workflow topic and a failing command's `Try:`
+line all carry the new name and none of them carries the old. The unmodified copy is asserted too,
+so a resolver that always fell back could not pass by doing nothing.
+
+**What does not follow the name**, and why each one is a constant instead:
+
+- **Follow-up ids** (`open-app`, `dev-plan`) and JSONL **event names**. These are keys a driving
+  agent branches on — a contract, per [[0006]] §Output contract — and a contract that changed with
+  the package's name would break every caller for a reason that has nothing to do with them.
+- **The files under `.expo/`** and the `AGENTS.md` block markers. They are read by the *next* run,
+  which may be a different version; a rename would orphan the record rather than migrate it.
+- **The git identity of a snapshot commit** (`expo-agent-cli`). One tool is one author across a
+  project's history, and a rename must not split it in two.
+- **The declared `bin` name.** It exists because `npx <package>` needs a declared bin, and it is
+  named in no help text and no suggestion ([[0001]] §Naming).
+
+The suggested-command lint reads the same module. Its sweep is over the *source*, looking for the
+printed prefix ([[0009]] §Design), and the source no longer spells it — so `src/lint/commandMentions.ts`
+substitutes the two known interpolations back to the values the CLI will print, and sees exactly
+what it saw before. Sharing the constant rather than copying it is what keeps a rename from turning
+the sweep into a check that reads nothing and passes.
 
 ## What this does not do
 

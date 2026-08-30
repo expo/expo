@@ -8,12 +8,13 @@
 
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const inspectConfigPluginsHelp: CommandHelp = {
   command: 'inspect:config-plugins',
-  usage: 'npx @expo/agent-cli inspect:config-plugins',
+  usage: `${PROGRAM_PREFIX} inspect:config-plugins`,
   options: [
     `--platform <ios|android|all>  Platform to introspect (default: all)`,
     `--file <name>                 Print one native file: infoPlist, entitlements, expoPlist,\n` +
@@ -25,15 +26,15 @@ export const inspectConfigPluginsHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli inspect:config-plugins',
+      run: `${PROGRAM_PREFIX} inspect:config-plugins`,
       gets: 'counts per platform: the native files produced, and the plugins that ran',
     },
     {
-      run: 'npx @expo/agent-cli inspect:config-plugins --file infoPlist',
+      run: `${PROGRAM_PREFIX} inspect:config-plugins --file infoPlist`,
       gets: 'the Info.plist the plugins produced, in full',
     },
     {
-      run: 'npx @expo/agent-cli inspect:config-plugins --platform android --json',
+      run: `${PROGRAM_PREFIX} inspect:config-plugins --platform android --json`,
       gets: 'every value for one platform, as one object',
     },
   ],
@@ -60,8 +61,8 @@ export const inspectConfigPluginsHelp: CommandHelp = {
     `ios.xcodeproj and every dangerous mod are dropped first, so their absence means`,
     `"not answered", never "unchanged".`,
     `configuredSdkVersion is what the app config resolves to, which is not the sdkVersion of`,
-    `"npx @expo/agent-cli status" — that is the installed expo package. Both are right.`,
-    `"npx @expo/agent-cli config" is expo config, unchanged. Only the colon form is this command.`,
+    `"${PROGRAM_PREFIX} status" — that is the installed expo package. Both are right.`,
+    `"${PROGRAM_PREFIX} config" is expo config, unchanged. Only the colon form is this command.`,
   ],
 };
 

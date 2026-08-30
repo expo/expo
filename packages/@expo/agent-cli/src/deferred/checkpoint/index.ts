@@ -6,6 +6,7 @@
 
 import chalk from 'chalk';
 
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
@@ -25,9 +26,9 @@ export const agentCliCheckpointCreate: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Snapshot the project, so a later change can be undone`,
-      chalk`npx @expo/agent-cli checkpoint`,
+      chalk`${PROGRAM_PREFIX} checkpoint`,
       [
-        `--label <label>   Why the snapshot exists, printed by "@expo/agent-cli checkpoint:list"`,
+        `--label <label>   Why the snapshot exists, printed by "${PROGRAM_NAME} checkpoint:list"`,
         `--json            Print the result as JSON`,
         `-h, --help        Usage info`,
       ].join('\n'),
@@ -37,12 +38,12 @@ export const agentCliCheckpointCreate: Command = async (argv) => {
         chalk`  without touching your index, your branches, or {bold HEAD}: nothing is committed, and`,
         chalk`  {bold git status} and {bold git log} do not change.`,
         '',
-        chalk`  {bold @expo/agent-cli install}, {bold @expo/agent-cli agents:setup} and {bold @expo/agent-cli dev} take one`,
+        chalk`  {bold ${PROGRAM_NAME} install}, {bold ${PROGRAM_NAME} agents:setup} and {bold ${PROGRAM_NAME} dev} take one`,
         chalk`  before they change anything. Pass {bold --no-checkpoint}, or set {bold AGENT_CLI_NO_CHECKPOINT},`,
         chalk`  to turn that off.`,
         '',
-        chalk`  Restore the newest one with {bold npx @expo/agent-cli checkpoint:undo}, and see the recorded ones`,
-        chalk`  with {bold npx @expo/agent-cli checkpoint:list}.`,
+        chalk`  Restore the newest one with {bold ${PROGRAM_PREFIX} checkpoint:undo}, and see the recorded ones`,
+        chalk`  with {bold ${PROGRAM_PREFIX} checkpoint:list}.`,
         '',
       ].join('\n')
     );
@@ -78,13 +79,13 @@ export const agentCliCheckpointList: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `List the checkpoints recorded for this project`,
-      chalk`npx @expo/agent-cli checkpoint:list`,
+      chalk`${PROGRAM_PREFIX} checkpoint:list`,
       [`--json            Print the result as JSON`, `-h, --help        Usage info`].join('\n'),
       [
         '',
         chalk`  Reads the record in {bold .expo/agent-cli-checkpoints.json} only: it answers in a project`,
         chalk`  whose repository is gone, and never spawns git. One line per checkpoint, newest first,`,
-        chalk`  with the id {bold npx @expo/agent-cli checkpoint:undo --id <id>} takes.`,
+        chalk`  with the id {bold ${PROGRAM_PREFIX} checkpoint:undo --id <id>} takes.`,
         '',
       ].join('\n')
     );
@@ -120,8 +121,8 @@ export const agentCliCheckpointUndo: Command = async (argv) => {
       // The one destructive command in the set, and the one an agent guesses the argument of:
       // `checkpoint:list` prints ids, so `checkpoint:undo <id>` is the natural next line to type.
       strayHint:
-        'name the checkpoint with --id, as "npx @expo/agent-cli checkpoint:undo --id ' +
-        '<id>", or run "npx @expo/agent-cli checkpoint:list" for the ids. With no --id this command ' +
+        `name the checkpoint with --id, as "${PROGRAM_PREFIX} checkpoint:undo --id ` +
+        `<id>", or run "${PROGRAM_PREFIX} checkpoint:list" for the ids. With no --id this command ` +
         'restores the most recent checkpoint over your working tree, which is what a dropped ' +
         'argument would have done here.',
     }
@@ -130,7 +131,7 @@ export const agentCliCheckpointUndo: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Restore the project to a checkpoint`,
-      chalk`npx @expo/agent-cli checkpoint:undo`,
+      chalk`${PROGRAM_PREFIX} checkpoint:undo`,
       [
         `--id <id>         Checkpoint to restore (default: the most recent one)`,
         `--json            Print the result as JSON`,
@@ -146,7 +147,7 @@ export const agentCliCheckpointUndo: Command = async (argv) => {
         chalk`  Files git ignores — {bold node_modules}, {bold ios/Pods}, {bold .env} — are in no checkpoint,`,
         chalk`  so a restored {bold package.json} needs an install afterwards.`,
         '',
-        chalk`  The recorded checkpoints and their ids are listed by {bold npx @expo/agent-cli checkpoint:list}.`,
+        chalk`  The recorded checkpoints and their ids are listed by {bold ${PROGRAM_PREFIX} checkpoint:list}.`,
         '',
       ].join('\n')
     );

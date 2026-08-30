@@ -4,10 +4,11 @@
 // anything a user can get wrong.
 
 import type { NavigatePlatform } from '../../navigate/device';
-import { resolveDevServerTarget } from '../devServer';
-import { resolveDevicePlatform } from '../devicePlatform';
+import { PROGRAM_PREFIX } from '../../programName';
 import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../../utils/args';
 import { CommandError } from '../../utils/errors';
+import { resolveDevServerTarget } from '../devServer';
+import { resolveDevicePlatform } from '../devicePlatform';
 
 /**
  * How the app is made to reload.
@@ -118,7 +119,7 @@ export function resolveReloadOptions(argv: string[]): ReloadOptions {
   // a caller who meant `--route`, and dropping it would reload without landing anywhere.
   if (args._.length > 0) {
     throw strayArgumentError('runtime:reload', args._, {
-      hint: `to land on a route after the reload, pass it as a flag: npx @expo/agent-cli runtime:reload --route ${args._[0]}`,
+      hint: `to land on a route after the reload, pass it as a flag: ${PROGRAM_PREFIX} runtime:reload --route ${args._[0]}`,
     });
   }
 
@@ -133,7 +134,11 @@ export function resolveReloadOptions(argv: string[]): ReloadOptions {
   return {
     route: args['--route'] ? String(args['--route']) : null,
     method,
-    devServerUrl: resolveDevServerTarget(args['--dev-server-url'], args['--port'], 'runtime:reload'),
+    devServerUrl: resolveDevServerTarget(
+      args['--dev-server-url'],
+      args['--port'],
+      'runtime:reload'
+    ),
     platform: resolveDevicePlatform(args, 'runtime:reload', {
       bothHint: 'run the command twice, once per device.',
     }),

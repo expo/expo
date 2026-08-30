@@ -8,6 +8,7 @@ import chalk from 'chalk';
 
 import { Log } from '../log';
 import { event } from '../plan/events';
+import { PROGRAM_PREFIX } from '../programName';
 import type { PlanStep, StartPlan } from '../project/types';
 import { isInteractive } from '../utils/interactive';
 import { confirmAsync } from '../utils/prompts';
@@ -51,7 +52,7 @@ export async function confirmPlanAsync(plan: StartPlan, options: DevOptions): Pr
   if (!approved) {
     event('start_plan_declined', { rule: plan.rule, steps: plan.steps.length });
     Log.log(
-      chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx @expo/agent-cli dev --plan} to print it again, or {bold npx @expo/agent-cli start} to start the dev server without planning.`
+      chalk`Nothing ran: the plan was not confirmed.\nTry: {bold ${PROGRAM_PREFIX} dev --plan} to print it again, or {bold ${PROGRAM_PREFIX} start} to start the dev server without planning.`
     );
   }
   return approved;

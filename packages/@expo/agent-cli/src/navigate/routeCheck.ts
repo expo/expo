@@ -11,6 +11,7 @@
 // Pure: the table and the route go in, a verdict comes out, and `navigateAsync` decides what to do
 // with it.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { matchProjectRoute, type ProjectRouteTable } from '../project/routes';
 import { CommandError } from '../utils/errors';
 
@@ -109,9 +110,9 @@ export function checkRoute({
  * while `runtime:reload --route` puts the app back on the code that is on disk first.
  */
 const ROUTE_COMMANDS = {
-  navigate: (route: string) => `npx @expo/agent-cli navigate ${route}`,
-  'runtime:reload': (route: string) => `npx @expo/agent-cli runtime:reload --route ${route}`,
-  smoke: (route: string) => `npx @expo/agent-cli smoke --route ${route}`,
+  navigate: (route: string) => `${PROGRAM_PREFIX} navigate ${route}`,
+  'runtime:reload': (route: string) => `${PROGRAM_PREFIX} runtime:reload --route ${route}`,
+  smoke: (route: string) => `${PROGRAM_PREFIX} smoke --route ${route}`,
 } as const;
 
 /** A command that resolves a route against the project's routes before it acts on one. */

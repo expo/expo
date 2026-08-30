@@ -2,12 +2,13 @@
 // @ref llp/0010-agent-conventions.rfc.md §The fourth: `reload`
 import { printCommandHelp } from '../../help/format';
 import type { CommandHelp } from '../../help/types';
+import { PROGRAM_PREFIX } from '../../programName';
 import type { Command } from '../../types';
 import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR } from '../../utils/args';
 
 export const runtimeReloadHelp: CommandHelp = {
   command: 'runtime:reload',
-  usage: 'npx @expo/agent-cli runtime:reload',
+  usage: `${PROGRAM_PREFIX} runtime:reload`,
   options: [
     `--route <route>         Open this route once the app is back`,
     `--method <method>       auto (default), dev-server, runtime, or device`,
@@ -27,15 +28,15 @@ export const runtimeReloadHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli runtime:reload',
+      run: `${PROGRAM_PREFIX} runtime:reload`,
       gets: 'the app runs the code on disk now, and the report says what proved it',
     },
     {
-      run: 'npx @expo/agent-cli runtime:reload --route /notes',
+      run: `${PROGRAM_PREFIX} runtime:reload --route /notes`,
       gets: 'the same, then that route opened in the app that came back',
     },
     {
-      run: 'npx @expo/agent-cli runtime:reload --json --timeout 60s',
+      run: `${PROGRAM_PREFIX} runtime:reload --json --timeout 60s`,
       gets: 'the same as one object, waiting a minute for the app to come back',
     },
   ],
@@ -114,7 +115,8 @@ export const agentCliReload: Command = async (argv) => {
     require('../../utils/findUp') as typeof import('../../utils/findUp');
   const { resolveReloadOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
   const { reloadAsync } = require('./reloadAsync') as typeof import('./reloadAsync');
-  const { EXIT_OK, exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');
+  const { EXIT_OK, exitWithCodeAsync } =
+    require('../../exitCodes') as typeof import('../../exitCodes');
 
   return (async () => {
     const options = resolveReloadOptions(argv ?? []);

@@ -4,6 +4,7 @@
 
 import path from 'node:path';
 
+import { PROGRAM_NAME, PROGRAM_PREFIX } from '../../programName';
 import { parseArgsOrThrow } from '../../utils/args';
 import { CommandError } from '../../utils/errors';
 import { DEFAULT_CONTEXT_AFTER, DEFAULT_CONTEXT_BEFORE } from './extract';
@@ -115,10 +116,10 @@ function resolveSource({
     [
       `No log to explain: neither --file nor --stdin was passed, and stdin is a terminal.`,
       `Why: this command reads a build log and reports what failed in it. On a terminal there is nothing being piped in, so waiting on stdin would hang instead of answering.`,
-      `How: run "npx @expo/agent-cli inspect:build-log --file <path>", or pipe a log in: "cat build.log | npx @expo/agent-cli inspect:build-log".`,
+      `How: run "${PROGRAM_PREFIX} inspect:build-log --file <path>", or pipe a log in: "cat build.log | ${PROGRAM_PREFIX} inspect:build-log".`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx @expo/agent-cli inspect:build-log --help';
+  error.suggestedCommand = `${PROGRAM_PREFIX} inspect:build-log --help`;
   throw error;
 }
 
@@ -192,9 +193,9 @@ function buildIdUnsupported(value: string): CommandError {
   const error = new CommandError(
     'BUILD_ID_UNSUPPORTED',
     [
-      `"@expo/agent-cli inspect:build-log ${value}" cannot fetch a build's logs yet, so it has nothing to explain.`,
+      `"${PROGRAM_NAME} inspect:build-log ${value}" cannot fetch a build's logs yet, so it has nothing to explain.`,
       `Why: eas-cli has no "build:logs" command, so there is no supported way for this CLI to read an EAS build's log. The argument is reserved for when there is; it is not a typo.`,
-      `How: save the log and pass it in — "npx eas build:view ${value}" prints where the log files are — then run "npx @expo/agent-cli inspect:build-log --file <path>". A local build's output pipes straight in: "npx expo run:ios 2>&1 | npx @expo/agent-cli inspect:build-log".`,
+      `How: save the log and pass it in — "npx eas build:view ${value}" prints where the log files are — then run "${PROGRAM_PREFIX} inspect:build-log --file <path>". A local build's output pipes straight in: "npx expo run:ios 2>&1 | ${PROGRAM_PREFIX} inspect:build-log".`,
     ].join('\n')
   );
   error.suggestedCommand = `npx eas build:view ${value}`;

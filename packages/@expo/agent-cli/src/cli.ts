@@ -16,6 +16,7 @@ import {
 } from './commandRegistry';
 import { EXIT_OK } from './exitCodes';
 import * as Log from './log';
+import { PROGRAM_NAME, PROGRAM_PREFIX } from './programName';
 import { configureColor } from './utils/color';
 import { argvRequestsJson, setJsonRequested } from './utils/jsonMode';
 
@@ -85,12 +86,12 @@ const resolution = subcommand == null ? null : resolveCommand(subcommand, comman
 // so `runtime eval` and `runtime:eval` are one command on the event stream.
 installEventLogger({
   command: args['--version']
-    ? '@expo/agent-cli --version'
+    ? `${PROGRAM_NAME} --version`
     : resolution == null
-      ? '@expo/agent-cli --help'
+      ? `${PROGRAM_NAME} --help`
       : resolution.kind === 'command'
-        ? `@expo/agent-cli ${resolution.name}`
-        : `@expo/agent-cli ${subcommand}`,
+        ? `${PROGRAM_NAME} ${resolution.name}`
+        : `${PROGRAM_NAME} ${subcommand}`,
   version,
 });
 
@@ -163,7 +164,7 @@ switch (resolution.kind) {
       'UNKNOWN_ACTION',
       unknownActionMessage(resolution.group, resolution.action)
     );
-    error.suggestedCommand = `npx @expo/agent-cli ${resolution.group} --help`;
+    error.suggestedCommand = `${PROGRAM_PREFIX} ${resolution.group} --help`;
     logCmdError(error);
     break;
   }

@@ -1,11 +1,12 @@
 import { printCommandHelp } from '../help/format';
 import type { CommandHelp } from '../help/types';
+import { PROGRAM_PREFIX } from '../programName';
 import type { Command } from '../types';
 import { assertWithOptionsArgs } from '../utils/args';
 
 export const devRunHelp: CommandHelp = {
   command: 'dev:run',
-  usage: 'npx @expo/agent-cli dev',
+  usage: `${PROGRAM_PREFIX} dev`,
   options: [
     `--detach            Run the dev server in the background and give the terminal back`,
     `--wait-ready        With --detach, also wait for the bundler before reporting`,
@@ -24,19 +25,19 @@ export const devRunHelp: CommandHelp = {
   ],
   examples: [
     {
-      run: 'npx @expo/agent-cli dev --plan',
+      run: `${PROGRAM_PREFIX} dev --plan`,
       gets: 'what would run to get this app on a device, and why. Nothing runs',
     },
     {
-      run: 'npx @expo/agent-cli dev --detach --wait-ready',
+      run: `${PROGRAM_PREFIX} dev --detach --wait-ready`,
       gets: 'the dev server in the background; its url, pid and log file are printed',
     },
     {
-      run: 'npx @expo/agent-cli dev --yes --json --port 8082',
+      run: `${PROGRAM_PREFIX} dev --yes --json --port 8082`,
       gets: 'the plan run without a confirmation, on that exact port, as one object',
     },
     {
-      run: 'npx @expo/agent-cli dev --eas --plan',
+      run: `${PROGRAM_PREFIX} dev --eas --plan`,
       gets: 'the plan with the build forced into the cloud, whatever this machine has',
     },
   ],
@@ -69,7 +70,7 @@ export const devRunHelp: CommandHelp = {
     `The project can choose, in package.json under expo.agentCli: buildBackend (local or eas,`,
     `optionally per platform) and target (expo-go or dev-build). A flag beats the config.`,
     `The options of expo start are accepted and passed on. For expo start with nothing decided`,
-    `for you, run "npx @expo/agent-cli start" instead.`,
+    `for you, run "${PROGRAM_PREFIX} start" instead.`,
   ],
 };
 

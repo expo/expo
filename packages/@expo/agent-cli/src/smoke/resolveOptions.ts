@@ -4,6 +4,7 @@
 // a user can get wrong, so every flag combination is testable without a dev server or a device.
 
 import type { CloudPreference } from '../navigate/device';
+import { PROGRAM_PREFIX } from '../programName';
 import { resolveDevServerTarget } from '../runtime/devServer';
 import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../utils/args';
 import { CommandError } from '../utils/errors';
@@ -99,7 +100,7 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
   // positional: this command's subject is the app, and a bare word is a caller who meant --route.
   if (args._.length > 0) {
     throw strayArgumentError('smoke', args._, {
-      hint: `to open a route before the error window, pass it as a flag: npx @expo/agent-cli smoke --route ${args._[0]}`,
+      hint: `to open a route before the error window, pass it as a flag: ${PROGRAM_PREFIX} smoke --route ${args._[0]}`,
     });
   }
 
@@ -172,10 +173,10 @@ function resolveSmokePlatform(args: { [flag: string]: unknown }): SmokePlatform 
       [
         `--platform web cannot be smoke-tested, so nothing ran.`,
         `Why: every phase of this command after the bundle check reads the running app through the dev server's debugger, and that list holds React Native runtimes only — a browser running the web bundle never registers one, whether or not the page is open. A pass here would mean "the web bundle compiles" while the word "smoke" promises that the app runs.`,
-        `How: run "npx @expo/agent-cli typecheck", which is the part of this that web can answer without a device — it proves this project's own compiler is happy with it. For a runtime gate, run this command with --ios or --android.`,
+        `How: run "${PROGRAM_PREFIX} typecheck", which is the part of this that web can answer without a device — it proves this project's own compiler is happy with it. For a runtime gate, run this command with --ios or --android.`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx @expo/agent-cli typecheck';
+    error.suggestedCommand = `${PROGRAM_PREFIX} typecheck`;
     throw error;
   }
 

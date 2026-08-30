@@ -5,6 +5,7 @@
 // spent its time learning.
 
 import { capFollowUps, type FollowUp } from '../../followups/types';
+import { PROGRAM_PREFIX } from '../../programName';
 
 export interface BuildWaitFollowUpInput {
   kind: 'build' | 'submission';
@@ -84,7 +85,7 @@ export function buildBuildWaitFollowUps({
     if (kind === 'build') {
       followups.push({
         id: 'explain-saved-log',
-        command: 'npx @expo/agent-cli build:explain --file <path>',
+        command: `${PROGRAM_PREFIX} build:explain --file <path>`,
         why: 'Once the log above is saved to a file, this locates the failing line in it and names the fix. Nothing here can download it for you yet.',
       });
     }
@@ -108,7 +109,7 @@ export function buildBuildWaitFollowUps({
   if (outcome === 'timeout') {
     followups.push({
       id: 'wait-longer',
-      command: `npx @expo/agent-cli build:wait ${id}${kind === 'submission' ? ' --submission' : ''} --timeout ${formatTimeout(timeoutMs * TIMEOUT_MULTIPLIER)}`,
+      command: `${PROGRAM_PREFIX} build:wait ${id}${kind === 'submission' ? ' --submission' : ''} --timeout ${formatTimeout(timeoutMs * TIMEOUT_MULTIPLIER)}`,
       why: `The ${kind} had not finished when the wait expired, which is not a failure — this waits twice as long.`,
     });
     followups.push({

@@ -3,6 +3,7 @@
 // user can get wrong. Every step of the creation is flag-driven, because the point of the command
 // is that nothing about it prompts.
 
+import { PROGRAM_PREFIX } from '../programName';
 import { parseArgsOrThrow } from '../utils/args';
 import { CommandError } from '../utils/errors';
 
@@ -30,7 +31,7 @@ const NEW_ARGS = {
 };
 
 /** The usage line, which is the recovery path for every argument error of this command. */
-const USAGE_COMMAND = 'npx @expo/agent-cli new <directory>';
+const USAGE_COMMAND = `${PROGRAM_PREFIX} new <directory>`;
 
 function badArgs(message: string, suggestedCommand = USAGE_COMMAND): CommandError {
   const error = new CommandError('BAD_ARGS', message);
@@ -59,7 +60,7 @@ export function resolveNewOptions(argv: string[]): NewOptions {
   const positional = args._;
   if (positional.length === 0) {
     throw badArgs(
-      `Missing directory. The directory is what makes this command headless, so it is never prompted for. Usage: ${USAGE_COMMAND}, for example: npx @expo/agent-cli new my-app`
+      `Missing directory. The directory is what makes this command headless, so it is never prompted for. Usage: ${USAGE_COMMAND}, for example: ${PROGRAM_PREFIX} new my-app`
     );
   }
   if (positional.length > 1) {
