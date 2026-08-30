@@ -23,7 +23,10 @@ function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
     route: null,
     platform: 'ios',
     cloud: 'fallback',
-    start: false,
+    // Off by default *in this table*, and on by default in the command: almost every case below is
+    // about a machine that already has a dev server and a device, and a helper that bootstrapped
+    // would make each of them assert the absence of a start it never needed.
+    bootstrap: false,
     windowMs: 3_000,
     timeoutMs: 60_000,
     screenshotPath: null,
@@ -137,6 +140,12 @@ function deps(overrides: Partial<SmokeDeps> = {}): SmokeDeps {
   return {
     discoverDevServer: async () => discovery(),
     startDevServer: async () => ({ ok: true, devServerUrl: 'http://127.0.0.1:8081', reason: null }),
+    stopDevServer: async () => ({ ok: true, target: 'http://127.0.0.1:8081', reason: null }),
+    bootDevice: async (register) => {
+      register({ deviceId: 'SIM-BOOTED', backend: 'local-ios' });
+      return { ok: true, deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null };
+    },
+    shutdownDevice: async (deviceId) => ({ ok: true, target: deviceId, reason: null }),
     // Settled by default: the wait before the picture has its own cases (F57).
     waitForStableTargets: async () => ({ stable: true }),
     waitForBundlerReady: async () => ({
@@ -286,7 +295,7 @@ describe(runSmokePhasesAsync, () => {
       expect(run.started).toBe(false);
     });
 
-    it(`starts one with --start, and reports that it did`, async () => {
+    it(`starts one by default, and reports that it did`, async () => {
       let reachable = false;
       const run = await runSmokePhasesAsync(
         deps({
@@ -296,15 +305,17 @@ describe(runSmokePhasesAsync, () => {
             return found;
           },
         }),
-        options({ start: true })
+        options({ bootstrap: true })
       );
 
       expect(run.outcome).toBe('passed');
       expect(run.started).toBe(true);
-      expect(run.phases[0]!.reason).toContain('started for this run');
+      expect(run.environment.devServer).toBe('started');
+      expect(statusOf(run, 'start-dev-server')).toBe('ok');
+      expect(statusOf(run, 'dev-server')).toBe('ok');
     });
 
-    it(`fails when --start could not start one, and says why`, async () => {
+    it(`fails when it could not start one, and says why`, async () => {
       const run = await runSmokePhasesAsync(
         deps({
           discoverDevServer: async () => discovery({ reachable: false }),
@@ -314,12 +325,263 @@ describe(runSmokePhasesAsync, () => {
             reason: 'port 8081 is taken',
           }),
         }),
-        options({ start: true })
+        options({ bootstrap: true })
       );
 
       expect(run.outcome).toBe('failed');
+      expect(statusOf(run, 'start-dev-server')).toBe('failed');
       expect(run.phases[0]!.reason).toContain('port 8081 is taken');
       expect(run.started).toBe(false);
+      expect(run.environment.devServer).toBe('failed');
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment.
+  // Start what is missing, stop only what this run started, and leave what was already there.
+  describe('the environment this run brings', () => {
+    /** A machine with nothing on it: no dev server, and no device. */
+    function bareMachine(overrides: Partial<SmokeDeps> = {}): Partial<SmokeDeps> {
+      let reachable = false;
+      let device: { deviceId: string | null; backend: 'local-ios' | null } = {
+        deviceId: null,
+        backend: null,
+      };
+      return {
+        discoverDevServer: async () => {
+          const found = discovery({ reachable });
+          reachable = true;
+          return found;
+        },
+        probeDevice: async () => ({ ...device, reason: device.deviceId ? null : 'no simulator' }),
+        bootDevice: async (register) => {
+          register({ deviceId: 'SIM-BOOTED', backend: 'local-ios' });
+          device = { deviceId: 'SIM-BOOTED', backend: 'local-ios' };
+          return { ok: true, deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null };
+        },
+        // Nothing is attached until the run opens the app on the simulator it booted.
+        waitForAppConnection: async () => ({
+          appsConnected: device.deviceId ? 1 : 0,
+          timedOut: false,
+          waitedMs: 3,
+        }),
+        ...overrides,
+      };
+    }
+
+    it(`starts the dev server and boots a device, then puts both back`, async () => {
+      const stopDevServer = jest.fn(async () => ({
+        ok: true,
+        target: 'http://127.0.0.1:8081',
+        reason: null,
+      }));
+      const shutdownDevice = jest.fn(async (deviceId: string) => ({
+        ok: true,
+        target: deviceId,
+        reason: null,
+      }));
+
+      const run = await runSmokePhasesAsync(
+        deps({ ...bareMachine(), stopDevServer, shutdownDevice }),
+        options({ bootstrap: true })
+      );
+
+      expect(run.environment.devServer).toBe('started');
+      expect(run.environment.device).toBe('booted');
+      expect(stopDevServer).toHaveBeenCalled();
+      expect(shutdownDevice).toHaveBeenCalledWith('SIM-BOOTED', 'local-ios');
+      // Newest first: the device this run booted goes before the dev server it started, so nothing
+      // is left talking to a bundler that has gone.
+      expect(run.environment.cleanup.map((entry) => entry.resource)).toEqual([
+        'device',
+        'dev-server',
+      ]);
+    });
+
+    it(`leaves a dev server and a device it found, and cleans nothing up`, async () => {
+      const stopDevServer = jest.fn();
+      const shutdownDevice = jest.fn();
+
+      const run = await runSmokePhasesAsync(
+        deps({ stopDevServer, shutdownDevice }),
+        options({ bootstrap: true })
+      );
+
+      expect(run.environment.devServer).toBe('reused');
+      expect(run.environment.device).toBe('reused');
+      expect(stopDevServer).not.toHaveBeenCalled();
+      expect(shutdownDevice).not.toHaveBeenCalled();
+      expect(run.environment.cleanup).toEqual([]);
+      // Neither bootstrap phase happened, so neither is reported — a `skipped` row for a step
+      // nothing needed reads as a step that was owed and not done.
+      expect(statusOf(run, 'start-dev-server')).toBeUndefined();
+      expect(statusOf(run, 'boot-device')).toBeUndefined();
+    });
+
+    it(`boots nothing when the caller named the cloud as the device`, async () => {
+      const bootDevice = jest.fn();
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...bareMachine(),
+          bootDevice,
+          probeDevice: async () => ({
+            deviceId: 'sess-live',
+            backend: 'cloud' as const,
+            reason: null,
+          }),
+          waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 3 }),
+        }),
+        options({ bootstrap: true, cloud: 'required' })
+      );
+
+      expect(bootDevice).not.toHaveBeenCalled();
+      expect(run.environment.device).toBe('reused');
+    });
+
+    // A phone on the same network is a device this machine's tools cannot see and a *connected app*
+    // all the same. Booting a simulator for it would spend a minute and then photograph an empty
+    // screen to answer for the app that is really running.
+    it(`boots nothing when an app is already attached`, async () => {
+      const bootDevice = jest.fn();
+      const run = await runSmokePhasesAsync(
+        deps({
+          bootDevice,
+          probeDevice: async () => ({ deviceId: null, backend: null, reason: 'no simulator' }),
+          waitForAppConnection: async () => ({ appsConnected: 1, timedOut: false, waitedMs: 3 }),
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(bootDevice).not.toHaveBeenCalled();
+      expect(run.environment.device).toBe('absent');
+      expect(statusOf(run, 'boot-device')).toBeUndefined();
+    });
+
+    it(`fails the boot phase when the device would not come up, and skips what needed it`, async () => {
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...bareMachine({
+            bootDevice: async () => ({
+              ok: false,
+              deviceId: null,
+              backend: null,
+              reason: 'no iOS runtime is installed',
+            }),
+          }),
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(run.outcome).toBe('failed');
+      expect(statusOf(run, 'boot-device')).toBe('failed');
+      expect(run.environment.device).toBe('failed');
+      for (const id of ['app', 'route', 'runtime', 'errors', 'screenshot'] as SmokePhaseId[]) {
+        expect(statusOf(run, id)).toBe('skipped');
+      }
+      // The dev server this run started still goes back, on the failing path.
+      expect(run.environment.cleanup.map((entry) => entry.resource)).toEqual(['dev-server']);
+    });
+
+    // Registered before the resource is started, so a start that half-worked — a child that
+    // published its lock and then died in the readiness wait — is still cleaned up.
+    it(`stops a dev server whose start it could not finish`, async () => {
+      const stopDevServer = jest.fn(async () => ({ ok: true, target: null, reason: null }));
+      await runSmokePhasesAsync(
+        deps({
+          discoverDevServer: async () => discovery({ reachable: false }),
+          startDevServer: async () => ({
+            ok: false,
+            devServerUrl: 'http://127.0.0.1:8081',
+            reason: 'its bundler never answered',
+          }),
+          stopDevServer,
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(stopDevServer).toHaveBeenCalled();
+    });
+
+    // Reported, never swallowed: a leaked dev server is the caller's problem the moment they run
+    // anything else, and a run that hid it would have them debug a port they never started.
+    it(`reports a cleanup that failed, and keeps the verdict about the app`, async () => {
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...bareMachine(),
+          stopDevServer: async () => ({
+            ok: false,
+            target: 'http://127.0.0.1:8081',
+            reason: 'SIGTERM was sent to 4242 and it was still running',
+          }),
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(run.outcome).toBe('passed');
+      expect(run.environment.cleanup).toContainEqual(
+        expect.objectContaining({
+          resource: 'dev-server',
+          ok: false,
+          reason: expect.stringContaining('still running'),
+        })
+      );
+    });
+
+    // `--no-start` is the run this command used to be, and it has to stay reachable: a caller
+    // verifying the dev server *they* started must not have one started for them.
+    it(`starts and boots nothing with --no-start`, async () => {
+      const startDevServer = jest.fn();
+      const bootDevice = jest.fn();
+      const run = await runSmokePhasesAsync(
+        deps({ ...bareMachine(), startDevServer, bootDevice }),
+        options({ bootstrap: false })
+      );
+
+      expect(run.outcome).toBe('failed');
+      expect(startDevServer).not.toHaveBeenCalled();
+      expect(bootDevice).not.toHaveBeenCalled();
+      expect(run.environment).toMatchObject({
+        devServer: 'absent',
+        device: 'absent',
+        cleanup: [],
+      });
+    });
+
+    // The bootstrap is not charged to `--timeout`: a cold simulator takes a minute to boot, and a
+    // budget that paid for it would leave the phases the budget is *about* with nothing.
+    it(`spends the bootstrap outside the run's budget`, async () => {
+      let clock = 0;
+      const budgets: number[] = [];
+      let booted = false;
+      const run = await runSmokePhasesAsync(
+        deps({
+          discoverDevServer: async () => discovery(),
+          probeDevice: async () => ({
+            deviceId: booted ? 'SIM-BOOTED' : null,
+            backend: booted ? ('local-ios' as const) : null,
+            reason: booted ? null : 'no simulator',
+          }),
+          // A boot that costs a minute of the clock this run reads.
+          bootDevice: async (register) => {
+            register({ deviceId: 'SIM-BOOTED', backend: 'local-ios' });
+            clock += 60_000;
+            booted = true;
+            return { ok: true, deviceId: 'SIM-BOOTED', backend: 'local-ios' as const, reason: null };
+          },
+          waitForAppConnection: async (_url, timeoutMs) => {
+            budgets.push(timeoutMs);
+            // Nothing until the run opened the app on the device it booted.
+            return { appsConnected: booted ? 1 : 0, timedOut: false, waitedMs: 3 };
+          },
+          now: () => (clock += 10),
+        }),
+        options({ bootstrap: true, timeoutMs: 60_000 })
+      );
+
+      expect(run.outcome).toBe('passed');
+      expect(run.environment.device).toBe('booted');
+      // The wait after the app was opened is the first one the boot could have eaten, and it still
+      // has most of the minute the caller asked for.
+      expect(budgets[1]).toBeGreaterThan(50_000);
     });
   });
 
@@ -841,10 +1103,10 @@ describe(smokeExitCode, () => {
   });
 });
 
-// @ref ../phases §SCREENSHOT_SETTLE_MS — friction run 6, F57. A run that opened the app itself
+// @ref ../phases §APP_SETTLE_MS — friction run 6, F57. A run that opened the app itself
 // photographed it while it was still loading, so the picture the gate hands back — the half of
 // "does it work" that no exit code answers — was of a splash screen.
-describe(`${runSmokePhasesAsync.name} and the picture it takes`, () => {
+describe(`${runSmokePhasesAsync.name} and the app it opened`, () => {
   it(`waits for the app to stop re-registering when this run opened it`, async () => {
     const waits: number[] = [];
     await runSmokePhasesAsync(
@@ -862,8 +1124,40 @@ describe(`${runSmokePhasesAsync.name} and the picture it takes`, () => {
       options()
     );
 
+    // Once for the whole run, however many phases need it: it is one fact about one app.
     expect(waits).toHaveLength(1);
     expect(waits[0]).toBeGreaterThan(0);
+  });
+
+  // @ref ../phases §APP_SETTLE_MS — observed 2026-08-30, a cold-start run. The `app` phase
+  // answered `ok` and the `runtime` phase two seconds later got `No target found`, so a run whose
+  // own picture shows the app rendered reported `22`. The debugger target list is still churning
+  // while an app boots, and the wait that was buying an honest picture has to come first.
+  it(`waits before it reads the runtime, not only before the picture`, async () => {
+    const order: string[] = [];
+    await runSmokePhasesAsync(
+      deps({
+        waitForAppConnection: jest
+          .fn()
+          .mockResolvedValueOnce({ appsConnected: 0, timedOut: true, waitedMs: 1 })
+          .mockResolvedValue({ appsConnected: 1, timedOut: false, waitedMs: 1 }),
+        waitForStableTargets: async () => {
+          order.push('settle');
+          return { stable: true };
+        },
+        evaluate: async () => {
+          order.push('evaluate');
+          return { ok: true, unsupported: false, reason: null };
+        },
+        captureScreenshot: async () => {
+          order.push('screenshot');
+          return screenshot();
+        },
+      }),
+      options()
+    );
+
+    expect(order).toEqual(['settle', 'evaluate', 'screenshot']);
   });
 
   it(`does not spend the wait on an app that was already attached`, async () => {

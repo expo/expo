@@ -18,7 +18,7 @@
 //
 // What is collected is every option this CLI *writes onto a command line*, which is a superset of
 // the foreign ones by exactly the two places it re-invokes itself (`cli.ts` normalizing `--help`
-// onto a command's own argv, and `smoke --start` starting `@expo/agent-cli dev`). Those two are left in
+// onto a command's own argv, and the flags `smoke` gives `@expo/agent-cli dev` when it starts one). Those two are left in
 // rather than excluded: an exclusion list is a place for a real one to hide, and the snapshot names
 // the file of every row anyway.
 

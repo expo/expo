@@ -68,7 +68,7 @@ describe("the flags this CLI writes onto a command line", () => {
     // published binary).
     //
     // Two rows are this CLI re-invoking itself and need no such run: the `--help` `cli.ts`
-    // normalizes onto a command's own argv, and the three flags `smoke --start` gives `@expo/agent-cli
+    // normalizes onto a command's own argv, and the three flags `smoke` gives `@expo/agent-cli
     // dev`. They are here because leaving them out would mean keeping an exclusion list, which is
     // a place for a real one to hide.
     //
@@ -81,6 +81,11 @@ describe("the flags this CLI writes onto a command line", () => {
     // The list got *shorter* in the same wave: `eas --version` was the probe that asked a binary on
     // `PATH` to prove it was the EAS CLI, and the single rung deleted both the candidate and the
     // question (llp/0015 §Resolving the EAS CLI).
+    //
+    // The two `src/device/bootDevice.ts` rows are the platform device tools rather than a member of
+    // the Expo family, and they were run as the rule requires [observed — live, 2026-08-30, macOS
+    // 26 with Xcode: `xcrun simctl list devices -j` printed the runtime table and exited 0, and
+    // `~/Library/Android/sdk/emulator/emulator -list-avds` printed `tuft-pixel` and exited 0].
     expect(
       sweep.foreignFlags.map(({ flag, file }) => `${flag}  ${file}`).sort()
     ).toMatchInlineSnapshot(`
@@ -110,8 +115,10 @@ describe("the flags this CLI writes onto a command line", () => {
         "--yes  src/utils/easCli.ts",
         "-Fpc  src/dev/portListener.ts",
         "-ano  src/dev/portListener.ts",
+        "-j  src/device/bootDevice.ts",
         "-j  src/navigate/device.ts",
         "-j  src/runtime/targetPlatform.ts",
+        "-list-avds  src/device/bootDevice.ts",
         "-nP  src/dev/portListener.ts",
         "-p  src/device/screenshot.ts",
         "-p  src/toolchain/detect.ts",

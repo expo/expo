@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Final
-**Systems:** `@expo/agent-cli` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `@expo/agent-cli smoke` (`src/smoke/`, `src/device/screenshot.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
+**Systems:** `@expo/agent-cli` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `@expo/agent-cli smoke` (`src/smoke/`, `src/device/screenshot.ts`, `src/device/bootDevice.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]], [[0017-deferred-commands]]
@@ -1810,6 +1810,121 @@ different port than the one it was asked about.
 | Dev server stopped, no `--start` | exit `20` at `dev-server`, follow-ups naming `dev --detach` and `smoke --start` |
 | `--start` from nothing | exit `0` in 11.4 s, `started: true`, dev server on 8081, app opened, PNG taken |
 | `--start --port 8210 --route /notes` | exit `0` in 11.3 s, dev server on **8210**, `source: flag`, screenshot on `/notes` |
+
+> The last three rows are the **old** behaviour, from before §The run brings its own environment.
+> `--start` is now the default, so "no `--start`" is spelled `--no-start`, and a run that starts a
+> dev server also stops it. Kept as measured: they are what the command did on that date.
+
+### The run brings its own environment
+
+Decision [confirmed — Kudo, 2026-08-29]: *"should smoke start everything if it's not automatically?
+if dev-server is not running, start it and stop after the run; if simulator/emulator is not running,
+start it and stop after the run."*
+
+`--start` was opt-in because a gate that silently triggers a native build is a surprise
+(§The smoke gate). The surprise was real and the opt-in was the wrong answer to it: what an agent
+running `npx @expo/agent-cli smoke` on a cold machine got was exit `20` and a follow-up telling it to
+run two other commands first — a verification command that could not verify anything until somebody
+had done the setup by hand. The build is what must not happen; a dev server and a simulator are
+seconds and a minute.
+
+So the default inverted, under three rules.
+
+**Start what is missing, stop only what you started, leave what you found.** A dev server that was
+already up is used and still running afterwards; one this run started is stopped in a cleanup. The
+same for the device. The run tracks "I started this" explicitly and never infers it at cleanup time
+— inferring it is how a command ends up killing the dev server somebody had open in another
+terminal. To keep a dev server after the gate, start it yourself first: `dev --detach` is the
+command, and reuse is what makes it work.
+
+**The two acts are phases, on the runs that performed them.** `start-dev-server` and `boot-device`
+are in `SmokePhaseId` and in the phase list *only* when the run did them. Every other phase is a
+question of every run, so a run that never reached one owes the reader a `skipped` row saying why;
+these two are acts, and a machine that already had a dev server did not *skip* a start. Their
+failures are the ordinary 20-band, with the ordinary "nothing to read" skips after them, and the
+cleanup still runs.
+
+**The bootstrap is not charged to `--timeout`.** A cold simulator takes about a minute and a cold
+first bundle rather longer, and a budget that paid for them would leave the phases the budget is
+*about* with nothing. Each act has a budget of its own — 120 s for the dev server, 120 s for an iOS
+boot, 240 s for an Android one, which is what `e2e-live/utils.ts` measured — and what they spend is
+subtracted from the clock `--timeout` bounds.
+
+#### Ordering, and the cleanup that is registered before the act
+
+Every cleanup is registered **before** the resource is started, and they run newest-first. Both
+halves are about failures rather than about tidiness:
+
+- *Before*, because a start that got halfway is still a resource this run is holding. A detached
+  child that published its lock and then died in the readiness wait is a dev server nobody else will
+  stop; a simulator that was told to boot and then hung is a simulator on somebody's laptop. The
+  boot reports its device id through a callback the moment it has one and before it touches the
+  device, which is what makes this possible for a device at all (`SmokeBootRegister`).
+- *Newest-first*, because the dev server is started before the device is booted, and leaving an app
+  talking to a bundler that has gone is a worse state than the reverse.
+
+A cleanup that **fails** is reported and never swallowed, and never folded into the outcome:
+whether a dev server would stop says nothing about whether the app boots, so a gate that failed on
+it would report a broken app to somebody whose app is fine. It lands in `environment.cleanup`, in
+the text summary as a `left behind` line, and on `cli:smoke` as `leftBehind`.
+
+#### This command does not build
+
+The boundary the bootstrap could most easily have blurred, and the one thing that stays refused.
+Starting a dev server is seconds; starting one for a project whose development build is missing or
+stale is `expo run:ios`, which is a compiler, minutes of it, and a native toolchain that may not be
+on the machine — and the detached start carries `--yes`, so nothing downstream would have stopped
+it. The start phase asks `StartPlan.buildLocation` first (the plan engine's own answer to "does
+this plan build anything", which reads wave 30's build record) and refuses with the command that
+does build: `npx @expo/agent-cli dev`. Expo Go targets and a development build already installed for
+this fingerprint both answer null there, and both bootstrap in full.
+
+#### Which device gets booted
+
+The one this developer last used, from `simctl`'s own `lastBootedAt` — not the newest iPhone on the
+newest runtime, which was the first rule written and is wrong for the reason that matters here.
+**Apps are installed per device.** A simulator nobody has ever booted has no Expo Go on it and no
+development build either, so booting it spends a minute and then fails at the `app` phase against a
+device that could never have answered. The machine this was written on lists five iPhones and five
+iPads and has used exactly one [observed — 2026-08-30]. Newest-runtime-then-iPhone survives as the
+tie-break for a fresh Xcode install where nothing has been booted at all.
+
+Android has no equivalent choice to make: the emulator is started with `-ports 5554,5555`, so its
+serial is `emulator-5554` and is known *before* the boot — which is the same live fact (F62) that
+lets the cleanup be registered before the act.
+
+`--cloud` boots nothing: the device it names is a session somebody else started and pays for. Nor
+does a run whose dev server already has an app attached — a phone on the same network is a device
+none of this machine's tools can see and the app under test all the same, and a simulator booted
+beside it would photograph an empty screen to answer for it.
+
+#### Live evidence
+
+[observed — 2026-08-30, macOS 26, Xcode 26, a `create-expo` blank app on SDK 57, iPhone 17 Pro
+`C159CF99-…`. The machine was made cold before each run: every simulator shut down, no dev server,
+nothing on the port.]
+
+| Case | Result |
+| --- | --- |
+| Cold machine, plain `smoke --port 9314` | exit `0` in **32 s**: dev server started (2.0 s), simulator booted (9.4 s), Expo Go launched and attached (6.9 s), runtime read, window clean, PNG taken — then the simulator shut down and the dev server stopped |
+| The same, twice more | exit `0` in 31 s and 30 s, `devServer: "started"`, `device: "booted"`, both cleanups `ok` |
+| After each run | no booted simulator, nothing listening on the port, no dev-server lock — the machine as it was found |
+| A dev server already running (`live-local`, 31/31) | `devServer: "reused"`, `cleanup: []`, and it is still running when the gate ends |
+
+Two things the round found that no fixture had shown:
+
+- **The settle wait belonged before the runtime read, not only before the picture** (§`APP_SETTLE_MS`).
+  A cold-start run reported `22 inconclusive` at `runtime` with `No target found`, on a run whose
+  own screenshot shows the app rendered and its message on screen. The `app` phase answered `ok` at
+  7.4 s and the debugger target list was still churning two seconds later. This is F57 one phase
+  earlier, and the bootstrap is what made the window common: before it, the app was nearly always
+  opened onto a simulator that was already warm.
+- **`lastBootedAt` is the device choice, and it has a limit worth stating.** The first cold run
+  booted `iPhone 17 Pro Max`, which was the machine's most recently used simulator and has no Expo
+  Go on it, and the run spent its whole budget in `app` before answering `22` — correctly, with the
+  real reason. Nothing cheaper is available: `simctl listapps` needs the device *booted*, so
+  "which simulator has the app" cannot be asked before the minute has been spent. A run that boots
+  the wrong one is honest and slow, which is the right way round.
 
 ## Android
 

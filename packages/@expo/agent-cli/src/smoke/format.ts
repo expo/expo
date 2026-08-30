@@ -11,7 +11,7 @@ import type { RouteCheckJson } from '../navigate/routeCheck';
 import { wrapUntrustedAppOutput } from '../runtime/untrusted';
 import { isFailingRecord, type SmokeRun } from './phases';
 import type { SmokeOptions } from './resolveOptions';
-import type { SmokePhase, SmokeResultJson } from './types';
+import type { SmokePhase, SmokeResource, SmokeResultJson } from './types';
 
 /** Width of the label column, matching `status` and `deploy`. */
 const LABEL_WIDTH = 12;
@@ -38,6 +38,7 @@ export function smokeResultToJson(
     source: run.discovery?.source ?? 'default',
     projectRootMatched: run.projectRootMatched,
     started: run.started,
+    environment: run.environment,
     appsConnected: run.appsConnected,
     // The same object `dev:wait` and `runtime:reload` print, from the same function: one question
     // asked in three commands must not have three shapes (llp/0010 §The reload gate).
@@ -88,6 +89,30 @@ export function formatSmokeResult(run: SmokeRun, options: SmokeOptions): string 
     lines.push(row('screenshot', run.screenshot.path));
   }
 
+  // What this run did to the machine, said out loud and only by the runs that did something. A run
+  // that started a dev server and booted a simulator changed what is on the developer's laptop,
+  // and the two facts they need are that it happened and that it was undone.
+  const environment = environmentLine(run);
+  if (environment) {
+    lines.push(row('environment', environment));
+  }
+  for (const cleanup of run.environment.cleanup) {
+    if (!cleanup.ok) {
+      // Loud, and never folded into the verdict: the app may be perfectly fine and there is still
+      // something running that this run put there.
+      lines.push(
+        row(
+          '',
+          chalk.yellow(
+            `left behind${SEPARATOR}the ${cleanupName(cleanup.resource)}${
+              cleanup.target ? ` ${cleanup.target}` : ''
+            } this run started did not stop: ${cleanup.reason}`
+          )
+        )
+      );
+    }
+  }
+
   // The records last and fenced, because everything in them is a string the app produced.
   if (run.errors.length > 0) {
     lines.push(
@@ -109,6 +134,38 @@ export function formatSmokeResult(run: SmokeRun, options: SmokeOptions): string 
 
   lines.push(row('took', `${formatDuration(run.durationMs)}${options.route ? `${SEPARATOR}${chalk.dim(`route ${options.route}`)}` : ''}`));
   return lines.join('\n');
+}
+
+/**
+ * What this run started and put back, or null when it started nothing.
+ *
+ * Only the runs that acted get a line. "Reused the dev server that was already up" is the ordinary
+ * case and saying it every time would bury the case that matters (llp/0005 §The run brings its own
+ * environment).
+ */
+function environmentLine(run: SmokeRun): string | null {
+  const acts: string[] = [];
+  if (run.environment.devServer === 'started') {
+    acts.push(`started the dev server${stoppedSuffix(run, 'dev-server')}`);
+  }
+  if (run.environment.device === 'booted') {
+    acts.push(`booted ${run.deviceId ?? 'a device'}${stoppedSuffix(run, 'device')}`);
+  }
+  return acts.length > 0 ? acts.join(SEPARATOR) : null;
+}
+
+/** Whether the thing this run started went back, in the words the cleanup reported. */
+function stoppedSuffix(run: SmokeRun, resource: SmokeResource): string {
+  const cleanup = run.environment.cleanup.find((entry) => entry.resource === resource);
+  if (cleanup == null) {
+    return chalk.dim(' · still running');
+  }
+  return cleanup.ok ? chalk.dim(' · stopped again') : chalk.yellow(' · NOT stopped');
+}
+
+/** The word a person uses for one of the two things a run can bring. */
+function cleanupName(resource: SmokeResource): string {
+  return resource === 'dev-server' ? 'dev server' : 'device';
 }
 
 /** The verdict, in the word an agent reads and a colour a person does. */

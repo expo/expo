@@ -1,6 +1,6 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// The gate itself: eight phases, one verdict.
+// The gate itself: eight phases, one verdict — and two more that only some runs perform.
 //
 // Every phase is a question one existing command already answers, asked here through the same
 // function rather than by running that command again. That is the whole design constraint. A
@@ -10,20 +10,28 @@
 //
 // The phases and where each one comes from:
 //
-// | phase           | the command whose question it is | the function                |
-// | --------------- | -------------------------------- | --------------------------- |
-// | `dev-server`    | every runtime command            | `discoverDevServerAsync`    |
-// | `bundler-ready` | this command only                | `waitForBundlerReadyAsync`  |
-// | `bundle`        | this command, `runtime:reload`   | `checkEntryBundleAsync`     |
-// | `app`           | this command only                | `waitForAppConnectionAsync` |
-// | `route`         | `navigate`                       | `openRouteAsync`            |
-// | `runtime`       | `runtime:eval`                   | `CdpClient.evaluateAsync`   |
-// | `errors`        | `runtime:errors`                 | `CdpRuntimeErrorCollector`  |
-// | `screenshot`    | (new)                            | `captureScreenshotAsync`    |
+// | phase              | the command whose question it is | the function                |
+// | ------------------ | -------------------------------- | --------------------------- |
+// | `start-dev-server` | `dev --detach` (conditional)     | `devDetachAsync`            |
+// | `dev-server`       | every runtime command            | `discoverDevServerAsync`    |
+// | `bundler-ready`    | this command only                | `waitForBundlerReadyAsync`  |
+// | `bundle`           | this command, `runtime:reload`   | `checkEntryBundleAsync`     |
+// | `boot-device`      | (new, conditional)               | `bootDeviceAsync`           |
+// | `app`              | this command only                | `waitForAppConnectionAsync` |
+// | `route`            | `navigate`                       | `openRouteAsync`            |
+// | `runtime`          | `runtime:eval`                   | `CdpClient.evaluateAsync`   |
+// | `errors`           | `runtime:errors`                 | `CdpRuntimeErrorCollector`  |
+// | `screenshot`       | (new)                            | `captureScreenshotAsync`    |
 //
-// The first three used to be `dev:wait`'s, which the v1 narrowing deferred (llp/0016). The library
-// functions they call are unchanged and still live in `src/runtime/`; only the second command that
-// called them is gone.
+// The `bundler-ready`/`bundle`/`app` rows used to be `dev:wait`'s, which the v1 narrowing deferred
+// (llp/0016). The library functions they call are unchanged and still live in `src/runtime/`; only
+// the second command that called them is gone.
+//
+// **The two conditional phases are acts rather than questions**, and that shapes three things
+// (llp/0005 §The run brings its own environment): they are reported only by a run that performed
+// them, they are never charged to `--timeout`, and each one registers the way to undo itself
+// *before* it does anything. `runSmokePhasesAsync` is the wrapper that runs those undos, newest
+// first, on every path out of the walk.
 //
 // The dependencies are injected rather than imported, so the outcome table below — which is the
 // part that can be wrong in a way no type checker sees — is testable against fakes, with no dev
@@ -39,14 +47,51 @@ import type { DevServerDiscovery } from '../runtime/devServer';
 import type { RuntimeErrorRecord } from '../runtime/runtimeErrorCollector';
 import type { AppConnectionResult, BundlerReadyResult } from '../runtime/waitReady';
 import type { SmokeOptions } from './resolveOptions';
-import type { SmokeOutcome, SmokePhase, SmokePhaseId, SmokePhaseStatus } from './types';
+import type {
+  SmokeCleanupJson,
+  SmokeEnvironmentJson,
+  SmokeOutcome,
+  SmokePhase,
+  SmokePhaseId,
+  SmokePhaseStatus,
+  SmokeResource,
+} from './types';
 
-/** What starting a dev server amounted to, when `--start` allowed one. */
+/** What starting a dev server amounted to. */
 export interface SmokeStartResult {
   ok: boolean;
   /** Origin it came up on, when it did. */
   devServerUrl: string | null;
   /** Why it did not. Null exactly when {@link ok} is true. */
+  reason: string | null;
+}
+
+/** What booting a simulator or an emulator amounted to. */
+export interface SmokeBootResult {
+  ok: boolean;
+  /** The device that came up. Null exactly when {@link ok} is false. */
+  deviceId: string | null;
+  backend: DeviceBackend | null;
+  /** Why none came up. Null exactly when {@link ok} is true. */
+  reason: string | null;
+}
+
+/**
+ * Told the moment the boot has a device to name, and before the device is touched.
+ *
+ * This is what makes "stop only what you started" hold through a boot that fails halfway: the
+ * cleanup is registered from here, so a simulator that was asked to boot and then hung is still
+ * shut down. A boot that registered its cleanup on the way *out* would leak exactly the device
+ * that went wrong (llp/0005 §The run brings its own environment).
+ */
+export type SmokeBootRegister = (device: { deviceId: string; backend: DeviceBackend }) => void;
+
+/** What putting one thing back amounted to. Never a throw: a cleanup that failed is a result. */
+export interface SmokeReleaseResult {
+  ok: boolean;
+  /** What was released, for the report. */
+  target: string | null;
+  /** Why it was not. Null exactly when {@link ok} is true. */
   reason: string | null;
 }
 
@@ -78,6 +123,17 @@ export interface SmokeErrorsResult {
 export interface SmokeDeps {
   discoverDevServer(explicitUrl: string | null): Promise<DevServerDiscovery>;
   startDevServer(): Promise<SmokeStartResult>;
+  /**
+   * Stop the dev server this run started. Only ever called for one this run started.
+   *
+   * Never throws, and answers `ok` for a dev server that is already gone: the question a cleanup
+   * asks is "is it not running now", and a start that died on its own has answered it.
+   */
+  stopDevServer(): Promise<SmokeReleaseResult>;
+  /** Boot a device for this run's platform, telling {@link SmokeBootRegister} the id first. */
+  bootDevice(register: SmokeBootRegister): Promise<SmokeBootResult>;
+  /** Shut down the device this run booted. Only ever called for one this run booted. */
+  shutdownDevice(deviceId: string, backend: DeviceBackend): Promise<SmokeReleaseResult>;
   waitForBundlerReady(devServerUrl: string, timeoutMs: number): Promise<BundlerReadyResult>;
   checkEntryBundle(devServerUrl: string, timeoutMs: number): Promise<BundleCheckResult>;
   waitForAppConnection(devServerUrl: string, timeoutMs: number): Promise<AppConnectionResult>;
@@ -147,6 +203,8 @@ export interface SmokeRun {
   discovery: DevServerDiscovery | null;
   projectRootMatched: boolean | null;
   started: boolean;
+  /** What this run found on the machine, what it started, and what it put back. */
+  environment: SmokeEnvironmentJson;
   appsConnected: number | null;
   bundle: BundleCheckResult | null;
   route: string | null;
@@ -167,24 +225,73 @@ const ROOT_ROUTE = '/';
 const APP_PROBE_MS = 2_000;
 
 /**
- * How long the app gets to stop re-registering before the picture is taken.
+ * How long the app gets to stop re-registering before anything is read from it.
  *
  * Only spent by a run that opened the app itself: a run that attached to an app already on screen
  * has nothing to settle, and the wait would be dead time in the common case.
+ *
+ * **Before the runtime read, not only before the picture** — and that is the correction this wave
+ * made [observed — 2026-08-30, a cold-start run of the shape §The run brings its own environment
+ * exists for: dev server started, simulator booted, Expo Go launched from nothing]. The `app` phase
+ * answered `ok` at 7.4 s and the `runtime` phase two seconds later got `No target found`, so a run
+ * whose app was on the screen and working reported `22`. Its own picture shows the app rendered.
+ *
+ * It is the same finding as F57, one phase earlier. F57 was about the *picture* being of a splash
+ * screen; this is about the *debugger target list* still churning while the app boots, and the
+ * bootstrap is what made that window common — before it, the app was nearly always opened onto a
+ * simulator that was already warm.
  */
-const SCREENSHOT_SETTLE_MS = 4_000;
+const APP_SETTLE_MS = 4_000;
+
+/**
+ * How long the run gives a dev server to come up, out of a budget of its own.
+ *
+ * Not out of `--timeout`, and that is the rule for both bootstrap budgets: a cold start contains a
+ * first bundle, and charging it to the budget meant for the phases that read the app would leave
+ * a run that had to start its own dev server with nothing left to read it with.
+ *
+ * The number is the detach path's own default, because it is the same wait: `dev --detach
+ * --wait-ready` is what this phase runs.
+ */
+export const START_DEV_SERVER_TIMEOUT_MS = 120_000;
+
+/**
+ * How long the run gives a device to boot, per platform, out of a budget of its own.
+ *
+ * Both are measured rather than chosen. A cold iOS simulator on this machine takes roughly a
+ * minute; an Android emulator takes several, which is why the live tier waits four
+ * (`e2e-live/utils.ts` §bootEmulatorAsync). Generous, because the cost of a bound that is too
+ * short is a run that reports a boot failure for a device that was coming up fine.
+ */
+export const BOOT_DEVICE_TIMEOUT_MS: Record<'ios' | 'android', number> = {
+  ios: 120_000,
+  android: 240_000,
+};
 
 /** Every phase, in the order they are reported. */
 const PHASE_ORDER: SmokePhaseId[] = [
+  'start-dev-server',
   'dev-server',
   'bundler-ready',
   'bundle',
+  'boot-device',
   'app',
   'route',
   'runtime',
   'errors',
   'screenshot',
 ];
+
+/**
+ * The phases that are reported only by a run that performed them.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment
+ * Every other phase is a question of every run, so a run that did not reach one owes the reader a
+ * `skipped` row saying why. These two are not questions; they are *acts*, and a machine that
+ * already had a dev server and a simulator did not skip them — there was nothing there to do. A
+ * `skipped start dev server` on a healthy run reads as work that was owed and not done.
+ */
+const CONDITIONAL_PHASES = new Set<SmokePhaseId>(['start-dev-server', 'boot-device']);
 
 /**
  * A screenshot that was never attempted, so the report has the same keys either way.
@@ -230,8 +337,109 @@ export async function runSmokePhasesAsync(
   options: SmokeOptions
 ): Promise<SmokeRun> {
   const startedAt = deps.now();
+  const cleanups: RegisteredCleanup[] = [];
+  const environment: SmokeEnvironmentJson = {
+    devServer: 'absent',
+    device: 'absent',
+    cleanup: [],
+  };
+
+  // The cleanup runs on both paths, and neither of them is a `finally` that swallows anything: a
+  // tool error still propagates, and it still leaves the machine as it found it. `durationMs` is
+  // recomputed afterwards because the caller waited for the cleanup too, and a run that reported
+  // `4.2s` while spending eight seconds shutting a simulator down would be describing a moment
+  // that had passed (llp/0021 §Readiness is a claim about now, pointed at the end of a run).
+  try {
+    const run = await runPhasesAsync(deps, options, { startedAt, cleanups, environment });
+    // Whether a device was *reused* is read off the run rather than probed for, and that is what
+    // keeps a healthy run free of device tools: the phase that decides about a boot only asks
+    // about a device when no app is connected, so on the ordinary run nothing has asked yet when
+    // it goes past. The screenshot resolves one anyway (F98), and that is the answer.
+    if (environment.device === 'absent' && run.deviceId != null) {
+      environment.device = 'reused';
+    }
+    environment.cleanup = await releaseAsync(deps, cleanups);
+    return { ...run, environment, durationMs: deps.now() - startedAt };
+  } catch (error: unknown) {
+    environment.cleanup = await releaseAsync(deps, cleanups);
+    throw error;
+  }
+}
+
+/** One resource this run started, and the call that puts it back. */
+interface RegisteredCleanup {
+  resource: SmokeResource;
+  /** What it is, for a report written even when the release call answers nothing. */
+  target: string | null;
+  release(): Promise<SmokeReleaseResult>;
+}
+
+/**
+ * Put back everything this run started, newest first, and report each one.
+ *
+ * Newest first because the two are ordered: the dev server was started before the device was
+ * booted, and an app left talking to a bundler that has gone is a worse state to leave a machine in
+ * than the reverse.
+ *
+ * Nothing here throws. A cleanup that fails is a **fact of the run**, and it is reported rather
+ * than folded into the verdict: whether a dev server would stop says nothing about whether the app
+ * boots, and a gate that failed on it would report a broken app to a caller whose app is fine.
+ */
+async function releaseAsync(
+  deps: SmokeDeps,
+  cleanups: RegisteredCleanup[]
+): Promise<SmokeCleanupJson[]> {
+  const released: SmokeCleanupJson[] = [];
+  for (const cleanup of [...cleanups].reverse()) {
+    const at = deps.now();
+    try {
+      const result = await cleanup.release();
+      released.push({
+        resource: cleanup.resource,
+        target: result.target ?? cleanup.target,
+        ok: result.ok,
+        reason: result.ok ? null : (result.reason ?? 'no reason was given'),
+        ms: deps.now() - at,
+      });
+    } catch (error: unknown) {
+      released.push({
+        resource: cleanup.resource,
+        target: cleanup.target,
+        ok: false,
+        reason: `the cleanup itself failed: ${error instanceof Error ? firstLine(error.message) : String(error)}`,
+        ms: deps.now() - at,
+      });
+    }
+  }
+  return released;
+}
+
+/** What {@link runSmokePhasesAsync} hands the phase walk, so the walk owns none of it. */
+interface SmokeRunContext {
+  startedAt: number;
+  /** Appended to as resources are started, and read back by the cleanup. */
+  cleanups: RegisteredCleanup[];
+  /** Filled in as the run learns what it found and what it started. */
+  environment: SmokeEnvironmentJson;
+}
+
+/** The phases themselves. Everything it starts is registered with the context first. */
+async function runPhasesAsync(
+  deps: SmokeDeps,
+  options: SmokeOptions,
+  { startedAt, cleanups, environment }: SmokeRunContext
+): Promise<SmokeRun> {
   const phases: SmokePhase[] = [];
-  const remaining = () => Math.max(0, options.timeoutMs - (deps.now() - startedAt));
+  /**
+   * How much of the clock the bootstrap spent, which `--timeout` is not charged for.
+   *
+   * A cold simulator takes a minute to come up. A budget that paid for it would leave a run that
+   * had to boot one with seconds for the bundle, the app and the error window — so the boot's
+   * minute is subtracted here and the phases that read the app get the budget the caller named.
+   */
+  let bootstrapMs = 0;
+  const remaining = () =>
+    Math.max(0, options.timeoutMs - (deps.now() - startedAt - bootstrapMs));
 
   /** Record one phase and hand back what it produced. */
   const record = async <T>(
@@ -244,16 +452,26 @@ export async function runSmokePhasesAsync(
     return value;
   };
 
+  /** The same, for a bootstrap phase: what it spends comes off the budget rather than out of it. */
+  const recordBootstrap: typeof record = async (id, run) => {
+    const value = await record(id, run);
+    bootstrapMs += phases[phases.length - 1]!.ms;
+    return value;
+  };
+
   /**
    * Everything from `from` onwards did not run, for the reason given.
    *
    * `stopBefore` is for the two exits that still take a picture: a phase must appear exactly once,
    * and a `screenshot` marked skipped here and then attempted below would appear twice.
+   *
+   * The conditional phases are never filled in here: a run that stopped at the bundle did not skip
+   * a device boot, it had no device boot to do (@ref ./phases §CONDITIONAL_PHASES).
    */
   const skipRest = (from: SmokePhaseId, reason: string, stopBefore?: SmokePhaseId): void => {
     const end = stopBefore == null ? PHASE_ORDER.length : PHASE_ORDER.indexOf(stopBefore);
     for (const id of PHASE_ORDER.slice(PHASE_ORDER.indexOf(from), end)) {
-      if (!phases.some((phase) => phase.id === id)) {
+      if (!CONDITIONAL_PHASES.has(id) && !phases.some((phase) => phase.id === id)) {
         phases.push({ id, status: 'skipped', ms: 0, reason });
       }
     }
@@ -266,6 +484,7 @@ export async function runSmokePhasesAsync(
     discovery: null,
     projectRootMatched: null,
     started: false,
+    environment,
     appsConnected: null,
     bundle: null,
     route: options.route,
@@ -280,40 +499,67 @@ export async function runSmokePhasesAsync(
     ...run,
   });
 
-  // ---- Phase 1: is there a dev server, and may this run start one? --------------------------
+  // ---- Phase 1: is there a dev server, and does this run start one? -------------------------
+  //
+  // The look comes first and is not a phase of its own: it is the question "is one running", and
+  // its answer decides whether there is a start to report at all. Its time belongs to the
+  // `dev-server` phase, which is the phase about finding one, so it is counted there by hand.
 
   let started = false;
-  const discovery = await record('dev-server', async () => {
-    const found = await deps.discoverDevServer(options.devServerUrl);
-    if (found.reachable) {
-      return { status: 'ok' as const, value: found };
+  let devServerMs = 0;
+  const lookAt = deps.now();
+  let discovery = await deps.discoverDevServer(options.devServerUrl);
+  devServerMs += deps.now() - lookAt;
+
+  if (discovery.reachable) {
+    environment.devServer = 'reused';
+  } else if (options.bootstrap) {
+    // @ref ./phases §RegisteredCleanup — registered **before** the start, so a start that got
+    // halfway is still put back: a detached child that published its lock and then died in the
+    // readiness wait is a dev server this run is responsible for, and one it never saw succeed.
+    cleanups.push({
+      resource: 'dev-server',
+      target: null,
+      release: () => deps.stopDevServer(),
+    });
+    const start = await recordBootstrap('start-dev-server', async () => {
+      const result = await deps.startDevServer();
+      return result.ok && result.devServerUrl != null
+        ? {
+            status: 'ok' as const,
+            reason: `started for this run at ${result.devServerUrl}, and stopped again afterwards`,
+            value: result,
+          }
+        : { status: 'failed' as const, reason: result.reason, value: result };
+    });
+    if (start.ok && start.devServerUrl != null) {
+      started = true;
+      environment.devServer = 'started';
+      // Discovered the same way the first look was, rather than by naming the URL the start
+      // reported: naming it would make `source` say `flag` for a run whose caller passed no flag,
+      // and `source` is reported precisely because `lock` and `flag` prove different things
+      // (llp/0005 §`DevServerSource`).
+      const againAt = deps.now();
+      discovery = await deps.discoverDevServer(options.devServerUrl);
+      devServerMs += deps.now() - againAt;
+    } else {
+      environment.devServer = 'failed';
     }
-    // `--start` is opt-in on purpose: a verification gate that silently triggers a native build is
-    // a surprise, and the default is to attach to what is already running.
-    if (!options.start) {
-      return {
-        status: 'failed' as const,
-        reason: `nothing answered at ${found.devServerUrl} (${found.reason ?? 'no answer'})`,
-        value: found,
-      };
-    }
-    const start = await deps.startDevServer();
-    if (!start.ok || start.devServerUrl == null) {
-      return { status: 'failed' as const, reason: start.reason, value: found };
-    }
-    started = true;
-    // Discovered the same way the first look was, rather than by naming the URL the start
-    // reported: naming it would make `source` say `flag` for a run whose caller passed no flag,
-    // and `source` is reported precisely because `lock` and `flag` prove different things
-    // (llp/0005 §`DevServerSource`).
-    const again = await deps.discoverDevServer(options.devServerUrl);
-    return again.reachable
-      ? { status: 'ok' as const, reason: 'started for this run', value: again }
-      : {
-          status: 'failed' as const,
-          reason: `a dev server was started at ${start.devServerUrl} and did not answer afterwards`,
-          value: again,
-        };
+  }
+
+  phases.push({
+    id: 'dev-server',
+    status: discovery.reachable ? 'ok' : 'failed',
+    ms: devServerMs,
+    reason: discovery.reachable
+      ? started
+        ? 'the dev server started above answered'
+        : null
+      : started
+        ? `a dev server was started and nothing answered at ${discovery.devServerUrl} afterwards`
+        : environment.devServer === 'failed'
+          ? `nothing answered at ${discovery.devServerUrl}, and the start above did not produce one`
+          : `nothing answered at ${discovery.devServerUrl} (${discovery.reason ?? 'no answer'})`,
   });
 
   if (!discovery.reachable) {
@@ -420,19 +666,118 @@ export async function runSmokePhasesAsync(
     });
   }
 
-  // ---- Phase 4: is an app attached, and can one be opened if not? ---------------------------
+  // ---- Phase 4: is there a device, and does this run boot one? ------------------------------
+  //
+  // The probe is resolved here rather than inside the two phases that used to ask for one, so the
+  // whole run is about one device (F98, pointed one step earlier). Cached, so an attach-only run
+  // pays for it exactly where it used to: at the first phase that needs a device.
+
+  let probed: { deviceId: string | null; backend: DeviceBackend | null; reason: string | null } | null =
+    null;
+  const deviceAsync = async () => (probed ??= await deps.probeDevice());
+
+  /**
+   * The app probe the boot decision needed, kept for the `app` phase that asks the same question.
+   *
+   * Null on a run that never had to decide about a boot, which is every run with a device already.
+   */
+  let firstConnection: AppConnectionResult | null = null;
+
+  // `--cloud` named the device, and the device it named is not on this machine: booting a
+  // simulator here would be answering a question about a session with a laptop (llp/0005 §What the
+  // cloud backend can and cannot do).
+  if (options.bootstrap && options.cloud !== 'required') {
+    // The **app** is asked about first, and the device only if nothing answers. Two reasons, and
+    // they point the same way. An app attached to this dev server is the app under test whatever
+    // it is running on — a phone on the same network is a device none of this machine's tools can
+    // see — so a simulator booted beside it would cost a minute and then photograph an empty
+    // screen to answer for the app that is really running. And it keeps the ordinary healthy run
+    // spawning no device tool at all until the picture is taken, which is where it always did.
+    firstConnection = await deps.waitForAppConnection(
+      devServerUrl,
+      Math.min(remaining(), APP_PROBE_MS)
+    );
+    if (firstConnection.appsConnected === 0) {
+      const found = await deviceAsync();
+      if (found.deviceId == null) {
+        const boot = await recordBootstrap('boot-device', async () => {
+          const result = await deps.bootDevice((booted) => {
+            // @ref ./phases §SmokeBootRegister — before the device is touched, so a boot that
+            // hangs halfway still leaves this run holding the thing it has to put back.
+            cleanups.push({
+              resource: 'device',
+              target: booted.deviceId,
+              release: () => deps.shutdownDevice(booted.deviceId, booted.backend),
+            });
+          });
+          return result.ok && result.deviceId != null
+            ? {
+                status: 'ok' as const,
+                reason: `booted ${result.deviceId} for this run, and shut it down again afterwards`,
+                value: result,
+              }
+            : {
+                status: 'failed' as const,
+                reason: result.reason ?? 'no device came up, and nothing said why',
+                value: result,
+              };
+        });
+        if (boot.ok && boot.deviceId != null) {
+          environment.device = 'booted';
+          probed = { deviceId: boot.deviceId, backend: boot.backend, reason: null };
+        } else {
+          environment.device = 'failed';
+          skipRest(
+            'app',
+            'no device could be booted, so there was nothing to open the app on and nothing to read'
+          );
+          return done('failed', {
+            ...base,
+            bundle,
+            screenshot: noScreenshot('no device came up, so nothing was photographed'),
+          });
+        }
+      }
+    }
+  }
+
+  // ---- Phase 5: is an app attached, and can one be opened if not? ---------------------------
 
   let deviceId: string | null = null;
   let deviceBackend: DeviceBackend | null = null;
   let routeCheck: RouteCheckJson | null = null;
   let routeOpenedWhileConnecting = false;
-  // Whether this run put the app on the screen, which is the only case the settle wait before the
-  // picture is for (F57). Not the same as `routeOpenedWhileConnecting`: a run with no `--route`
-  // still opens the root route when nothing is attached.
+  // Whether this run put the app on the screen, which is the only case the settle wait is for
+  // (F57). Not the same as `routeOpenedWhileConnecting`: a run with no `--route` still opens the
+  // root route when nothing is attached.
   let appOpenedByThisRun = false;
 
+  /**
+   * Wait for the app this run opened to stop re-registering. At most once, and never otherwise.
+   *
+   * @ref ./phases §APP_SETTLE_MS. Shared by the runtime read and the picture because it is one
+   * fact about one app: a second wait would be a second budget spent proving what the first one
+   * already proved.
+   */
+  let settled = false;
+  const settleIfOpenedAsync = async (): Promise<void> => {
+    if (!appOpenedByThisRun || settled) {
+      return;
+    }
+    settled = true;
+    await deps.waitForStableTargets(
+      devServerUrl,
+      Math.min(APP_SETTLE_MS, Math.max(0, remaining()))
+    );
+  };
+
   const connection = await record('app', async () => {
-    const first = await deps.waitForAppConnection(devServerUrl, Math.min(remaining(), APP_PROBE_MS));
+    // Reused when the boot decision above already asked. It answered "nothing is attached", which
+    // is still true of a simulator that has only just finished booting — and asking again would
+    // spend a second wait on a fact this run established one phase ago.
+    const first =
+      firstConnection ??
+      (await deps.waitForAppConnection(devServerUrl, Math.min(remaining(), APP_PROBE_MS)));
     if (first.appsConnected > 0) {
       return { status: 'ok' as const, value: first };
     }
@@ -441,7 +786,7 @@ export async function runSmokePhasesAsync(
     // rather than waiting out its budget on a state it could have changed itself. This is friction
     // run 1's F4 absorbed into the gate, and the same reasoning F48-8 gave `status.next`: a wait
     // for an app cannot succeed while nothing is opening one.
-    const device = await deps.probeDevice();
+    const device = await deviceAsync();
     if (device.deviceId == null) {
       return {
         status: 'inconclusive' as const,
@@ -484,11 +829,10 @@ export async function runSmokePhasesAsync(
     // No app, so no runtime and no window — but there may still be a device, and a picture of
     // whatever is on it is the most useful thing left to hand back.
     skipRest('route', 'no app is connected, so there was nothing to read', 'screenshot');
+    // The run opened the app in this phase, so whatever is on screen may still be loading.
     const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
-      devServerUrl,
-      // The run opened the app in this phase, so whatever is on screen may still be loading.
-      relaunched: appOpenedByThisRun,
-      remainingMs: remaining(),
+      settleAsync: settleIfOpenedAsync,
+      deviceAsync,
     });
     return done(appPhase.status === 'failed' ? 'failed' : 'inconclusive', {
       ...withApp,
@@ -500,7 +844,7 @@ export async function runSmokePhasesAsync(
     });
   }
 
-  // ---- Phase 5: the route, unless phase 4 already opened it ---------------------------------
+  // ---- Phase 6: the route, unless the app phase already opened it -------------------------
 
   if (options.route == null) {
     phases.push({
@@ -538,9 +882,8 @@ export async function runSmokePhasesAsync(
         'screenshot'
       );
       const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
-        devServerUrl,
-        relaunched: true,
-        remainingMs: remaining(),
+        settleAsync: settleIfOpenedAsync,
+        deviceAsync,
       });
       return done('failed', {
         ...withApp,
@@ -553,7 +896,12 @@ export async function runSmokePhasesAsync(
     }
   }
 
-  // ---- Phase 6: can the runtime be read at all? ---------------------------------------------
+  // ---- Phase 7: can the runtime be read at all? ---------------------------------------------
+
+  // @ref ./phases §APP_SETTLE_MS. Before the read rather than only before the picture: an app that
+  // has just been launched onto a simulator this run booted is still registering, and asking a
+  // debugger target list mid-churn answers "No target found" about an app that is running fine.
+  await settleIfOpenedAsync();
 
   const runtime = await record('runtime', async () => {
     const result = await deps.evaluate(devServerUrl);
@@ -570,7 +918,7 @@ export async function runSmokePhasesAsync(
     };
   });
 
-  // ---- Phase 7: what did the app report while it was watched? -------------------------------
+  // ---- Phase 8: what did the app report while it was watched? -------------------------------
 
   // Opened even for a runtime that cannot be evaluated, because an empty window costs one wait and
   // the report is more useful with it — but the *verdict* never rests on it. That is the rule
@@ -610,14 +958,13 @@ export async function runSmokePhasesAsync(
     };
   });
 
-  // ---- Phase 8: the picture -----------------------------------------------------------------
+  // ---- Phase 9: the picture -----------------------------------------------------------------
 
+  // Already done before the runtime read on this path, so this call costs nothing: the wait
+  // happens once per run, for a run that opened the app.
   const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
-    devServerUrl,
-    // Only when this run put the app there: an app that was already attached and on screen has
-    // nothing left to settle, and the wait would be dead time in the common case.
-    relaunched: appOpenedByThisRun,
-    remainingMs: remaining(),
+    settleAsync: settleIfOpenedAsync,
+    deviceAsync,
   });
 
   // The verdict. `failed` needs something to have gone wrong; `passed` needs the runtime to have
@@ -662,7 +1009,19 @@ async function captureIfPossible(
   deviceId: string | null,
   deviceBackend: DeviceBackend | null,
   phases: SmokePhase[],
-  settle: { devServerUrl: string; relaunched: boolean; remainingMs: number }
+  settle: {
+    /**
+     * The run's settle wait, which is a no-op unless this run opened the app and has not waited
+     * yet (@ref ./phases §APP_SETTLE_MS).
+     */
+    settleAsync: () => Promise<void>;
+    /** The run's own device probe, cached, so this phase never resolves a second one (F98). */
+    deviceAsync: () => Promise<{
+      deviceId: string | null;
+      backend: DeviceBackend | null;
+      reason: string | null;
+    }>;
+  }
 ): Promise<CaptureOutcome> {
   const at = deps.now();
   const push = (status: SmokePhaseStatus, reason: string | null) =>
@@ -677,7 +1036,7 @@ async function captureIfPossible(
   let device = deviceId;
   let backend = deviceBackend;
   if (device == null) {
-    const probe = await deps.probeDevice();
+    const probe = await settle.deviceAsync();
     backend = probe.backend;
     if (probe.deviceId == null) {
       const skipped = noScreenshot(
@@ -691,13 +1050,9 @@ async function captureIfPossible(
     device = probe.deviceId;
   }
 
-  // @ref ./phases §SCREENSHOT_SETTLE_MS — friction run 6, F57.
-  if (settle.relaunched) {
-    await deps.waitForStableTargets(
-      settle.devServerUrl,
-      Math.min(SCREENSHOT_SETTLE_MS, Math.max(0, settle.remainingMs))
-    );
-  }
+  // @ref ./phases §APP_SETTLE_MS — friction run 6, F57. Usually already done: the runtime read
+  // needs the same settle and asks for it first, on every path that reaches it.
+  await settle.settleAsync();
 
   const result = await deps.captureScreenshot(device, backend);
   push(result.ok ? 'ok' : 'skipped', result.ok ? null : result.reason);
@@ -708,6 +1063,10 @@ async function captureIfPossible(
   // [observed — live cloud, 2026-08-27]. The device a run used is a fact of the run, whichever phase
   // found it.
   return { screenshot: result, deviceId: device, deviceBackend: backend };
+}
+
+function firstLine(text: string): string {
+  return text.split('\n')[0] ?? '';
 }
 
 /** The bundler's own error, as one sentence with the location in it. */

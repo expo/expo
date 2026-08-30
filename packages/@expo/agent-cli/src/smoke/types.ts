@@ -20,12 +20,22 @@ import type { RuntimeErrorRecord } from '../runtime/runtimeErrorCollector';
  * this process (llp/0005 §The smoke gate).
  */
 export type SmokePhaseId =
+  /**
+   * Was a dev server started for this run?
+   *
+   * **Conditional**: it is in the list only on a run that performed it. A run that found one has
+   * not skipped a start, it never had one to do, and a `skipped` row there would read as a step
+   * that was owed (llp/0005 §The run brings its own environment).
+   */
+  | 'start-dev-server'
   /** Is there a dev server, and is it this project's to talk to? */
   | 'dev-server'
   /** Has its bundler finished, and does it serve this project? */
   | 'bundler-ready'
   /** Does this project's own entry bundle compile? */
   | 'bundle'
+  /** Was a simulator or an emulator booted for this run? Conditional, like `start-dev-server`. */
+  | 'boot-device'
   /** Is an app attached to it, and if not, can one be opened? */
   | 'app'
   /** Did the route the caller named open? */
@@ -83,6 +93,63 @@ export type SmokeOutcome =
   /** Nothing was shown to be wrong and nothing was proved right. */
   | 'inconclusive';
 
+/**
+ * What this run did about the dev server it needed.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment
+ * A closed set, because the difference between these four decides what the *machine* looks like
+ * afterwards, and an agent must not have to read English to tell "I left your dev server alone"
+ * from "I started one and took it away again".
+ */
+export type SmokeDevServerDisposition =
+  /** One was already running, and it is still running. */
+  | 'reused'
+  /** This run started one, and stopped it again. */
+  | 'started'
+  /** This run tried to start one and could not. */
+  | 'failed'
+  /** There was none and this run did not start one — `--no-start`, or nothing needed it. */
+  | 'absent';
+
+/** The same four for the device, with the word that fits a simulator. */
+export type SmokeDeviceDisposition = 'reused' | 'booted' | 'failed' | 'absent';
+
+/** Which of the two things a run can bring with it. */
+export type SmokeResource = 'dev-server' | 'device';
+
+/** One thing this run started and then put back. */
+export interface SmokeCleanupJson {
+  resource: SmokeResource;
+  /** What was released: the dev server's origin, or the device's id. Null when it had no name. */
+  target: string | null;
+  /** Whether it went. */
+  ok: boolean;
+  /** Why it did not. Null exactly when {@link ok} is true. */
+  reason: string | null;
+  /** How long it took, in milliseconds. */
+  ms: number;
+}
+
+/**
+ * What this run found, what it started, and what it put back.
+ *
+ * The command's answer used to be only about the app. It is now also about the machine: a run that
+ * boots a simulator and starts a dev server changes what is on the developer's laptop, and a report
+ * that did not say so would leave them to discover it from a busy port.
+ */
+export interface SmokeEnvironmentJson {
+  devServer: SmokeDevServerDisposition;
+  device: SmokeDeviceDisposition;
+  /**
+   * Everything this run put back, newest first.
+   *
+   * Empty for a run that started nothing — which is most runs. A failed entry is reported here
+   * rather than folded into {@link SmokeResultJson.outcome}: the verdict is about the app, and a
+   * dev server that would not stop says nothing about whether the app boots.
+   */
+  cleanup: SmokeCleanupJson[];
+}
+
 /** What the error window caught, summarized next to the records themselves. */
 export interface SmokeErrorsJson {
   /** How long the window was open, in milliseconds. Null when it never opened. */
@@ -123,8 +190,15 @@ export interface SmokeResultJson {
   source: DevServerSource;
   /** Whether the dev server proved it serves this project; null when it could not be decided. */
   projectRootMatched: boolean | null;
-  /** A dev server was started by this run, because `--start` allowed it. */
+  /**
+   * A dev server was started by this run.
+   *
+   * Kept beside {@link environment}, which says the same thing with more detail, because it is the
+   * key callers already branch on and `environment.devServer === 'started'` is the same fact.
+   */
   started: boolean;
+  /** What this run found on the machine, what it started, and what it put back. */
+  environment: SmokeEnvironmentJson;
   /** Debugger targets attached when the run read them. Null when it never got that far. */
   appsConnected: number | null;
   /** The same `bundle` object `dev:wait` and `runtime:reload` print, from the same check. */

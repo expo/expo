@@ -152,7 +152,7 @@ export interface DevDetachOptions {
   /**
    * Whether to print the report at all.
    *
-   * False for a caller that is *part of* another command's answer: `@expo/agent-cli smoke --start` starts a
+   * False for a caller that is *part of* another command's answer: `@expo/agent-cli smoke` starts a
    * dev server as one phase of eight, and under `--json` its stdout is one object — a second report
    * printed into it would make the whole run unparseable, which is the failure llp/0010 §The
    * `--json` error envelope records for `dev` itself. The `cli:dev_detach` event is emitted either

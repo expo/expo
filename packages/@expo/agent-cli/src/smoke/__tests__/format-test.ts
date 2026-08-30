@@ -12,7 +12,7 @@ function options(overrides: Partial<SmokeOptions> = {}): SmokeOptions {
     route: null,
     platform: 'ios',
     cloud: 'fallback',
-    start: false,
+    bootstrap: false,
     windowMs: 3_000,
     timeoutMs: 60_000,
     screenshotPath: null,
@@ -49,6 +49,7 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
     },
     projectRootMatched: true,
     started: false,
+    environment: { devServer: 'reused', device: 'reused', cleanup: [] },
     appsConnected: 1,
     bundle: {
       outcome: 'ok',
@@ -86,6 +87,7 @@ describe(smokeResultToJson, () => {
       'deviceBackend',
       'deviceId',
       'durationMs',
+      'environment',
       'errors',
       'followups',
       'ok',
@@ -262,5 +264,70 @@ describe(formatSmokeResult, () => {
     expect(printed).toContain('BEGIN UNTRUSTED APP OUTPUT');
     expect(printed).toContain('Error: BOOM');
     expect(printed).toContain('END UNTRUSTED APP OUTPUT');
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment.
+  describe('what the run did to the machine', () => {
+    it(`names what it started and says it was put back`, () => {
+      const printed = formatSmokeResult(
+        run({
+          started: true,
+          deviceId: 'SIM-BOOTED',
+          environment: {
+            devServer: 'started',
+            device: 'booted',
+            cleanup: [
+              { resource: 'device', target: 'SIM-BOOTED', ok: true, reason: null, ms: 2100 },
+              {
+                resource: 'dev-server',
+                target: 'http://127.0.0.1:8210',
+                ok: true,
+                reason: null,
+                ms: 340,
+              },
+            ],
+          },
+        }),
+        options()
+      );
+
+      expect(printed).toContain('environment');
+      expect(printed).toContain('started the dev server');
+      expect(printed).toContain('booted SIM-BOOTED');
+      expect(printed).toContain('stopped again');
+    });
+
+    // The one line a reader must not miss, and the one the verdict deliberately does not carry:
+    // the app is fine and there is a dev server on this machine that this run put there.
+    it(`says what it left behind, on a run that passed`, () => {
+      const printed = formatSmokeResult(
+        run({
+          started: true,
+          environment: {
+            devServer: 'started',
+            device: 'reused',
+            cleanup: [
+              {
+                resource: 'dev-server',
+                target: 'http://127.0.0.1:8210',
+                ok: false,
+                reason: 'SIGTERM was sent to 4242 and it was still running 10000ms later',
+                ms: 10_000,
+              },
+            ],
+          },
+        }),
+        options()
+      );
+
+      expect(printed).toContain('left behind');
+      expect(printed).toContain('http://127.0.0.1:8210');
+      expect(printed).toContain('still running');
+    });
+
+    // Most runs start nothing, and a line saying so every time would bury the runs that did.
+    it(`says nothing at all when it started nothing`, () => {
+      expect(formatSmokeResult(run(), options())).not.toContain('environment');
+    });
   });
 });

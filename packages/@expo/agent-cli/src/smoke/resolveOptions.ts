@@ -21,15 +21,20 @@ export type SmokePlatform = 'ios' | 'android';
  */
 export const DEFAULT_SMOKE_WINDOW_MS = 3_000;
 
-/** Total budget of a run that attaches to a dev server that is already up. */
+/** Total budget of an attach-only run (`--no-start`), which reads a dev server that is already up. */
 export const DEFAULT_SMOKE_TIMEOUT_MS = 60_000;
 
 /**
- * Total budget of a run allowed to start the dev server.
+ * Total budget of a run allowed to start the dev server, which is the default.
  *
  * Larger because it contains a cold first bundle, which is the same reason a readiness wait defaults to
  * two minutes: a budget that expired before the common slow path finished would report `22` for
  * every first run of the day.
+ *
+ * **It does not contain the bootstrap itself.** Starting a dev server and booting a simulator each
+ * get a budget of their own (`./phases.ts`), and the time they spend is taken off the clock this
+ * bounds — a minute spent waiting for a simulator to come up must not be a minute the error window
+ * no longer has (llp/0005 §The run brings its own environment).
  */
 export const DEFAULT_SMOKE_START_TIMEOUT_MS = 180_000;
 
@@ -48,11 +53,21 @@ export interface SmokeOptions {
    * @see llp/0005-runtime-loop-tools.rfc.md §The cloud simulator backend
    */
   cloud: CloudPreference;
-  /** Whether this run may start a dev server when it finds none (`--start`). */
-  start: boolean;
+  /**
+   * Whether this run brings its own environment: start a dev server when there is none, boot a
+   * device when there is none, and put both back afterwards. Cleared by `--no-start`.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment
+   */
+  bootstrap: boolean;
   /** How long the error window stays open, in milliseconds. */
   windowMs: number;
-  /** Total budget for the whole run, in milliseconds. */
+  /**
+   * Budget for the phases that read the app, in milliseconds.
+   *
+   * Not for the whole command: the two bootstrap phases have budgets of their own, and what they
+   * spend is not taken out of this one.
+   */
   timeoutMs: number;
   /** Where the screenshot goes, or null for the default path under `.expo/`. */
   screenshotPath: string | null;
@@ -74,7 +89,10 @@ const SMOKE_ARGS = {
   '--ios': Boolean,
   '--android': Boolean,
   '--cloud': Boolean,
+  // `--start` is what this command does by default now, and it stays accepted rather than being
+  // removed: it is on command lines people have already written, and it still names the truth.
   '--start': Boolean,
+  '--no-start': Boolean,
   '--window': String,
   '--timeout': String,
   '--screenshot': String,
@@ -117,12 +135,25 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
     );
   }
 
-  const start = !!args['--start'];
+  if (args['--start'] && args['--no-start']) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--start and --no-start ask for opposite things, so this run has no rule for what to do.`,
+        `Why: --start says to start a dev server and boot a device when there is none, and --no-start says to read what is already running and fail when nothing is; there is no reading of the pair that does both.`,
+        `How: pass one, or neither. Starting what is missing is what this command does by default, so --start is only the same thing spelled out loud.`,
+      ].join('\n')
+    );
+  }
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment — Kudo's directive
+  // of 2026-08-29. On by default, and the flag that changes anything is the one that turns it off.
+  const bootstrap = !args['--no-start'];
   return {
     route: args['--route'] ? String(args['--route']) : null,
     platform,
     cloud: args['--cloud'] ? 'required' : 'fallback',
-    start,
+    bootstrap,
     windowMs: resolveDuration(args['--window'], '--window', DEFAULT_SMOKE_WINDOW_MS, {
       // A window of zero catches nothing and would report an empty one as evidence, which is the
       // reading this whole command exists to stop.
@@ -131,7 +162,7 @@ export function resolveSmokeOptions(argv: string[]): SmokeOptions {
     timeoutMs: resolveDuration(
       args['--timeout'],
       '--timeout',
-      start ? DEFAULT_SMOKE_START_TIMEOUT_MS : DEFAULT_SMOKE_TIMEOUT_MS,
+      bootstrap ? DEFAULT_SMOKE_START_TIMEOUT_MS : DEFAULT_SMOKE_TIMEOUT_MS,
       { allowZero: false }
     ),
     screenshotPath: args['--screenshot'] ? String(args['--screenshot']) : null,

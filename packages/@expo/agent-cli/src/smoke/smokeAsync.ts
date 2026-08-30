@@ -7,12 +7,17 @@
 // tested against fakes. What is here is the real versions of those functions — every one of them
 // the same function the command that owns the question already calls.
 
+import { bootDeviceAsync, shutdownDeviceAsync } from '../device/bootDevice';
 import { captureScreenshotAsync, defaultScreenshotPath } from '../device/screenshot';
 import { devDetachAsync } from '../dev/detachAsync';
 import { resolveDevOptions } from '../dev/resolveOptions';
+import { resolveDevStopOptions } from '../dev/resolveStopOptions';
+import { devStopAsync, type DevStopResultJson } from '../dev/stopAsync';
 import { event } from '../events';
+import { EXIT_OK } from '../exitCodes';
 import { buildSmokeFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
+import { PROGRAM_PREFIX } from '../programName';
 import { resolveDeviceAsync, type DeviceBackend } from '../navigate/device';
 import { openRouteAsync } from '../navigate/openRoute';
 import { checkEntryBundleAsync } from '../runtime/bundleCheck';
@@ -26,9 +31,11 @@ import {
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { formatSmokeResult, smokeResultToJson } from './format';
 import {
+  BOOT_DEVICE_TIMEOUT_MS,
   isFailingRecord,
   runSmokePhasesAsync,
   smokeExitCode,
+  START_DEV_SERVER_TIMEOUT_MS,
   type SmokeDeps,
   type SmokeRun,
 } from './phases';
@@ -110,6 +117,11 @@ export async function smokeAsync(projectRoot: string, options: SmokeOptions): Pr
     devServerUrl: run.devServerUrl,
     source: run.discovery?.source ?? null,
     started: run.started,
+    // What this run did to the machine, on the stream too: an agent watching events rather than
+    // stdout has to be able to see that a dev server appeared and went again.
+    devServer: run.environment.devServer,
+    device: run.environment.device,
+    leftBehind: run.environment.cleanup.filter((entry) => !entry.ok).map((entry) => entry.resource),
     appsConnected: run.appsConnected,
     bundle: run.bundle?.outcome ?? null,
     runtimeSupported: run.runtimeSupported,
@@ -139,7 +151,7 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
   return buildSmokeFollowUps({
     outcome: run.outcome,
     devServerFound: run.discovery?.reachable ?? false,
-    start: options.start,
+    bootstrap: options.bootstrap,
     foreignDevServer: run.projectRootMatched === false,
     bundleBroken: run.bundle?.outcome === 'broken',
     bundleFile: run.bundle?.error?.filename ?? null,
@@ -210,11 +222,27 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
     // return, and this run has seven more phases to perform (llp/0004 §Daemonization).
     // The argv is `START_DEV_SERVER_ARGV`, whose documentation says why it carries no platform.
     startDevServer: async () => {
+      // @ref llp/0005-runtime-loop-tools.rfc.md §This command does not build — the boundary the
+      // bootstrap must not blur. Asked *before* anything is spawned: `--yes` on the detached child
+      // consents to whatever plan it makes, and for a project whose target needs a development
+      // build that is not installed, that plan is a compiler. `smoke` verifies a running app; the
+      // command that builds one is `dev`, and this says so instead of spending ten minutes.
+      const refusal = await buildRefusalAsync(projectRoot, options);
+      if (refusal) {
+        return { ok: false, devServerUrl: null, reason: refusal };
+      }
       const argv = [...START_DEV_SERVER_ARGV, ...startPortArgs(options.devServerUrl)];
       try {
         // `print: false`: the detached start is one phase of this run, and this run prints one
         // report. Its `cli:dev_detach` event is still emitted, so nothing about it is hidden.
-        await devDetachAsync(projectRoot, resolveDevOptions(argv), { print: false });
+        //
+        // The budget is this phase's own (@ref ./phases §START_DEV_SERVER_TIMEOUT_MS) rather than
+        // `--timeout`, which bounds the phases that read the app and is not charged for the start.
+        await devDetachAsync(
+          projectRoot,
+          { ...resolveDevOptions(argv), detachTimeoutMs: START_DEV_SERVER_TIMEOUT_MS },
+          { print: false }
+        );
       } catch (error: unknown) {
         return {
           ok: false,
@@ -235,6 +263,48 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
           ? null
           : `a dev server was started and nothing answered at ${found.devServerUrl} afterwards (${found.reason ?? 'no answer'})`,
       };
+    },
+
+    // `dev:stop`'s own act, through `dev:stop`'s own function, with its report suppressed: this
+    // run prints one report and the stop is a line in it. Everything that makes the stop safe is
+    // that command's — it signals the pid the project's lock names and refuses a dev server no
+    // lock answers for, so a cleanup can never take down something this run did not start.
+    stopDevServer: async () => {
+      const captured: { report: DevStopResultJson | null } = { report: null };
+      const code = await devStopAsync(projectRoot, resolveDevStopOptions(['--no-followups']), {
+        print: false,
+        onReport: (stopped) => {
+          captured.report = stopped;
+        },
+      });
+      const stopped = captured.report;
+      return {
+        ok: code === EXIT_OK,
+        target: stopped?.url ?? (stopped?.port == null ? null : `port ${stopped.port}`),
+        reason: code === EXIT_OK ? null : (stopped?.detail ?? 'the dev server did not stop'),
+      };
+    },
+
+    // @ref src/device/bootDevice.ts. Local only, and that is not a gap: `--cloud` names a session
+    // somebody else started and pays for, and the phase that calls this never runs for one.
+    bootDevice: async (register) => {
+      const result = await bootDeviceAsync(options.platform, {
+        timeoutMs: BOOT_DEVICE_TIMEOUT_MS[options.platform],
+        onBooting: register,
+      });
+      return {
+        ok: result.ok,
+        deviceId: result.deviceId,
+        backend: result.backend,
+        reason: result.ok
+          ? null
+          : `${result.reason}${result.name ? ` (${result.name})` : ''}`,
+      };
+    },
+
+    shutdownDevice: async (deviceId, backend) => {
+      const result = await shutdownDeviceAsync(deviceId, backend);
+      return { ok: result.ok, target: deviceId, reason: result.reason };
     },
 
     waitForBundlerReady: (devServerUrl, timeoutMs) =>
@@ -383,6 +453,55 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
 
     now: () => Date.now(),
   };
+}
+
+/**
+ * Why this run will not start a dev server, when the plan for one contains a build.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §This command does not build
+ * The boundary between `smoke` and `dev`, and the one the bootstrap could most easily have blurred.
+ * Starting a dev server is seconds; starting one for a project whose development build is missing
+ * or stale is `expo run:ios`, which is a compiler, minutes of it, and a native toolchain that may
+ * not be on this machine at all. A verification gate that quietly triggered that would be the
+ * surprise `--start` was opt-in to avoid — so the gate keeps refusing it, and now says which
+ * command does it.
+ *
+ * The question is `StartPlan.buildLocation`, which is the plan engine's own answer to "does this
+ * plan build anything": Expo Go targets and a development build that is already installed for this
+ * fingerprint both answer null, and both bootstrap in full.
+ *
+ * @returns the sentence for the failed phase, or null when there is nothing to refuse.
+ */
+async function buildRefusalAsync(
+  projectRoot: string,
+  options: SmokeOptions
+): Promise<string | null> {
+  const { probeProjectStateAsync } = require('../project/probe') as typeof import('../project/probe');
+  const { readLastBuildFingerprints } =
+    require('../plan/lastBuild') as typeof import('../plan/lastBuild');
+  const { resolveStartPlanAsync } =
+    require('../plan/resolveAsync') as typeof import('../plan/resolveAsync');
+
+  let plan;
+  try {
+    const state = await probeProjectStateAsync(projectRoot);
+    plan = await resolveStartPlanAsync(projectRoot, state, {
+      platform: options.platform,
+      lastBuild: readLastBuildFingerprints(projectRoot),
+    });
+  } catch {
+    // The probe is a courtesy, not a gate: a project it could not read is one this refusal knows
+    // nothing about, and refusing on an unread plan would stop runs that would have worked.
+    return null;
+  }
+
+  if (plan.buildLocation == null) {
+    return null;
+  }
+  return [
+    `this project needs a ${options.platform} development build before a dev server is any use, and this command does not build`,
+    `— "${PROGRAM_PREFIX} dev --${options.platform} --yes" runs that build and starts the dev server, and this gate answers once the app is installed`,
+  ].join(' ');
 }
 
 function firstLine(text: string): string {

@@ -17,15 +17,15 @@ function onPlatform(platform: string) {
 }
 
 describe(resolveSmokeOptions, () => {
-  it(`defaults to attaching, watching for three seconds, and taking a picture`, () => {
+  it(`defaults to bootstrapping, watching for three seconds, and taking a picture`, () => {
     onPlatform('darwin');
     expect(resolveSmokeOptions([])).toEqual({
       route: null,
       platform: 'ios',
       cloud: 'fallback',
-      start: false,
+      bootstrap: true,
       windowMs: DEFAULT_SMOKE_WINDOW_MS,
-      timeoutMs: DEFAULT_SMOKE_TIMEOUT_MS,
+      timeoutMs: DEFAULT_SMOKE_START_TIMEOUT_MS,
       screenshotPath: null,
       screenshot: true,
       devServerUrl: null,
@@ -35,12 +35,25 @@ describe(resolveSmokeOptions, () => {
     });
   });
 
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment — Kudo's directive
+  // of 2026-08-29. Starting what is missing is what the command does now, so `--start` is the
+  // default spelled out loud and `--no-start` is the attach-only run it used to be.
+  it(`treats --start as the default and --no-start as the attach-only run`, () => {
+    expect(resolveSmokeOptions([]).bootstrap).toBe(true);
+    expect(resolveSmokeOptions(['--start']).bootstrap).toBe(true);
+    expect(resolveSmokeOptions(['--no-start']).bootstrap).toBe(false);
+  });
+
+  it(`refuses --start and --no-start together`, () => {
+    expect(() => resolveSmokeOptions(['--start', '--no-start'])).toThrow(/opposite things/);
+  });
+
   // The budget of a run that may start a dev server contains a cold first bundle, which is the
   // same reason a readiness wait defaults to two minutes rather than to seconds.
-  it(`gives --start a larger budget, and lets --timeout override it`, () => {
-    expect(resolveSmokeOptions(['--start']).timeoutMs).toBe(DEFAULT_SMOKE_START_TIMEOUT_MS);
-    expect(resolveSmokeOptions(['--start', '--timeout', '30s']).timeoutMs).toBe(30_000);
-    expect(resolveSmokeOptions([]).timeoutMs).toBe(DEFAULT_SMOKE_TIMEOUT_MS);
+  it(`gives a bootstrapping run a larger budget, and lets --timeout override it`, () => {
+    expect(resolveSmokeOptions([]).timeoutMs).toBe(DEFAULT_SMOKE_START_TIMEOUT_MS);
+    expect(resolveSmokeOptions(['--timeout', '30s']).timeoutMs).toBe(30_000);
+    expect(resolveSmokeOptions(['--no-start']).timeoutMs).toBe(DEFAULT_SMOKE_TIMEOUT_MS);
   });
 
   it.each([

@@ -335,7 +335,10 @@ describe('unknown options across commands', () => {
 
     const result = await executeAgentCliAsync(
       projectRoot,
-      ['smoke', '--port', '65533', '--timeout', '1s', '--json'],
+      // `--no-start`, so this stays a question about the flag: without it the run would try to
+      // start a dev server on that port and the first phase would be the start rather than the
+      // discovery whose URL this is checking.
+      ['smoke', '--port', '65533', '--no-start', '--timeout', '1s', '--json'],
       { reject: false }
     );
 

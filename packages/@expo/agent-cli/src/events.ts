@@ -610,8 +610,24 @@ declare module '2g' {
       devServerUrl: string;
       /** Which discovery step produced it, or null when nothing answered. */
       source: string | null;
-      /** A dev server was started by this run, because `--start` allowed it. */
+      /** A dev server was started by this run. The same fact as `devServer: "started"`. */
       started: boolean;
+      /**
+       * What this run did about the dev server: `reused`, `started`, `failed` or `absent`.
+       *
+       * @see llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment
+       */
+      devServer: string;
+      /** The same about the device: `reused`, `booted`, `failed` or `absent`. */
+      device: string;
+      /**
+       * What this run started and could **not** put back, as `dev-server` and `device`.
+       *
+       * Empty on almost every run, and the one thing on this event that is about the machine
+       * rather than about the app: a caller reading only the outcome would never learn that a
+       * passing run left a dev server behind.
+       */
+      leftBehind: string[];
       /** Debugger targets attached when the run read them, or null when it never got that far. */
       appsConnected: number | null;
       /** `ok`, `broken`, `timeout`, `unknown`, or null when the check did not run. */

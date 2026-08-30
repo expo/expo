@@ -13,8 +13,8 @@ export interface SmokeFollowUpInput {
   outcome: 'passed' | 'failed' | 'inconclusive';
   /** Whether a dev server answered at all. */
   devServerFound: boolean;
-  /** Whether this run was allowed to start one (`--start`). */
-  start: boolean;
+  /** Whether this run was allowed to start one and boot a device (`--no-start` clears it). */
+  bootstrap: boolean;
   /** Whether the dev server proved it serves another project. */
   foreignDevServer: boolean;
   /** Whether the entry bundle was reported broken. */
@@ -69,22 +69,26 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
   const same = ` --${input.platform}${sameRoute}${onCloud}`;
   const otherPlatform = input.platform === 'android' ? 'ios' : 'android';
 
-  // No dev server, and this run was not allowed to start one. The one thing to do is the thing
-  // `--start` would have done, spelled as the command that does it without blocking the shell.
+  // No dev server. A run that tried to start one and could not needs to see the start fail where
+  // its output is visible; a `--no-start` run needs the start it declined to do.
   if (!input.devServerFound) {
     return capFollowUps([
       {
         id: 'dev-detach',
         command: `${PROGRAM_PREFIX} dev --detach --yes --wait-ready`,
-        why: input.start
-          ? 'This run was allowed to start a dev server and could not, so starting one in the foreground shows what stops it.'
-          : 'Nothing answered as a dev server, and this run was attach-only. That starts one and gives the terminal back.',
+        why: input.bootstrap
+          ? 'This run tried to start a dev server and could not, so starting one on its own reports what stops it — and leaves it running rather than taking it away again.'
+          : 'Nothing answered as a dev server, and --no-start made this run attach-only. That starts one and gives the terminal back.',
       },
-      {
-        id: 'smoke-start',
-        command: `${PROGRAM_PREFIX} smoke --start${same}`,
-        why: 'Runs the same gate and starts the dev server itself when there is none.',
-      },
+      ...(input.bootstrap
+        ? []
+        : [
+            {
+              id: 'smoke-start',
+              command: `${PROGRAM_PREFIX} smoke${same}`,
+              why: 'Runs the same gate without --no-start, which starts the dev server itself when there is none and stops it again afterwards.',
+            },
+          ]),
     ]);
   }
 

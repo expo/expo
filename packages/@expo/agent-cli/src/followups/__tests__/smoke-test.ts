@@ -12,7 +12,7 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
   return {
     outcome: 'passed',
     devServerFound: true,
-    start: false,
+    bootstrap: true,
     foreignDevServer: false,
     bundleBroken: false,
     bundleFile: null,
@@ -62,9 +62,15 @@ describe(buildSmokeFollowUps, () => {
     );
   });
 
-  it(`offers --start to a run that was attach-only`, () => {
-    expect(commands({ devServerFound: false, start: false })).toContain(
-      'npx @expo/agent-cli smoke --start --ios'
+  // The attach-only run is the one with something to offer: dropping `--no-start` is the whole
+  // difference between it and a run that would have started the dev server itself. A run that
+  // already tried gets no such line — re-running it does the same thing again.
+  it(`offers the bootstrapping run to one that was attach-only, and to no other`, () => {
+    expect(commands({ devServerFound: false, bootstrap: false })).toContain(
+      'npx @expo/agent-cli smoke --ios'
+    );
+    expect(commands({ devServerFound: false, bootstrap: true })).not.toContain(
+      'npx @expo/agent-cli smoke --ios'
     );
   });
 
@@ -148,8 +154,8 @@ describe(buildSmokeFollowUps, () => {
   });
 
   it(`keeps the route on a re-run it suggests`, () => {
-    expect(commands({ devServerFound: false, route: '/notes' })).toContain(
-      'npx @expo/agent-cli smoke --start --ios --route /notes'
+    expect(commands({ devServerFound: false, bootstrap: false, route: '/notes' })).toContain(
+      'npx @expo/agent-cli smoke --ios --route /notes'
     );
     expect(commands({ bundleBroken: true, outcome: 'failed', route: '/notes' })).toContain(
       'npx @expo/agent-cli smoke --ios --route /notes'

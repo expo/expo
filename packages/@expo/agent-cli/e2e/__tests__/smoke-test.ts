@@ -20,6 +20,7 @@ import {
   executeAgentCliAsync,
   holdDevLockAsync,
   installStubBinAsync,
+  readDevLockAsync,
   setupFixtureAsync,
   startStubDevServerAsync,
   stubExpoEnv,
@@ -135,11 +136,25 @@ describe('@expo/agent-cli smoke', () => {
       expect(result.exitCode).toBe(0);
       expect(result.all).toContain('--route');
       expect(result.all).toContain('--start');
+      expect(result.all).toContain('--no-start');
       expect(result.all).toContain('--window');
       expect(result.all).toContain('--no-screenshot');
       expect(result.all).toContain('0');
       expect(result.all).toContain('20');
       expect(result.all).toContain('22');
+    });
+
+    // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment. A command that
+    // starts a dev server and boots a simulator changes the machine, so the help says so before
+    // anybody runs it — and says what to do to keep the dev server afterwards.
+    it(`says it starts what is missing, puts it back, and does not build`, async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      const result = await executeAgentCliAsync(projectRoot, ['smoke', '--help']);
+
+      expect(result.all).toContain('brings its own environment');
+      expect(result.all).toContain('stops exactly what it started');
+      expect(result.all).toContain('It does not build');
     });
 
     // The two limits a reader would otherwise assume away, both of them llp/0005 findings.
@@ -164,24 +179,32 @@ describe('@expo/agent-cli smoke', () => {
     });
   });
 
-  // @ref llp/0010-agent-conventions.rfc.md §Exit codes. `--start` is opt-in, so a run that finds
-  // no dev server reports that the operation failed rather than starting one.
-  describe('with no dev server', () => {
-    it('exits 20 and never starts one without --start', async () => {
+  // @ref llp/0010-agent-conventions.rfc.md §Exit codes. `--no-start` is the attach-only run this
+  // command used to be by default: it reports that the operation failed rather than starting one.
+  describe('with no dev server and --no-start', () => {
+    it('exits 20 and never starts one', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
       const result = await executeAgentCliAsync(
         projectRoot,
         // A port nothing is on, named explicitly so no scan can find another project's server.
-        ['smoke', '--json', '--port', '59117'],
+        ['smoke', '--json', '--no-start', '--port', '59117'],
         { env: stubExpoEnv(projectRoot), reject: false }
       );
 
       expect(result.exitCode).toBe(20);
       const report = JSON.parse(result.stdout);
       expect(report).toMatchObject({ ok: false, outcome: 'failed', started: false });
+      expect(report.environment).toEqual({
+        devServer: 'absent',
+        device: 'absent',
+        cleanup: [],
+      });
       expect(report.phases[0]).toMatchObject({ id: 'dev-server', status: 'failed' });
-      // Everything after it says it did not run, rather than reading as a pass.
+      // Everything after it says it did not run, rather than reading as a pass — and the two
+      // conditional phases are not in the list at all, because there was nothing to start.
+      expect(report.phases.map((phase: any) => phase.id)).not.toContain('start-dev-server');
+      expect(report.phases.map((phase: any) => phase.id)).not.toContain('boot-device');
       for (const phase of report.phases.slice(1)) {
         expect(phase.status).toBe('skipped');
         expect(phase.reason).toEqual(expect.any(String));
@@ -192,15 +215,98 @@ describe('@expo/agent-cli smoke', () => {
     it('says what to run, on stderr, for a person', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
 
-      const result = await executeAgentCliAsync(projectRoot, ['smoke', '--port', '59118'], {
-        env: stubExpoEnv(projectRoot),
-        reject: false,
-      });
+      const result = await executeAgentCliAsync(
+        projectRoot,
+        ['smoke', '--no-start', '--port', '59118'],
+        { env: stubExpoEnv(projectRoot), reject: false }
+      );
 
       expect(result.exitCode).toBe(20);
       expect(result.stderr).toContain('Why:');
       expect(result.stderr).toContain('How:');
       expect(result.all).toContain('npx @expo/agent-cli dev --detach');
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The run brings its own environment.
+  //
+  // The property no unit test can show: a *second process* was started, it published this
+  // project's lock, and it is gone by the time this command's own process exits. The dev server is
+  // the stub `expo` bin, which takes the lock exactly as the real one does, because the wrapper
+  // that takes it is real here.
+  describe('with no dev server, by default', () => {
+    /** Whether this project's dev-server lock still answers. */
+    async function lockHeldAsync(projectRoot: string): Promise<boolean> {
+      return (await readDevLockAsync(projectRoot)) != null;
+    }
+
+    it('starts one, and stops it again before it exits', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          // No screenshot and no device: this case is about the dev server, and a stub `xcrun` is
+          // what the screenshot tests own.
+          ['smoke', '--json', '--no-screenshot', '--port', '9351', '--timeout', '10s'],
+          {
+            env: {
+              ...stubExpoEnv(projectRoot),
+              STUB_EXPO_DELAY_MS: '30000',
+              STUB_EXPO_DEV_SERVER_PORT: '9351',
+              // The stub binds the port and answers `GET /status`, which is what `--wait-ready`
+              // needs — and `--wait-ready` is what the start phase runs.
+              STUB_EXPO_LISTEN: '1',
+            },
+            reject: false,
+          }
+        );
+
+        const report = JSON.parse(result.stdout);
+        // The dev server was started for this run, and the phase that did it is in the list.
+        expect(report.environment.devServer).toBe('started');
+        expect(report.started).toBe(true);
+        expect(report.phases[0]).toMatchObject({ id: 'start-dev-server', status: 'ok' });
+        expect(report.phases[1]).toMatchObject({ id: 'dev-server', status: 'ok' });
+
+        // And it was put back. Both halves: the run says it stopped it, and the lock agrees.
+        expect(report.environment.cleanup).toContainEqual(
+          expect.objectContaining({ resource: 'dev-server', ok: true })
+        );
+        expect(await lockHeldAsync(projectRoot)).toBe(false);
+      } finally {
+        await executeAgentCliAsync(projectRoot, ['dev:stop', '--json'], {
+          env: stubExpoEnv(projectRoot),
+          reject: false,
+        });
+      }
+    });
+
+    // The other half of "restore what you found": a dev server this run did not start is not this
+    // run's to take away, however the run ends.
+    it('leaves a dev server that was already running', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [] });
+      const release = await holdLockForAsync(projectRoot, stub);
+
+      try {
+        const result = await executeAgentCliAsync(
+          projectRoot,
+          ['smoke', '--json', '--no-screenshot', '--timeout', '4s'],
+          { env: { PATH: path.join(projectRoot, '.no-bin') }, reject: false }
+        );
+
+        const report = JSON.parse(result.stdout);
+        expect(report.environment.devServer).toBe('reused');
+        expect(report.started).toBe(false);
+        expect(report.environment.cleanup).toEqual([]);
+        expect(report.phases.map((phase: any) => phase.id)).not.toContain('start-dev-server');
+        // Still answering, and still this project's.
+        expect(await lockHeldAsync(projectRoot)).toBe(true);
+      } finally {
+        release();
+        await stub.close();
+      }
     });
   });
 
@@ -224,7 +330,7 @@ describe('@expo/agent-cli smoke', () => {
 
       const result = await executeAgentCliAsync(
         projectRoot,
-        ['smoke', '--json', '--timeout', '4s'],
+        ['smoke', '--json', '--no-start', '--timeout', '4s'],
         {
           // An empty `PATH`, so neither a stub nor this machine's own `xcrun` and `adb` can be
           // found. Inheriting the real one made this pass against a simulator that happened to be
@@ -449,7 +555,7 @@ describe('@expo/agent-cli smoke', () => {
 
       const result = await executeAgentCliAsync(
         projectRoot,
-        ['smoke', '--json', '--port', '59119'],
+        ['smoke', '--json', '--no-start', '--port', '59119'],
         { env: stubExpoEnv(projectRoot), reject: false }
       );
 
@@ -461,6 +567,7 @@ describe('@expo/agent-cli smoke', () => {
         'deviceBackend',
         'deviceId',
         'durationMs',
+        'environment',
         'errors',
         'followups',
         'ok',
@@ -512,7 +619,7 @@ describe('@expo/agent-cli smoke', () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const eventsPath = path.join(projectRoot, 'events.jsonl');
 
-    await executeAgentCliAsync(projectRoot, ['smoke', '--json', '--port', '59120'], {
+    await executeAgentCliAsync(projectRoot, ['smoke', '--json', '--no-start', '--port', '59120'], {
       env: { ...stubExpoEnv(projectRoot), LOG_EVENTS: eventsPath },
       reject: false,
     });

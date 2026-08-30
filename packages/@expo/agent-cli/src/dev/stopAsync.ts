@@ -141,12 +141,37 @@ export interface DevStopResultJson {
   followups: FollowUp[];
 }
 
+export interface DevStopReportOptions {
+  /**
+   * Whether to print the report at all.
+   *
+   * False for a caller that is *part of* another command's answer, exactly as
+   * `devDetachAsync` has it: `smoke` stops the dev server it started as the cleanup of a run that
+   * prints one report, and under `--json` a second report printed into that stdout would make the
+   * whole run unparseable. The `cli:dev_stop` event is emitted either way, so a suppressed report
+   * is never a silent stop.
+   */
+  print?: boolean;
+  /**
+   * Handed the report, for a caller that has to say what happened in words of its own.
+   *
+   * The return value is one exit code, which is all a command needs and not enough for a caller
+   * folding this into a bigger answer: `smoke`'s cleanup line names the URL it stopped and quotes
+   * the detail when it could not, and neither of those is derivable from `20`.
+   */
+  onReport?: (report: DevStopResultJson) => void;
+}
+
 /**
  * Stop this project's dev server.
  *
  * @returns the exit code: `0` stopped, or nothing was running; `20` something is still there.
  */
-export async function devStopAsync(projectRoot: string, options: DevStopOptions): Promise<number> {
+export async function devStopAsync(
+  projectRoot: string,
+  options: DevStopOptions,
+  { print = true, onReport }: DevStopReportOptions = {}
+): Promise<number> {
   const startedAt = Date.now();
   const lock = await readDevServerLockAsync(projectRoot);
 
@@ -185,19 +210,23 @@ export async function devStopAsync(projectRoot: string, options: DevStopOptions)
     reason: report.reason,
   });
 
-  if (options.json) {
-    Log.log(JSON.stringify(report, null, 2));
-  } else {
-    printHumanReport(report);
-  }
-
   const exitCode =
     report.stopped || report.reason === 'not-running' ? EXIT_OK : EXIT_OUTCOME_FAILED;
-  if (exitCode !== EXIT_OK) {
-    Log.error(explainFailure(report, options));
-  }
+  onReport?.(report);
 
-  reportFollowUps('dev:stop', report.followups, { json: options.json });
+  // The event above is emitted whatever happens: a caller that suppresses the report is still
+  // stopping a dev server, and the stream is how that is visible to anything watching.
+  if (print) {
+    if (options.json) {
+      Log.log(JSON.stringify(report, null, 2));
+    } else {
+      printHumanReport(report);
+    }
+    if (exitCode !== EXIT_OK) {
+      Log.error(explainFailure(report, options));
+    }
+    reportFollowUps('dev:stop', report.followups, { json: options.json });
+  }
   return exitCode;
 }
 
