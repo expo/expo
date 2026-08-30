@@ -10,6 +10,7 @@ import {
   openUrlAsync,
 } from '../adb';
 import { startDeviceAsync } from '../emulator';
+import { getDevicesAsync } from '../getDevices';
 import { shellDumpsysPackage } from './fixtures/adb-output';
 
 jest.mock('../adbReverse', () => ({
@@ -26,6 +27,7 @@ jest.mock('../adb', () => ({
   logUnauthorized: jest.fn(),
 }));
 jest.mock('../emulator', () => ({ startDeviceAsync: jest.fn() }));
+jest.mock('../getDevices', () => ({ getDevicesAsync: jest.fn() }));
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
@@ -228,6 +230,87 @@ describe('device resolution', () => {
       /The device disconnected. Reconnect it and try again./
     );
     expect(installAsync).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('resolveFromNameAsync', () => {
+  it('resolves a physical device by serial', async () => {
+    const device = asDevice({
+      name: 'moto_g55_5G',
+      pid: 'ZY22KPLGQ9',
+      type: 'device',
+      state: 'device',
+      isAuthorized: true,
+      isBooted: true,
+    });
+    jest.mocked(getDevicesAsync).mockResolvedValueOnce([device]);
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(device);
+
+    const manager = await AndroidDeviceManager.resolveFromNameAsync('ZY22KPLGQ9');
+    expect(manager.device.pid).toBe('ZY22KPLGQ9');
+  });
+
+  it('resolves a physical device by name', async () => {
+    const device = asDevice({
+      name: 'moto_g55_5G',
+      pid: 'ZY22KPLGQ9',
+      type: 'device',
+      state: 'device',
+      isAuthorized: true,
+      isBooted: true,
+    });
+    jest.mocked(getDevicesAsync).mockResolvedValueOnce([device]);
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(device);
+
+    const manager = await AndroidDeviceManager.resolveFromNameAsync('moto_g55_5G');
+    expect(manager.device.pid).toBe('ZY22KPLGQ9');
+  });
+
+  it('prefers a serial match over a name match', async () => {
+    const deviceNamedX = asDevice({
+      name: 'X',
+      pid: 'other-serial',
+      type: 'device',
+      state: 'device',
+      isAuthorized: true,
+      isBooted: true,
+    });
+    const deviceWithSerialX = asDevice({
+      name: 'other-name',
+      pid: 'X',
+      type: 'device',
+      state: 'device',
+      isAuthorized: true,
+      isBooted: true,
+    });
+    jest.mocked(getDevicesAsync).mockResolvedValueOnce([deviceNamedX, deviceWithSerialX]);
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(deviceWithSerialX);
+
+    const manager = await AndroidDeviceManager.resolveFromNameAsync('X');
+    expect(manager.device.pid).toBe('X');
+    expect(manager.device.name).toBe('other-name');
+  });
+
+  it('rejects with an actionable error when no device matches', async () => {
+    const device = asDevice({
+      name: 'Pixel 5',
+      pid: '123',
+      type: 'device',
+      state: 'device',
+      isAuthorized: true,
+      isBooted: true,
+    });
+    jest.mocked(getDevicesAsync).mockResolvedValue([device]);
+
+    await expect(AndroidDeviceManager.resolveFromNameAsync('nonsense')).rejects.toThrow(
+      /nonsense/s
+    );
+    await expect(AndroidDeviceManager.resolveFromNameAsync('nonsense')).rejects.toThrow(
+      /Pixel 5.*123/s
+    );
+    await expect(AndroidDeviceManager.resolveFromNameAsync('nonsense')).rejects.toThrow(
+      /--device/s
+    );
   });
 });
 
