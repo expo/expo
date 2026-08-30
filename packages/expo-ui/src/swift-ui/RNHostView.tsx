@@ -2,7 +2,6 @@ import { requireNativeView } from 'expo';
 import type { LayoutChangeEvent } from 'react-native';
 
 import { PresentedContentContext, useIsPresentedInOwnWindow } from '../PresentedContentContext';
-import { hostedContent } from '../utils';
 
 const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHostView');
 
@@ -39,7 +38,7 @@ export function RNHostView(props: RNHostViewProps) {
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}>
       {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
       <PresentedContentContext.Provider value={false}>
-        {hostedContent(props.children)}
+        {props.children}
       </PresentedContentContext.Provider>
     </RNHostNativeView>
   );

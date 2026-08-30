@@ -28,7 +28,6 @@
 
 ### 🐛 Bug fixes
 
-- [iOS][Android] Fixed `RNHostView` hosting only one of several children, so a fragment or an array of elements overlapped instead of laying out. They now get a single React Native parent. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS][Android] Fixed a `matchContents` `RNHostView` inside a `matchContents` `Host` growing the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fix a drag that starts on a hosted `TextInput` not scrolling the `ScrollView` around it. React Native's text input asks its ancestors not to intercept the gesture, then releases them one move later, and Jetpack Compose read that release as "Compose claimed the gesture" and cancelled the hosted subtree. `RNHostView` no longer passes such a release on to Compose.
 - [Android] Fix the system status bar and navigation bar turning light while a `BottomSheet` or `ModalBottomSheet` with a custom dark background is open. A custom container color matches no color-scheme role, so the default content color fell back to black and Material3 themed the sheet window's system bars from it. The default content color is now derived from the container color's luminance, so it also contrasts with a custom background. ([#49394](https://github.com/expo/expo/pull/49394) by [@expo-bot](https://github.com/expo-bot))
