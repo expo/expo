@@ -29,6 +29,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { resolveAdb, runAdbAsync, type AdbResolution } from './adb';
+import { simulatorHasAppAsync } from './installedApps';
 import type { DeviceBackend } from '../navigate/device';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 
@@ -48,6 +49,23 @@ export interface BootDeviceResult {
   name: string | null;
   /** Why none came up, as one sentence. Null exactly when {@link ok} is true. */
   reason: string | null;
+  /**
+   * Nothing was booted **on purpose**, because no device could have opened the app.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app
+   * Distinct from an ordinary failure, and the distinction is the whole point of asking before
+   * booting: a boot that could not have opened the app costs a minute and answers nothing, so
+   * declining it is the *right* outcome and the report has to say so rather than describing a
+   * simulator that would not start.
+   */
+  refused: boolean;
+  /**
+   * Why this device was chosen, for a report that has to explain itself.
+   *
+   * Null when none was. One clause, in the terms of the rule that picked it — "has Expo Go
+   * installed", "already booted".
+   */
+  choice: string | null;
 }
 
 /** What one shutdown amounted to. Never throws, for the same reason. */
@@ -70,6 +88,22 @@ export interface BootDeviceOptions {
   now?: () => number;
   /** Injected for the tests: the emulator this host would spawn. */
   adb?: AdbResolution;
+  /**
+   * The application the caller is about to open, when it knows.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app
+   * Given, the boot only ever chooses a device that **has this app installed**, and declines
+   * rather than booting one that could not open it. Absent, the choice is the ordering that was
+   * here before — which is right for a caller that has no particular app in mind, and was wrong
+   * for `smoke`, whose whole next phase is opening one.
+   */
+  appId?: string | null;
+  /** What the app is called in a sentence, for the refusal. Defaults to {@link appId}. */
+  appLabel?: string | null;
+  /** The command that puts the app on a device, named by the refusal when there is one. */
+  installWith?: string | null;
+  /** Injected for the tests: which apps a simulator has. */
+  hasAppAsync?: (udid: string, appId: string) => Promise<boolean>;
 }
 
 /** One simulator, as `simctl list devices -j` describes it. */
@@ -165,15 +199,33 @@ export function parseSimulators(stdout: string): SimulatorEntry[] {
  *
  * A simulator that is already `Booted` wins outright — the caller only reaches this when its probe
  * found none, so one here is a race, and joining it is better than booting a second.
+ *
+ * **`hasApp` outranks all of it**, and that is the correction the proxy above needed
+ * (llp/0005 §The device that can open the app). "Most recently used" is a guess at "has the apps
+ * on it"; the app itself is the fact. A dev-client project booted a fresh simulator on that guess
+ * and the deep link came back `115` — no handler for the scheme — after a 12.4 s boot for a device
+ * that could never have opened it [observed — Kudo, 2026-08-30, DailyWords-Grok]. When no device
+ * has the app this answers **null**, because a boot that cannot open the app is worse than no boot:
+ * it costs the minute and answers nothing.
+ *
+ * `hasApp` absent is "nobody asked", which is not "the answer is no": a caller that does not know
+ * which app it is about gets the ordering that was here before.
  */
-export function pickSimulator(simulators: SimulatorEntry[]): SimulatorEntry | null {
-  const usable = simulators.filter((simulator) => simulator.isAvailable);
-  if (usable.length === 0) {
+export function pickSimulator(
+  simulators: SimulatorEntry[],
+  { hasApp }: { hasApp?: (simulator: SimulatorEntry) => boolean } = {}
+): SimulatorEntry | null {
+  const available = simulators.filter((simulator) => simulator.isAvailable);
+  if (available.length === 0) {
     return null;
   }
-  const alreadyUp = usable.find((simulator) => simulator.state === 'Booted');
+  const alreadyUp = available.find((simulator) => simulator.state === 'Booted');
   if (alreadyUp) {
     return alreadyUp;
+  }
+  const usable = hasApp == null ? available : available.filter(hasApp);
+  if (usable.length === 0) {
+    return null;
   }
   const ranked = [...usable].sort((left, right) => {
     const byLastBooted = right.lastBootedAt - left.lastBootedAt;
@@ -277,14 +329,21 @@ async function bootSimulatorAsync({
   timeoutMs,
   onBooting,
   now = Date.now,
+  appId = null,
+  appLabel = null,
+  installWith = null,
+  hasAppAsync = (udid, id) => simulatorHasAppAsync(udid, id),
 }: BootDeviceOptions): Promise<BootDeviceResult> {
-  const none = (reason: string): BootDeviceResult => ({
+  const none = (reason: string, refused = false): BootDeviceResult => ({
     ok: false,
     deviceId: null,
     backend: null,
     name: null,
     reason,
+    refused,
+    choice: null,
   });
+  const app = appLabel ?? appId;
 
   const deadline = now() + timeoutMs;
   const left = () => Math.max(1_000, deadline - now());
@@ -303,12 +362,52 @@ async function bootSimulatorAsync({
     );
   }
 
-  const simulator = pickSimulator(parseSimulators(listed.stdout));
-  if (simulator == null) {
+  const simulators = parseSimulators(listed.stdout);
+  if (simulators.filter((entry) => entry.isAvailable).length === 0) {
     return none(
       `this machine has no iOS simulator to boot. Install an iOS runtime in Xcode's Settings › Components, then run this command again`
     );
   }
+
+  // @ref ./bootDevice §pickSimulator. Asked **before** anything is booted, which is the whole
+  // point: the answer decides between a minute well spent and a minute spent on a device that
+  // could never have opened the app.
+  const withApp =
+    appId == null
+      ? null
+      : new Set(
+          (
+            await Promise.all(
+              simulators.map(async (entry) =>
+                (await hasAppAsync(entry.udid, appId)) ? entry.udid : null
+              )
+            )
+          ).filter((udid): udid is string => udid != null)
+        );
+
+  const simulator = pickSimulator(
+    simulators,
+    withApp == null ? {} : { hasApp: (entry) => withApp.has(entry.udid) }
+  );
+  if (simulator == null) {
+    // Nothing was booted, and that is the answer rather than a failure to boot: no simulator on
+    // this machine has the app, so every one of them would have refused the deep link.
+    return none(
+      [
+        `no iOS simulator has ${app} installed, so booting one would open nothing`,
+        `— ${simulators.length} ${simulators.length === 1 ? 'simulator was' : 'simulators were'} looked at`,
+        installWith ? `. Run "${installWith}" once to put the app on a simulator` : '',
+      ].join(''),
+      true
+    );
+  }
+
+  const choice =
+    simulator.state === 'Booted'
+      ? 'it was already booted'
+      : withApp == null
+        ? 'it is the simulator this machine last used'
+        : `it has ${app} installed`;
 
   // Before the boot, so the caller is holding it from here on (@ref ./bootDevice §onBooting).
   onBooting?.({ deviceId: simulator.udid, backend: 'local-ios' });
@@ -325,6 +424,8 @@ async function bootSimulatorAsync({
       backend: 'local-ios',
       name: simulator.name,
       reason: `"xcrun simctl boot ${simulator.udid}" exited ${booted.exitCode}: ${firstLine(booted.stderr) || 'no output'}`,
+      refused: false,
+      choice,
     };
   }
 
@@ -341,6 +442,8 @@ async function bootSimulatorAsync({
       backend: 'local-ios',
       name: simulator.name,
       reason: `${simulator.name} (${simulator.udid}) was asked to boot and "xcrun simctl bootstatus" did not report it up within ${timeoutMs}ms`,
+      refused: false,
+      choice,
     };
   }
 
@@ -350,6 +453,8 @@ async function bootSimulatorAsync({
     backend: 'local-ios',
     name: simulator.name,
     reason: null,
+    refused: false,
+    choice,
   };
 }
 
@@ -366,6 +471,8 @@ async function bootEmulatorAsync({
     backend: null,
     name: null,
     reason,
+    refused: false,
+    choice: null,
   });
 
   const adb = given ?? resolveAdb();
@@ -415,6 +522,8 @@ async function bootEmulatorAsync({
         backend: 'local-android',
         name: avd,
         reason: `"${emulator} -avd ${avd}" could not be started: ${spawnFailure}`,
+        refused: false,
+        choice: 'it is the only Android virtual device this machine has',
       };
     }
     const probe = await runAdbAsync(
@@ -428,6 +537,8 @@ async function bootEmulatorAsync({
         backend: 'local-android',
         name: avd,
         reason: null,
+        refused: false,
+        choice: 'it is the only Android virtual device this machine has',
       };
     }
     if (now() >= deadline) {
@@ -437,6 +548,8 @@ async function bootEmulatorAsync({
         backend: 'local-android',
         name: avd,
         reason: `the emulator ${avd} did not finish booting within ${timeoutMs}ms — "${adb.bin} -s ${EMULATOR_SERIAL} shell getprop sys.boot_completed" never answered 1`,
+        refused: false,
+        choice: 'it is the only Android virtual device this machine has',
       };
     }
     await new Promise((resolve) => setTimeout(resolve, BOOT_POLL_MS));

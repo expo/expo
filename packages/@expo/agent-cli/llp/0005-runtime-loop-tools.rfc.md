@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Final
-**Systems:** `@expo/agent-cli` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `@expo/agent-cli smoke` (`src/smoke/`, `src/device/screenshot.ts`, `src/device/bootDevice.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
+**Systems:** `@expo/agent-cli` runtime commands (`src/runtime/`, its shared preflight `src/runtime/preflight.ts`, `src/navigate/`, `src/runtime/reload/`, `src/project/routes.ts`); `@expo/agent-cli smoke` (`src/smoke/`, `src/device/screenshot.ts`, `src/device/bootDevice.ts`, `src/device/installedApps.ts`); the cloud device layer (`src/device/cloudSimulator.ts`); the Android device layer (`src/device/adb.ts`, `src/navigate/adbReverse.ts`, `src/runtime/targetPlatform.ts`, `src/runtime/targetLiveness.ts`, `src/dev/logErrors.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20 · finalized 2026-08-28
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0016-v1-scope]], [[0017-deferred-commands]]
@@ -1997,6 +1997,95 @@ Every simulator shut down and the Metro cache cleared before the first run.]
 
 The `app` phase at 6.9 s and `runtime` at 1.1 s are the two numbers this section is about. Neither
 fits in a reading window that had already paid for a 9.4 s boot out of it.
+
+### The device that can open the app
+
+Amendment [observed — Kudo, 2026-08-30, DailyWords-Grok]. A dev-client project booted a simulator
+with nothing installed on it and the deep link came back
+`simctl openurl dailywordsgrok://… exited 115` — no handler for the scheme. Every phase was honest;
+the run was wrong twelve seconds earlier, when it chose that device.
+
+§The run brings its own environment chose by `lastBootedAt`, on the argument that apps are
+installed per device and the most recently used one is where they are. That is a **proxy**, and
+this is where it breaks: on a machine with eleven simulators, the one used most recently can easily
+be one somebody opened once for something else. The app itself is the fact, so the app is the rule
+now, and `lastBootedAt` is what breaks the tie among the devices that have it.
+
+**When no device has it, nothing is booted.** A boot that could not have opened the app costs the
+minute *and* answers nothing, so declining is the right outcome rather than a failure to boot —
+`BootDeviceResult.refused` carries that difference, and the report says the machine has nowhere to
+run this app rather than describing a simulator that would not start. The recovery is the command
+that installs it, which differs by target: `dev` builds a development build, and `expo start --ios`
+is what installs Expo Go [the same `openProjectInExpoGoAsync` finding llp/0004 §Decision table
+records for the plan's platform flag].
+
+#### Expo Go is not exempt, which is the assumption this round falsified
+
+It was expected that any device would do for an Expo Go project, because the open path installs
+Expo Go if it has to. It does not — that is `expo start --ios`, and `smoke` deliberately opens
+through `simctl openurl` instead, precisely to avoid the AppleScript grant that flag needs
+(§The command line the dev-server start uses). Measured on a simulator created fresh for the
+question [observed — 2026-08-30]:
+
+| open | exit |
+| --- | --- |
+| `simctl openurl <fresh> 'exp://127.0.0.1:9999/--/?'` | **115** |
+| `simctl openurl <fresh> 'dailywordsgrok://expo-development-client/?url=…'` | **115** |
+
+Both schemes, one answer. So one rule covers both, and an Expo Go project on a machine where no
+simulator has Expo Go is refused exactly like a dev client is.
+
+#### Why the filesystem, and not `simctl`
+
+Both tools that answer "does this device have this app" refuse on a device that is not booted:
+
+```
+$ xcrun simctl get_app_container <shut-udid> host.exp.Exponent
+An error was encountered processing the command (domain=com.apple.CoreSimulator.SimError, code=405):
+Unable to lookup in current state: Shutdown
+```
+
+`simctl listapps` answers the same. Every device the choice is about is shut — that is the whole
+reason the run is about to boot one — so the tools can only answer the question nobody needs. What
+is left is the layout on disk, which is stable and public: an installed app is
+`Devices/<udid>/data/Containers/Bundle/Application/<container>/<Name>.app`, and `plutil` reads
+`CFBundleIdentifier` out of the `Info.plist` inside it (`src/device/installedApps.ts`). The
+container uuid and the directory name both say nothing about which app it is, so every bundle has
+to be looked into; the scan stops at the first device that has the app.
+
+**Android makes no such choice.** An emulator's package list needs `adb`, which needs the emulator
+running, and there is normally one AVD — so there is nothing to choose between and nothing this
+could read. The Android boot is unchanged.
+
+#### And a picture is a picture of something
+
+A screenshot is the one piece of evidence a reader believes without checking, and a home screen
+looks exactly like an app that failed to render. The `screenshot` phase's `ok` now says what it
+captured when no app of this project was connected, so an `ok` beside a failed `app` phase cannot
+be read as the app being fine.
+
+#### Live evidence
+
+[observed — 2026-08-30, `friction/run7/tapapp` (Expo Go), macOS 26. The trap was built rather than
+waited for: a simulator was created with nothing on it and booted once, which made it the machine's
+most recently used device — exactly the shape Kudo's run met. Both runs are the same machine state,
+the same project and the same port range; only the selection rule differs.]
+
+| Rule | Result |
+| --- | --- |
+| `lastBootedAt` only | **`20`** — `boot-device` `ok` 8.4 s on the empty simulator, then `app` `failed`: `"xcrun simctl openurl 1BC7DBBE… exp://…" exited 115` |
+| The app decides | **`0` in 33 s** — `boot-device` 7.1 s on `C159CF99…` "because it has Expo Go installed", `app` `ok` at 8.7 s, runtime read, window clean |
+
+The failing run also shows the screenshot line doing its job: `ok … the device's screen — no app of
+this project was connected, so this is not a picture of it running`.
+
+The **dev-client** half is proven at the stub tier rather than live, and the reason is the cost: a
+project whose plan does not build is one with a development build already installed *and* a build
+record matching its fingerprint, which is fifteen minutes of Xcode to produce. `wave29-devclient/
+dcapp` has the app installed on `C159CF99…` and no record, so its plan is `bare-stale` and the run
+refuses one phase earlier, at §This command does not build — correctly, and before the device
+choice is reached. The e2e cases cover the rest: booted-with-app preferred over fresh, and a
+refusal that issues **no `simctl boot` at all**.
 
 ## Android
 

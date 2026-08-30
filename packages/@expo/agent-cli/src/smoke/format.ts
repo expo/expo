@@ -149,7 +149,13 @@ function environmentLine(run: SmokeRun): string | null {
     acts.push(`started the dev server${stoppedSuffix(run, 'dev-server')}`);
   }
   if (run.environment.device === 'booted') {
-    acts.push(`booted ${run.deviceId ?? 'a device'}${stoppedSuffix(run, 'device')}`);
+    // Which device, **and on what grounds**: a machine has ten simulators and this run picked one
+    // of them (llp/0005 §The device that can open the app).
+    acts.push(
+      `booted ${run.deviceId ?? 'a device'}${
+        run.environment.deviceChoice ? chalk.dim(` — ${run.environment.deviceChoice}`) : ''
+      }${stoppedSuffix(run, 'device')}`
+    );
   }
   return acts.length > 0 ? acts.join(SEPARATOR) : null;
 }

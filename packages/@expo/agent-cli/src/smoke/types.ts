@@ -141,6 +141,15 @@ export interface SmokeEnvironmentJson {
   devServer: SmokeDevServerDisposition;
   device: SmokeDeviceDisposition;
   /**
+   * Why this device rather than another, in one clause. Null when this run chose none.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app
+   * A machine has ten simulators and a run boots one of them; which one, and on what grounds, is
+   * the difference between a gate that works and twelve seconds spent on a device that could never
+   * have opened the app. `"it has Expo Go installed"`, `"it was already booted"`.
+   */
+  deviceChoice: string | null;
+  /**
    * Everything this run put back, newest first.
    *
    * Empty for a run that started nothing — which is most runs. A failed entry is reported here

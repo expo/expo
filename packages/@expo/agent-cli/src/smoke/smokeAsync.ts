@@ -205,6 +205,11 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
   // Built once and shared by every phase that reads a target, so no two phases can disagree about
   // which app this run is about (F51). Built lazily: a run that fails at the dev-server phase never
   // spawns a device tool for it.
+  // Read once and shared by the start phase and the boot phase, which ask two halves of one
+  // question: what is this run about to open, and does it exist yet.
+  let target: Promise<SmokeTarget> | null = null;
+  const targetAsync = () => (target ??= resolveSmokeTargetAsync(projectRoot, options));
+
   let deviceIndex: Promise<DeviceNameIndex> | null = null;
   const indexAsync = (devServerUrl: string) =>
     (deviceIndex ??= probeDevServerAsync(devServerUrl).then((probe) =>
@@ -227,9 +232,9 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
       // consents to whatever plan it makes, and for a project whose target needs a development
       // build that is not installed, that plan is a compiler. `smoke` verifies a running app; the
       // command that builds one is `dev`, and this says so instead of spending ten minutes.
-      const refusal = await buildRefusalAsync(projectRoot, options);
-      if (refusal) {
-        return { ok: false, devServerUrl: null, reason: refusal };
+      const { buildRefusal } = await targetAsync();
+      if (buildRefusal) {
+        return { ok: false, devServerUrl: null, reason: buildRefusal };
       }
       const argv = [...START_DEV_SERVER_ARGV, ...startPortArgs(options.devServerUrl)];
       try {
@@ -287,15 +292,25 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
 
     // @ref src/device/bootDevice.ts. Local only, and that is not a gap: `--cloud` names a session
     // somebody else started and pays for, and the phase that calls this never runs for one.
+    //
+    // The app this run is about is handed over, so the boot picks a device that **has** it and
+    // declines rather than booting one that could not open it (llp/0005 §The device that can open
+    // the app).
     bootDevice: async (register) => {
+      const target = await targetAsync();
       const result = await bootDeviceAsync(options.platform, {
         timeoutMs: BOOT_DEVICE_TIMEOUT_MS[options.platform],
         onBooting: register,
+        appId: target.appId,
+        appLabel: target.appLabel,
+        installWith: target.installWith,
       });
       return {
         ok: result.ok,
         deviceId: result.deviceId,
         backend: result.backend,
+        refused: result.refused,
+        choice: result.choice,
         reason: result.ok
           ? null
           : `${result.reason}${result.name ? ` (${result.name})` : ''}`,
@@ -456,31 +471,59 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
 }
 
 /**
- * Why this run will not start a dev server, when the plan for one contains a build.
+ * What this run would open, and whether it may start a dev server for it at all.
  *
- * @ref llp/0005-runtime-loop-tools.rfc.md §This command does not build
- * The boundary between `smoke` and `dev`, and the one the bootstrap could most easily have blurred.
- * Starting a dev server is seconds; starting one for a project whose development build is missing
- * or stale is `expo run:ios`, which is a compiler, minutes of it, and a native toolchain that may
- * not be on this machine at all. A verification gate that quietly triggered that would be the
- * surprise `--start` was opt-in to avoid — so the gate keeps refusing it, and now says which
- * command does it.
- *
- * The question is `StartPlan.buildLocation`, which is the plan engine's own answer to "does this
- * plan build anything": Expo Go targets and a development build that is already installed for this
- * fingerprint both answer null, and both bootstrap in full.
- *
- * @returns the sentence for the failed phase, or null when there is nothing to refuse.
+ * One read of the project's plan, answering the two questions that are really the same one: which
+ * app is this run about, and is it an app that exists yet.
  */
-async function buildRefusalAsync(
+interface SmokeTarget {
+  /**
+   * Why this run will not start a dev server, or null when there is nothing to refuse.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §This command does not build
+   * The boundary between `smoke` and `dev`, and the one the bootstrap could most easily have
+   * blurred. Starting a dev server is seconds; starting one for a project whose development build
+   * is missing or stale is `expo run:ios`, which is a compiler, minutes of it, and a native
+   * toolchain that may not be on this machine at all. The question is `StartPlan.buildLocation`,
+   * the plan engine's own answer to "does this plan build anything": Expo Go targets and a
+   * development build already installed for this fingerprint both answer null, and both bootstrap
+   * in full.
+   */
+  buildRefusal: string | null;
+  /**
+   * The application id this run's deep link would open, or null when it could not be read.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app
+   * The **plan's** rule decides it rather than the app config alone, and that distinction is the
+   * whole value: an Expo Go project usually also declares an `ios.bundleIdentifier`, so a device
+   * choice made from the config would go looking for an app this run is never going to open.
+   */
+  appId: string | null;
+  /** What to call it in a sentence — `Expo Go` reads better than `host.exp.Exponent`. */
+  appLabel: string | null;
+  /** The command that puts that app on a simulator, for a machine where no device has it. */
+  installWith: string | null;
+}
+
+/** Read the plan once, and answer both questions from it. Never throws. */
+async function resolveSmokeTargetAsync(
   projectRoot: string,
   options: SmokeOptions
-): Promise<string | null> {
+): Promise<SmokeTarget> {
   const { probeProjectStateAsync } = require('../project/probe') as typeof import('../project/probe');
   const { readLastBuildFingerprints } =
     require('../plan/lastBuild') as typeof import('../plan/lastBuild');
   const { resolveStartPlanAsync } =
     require('../plan/resolveAsync') as typeof import('../plan/resolveAsync');
+  const { EXPO_GO_APP_ID, readConfiguredAppId } =
+    require('../runtime/appId') as typeof import('../runtime/appId');
+
+  const unknown: SmokeTarget = {
+    buildRefusal: null,
+    appId: null,
+    appLabel: null,
+    installWith: null,
+  };
 
   let plan;
   try {
@@ -490,18 +533,37 @@ async function buildRefusalAsync(
       lastBuild: readLastBuildFingerprints(projectRoot),
     });
   } catch {
-    // The probe is a courtesy, not a gate: a project it could not read is one this refusal knows
-    // nothing about, and refusing on an unread plan would stop runs that would have worked.
-    return null;
+    // The probe is a courtesy, not a gate: a project it could not read is one this knows nothing
+    // about, and refusing or choosing a device on an unread plan would stop runs that would have
+    // worked. Everything below degrades to the behaviour that was here before it.
+    return unknown;
   }
 
-  if (plan.buildLocation == null) {
-    return null;
-  }
-  return [
-    `this project needs a ${options.platform} development build before a dev server is any use, and this command does not build`,
-    `— "${PROGRAM_PREFIX} dev --${options.platform} --yes" runs that build and starts the dev server, and this gate answers once the app is installed`,
-  ].join(' ');
+  // `expo-go` is the one rule whose app is not this project's own build. Everything else — a
+  // development build, a bare project, one that needs `expo-dev-client` — opens the app the
+  // config names, whether or not it is installed anywhere yet.
+  const expoGo = plan.rule === 'expo-go';
+  const configured = expoGo ? null : readConfiguredAppId(projectRoot, options.platform);
+  const appId = expoGo ? EXPO_GO_APP_ID[options.platform] : configured;
+
+  return {
+    buildRefusal:
+      plan.buildLocation == null
+        ? null
+        : [
+            `this project needs a ${options.platform} development build before a dev server is any use, and this command does not build`,
+            `— "${PROGRAM_PREFIX} dev --${options.platform} --yes" runs that build and starts the dev server, and this gate answers once the app is installed`,
+          ].join(' '),
+    appId,
+    appLabel: expoGo ? 'Expo Go' : appId,
+    // Two different commands, because they put two different apps on the device. `expo start
+    // --ios` is what installs Expo Go [observed — `@expo/cli` `openPlatforms.ts` →
+    // `PlatformManager.openProjectInExpoGoAsync`, the same finding llp/0004 §Decision table
+    // records for the plan's platform flag]; a development build is `dev`'s to make.
+    installWith: expoGo
+      ? `npx expo start --${options.platform}`
+      : `${PROGRAM_PREFIX} dev --${options.platform} --yes`,
+  };
 }
 
 function firstLine(text: string): string {

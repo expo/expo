@@ -154,6 +154,59 @@ describe(pickSimulator, () => {
   });
 });
 
+// @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app.
+//
+// The rule above chose the simulator most recently used, which is a *proxy* for "the one with the
+// apps on it". Kudo's run found where the proxy breaks: a dev-client project booted a fresh
+// simulator and the deep link came back `115` — no handler — after a 12.4 s boot for a device that
+// could never have opened it. So the app itself is the rule now, and `lastBootedAt` is what breaks
+// the tie among the devices that have it.
+describe(`${pickSimulator.name} when the app decides`, () => {
+  const fresh = simulator({ udid: 'FRESH', name: 'iPhone 17', lastBootedAt: 0 });
+  const used = simulator({
+    udid: 'USED',
+    name: 'iPhone 17 Pro',
+    lastBootedAt: Date.parse('2026-08-30T08:00:00Z'),
+  });
+  const older = simulator({
+    udid: 'OLDER',
+    name: 'iPhone Air',
+    lastBootedAt: Date.parse('2026-08-20T08:00:00Z'),
+  });
+
+  it(`takes the device that has the app over the one used more recently`, () => {
+    const picked = pickSimulator([fresh, used, older], { hasApp: (entry) => entry.udid === 'OLDER' });
+
+    expect(picked?.udid).toBe('OLDER');
+  });
+
+  it(`breaks a tie between devices that have it the way it always did`, () => {
+    const picked = pickSimulator([fresh, used, older], { hasApp: (entry) => entry.udid !== 'FRESH' });
+
+    expect(picked?.udid).toBe('USED');
+  });
+
+  // The whole point: a boot that could not have opened the app is worse than no boot, because it
+  // costs the minute *and* answers nothing.
+  it(`takes nothing when no device has the app`, () => {
+    expect(pickSimulator([fresh, used, older], { hasApp: () => false })).toBeNull();
+  });
+
+  // A booted device still wins outright, and still without asking about the app: the caller only
+  // reaches this when its own probe found none, so one here is a race worth joining.
+  it(`still joins a simulator that is already booted`, () => {
+    const up = simulator({ udid: 'UP', state: 'Booted', lastBootedAt: 0 });
+
+    expect(pickSimulator([used, up], { hasApp: (entry) => entry.udid === 'USED' })?.udid).toBe('UP');
+  });
+
+  // No question asked is not the same as answered no. A caller that does not know which app it is
+  // about gets the rule that was there before this one.
+  it(`falls back to the most recently used when nothing asks about an app`, () => {
+    expect(pickSimulator([fresh, used, older])?.udid).toBe('USED');
+  });
+});
+
 describe(parseAvds, () => {
   it(`reads one name per line`, () => {
     expect(parseAvds('Pixel_7_API_35\ntuft-pixel\n')).toEqual(['Pixel_7_API_35', 'tuft-pixel']);

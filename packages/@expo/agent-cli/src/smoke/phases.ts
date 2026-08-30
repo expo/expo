@@ -74,6 +74,17 @@ export interface SmokeBootResult {
   backend: DeviceBackend | null;
   /** Why none came up. Null exactly when {@link ok} is true. */
   reason: string | null;
+  /**
+   * Nothing was booted **on purpose**: no device on this machine could have opened the app.
+   *
+   * @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app
+   * Reported apart from an ordinary boot failure because the two need different sentences and
+   * different next actions: one is a simulator that would not start, and this one is a machine
+   * that has nowhere to run this app yet.
+   */
+  refused?: boolean;
+  /** Why this device rather than another, for the report. Null when none was chosen. */
+  choice?: string | null;
 }
 
 /**
@@ -290,7 +301,7 @@ export const APP_ATTACH_TIMEOUT_MS = 120_000;
  * no debugger has **decided** and is asked once, and a wait that ends with no answer reports the
  * runtime's own reason exactly as it did before.
  */
-export const RUNTIME_READY_TIMEOUT_MS = 30_000;
+export const RUNTIME_READY_TIMEOUT_MS = 15_000;
 
 /** How often the runtime is asked again while that wait runs. */
 const RUNTIME_READY_POLL_MS = 500;
@@ -393,6 +404,7 @@ export async function runSmokePhasesAsync(
   const environment: SmokeEnvironmentJson = {
     devServer: 'absent',
     device: 'absent',
+    deviceChoice: null,
     cleanup: [],
   };
 
@@ -783,7 +795,11 @@ async function runPhasesAsync(
           return result.ok && result.deviceId != null
             ? {
                 status: 'ok' as const,
-                reason: `booted ${result.deviceId} for this run, and shut it down again afterwards`,
+                reason: [
+                  `booted ${result.deviceId} for this run`,
+                  result.choice ? ` because ${result.choice}` : '',
+                  `, and shut it down again afterwards`,
+                ].join(''),
                 value: result,
               }
             : {
@@ -794,17 +810,27 @@ async function runPhasesAsync(
         });
         if (boot.ok && boot.deviceId != null) {
           environment.device = 'booted';
+          environment.deviceChoice = boot.choice ?? null;
           probed = { deviceId: boot.deviceId, backend: boot.backend, reason: null };
         } else {
-          environment.device = 'failed';
+          // A boot that was **declined** left the machine exactly as it was, so the report must not
+          // say a device failed to come up: nothing was asked to (llp/0005 §The device that can
+          // open the app).
+          environment.device = boot.refused ? 'absent' : 'failed';
           skipRest(
             'app',
-            'no device could be booted, so there was nothing to open the app on and nothing to read'
+            boot.refused
+              ? 'no device on this machine has the app, so there was nothing to open it on'
+              : 'no device could be booted, so there was nothing to open the app on and nothing to read'
           );
           return done('failed', {
             ...base,
             bundle,
-            screenshot: noScreenshot('no device came up, so nothing was photographed'),
+            screenshot: noScreenshot(
+              boot.refused
+                ? 'no device has the app, so none was booted and nothing was photographed'
+                : 'no device came up, so nothing was photographed'
+            ),
           });
         }
       }
@@ -925,6 +951,7 @@ async function runPhasesAsync(
     const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
       settleAsync: settleIfOpenedAsync,
       deviceAsync,
+      appConnected: false,
     });
     return done(appPhase.status === 'failed' ? 'failed' : 'inconclusive', {
       ...withApp,
@@ -976,6 +1003,8 @@ async function runPhasesAsync(
       const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
         settleAsync: settleIfOpenedAsync,
         deviceAsync,
+        // The route was refused, so whatever is on screen is not the route under test.
+        appConnected: false,
       });
       return done('failed', {
         ...withApp,
@@ -1082,6 +1111,7 @@ async function runPhasesAsync(
   const captured = await captureIfPossible(deps, options, deviceId, deviceBackend, phases, {
     settleAsync: settleIfOpenedAsync,
     deviceAsync,
+    appConnected: true,
   });
 
   // The verdict. `failed` needs something to have gone wrong; `passed` needs the runtime to have
@@ -1132,6 +1162,13 @@ async function captureIfPossible(
      * yet (@ref ./phases §APP_SETTLE_MS).
      */
     settleAsync: () => Promise<void>;
+    /**
+     * Whether an app of this project was connected when the picture was taken.
+     *
+     * Carried so the `ok` line can say what the picture is *of*: a screenshot of a device with no
+     * app on it is evidence of the device, and reads as evidence of the app.
+     */
+    appConnected: boolean;
     /** The run's own device probe, cached, so this phase never resolves a second one (F98). */
     deviceAsync: () => Promise<{
       deviceId: string | null;
@@ -1172,7 +1209,18 @@ async function captureIfPossible(
   await settle.settleAsync();
 
   const result = await deps.captureScreenshot(device, backend);
-  push(result.ok ? 'ok' : 'skipped', result.ok ? null : result.reason);
+  push(
+    result.ok ? 'ok' : 'skipped',
+    result.ok
+      ? // @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app. A picture is
+        // the one piece of evidence a reader believes without checking, and a picture of a home
+        // screen looks exactly like a picture of an app that failed to render. An `ok` beside a
+        // run whose app never connected has to say what it is a picture *of*.
+        settle.appConnected
+        ? null
+        : `the device's screen — no app of this project was connected, so this is not a picture of it running`
+      : result.reason
+  );
   // Handed back, and this is F98. A healthy app opens nothing — the `app` phase finds it already
   // connected and the `route` phase is skipped — so before this the two steps that set the run's
   // device fields never ran, and a run that had photographed a **billed cloud session** reported

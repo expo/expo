@@ -464,6 +464,63 @@ describe(runSmokePhasesAsync, () => {
       expect(statusOf(run, 'boot-device')).toBeUndefined();
     });
 
+    // @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app. A boot that could
+    // not have opened the app is worse than no boot: it costs the minute *and* answers nothing.
+    // Declining is the right outcome, and the report has to say that rather than describing a
+    // simulator that would not start.
+    it(`reports a declined boot as a machine with nowhere to run the app`, async () => {
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...bareMachine({
+            bootDevice: async () => ({
+              ok: false,
+              deviceId: null,
+              backend: null,
+              refused: true,
+              choice: null,
+              reason: 'no iOS simulator has Expo Go installed, so booting one would open nothing',
+            }),
+          }),
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(run.outcome).toBe('failed');
+      expect(statusOf(run, 'boot-device')).toBe('failed');
+      expect(run.phases.find((phase) => phase.id === 'boot-device')?.reason).toContain(
+        'would open nothing'
+      );
+      // Nothing was booted, so nothing is `failed` about the device: the machine is as it was.
+      expect(run.environment.device).toBe('absent');
+      expect(run.environment.cleanup.map((entry) => entry.resource)).toEqual(['dev-server']);
+    });
+
+    it(`says why it chose the device it booted`, async () => {
+      const run = await runSmokePhasesAsync(
+        deps({
+          ...bareMachine({
+            bootDevice: async (register) => {
+              register({ deviceId: 'SIM-BOOTED', backend: 'local-ios' });
+              return {
+                ok: true,
+                deviceId: 'SIM-BOOTED',
+                backend: 'local-ios' as const,
+                reason: null,
+                refused: false,
+                choice: 'it has Expo Go installed',
+              };
+            },
+          }),
+        }),
+        options({ bootstrap: true })
+      );
+
+      expect(run.environment.deviceChoice).toBe('it has Expo Go installed');
+      expect(run.phases.find((phase) => phase.id === 'boot-device')?.reason).toContain(
+        'because it has Expo Go installed'
+      );
+    });
+
     it(`fails the boot phase when the device would not come up, and skips what needed it`, async () => {
       const run = await runSmokePhasesAsync(
         deps({
@@ -1440,6 +1497,36 @@ describe(smokeExitCode, () => {
     expect(smokeExitCode(run.outcome)).toBe(code);
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The device that can open the app. A picture is the one
+// piece of evidence a reader believes without checking, and a home screen looks exactly like an app
+// that failed to render — so an `ok` on a run whose app never connected has to say what it is a
+// picture of.
+describe(`${runSmokePhasesAsync.name} and what the picture shows`, () => {
+  it(`says the app was not connected, on a run where it was not`, async () => {
+    const run = await runSmokePhasesAsync(
+      deps({
+        waitForAppConnection: async () => ({ appsConnected: 0, timedOut: true, waitedMs: 1 }),
+        probeDevice: async () => ({ deviceId: 'SIM-1', backend: 'local-ios' as const, reason: null }),
+      }),
+      options()
+    );
+
+    const shot = run.phases.find((phase) => phase.id === 'screenshot');
+    expect(shot?.status).toBe('ok');
+    expect(shot?.reason).toContain('no app of this project was connected');
+  });
+
+  it(`says nothing extra when the app was there`, async () => {
+    const run = await runSmokePhasesAsync(deps(), options());
+
+    expect(run.phases.find((phase) => phase.id === 'screenshot')).toMatchObject({
+      status: 'ok',
+      reason: null,
+    });
+  });
+});
+
 
 // @ref ../phases §APP_SETTLE_MS — friction run 6, F57. A run that opened the app itself
 // photographed it while it was still loading, so the picture the gate hands back — the half of

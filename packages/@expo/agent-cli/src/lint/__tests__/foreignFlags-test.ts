@@ -86,6 +86,12 @@ describe("the flags this CLI writes onto a command line", () => {
     // the Expo family, and they were run as the rule requires [observed — live, 2026-08-30, macOS
     // 26 with Xcode: `xcrun simctl list devices -j` printed the runtime table and exited 0, and
     // `~/Library/Android/sdk/emulator/emulator -list-avds` printed `tuft-pixel` and exited 0].
+    //
+    // The two `src/device/installedApps.ts` rows are `plutil`, which ships with macOS rather than
+    // with a package, so "run it against the published binary" is the only form the rule can take
+    // — and it was [observed — live, 2026-08-30: `plutil -extract CFBundleIdentifier raw -o -
+    // <sim>/…/ExpoGo.app/Info.plist` printed `host.exp.Exponent` and exited 0, and the same call
+    // against a development build's bundle printed `com.kudochien.dcapp`].
     expect(
       sweep.foreignFlags.map(({ flag, file }) => `${flag}  ${file}`).sort()
     ).toMatchInlineSnapshot(`
@@ -115,11 +121,13 @@ describe("the flags this CLI writes onto a command line", () => {
         "--yes  src/utils/easCli.ts",
         "-Fpc  src/dev/portListener.ts",
         "-ano  src/dev/portListener.ts",
+        "-extract  src/device/installedApps.ts",
         "-j  src/device/bootDevice.ts",
         "-j  src/navigate/device.ts",
         "-j  src/runtime/targetPlatform.ts",
         "-list-avds  src/device/bootDevice.ts",
         "-nP  src/dev/portListener.ts",
+        "-o  src/device/installedApps.ts",
         "-p  src/device/screenshot.ts",
         "-p  src/toolchain/detect.ts",
         "-s  src/device/screenshot.ts",

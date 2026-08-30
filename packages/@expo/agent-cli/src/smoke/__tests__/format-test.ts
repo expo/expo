@@ -49,7 +49,7 @@ function run(overrides: Partial<SmokeRun> = {}): SmokeRun {
     },
     projectRootMatched: true,
     started: false,
-    environment: { devServer: 'reused', device: 'reused', cleanup: [] },
+    environment: { devServer: 'reused', device: 'reused', deviceChoice: null, cleanup: [] },
     appsConnected: 1,
     bundle: {
       outcome: 'ok',
@@ -276,6 +276,7 @@ describe(formatSmokeResult, () => {
           environment: {
             devServer: 'started',
             device: 'booted',
+            deviceChoice: 'it has Expo Go installed',
             cleanup: [
               { resource: 'device', target: 'SIM-BOOTED', ok: true, reason: null, ms: 2100 },
               {
@@ -306,6 +307,7 @@ describe(formatSmokeResult, () => {
           environment: {
             devServer: 'started',
             device: 'reused',
+            deviceChoice: null,
             cleanup: [
               {
                 resource: 'dev-server',
