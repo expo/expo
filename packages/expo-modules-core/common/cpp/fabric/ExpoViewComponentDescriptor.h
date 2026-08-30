@@ -30,12 +30,16 @@ public:
     return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
   }
 
+  static bool isRNHostView(const react::Props::Shared &props) {
+    // Currently, only RNHostView can have `sizesToContent` set to true.
+    return ShadowNodeType::sizesToContent(props);
+  }
+
   std::shared_ptr<facebook::react::ShadowNode> createShadowNode(
     const facebook::react::ShadowNodeFragment &fragment,
     const facebook::react::ShadowNodeFamily::Shared &family
   ) const override {
-    // Currently, only RNHostView can have `sizesToContent` set to true.
-    if (!ShadowNodeType::sizesToContent(fragment.props)) {
+    if (!isRNHostView(fragment.props)) {
       return facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::createShadowNode(
         fragment, family);
     }
@@ -104,8 +108,7 @@ public:
       snode->updateYogaProps();
     }
 
-    // Currently, RNHostView is the only node that can have `sizesToContent` set to true
-    if (ShadowNodeType::sizesToContent(snode->getProps())) {
+    if (isRNHostView(snode->getProps())) {
       auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
         snode->getProps());
       auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
