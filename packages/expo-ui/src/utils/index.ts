@@ -2,14 +2,8 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 export const hostedContent = (children: React.ReactNode): React.ReactNode => {
-  const elements = flattenFragments(children);
-
-  if (elements.length === 0) {
+  if (flattenFragments(children).length === 0) {
     return children;
-  }
-
-  if (elements.length === 1 && React.isValidElement(elements[0])) {
-    return elements[0];
   }
 
   return React.createElement(
