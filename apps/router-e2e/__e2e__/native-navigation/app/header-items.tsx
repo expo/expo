@@ -15,6 +15,28 @@ import {
 
 import { searchIcon, sendIcon, deleteIcon } from './icons';
 
+function CustomHeaderElement() {
+  return (
+    <Pressable
+      testID="custom-header-element"
+      onPress={() => Alert.alert('Custom Element', 'Custom header element pressed!')}
+      style={styles.customHeaderElement}>
+      <SymbolView
+        size={20}
+        tintColor={Platform.select({
+          ios: Color.ios.systemBlue,
+          android: Color.android.dynamic.primary,
+        })}
+        style={{ width: 20, height: 20 }}
+        name={{
+          ios: 'heart.fill',
+          android: 'favorite',
+        }}
+      />
+    </Pressable>
+  );
+}
+
 export default function HeaderItemsScreen() {
   const params = useLocalSearchParams();
 
@@ -96,28 +118,6 @@ export default function HeaderItemsScreen() {
     );
     Alert.alert('Color Selected', `You selected ${color}`);
   };
-
-  function CustomHeaderElement() {
-    return (
-      <Pressable
-        testID="custom-header-element"
-        onPress={() => Alert.alert('Custom Element', 'Custom header element pressed!')}
-        style={styles.customHeaderElement}>
-        <SymbolView
-          size={20}
-          tintColor={Platform.select({
-            ios: Color.ios.systemBlue,
-            android: Color.android.dynamic.primary,
-          })}
-          style={{ width: 20, height: 20 }}
-          name={{
-            ios: 'heart.fill',
-            android: 'favorite',
-          }}
-        />
-      </Pressable>
-    );
-  }
 
   return (
     <>

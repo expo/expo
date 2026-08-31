@@ -112,13 +112,8 @@ export default defineConfig({
     // get triaged.
     'react/globals': 'off',
     'react/immutability': 'off',
-    'react/preserve-manual-memoization': 'off',
-    'react/purity': 'off',
     'react/refs': 'off',
     'react/set-state-in-effect': 'off',
-    'react/static-components': 'off',
-    'react/use-memo': 'off',
-    'react/void-use-memo': 'off',
 
     // -----------------
     // --- Stylistic ---
