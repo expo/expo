@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Generate Babel configs through `expo/internal/babel-preset` so projects do not depend on package-manager hoisting of `babel-preset-expo`. ([#49369](https://github.com/expo/expo/pull/49369) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - Show the Xcode build log path when `run:ios` fails. ([#48624](https://github.com/expo/expo/pull/48624) by [@ramonclaudio](https://github.com/ramonclaudio))

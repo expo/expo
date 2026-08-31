@@ -56,10 +56,7 @@ export const TEMPLATES: {
     id: 'babel.config.js',
     file: (projectRoot) => importFromVendor(projectRoot, 'babel.config.js'),
     destination: () => 'babel.config.js',
-    dependencies: [
-      // Even though this is installed in `expo`, we should add it for now.
-      'babel-preset-expo',
-    ],
+    dependencies: [],
   },
   {
     id: 'metro.config.js',

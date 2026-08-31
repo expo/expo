@@ -43,7 +43,7 @@ describe(queryAndGenerateAsync, () => {
     expect(copyAsync).not.toHaveBeenCalled();
     expect(installAsync).not.toHaveBeenCalled();
   });
-  it(`queries a file, generates, and installs`, async () => {
+  it(`queries a Babel config without installing a transitive preset`, async () => {
     await queryAndGenerateAsync('/', {
       files: ['babel.config.js'],
       props: {
@@ -56,7 +56,7 @@ describe(queryAndGenerateAsync, () => {
       expect.stringMatching(/@expo\/cli\/static\/template\/babel\.config\.js/),
       '/babel.config.js'
     );
-    expect(installAsync).toHaveBeenCalledWith(['babel-preset-expo'], {}, ['--dev', 'foobar']);
+    expect(installAsync).not.toHaveBeenCalled();
   });
 });
 
