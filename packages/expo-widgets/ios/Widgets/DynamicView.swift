@@ -194,9 +194,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [Any] {
-        let validChildren = flattenChildNodes(children)
-        initialProps.children = validChildren.enumerated().map { index, child in
-          WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: index))
+        initialProps.children = flattenChildNodes(children).map { slot, child in
+          WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: slot))
         }
       } else if let child = props["children"] as? [String: Any] {
         initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: 0))]
@@ -204,15 +203,27 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
     }
   }
 
-  private func flattenChildNodes(_ children: [Any]) -> [[String: Any]] {
-    return children.flatMap { child -> [[String: Any]] in
-      if let node = child as? [String: Any] {
-        return [node]
+  // Flattens nested child arrays into (slot, node) pairs. Slots are numbered by
+  // position in the raw children structure — the `null`/`false` that conditional
+  // rendering (`{cond && <X/>}`) leaves in the array still consumes its slot, as
+  // it does in React — so an unkeyed sibling keeps its slot, and therefore its
+  // identity, when a conditional sibling appears or disappears.
+  private func flattenChildNodes(_ children: [Any]) -> [(slot: Int, node: [String: Any])] {
+    var slot = 0
+    var result: [(slot: Int, node: [String: Any])] = []
+    func walk(_ children: [Any]) {
+      for child in children {
+        if let node = child as? [String: Any] {
+          result.append((slot: slot, node: node))
+          slot += 1
+        } else if let nested = child as? [Any] {
+          walk(nested)
+        } else {
+          slot += 1
+        }
       }
-      if let nested = child as? [Any] {
-        return flattenChildNodes(nested)
-      }
-      return []
     }
+    walk(children)
+    return result
   }
 }
