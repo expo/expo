@@ -13,7 +13,7 @@ import { CommandError } from '../../utils/errors';
 import { loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
-import { getSchemesForIosAsync } from '../../utils/scheme';
+import { getSchemesForIosAsync, resolveExpoOrLongestScheme } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
@@ -206,19 +206,22 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     }
   }
 
+  // Prefer the schemes declared by the target being launched.
+  let scheme = resolveExpoOrLongestScheme(launchInfo.schemes)[0];
+  if (!scheme && !isCustomBinary) {
+    // Fallback to the Info.plist of the first application target in
+    // the pbxproj, which may be wrong if multiple targets exists in
+    // the project, only if not launching a custom binary.
+    scheme = (await getSchemesForIosAsync(projectRoot))[0];
+  }
+
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     mode,
     headless: !props.shouldStartBundler,
-    // If a scheme is specified then use that instead of the package name.
-
-    scheme: isCustomBinary
-      ? // If launching a custom binary, use the schemes in the Info.plist.
-        launchInfo.schemes[0]
-      : // If a scheme is specified then use that instead of the package name.
-        (await getSchemesForIosAsync(projectRoot))?.[0],
+    scheme,
   });
 
   // Install and launch the app binary on a device.
