@@ -17,8 +17,10 @@
 #                            in place instead of posting a new one (GitHub keeps the
 #                            edit history). If the thread has no findings comment
 #                            yet, a new one is posted. Dispatch input: `retry`.
-#   ... --announce           post the "started — watch the run" comment. Off by
-#                            default; the eyes reaction is the only receipt.
+#   ... --no-announce        skip the "started — watch the run" comment; the
+#                            eyes reaction is then the only receipt. Announcing
+#                            is the default on the comment path (dispatch runs
+#                            are always quiet).
 #   @expo-bot check          verify + review from one comment. This workflow runs the
 #                            verify half (--fix / --no-fix apply, issues and PRs);
 #                            expo-code-review-command.yml picks up the review half
@@ -31,7 +33,8 @@
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
 # (hosted E2B Linux sandboxes, GHA VMs for image-specific checks — Windows
-# Server, macOS 15, Ubuntu CI — proxied EAS builds, hosted iOS simulators).
+# Server, macOS 15, Ubuntu CI — proxied EAS builds, hosted iOS and Android
+# simulator sessions).
 # Linux E2B + the hosted simulator stay the default. A GHA VM is the
 # exception: same image as GitHub Actions, not a pauseable sandbox and not
 # EAS Simulator. An Expo app on that VM can still be shown on the hosted
@@ -515,12 +518,14 @@ jobs:
                 ;;
             esac
           fi
-          # The "started — watch the run" comment is opt-in: threads stay
-          # quiet unless the commander asks for the watch link with
-          # --announce. The eyes reaction remains the default receipt.
-          announce=false
-          if [ "$QUIET" != "true" ]; then
-            case " $line " in *" --announce "*) announce=true ;; esac
+          # The "started — watch the run" comment posts by default on the
+          # comment path; --no-announce opts a thread out, leaving the eyes
+          # reaction as the only receipt. Dispatch runs stay quiet always.
+          announce=true
+          if [ "$QUIET" = "true" ]; then
+            announce=false
+          else
+            case " $line " in *" --no-announce "*) announce=false ;; esac
           fi
           # --retry: the publish phase passes updateLatest to the findings
           # tool, so the thread's previous findings comment is edited in
@@ -562,10 +567,10 @@ jobs:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
 
-      # Opt-in via --announce: the Actions run streams the agent's live
-      # progress, and this posts that link the moment work begins (the
+      # Watchable from the start: the Actions run streams the agent's live
+      # progress, so the thread gets that link the moment work begins (the
       # findings comment lands separately when the investigation completes).
-      # Default is no comment — the eyes reaction is the only receipt.
+      # --no-announce opts out, leaving the eyes reaction as the only receipt.
       - name: Announce run
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && steps.cmd.outputs.announce == 'true' && env.QUIET != 'true'
         env:
@@ -588,9 +593,9 @@ jobs:
       # are in_progress too, so ordering by (created_at, id) IS the queue;
       # admission by global position keeps the executing count at CAP even
       # when several waiters poll at once. Runs pending on the per-target
-      # group are not in_progress and hold no capacity. With --announce the
-      # thread has the watch link during this wait; by default the queue
-      # wait is visible only from the Actions tab.
+      # group are not in_progress and hold no capacity. The announce above
+      # already posted the watch link (unless --no-announce), so the queue
+      # wait is visible from the thread.
       - name: Wait for a free verification slot
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
@@ -871,7 +876,7 @@ jobs:
           scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
             -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
             -H 'Content-Type: application/json' \
-            -d "{\"sandboxBudget\":2,\"buildBudget\":5,\"ttlSeconds\":10800,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"agent-command-${GITHUB_RUN_ID}\"}" \
+            -d "{\"sandboxBudget\":2,\"buildBudget\":5,\"ttlSeconds\":10800,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"optInTools\":[\"create_gha_sandbox\"],\"name\":\"agent-command-${GITHUB_RUN_ID}\"}" \
             | jq -r '.token // empty')
           if [ -z "$scoped" ]; then
             echo "::error::Could not mint a scoped sandbox token"

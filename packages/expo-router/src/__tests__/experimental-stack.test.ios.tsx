@@ -228,8 +228,8 @@ describe('ExperimentalStack — Screen activityMode', () => {
 
     const props = screenPropsByKey();
     const keys = Object.keys(props);
-    expect(keys.some((k) => k.startsWith('a-'))).toBe(true);
-    expect(keys.some((k) => k.startsWith('b-'))).toBe(true);
+    expect(keys.some((k) => k.startsWith('a:'))).toBe(true);
+    expect(keys.some((k) => k.startsWith('b:'))).toBe(true);
   });
 });
 
@@ -248,7 +248,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey?.startsWith('b-'));
+      .find((p: any) => p.screenKey?.startsWith('b:'));
 
     expect(propsB).toBeDefined();
     expect(propsB.onDismiss).toBeUndefined();
@@ -296,7 +296,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey?.startsWith('b-'));
+      .find((p: any) => p.screenKey?.startsWith('b:'));
 
     act(() => {
       propsB.onNativeDismiss(propsB.screenKey);
@@ -322,7 +322,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
       const propsB = MockedScreen.mock.calls
         .map((call) => call[0])
         .reverse()
-        .find((props: any) => props.screenKey?.startsWith('b-'));
+        .find((props: any) => props.screenKey?.startsWith('b:'));
 
       expect(propsB.preventNativeDismiss).toBe(false);
       act(() => propsB.onNativeDismissPrevented());
@@ -361,7 +361,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsNested = MockedScreen.mock.calls
       .map((call) => call[0])
       .reverse()
-      .find((props: any) => props.screenKey?.startsWith('nested-'));
+      .find((props: any) => props.screenKey?.startsWith('nested:'));
 
     expect(propsNested.preventNativeDismiss).toBe(true);
     act(() => propsNested.onNativeDismissPrevented());

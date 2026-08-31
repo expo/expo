@@ -48,6 +48,9 @@ module Expo
     # Environment variable for a shared remote base URL used by external prebuilt packages.
     EXTERNAL_MODULES_BASE_URL_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_BASE_URL'.freeze
 
+    # When set to a file path, `pod install` writes the derivations dump there.
+    DUMP_ENV_VAR = 'EXPO_PRECOMPILED_DUMP'.freeze
+
     # Subdirectory within each pod dir for tarballs and build state
     ARTIFACTS_DIR_NAME = 'artifacts'.freeze
 
@@ -194,9 +197,11 @@ module Expo
       #
       # @param installer [Pod::Installer] The CocoaPods installer instance
       def perform_post_install(installer)
+        dump_derivations(ENV[DUMP_ENV_VAR]) unless ENV[DUMP_ENV_VAR].to_s.empty?
         print_linking_summary
         disable_swift_interface_verification(installer)
         configure_use_frameworks(installer)
+        requote_swift_compat_header_paths(installer)
         ensure_artifacts(installer)
         configure_header_search_paths(installer)
         configure_prebuilt_dependency_header_search_paths(installer)
@@ -240,6 +245,38 @@ module Expo
             end
           end
         end
+      end
+
+      # Canonical JSON dump (one pod per line) of the pure derivations behind
+      # pod_lookup_map — the ENG-25370 snapshot/differential baseline.
+      # build_output_dir is excluded: it depends on which artifacts exist locally.
+      def dump_derivations(output_path)
+        repo_root = memoized_repo_root
+        lines = pod_lookup_map.sort_by { |pod_name, _| pod_name }.map do |pod_name, info|
+          entry = {
+            'type' => info[:type].to_s,
+            'npmPackage' => info[:npm_package],
+            'packageRoot' => repo_relative_path(info[:package_root], repo_root),
+            'podspecDir' => repo_relative_path(info[:podspec_dir], repo_root),
+            'productName' => info[:product_name],
+            'codegenName' => info[:codegen_name],
+            'spmDependencyFrameworks' => info[:spm_dependency_frameworks] || [],
+            'spmDependencyVersions' => (info[:spm_dependency_versions] || {}).sort.to_h,
+            'dependencyProducts' => info[:prebuilt_dependency_pods] || [],
+            'autolinkWhen' => info[:autolink_when],
+          }
+          "  #{pod_name.to_json}: #{JSON.generate(entry)}"
+        end
+        FileUtils.mkdir_p(File.dirname(output_path))
+        File.write(output_path, "{\n#{lines.join(",\n")}\n}\n")
+        Pod::UI.puts "[Expo-precompiled] Wrote derivations dump (#{lines.size} pods) to #{output_path}"
+      end
+
+      # pnpm store segments are collapsed: their names embed version and patch
+      # hashes, which would churn the fixture on every dependency bump.
+      def repo_relative_path(path, repo_root)
+        return path unless path && repo_root && path.start_with?(repo_root + File::SEPARATOR)
+        path[(repo_root.length + 1)..].sub(%r{\Anode_modules/\.pnpm/[^/]+/node_modules/}, 'node_modules/')
       end
 
       # Symlinks each shared SPM dependency xcframework (e.g. SDWebImage) into the
@@ -869,6 +906,14 @@ module Expo
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
 
+        # This workaround rewires the xcframework-root Headers/ layout that react-native
+        # shipped up to 0.86. react-native 0.87 dropped that layout (headers are extracted
+        # to a Pods/React-Core-prebuilt/Headers sidecar with its own modulemap instead),
+        # so applying it there would point the React module at a missing umbrella header
+        # and break every React module build. Skip when the expected layout is absent.
+        umbrella_header = File.join(xcframework_path, 'Headers', 'React_Core', 'React_Core-umbrella.h')
+        return unless File.exist?(umbrella_header)
+
         target_support_dir = File.join(installer.sandbox.root, 'Target Support Files', 'React-Core-prebuilt')
         FileUtils.mkdir_p(target_support_dir)
 
@@ -994,6 +1039,21 @@ module Expo
         return content.sub(line) { "#{$1} #{value}" } if existing
 
         (content.end_with?("\n") ? content : content + "\n") + "#{key} = $(inherited) #{value}\n"
+      end
+
+      # CocoaPods shell-splits `pod_target_xcconfig` search paths, dropping the quotes
+      # around entries that contain spaces. `.../Swift Compatibility Header` then lands
+      # in the generated pod xcconfigs as three broken -I flags, so a source-built Swift
+      # pod's dependents can't find its generated ObjC compatibility header (e.g. the
+      # Expo pod importing ExpoModulesCore-Swift.h). Re-quote those entries after
+      # CocoaPods writes the xcconfigs. Aggregate (user-target) xcconfigs keep their
+      # quotes and are left untouched by the negative-lookaround guards.
+      def requote_swift_compat_header_paths(installer)
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          fixed = content.gsub(%r{(?<!")(\$[({]PODS_CONFIGURATION_BUILD_DIR[)}]/[^ "\n]+/Swift Compatibility Header)(?!")}, '"\1"')
+          File.write(xcconfig_path, fixed) if fixed != content
+        end
       end
 
       # TODO(ExpoModulesJSI-xcframework): Remove this method when ExpoModulesJSI.xcframework

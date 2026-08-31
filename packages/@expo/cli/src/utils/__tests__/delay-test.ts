@@ -25,15 +25,26 @@ describe(waitForActionAsync, () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
   it(`times out waiting for a given action to return a truthy value`, async () => {
+    // Fake timers keep the number of polls deterministic. On real timers the
+    // action runs twice only while two 80ms intervals still fit in the 100ms
+    // max wait time. A busy machine can delay the first interval past 100ms,
+    // and then the action runs once.
+    jest.useFakeTimers();
     const fn = jest.fn(() => '');
-    const result = await waitForActionAsync({
+
+    const promise = waitForActionAsync({
       action: fn,
       interval: 80,
       maxWaitTime: 100,
     });
-    expect(result).toEqual('');
+    // First interval: 80ms elapsed, still inside the max wait time.
+    await jest.advanceTimersByTimeAsync(80);
+    // Second interval: 160ms elapsed, so the loop stops.
+    await jest.advanceTimersByTimeAsync(80);
+
+    await expect(promise).resolves.toEqual('');
     expect(fn).toHaveBeenCalledTimes(2);
-  }, 500);
+  });
 });
 
 describe(resolveWithTimeout, () => {

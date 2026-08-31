@@ -4,6 +4,7 @@ description: Learn how to track and analyze your account's activities by using t
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
 > **info** Audit logs are available for [Enterprise plan](https://expo.dev/pricing) customers.
 
@@ -14,7 +15,7 @@ Audit logs record actions made with Expo Application Services (EAS) by accounts.
 - Audit logs can only be created and never modified or deleted, they serve as a source of truth to help monitor events and debug issues occurring within accounts.
 - **Audit logs are available to Enterprise plan customers**. When subscribed, some of the logs used internally by Expo are immediately available, while other types of logs are starting to be collected after the subscription is activated.
 - Audit logs are stored for 1.5 years. If an account is deleted, its audit logs will be deleted after 90 days.
-- To access them, go to **Account settings**/**Organization settings** > [**Audit logs**](https://expo.dev/accounts/[account]/settings/audit-logs).
+- To access them, go to **Account settings**/**Organization settings** > [**Audit logs**](https://expo.dev/accounts/[account]/settings/audit-logs), or use [EAS CLI](#view-audit-logs-with-eas-cli).
 
 <ContentSpotlight
   alt="Screenshot showing the audit logs page for an account."
@@ -103,4 +104,16 @@ You can export your audit logs to review them outside of the Expo dashboard. To 
 
 The exported file will include all the fields shown on the Audit logs page except for the **Message** field.
 
-> **Note:** Export is currently only available through the Expo website. There is no API available for programmatic export of audit logs.
+> **Note:** The **Export** button is only available on the Expo website. To read audit logs programmatically, use [EAS CLI](#view-audit-logs-with-eas-cli).
+
+## View audit logs with EAS CLI
+
+You can also programmatically read audit logs from a terminal. Run the `eas account:audit` command with the account name:
+
+<Terminal cmd={['$ eas account:audit my-account']} />
+
+If you omit the account name, the command prompts you to select one. To read the logs in a script, pass the `--json` flag:
+
+<Terminal cmd={['$ eas account:audit my-account --json']} />
+
+For pagination and the remaining flags, see the [`eas account:audit`](/eas/cli/#eas-account-audit-account-name) reference.

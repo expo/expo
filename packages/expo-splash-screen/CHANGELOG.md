@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Generate a transparent Android splash drawable when the config plugin has no image. ([#49371](https://github.com/expo/expo/pull/49371) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
+
 ### 💡 Others
 
 ## 57.0.5 - 2026-07-22

@@ -19,7 +19,8 @@ begin
   if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
     project_root = ENV['PROJECT_ROOT'] || Pod::Config.instance.installation_root.to_s
     dev_client_package = podfile_properties['expo.updates.devClientPackage'] || 'expo-dev-client'
-    use_dev_client = File.dirname(`node --print "require.resolve('#{dev_client_package}/package.json', { paths: ['#{__dir__}', '#{project_root}'] })"`).length > 0
+    dev_client_package_json_path = `node --print "require.resolve('#{dev_client_package}/package.json', { paths: ['#{__dir__}', '#{project_root}'] })" 2>/dev/null`.strip
+    use_dev_client = !dev_client_package_json_path.empty?
   end
 rescue
   use_dev_client = false

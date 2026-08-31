@@ -12,8 +12,78 @@ import {
   convertMdxInstructionToMarkdown,
   extractFrontmatter,
   findMdxSource,
+  insertAgentInstructionsAfterH1,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
+
+describe('insertAgentInstructionsAfterH1', () => {
+  const block =
+    '<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n';
+
+  it('inserts the block below the first H1', () => {
+    const markdown = '# Page title\n\nFirst paragraph.\n\n## First section\n\nMore.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(
+      '# Page title\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nFirst paragraph.\n\n## First section\n\nMore.'
+    );
+  });
+
+  it('targets the first H1 even when content precedes it', () => {
+    const markdown = 'Intro line.\n\n# Page title\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result.indexOf('# Page title')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(result.indexOf('Body.'));
+  });
+
+  it('prepends the block when no H1 exists', () => {
+    const markdown = 'This page redirects to another page.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+
+  it('does not treat an H2 as an H1', () => {
+    const markdown = '## Only a section heading\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+
+  it('keeps the description paragraph attached to the title', () => {
+    const markdown = '# Create a project\n\nLearn how to create a new Expo project.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'Learn how to create a new Expo project.'
+    );
+
+    expect(result).toBe(
+      '# Create a project\n\nLearn how to create a new Expo project.\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nBody.'
+    );
+  });
+
+  it('matches a description paragraph that turndown escaped', () => {
+    const markdown = '# Page\n\nUse \\[brackets\\] carefully.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block, 'Use [brackets] carefully.');
+
+    expect(result.indexOf('carefully.')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+  });
+
+  it('inserts below the H1 when the next paragraph is not the description', () => {
+    const markdown = '# Page title\n\nRegular first paragraph.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'A description not on the page.'
+    );
+
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(
+      result.indexOf('Regular first paragraph.')
+    );
+  });
+});
 
 describe('convertMdxInstructionToMarkdown', () => {
   it('converts scene JSX components and inlines helper MDX', () => {

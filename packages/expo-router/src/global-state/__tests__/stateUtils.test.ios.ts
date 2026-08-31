@@ -1,121 +1,67 @@
 import type { ResultState } from '../../fork/getStateFromPath';
 import type { NavigationState } from '../../react-navigation/native';
-import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
+import { findDivergentState, resetNavigatorState } from '../stateUtils';
 
-// React Navigation converts nested action states into a flat `{ screen, params: { screen, params: ... } }`
-// structure. `getPayloadFromStateRoute` mirrors this by merging params at each level so the
-// dispatch payload matches what React Navigation expects.
-// TODO(@ubax): validate if params bubbling behavior is consistent with React Navigation and expected here
-describe('getPayloadFromStateRoute', () => {
-  it('returns empty payload for empty route', () => {
-    const result = getPayloadFromStateRoute({});
-    expect(result).toEqual({ params: {} });
-  });
-
-  it('extracts screen name from a single route', () => {
-    const result = getPayloadFromStateRoute({
-      name: 'home',
-    });
-
-    expect(result).toEqual({ screen: 'home', params: {} });
-  });
-
-  it('preserves params from a single route', () => {
-    const result = getPayloadFromStateRoute({
-      name: 'profile',
-      params: { id: '123', color: 'blue' },
-    });
-
-    expect(result).toEqual({ screen: 'profile', params: { id: '123', color: 'blue' } });
-  });
-
-  it('traverses nested routes and nests params correctly', () => {
-    const route = {
-      name: 'tabs',
-      params: { tabParam: 'a' },
-      state: {
-        routes: [
-          {
-            name: 'settings',
-            params: { section: 'general' },
-          },
-        ],
-      },
+describe('resetNavigatorState', () => {
+  it('keeps only the focused route and fields shared by every navigator', () => {
+    const nestedState: NavigationState = {
+      stale: false,
+      routeKeySeq: 1,
+      key: 'nested',
+      index: 0,
+      routeNames: ['child'],
+      routes: [{ key: 'child-key', name: 'child' }],
+    };
+    const state: NavigationState = {
+      stale: false,
+      routeKeySeq: 4,
+      key: 'navigator',
+      type: 'tab',
+      index: 1,
+      routeNames: ['first', 'second'],
+      routes: [
+        { key: 'first-key', name: 'first' },
+        {
+          key: 'second-key',
+          name: 'second',
+          params: { id: '123' },
+          state: nestedState,
+        },
+      ],
+      history: [{ type: 'route', key: 'second-key' }],
     };
 
-    const result = getPayloadFromStateRoute(route);
-
-    expect(result).toEqual({
-      screen: 'tabs',
-      params: {
-        tabParam: 'a',
-        screen: 'settings',
-        section: 'general',
-        params: { tabParam: 'a', section: 'general' },
-      },
+    expect(resetNavigatorState(state, 'stack')).toEqual({
+      stale: false,
+      routeKeySeq: 4,
+      key: 'navigator',
+      type: 'stack',
+      index: 0,
+      routeNames: ['first', 'second'],
+      routes: [state.routes[1]],
     });
   });
 
-  it('uses the last route in state.routes when traversing', () => {
-    const route = {
-      name: 'stack',
-      state: {
-        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third', params: { value: '42' } }],
-      },
+  it('keeps an empty navigator state complete', () => {
+    const state: NavigationState = {
+      stale: false,
+      routeKeySeq: 0,
+      key: 'navigator',
+      type: 'tab',
+      index: -1,
+      routeNames: [],
+      routes: [],
+      history: [],
     };
 
-    const result = getPayloadFromStateRoute(route);
-
-    expect(result).toEqual({
-      screen: 'stack',
-      params: { screen: 'third', value: '42', params: { value: '42' } },
-    });
-  });
-
-  it('handles deeply nested routes (3 levels)', () => {
-    const route = {
-      name: 'root',
-      state: {
-        routes: [
-          {
-            name: 'middle',
-            state: {
-              routes: [
-                {
-                  name: 'leaf',
-                  params: { leafParam: 'deep' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    };
-
-    const result = getPayloadFromStateRoute(route);
-
-    expect(result.screen).toBe('root');
-    expect(result.params.screen).toBe('middle');
-    // Leaf screen and params are nested one level deeper (React Nav merges after first layer)
-    expect(result.params.params.screen).toBe('leaf');
-    expect(result.params.params.leafParam).toBe('deep');
-  });
-
-  it('does not forward "screen" key in params at any level', () => {
-    const route = {
-      name: 'parent',
-      params: { screen: 'shouldBeRemoved', keepMe: 'yes' },
-      state: {
-        routes: [{ name: 'child' }],
-      },
-    };
-
-    const result = getPayloadFromStateRoute(route);
-
-    // The screen key in params is replaced by the child screen name
-    expect(result).toEqual({
-      params: { keepMe: 'yes', screen: 'child', params: { keepMe: 'yes' } },
-      screen: 'parent',
+    expect(resetNavigatorState(state, 'stack')).toEqual({
+      stale: false,
+      routeKeySeq: 0,
+      key: 'navigator',
+      type: 'stack',
+      index: -1,
+      routeNames: [],
+      routes: [],
     });
   });
 });
@@ -135,6 +81,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['home'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -168,6 +115,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['home'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -176,6 +124,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -213,6 +162,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['home'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -221,6 +171,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -258,6 +209,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['details'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -266,6 +218,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['[id]'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -302,6 +255,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['details'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -310,6 +264,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['[id]'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -356,6 +311,7 @@ describe('findDivergentState', () => {
                   type: 'stack',
                   routeNames: ['leaf'],
                   stale: false,
+                  routeKeySeq: 0,
                 },
               },
             ],
@@ -364,6 +320,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['branch-b'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -372,6 +329,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -412,6 +370,7 @@ describe('findDivergentState', () => {
               type: 'stack',
               routeNames: ['page'],
               stale: false,
+              routeKeySeq: 0,
             },
           },
         ],
@@ -420,6 +379,7 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
       const result = findDivergentState(actionState, navState, true);
@@ -449,6 +409,7 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
       const result = findDivergentState(actionState, navState, true);
@@ -476,9 +437,10 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
-      const result = findDivergentState(actionState, navState, false);
+      const result = findDivergentState(actionState, navState);
 
       // Should use index 0 ('home'), so it diverges because 'settings' !== 'home'
       expect(result.actionStateRoute?.name).toBe('settings');
@@ -504,6 +466,7 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
       const result = findDivergentState(actionState, navState, true);
@@ -514,5 +477,62 @@ describe('findDivergentState', () => {
       expect(result.navigationRoutes).toHaveLength(1);
       expect(result.navigationRoutes[0]!.name).toBe('settings');
     });
+  });
+
+  it('stops at an unmounted child navigator', () => {
+    const childState: NavigationState = {
+      routes: [{ key: 'leaf-key', name: 'leaf' }],
+      index: 0,
+      key: 'child-nav',
+      type: 'stack',
+      routeNames: ['leaf'],
+      stale: false,
+      routeKeySeq: 0,
+    };
+    const actionState: ResultState = {
+      routes: [{ name: 'root', state: { routes: [{ name: 'leaf' }] } }],
+    };
+    const navState: NavigationState = {
+      routes: [{ key: 'root-key', name: 'root', state: childState }],
+      index: 0,
+      key: 'root-nav',
+      type: 'stack',
+      routeNames: ['root'],
+      stale: false,
+      routeKeySeq: 0,
+    };
+
+    const result = findDivergentState(actionState, navState, false, (key) => key !== 'child-nav');
+
+    expect(result.navigationState.key).toBe('root-nav');
+    expect(result.actionStateRoute?.name).toBe('root');
+  });
+
+  it('never returns a keyless child state', () => {
+    const actionState: ResultState = {
+      routes: [{ name: 'root', state: { routes: [{ name: 'leaf' }] } }],
+    };
+    const navState: NavigationState = {
+      routes: [
+        {
+          key: 'root-key',
+          name: 'root',
+          state: {
+            routes: [{ key: 'leaf-key', name: 'leaf' }],
+            index: 0,
+            type: 'stack',
+            routeNames: ['leaf'],
+          },
+        },
+      ],
+      index: 0,
+      key: 'root-nav',
+      type: 'stack',
+      routeNames: ['root'],
+      stale: false,
+      routeKeySeq: 0,
+    };
+
+    expect(findDivergentState(actionState, navState).navigationState.key).toBe('root-nav');
   });
 });
