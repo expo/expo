@@ -3,7 +3,6 @@ export type {
   ExpoWidgetsEvents,
   LevelOfDetail,
   LiveActivityComponent,
-  LiveActivityContentState,
   LiveActivityDismissalPolicy,
   LiveActivityEnvironment,
   LiveActivityEvents,

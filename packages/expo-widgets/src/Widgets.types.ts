@@ -272,21 +272,6 @@ export type PushToStartTokenEvent = {
 };
 
 /**
- * The content state of a Live Activity: its name and the props it currently displays.
- */
-export type LiveActivityContentState<T extends object = object> = {
-  /**
-   * The Live Activity name. Matches the `'name'` field in the widget configuration in the app config.
-   */
-  name: string;
-  /**
-   * The props the Live Activity was started with or last updated to display,
-   * or `null` if the activity has no props.
-   */
-  props: T | null;
-};
-
-/**
  * Dismissal policy for ending a live activity.
  * - `'default'` - The system’s default dismissal policy for the Live Activity.
  * - `'immediate'` - The system immediately removes the Live Activity that ended.
@@ -332,7 +317,7 @@ export declare class NativeLiveActivityFactory extends SharedObject {
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   getId(): string;
-  getContentState(): { name: string; props?: string } | null;
+  getContentState(): string | null;
   update(props?: string, staleDate?: number): Promise<void>;
   end(
     dismissalPolicy?: string,

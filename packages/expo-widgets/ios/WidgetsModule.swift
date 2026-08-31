@@ -105,7 +105,7 @@ public final class WidgetsModule: Module {
       }
 
       Function("getContentState") { (instance: LiveActivity) in
-        instance.getContentState()
+        try instance.getContentState()
       }
 
       AsyncFunction("update") { (instance: LiveActivity, props: String?, staleDate: Date?) in
