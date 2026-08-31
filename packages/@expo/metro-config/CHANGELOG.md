@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- Seal web worker chunks to prevent common chunk splitting from applying to them ([#49227](https://github.com/expo/expo/pull/49227) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 57.0.12 — 2026-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.11 — 2026-08-26
+
+### 🐛 Bug fixes
+
+- Seal web worker chunks to prevent common chunk splitting from applying to them ([#49227](https://github.com/expo/expo/pull/49227) by [@kitten](https://github.com/kitten))
 
 ## 57.0.10 — 2026-08-24
 

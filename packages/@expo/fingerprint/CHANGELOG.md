@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Resolve the git root from the project root instead of the process working directory during project workflow detection, so fingerprinting a project (for example a git worktree) while the working directory is inside another repository no longer flips the workflow from `managed` to `generic` and silently changes the hash. ([#49435](https://github.com/expo/expo/pull/49435) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
+
+## 0.20.11 — 2026-08-28
+
+_This version does not introduce any user-facing changes._
 
 ## 0.20.10 — 2026-08-24
 

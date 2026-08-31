@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 57.0.6 — 2026-08-26
+
+### 🐛 Bug fixes
+
+- [android] Fixed slow uploads of SAF-backed `content://` files by resolving the request body's content length once, instead of querying it through `ContentResolver` for every 8 KiB written. ([#49206](https://github.com/expo/expo/pull/49206) by [@gmaclennan](https://github.com/gmaclennan))
+### 💡 Others
+
 ## 57.0.5 — 2026-08-20
 
 ### 🐛 Bug fixes

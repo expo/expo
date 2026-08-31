@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "57.0.9",
+  "version": "57.0.10",
   "description": "Expo module for browser-based authentication",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -34,9 +34,9 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
     "expo-application": "workspace:~57.0.2",
-    "expo-constants": "workspace:~57.0.14",
+    "expo-constants": "workspace:~57.0.16",
     "expo-crypto": "workspace:~57.0.2",
-    "expo-linking": "workspace:~57.0.7",
+    "expo-linking": "workspace:~57.0.8",
     "expo-web-browser": "workspace:~57.0.2",
     "invariant": "^2.2.4"
   },

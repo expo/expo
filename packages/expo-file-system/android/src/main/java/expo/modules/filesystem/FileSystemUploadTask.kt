@@ -226,12 +226,16 @@ private class CountingRequestBody(
   private val requestBody: RequestBody,
   private val progressListener: (Long, Long) -> Unit
 ) : RequestBody() {
+  // Resolved once: contentLength() is a ContentResolver query for SAF-backed
+  // files, and the counting sink needs the total on every segment written.
+  private val cachedContentLength: Long by lazy { requestBody.contentLength() }
+
   override fun contentType() = requestBody.contentType()
 
-  override fun contentLength() = requestBody.contentLength()
+  override fun contentLength() = cachedContentLength
 
   override fun writeTo(sink: BufferedSink) {
-    val countingSink = CountingSink(sink, this, progressListener)
+    val countingSink = CountingSink(sink, cachedContentLength, progressListener)
     val bufferedSink = countingSink.buffer()
     requestBody.writeTo(bufferedSink)
     bufferedSink.flush()
@@ -243,7 +247,7 @@ private class CountingRequestBody(
  */
 private class CountingSink(
   sink: Sink,
-  private val requestBody: RequestBody,
+  private val totalBytes: Long,
   private val progressListener: (Long, Long) -> Unit
 ) : ForwardingSink(sink) {
   private var bytesWritten = 0L
@@ -251,14 +255,19 @@ private class CountingSink(
   override fun write(source: Buffer, byteCount: Long) {
     super.write(source, byteCount)
     bytesWritten += byteCount
-    progressListener(bytesWritten, requestBody.contentLength())
+    progressListener(bytesWritten, totalBytes)
   }
 }
 
 private fun UnifiedFileInterface.asRequestBody(contentType: String?): RequestBody {
   return object : RequestBody() {
+    // length() is a ContentResolver query for content:// files, and ContentProviderFile
+    // and AssetFile can fall back to reading the whole stream; resolve it once, and
+    // not before OkHttp asks for it.
+    private val resolvedLength: Long by lazy { length() }
+
     override fun contentType() = contentType?.toMediaTypeOrNull()
-    override fun contentLength() = length()
+    override fun contentLength() = resolvedLength
     override fun writeTo(sink: BufferedSink) {
       inputStream().use { input ->
         val source = input.source()

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.17 — 2026-08-26
+
+### 🎉 New features
+
+- Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
 
 ## 57.0.16 — 2026-08-24
 

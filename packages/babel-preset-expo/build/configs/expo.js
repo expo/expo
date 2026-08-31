@@ -26,17 +26,6 @@ module.exports = function (api, options) {
     if (reactCompilerPlugin != null) {
         plugins.push(reactCompilerPlugin);
     }
-    // TODO(@kitten): Remove or add non-hermes config
-    if (options.engine !== 'hermes') {
-        // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
-        // getters and setters in spread objects. We need to add this plugin ourself without that option.
-        // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-        plugins.push([
-            require('@babel/plugin-transform-object-rest-spread'),
-            // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-            { loose: true, useBuiltIns: true },
-        ]);
-    }
     const inlines = getInlinesFromOptions(options);
     plugins.push([require('../plugins/define-plugin'), inlines]);
     if (options.isProduction) {

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 57.0.2 — 2026-08-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed a main-thread deadlock when notifying screen orientation listeners. ([#49367](https://github.com/expo/expo/pull/49367) by [@ryan-saffer](https://github.com/ryan-saffer))
+
 ## 57.0.1 — 2026-07-15
 
 _This version does not introduce any user-facing changes._

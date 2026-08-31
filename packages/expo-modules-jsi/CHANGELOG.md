@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 57.0.6 — 2026-08-26
+
+### 💡 Others
+
+- [iOS] `JavaScriptActor.assumeIsolated` no longer heap-allocates a closure box per call by keeping its `operation` non-escaping, making synchronous host calls ~1.6× faster. ([#47837](https://github.com/expo/expo/pull/47837) by [@tsapeta](https://github.com/tsapeta))
+
 ## 57.0.5 — 2026-08-20
 
 ### 🐛 Bug fixes

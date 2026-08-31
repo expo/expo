@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 57.0.2 — 2026-08-28
+
+### 🐛 Bug fixes
+
+- [web] Fixed `isLoaded()` always returning `false` on Firefox, and on every engine for font families whose name needs quoting, by normalizing quotes when comparing family names against the CSSOM. This also stops `loadAsync()` from injecting a duplicate `@font-face` rule on every call and makes `unloadAsync()` and `getLoadedFonts()` behave consistently across engines. ([#49266](https://github.com/expo/expo/pull/49266) by [@irfanfandi](https://github.com/irfanfandi))
+- [web] Match `@font-face` rules by comparing the rule's bare family name against the caller's literal name, so families whose names contain quotes or padding resolve correctly, and fixed `unloadAsync()` deleting wrong rules when several rules match. ([#49379](https://github.com/expo/expo/pull/49379) by [@vonovak](https://github.com/vonovak))
+
 ## 57.0.1 — 2026-07-15
 
 _This version does not introduce any user-facing changes._

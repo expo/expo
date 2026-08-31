@@ -19,6 +19,9 @@ module.exports = function (_api, _options) {
             [require('@babel/plugin-transform-destructuring'), { useBuiltIns: true }],
             [require('@babel/plugin-transform-async-generator-functions')],
             [require('@babel/plugin-transform-async-to-generator')],
+            // Keep this after transform-destructuring to avoid the loose-mode computed exclusion bug.
+            // See: https://github.com/babel/babel/pull/18197
+            [require('@babel/plugin-transform-object-rest-spread'), { loose: true, useBuiltIns: true }],
             // Ensure the react-jsx-dev plugin works as expected when JSX is used in a function body.
             require('@babel/plugin-transform-parameters'),
             [require('@babel/plugin-transform-react-display-name')],

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 2.4.3 — 2026-08-28
+
+### 🎉 New features
+
+- Backport `setNodeEnv` to SDK 57 so Expo commands and tools can set `NODE_ENV` consistently. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 💡 Others
+
+- Backport the internal config mode handoff and inherited dotenv cleanup to SDK 57. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 2.4.2 — 2026-07-15
 
 _This version does not introduce any user-facing changes._
