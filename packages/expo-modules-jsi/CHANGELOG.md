@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] `JavaScriptValue.undefined` and `JavaScriptValue.null` now return shared immortal instances instead of allocating a new value on each access, removing one allocation from every void-returning host call. ([#49545](https://github.com/expo/expo/pull/49545) by [@tsapeta](https://github.com/tsapeta))
+
 ## 57.0.6 — 2026-08-26
 
 ### 💡 Others
