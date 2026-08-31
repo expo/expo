@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a data race on `NotificationCenterManager`'s delegate list that crashed the app with `SIGSEGV` when one app context registered its modules while another tore its own down, such as on a dev-client reload or `Updates.reloadAsync()`. ([#49549](https://github.com/expo/expo/issues/49549), [#49554](https://github.com/expo/expo/pull/49554) by [@dennytosp](https://github.com/dennytosp))
 - [Android] Prevented `onUserLeaveHint` from firing when a notification tap opens the app, which made picture-in-picture implementations enter PiP unexpectedly. ([#48471](https://github.com/expo/expo/pull/48471) by [@stareezy-1](https://github.com/stareezy-1))
 - [iOS] Avoid warning when an aborted push token registration request rejects with a native fetch cancellation error. ([#48547](https://github.com/expo/expo/pull/48547) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
 - [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws on some OEM ROMs. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))
