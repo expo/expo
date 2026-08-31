@@ -252,7 +252,7 @@ const buildXcodeBuildArgs = (
   const allXccPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].map((m) => `-Xcc ${m}`).join(' ');
 
   // Build extra include flags for headers that can't be in Package.swift
-  // (e.g. Hermes headers that conflict with React VFS jsi/ headers)
+  // (e.g. Hermes headers that conflict with React's jsi/ headers)
   const extraIncludeFlags = (hermesIncludeDirs ?? []).map((dir) => `-I${dir}`);
 
   return [

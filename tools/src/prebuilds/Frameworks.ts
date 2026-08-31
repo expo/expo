@@ -1394,7 +1394,9 @@ const fixObjCSwiftHeaderModuleReferencesAsync = async (
     }
   }
 
-  // Remove @import React - React.xcframework has VFS overlays that cause issues
+  // A `React` clang module only exists for consumers that install React Native as the prebuilt
+  // React.xcframework; a source build vends `React_Core` instead. Shipping the import in a public
+  // header would make those consumers fail to compile it.
   const reactImportPattern = /^@import React;\s*$/gm;
   const reactReplaced = content.replace(reactImportPattern, '// Removed: @import React;');
   if (reactReplaced !== content) {

@@ -47,7 +47,7 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │     - configure_header_search_paths                                        │
 │     - configure_codegen_for_prebuilt_modules                               │
 │     - stub_bundled_pod_targets                                             │
-│     - configure_use_frameworks (if use_frameworks! active)                 │
+│     - ensure_modular_react_header_flags (prebuilt React only)              │
 │                                                                             │
 │   Result in Pods/<PodName>/:                                               │
 │     <Product>.xcframework/            (extracted by CocoaPods)             │
@@ -365,8 +365,7 @@ packages/precompile/.cache/
 └── react/
     └── 0.76.7/
         └── debug/
-            ├── React.xcframework/
-            └── React-VFS.yaml
+            └── React.xcframework/
 ```
 
 ### Environment Variable
@@ -458,7 +457,6 @@ Version specifiers: `{ "exact": "4.5.0" }`, `{ "from": "4.0.0" }`, `{ "branch": 
 | `fileMapping`        | array           | File mapping rules (objects with `from`, `to`, `type`) |
 | `moduleMapContent`   | string          | Custom module map content                          |
 | `publicHeaders`      | boolean         | Whether headers are public (default: `true`)       |
-| `vfsOverlayPath`     | string          | Path to VFS overlay file (framework targets only)  |
 
 #### Framework Target Type
 
@@ -578,7 +576,7 @@ This means **most podspecs don't need manual modification** to support precompil
 | `configure_header_search_paths(installer)` | Ensures ExpoModulesJSI headers are found |
 | `configure_codegen_for_prebuilt_modules(installer)` | Excludes prebuilt modules from ReactCodegen |
 | `stub_bundled_pod_targets(installer)` | Removes implementation sources from bundled pod compile phases |
-| `configure_use_frameworks(installer)` | Patches modulemaps and injects flags for `use_frameworks!` builds |
+| `ensure_modular_react_header_flags(installer)` | Extends React Native's prebuilt module-map coverage to the Expo pods |
 | `disable_swift_interface_verification(installer)` | Adds `SWIFT_EMIT_MODULE_INTERFACE = NO` when prebuilt React active |
 | `clear_cocoapods_cache` | Removes stale CocoaPods cache entries for prebuilt pods |
 

@@ -97,7 +97,7 @@ export const generateStep: Step<PrebuildContext> = {
     // Generate source code structure for the package/product
     await SPMGenerator.generateIsolatedSourcesForTargetsAsync(pkg, product);
 
-    // Generate Package.swift and vfs overlay for the package/product
+    // Generate Package.swift for the package/product
     await SPMGenerator.generateSwiftPackageAsync(pkg, product, flavor, artifacts);
 
     setStage(ctx, 'generate', 'success');
@@ -140,7 +140,7 @@ export const buildStep: Step<PrebuildContext> = {
 
     // Compute hermes include paths for xcodebuild flags.
     // Hermes includes can't go in Package.swift because destroot/include/
-    // contains jsi/ headers that conflict with React VFS jsi/ mappings.
+    // contains jsi/ headers that conflict with React's jsi/ headers.
     const hermesIncludeDirs = artifacts
       ? [path.join(artifacts.hermes, 'destroot', 'include')]
       : undefined;

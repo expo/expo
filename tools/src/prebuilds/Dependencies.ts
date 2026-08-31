@@ -7,9 +7,7 @@ import { Artifacts } from './Artifacts';
 import type { DownloadDependenciesOptions, DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
-import { transformReactXCFrameworkAsync, isVFSGenerated } from './TransformReactXCFramework';
 import { createAsyncSpinner, hasFileContentChanged, SpinnerError } from './Utils';
-import { resolvePackagePath } from './resolvePackage';
 
 /**
  * Recursively syncs a source directory to a destination directory.
@@ -17,14 +15,9 @@ import { resolvePackagePath } from './resolvePackage';
  * This enables incremental builds by not triggering xcodebuild rebuilds.
  * @param srcDir Source directory
  * @param destDir Destination directory
- * @param preserveExtraFiles Files in destination that should not be deleted even if not in source
  * @returns Number of files that were actually updated
  */
-async function syncDirectoryAsync(
-  srcDir: string,
-  destDir: string,
-  preserveExtraFiles: Set<string> = new Set()
-): Promise<number> {
+async function syncDirectoryAsync(srcDir: string, destDir: string): Promise<number> {
   let updatedCount = 0;
 
   // Ensure destination exists
@@ -39,7 +32,7 @@ async function syncDirectoryAsync(
 
     if (entry.isDirectory()) {
       // Recursively sync subdirectories
-      updatedCount += await syncDirectoryAsync(srcPath, destPath, preserveExtraFiles);
+      updatedCount += await syncDirectoryAsync(srcPath, destPath);
     } else if (entry.isSymbolicLink()) {
       // Handle symlinks - recreate if target differs
       const srcTarget = await fs.readlink(srcPath);
@@ -63,16 +56,12 @@ async function syncDirectoryAsync(
     }
   }
 
-  // Remove files in dest that don't exist in source (except preserved files)
+  // Remove files in dest that don't exist in source
   if (await fs.pathExists(destDir)) {
     const destEntries = await fs.readdir(destDir, { withFileTypes: true });
     for (const destEntry of destEntries) {
       const srcPath = path.join(srcDir, destEntry.name);
       const destPath = path.join(destDir, destEntry.name);
-      // Skip deletion if file is in preserve list
-      if (preserveExtraFiles.has(destEntry.name)) {
-        continue;
-      }
       if (!(await fs.pathExists(srcPath))) {
         await fs.remove(destPath);
       }
@@ -244,37 +233,6 @@ export const Dependencies = {
       }
     );
 
-    // React header resolution comes in two flavors:
-    //  - Modern modular artifact: ships ReactNativeHeaders.xcframework with a flattened clang
-    //    module map. Nothing to generate — the module map is consumed directly.
-    //  - Legacy artifact: ships only React.xcframework, so we synthesize a VFS overlay (and stage
-    //    missing headers) without ever modifying the xcframework (preserves Meta's code signature).
-    const reactNativeSourcePath = resolvePackagePath('react-native');
-    const xcframeworkPath = path.join(reactNativePath, 'React.xcframework');
-    const usesModularHeaders = fs.existsSync(
-      path.join(reactNativePath, 'ReactNativeHeaders.xcframework')
-    );
-    if (usesModularHeaders) {
-      logger.verbose(
-        '📦 Modular React headers detected (ReactNativeHeaders.xcframework) — skipping VFS overlay'
-      );
-    } else {
-      // Skipped if already generated and RN source version hasn't changed.
-      if (
-        fs.existsSync(xcframeworkPath) &&
-        !isVFSGenerated(reactNativePath, reactNativeSourcePath)
-      ) {
-        logger.verbose('🔄 Generating VFS overlay for stock React.xcframework...');
-        await transformReactXCFrameworkAsync({
-          outputPath: reactNativePath,
-          reactNativePath: reactNativeSourcePath,
-        });
-      }
-
-      // Generate the VFS overlay file from the template (resolves ${ROOT_PATH} placeholders)
-      await resolveVFSOverlayTemplate(reactNativePath);
-    }
-
     return {
       hermes: hermesPath,
       reactNativeDependencies: reactNativeDependenciesPath,
@@ -317,10 +275,6 @@ export const Dependencies = {
       // Ensure the Dependencies folder exists
       await fs.mkdir(depsDestinationPath, { recursive: true });
 
-      // Generated files that should be preserved in destination (not deleted during sync)
-      // React-VFS.yaml is generated from React-VFS-template.yaml by resolveVFSOverlayTemplate
-      const preserveGeneratedFiles = new Set(['React-VFS.yaml']);
-
       // Sync directories (only copies changed files, preserves mtime for unchanged)
       spinner.info('Syncing Hermes...');
       const hermesUpdated = await syncDirectoryAsync(artifacts.hermes, hermesDest);
@@ -329,7 +283,7 @@ export const Dependencies = {
       const rnDepsUpdated = await syncDirectoryAsync(artifacts.reactNativeDependencies, rnDepsDest);
 
       spinner.info('Syncing React Native...');
-      const rnUpdated = await syncDirectoryAsync(artifacts.react, rnDest, preserveGeneratedFiles);
+      const rnUpdated = await syncDirectoryAsync(artifacts.react, rnDest);
 
       const totalUpdated = hermesUpdated + rnDepsUpdated + rnUpdated;
       if (totalUpdated > 0) {
@@ -338,12 +292,6 @@ export const Dependencies = {
         );
       } else {
         spinner.succeed('Artifacts already up-to-date in local .dependencies folder');
-      }
-
-      // Legacy artifacts only: resolve the VFS overlay template with the correct paths. Modular
-      // artifacts (ReactNativeHeaders.xcframework) ship a module map and need no overlay.
-      if (!fs.existsSync(path.join(rnDest, 'ReactNativeHeaders.xcframework'))) {
-        await resolveVFSOverlayTemplate(rnDest);
       }
     } else {
       const spinner = createAsyncSpinner('Verifying artifacts for local dependencies', pkg);
@@ -468,32 +416,4 @@ const downloadReactNativeAsync = async (
     localTarballPath: options.localTarballPath,
     skipArtifacts: options.skipArtifacts,
   });
-};
-
-/**
- * Resolves the VFS overlay template by replacing ${ROOT_PATH} placeholders
- * with the actual path to the React.xcframework.
- * The template lives next to the xcframework (at outputPath level).
- * Only writes the file if content has changed to preserve mtime for incremental builds.
- */
-const resolveVFSOverlayTemplate = async (outputPath: string): Promise<void> => {
-  const xcframeworkPath = path.join(outputPath, 'React.xcframework');
-  const vfsTemplatePath = path.join(outputPath, 'React-VFS-template.yaml');
-  const vfsOutputPath = path.join(outputPath, 'React-VFS.yaml');
-
-  if (!fs.existsSync(vfsTemplatePath)) {
-    return;
-  }
-
-  const templateContent = fs.readFileSync(vfsTemplatePath, 'utf8');
-  const resolvedContent = templateContent.replace(/\$\{ROOT_PATH\}/g, xcframeworkPath);
-
-  // Only write if content changed (preserves mtime for incremental builds)
-  if (fs.existsSync(vfsOutputPath)) {
-    const existingContent = fs.readFileSync(vfsOutputPath, 'utf8');
-    if (existingContent === resolvedContent) {
-      return; // No changes needed
-    }
-  }
-  await fs.writeFile(vfsOutputPath, resolvedContent, 'utf8');
 };
