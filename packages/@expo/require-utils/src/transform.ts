@@ -9,13 +9,13 @@ export function toCommonJS(filename: string, code: string) {
       [
         require('@babel/plugin-transform-modules-commonjs'),
         {
-          // NOTE(@kitten): We used to use sucrase to transform, which is why
-          // we're doing this CJS-to-ESM transform in the first place. Our
-          // previous transformation isn't 100% compatible with the standard
-          // Node ESM loading. In Babel, this is the "node" flag (although
-          // node behaviour is explicitly different from this). This skips
-          // the `__esModule -> default` wrapper
-          importInterop: 'node',
+          // NOTE(@gustavohariel): We must keep Babel's default `__esModule` interop here, so that
+          // a default import of a transpiled module resolves to its `exports.default` rather than
+          // to the module namespace object. Every compiled Expo config plugin has that shape, and
+          // Node's `require(esm)` namespace carries `__esModule` too. This matches what
+          // TypeScript's `transpileModule` emits on the other code path in `evalModule`, so both
+          // transforms agree on what a default import means.
+          importInterop: 'babel',
           loose: true,
         },
       ],
