@@ -24,7 +24,6 @@ plugins {
   id 'expo-module-gradle-plugin'
 }
 apply plugin: 'com.google.devtools.ksp'
-apply from: new File(rootDir, "versioning_linking.gradle")
 apply plugin: 'com.apollographql.apollo'
 
 expoModule {
@@ -33,12 +32,6 @@ expoModule {
 
 def reactProperties = new Properties()
 file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
-
-// WHEN_VERSIONING_REMOVE_FROM_HERE
-//maven repository info
-group = 'host.exp.exponent'
-version = '45.0.0'
-// WHEN_VERSIONING_REMOVE_TO_HERE
 
 repositories {
   mavenCentral()
@@ -90,11 +83,6 @@ android {
     versionCode 1
     versionName "1.0"
 
-    /* WHEN_VERSIONING_UNCOMMENT_FROM_HERE
-    missingDimensionStrategy('versioning', 'versioned')
-    WHEN_VERSIONING_UNCOMMENT_TO_HERE */
-
-    // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
       'appAuthRedirectScheme': 'host.exp.exponent'
     ]
@@ -102,7 +90,6 @@ android {
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
     buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true")
-    // WHEN_VERSIONING_REMOVE_TO_HERE
   }
 
   buildTypes {
@@ -124,7 +111,6 @@ apollo {
   }
 }
 
-// WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
 class GenerateDynamicMacrosPlugin implements Plugin<Project> {
@@ -152,8 +138,6 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
 
 apply plugin: GenerateDynamicMacrosPlugin
 
-// WHEN_VERSIONING_REMOVE_TO_HERE
-
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
@@ -176,10 +160,6 @@ dependencies {
 
   testImplementation 'junit:junit:4.13.2'
 
-  // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
-
-  // WHEN_VERSIONING_REMOVE_FROM_HERE
-
   api 'org.webkit:android-jsc:r250231' // needs to be before react-native
 
   api project(':packages:react-native:ReactAndroid')
@@ -190,10 +170,6 @@ dependencies {
 
   // Expo modules
   api project(':expo')
-
-  // Versioned react native
-  // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
-  // WHEN_VERSIONING_REMOVE_TO_HERE
 
   // React native dependencies
   api(libs.androidx.appcompat.resources)
@@ -242,7 +218,6 @@ dependencies {
   implementation "androidx.tracing:tracing-ktx:1.1.0"
 
   api 'com.google.firebase:firebase-messaging:22.0.0'
-  // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // Home screen QR scanner (QRScannerActivity, HomeAppViewModel)
   def camerax_version = "1.4.0-alpha02"
@@ -283,5 +258,3 @@ project.afterEvaluate {
   // For the workaround, we just pretend we don't have local aar dependencies.
   tasks.findByName("bundleReleaseLocalLintAar")?.localAarDeps?.setFrom([])
 }
-
-useVendoredModulesForExpoView('unversioned')
