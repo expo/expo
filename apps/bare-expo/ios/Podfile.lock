@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.21):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.30):
+  - Expo (55.0.31):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -63,15 +63,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (55.0.39):
+  - expo-dev-client (55.0.40):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (55.0.40):
+  - expo-dev-launcher (55.0.41):
     - EXManifests
-    - expo-dev-launcher/Main (= 55.0.40)
+    - expo-dev-launcher/Main (= 55.0.41)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -100,7 +100,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (55.0.40):
+  - expo-dev-launcher/Main (55.0.41):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (55.0.40):
+  - expo-dev-launcher/Tests (55.0.41):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -166,7 +166,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (55.0.40):
+  - expo-dev-launcher/Unsafe (55.0.41):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.30):
+  - Expo/Tests (55.0.31):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -509,7 +509,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (55.0.18):
     - ExpoModulesCore
-  - ExpoModulesCore (55.0.25):
+  - ExpoModulesCore (55.0.26):
     - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
@@ -534,7 +534,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - ExpoModulesCore/Tests (55.0.25):
+  - ExpoModulesCore/Tests (55.0.26):
     - ExpoModulesJSI
     - ExpoModulesTestCore
     - hermes-engine
@@ -560,12 +560,12 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - ExpoModulesJSI (55.0.25):
+  - ExpoModulesJSI (55.0.26):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.25):
+  - ExpoModulesJSI/Tests (55.0.26):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
@@ -3983,15 +3983,15 @@ SPEC CHECKSUMS:
   EXConstants: dd0b0af9c628c00bc5ce556964210c4465ac9ffe
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: c9ac464913660ef8580236b0d3d6fad7a7bce552
-  Expo: 9f9432f8e991eacb4d7038ddd7b1e8e900281780
-  expo-dev-client: 3dc137f7f4b38706cc61a0bb75940398be6d3e0a
-  expo-dev-launcher: 50093906e3cea2f2acca0d585fa94f3c18d36d34
+  Expo: 80a983dbbd818bf4e16a0ae0f3b0624ae58fe2be
+  expo-dev-client: fd23d6dc2b6b4fe9756923ab9410aaa1298243a1
+  expo-dev-launcher: dcfef6b411e22e09ea45423b9c20ef48ec3f9ad5
   expo-dev-menu: 3cf08b0700a8f238f5c8cbcbc9e2f3fbc4f1a5e2
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: 6fe8d7bfc09bbc6a3ee1b6e402c27d7feef5012d
   ExpoAppIntegrity: 3579a37b31a3f7be28e3ecdfcbe359b6dd66b829
   ExpoAppleAuthentication: ab3d5d027724c02652f5be78bf81e43ac0e684c6
-  ExpoAppMetrics: 3e240bd06bd00a93b9f3894a9a958e832d4a2cfc
+  ExpoAppMetrics: cd88e7f620c376cbc2fe35c6f150316ac166e999
   ExpoAsset: 64ff088f684d008431f518c0d40fccefb9cda593
   ExpoAudio: bf8a9a7d9cb56fbb01aa459d940cf39ddb8e451b
   ExpoBackgroundFetch: 45e3a93f7382f7b40b507e412bdfd5672d8decd8
@@ -4032,8 +4032,8 @@ SPEC CHECKSUMS:
   ExpoMaps: b3f634d3e8803ea61d1c39ccc2f3efacbd25faf2
   ExpoMediaLibrary: 98bef99fe8d75621176690193a12fb376c41eb6f
   ExpoMeshGradient: f172f5c6a451236a87671362e639f8604c7e99fd
-  ExpoModulesCore: 14aaf355a4f385b04df93f6fd0f58873ed79e044
-  ExpoModulesJSI: 52db434b6c7f626a4613974b2bd05f9816c07224
+  ExpoModulesCore: b961022cb1a93143b04c5812d5aa5b777c288c77
+  ExpoModulesJSI: 37c1f4647b4506df11abf061ab1e4c30c307b023
   ExpoModulesTestCore: 15b132dcc38f95c14ba445efc336c806d48884a2
   ExpoNetwork: 317efafde956bda7f1266d5ed00e7e1e4ce12a61
   ExpoNotifications: 793cb016faf9ee414ed9ae94e8951c95ca31d619

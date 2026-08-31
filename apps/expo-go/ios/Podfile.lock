@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (55.0.21):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.30):
+  - Expo (55.0.31):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.30):
+  - Expo/Tests (55.0.31):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -313,7 +313,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (55.0.18):
     - ExpoModulesCore
-  - ExpoModulesCore (55.0.25):
+  - ExpoModulesCore (55.0.26):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -344,7 +344,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (55.0.25):
+  - ExpoModulesCore/Tests (55.0.26):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -376,12 +376,12 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (55.0.25):
+  - ExpoModulesJSI (55.0.26):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.25):
+  - ExpoModulesJSI/Tests (55.0.26):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
@@ -4885,12 +4885,12 @@ SPEC CHECKSUMS:
   EXConstants: dd0b0af9c628c00bc5ce556964210c4465ac9ffe
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: c9ac464913660ef8580236b0d3d6fad7a7bce552
-  Expo: 98c881f0fff66adfbe89c4cbfaf13bbc63f3b278
+  Expo: f988900e2b86c186b34c2a73087ec422afab1785
   expo-dev-menu: 8b6922d29cae80e20189a7384eddf248f14301ef
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: 6fe8d7bfc09bbc6a3ee1b6e402c27d7feef5012d
   ExpoAppleAuthentication: ab3d5d027724c02652f5be78bf81e43ac0e684c6
-  ExpoAppMetrics: 5ce8e3d9824670598b9e83cc07c9ebf1779e08d6
+  ExpoAppMetrics: 7851d107f8dab82b7c348cfe1df10d023ef5b12f
   ExpoAsset: 64ff088f684d008431f518c0d40fccefb9cda593
   ExpoAudio: bf8a9a7d9cb56fbb01aa459d940cf39ddb8e451b
   ExpoBackgroundFetch: 45e3a93f7382f7b40b507e412bdfd5672d8decd8
@@ -4928,8 +4928,8 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 7a5406bd7cae7dad68b994f6b5b24ff3548af64f
   ExpoMediaLibrary: 98bef99fe8d75621176690193a12fb376c41eb6f
   ExpoMeshGradient: f172f5c6a451236a87671362e639f8604c7e99fd
-  ExpoModulesCore: c762c92a2034927578943ead805e9d2066ed08df
-  ExpoModulesJSI: 52db434b6c7f626a4613974b2bd05f9816c07224
+  ExpoModulesCore: 3f37b9765e601161e461ec55f495ef42db63b478
+  ExpoModulesJSI: 37c1f4647b4506df11abf061ab1e4c30c307b023
   ExpoModulesTestCore: 15b132dcc38f95c14ba445efc336c806d48884a2
   ExpoNetwork: 317efafde956bda7f1266d5ed00e7e1e4ce12a61
   ExpoNotifications: 793cb016faf9ee414ed9ae94e8951c95ca31d619
