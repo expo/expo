@@ -1,14 +1,10 @@
 import AppIntents
-@preconcurrency import CoreSpotlight
 internal import ExpoAppIntents
 import Foundation
 
 @available(iOS 18.0, *)
 @AppEntity(schema: .mail.draft)
-struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
-  /** Groups the app's Spotlight items so they can be managed together. */
-  static let spotlightDomainIdentifier = "dev.expo.appintents.mailDraft"
-
+struct MailDraftEntity {
   static let defaultQuery = MailDraftEntityQuery()
 
   var id: String
@@ -20,17 +16,8 @@ struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
   var attachments: [IntentFile]
   var account: MailAccountEntity
 
-  /** Mirrors the `hideInSpotlight` flag from the catalog. */
+  /// Mirrors the catalog flag for `IndexedEntity.hideInSpotlight` in the optional visual layer.
   var isHiddenInSpotlight: Bool = false
-
-  /**
-   Apple's own opt-out, honoured by Spotlight from iOS 18.4. expo-app-intents already keeps hidden
-   drafts out of the index it manages; forwarding it here also covers indexing the system performs
-   itself.
-   */
-  var hideInSpotlight: Bool {
-    return isHiddenInSpotlight
-  }
 
   init(
     id: String,
@@ -56,13 +43,11 @@ struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
 
   /// Builds a draft from a catalog record published by JavaScript with
   /// `setEntityCatalogAsync('mailDraft', drafts)`. The record's title carries the subject and its
-  /// subtitle carries the body, so Siri can resolve a draft the user names out loud.
+  /// subtitle carries the body, so Siri can resolve a draft the user names out loud. Anything with
+  /// no field of its own on the record travels in `metadata`.
   init(record: AppIntentEntityRecord) {
-    let bodyText = record.metadata["body"] ?? record.subtitle ?? ""
-    let recipients = (record.metadata["recipients"] ?? "")
-      .split(separator: ",")
-      .map { $0.trimmingCharacters(in: .whitespaces) }
-      .filter { !$0.isEmpty }
+    let bodyText = record.subtitle ?? ""
+    let recipients = Self.recipients(from: record.metadata["recipients"])
 
     self.init(
       id: record.id,
@@ -78,30 +63,7 @@ struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
   }
 
   var displayRepresentation: DisplayRepresentation {
-    return DisplayRepresentation(
-      title: "\(displaySubject)",
-      subtitle: "\(bodyPreview)",
-      image: DisplayRepresentation.Image(systemName: "envelope", isTemplate: true)
-    )
-  }
-
-  /**
-   Spotlight metadata for the indexed draft. `defaultAttributeSet` already carries what the
-   `.mail.draft` schema declares indexing keys for, so this only fills in the rest.
-   */
-  var attributeSet: CSSearchableItemAttributeSet {
-    let attributes = defaultAttributeSet
-    attributes.displayName = displaySubject
-    attributes.title = displaySubject
-    attributes.subject = subject
-    attributes.textContent = bodyText
-    attributes.contentDescription = bodyText
-    attributes.recipientEmailAddresses = to.compactMap(Self.emailAddress(of:))
-    attributes.authorEmailAddresses = [account.emailAddress]
-    attributes.userCreated = NSNumber(value: true)
-    attributes.domainIdentifier = Self.spotlightDomainIdentifier
-    attributes.keywords = ["mail", "draft", "email", displaySubject]
-    return attributes
+    return DisplayRepresentation(title: "\(displaySubject)", subtitle: "\(bodyPreview)")
   }
 
   var displaySubject: String {
@@ -132,20 +94,8 @@ struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
 
   /// The same addresses as one string, for the places that want a single line instead of an array: a
   /// summary label, or one string to match a search term against.
-  ///
-  /// Nothing in this example reads it yet. `displayRepresentation` shows the subject and a body
-  /// preview, and `MailDraftEntityQuery` searches those two, because a draft built from a catalog
-  /// record has no recipients - `init(record:)` above leaves `to`, `cc` and `bcc` empty. Add
-  /// recipients to the records your app publishes, then search this too.
   var recipientList: String {
     return recipientAddresses.joined(separator: ", ")
-  }
-
-  static func emailAddress(of person: IntentPerson) -> String? {
-    guard let handle = person.handle, case .emailAddress(let emailAddress) = handle.value else {
-      return nil
-    }
-    return emailAddress
   }
 
   private static func address(of person: IntentPerson) -> String? {
@@ -172,6 +122,17 @@ struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
     @unknown default:
       return nil
     }
+  }
+
+  /// Catalog metadata is JSON so display names containing commas remain one recipient.
+  private static func recipients(from metadata: String?) -> [String] {
+    guard let metadata,
+      let data = metadata.data(using: .utf8),
+      let recipients = try? JSONDecoder().decode([String].self, from: data)
+    else {
+      return []
+    }
+    return recipients
   }
 
   private var bodyPreview: String {
