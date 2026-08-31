@@ -1563,7 +1563,7 @@ export default function TabLayout() {
 
 <Collapsible summary="The default and selected icons share one rendering mode on iOS">
 
-On iOS, a tab's default and selected image icons must use the same [rendering mode](#icon-rendering-mode). When they resolve to different modes, both icons use the default icon's mode and a warning is logged.
+On iOS, a tab's default and selected image icons must use the same [rendering mode](#icon-rendering-mode). When they resolve to different modes, both icons use the default icon's mode and Expo Router logs a warning in development.
 
 The modes disagree when an icon color applies to only one of the states. This happens when you set `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop without also setting a color for the default state, because a color implies `'template'` rendering while an uncolored icon defaults to `'original'`. Setting `renderingMode` for only one state has the same effect.
 
