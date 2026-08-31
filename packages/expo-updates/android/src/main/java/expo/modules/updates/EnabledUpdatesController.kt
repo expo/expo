@@ -11,7 +11,6 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
@@ -185,10 +184,6 @@ class EnabledUpdatesController(
     startupStartTimeMillis = System.currentTimeMillis()
 
     purgeUpdatesLogsOlderThanOneDay()
-
-    if (!updatesConfiguration.hasUpdatesOverride) {
-      BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
-    }
 
     stateMachine.queueExecution(startupProcedure)
   }

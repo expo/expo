@@ -3,6 +3,7 @@ package expo.modules.updates.procedures
 import android.content.Context
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
@@ -207,6 +208,9 @@ class StartupProcedure(
   override suspend fun run(procedureContext: ProcedureContext) {
     this.procedureContext = procedureContext
     procedureContext.processStateEvent(UpdatesStateEvent.StartStartup())
+    if (!updatesConfiguration.hasUpdatesOverride) {
+      BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+    }
     initializeErrorRecovery()
     loaderTask.start()
   }
