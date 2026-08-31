@@ -377,6 +377,9 @@ export function useNavigationTreeReducer({
     previousRegistryRef.current = registry;
     for (const [stateKey, entry] of previousRegistry) {
       if (!registry.has(stateKey) && entry.routeNode) {
+        // This runs inside an effect; the rule doesn't recognize the `useClientLayoutEffect`
+        // wrapper as one.
+        // oxlint-disable-next-line react-hooks/rules-of-hooks
         process({
           type: 'NAVIGATOR_UNMOUNTED',
           stateKey,

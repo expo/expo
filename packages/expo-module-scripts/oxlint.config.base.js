@@ -52,16 +52,15 @@ export default defineConfig({
     {
       files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
       rules: {
-        // Already handled by TypeScript itself, enabling them blocks legitimate type overloads.
-        'no-redeclare': 'off',
-        'typescript/no-redeclare': 'off',
         // Handled by TypeScript.
         'no-unused-expressions': 'off',
-        'typescript/no-unused-expressions': 'off',
         'no-unused-vars': 'off',
-        'typescript/no-unused-vars': 'off',
         'no-useless-return': 'off',
+        // Enabling it blocks legitimate type overloads, which TypeScript already validates.
         'no-dupe-class-members': 'off',
+        // Function declarations directly inside a TS `namespace` body are legal; the rule's
+        // default disallows them (the `namespaces` option landed in oxc-project/oxc#24044).
+        'no-inner-declarations': ['warn', 'functions', { namespaces: 'allow' }],
       },
     },
   ],
@@ -96,8 +95,30 @@ export default defineConfig({
     'unicorn/no-thenable': 'off',
     // The `children` prop is an accepted pattern in this codebase.
     'react/no-children-prop': 'off',
+    // The ESLint rules flag callbacks only in the `disallow-in-func` mode, but oxlint always
+    // flags them, hitting the common fetch-on-mount pattern (`fetch().then(() => setState())`).
+    'react/no-did-mount-set-state': 'off',
+    'react/no-did-update-set-state': 'off',
     // Enums occasionally alias a value.
     'typescript/no-duplicate-enum-values': 'off',
+
+    // -------------------------------------
+    // --- React Compiler-derived rules ---
+    // -------------------------------------
+
+    // On by default since oxlint 1.79. The repo has a few hundred pre-existing violations
+    // (ref reads during render, setState calls in effects, and similar), so they are kept off
+    // to make the oxlint update behavior-neutral. Re-enable rule by rule as the findings
+    // get triaged.
+    'react/globals': 'off',
+    'react/immutability': 'off',
+    'react/preserve-manual-memoization': 'off',
+    'react/purity': 'off',
+    'react/refs': 'off',
+    'react/set-state-in-effect': 'off',
+    'react/static-components': 'off',
+    'react/use-memo': 'off',
+    'react/void-use-memo': 'off',
 
     // -----------------
     // --- Stylistic ---
