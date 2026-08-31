@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Stop writing DOM component source maps into the app binary during `expo export:embed`, so Android release builds no longer ship `www.bundle` source maps with the original app source. ([#49480](https://github.com/expo/expo/pull/49480) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 57.0.20 — 2026-08-28
