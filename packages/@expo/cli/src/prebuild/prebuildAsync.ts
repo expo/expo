@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
+import { recordPrebuildFingerprintAsync } from '../utils/nativeFingerprint';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -200,6 +201,16 @@ export async function prebuildAsync(
       xcodeProjectTargets: inlineModules.xcodeProjectTargets,
       name: exp.name,
     });
+  }
+
+  // Record what the native directories were generated from, so `npx expo needs-rebuild` can
+  // detect stale directories later. Never fails prebuild. Runs after `pod install`: the
+  // fingerprint scans the ios directory, and a concurrent scan could hit files mid-write —
+  // losing the marker or persisting a torn state.
+  for (const platform of options.platforms) {
+    if (platform === 'android' || platform === 'ios') {
+      await recordPrebuildFingerprintAsync(projectRoot, platform);
+    }
   }
 
   donePrebuild('done', {
