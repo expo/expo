@@ -104,12 +104,13 @@ function renameNpmTarballEntries(expName: string | undefined) {
     }
   };
   if (expName) {
-    const androidName = IOSConfig.XcodeUtils.sanitizedName(expName.toLowerCase());
     const iosName = IOSConfig.XcodeUtils.sanitizedName(expName);
+    // Lowercase after sanitizing so the result always matches content renames
+    // (slugify's charmap is case-asymmetric).
     const lowerCaseName = iosName.toLowerCase();
     return (input: string, typeflag: TarTypeFlag) => {
       input = input
-        .replace(/HelloWorld/g, input.includes('android') ? androidName : iosName)
+        .replace(/HelloWorld/g, input.includes('android') ? lowerCaseName : iosName)
         .replace(/helloworld/g, lowerCaseName);
       return renameConfigs(input, typeflag);
     };

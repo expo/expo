@@ -173,13 +173,49 @@ describe('renameTemplateAppNameAsync', () => {
       expect(spyWriteFile).toHaveBeenCalledTimes(1);
     });
 
-    // Whether the expected behaviour is a bug or not is up for discussion. This
-    // test is partially for the purpose of characterising the current behaviour.
-    //
-    // To be precise, this quirk originally existed only in Expo CLI (because XML
-    // escaping was only performed there), but now Create Expo has been made
-    // consistent with that behaviour as well.
-    it('sanitizes XML-unsafe characters in XML and Plist files when renaming', async () => {
+    it('derives the lowercase identifier from the sanitized name, matching path renames', async () => {
+      // Lowercasing happens after sanitizing ('Ǉubljana' -> 'LJubljana' ->
+      // 'ljubljana'), like in file-path renames.
+      jest.spyOn(fs.promises, 'readFile').mockImplementation(async () => 'package com.helloworld;');
+      let written = '';
+      jest.spyOn(fs.promises, 'writeFile').mockImplementation(async (_filePath, data) => {
+        written = data as string;
+      });
+
+      await renameTemplateAppNameAsync(cwd, { files: ['Main.kt'], expName: 'Ǉubljana' });
+      expect(written).toBe('package com.ljubljana;');
+    });
+
+    it.each([
+      // XML-unsafe characters use entities in generic XML/plist files; Android
+      // resource files (.xml) use backslash escapes for quotes
+      ['A & B & C', 'strings.xml', '<string>A &amp; B &amp; C</string>'],
+      ["Bob's App", 'strings.xml', "<string>Bob\\'s App</string>"],
+      ['A "B" C', 'strings.xml', '<string>A \\"B\\" C</string>'],
+      ['@string/foo', 'strings.xml', '<string>\\@string/foo</string>'],
+      ['?attr', 'strings.xml', '<string>\\?attr</string>'],
+      ['C:\\Temp', 'strings.xml', '<string>C:\\\\Temp</string>'],
+      [' Padded ', 'strings.xml', '<string>" Padded "</string>'],
+      ["Bob's App", 'app.plist', '<string>Bob&apos;s App</string>'],
+      ['A "B" C', 'app.plist', '<string>A &quot;B&quot; C</string>'],
+      // replacement patterns in the name are inserted literally, not expanded
+      ['Cost $& Fees', 'app.json', '<string>Cost $& Fees</string>'],
+    ])('renders the display name %j in %s as %j', async (expName, file, expected) => {
+      jest
+        .spyOn(fs.promises, 'readFile')
+        .mockImplementation(async () => '<string>Hello App Display Name</string>');
+      let written = '';
+      jest.spyOn(fs.promises, 'writeFile').mockImplementation(async (_filePath, data) => {
+        written = data as string;
+      });
+
+      await renameTemplateAppNameAsync(cwd, { files: [file], expName });
+      expect(written).toBe(expected);
+    });
+
+    // XML escaping applies only to the display name; the sanitized project
+    // identifiers derive from the raw name so they match across all files.
+    it('derives the same sanitized identifier in XML and non-XML files', async () => {
       // There is probably a more Jesty way to spy this, but I am tired
       const filesRead: string[] = [];
       const filesWritten: string[] = [];
@@ -194,15 +230,8 @@ describe('renameTemplateAppNameAsync', () => {
       const spyWriteFile = jest
         .spyOn(fs.promises, 'writeFile')
         .mockImplementation(async (filePath, data) => {
-          if (['.plist', '.xml'].includes(path.extname(filePath as string))) {
-            // XML escaping followed by sanitization:
-            // Bye<World -> Bye&lt;World -> ByeltWorld
-            expect(data).toMatch('ByeltWorld');
-          } else {
-            // Sanitization:
-            // Bye<World -> ByeWorld
-            expect(data).toMatch('ByeWorld');
-          }
+          // Sanitization: Bye<World -> ByeWorld
+          expect(data).toMatch('ByeWorld');
 
           filesWritten.push(filePath as string);
         });

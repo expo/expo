@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Derive sanitized project identifiers in the prebuild template from the raw app name in XML and plist files too (e.g. 'A & B' produced 'AampB' in plists but 'AB' elsewhere), and lowercase identifiers from the sanitized name, so file paths and contents always agree. Escape display names for Android resources and plists, and insert names containing replacement patterns (e.g. '$&') literally. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - Show the Xcode build log path when `run:ios` fails. ([#48624](https://github.com/expo/expo/pull/48624) by [@ramonclaudio](https://github.com/ramonclaudio))

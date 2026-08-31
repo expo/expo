@@ -1,16 +1,26 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig, XML } from '@expo/config-plugins';
 import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
 import { debugEvent } from './events';
 
+// Android resource XML (strings.xml): aapt2 resolves XML entities before its
+// own escape rules, so only &, <, > take entities; the rest (quotes, @, ?,
+// whitespace) needs Android's backslash escapes from `escapeAndroidString`.
+function escapeAndroidResourceValue(original: string): string {
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  return XML.escapeAndroidString(noGt);
+}
+
 function escapeXMLCharacters(original: string): string {
-  const noAmps = original.replace('&', '&amp;');
-  const noLt = noAmps.replace('<', '&lt;');
-  const noGt = noLt.replace('>', '&gt;');
-  const noApos = noGt.replace('"', '\\"');
-  return noApos.replace("'", "\\'");
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  const noQuots = noGt.replace(/"/g, '&quot;');
+  return noQuots.replace(/'/g, '&apos;');
 }
 
 /**
@@ -147,15 +157,28 @@ export async function renameTemplateAppNameAsync(
 
       debugEvent('rename_file', { path: debugEvent.path(absoluteFilePath) });
 
-      const safeName = ['.xml', '.plist'].includes(path.extname(file))
-        ? escapeXMLCharacters(name)
-        : name;
+      const extension = path.extname(file);
+      // Escaping applies only to the display name; the sanitized project
+      // identifiers derive from the raw name so they match across all files.
+      // `.xml` files in the rename config are Android resources; `.plist` is
+      // generic XML.
+      // Under `expo prebuild`, `AndroidConfig.Name.withName` later overwrites
+      // `app_name` from the raw config name, escaped by the same
+      // `escapeAndroidString`. This escaping keeps the file valid until the
+      // mods run, and is the final output for custom rename configs and for
+      // `create-expo`, which runs no mods.
+      const safeName =
+        extension === '.xml'
+          ? escapeAndroidResourceValue(name)
+          : extension === '.plist'
+            ? escapeXMLCharacters(name)
+            : name;
 
       try {
         const replacement = contents
-          .replace(/Hello App Display Name/g, safeName)
-          .replace(/HelloWorld/g, IOSConfig.XcodeUtils.sanitizedName(safeName))
-          .replace(/helloworld/g, IOSConfig.XcodeUtils.sanitizedName(safeName.toLowerCase()));
+          .replace(/Hello App Display Name/g, () => safeName)
+          .replace(/HelloWorld/g, IOSConfig.XcodeUtils.sanitizedName(name))
+          .replace(/helloworld/g, IOSConfig.XcodeUtils.sanitizedName(name).toLowerCase());
 
         if (replacement === contents) {
           return;
