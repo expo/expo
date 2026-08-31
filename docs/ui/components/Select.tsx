@@ -63,7 +63,7 @@ export function Select({
             />
           }
           className={mergeClasses(
-            'min-h-9 transform-none justify-between truncate px-3',
+            'min-h-9 justify-between truncate px-3 active:scale-100',
             !value && 'text-quaternary',
             size === 'lg' && 'min-h-13',
             className
