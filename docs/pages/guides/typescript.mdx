@@ -220,9 +220,23 @@ Some Expo libraries provide both static types and type generation capabilities. 
 
 ## TypeScript for project's config files
 
-Additional setup is required to use TypeScript for configuration files such as **metro.config.js** or **app.config.js**.
+### metro.config.ts
 
-Install [`tsx`](https://tsx.is/) as a dev dependency and utilize its [`tsx/cjs` require hook](https://tsx.is/dev-api/entry-point#commonjs-mode-only) to import TypeScript files within your JS configuration file. This hook allows TypeScript imports while keeping the root file as JavaScript. The command below adds `tsx` so `import 'tsx/cjs'` works in the following sub-section examples.
+Metro supports TypeScript configuration files directly:
+
+```ts metro.config.ts
+import { getDefaultConfig } from 'expo/metro-config.js';
+
+const config = getDefaultConfig(import.meta.dirname);
+
+export default config;
+```
+
+### app.config.ts
+
+**app.config.ts** is supported by default. However, it doesn't support external TypeScript modules, or **tsconfig.json** customization.
+
+For a more comprehensive TypeScript setup, install [`tsx`](https://tsx.is/) as a dev dependency:
 
 <Tabs>
 
@@ -254,23 +268,18 @@ Install [`tsx`](https://tsx.is/) as a dev dependency and utilize its [`tsx/cjs` 
 
 </Tabs>
 
-### metro.config.js
+Then utilize its [`tsx/cjs` require hook](https://tsx.is/dev-api/entry-point#commonjs-mode-only) to import TypeScript files within your JS configuration file. This hook allows TypeScript imports while keeping the root file as JavaScript.
 
-Update **metro.config.js** to require **metro.config.ts** file:
+```ts app.config.ts
+import 'tsx/cjs'; // Add this to import TypeScript files
+import { ExpoConfig } from 'expo/config';
 
-```js metro.config.js
-require('tsx/cjs'); // Add this to import TypeScript files
-module.exports = require('./metro.config.ts');
-```
+const config: ExpoConfig = {
+  name: 'my-app',
+  slug: 'my-app',
+};
 
-Update **metro.config.ts** file with your project's metro configuration:
-
-```ts metro.config.ts
-import { getDefaultConfig } from 'expo/metro-config';
-
-const config = getDefaultConfig(__dirname);
-
-module.exports = config;
+export default config;
 ```
 
 <Collapsible summary="Deprecated: webpack.config.js">
@@ -294,22 +303,6 @@ module.exports = async function (env: Environment, argv: Arguments) {
 ```
 
 </Collapsible>
-
-### app.config.js
-
-**app.config.ts** is supported by default. However, it doesn't support external TypeScript modules, or **tsconfig.json** customization. You can use the following approach to get a more comprehensive TypeScript setup:
-
-```ts app.config.ts
-import 'tsx/cjs'; // Add this to import TypeScript files
-import { ExpoConfig } from 'expo/config';
-
-const config: ExpoConfig = {
-  name: 'my-app',
-  slug: 'my-app',
-};
-
-export default config;
-```
 
 ## Other TypeScript features
 
