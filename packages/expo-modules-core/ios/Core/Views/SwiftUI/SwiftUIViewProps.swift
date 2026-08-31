@@ -47,9 +47,31 @@ extension ExpoSwiftUI {
      */
     public let globalEventDispatcher = EventDispatcher(GLOBAL_EVENT_NAME)
 
+    /**
+     A dictionary to store previous raw prop values for change detection.
+     */
+    private var previousRawProps: [String: Any] = [:]
+
     internal func updateRawProps(_ rawProps: [String: Any], appContext: AppContext) throws {
-      // Update the props just like the records
-      try update(withDict: rawProps, appContext: appContext)
+      try fieldsOf(self).forEach { field in
+        guard let key = field.key else {
+          return
+        }
+        guard rawProps.keys.contains(key) else {
+          if field.isRequired {
+            try field.set(nil, appContext: appContext)
+          }
+          return
+        }
+        let newValue = rawProps[key]
+        let previousValue = previousRawProps[key]
+
+        if !Conversions.areValuesEqual(previousValue, newValue) {
+          try field.set(newValue, appContext: appContext)
+
+          previousRawProps[key] = newValue
+        }
+      }
 
       // Notify subscribed views about the change to re-render them.
       objectWillChange.send()
