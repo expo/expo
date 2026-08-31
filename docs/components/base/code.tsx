@@ -166,7 +166,7 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'relative my-4 overflow-x-auto rounded-3xl border border-secondary bg-subtle whitespace-pre',
+        'relative my-4 overflow-x-auto rounded-3xl border border-secondary bg-subtle whitespace-pre [&::-webkit-scrollbar-track]:mx-6',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
