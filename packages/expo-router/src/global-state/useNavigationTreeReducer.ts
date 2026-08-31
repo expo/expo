@@ -323,7 +323,6 @@ export function useNavigationTreeReducer({
           'The navigation container is missing its initial state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
         );
       }
-      // TODO(@ubax): check if deepFreeze is needed here.
       return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
     }
   );
