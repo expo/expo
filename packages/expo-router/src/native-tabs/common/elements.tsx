@@ -3,7 +3,7 @@ import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Label, Icon, Badge, VectorIcon } from '../../primitives';
-import type { NativeTabsLabelStyle } from '../types';
+import type { IconRenderingMode, NativeTabsLabelStyle } from '../types';
 
 export interface NativeTabsTriggerLabelProps {
   /**
@@ -66,7 +66,7 @@ export interface SrcIcon {
    *
    * @platform ios
    */
-  renderingMode?: 'template' | 'original';
+  renderingMode?: IconRenderingMode;
 }
 
 export interface SFSymbolIcon {
