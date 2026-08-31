@@ -59,6 +59,30 @@ describe(useLocalSearchParams, () => {
     expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 
+  it.only('returns route and query params from layouts and routes in the same render', () => {
+    let layoutParams;
+    let routeParams;
+
+    renderRouter(
+      {
+        'app/[id]/_layout': function Layout() {
+          layoutParams = useLocalSearchParams();
+          return <Slot />;
+        },
+        'app/[id]/index': function Route() {
+          routeParams = useLocalSearchParams();
+          return null;
+        },
+      },
+      {
+        initialUrl: '/app/123?query=hello',
+      }
+    );
+
+    expect(layoutParams).toEqual({ id: '123', query: 'hello' });
+    expect(routeParams).toEqual({ id: '123', query: 'hello' });
+  });
+
   it(`defaults abstract types`, () => {
     const params = renderHookOnce(() => useLocalSearchParams());
     expectTypeOf(params).toExtend<Record<string, string | string[] | undefined>>();
