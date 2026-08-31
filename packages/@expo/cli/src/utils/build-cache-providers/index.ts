@@ -176,6 +176,13 @@ async function calculateFingerprintHashAsync({
   return fingerprint.hash;
 }
 
+/**
+ * Resolve `@expo/fingerprint` directly from the project — NOT through the shared
+ * `importFingerprint`, which prefers `expo/fingerprint` and exists for parity with the
+ * embedded-fingerprint channel. Build-cache keys predate that channel: resolving a different
+ * copy would silently change every existing key, and `MODULE_NOT_FOUND` while loading
+ * (a corrupted install) must degrade to "skip build cache", not abort `expo run:*`.
+ */
 function importFingerprintForDev(projectRoot: string): null | typeof import('@expo/fingerprint') {
   try {
     return require(require.resolve('@expo/fingerprint', { paths: [projectRoot] }));

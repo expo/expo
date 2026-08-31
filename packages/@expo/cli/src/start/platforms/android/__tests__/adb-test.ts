@@ -12,6 +12,7 @@ import {
   launchActivityAsync,
   sanitizeAdbDeviceName,
   openUrlAsync,
+  getPackagePathsAsync,
 } from '../adb';
 
 jest.mock('../ADBServer', () => ({
@@ -46,6 +47,67 @@ describe(openUrlAsync, () => {
     expect(getServer().runAsync).toHaveBeenCalledWith(
       expect.arrayContaining(["'acme://x; reboot'"])
     );
+  });
+});
+
+describe(getPackagePathsAsync, () => {
+  it(`returns the APK paths of an installed app`, async () => {
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce('package:/data/app/~~abc==/dev.bacon.app-xyz==/base.apk\n');
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([
+      '/data/app/~~abc==/dev.bacon.app-xyz==/base.apk',
+    ]);
+    expect(getServer().runAsync).toHaveBeenCalledWith([
+      '-s',
+      '123',
+      'shell',
+      "'pm'",
+      "'path'",
+      "'--user'",
+      "'0'",
+      "'dev.bacon.app'",
+    ]);
+  });
+
+  it(`returns an empty list when the app is not installed`, async () => {
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('');
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([]);
+  });
+
+  it(`returns an empty list when pm path exits non-zero for a missing package`, async () => {
+    // `resolveAdbPromise` keeps the bare spawn message when adb printed nothing — the shape
+    // `pm path` produces for a package that is not installed.
+    jest
+      .mocked(getServer().runAsync)
+      .mockRejectedValueOnce(new Error('adb exited with non-zero code: 1'));
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([]);
+  });
+
+  // Some devices print an explicit package error for a missing package instead of exiting
+  // silently; these must read as "not installed", not as a failed check.
+  it.each([
+    "Error: Can't find package: dev.bacon.app",
+    'Failure: package dev.bacon.app not found',
+    'Unknown package: dev.bacon.app',
+  ])(`returns an empty list for the package error %p`, async (message) => {
+    jest.mocked(getServer().runAsync).mockRejectedValueOnce(new Error(message));
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([]);
+  });
+
+  // Any failure with adb output says nothing about the app: transport errors, authorization
+  // states, and shell errors must all throw instead of reading as "not installed".
+  it.each([
+    'device offline',
+    "device 'emulator-5554' not found",
+    'insufficient permissions for device: missing udev rules?',
+    'more than one device/emulator',
+    'closed',
+    "protocol fault (couldn't read status)",
+    'device still authorizing',
+  ])(`rethrows the adb error %p`, async (message) => {
+    jest.mocked(getServer().runAsync).mockRejectedValueOnce(new Error(message));
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).rejects.toThrow(message);
   });
 });
 
