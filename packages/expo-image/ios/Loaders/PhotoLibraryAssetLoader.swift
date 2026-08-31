@@ -91,10 +91,11 @@ private func requestAsset(
   progressBlock: SDImageLoaderProgressBlock?,
   completedBlock: SDImageLoaderCompletedBlock?
 ) -> PHImageRequestID {
+  let deliveryMode = context?[ImageView.deliveryModeKey] as? ImageDeliveryMode ?? .highQuality
   let options = PHImageRequestOptions()
   options.isSynchronous = false
   options.version = .current
-  options.deliveryMode = .highQualityFormat
+  options.deliveryMode = deliveryMode.toPHImageRequestOptionsDeliveryMode()
   options.resizeMode = .fast
   options.normalizedCropRect = .zero
   options.isNetworkAccessAllowed = true

@@ -15,6 +15,7 @@ public final class ImageView: ExpoView {
   nonisolated static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
   nonisolated static let contentFitKey = SDWebImageContextOption(rawValue: "contentFit")
   nonisolated static let frameSizeKey = SDWebImageContextOption(rawValue: "frameSize")
+  nonisolated static let deliveryModeKey = SDWebImageContextOption(rawValue: "deliveryMode")
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
@@ -62,6 +63,8 @@ public final class ImageView: ExpoView {
   var lockResource: Bool = false
 
   var enforceEarlyResizing: Bool = false
+
+  var deliveryMode: ImageDeliveryMode = .highQuality
 
   var recyclingKey: String? {
     didSet {
@@ -193,6 +196,7 @@ public final class ImageView: ExpoView {
     context[ImageView.screenScaleKey] = screenScale
     context[ImageView.frameSizeKey] = frame.size
     context[ImageView.contentFitKey] = contentFit
+    context[ImageView.deliveryModeKey] = deliveryMode
 
     // Do it here so we don't waste resources trying to fetch from a remote URL
     if maybeRenderLocalAsset(from: source) {
@@ -254,28 +258,37 @@ public final class ImageView: ExpoView {
       }
       return
     }
-    guard finished else {
+    
+    // A `finished=false` callback with no image is a canceled load. If there IS an image, it's a
+    // partial delivery from a loader that supports opportunistic loading (e.g. PhotoKit's
+    // `opportunistic` `deliveryMode`) — render it as an intermediate frame; the final image comes
+    // in a later `finished=true` callback.
+    guard image != nil || finished else {
       log.debug("Loading the image has been canceled")
       return
     }
 
     if let image {
-      onLoad([
-        "cacheType": cacheTypeToString(cacheType),
-        "source": [
-          "url": imageUrl?.absoluteString,
-          "width": image.size.width,
-          "height": image.size.height,
-          "mediaType": imageFormatToMediaType(image.sd_imageFormat),
-          "isAnimated": image.sd_isAnimated
-        ]
-      ])
+      // Only emit `onLoad` for the final delivery so subscribers don't see two loads for a
+      // single source when a loader delivers a partial preview first.
+      if finished {
+        onLoad([
+          "cacheType": cacheTypeToString(cacheType),
+          "source": [
+            "url": imageUrl?.absoluteString,
+            "width": image.size.width,
+            "height": image.size.height,
+            "mediaType": imageFormatToMediaType(image.sd_imageFormat),
+            "isAnimated": image.sd_isAnimated
+          ]
+        ])
 
-      appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
-        url: imageUrl?.absoluteString ?? "",
-        width: image.size.width * image.scale,
-        height: image.size.height * image.scale
-      )
+        appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+          url: imageUrl?.absoluteString ?? "",
+          width: image.size.width * image.scale,
+          height: image.size.height * image.scale
+        )
+      }
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
       imageLayoutSize = idealSize(
@@ -287,7 +300,7 @@ public final class ImageView: ExpoView {
       let imageIdealSize = imageLayoutSize.rounded(.up)
       let image = processImage(image, idealSize: imageIdealSize, scale: scale)
       applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-      renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
+      renderSourceImage(image, cacheType: finished ? ImageCacheType.fromSdCacheType(cacheType) : .none)
     } else {
       displayPlaceholderIfNecessary()
     }

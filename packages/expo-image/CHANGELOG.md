@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added a `deliveryMode` prop (`'highQuality' | 'opportunistic'`) that maps to `PHImageRequestOptions.deliveryMode` for Photo Library assets (`ph://` sources). With `'opportunistic'`, the view renders a fast low-quality preview first and then swaps in the final high-quality image.
 - Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
 - add expo-observe integration ([#47145](https://github.com/expo/expo/pull/47145) by [@Ubax](https://github.com/Ubax))
 - [iOS][Android] Added a `skipOnCacheHit` field to `transition` that skips the fade the first time a cached image appears (`'memory'` for memory-cache hits, `'all'` for any cache hit), so already-loaded images don't re-animate on mount, tab change, or when scrolling back into view. A transition from a `source` change still plays. ([#48181](https://github.com/expo/expo/pull/48181) by [@janicduplessis](https://github.com/janicduplessis))

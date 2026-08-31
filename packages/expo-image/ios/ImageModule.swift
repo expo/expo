@@ -147,6 +147,10 @@ public final class ImageModule: Module {
         }
       }
 
+      Prop("deliveryMode") { (view, deliveryMode: ImageDeliveryMode?) in
+        view.deliveryMode = deliveryMode ?? .highQuality
+      }
+
       AsyncFunction("startAnimating") { (view: ImageView) in
         if view.isSFSymbolSource {
           view.startSymbolAnimation()
