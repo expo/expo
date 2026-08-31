@@ -187,22 +187,30 @@ export function getCatalogImages(
 ): CatalogImage[] {
   const images: CatalogImage[] = [];
   asset.scales.forEach((scale, idx) => {
-    if (CATALOG_SCALES.includes(scale)) {
-      images.push({ scale, src: asset.files[idx]! });
+    const src = asset.files[idx];
+    if (src && CATALOG_SCALES.includes(scale)) {
+      images.push({ scale, src });
     }
   });
-  if (images.length === 0 && asset.scales.length > 0) {
-    const maxCatalogScale = CATALOG_SCALES[CATALOG_SCALES.length - 1]!;
-    let idx = asset.scales.findIndex((scale) => scale > maxCatalogScale);
-    if (idx === -1) {
-      idx = asset.scales.length - 1;
-    }
-    const scale = Math.min(maxCatalogScale, Math.max(1, Math.ceil(asset.scales[idx]!)));
-    Log.warn(
-      `Asset "${asset.name}" has no 1x/2x/3x variant; using its @${asset.scales[idx]}x file as the ${scale}x catalog rendition.`
-    );
-    images.push({ scale, src: asset.files[idx]! });
+  if (images.length > 0) {
+    return images;
   }
+
+  let idx = asset.scales.findIndex((scale) => scale > MAX_CATALOG_SCALE);
+  if (idx === -1) {
+    idx = asset.scales.length - 1;
+  }
+  const assetScale = asset.scales[idx];
+  const src = asset.files[idx];
+  if (assetScale === undefined || src === undefined) {
+    return images;
+  }
+
+  const scale = Math.min(MAX_CATALOG_SCALE, Math.max(1, Math.ceil(assetScale)));
+  Log.warn(
+    `Asset "${asset.name}" has no 1x/2x/3x variant; using its @${assetScale}x file as the ${scale}x catalog rendition.`
+  );
+  images.push({ scale, src });
   return images;
 }
 
@@ -259,13 +267,14 @@ function copy(src: string, dest: string, callback: (error?: NodeJS.ErrnoExceptio
   });
 }
 
-const ALLOWED_SCALES: { [key: string]: number[] } = {
-  ios: [1, 2, 3],
-};
-
 // Scales an iOS asset catalog imageset can hold. actool silently drops
 // renditions at any other scale (e.g. a fractional @1.5x).
-const CATALOG_SCALES = ALLOWED_SCALES.ios!;
+const CATALOG_SCALES = [1, 2, 3];
+const MAX_CATALOG_SCALE = Math.max(...CATALOG_SCALES);
+
+const ALLOWED_SCALES: { [key: string]: number[] } = {
+  ios: CATALOG_SCALES,
+};
 
 export function filterPlatformAssetScales(platform: string, scales: number[]): number[] {
   const whitelist: number[] = ALLOWED_SCALES[platform]!;
