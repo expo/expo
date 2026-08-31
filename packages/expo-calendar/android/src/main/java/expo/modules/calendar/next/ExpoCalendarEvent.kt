@@ -111,7 +111,7 @@ class ExpoCalendarEvent(
 
   suspend fun getExtendedProperties(): List<ExtendedPropertyRecord> =
     extendedPropertyRepository.findAllByEventId(eventId)
-      .map { extendedPropertyMapper.toRecord(it) }
+      .mapNotNull { extendedPropertyMapper.toRecord(it) }
 
   suspend fun setExtendedProperty(name: String, value: String) {
     val account = requireOwningAccount()
