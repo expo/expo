@@ -1552,6 +1552,79 @@ importers:
         specifier: ^1.20250807.0
         version: 1.20260317.1
 
+  apps/router-tester:
+    dependencies:
+      '@expo/vector-icons':
+        specifier: ^15.0.2
+        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      expo:
+        specifier: workspace:*
+        version: link:../../packages/expo
+      expo-constants:
+        specifier: workspace:*
+        version: link:../../packages/expo-constants
+      expo-dev-client:
+        specifier: workspace:*
+        version: link:../../packages/expo-dev-client
+      expo-image:
+        specifier: workspace:*
+        version: link:../../packages/expo-image
+      expo-linking:
+        specifier: workspace:*
+        version: link:../../packages/expo-linking
+      expo-router:
+        specifier: workspace:*
+        version: link:../../packages/expo-router
+      expo-splash-screen:
+        specifier: workspace:*
+        version: link:../../packages/expo-splash-screen
+      expo-status-bar:
+        specifier: workspace:*
+        version: link:../../packages/expo-status-bar
+      expo-symbols:
+        specifier: workspace:*
+        version: link:../../packages/expo-symbols
+      expo-system-ui:
+        specifier: workspace:*
+        version: link:../../packages/expo-system-ui
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      react-native:
+        specifier: 0.87.0
+        version: 0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+      react-native-gesture-handler:
+        specifier: ~3.1.0
+        version: 3.1.0(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-pager-view:
+        specifier: ^8.0.2
+        version: 8.0.2(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-reanimated:
+        specifier: 4.5.1
+        version: 4.5.1(patch_hash=e2626de5a7914e5e42159ee39602e6b9ff62cbfb4ba181bc75276c5dac265e25)(react-native-worklets@0.10.1(patch_hash=8e525838db0b8e9bed0b01632a1f8b6f7c40543b37a45f58e3db2cca501b55f8)(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-safe-area-context:
+        specifier: 5.7.0
+        version: 5.7.0(patch_hash=625957ca1b170be60c35594e195dc626b3f9d4b7058d92cd3dab8ce8c65532c8)(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-screens:
+        specifier: 4.27.0
+        version: 4.27.0(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-tab-view:
+        specifier: ^4.3.0
+        version: 4.3.0(react-native-pager-view@8.0.2(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-worklets:
+        specifier: 0.10.1
+        version: 0.10.1(patch_hash=8e525838db0b8e9bed0b01632a1f8b6f7c40543b37a45f58e3db2cca501b55f8)(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      sf-symbols-typescript:
+        specifier: ^2.0.0
+        version: 2.2.0
+    devDependencies:
+      '@types/react':
+        specifier: ~19.2.10
+        version: 19.2.14
+
   apps/sandbox:
     dependencies:
       '@react-navigation/bottom-tabs':
