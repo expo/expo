@@ -236,9 +236,9 @@ function getImportNames(options: JsTransformOptions, ast: t.File) {
     options.experimentalImportSupport === true &&
     options.customTransformOptions?.liveBindings !== 'false'
   ) {
-    // NOTE(@kitten): The live bindings import/export plugin doesn't use these helpers
-    // If it's used, we can assume that there's no conflicts (since we reserve this name, and assume users won't use it)
-    // and skip the expensive `generateImportNames` call
+    // NOTE(@kitten): The live bindings import/export plugin only emits `importDefault`, and
+    // never `importAll`. Both names are reserved, and we assume users won't declare them
+    // themselves, so we can skip the expensive `generateImportNames` conflict check.
     return {
       importAll: '_$$_IMPORT_ALL',
       importDefault: '_$$_IMPORT_DEFAULT',
