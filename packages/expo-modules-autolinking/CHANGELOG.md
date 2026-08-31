@@ -50,6 +50,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
+- [iOS] Enable `react-native-screens`' gamma architecture (`RNS_GAMMA_ENABLED`) in its precompiled XCFramework by building the gamma sources and adding a Swift target for the split-view controllers. ([#47240](https://github.com/expo/expo/pull/47240) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
