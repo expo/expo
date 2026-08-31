@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use the same mode for env loading and bundling with custom Xcode configurations. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 - Add experimental `tvos` and `macos` platforms gated by `expriments.outOfTreePlatforms` in config ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))

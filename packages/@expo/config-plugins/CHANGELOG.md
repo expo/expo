@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Use the same mode for env loading and bundling with custom Xcode configurations. ([#49555](https://github.com/expo/expo/pull/49555) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
 
 ### 💡 Others
