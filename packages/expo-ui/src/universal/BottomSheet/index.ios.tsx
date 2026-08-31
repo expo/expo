@@ -10,7 +10,7 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 
 import type { BottomSheetProps, SnapPoint } from './types';
-import { resolveContentPadding } from './utils';
+import { resolveContentPadding, resolveStringColor } from './utils';
 
 function snapPointToDetent(snapPoint: SnapPoint): PresentationDetent {
   if (snapPoint === 'half') return 'medium';
@@ -43,11 +43,9 @@ export function BottomSheet({
   if (snapPoints && snapPoints.length > 0) {
     presentationModifiers.push(presentationDetents(snapPoints.map(snapPointToDetent)));
   }
-  // Runtime-checked rather than cast: containerColor is typed ColorValue
-  // (react-native's broader union, e.g. PlatformColor()), while
-  // presentationBackground only accepts a hex/CSS-color string.
-  if (typeof containerColor === 'string') {
-    presentationModifiers.push(presentationBackground(containerColor));
+  const resolvedContainerColor = resolveStringColor(containerColor);
+  if (resolvedContainerColor) {
+    presentationModifiers.push(presentationBackground(resolvedContainerColor));
   }
   if (modifiers?.length) {
     presentationModifiers.push(...modifiers);
