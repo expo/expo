@@ -186,6 +186,12 @@ export interface NativeTabOptions extends DefaultRouterOptions {
      */
     contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'>;
 }
+/**
+ * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
+ * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
+ * @platform ios
+ */
+export type IconRenderingMode = 'template' | 'original';
 export type SymbolOrImageSource = {
     /**
      * The name of the SF Symbol to use as an icon.
@@ -212,7 +218,7 @@ export type SymbolOrImageSource = {
      * @platform ios
      * @default 'template'
      */
-    renderingMode?: 'template' | 'original';
+    renderingMode?: IconRenderingMode;
 };
 export type NativeTabsLabelStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'color'>;
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];

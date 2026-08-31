@@ -53,7 +53,7 @@ export declare function useSharedScreenProps(props: InternalTabScreenProps): {
         drawable?: string;
     } | {
         src?: import("react-native").ImageSourcePropType;
-        renderingMode?: "template" | "original";
+        renderingMode?: import("./types").IconRenderingMode;
     } | undefined;
     selectedIcon: {
         sf?: import("sf-symbols-typescript").SFSymbol;
@@ -61,7 +61,7 @@ export declare function useSharedScreenProps(props: InternalTabScreenProps): {
         drawable?: string;
     } | {
         src?: import("react-native").ImageSourcePropType;
-        renderingMode?: "template" | "original";
+        renderingMode?: import("./types").IconRenderingMode;
     } | undefined;
 };
 export declare function ScreenContent({ options, contentRenderer, }: {
