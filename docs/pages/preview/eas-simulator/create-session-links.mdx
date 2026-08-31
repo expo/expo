@@ -1,12 +1,12 @@
 ---
 title: Start an EAS Simulator session from a link
 sidebar_title: Create session links
-description: Construct an authenticated expo.dev URL that creates and opens an EAS Simulator session from an EAS Build or application archive.
+description: Construct an authenticated expo.dev URL that creates and opens an EAS Simulator session from an EAS Build, build fingerprint, or application archive.
 ---
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-A create session link starts an iOS Simulator session from an EAS Build or application archive and opens its session page on expo.dev. Use one to add an EAS Simulator action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/eas-simulator/rest-api/).
+A create session link starts an iOS Simulator session from an EAS Build, build fingerprint, or application archive and opens its session page on expo.dev. Use one to add an EAS Simulator action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/eas-simulator/rest-api/).
 
 Create session links start browser-preview-only sessions. They do not provision agent-device, Appium, or Argent. Use [EAS CLI](/preview/eas-simulator/cli-reference/) or the [REST API](/preview/eas-simulator/rest-api/) when you need a controller, an Android Emulator, a blank device, Expo Go, or custom duration and idle limits.
 
@@ -26,29 +26,31 @@ The person opening the link must sign in to an Expo account that can access the 
 
 Every create session link requires exactly one application source:
 
-| Parameter               | Description                                                                                                                                                                                    |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `buildId`               | ID of a finished, unexpired EAS Build for the iOS Simulator. The build determines the platform.                                                                                                |
-| `applicationArchiveUrl` | URL of a downloadable iOS application archive. Encode this URL because it is nested inside the create session URL. Supported extensions are **.tar.gz**, **.tgz**, **.app**, and **.app.zip**. |
+| Parameter               | Description                                                                                                                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buildId`               | ID of a finished, unexpired EAS Build for the iOS Simulator. The build determines the platform.                                                                                                       |
+| `buildFingerprint`      | Fingerprint hash of an EAS Build. Requires `platform`. EAS selects the newest finished, unexpired build with this fingerprint on the requested platform. On iOS, the build must target the Simulator. |
+| `applicationArchiveUrl` | URL of a downloadable iOS application archive. Encode this URL because it is nested inside the create session URL. Supported extensions are **.tar.gz**, **.tgz**, **.app**, and **.app.zip**.        |
 
-Do not include both parameters. A link without either parameter cannot create a session.
+Do not include more than one application source. A link without an application source cannot create a session.
 
-### Add optional parameters
+### Add other parameters
 
-| Parameter          | Description                                                                                                                                                                                                       |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `platform`         | Platform for `applicationArchiveUrl`. Create session links currently support `ios`. You can omit it when the archive URL has a supported iOS extension. The value does not override the platform of an EAS Build. |
-| `launchArgs`       | Argument passed to the application when it launches. Repeat this parameter to pass multiple arguments. Their order is preserved.                                                                                  |
-| `openUrl`          | Expo, development-client, or application deep link to open after the application launches.                                                                                                                        |
-| `deviceIdentifier` | iOS Simulator name or unique device identifier (UDID), such as `iPhone 16 Pro`. The runner chooses the default device when this parameter is omitted.                                                             |
-| `name`             | Descriptive session name with a maximum of 255 characters.                                                                                                                                                        |
+| Parameter          | Description                                                                                                                                                                                                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `platform`         | Platform for `buildFingerprint` or `applicationArchiveUrl`. Create session links currently support `ios`. It is required with `buildFingerprint` and can be omitted when an archive URL has a supported iOS extension. The value does not override the platform of a build selected by `buildId`. |
+| `launchArgs`       | Argument passed to the application when it launches. Repeat this parameter to pass multiple arguments. Their order is preserved.                                                                                                                                                                  |
+| `openUrl`          | Expo, development-client, or application deep link to open after the application launches.                                                                                                                                                                                                        |
+| `deviceIdentifier` | iOS Simulator name or unique device identifier (UDID), such as `iPhone 16 Pro`. The runner chooses the default device when this parameter is omitted.                                                                                                                                             |
+| `name`             | Descriptive session name with a maximum of 255 characters.                                                                                                                                                                                                                                        |
 
 URL-encode parameter values, especially nested URLs and values that contain spaces. Most programming languages provide a URL builder that handles this encoding. For example:
 
 ```js
 const url = new URL('https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create');
 
-url.searchParams.set('buildId', 'BUILD_UUID');
+url.searchParams.set('buildFingerprint', 'FINGERPRINT_HASH');
+url.searchParams.set('platform', 'ios');
 url.searchParams.set('name', 'PR preview');
 url.searchParams.set('deviceIdentifier', 'iPhone 16 Pro');
 url.searchParams.append('launchArgs', '-UITestMode');
@@ -67,6 +69,14 @@ https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId
 ```
 
 The build must be finished, its artifact must not be expired, and it must target the iOS Simulator instead of a physical iOS device.
+
+### Start the latest compatible build with a fingerprint
+
+```text
+https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildFingerprint=FINGERPRINT_HASH&platform=ios
+```
+
+EAS selects the newest finished, unexpired iOS Simulator build with this fingerprint. If no compatible build exists, the link shows a validation error. Use `buildId` instead when you need to select one specific build.
 
 ### Name the session and choose a device
 
@@ -98,4 +108,4 @@ The session page shows its startup progress and the browser preview when it beco
 
 Closing the page or navigating away does not cancel a session creation that the service already accepted, and it does not stop a running session. Stop the session when you finish so that it does not continue consuming usage.
 
-If the parameters or build are invalid, expo.dev shows a **Cannot start simulator session** error instead. Common causes include an unfinished or expired build, an iOS device build, an unsupported archive URL, or more than one application source.
+If the parameters or build are invalid, expo.dev shows a **Cannot start simulator session** error instead. Common causes include an unfinished or expired build, an iOS device build, a fingerprint without `platform`, no compatible build for a fingerprint, an unsupported archive URL, or more than one application source.
