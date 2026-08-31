@@ -144,6 +144,13 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Normal request serves HTML');
 
+  if (!varyTokens(htmlResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the HTML variant, got: ${htmlResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ HTML variant of a negotiated page returns Vary: Accept');
+
   // With Accept: text/markdown, should serve markdown
   const mdResponse = await fetch(`${BASE_URL}/test-page`, {
     headers: { Accept: 'text/markdown' },

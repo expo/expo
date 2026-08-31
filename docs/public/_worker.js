@@ -98,6 +98,9 @@ export default {
       });
     }
 
-    return env.ASSETS.fetch(request);
+    const htmlResponse = await env.ASSETS.fetch(request);
+    const response = new Response(htmlResponse.body, htmlResponse);
+    response.headers.append("Vary", "Accept");
+    return response;
   },
 };
