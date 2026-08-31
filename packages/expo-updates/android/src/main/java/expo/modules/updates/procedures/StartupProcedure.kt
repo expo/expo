@@ -4,7 +4,7 @@ import android.content.Context
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.BuildData
-import expo.modules.updates.db.DatabaseHolder
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.errorrecovery.ErrorRecovery
@@ -31,7 +31,7 @@ import java.io.File
 class StartupProcedure(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
@@ -73,7 +73,7 @@ class StartupProcedure(
   private val loaderTask = LoaderTask(
     context,
     updatesConfiguration,
-    databaseHolder,
+    database,
     updatesDirectory,
     fileDownloader,
     selectionPolicy,
@@ -209,7 +209,7 @@ class StartupProcedure(
     this.procedureContext = procedureContext
     procedureContext.processStateEvent(UpdatesStateEvent.StartStartup())
     if (!updatesConfiguration.hasUpdatesOverride) {
-      BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+      BuildData.ensureBuildDataIsConsistent(updatesConfiguration, database)
     }
     initializeErrorRecovery()
     loaderTask.start()
@@ -247,7 +247,7 @@ class StartupProcedure(
           return
         }
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
-        val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate, procedureScope)
+        val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, database, fileDownloader, updatesDirectory, launchedUpdate, procedureScope)
         procedureScope.launch {
           try {
             val loaderResult = remoteLoader.load { updateResponse ->
@@ -294,7 +294,7 @@ class StartupProcedure(
         }
         procedureScope.launch {
           val launchedUpdate = launchedUpdate ?: return@launch
-          databaseHolder.withDatabase { it.updateDao().incrementFailedLaunchCount(launchedUpdate) }
+          database.updateDao().incrementFailedLaunchCount(launchedUpdate)
         }
       }
 
@@ -304,7 +304,7 @@ class StartupProcedure(
         }
         procedureScope.launch {
           val launchedUpdate = launchedUpdate ?: return@launch
-          databaseHolder.withDatabase { it.updateDao().incrementSuccessfulLaunchCount(launchedUpdate) }
+          database.updateDao().incrementSuccessfulLaunchCount(launchedUpdate)
         }
       }
 
