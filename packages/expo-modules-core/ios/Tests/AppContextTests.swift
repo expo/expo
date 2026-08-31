@@ -284,6 +284,7 @@ struct AppContextTests {
         _ = try appContext.runtime
       }
     }
+  }
 }
 
 // MARK: - ModuleProvider
