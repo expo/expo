@@ -8,6 +8,7 @@ import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
 import type { BuildProps, Options } from '../XcodeBuild.types';
 import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
+import { resolveXcodeConfigurationMode } from './resolveXcodeConfiguration';
 import { resolveXcodeProject } from './resolveXcodeProject';
 
 /** Resolve arguments for the `run:ios` command. */
@@ -57,11 +58,13 @@ export async function resolveOptionsAsync(
   // The cache is reset in `../node_modules/react-native/scripts/react-native-xcode.sh` when the
   // project is running in Debug and built onto a physical device. It seems that this is done because
   // the script is run from Xcode and unaware of the CLI instance.
-  const shouldSkipInitialBundling = configuration === 'Debug' && !isSimulator;
+  const isDevelopment = resolveXcodeConfigurationMode(configuration) === 'development';
+  const shouldSkipInitialBundling = isDevelopment && !isSimulator;
 
   return {
     ...bundlerProps,
-    shouldStartBundler: options.configuration === 'Debug' || bundlerProps.shouldStartBundler,
+    shouldStartBundler:
+      (!!options.configuration && isDevelopment) || bundlerProps.shouldStartBundler,
     projectRoot,
     isSimulator,
     xcodeProject,

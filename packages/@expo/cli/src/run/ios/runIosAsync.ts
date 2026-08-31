@@ -22,10 +22,11 @@ import * as XcodeBuild from './XcodeBuild';
 import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
+import { resolveXcodeConfigurationMode } from './options/resolveXcodeConfiguration';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
-  const mode = options.configuration === 'Release' ? 'production' : 'development';
+  const mode = resolveXcodeConfigurationMode(options.configuration);
   loadEnvFiles(projectRoot, { mode });
 
   assertPlatform();
