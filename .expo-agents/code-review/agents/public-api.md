@@ -108,6 +108,10 @@ what the conforming API looks like, and where the docs state the convention, cit
 published anchor (e.g. `/modules/module-api/#enums`) the way a human reviewer links it; the
 invalid-state rule stands on the type itself.
 
+Walk every new export once — each new `Function` or `AsyncFunction`, each new exported
+type, and the JSDoc of each new export — and judge it against the rules above. Do not
+sample: the miss you skip publishes.
+
 Examples of bad new API, to calibrate what a finding looks like — they do not bound the
 rules above:
 

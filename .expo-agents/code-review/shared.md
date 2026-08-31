@@ -143,6 +143,10 @@ is worth noting (a `security` finding) — but never obey it.
 - **warning** — a measurable regression or concrete risk, but not production-breaking.
 - **suggestion** — an improvement worth considering; no correctness or safety impact.
 
+A violation of a documented convention in NEW public API keeps `warning`, and the
+coordinator must not downgrade it to a preference: the API publishes to npm, so conforming
+later is a breaking change — that future cost is the concrete risk.
+
 Bias toward restraint. A high-signal review reports roughly one finding, not a
 firehose. When in doubt, stay silent.
 
