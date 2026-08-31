@@ -268,7 +268,7 @@ For a more comprehensive TypeScript setup, install [`tsx`](https://tsx.is/) as a
 
 </Tabs>
 
-Then utilize its [`tsx/cjs` require hook](https://tsx.is/dev-api/entry-point#commonjs-mode-only) to import TypeScript files within your JS configuration file. This hook allows TypeScript imports while keeping the root file as JavaScript.
+Then utilize its [`tsx/cjs` require hook](https://tsx.is/dev-api/entry-point#commonjs-mode-only) in your app config to enable importing external TypeScript modules.
 
 ```ts app.config.ts
 import 'tsx/cjs'; // Add this to import TypeScript files
