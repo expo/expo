@@ -16,6 +16,7 @@ import type {
 } from '../react-navigation/native';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 /**
  * Event map for `NativeTabs` navigation events.
@@ -228,6 +229,13 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   >;
 }
 
+/**
+ * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
+ * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
+ * @platform ios
+ */
+export type IconRenderingMode = 'template' | 'original';
+
 export type SymbolOrImageSource =
   | {
       /**
@@ -256,7 +264,7 @@ export type SymbolOrImageSource =
        * @platform ios
        * @default 'template'
        */
-      renderingMode?: 'template' | 'original';
+      renderingMode?: IconRenderingMode;
     };
 
 export type NativeTabsLabelStyle = Pick<
@@ -295,6 +303,8 @@ export const SUPPORTED_BLUR_EFFECTS = [
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
 export interface NativeTabsProps extends PropsWithChildren {
+  /** A component to render when an individual tab screen throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   // #region common props
   /**
    * The style of the every tab label in the tab bar.

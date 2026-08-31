@@ -1,3 +1,41 @@
+const NOT_FOUND_MARKDOWN = `# Page not found
+
+No markdown exists for this path. Useful starting points:
+
+- [Documentation index](https://docs.expo.dev/llms.txt)
+- [Sitemap](https://docs.expo.dev/sitemap.xml)
+- [Documentation home](https://docs.expo.dev/)
+`;
+
+function acceptsMarkdown(accept) {
+  let markdownListed = false;
+  let markdownQuality = 0;
+  let htmlQuality = 0;
+
+  for (const entry of accept.split(",")) {
+    const [type, ...params] = entry.split(";");
+    const name = type.trim().toLowerCase();
+
+    let quality = 1;
+    for (const param of params) {
+      const [key, value] = param.split("=");
+      if (key.trim().toLowerCase() === "q") {
+        quality = Number(value);
+        if (!Number.isFinite(quality)) quality = 0;
+      }
+    }
+
+    if (name === "text/markdown") {
+      markdownListed = true;
+      markdownQuality = Math.max(markdownQuality, quality);
+    } else if (name === "text/html" || name === "text/*" || name === "*/*") {
+      htmlQuality = Math.max(htmlQuality, quality);
+    }
+  }
+
+  return markdownListed && markdownQuality > 0 && markdownQuality >= htmlQuality;
+}
+
 function upgradeHelperPairPath(url) {
   if (!/^\/bare\/upgrade\/?$/.test(url.pathname)) return null;
 
@@ -18,7 +56,7 @@ export default {
     const pairPath = upgradeHelperPairPath(url);
 
     const wantsMarkdown =
-      accept.includes("text/markdown") ||
+      acceptsMarkdown(accept) ||
       (pairPath !== null && /\.md$/.test(url.searchParams.get("toSdk") || ""));
 
     if (wantsMarkdown) {
@@ -40,14 +78,29 @@ export default {
             status: 200,
             headers: {
               "Content-Type": "text/markdown; charset=utf-8",
+              Vary: "Accept",
             },
           });
         }
       }
 
-      return new Response("Not found\n", { status: 404 });
+      const passthrough = await env.ASSETS.fetch(request);
+      if (passthrough.status >= 300 && passthrough.status < 400) {
+        return passthrough;
+      }
+
+      return new Response(NOT_FOUND_MARKDOWN, {
+        status: 404,
+        headers: {
+          "Content-Type": "text/markdown; charset=utf-8",
+          Vary: "Accept",
+        },
+      });
     }
 
-    return env.ASSETS.fetch(request);
+    const htmlResponse = await env.ASSETS.fetch(request);
+    const response = new Response(htmlResponse.body, htmlResponse);
+    response.headers.append("Vary", "Accept");
+    return response;
   },
 };

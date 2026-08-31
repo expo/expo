@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix `performAndroidHapticsAsync` doing nothing by running it on the main queue. ([#49263](https://github.com/expo/expo/pull/49263) by [@KAMRONBEK](https://github.com/KAMRONBEK))
+
 ### 💡 Others
 
 ## 57.0.1 - 2026-07-15

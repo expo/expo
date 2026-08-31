@@ -1,6 +1,9 @@
 import type { ImageSourcePropType } from 'react-native';
 
-import { convertOptionsIconToScreensPropsIcon } from '../optionsIconConverter';
+import {
+  convertOptionsIconToScreensPropsIcon,
+  resolveIconRenderingMode,
+} from '../optionsIconConverter';
 
 describe(convertOptionsIconToScreensPropsIcon, () => {
   it('returns undefined when icon is undefined', () => {
@@ -74,35 +77,61 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     });
   });
 
-  describe('smart default with iconColor', () => {
-    it('defaults to imageSource (original) when iconColor is undefined', () => {
+  describe('rendering mode override', () => {
+    it('renders as a template when the override is "template"', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      expect(convertOptionsIconToScreensPropsIcon({ src }, undefined)).toEqual({
-        type: 'imageSource',
-        imageSource: src,
-      });
-    });
-
-    it('defaults to templateSource (template) when iconColor is set', () => {
-      const src = { uri: 'https://example.com/icon.png' };
-      expect(convertOptionsIconToScreensPropsIcon({ src }, '#ff0000')).toEqual({
+      expect(convertOptionsIconToScreensPropsIcon({ src }, 'template')).toEqual({
         type: 'templateSource',
         templateSource: src,
       });
     });
 
-    it('respects explicit renderingMode="original" even when iconColor is set', () => {
+    it('renders as an image when the override is "original"', () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(
-        convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'original' }, '#ff0000')
+        convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' }, 'original')
       ).toEqual({ type: 'imageSource', imageSource: src });
     });
 
-    it('respects explicit renderingMode="template" even when iconColor is undefined', () => {
-      const src = { uri: 'https://example.com/icon.png' };
-      expect(
-        convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' }, undefined)
-      ).toEqual({ type: 'templateSource', templateSource: src });
+    it('is ignored for SF Symbols', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ sf: 'star.fill' }, 'template')).toEqual({
+        type: 'sfSymbol',
+        name: 'star.fill',
+      });
     });
+  });
+});
+
+describe(resolveIconRenderingMode, () => {
+  const src = { uri: 'https://example.com/icon.png' };
+
+  it('returns undefined when icon is undefined', () => {
+    expect(resolveIconRenderingMode(undefined)).toBeUndefined();
+  });
+
+  it('returns undefined for SF Symbols, which are always tinted by the system', () => {
+    expect(resolveIconRenderingMode({ sf: 'star.fill' }, '#ff0000')).toBeUndefined();
+  });
+
+  it('returns undefined when sf takes precedence over src', () => {
+    expect(resolveIconRenderingMode({ sf: 'star.fill', src })).toBeUndefined();
+  });
+
+  it('defaults to "original" when no icon color is set', () => {
+    expect(resolveIconRenderingMode({ src })).toBe('original');
+  });
+
+  it('defaults to "template" when an icon color is set', () => {
+    expect(resolveIconRenderingMode({ src }, '#ff0000')).toBe('template');
+  });
+
+  it('respects explicit renderingMode="original" even when an icon color is set', () => {
+    expect(resolveIconRenderingMode({ src, renderingMode: 'original' }, '#ff0000')).toBe(
+      'original'
+    );
+  });
+
+  it('respects explicit renderingMode="template" even when no icon color is set', () => {
+    expect(resolveIconRenderingMode({ src, renderingMode: 'template' })).toBe('template');
   });
 });

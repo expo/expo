@@ -7,7 +7,10 @@ import {
   type TabRouterOptions as RNTabRouterOptions,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
-import type { TriggerMap } from './common';
+import { ensureStateHistory } from '../react-navigation/routers/TabRouter';
+import { attachRouteState, type RouteState } from '../react-navigation/routers/attachRouteState';
+import { ensureStateType } from '../react-navigation/routers/ensureStateType';
+import { getTabRoute, type TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
@@ -24,6 +27,7 @@ export type ExpoTabActionType =
         name: string;
         resetOnFocus?: boolean;
         params?: object;
+        state?: RouteState;
       };
     };
 
@@ -40,21 +44,14 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      const route = state.routes.find((route) => route.name === action.payload.name);
+      const { route, isSwitching } = getTabRoute(state, action.payload.name);
 
       if (!route) {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      // We should reset if this is the first time visiting the route.
-      let shouldReset =
-        !(state.history == null ? state.routes : state.history).some(
-          (item) => item.key === route.key
-        ) && !route.state;
-
-      if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
-        shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
-      }
+      const shouldReset =
+        'resetOnFocus' in action.payload && Boolean(action.payload.resetOnFocus && isSwitching);
 
       if (shouldReset) {
         state = {
@@ -66,15 +63,24 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
             return { ...r, state: undefined };
           }),
         };
-        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
-      } else if (route.state !== undefined) {
-        // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
-        // a tab that hosts a navigator must not re-apply the trigger's nested payload
-        // (`params.screen`), which would reset the preserved child state.
-        return rnTabRouter.getStateForRouteFocus(state, route.key);
-      } else {
-        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
+
+      if (!isSwitching && route.state !== undefined) {
+        const selectedRoute = attachRouteState(route, action);
+        if (selectedRoute === route) {
+          state = ensureStateType(
+            ensureStateHistory(
+              state,
+              options.backBehavior ?? 'firstRoute',
+              options.initialRouteName
+            ),
+            'tab'
+          );
+          return { state, affectedRouteKey: route.key };
+        }
+      }
+
+      return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
     },
   };
 

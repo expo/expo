@@ -8,7 +8,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
@@ -72,7 +71,7 @@ class UpdatesDevLauncherController(
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
-  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
+  private val database = UpdatesDatabase.getInstance(context, Dispatchers.IO)
   private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private var mSelectionPolicy: SelectionPolicy? = null
@@ -186,13 +185,13 @@ class UpdatesDevLauncherController(
       EASClientID(context).uuid.toString(),
       updatesConfiguration!!,
       logger,
-      databaseHolder.database
+      database
     )
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
       logger,
-      databaseHolder.database,
+      database,
       fileDownloader,
       updatesDirectory,
       null,
@@ -315,7 +314,7 @@ class UpdatesDevLauncherController(
       controllerScope
     )
     try {
-      launcher.launch(databaseHolder.database)
+      launcher.launch(database)
       this@UpdatesDevLauncherController.launcher = launcher
       callback.onSuccess(object : UpdatesDevLauncherInterface.Update {
         override val manifest: JSONObject
@@ -333,15 +332,12 @@ class UpdatesDevLauncherController(
     }
   }
 
-  private fun getDatabase(): UpdatesDatabase = databaseHolder.database
-
   private fun runReaper() {
     controllerScope.launch {
       updatesConfiguration?.let {
-        val databaseLocal = getDatabase()
         Reaper.reapUnusedUpdates(
           it,
-          databaseLocal,
+          database,
           updatesDirectory,
           launchedUpdate,
           selectionPolicy

@@ -106,12 +106,12 @@ export const Footer = ({
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
             <LlmsTxtLink />
             {!isDev && shouldShowModifiedDate && modificationDate && (
-              <LI className="mt-4! text-xs! text-quaternary!">
+              <LI className="mt-4! text-xs! text-tertiary!">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (
-              <LI className="mt-4! text-xs! text-quaternary!">
+              <LI className="mt-4! text-xs! text-tertiary!">
                 Last updated data is not available in dev mode
               </LI>
             )}

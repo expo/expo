@@ -26,7 +26,6 @@ const EXCLUDE_PACKAGES = [
 
 export const REACT_NATIVE_TRANSITIVE_DEPENDENCIES = [
   // These packages are transitive dependencies from some expo packages, we should also override their versions.
-  '@react-native/assets-registry',
   '@react-native/dev-middleware',
   '@react-native/babel-preset',
   'react-native',

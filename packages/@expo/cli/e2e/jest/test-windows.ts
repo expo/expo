@@ -10,5 +10,3 @@ declare global {
   /** Run a test case on any platform except Windows */
   var testNotWindows: jest.It;
 }
-
-export {};

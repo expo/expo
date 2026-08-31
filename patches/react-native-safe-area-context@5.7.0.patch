@@ -1,0 +1,22 @@
+diff --git a/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt b/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt
+index b29e787a86aa9fa04a8887e6cc7e59bac06d2547..eb5f4d0f3af417842613576022c06b61be052b78 100644
+--- a/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt
++++ b/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt
+@@ -50,14 +50,9 @@ class SafeAreaView(context: Context?) :
+         val uiManager = reactContext.getNativeModule(UIManagerModule::class.java)
+         if (uiManager != null) {
+           uiManager.setViewLocalData(id, localData)
+-          // Sadly there doesn't seem to be a way to properly dirty a yoga node from java, so if we
+-          // are in
+-          // the middle of a layout, we need to recompute it. There is also no way to know whether
+-          // we
+-          // are in the middle of a layout so always do it.
+-          reactContext.runOnNativeModulesQueueThread {
+-            uiManager.uiImplementation.dispatchViewUpdates(-1)
+-          }
++          // React Native 0.87 removed `UIManagerModule.uiImplementation`, so the legacy-architecture
++          // relayout (`uiImplementation.dispatchViewUpdates`) is no longer possible. This branch only
++          // runs on the legacy architecture, which is unsupported on 0.87+.
+           waitForReactLayout()
+         }
+       }

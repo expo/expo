@@ -641,6 +641,7 @@ export const eas = [
     makeGroup('Integrations', [
       makePage('eas/observe/integrations/expo-router.mdx'),
       makePage('eas/observe/integrations/react-navigation.mdx'),
+      makePage('eas/observe/integrations/expo-image.mdx'),
       makePage('eas/observe/integrations/third-party.mdx'),
     ]),
     makeGroup('Reference', [
@@ -753,6 +754,7 @@ const preview = [
         makePage('preview/eas-simulator/get-started.mdx'),
         makePage('preview/eas-simulator/run-and-control.mdx'),
         makePage('preview/eas-simulator/cli-reference.mdx'),
+        makePage('preview/eas-simulator/rest-api.mdx'),
         makePage('preview/eas-simulator/troubleshooting.mdx'),
       ],
       { expanded: true }

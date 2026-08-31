@@ -87,6 +87,7 @@ class AudioModule : Module() {
   private var focusRequestRegistered = false
   private var registeredAudioFocusGain: Int? = null
   private var shouldRefreshFocusOnGain = false
+  private val audioSessionActivityKeepers = mutableSetOf<String>()
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
     appContext.mainQueue.launch {
       if (!focusRequestRegistered) {
@@ -138,7 +139,7 @@ class AudioModule : Module() {
               playable.setVolume(playable.previousVolume)
             }
 
-            if (playablesToResume.isEmpty()) {
+            if (playablesToResume.isEmpty() && audioSessionActivityKeepers.isEmpty()) {
               return@launch
             }
 
@@ -181,8 +182,19 @@ class AudioModule : Module() {
     }
   }
 
-  private fun shouldReleaseFocus(): Boolean {
-    return focusAcquired && allPlayables.none { it.isPlaying }
+  private fun releaseAudioFocusIfUnused() {
+    if (!focusRequestRegistered || audioSessionActivityKeepers.isNotEmpty()) {
+      return
+    }
+
+    val focusIsStillNeeded = if (focusAcquired) {
+      allPlayables.any { it.isPlaying || it.hasActivePlaybackIntent() }
+    } else {
+      allPlayables.any { it.shouldResumeAfterFocus() }
+    }
+    if (!focusIsStillNeeded) {
+      releaseAudioFocus()
+    }
   }
 
   private fun Playable.hasActivePlaybackIntent(): Boolean {
@@ -280,10 +292,16 @@ class AudioModule : Module() {
     focusAcquired = false
   }
 
-  private fun releasePendingAudioFocusIfUnused() {
-    if (focusRequestRegistered && !focusAcquired && allPlayables.none { it.shouldResumeAfterFocus() }) {
-      releaseAudioFocus()
+  private fun registerAudioSessionActivityKeeper(player: AudioPlayer) {
+    if (player.keepAudioSessionActive) {
+      audioSessionActivityKeepers.add(player.id)
     }
+  }
+
+  private fun removePlayer(playerId: String) {
+    players.remove(playerId)
+    audioSessionActivityKeepers.remove(playerId)
+    releaseAudioFocusIfUnused()
   }
 
   private fun updateAudioFocusForModeChange(previousMode: InterruptionMode?) {
@@ -293,7 +311,7 @@ class AudioModule : Module() {
 
     runOnMain {
       if (focusRequestRegistered && !focusAcquired) {
-        val hasPlaybackIntent = allPlayables.any { it.shouldResumeAfterFocus() }
+        val hasPlaybackIntent = audioSessionActivityKeepers.isNotEmpty() || allPlayables.any { it.shouldResumeAfterFocus() }
         if (!hasPlaybackIntent) {
           releaseAudioFocus()
           return@runOnMain
@@ -303,12 +321,12 @@ class AudioModule : Module() {
       }
 
       val playablesWithPlaybackIntent = allPlayables.filter { it.hasActivePlaybackIntent() }.toList()
-      if (playablesWithPlaybackIntent.isEmpty() && !focusAcquired) {
+      if (playablesWithPlaybackIntent.isEmpty() && audioSessionActivityKeepers.isEmpty() && !focusAcquired) {
         return@runOnMain
       }
       releaseAudioFocus()
 
-      if (playablesWithPlaybackIntent.isNotEmpty()) {
+      if (playablesWithPlaybackIntent.isNotEmpty() || audioSessionActivityKeepers.isNotEmpty()) {
         val focusResult = requestAudioFocus()
         allPlayables.forEach { playable ->
           playable.setVolume(playable.previousVolume)
@@ -387,6 +405,7 @@ class AudioModule : Module() {
       audioEnabled = enabled
       if (!enabled) {
         runOnMain {
+          audioSessionActivityKeepers.clear()
           releaseAudioFocus()
           allPlayables.forEach {
             it.isPaused = false
@@ -434,7 +453,9 @@ class AudioModule : Module() {
 
     OnActivityEntersBackground {
       if (!shouldPlayInBackground) {
-        releaseAudioFocus()
+        if (audioSessionActivityKeepers.isEmpty()) {
+          releaseAudioFocus()
+        }
         allPlayables.forEach { playable ->
           if (playable.isPlaying) {
             playable.isPaused = true
@@ -482,6 +503,7 @@ class AudioModule : Module() {
     OnDestroy {
       context.unregisterReceiver(ringerModeReceiver)
       GlobalScope.launch(Dispatchers.Main) {
+        audioSessionActivityKeepers.clear()
         releaseAudioFocus()
         players.values.forEach {
           it.ref.stop()
@@ -510,13 +532,19 @@ class AudioModule : Module() {
             updateInterval,
             bufferDurationMs
           )
+          player.keepAudioSessionActive = keepAudioSessionActive
+
+          val playerId = player.id
+          player.onRelease = {
+            // The app context's main queue is cancelled during reload, so release bookkeeping must
+            // use the same reload-safe scope as BaseAudioPlayer.sharedObjectDidRelease().
+            GlobalScope.launch(Dispatchers.Main) {
+              removePlayer(playerId)
+            }
+          }
           player.onPlaybackStateChange = { isPlaying ->
             if (!isPlaying) {
-              if (shouldReleaseFocus()) {
-                releaseAudioFocus()
-              } else {
-                releasePendingAudioFocusIfUnused()
-              }
+              releaseAudioFocusIfUnused()
             }
           }
           players[player.id] = player
@@ -625,9 +653,10 @@ class AudioModule : Module() {
           return@Function
         }
         runOnMain {
-          if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+          if (requestAudioFocus() == AudioFocusResult.FAILED) {
             return@runOnMain
           }
+          registerAudioSessionActivityKeeper(player)
           player.ref.play()
         }
       }
@@ -636,7 +665,7 @@ class AudioModule : Module() {
         runOnMain {
           player.isPaused = false
           player.ref.pause()
-          releasePendingAudioFocusIfUnused()
+          releaseAudioFocusIfUnused()
         }
       }
 
@@ -646,7 +675,7 @@ class AudioModule : Module() {
             if (source == null) {
               player.clearMediaSource()
               player.isPaused = false
-              releasePendingAudioFocusIfUnused()
+              releaseAudioFocusIfUnused()
               return@runOnMain
             }
             val mediaSource = createMediaItem(source)
@@ -703,8 +732,7 @@ class AudioModule : Module() {
 
       Function("remove") { player: AudioPlayer ->
         runOnMain {
-          players.remove(player.id)
-          releasePendingAudioFocusIfUnused()
+          removePlayer(player.id)
         }
       }
     }
@@ -878,11 +906,7 @@ class AudioModule : Module() {
           playlist.loadInitialPlaylist()
           playlist.onPlaybackStateChange = { isPlaying ->
             if (!isPlaying) {
-              if (shouldReleaseFocus()) {
-                releaseAudioFocus()
-              } else {
-                releasePendingAudioFocusIfUnused()
-              }
+              releaseAudioFocusIfUnused()
             }
           }
           playlists[playlist.id] = playlist
@@ -1000,7 +1024,7 @@ class AudioModule : Module() {
         runOnMain {
           playlist.isPaused = false
           playlist.ref.pause()
-          releasePendingAudioFocusIfUnused()
+          releaseAudioFocusIfUnused()
         }
       }
 
@@ -1043,7 +1067,7 @@ class AudioModule : Module() {
           playlist.remove(index)
           if (playlist.trackCount == 0) {
             playlist.isPaused = false
-            releasePendingAudioFocusIfUnused()
+            releaseAudioFocusIfUnused()
           }
         }
       }
@@ -1052,7 +1076,7 @@ class AudioModule : Module() {
         runOnMain {
           playlist.clear()
           playlist.isPaused = false
-          releasePendingAudioFocusIfUnused()
+          releaseAudioFocusIfUnused()
         }
       }
 
@@ -1078,7 +1102,7 @@ class AudioModule : Module() {
         runOnMain {
           playlist.clearLockScreenControls()
           playlists.remove(playlist.id)
-          releasePendingAudioFocusIfUnused()
+          releaseAudioFocusIfUnused()
         }
       }
     }

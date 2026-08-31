@@ -103,6 +103,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     // Source exports can contain TypeScript files that use explicit `.js`
     // extensions for runtime ESM compatibility.
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^react-native/asset-registry$': 'react-native/src/asset-registry',
     ...preset.moduleNameMapper,
   };
 
@@ -149,6 +150,22 @@ function getBaseWebPreset() {
   };
 }
 
+// `getPlatformPreset` builds its own `moduleNameMapper` from scratch, so spreading it over the
+// base preset drops the mappers that the upstream React Native preset defines. Since React Native
+// 0.87 those mappers are required: `jest/setup.js` mocks `react-native/setup-env`, which is only
+// reachable through the `^react-native/setup-env$` alias. Merge them back for the native presets,
+// keeping the platform mappers last so platform-specific entries still win.
+function withNativeModuleNameMapper(platformPreset) {
+  return {
+    ...expoPreset,
+    ...platformPreset,
+    moduleNameMapper: {
+      ...expoPreset.moduleNameMapper,
+      ...platformPreset.moduleNameMapper,
+    },
+  };
+}
+
 module.exports = {
   getWebPreset({ isReactServer } = {}) {
     const preset = {
@@ -169,24 +186,22 @@ module.exports = {
     };
   },
   getIOSPreset({ isReactServer } = {}) {
-    return {
-      ...expoPreset,
-      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
+    return withNativeModuleNameMapper(
+      getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
         isReactServer,
-      }),
-    };
+      })
+    );
   },
   getAndroidPreset({ isReactServer } = {}) {
-    return {
-      ...expoPreset,
-      ...getPlatformPreset(
+    return withNativeModuleNameMapper(
+      getPlatformPreset(
         { name: 'Android', color: 'blueBright' },
         ['android', 'native'],
         'android',
         {
           isReactServer,
         }
-      ),
-    };
+      )
+    );
   },
 };

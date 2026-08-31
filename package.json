@@ -41,7 +41,7 @@
     "jest": "^29.7.0",
     "lint-staged": "^17.0.8",
     "oxfmt": "^0.55.0",
-    "oxlint": "^1.70.0",
+    "oxlint": "^1.79.0",
     "prettier": "~3.8.3",
     "ts-node": "^10.9.2",
     "turbo": "2.10.0",
@@ -53,7 +53,7 @@
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",
     "@types/babel__traverse": "^7.20.7",
-    "react-native": "0.86.0",
+    "react-native": "0.87.0",
     "react-native-reanimated": "4.5.1",
     "react-native-worklets": "0.10.1"
   },

@@ -10,6 +10,7 @@
 
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
 - Added `CameraView.scanDocumentAsync` to scan multi-page documents on Android and iOS. ([#47362](https://github.com/expo/expo/pull/47362) by [@alanjhughes](https://github.com/alanjhughes))
+- Added an `onRecordingProgress` event to `CameraView` that reports the recorded duration and file size while recording video, at a rate set by the new `progressUpdateInterval` recording option. ([#48871](https://github.com/expo/expo/pull/48871), [#48872](https://github.com/expo/expo/pull/48872), [#48873](https://github.com/expo/expo/pull/48873) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
