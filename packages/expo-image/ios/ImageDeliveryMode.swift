@@ -6,7 +6,7 @@ import ExpoModulesCore
  (sources with the `ph://` scheme).
  */
 enum ImageDeliveryMode: String, Enumerable {
-  case highQuality
+  case highQuality = "high-quality"
   case opportunistic
 
   func toPHImageRequestOptionsDeliveryMode() -> PHImageRequestOptionsDeliveryMode {

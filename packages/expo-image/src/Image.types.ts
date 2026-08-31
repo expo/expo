@@ -100,7 +100,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * (sources with the `ph://` scheme).
  * @hidden Described in the {@link ImageProps['deliveryMode']}
  */
-export type ImageDeliveryMode = 'highQuality' | 'opportunistic';
+export type ImageDeliveryMode = 'high-quality' | 'opportunistic';
 
 /**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
@@ -484,14 +484,14 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * Controls how the Photos framework delivers image data for Photo Library assets
    * (sources with the `ph://` scheme). Has no effect on other sources.
    *
-   * - `'highQuality'` - Requests the highest quality image available, even if it takes longer to load.
+   * - `'high-quality'` - Requests the highest quality image available, even if it takes longer to load.
    * A single result is delivered.
    *
    * - `'opportunistic'` - Delivers a fast, low-quality preview first (if available) and then loads the
    * final high-quality image, which may result in two callbacks. Useful when displaying iCloud-backed
    * assets that would otherwise take a while to appear.
    *
-   * @default 'highQuality'
+   * @default 'high-quality'
    * @platform ios
    */
   deliveryMode?: ImageDeliveryMode;
