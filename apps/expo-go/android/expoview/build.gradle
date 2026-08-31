@@ -165,7 +165,6 @@ dependencies {
   implementation 'io.coil-kt.coil3:coil-network-okhttp:3.2.0'
   implementation 'androidx.compose.material3:material3:1.4.0-alpha10'
   implementation 'androidx.core:core-splashscreen:1.0.1'
-  implementation 'io.coil-kt:coil-compose:2.6.0'
   implementation "androidx.navigation:navigation-compose:2.8.5"
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0"
   implementation "androidx.compose.ui:ui:1.7.6"
