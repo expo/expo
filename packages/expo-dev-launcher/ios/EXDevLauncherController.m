@@ -315,6 +315,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
 {
+  if ([EXDevLauncherFingerprintCheck handle:url]) {
+    return YES;
+  }
+
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }

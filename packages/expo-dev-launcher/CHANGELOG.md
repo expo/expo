@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Respond to the needs-rebuild fingerprint check on physical iOS devices. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 - Resolve asset URLs and `bundleUrl` from base request URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
 - [iOS] Filter discovered development servers by bundle identifier, Expo account, or slug. ([#48697](https://github.com/expo/expo/pull/48697) by [@alanjhughes](https://github.com/alanjhughes))
 

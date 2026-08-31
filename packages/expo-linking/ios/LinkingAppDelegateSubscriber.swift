@@ -6,6 +6,14 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
   {
+    // The needs-rebuild fingerprint check uses this host as a trigger URL, not a real deep link.
+    // Don't store it as the initial URL or notify JS: expo-linking's `getLinkingURL()` /
+    // `useLinkingURL()` and its `url` event ignore the trigger. React Native's own Linking
+    // module still sees the URL (`ExpoAppSceneDelegate` calls `RCTLinkingManager`
+    // unconditionally), so expo-router or other RN-linking-based routers may still receive it.
+    if url.host == "expo-fingerprint-check" {
+      return false
+    }
     ExpoLinkingRegistry.shared.initialURL = url
     NotificationCenter.default.post(name: onURLReceivedNotification, object: self, userInfo: ["url": url])
     return false
@@ -13,6 +21,9 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   #elseif os(macOS)
   public func application(_ application: NSApplication, open urls: [URL]) {
     guard let url = urls.first else {
+      return
+    }
+    if url.host == "expo-fingerprint-check" {
       return
     }
     ExpoLinkingRegistry.shared.initialURL = url

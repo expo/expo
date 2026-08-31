@@ -15,7 +15,7 @@ import { getConfigEnvMode, loadEnvFiles } from '../utils/nodeEnv';
 import { debugEvent } from './events';
 import { getInstalledFingerprintAndroidAsync } from './getInstalledFingerprintAndroidAsync';
 import { getInstalledFingerprintIosAsync } from './getInstalledFingerprintIosAsync';
-import type { InstalledAppDevice } from './installedFingerprint';
+import type { InstalledAppDevice, InstalledFingerprintResult } from './installedFingerprint';
 
 export type Platform = 'android' | 'ios';
 
@@ -35,14 +35,14 @@ export function resolvePlatformOption(platform?: string): {
       return { platforms: supportedPlatforms, explicit: false };
     case 'all':
       if (!supportedPlatforms.includes('ios')) {
-        Log.warn('Skipping iOS: simulators are only available on macOS.');
+        Log.warn('Skipping iOS: checking iOS simulators or devices requires macOS.');
       }
       return { platforms: supportedPlatforms, explicit: true };
     case 'android':
       return { platforms: ['android'], explicit: true };
     case 'ios':
       if (!supportedPlatforms.includes('ios')) {
-        throw new CommandError('iOS simulators are only available on macOS.');
+        throw new CommandError('Checking iOS simulators or devices requires macOS.');
       }
       return { platforms: ['ios'], explicit: true };
     default:
@@ -70,6 +70,7 @@ export type PlatformCheckResult = {
     | 'no-device'
     | 'app-not-installed'
     | 'no-embedded-fingerprint'
+    | 'no-response'
     | 'fingerprint-unavailable'
     | 'check-failed';
   /** Human-readable explanation and next step. */
@@ -248,6 +249,26 @@ async function checkPlatformAsync(
     prebuildChanges,
   };
 
+  const result = buildInstalledResult(installed, base, platform, device);
+  if (installed.hint) {
+    // Extra guidance the reader wants surfaced without changing the verdict — currently only
+    // "a physical device is also connected, check it with --device" when a booted simulator's
+    // result was inconclusive.
+    return { ...result, recommendation: `${result.recommendation} ${installed.hint}` };
+  }
+  return result;
+}
+
+function buildInstalledResult(
+  installed: InstalledFingerprintResult,
+  base: {
+    currentHash: string;
+    prebuildStatus: PlatformCheckResult['prebuildStatus'];
+    prebuildChanges: PrebuildSourceChange[];
+  },
+  platform: Platform,
+  device: string | undefined
+): PlatformCheckResult {
   switch (installed.status) {
     case 'no-device':
       return {
@@ -255,9 +276,9 @@ async function checkPlatformAsync(
         status: 'unknown',
         reason: 'no-device',
         recommendation: device
-          ? `No ${platform === 'ios' ? 'booted simulator' : 'connected device or emulator'} matched --device "${device}".`
+          ? `No ${platform === 'ios' ? 'simulator or device' : 'connected device or emulator'} matched --device "${device}".`
           : platform === 'ios'
-            ? 'No booted iOS simulator was found. Boot the simulator that has the app installed. Physical iOS devices are not supported.'
+            ? 'No booted iOS simulator and no connected physical device was found. Boot a simulator, or connect a device and use --device "<name>" to check it.'
             : 'No authorized Android device or emulator is connected.',
         commands: [],
         device: null,
@@ -301,8 +322,26 @@ async function checkPlatformAsync(
         exitCode: 4,
       };
     }
+    case 'no-response': {
+      const causes = [
+        'the phone and this computer are not on the same network',
+        "the macOS firewall or the app's Local Network permission blocks the connection",
+        'the device screen is locked',
+        'the app is a release build or lacks expo-dev-client, so it can never respond',
+      ];
+      return {
+        ...base,
+        status: 'unknown',
+        reason: 'no-response',
+        recommendation: `The app on ${installed.device.name} did not report its fingerprint in time. Likely causes: ${causes.join('; ')}. If the build predates this feature, rebuild with npx expo run:ios --device.`,
+        commands: [],
+        device: installed.device,
+        installedHash: null,
+        exitCode: 4,
+      };
+    }
     case 'ok': {
-      if (installed.hash === fingerprint.hash) {
+      if (installed.hash === base.currentHash) {
         return {
           ...base,
           status: 'up-to-date',
@@ -367,7 +406,11 @@ function aggregateExitCode(
 ): number {
   let considered = results;
   if (!explicit) {
-    const reachable = results.filter((result) => result.reason !== 'no-device');
+    // `no-response` is the physical-device flavor of "couldn't reach a device" — a phone that
+    // happens to be plugged in must not fail the command when another platform answered.
+    const reachable = results.filter(
+      (result) => result.reason !== 'no-device' && result.reason !== 'no-response'
+    );
     if (reachable.length) {
       considered = reachable;
     }
