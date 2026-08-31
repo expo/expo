@@ -37,6 +37,9 @@ internal final class ConstantsProvider: EXConstantsInterface {
     if let manifest = getManifest() {
       result["manifest"] = manifest
     }
+    if let fingerprint = getFingerprint() {
+      result["fingerprint"] = fingerprint
+    }
     return result
   }
 }
@@ -129,4 +132,16 @@ private func getManifest() -> [String: Any]? {
     log.error("Error reading the embedded app config: \(error)")
     return nil
   }
+}
+
+private func getFingerprint() -> String? {
+  // The file is absent in builds created before fingerprint embedding existed
+  // or with `EXPO_SKIP_FINGERPRINT_EMBED` set — that is not an error.
+  guard let bundle = findEXConstantsBundle(),
+        let url = bundle.url(forResource: "app", withExtension: "fingerprint"),
+        let fingerprint = try? String(contentsOf: url, encoding: .utf8) else {
+    return nil
+  }
+  let trimmed = fingerprint.trimmingCharacters(in: .whitespacesAndNewlines)
+  return trimmed.isEmpty ? nil : trimmed
 }

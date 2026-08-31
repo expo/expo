@@ -166,6 +166,15 @@ export type NativeConstants = {
    * Returns `null` in existing React Native projects and on web.
    */
   expoVersion: string | null;
+  /**
+   * The [`@expo/fingerprint`](/versions/latest/sdk/fingerprint/) hash of the project state this
+   * app was built from, embedded into the app at native build time. Comparing it against the
+   * current project fingerprint (for example, through the development server) reveals whether the
+   * installed app must be rebuilt. Only debug builds embed the fingerprint. The value is set to
+   * `null` in Expo Go, on web, in release builds, and in apps built before fingerprint embedding
+   * existed or with `EXPO_SKIP_FINGERPRINT_EMBED` set.
+   */
+  fingerprint: string | null;
   isDetached?: boolean;
   intentUri?: string;
   /**
