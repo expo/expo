@@ -37,10 +37,9 @@ export function resolveContentPadding(
 }
 
 /**
- * Narrows a `containerColor` prop to the plain hex/CSS-color string that the web and iOS
- * implementations can consume, discarding it (falling back to each platform's own default)
- * when it's `undefined` or an `OpaqueColorValue` (e.g. `PlatformColor()`/`DynamicColorIOS()`) —
- * neither web's inline style nor `presentationBackground` accepts those.
+ * Narrows a `containerColor` prop to the plain CSS-color string the web implementation's inline
+ * style can consume, discarding it (falling back to the platform default) when it's `undefined`
+ * or an `OpaqueColorValue` (e.g. `PlatformColor()`/`DynamicColorIOS()`).
  */
 export function resolveStringColor(color: ColorValue | undefined): string | undefined {
   return typeof color === 'string' ? color : undefined;

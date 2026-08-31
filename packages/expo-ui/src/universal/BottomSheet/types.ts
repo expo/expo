@@ -114,18 +114,11 @@ export interface BottomSheetProps {
   /**
    * The sheet's own background color, painting its full chrome (including the
    * drag-indicator zone and, on iOS, the home-indicator safe-area inset).
-   * When omitted, each platform keeps its own default (Compose Material3's
-   * `BottomSheetDefaults.ContainerColor` on Android, opaque white via `vaul`'s
-   * `Drawer.Content` on web, the system sheet background on iOS).
+   * When omitted, each platform keeps its own default.
    *
-   * This only paints the background -- on every platform, `children` are
-   * plain React Native views, not native Compose/SwiftUI content, so none of
-   * them pick up a contrasting text color automatically from a custom
-   * `containerColor` (Android's own `contentColor` default, derived from
-   * `containerColor`, only reaches native Compose content that reads the
-   * ambient `LocalContentColor`; a React Native `Text` sets its own `color`
-   * independently of that). A dark custom `containerColor` needs the sheet's
-   * own children to set a contrasting color explicitly, on every platform.
+   * This only paints the background. `children` are React Native views on
+   * every platform, so they don't pick up a contrasting text color
+   * automatically -- set one explicitly if you use a dark `containerColor`.
    * @platform android
    * @platform ios 16.4+
    * @platform web
@@ -133,11 +126,9 @@ export interface BottomSheetProps {
   containerColor?: ColorValue;
 
   /**
-   * The preferred color of content inside the sheet that doesn't set its own
-   * color explicitly (Compose's ambient `LocalContentColor`). Only affects
-   * native Compose content -- see `containerColor`'s doc for why this
-   * doesn't reach a `BottomSheet`'s (React Native) `children` on any
-   * platform, Android included.
+   * The preferred color for native Compose content that doesn't set its own
+   * color. Doesn't reach a `BottomSheet`'s (React Native) `children` -- see
+   * `containerColor`'s doc.
    * @platform android
    */
   contentColor?: ColorValue;
