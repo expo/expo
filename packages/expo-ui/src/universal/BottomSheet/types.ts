@@ -110,4 +110,23 @@ export interface BottomSheetProps {
    * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
    */
   modifiers?: ModifierConfig[];
+
+  /**
+   * The sheet's own background color, painting its full chrome (including the
+   * drag-indicator zone and, on iOS, the home-indicator safe-area inset).
+   * When omitted, each platform keeps its own default (Compose Material3's
+   * `BottomSheetDefaults.ContainerColor` on Android, opaque white via `vaul`'s
+   * `Drawer.Content` on web, the system sheet background on iOS).
+   * @platform android
+   * @platform ios 16.4+
+   * @platform web
+   */
+  containerColor?: ColorValue;
+
+  /**
+   * The preferred color of content inside the sheet that doesn't set its own
+   * color explicitly (Compose's ambient `LocalContentColor`).
+   * @platform android
+   */
+  contentColor?: ColorValue;
 }
