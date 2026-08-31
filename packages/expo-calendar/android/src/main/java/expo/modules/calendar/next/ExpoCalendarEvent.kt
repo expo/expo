@@ -1,6 +1,5 @@
 package expo.modules.calendar.next
 
-import android.provider.CalendarContract
 import expo.modules.calendar.next.utils.DateTimeInput
 import expo.modules.calendar.next.utils.getTimeInMillis
 import expo.modules.calendar.next.domain.dto.event.EventExceptionInput
@@ -154,16 +153,20 @@ class ExpoCalendarEvent(
   }
 
   /**
-   * Rejects names a sync adapter would drop, on the calendars where one is at work.
+   * Rejects names Google Calendar's sync adapter would drop.
+   *
+   * The prefix convention belongs to that adapter, not to the calendar provider, so it is enforced
+   * on Google accounts only. Another adapter may keep an unprefixed name, and refusing the write
+   * here would deny something that works.
    */
   private fun requireSyncSafeName(name: String, account: CalendarAccount) {
-    if (account.type == CalendarContract.ACCOUNT_TYPE_LOCAL || ExtendedPropertyName.isSyncSafe(name)) {
+    if (!account.isGoogle || ExtendedPropertyName.isSyncSafe(name)) {
       return
     }
     throw ExtendedPropertyNameNotSyncSafeException(
-      "Extended property name `$name` has no visibility prefix, and this event belongs to an account of type `${account.type}`. " +
-        "Sync adapters such as Google Calendar's keep only names prefixed `${ExtendedPropertyName.PRIVATE_PREFIX}` or " +
-        "`${ExtendedPropertyName.SHARED_PREFIX}`, and drop the rest on the next sync without reporting an error, " +
+      "Extended property name `$name` has no visibility prefix, and this event belongs to a Google account. " +
+        "Google Calendar's sync adapter keeps only names prefixed `${ExtendedPropertyName.PRIVATE_PREFIX}` or " +
+        "`${ExtendedPropertyName.SHARED_PREFIX}`, and drops the rest on the next sync without reporting an error, " +
         "so the value would be stored on the device and disappear later. " +
         "Use `${ExtendedPropertyName.PRIVATE_PREFIX}$name` to keep the value readable by the owning account only, " +
         "or `${ExtendedPropertyName.SHARED_PREFIX}$name` to share it with the guests of the event."

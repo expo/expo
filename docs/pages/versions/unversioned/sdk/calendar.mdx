@@ -172,7 +172,7 @@ const properties = await event.getExtendedProperties();
 
 These methods read and write `CalendarContract.ExtendedProperties`, which comes with two constraints:
 
-- On a calendar owned by an account, the name has to start with `private:` or `shared:`. The `private:` prefix keeps the value readable by that account, and the `shared:` prefix shares it with the guests of the event. Some sync adapters, including Google Calendar's, drop any other name on the next sync, so `setExtendedProperty` rejects it instead of letting the value disappear later. Calendars of the local account are never synced and accept any name.
+- On a calendar owned by a Google account, the name has to start with `private:` or `shared:`. The `private:` prefix keeps the value readable by that account, and the `shared:` prefix shares it with the guests of the event. Google Calendar's sync adapter drops any other name on the next sync, so `setExtendedProperty` rejects it instead of letting the value disappear later. This convention belongs to that adapter rather than to the calendar provider, so calendars of any other account accept any name.
 - `setExtendedProperty` and `deleteExtendedProperty` need the event to belong to a calendar that has an account. The calendar provider accepts writes to that table only from the sync adapter of that account. Reading with `getExtendedProperties` has no account requirement.
 
 > **info** Extended properties are Android-only. On iOS, write to the `url` property of the event instead.
