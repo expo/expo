@@ -81,7 +81,6 @@ abstract class UpdatesDatabase : RoomDatabase() {
           MIGRATION_11_12,
           MIGRATION_12_13
         )
-          .allowMainThreadQueries()
           .fallbackToDestructiveMigration()
           .build()
 
