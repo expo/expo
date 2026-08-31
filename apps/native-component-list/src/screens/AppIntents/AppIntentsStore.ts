@@ -258,14 +258,11 @@ function stringArrayParam(params: Record<string, unknown>, name: string): string
  * representation. Each address stays whole, so a display name such as "Doe, John" remains one
  * recipient.
  *
- * An invocation queued by a build that sent one comma-separated string is still read, because the
- * pending queue outlives an app update.
  */
 function recipientsParam(params: Record<string, unknown>): string[] {
-  const value = params.recipients;
-  const recipients =
-    typeof value === 'string' ? value.split(',') : stringArrayParam(params, 'recipients');
-  return recipients.map((recipient) => recipient.trim()).filter(Boolean);
+  return stringArrayParam(params, 'recipients')
+    .map((recipient) => recipient.trim())
+    .filter(Boolean);
 }
 
 function latestInvocation(invocations: AppIntentInvocationLike[]): AppIntentInvocationLike | null {
@@ -369,17 +366,19 @@ export async function clearMailDrafts(): Promise<void> {
 }
 
 export async function addSampleMailDrafts(): Promise<AppIntentMailDraft[]> {
-  const existingDrafts = await getMailDrafts();
-  const existingDraftIds = new Set(existingDrafts.map((draft) => draft.id));
-  const newDrafts = appIntentSampleMailDrafts.filter((draft) => !existingDraftIds.has(draft.id));
+  return withSerializedStateUpdate(async () => {
+    const existingDrafts = await getMailDrafts();
+    const existingDraftIds = new Set(existingDrafts.map((draft) => draft.id));
+    const newDrafts = appIntentSampleMailDrafts.filter((draft) => !existingDraftIds.has(draft.id));
 
-  if (newDrafts.length === 0) {
-    return existingDrafts;
-  }
+    if (newDrafts.length === 0) {
+      return existingDrafts;
+    }
 
-  const drafts = [...newDrafts, ...existingDrafts];
-  await withSerializedStateUpdate(() => writeJson<AppIntentMailDraft[]>(mailDraftsKey, drafts));
-  return drafts;
+    const drafts = [...newDrafts, ...existingDrafts];
+    await writeJson<AppIntentMailDraft[]>(mailDraftsKey, drafts);
+    return drafts;
+  });
 }
 
 /** Flips one of the visibility flags on a draft and returns the updated list. */
@@ -387,18 +386,20 @@ export async function toggleMailDraftFlag(
   id: string,
   flag: 'hideInSpotlight' | 'hideInSuggestions'
 ): Promise<AppIntentMailDraft[]> {
-  const drafts = await getMailDrafts();
-  const updated = drafts.map((draft) =>
-    draft.id === id ? { ...draft, [flag]: !draft[flag] } : draft
-  );
-  await withSerializedStateUpdate(() => writeJson<AppIntentMailDraft[]>(mailDraftsKey, updated));
-  return updated;
+  return withSerializedStateUpdate(async () => {
+    const drafts = await getMailDrafts();
+    const updated = drafts.map((draft) =>
+      draft.id === id ? { ...draft, [flag]: !draft[flag] } : draft
+    );
+    await writeJson<AppIntentMailDraft[]>(mailDraftsKey, updated);
+    return updated;
+  });
 }
 
 /**
- * Projects the drafts into the shape the native `MailDraftEntity.init(record:)` reads: the record's
- * title carries the subject, and `metadata` carries the rest, since `AppIntentEntity` has no field
- * for a recipient or a timestamp.
+ * Projects the drafts into the shape the native `MailDraftEntity.init(record:)` reads: the title
+ * and subtitle carry the subject and body, while `metadata` carries the recipients and the
+ * app-specific suggestion flag.
  *
  * `metadata.recipients` is what rebuilds the draft's `to` list, which is what makes "the draft to
  * Maya" resolve: `MailDraftEntityQuery.entities(matching:)` searches `recipientList`. They are not
@@ -412,11 +413,10 @@ export function mailDraftsToEntityCatalog(drafts: AppIntentMailDraft[]): AppInte
     subtitle: draft.body,
     hideInSpotlight: draft.hideInSpotlight,
     metadata: {
-      body: draft.body,
-      recipients: draft.recipients.join(','),
-      createdAt: String(draft.createdAt),
-      invocationId: draft.invocationId,
-      hideInSuggestions: draft.hideInSuggestions ? 'true' : 'false',
+      // Metadata values are strings, so encode the array as JSON. A comma-delimited value cannot
+      // distinguish two recipients from one display name such as "Doe, John".
+      recipients: JSON.stringify(draft.recipients),
+      ...(draft.hideInSuggestions ? { hideInSuggestions: 'true' } : {}),
     },
   }));
 }
