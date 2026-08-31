@@ -31,7 +31,7 @@ npx expo install expo-blur
 ### Configure for Android
 
 > [!note]
-> [From SDK 55 and later, it is stable on Android.](https://docs.expo.dev/versions/latest/sdk/blur-view/#android-support)
+> [The blurring feature is stable on Android from SDK 55](https://docs.expo.dev/versions/latest/sdk/blur-view/#android-support)
 
 ### Configure for iOS
 
