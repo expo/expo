@@ -33,6 +33,59 @@ public extension NotificationDelegate {
 }
 
 /**
+ The delegates of `NotificationCenterManager`, and the responses that arrived before any delegate
+ could handle them.
+
+ The manager is a process-wide singleton, but app contexts are not: the modules of an incoming
+ context register themselves while an outgoing context tears its own down, which happens on every
+ dev-client reload and on `Updates.reloadAsync()`. Both arrays are therefore written from more than
+ one thread at a time, so they live behind a lock.
+ */
+internal final class NotificationDelegateRegistry {
+  private let state = Mutex(State())
+
+  private struct State {
+    var delegates: [NotificationDelegate] = []
+    var pendingResponses: [UNNotificationResponse] = []
+  }
+
+  /**
+   A snapshot of the delegates. Callers iterate the snapshot instead of holding the lock across a
+   delegate callback: `add` hands back the pending responses so that the caller can offer them to
+   the delegate it just added, and a delegate is free to add or remove delegates from there.
+   */
+  var delegates: [NotificationDelegate] {
+    state.withLock { $0.delegates }
+  }
+
+  var pendingResponses: [UNNotificationResponse] {
+    state.withLock { $0.pendingResponses }
+  }
+
+  /**
+   Adds the delegate, and returns the responses that it still has to be offered.
+   */
+  func add(_ delegate: NotificationDelegate) -> [UNNotificationResponse] {
+    state.withLock { state in
+      state.delegates.append(delegate)
+      return state.pendingResponses
+    }
+  }
+
+  func remove(_ delegate: AnyObject) {
+    state.withLock { $0.delegates.removeAll { $0 === delegate } }
+  }
+
+  func appendPendingResponse(_ response: UNNotificationResponse) {
+    state.withLock { $0.pendingResponses.append(response) }
+  }
+
+  func removeAllPendingResponses() {
+    state.withLock { $0.pendingResponses.removeAll() }
+  }
+}
+
+/**
  Singleton that sets itself as the UserNotificationCenter delegate,
  and calls its own delegates in response to notification center calls.
  */
@@ -42,8 +95,16 @@ public class NotificationCenterManager: NSObject,
   @objc
   public static let shared = NotificationCenterManager()
 
-  var delegates: [NotificationDelegate] = []
-  var pendingResponses: [UNNotificationResponse] = []
+  private let registry = NotificationDelegateRegistry()
+
+  var delegates: [NotificationDelegate] {
+    registry.delegates
+  }
+
+  var pendingResponses: [UNNotificationResponse] {
+    registry.pendingResponses
+  }
+
   let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()
 
   private override init() {
@@ -62,20 +123,17 @@ public class NotificationCenterManager: NSObject,
   }
 
   public func addDelegate(_ delegate: NotificationDelegate) {
-    delegates.append(delegate)
     var handled = false
-    for pendingResponse in pendingResponses {
+    for pendingResponse in registry.add(delegate) {
       handled = delegate.didReceive(pendingResponse, completionHandler: {}) || handled
     }
     if handled {
-      pendingResponses.removeAll()
+      registry.removeAllPendingResponses()
     }
   }
 
   public func removeDelegate(_ delegate: AnyObject) {
-    if let index = delegates.firstIndex(where: { $0 === delegate }) {
-      delegates.remove(at: index)
-    }
+    registry.remove(delegate)
   }
 
   // MARK: - Called by PushTokenAppDelegateSubscriber
@@ -118,7 +176,7 @@ public class NotificationCenterManager: NSObject,
       handled = delegate.didReceive(response, completionHandler: completionHandler) || handled
     }
     if !handled {
-      pendingResponses.append(response)
+      registry.appendPendingResponse(response)
     }
     completionHandler()
   }
