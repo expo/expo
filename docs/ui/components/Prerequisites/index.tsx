@@ -69,7 +69,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
       <details
         id={heading.current.slug}
         className={mergeClasses(
-          'mb-3 scroll-m-4 rounded-md border border-default p-0',
+          'mb-3 scroll-m-4 rounded-3xl border border-default p-0',
           '[[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
@@ -82,7 +82,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         data-md="prerequisites">
         <summary
           className={mergeClasses(
-            'group m-0 flex cursor-pointer items-center justify-between rounded-md p-1.5 py-3 pr-4',
+            'group m-0 flex cursor-pointer items-center justify-between rounded-3xl p-1.5 py-3 pr-4',
             '[details[open]>&]:rounded-b-none',
             'hocus:bg-subtle'
           )}>

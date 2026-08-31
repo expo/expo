@@ -65,7 +65,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           setIsOpen(event.currentTarget.open);
         }}
         className={mergeClasses(
-          'mb-3 scroll-m-4 rounded-md border border-default bg-default p-0',
+          'mb-3 scroll-m-4 rounded-3xl border border-default bg-default p-0',
           '[&[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
@@ -75,7 +75,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
         data-md="collapsible">
         <summary
           className={mergeClasses(
-            'group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3',
+            'group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-3xl bg-subtle p-1.5 pr-3',
             '[details[open]>&]:rounded-b-none',
             '[&_h4]:my-0',
             '[&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug'

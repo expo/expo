@@ -99,7 +99,7 @@ export function ComponentExample({ title, src, darkSrc, alt, android, ios, child
 
   return (
     <Snippet className="mb-4 flex flex-col prose-pre:m-0! prose-pre:rounded-none! prose-pre:border-0!">
-      <div className="flex overflow-hidden rounded-md border border-default max-lg:flex-col">
+      <div className="flex overflow-hidden rounded-3xl border border-default max-lg:flex-col">
         <div className="flex min-w-0 flex-1 flex-col [&>div:first-child]:rounded-none [&>div:first-child]:border-0 [&>div:first-child]:border-b [&>div:first-child]:border-default">
           <SnippetHeader title={title} Icon={FileCode01Icon}>
             <CopyAction text={cleanCopyValue(value, context.version)} />
