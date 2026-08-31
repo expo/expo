@@ -642,12 +642,14 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @objc
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
-    // [0] When ExpoModulesCore is built as separated framework/module,
-    // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    // CFBundleExecutable is tried first: it equals $(PRODUCT_NAME:c99extidentifier) and
-    // directly matches the Swift module name. CFBundleName is kept as a fallback for the
-    // uncommon case where both values are identical valid identifiers.
+    // [0] When ExpoModulesCore is built as a separate framework/module,
+    // explicitly load the main bundle's `ExpoModulesProvider` class.
+    // `ExpoModulesProviderModuleName` is an internal key that allows repack-app to
+    // preserve the original Swift module name. Try `CFBundleExecutable` next because
+    // it usually matches the Swift module name. Keep `CFBundleName` as a final fallback
+    // for cases where it is also a valid module identifier.
     let mainBundleNames = [
+      Bundle.main.infoDictionary?["ExpoModulesProviderModuleName"],
       Bundle.main.infoDictionary?["CFBundleExecutable"],
       Bundle.main.infoDictionary?["CFBundleName"]
     ].compactMap { $0 as? String }
