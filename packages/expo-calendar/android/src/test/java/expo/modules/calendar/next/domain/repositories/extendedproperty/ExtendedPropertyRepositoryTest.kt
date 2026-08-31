@@ -1,7 +1,9 @@
 package expo.modules.calendar.next.domain.repositories.extendedproperty
 
+import android.content.ContentProviderOperation
+import android.content.ContentProviderResult
 import android.content.ContentResolver
-import android.content.ContentValues
+import android.content.OperationApplicationException
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
@@ -16,7 +18,6 @@ import expo.modules.calendar.next.exceptions.PermissionException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
@@ -138,42 +139,17 @@ class ExtendedPropertyRepositoryTest {
 
   // endregion
 
-  // region findAllByName
-
-  @Test
-  fun `given a name, when findAllByName, then selects on both EVENT_ID and NAME`() = runTest {
-    // Given
-    val selectionSlot = slot<String>()
-    val selectionArgsSlot = slot<Array<String>>()
-    every {
-      contentResolver.query(any(), any(), capture(selectionSlot), capture(selectionArgsSlot), any())
-    } returns emptyCursor()
-
-    // When
-    val result = repository.findAllByName(EventId(42L), "private:x-owner")
-
-    // Then
-    Assert.assertEquals(emptyList<ExtendedPropertyEntity>(), result)
-    Assert.assertEquals(
-      "${CalendarContract.ExtendedProperties.EVENT_ID} = ? AND ${CalendarContract.ExtendedProperties.NAME} = ?",
-      selectionSlot.captured
-    )
-    Assert.assertArrayEquals(arrayOf("42", "private:x-owner"), selectionArgsSlot.captured)
-  }
-
-  // endregion
-
   // region upsert
 
   @Test
-  fun `given no existing property, when upsert, then inserts through the sync adapter URI`() = runTest {
+  fun `given a name and a value, when upsert, then deletes and inserts in one batch through the sync adapter URI`() = runTest {
     // Given
-    val uriSlot = slot<Uri>()
-    val valuesSlot = slot<ContentValues>()
-    val insertedUri = mockk<Uri>()
-    every { insertedUri.lastPathSegment } returns "7"
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns emptyCursor()
-    every { contentResolver.insert(capture(uriSlot), capture(valuesSlot)) } returns insertedUri
+    val authoritySlot = slot<String>()
+    val operationsSlot = slot<ArrayList<ContentProviderOperation>>()
+    every { contentResolver.applyBatch(capture(authoritySlot), capture(operationsSlot)) } returns arrayOf(
+      ContentProviderResult(1),
+      ContentProviderResult(Uri.parse("content://com.android.calendar/extendedproperties/7"))
+    )
 
     // When
     val result = repository.upsert(
@@ -183,90 +159,45 @@ class ExtendedPropertyRepositoryTest {
     )
 
     // Then
-    // CalendarProvider2 refuses writes to this table unless the caller declares itself
-    // the sync adapter of the owning account.
+    // The provider applies a batch as one transaction, so the row a concurrent write could have
+    // left behind is gone and the new one is in place without a window between the two.
     Assert.assertEquals(ExtendedPropertyId(7L), result)
-    Assert.assertEquals("true", uriSlot.captured.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
-    Assert.assertEquals("user@example.com", uriSlot.captured.getQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME))
-    Assert.assertEquals("com.google", uriSlot.captured.getQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE))
-    Assert.assertEquals(42L, valuesSlot.captured.getAsLong(CalendarContract.ExtendedProperties.EVENT_ID).toLong())
-    Assert.assertEquals("private:x-owner", valuesSlot.captured.getAsString(CalendarContract.ExtendedProperties.NAME))
-    Assert.assertEquals("mirror-42", valuesSlot.captured.getAsString(CalendarContract.ExtendedProperties.VALUE))
+    Assert.assertEquals(CalendarContract.AUTHORITY, authoritySlot.captured)
+    Assert.assertEquals(2, operationsSlot.captured.size)
+    Assert.assertTrue(operationsSlot.captured[0].isDelete)
+    Assert.assertTrue(operationsSlot.captured[1].isInsert)
+    operationsSlot.captured.forEach { operation ->
+      Assert.assertEquals("true", operation.uri.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
+      Assert.assertEquals("user@example.com", operation.uri.getQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME))
+      Assert.assertEquals("com.google", operation.uri.getQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE))
+    }
   }
 
-  @Test
-  fun `given an existing property, when upsert, then updates that row instead of inserting a duplicate`() = runTest {
+  @Test(expected = IllegalStateException::class)
+  fun `given a batch result without a URI, when upsert, then throws IllegalStateException`() = runTest {
     // Given
-    val uriSlot = slot<Uri>()
-    val valuesSlot = slot<ContentValues>()
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
-      mapOf(
-        CalendarContract.ExtendedProperties._ID to 5L,
-        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
-        CalendarContract.ExtendedProperties.VALUE to "mirror-1"
-      )
-    )
-    every { contentResolver.update(capture(uriSlot), capture(valuesSlot), any(), any()) } returns 1
-
-    // When
-    val result = repository.upsert(
-      EventId(42L),
-      account,
-      ExtendedPropertyInput(name = "private:x-owner", value = "mirror-2")
-    )
-
-    // Then
-    // The provider only understands updates addressed to a single row, hence the id in the path.
-    Assert.assertEquals(ExtendedPropertyId(5L), result)
-    Assert.assertEquals("5", uriSlot.captured.lastPathSegment)
-    Assert.assertEquals("true", uriSlot.captured.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
-    Assert.assertEquals("mirror-2", valuesSlot.captured.getAsString(CalendarContract.ExtendedProperties.VALUE))
-    verify(exactly = 0) { contentResolver.insert(any(), any()) }
-  }
-
-  @Test(expected = PermissionException::class)
-  fun `given SecurityException, when upsert, then throws PermissionException`() = runTest {
-    // Given
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns emptyCursor()
-    every { contentResolver.insert(any(), any()) } throws SecurityException()
+    every { contentResolver.applyBatch(any(), any()) } returns arrayOf(ContentProviderResult(1))
 
     // When / Then
     repository.upsert(EventId(42L), account, ExtendedPropertyInput("private:x-owner", "mirror-42"))
   }
 
-  @Test
-  fun `given duplicate rows under one name, when upsert, then updates the first and removes the rest`() = runTest {
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when upsert, then throws PermissionException`() = runTest {
     // Given
-    // The table has no unique constraint on (EVENT_ID, NAME), so a name can carry several rows.
-    val updatedUriSlot = slot<Uri>()
-    val deletedUris = mutableListOf<Uri>()
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
-      mapOf(
-        CalendarContract.ExtendedProperties._ID to 5L,
-        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
-        CalendarContract.ExtendedProperties.VALUE to "mirror-1"
-      ),
-      mapOf(
-        CalendarContract.ExtendedProperties._ID to 6L,
-        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
-        CalendarContract.ExtendedProperties.VALUE to "mirror-1-duplicate"
-      )
-    )
-    every { contentResolver.update(capture(updatedUriSlot), any(), any(), any()) } returns 1
-    every { contentResolver.delete(capture(deletedUris), any(), any()) } returns 1
+    every { contentResolver.applyBatch(any(), any()) } throws SecurityException()
 
-    // When
-    val result = repository.upsert(
-      EventId(42L),
-      account,
-      ExtendedPropertyInput(name = "private:x-owner", value = "mirror-2")
-    )
+    // When / Then
+    repository.upsert(EventId(42L), account, ExtendedPropertyInput("private:x-owner", "mirror-42"))
+  }
 
-    // Then
-    Assert.assertEquals(ExtendedPropertyId(5L), result)
-    Assert.assertEquals("5", updatedUriSlot.captured.lastPathSegment)
-    Assert.assertEquals(listOf("6"), deletedUris.map { it.lastPathSegment })
-    verify(exactly = 0) { contentResolver.insert(any(), any()) }
+  @Test(expected = CouldNotExecuteQueryException::class)
+  fun `given a rejected batch, when upsert, then throws CouldNotExecuteQueryException`() = runTest {
+    // Given
+    every { contentResolver.applyBatch(any(), any()) } throws OperationApplicationException()
+
+    // When / Then
+    repository.upsert(EventId(42L), account, ExtendedPropertyInput("private:x-owner", "mirror-42"))
   }
 
   // endregion
@@ -274,65 +205,39 @@ class ExtendedPropertyRepositoryTest {
   // region deleteByName
 
   @Test
-  fun `given an existing property, when deleteByName, then deletes that row through the sync adapter URI`() = runTest {
+  fun `given a name, when deleteByName, then removes every matching row through the sync adapter URI`() = runTest {
     // Given
     val uriSlot = slot<Uri>()
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
-      mapOf(
-        CalendarContract.ExtendedProperties._ID to 5L,
-        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
-        CalendarContract.ExtendedProperties.VALUE to "mirror-42"
-      )
-    )
-    every { contentResolver.delete(capture(uriSlot), any(), any()) } returns 1
+    val whereSlot = slot<String>()
+    val selectionArgsSlot = slot<Array<String>>()
+    every {
+      contentResolver.delete(capture(uriSlot), capture(whereSlot), capture(selectionArgsSlot))
+    } returns 2
 
     // When
     val result = repository.deleteByName(EventId(42L), account, "private:x-owner")
 
     // Then
+    // Selecting on the name rather than on a row id removes the duplicates the table allows.
     Assert.assertTrue(result)
-    Assert.assertEquals("5", uriSlot.captured.lastPathSegment)
     Assert.assertEquals("true", uriSlot.captured.getQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER))
+    Assert.assertEquals(
+      "${CalendarContract.ExtendedProperties.EVENT_ID} = ? AND ${CalendarContract.ExtendedProperties.NAME} = ?",
+      whereSlot.captured
+    )
+    Assert.assertArrayEquals(arrayOf("42", "private:x-owner"), selectionArgsSlot.captured)
   }
 
   @Test
-  fun `given no such property, when deleteByName, then returns false without touching the provider`() = runTest {
+  fun `given no matching row, when deleteByName, then returns false`() = runTest {
     // Given
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns emptyCursor()
+    every { contentResolver.delete(any(), any(), any()) } returns 0
 
     // When
     val result = repository.deleteByName(EventId(42L), account, "private:x-owner")
 
     // Then
     Assert.assertFalse(result)
-    verify(exactly = 0) { contentResolver.delete(any(), any(), any()) }
-  }
-
-  @Test
-  fun `given duplicate rows under one name, when deleteByName, then removes every row`() = runTest {
-    // Given
-    val deletedUris = mutableListOf<Uri>()
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
-      mapOf(
-        CalendarContract.ExtendedProperties._ID to 5L,
-        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
-        CalendarContract.ExtendedProperties.VALUE to "mirror-42"
-      ),
-      mapOf(
-        CalendarContract.ExtendedProperties._ID to 6L,
-        CalendarContract.ExtendedProperties.NAME to "private:x-owner",
-        CalendarContract.ExtendedProperties.VALUE to "mirror-42-duplicate"
-      )
-    )
-    every { contentResolver.delete(capture(deletedUris), any(), any()) } returns 1
-
-    // When
-    val result = repository.deleteByName(EventId(42L), account, "private:x-owner")
-
-    // Then
-    // Leaving a duplicate behind would make the delete report a success it did not deliver.
-    Assert.assertTrue(result)
-    Assert.assertEquals(listOf("5", "6"), deletedUris.map { it.lastPathSegment })
   }
 
   // endregion
