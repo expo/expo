@@ -172,14 +172,18 @@ it('uses web-only href attributes', () => {
 
 describe('base url relative links', () => {
   let old_base_url: string | undefined = undefined;
+  let old_node_env = process.env.NODE_ENV;
 
   beforeAll(() => {
     old_base_url = process.env.EXPO_BASE_URL;
+    old_node_env = process.env.NODE_ENV;
     process.env.EXPO_BASE_URL = '/base_url';
+    process.env.NODE_ENV = 'development';
   });
 
   afterAll(() => {
     process.env.EXPO_BASE_URL = old_base_url;
+    process.env.NODE_ENV = old_node_env;
   });
 
   it('appends base url to paths uris', () => {
