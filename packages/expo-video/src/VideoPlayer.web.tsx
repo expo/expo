@@ -269,6 +269,7 @@ export default class VideoPlayerWeb
   }
 
   unmountVideoView(video: HTMLVideoElement) {
+    this._removeListeners(video);
     this._mountedVideos.delete(video);
   }
 
@@ -392,6 +393,20 @@ export default class VideoPlayerWeb
     if (mountedVideos[0] === eventSource) {
       this.emit(eventName, ...args);
     }
+  }
+
+  _removeListeners(video: HTMLVideoElement): void {
+    video.onplay = null;
+    video.onpause = null;
+    video.onvolumechange = null;
+    video.onseeking = null;
+    video.onseeked = null;
+    video.onratechange = null;
+    video.onerror = null;
+    video.oncanplay = null;
+    video.onwaiting = null;
+    video.onended = null;
+    video.onloadstart = null;
   }
 
   _addListeners(video: HTMLVideoElement): void {
