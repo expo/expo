@@ -1,3 +1,4 @@
+import type { LayoutChangeEvent } from 'react-native';
 export interface RNHostViewProps {
     /**
      * When `true`, the RNHost will update its size in the React Native view tree to match the
@@ -7,6 +8,7 @@ export interface RNHostViewProps {
      * @default false
      */
     matchContents?: boolean;
+    onLayout?: (event: LayoutChangeEvent) => void;
     /**
      * The RN View to be hosted.
      */

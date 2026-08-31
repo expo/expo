@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
 import type { UniversalBaseProps } from '../types';
 /**
  * Props for the [`RNHostView`](#rnhostview) component.
@@ -15,6 +16,7 @@ export interface RNHostViewProps extends UniversalBaseProps {
      * @platform ios
      */
     matchContents?: boolean;
+    onLayout?: (event: LayoutChangeEvent) => void;
     /**
      * The React Native view to host.
      */

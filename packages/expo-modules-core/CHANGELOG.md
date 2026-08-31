@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS][Android] Fixed a `matchContents` `RNHostView` and the `matchContents` host around it feeding each other's size back and forth, which grew the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.14 — 2026-08-26

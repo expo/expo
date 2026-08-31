@@ -41,6 +41,8 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 @OptimizedComposeProps
 internal data class RNHostViewProps(
   val matchContents: MutableState<Boolean?> = mutableStateOf(null),
+  //  Adds LeafNode and MeasurableYogaNode trait in Shadow node
+  val expoInternalSizeFromChildren: MutableState<Boolean?> = mutableStateOf(null),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
