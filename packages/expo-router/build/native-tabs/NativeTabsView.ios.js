@@ -49,8 +49,24 @@ function NativeTabsView(props) {
 function Screen(props) {
     const { options, standardAppearance, scrollEdgeAppearance, contentRenderer } = props;
     const shared = (0, NativeTabsView_shared_1.useSharedScreenProps)(props);
-    const iosIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor);
-    const iosSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.selectedIcon ?? shared.icon, standardAppearance?.stacked?.selected?.tabBarItemIconColor);
+    const selectedIcon = shared.selectedIcon ?? shared.icon;
+    // React Native Screens requires `icon` and `selectedIcon` to resolve to the same icon type and
+    // throws otherwise, so both states have to share a rendering mode. The two can disagree when a
+    // color is set for only one of the states, or when `renderingMode` is set explicitly.
+    const normalRenderingMode = (0, optionsIconConverter_1.resolveIconRenderingMode)(shared.icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor);
+    const selectedRenderingMode = (0, optionsIconConverter_1.resolveIconRenderingMode)(selectedIcon, standardAppearance?.stacked?.selected?.tabBarItemIconColor);
+    if (process.env.NODE_ENV !== 'production' &&
+        normalRenderingMode &&
+        selectedRenderingMode &&
+        normalRenderingMode !== selectedRenderingMode) {
+        console.warn(`NativeTabs does not currently support rendering icons in different modes, so the "${props.name}" tab renders both icons with the default icon's mode. ` +
+            'The modes disagree when an icon color applies to only one of the states — `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop — or when `renderingMode` is set for only one state. ' +
+            'To render both the same way, set a color for both states (for example `iconColor` rather than only `tintColor`), or set `renderingMode` on the `Icon`.');
+    }
+    // The normal state wins, so the selected icon follows the mode the tab bar shows most of the time.
+    const effectiveRenderingMode = normalRenderingMode ?? selectedRenderingMode;
+    const iosIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(shared.icon, effectiveRenderingMode);
+    const iosSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(selectedIcon, effectiveRenderingMode);
     const content = (0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.ScreenContent, { options: options, contentRenderer: contentRenderer });
     const wrappedContent = (0, react_1.useMemo)(() => (0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaProvider, { children: content }), [content]);
     return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...shared.options, pointerEvents: shared.pointerEvents, ios: {

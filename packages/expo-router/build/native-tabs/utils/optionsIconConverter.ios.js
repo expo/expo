@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appendIconOptions = appendIconOptions;
+exports.resolveIconRenderingMode = resolveIconRenderingMode;
 exports.convertOptionsIconToScreensPropsIcon = convertOptionsIconToScreensPropsIcon;
 const optionsIconConverter_shared_1 = require("./optionsIconConverter.shared");
 function appendIconOptions(options, props) {
@@ -43,23 +44,39 @@ function appendIconOptions(options, props) {
     }
     (0, optionsIconConverter_shared_1.applySelectedColor)(options, props.selectedColor);
 }
-function convertOptionsIconToScreensPropsIcon(icon, iconColor) {
+function resolveIconRenderingMode(icon, iconColor) {
+    if (!getIconImageSource(icon)) {
+        return undefined;
+    }
+    const renderingMode = icon && 'renderingMode' in icon ? icon.renderingMode : undefined;
+    return renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
+}
+function convertOptionsIconToScreensPropsIcon(icon, renderingMode) {
     if (icon && 'sf' in icon && icon.sf) {
         return {
             type: 'sfSymbol',
             name: icon.sf,
         };
     }
-    if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
-        const imageSource = 'xcasset' in icon && icon.xcasset
-            ? { uri: icon.xcasset }
-            : icon.src;
-        const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
-        const effectiveRenderingMode = renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
-        if (effectiveRenderingMode === 'original') {
-            return { type: 'imageSource', imageSource };
-        }
-        return { type: 'templateSource', templateSource: imageSource };
+    const imageSource = getIconImageSource(icon);
+    if (!imageSource) {
+        return undefined;
+    }
+    const effectiveRenderingMode = renderingMode ?? resolveIconRenderingMode(icon);
+    if (effectiveRenderingMode === 'original') {
+        return { type: 'imageSource', imageSource };
+    }
+    return { type: 'templateSource', templateSource: imageSource };
+}
+function getIconImageSource(icon) {
+    if (!icon || ('sf' in icon && icon.sf)) {
+        return undefined;
+    }
+    if ('xcasset' in icon && icon.xcasset) {
+        return { uri: icon.xcasset };
+    }
+    if ('src' in icon && icon.src) {
+        return icon.src;
     }
     return undefined;
 }

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when the normal and selected icons resolved to different rendering modes. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
+
 ### 💡 Others
 
 ## 57.0.20 — 2026-09-08

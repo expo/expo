@@ -1,6 +1,6 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import type { NativeTabOptions, NativeTabsProps } from '../types';
+import type { IconRenderingMode, NativeTabOptions, NativeTabsProps } from '../types';
 export declare function convertIconColorPropToObject(iconColor: NativeTabsProps['iconColor']): {
     default?: ColorValue;
     selected?: ColorValue;
@@ -11,7 +11,7 @@ export type AwaitedIcon = {
     drawable?: string;
 } | {
     src?: ImageSourcePropType;
-    renderingMode?: 'template' | 'original';
+    renderingMode?: IconRenderingMode;
 };
 export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
     sf?: SFSymbol;
@@ -19,10 +19,10 @@ export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
     drawable?: string;
 } | {
     src?: ImageSourcePropType;
-    renderingMode?: "template" | "original";
+    renderingMode?: IconRenderingMode;
 } | undefined;
-export declare function convertComponentSrcToImageSource(src: React.ReactElement, renderingMode?: 'template' | 'original'): {
+export declare function convertComponentSrcToImageSource(src: React.ReactElement, renderingMode?: IconRenderingMode): {
     src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
-    renderingMode?: "template" | "original";
+    renderingMode?: IconRenderingMode;
 } | undefined;
 //# sourceMappingURL=icon.d.ts.map

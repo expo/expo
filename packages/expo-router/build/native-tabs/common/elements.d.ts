@@ -2,7 +2,7 @@ import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { VectorIcon } from '../../primitives';
-import type { NativeTabsLabelStyle } from '../types';
+import type { IconRenderingMode, NativeTabsLabelStyle } from '../types';
 export interface NativeTabsTriggerLabelProps {
     /**
      * The text to display as the label for the tab.
@@ -59,7 +59,7 @@ export interface SrcIcon {
      *
      * @platform ios
      */
-    renderingMode?: 'template' | 'original';
+    renderingMode?: IconRenderingMode;
 }
 export interface SFSymbolIcon {
     /**
