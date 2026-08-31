@@ -115,7 +115,8 @@ private class HmsWatchSession(
   private var callback: LocationCallback? = null
 
   @SuppressLint("MissingPermission")
-  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit) {
+  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean {
+    stopUpdates()
     val locationRequest = LocationRequest.create()
       .setPriority(parameters.priority.toHmsPriority())
       .setInterval(parameters.interval.inWholeMilliseconds)
@@ -129,6 +130,7 @@ private class HmsWatchSession(
     }
     this.callback = callback
     fusedLocationProvider.requestLocationUpdates(locationRequest, callback, Looper.getMainLooper())
+    return true
   }
 
   override fun stopUpdates() {

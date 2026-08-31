@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.location.Location
 import android.os.Looper
+import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.CurrentLocationRequest
@@ -14,12 +15,13 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
-import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.Task
 import expo.modules.location.next.GetCurrentPositionOptions
 import expo.modules.location.next.LocationPriority
 import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.Position
 import expo.modules.location.next.ProviderResult
+import expo.modules.location.next.SETTINGS_REQUEST_CODE
 import expo.modules.location.next.WatchPositionParameters
 import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
@@ -28,6 +30,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.time.Duration
 
 fun LocationPriority.toGmsPriority(): Int {
   return when (this) {
@@ -35,6 +38,17 @@ fun LocationPriority.toGmsPriority(): Int {
     LocationPriority.BALANCED_POWER_ACCURACY -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
     LocationPriority.LOW_POWER -> Priority.PRIORITY_LOW_POWER
     LocationPriority.PASSIVE -> Priority.PRIORITY_PASSIVE
+  }
+}
+
+private suspend fun <T> Task<T>.awaitOrNull(): T? {
+  return suspendCancellableCoroutine { continuation ->
+    this.addOnSuccessListener { continuation.resume(it) }
+    this.addOnFailureListener { e ->
+      Log.w("ExpoLocation", "GMS location task failed", e)
+      continuation.resume(null)
+    }
+    this.addOnCanceledListener { continuation.resume(null) }
   }
 }
 
@@ -49,26 +63,21 @@ class GmsLocationProvider(
 
   @SuppressLint("MissingPermission")
   override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
-    if (!isServiceAvailable()) return ProviderResult.Unsupported;
-    val cts = CancellationTokenSource()
+    if (!isServiceAvailable()) return ProviderResult.Unsupported
 
-    val request = CurrentLocationRequest.Builder()
-      .setPriority(options.priority.toGmsPriority())
-      .setDurationMillis(options.timeout.inWholeMilliseconds)
-      .setMaxUpdateAgeMillis(options.maxCachedAge.inWholeMilliseconds)
-      .build()
-    val location: Location? = suspendCancellableCoroutine { continuation ->
-      fusedLocationProvider
-        .getCurrentLocation(request, cts.token)
-        .addOnSuccessListener { location ->
-          continuation.resume(location)
-        }.addOnFailureListener { e -> continuation.resumeWithException(e) }
-        .addOnCanceledListener { continuation.cancel() }
-    }
-    if (location == null) {
-      return ProviderResult.Unavailable
-    }
-    return ProviderResult.Success(location.toPosition())
+    var location: Location? = if (options.timeout > Duration.ZERO) {
+      val request = CurrentLocationRequest.Builder()
+        .setPriority(options.priority.toGmsPriority())
+        .setDurationMillis(options.timeout.inWholeMilliseconds)
+        .setMaxUpdateAgeMillis(options.maxCachedAge.inWholeMilliseconds)
+        .build()
+      fusedLocationProvider.getCurrentLocation(request, null).awaitOrNull()
+    } else null
+
+    location = location ?: fusedLocationProvider.lastLocation.awaitOrNull()
+    return location?.let {
+      ProviderResult.Success(it.toPosition())
+    } ?: ProviderResult.Unavailable
   }
 
   override fun watchPosition(): ProviderResult<WatchSession> {
@@ -120,7 +129,8 @@ private class GmsWatchSession(
   private var callback: LocationCallback? = null
 
   @SuppressLint("MissingPermission")
-  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit) {
+  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean {
+    stopUpdates()
     val locationRequest = LocationRequest
       .Builder(parameters.priority.toGmsPriority(), parameters.interval.inWholeMilliseconds)
       .setMaxUpdateDelayMillis(parameters.maxUpdateDelay.inWholeMilliseconds)
@@ -134,6 +144,7 @@ private class GmsWatchSession(
     }
     this.callback = callback
     fusedLocationProvider.requestLocationUpdates(locationRequest, callback, Looper.getMainLooper())
+    return true
   }
 
   override fun stopUpdates() {

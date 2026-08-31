@@ -8,11 +8,11 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -35,6 +35,7 @@ import expo.modules.location.next.locationProviders.FallbackLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.records.PermissionRequestResponse
 import java.io.Serializable
+import java.lang.ref.WeakReference
 import java.util.Locale
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -44,8 +45,6 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class RequestingBackgroundPermissionsWithoutForegroundGrantException: CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
-
-public const val SETTINGS_REQUEST_CODE = 1492
 
 enum class LocationPermissionStatus(val value: String) : Enumerable {
   GRANTED("granted"),
@@ -79,7 +78,7 @@ enum class LocationAccuracyOption(val value: String) : Enumerable {
 }
 
 class RequestForegroundPermissionsOptions(
-  @Field val accuracy: LocationAccuracyOption = LocationAccuracyOption.FULL
+  @Field val accuracy: LocationAccuracyOption? = null
 ) : Record
 
 class LocationPermissionResponse(
@@ -142,13 +141,13 @@ data class GetCurrentPositionOptions(
 )
 
 class GetPositionOptions(
-  @Field val maxCachedAge: Double = 0.0,
-  @Field val timeout: Double = 90.0,
+  @Field val maxCachedAge: Double? = null,
+  @Field val timeout: Double? = null,
   @Field val profile: LocationProfile = LocationProfile.DEFAULT
 ) : Record {
   fun toProviderOptions(): GetCurrentPositionOptions = GetCurrentPositionOptions(
-    maxCachedAge = maxCachedAge.seconds,
-    timeout = timeout.seconds,
+    maxCachedAge = (maxCachedAge ?: 0.0).seconds,
+    timeout = (timeout ?: 90.0).seconds,
     priority = profile.priority()
   )
 }
@@ -162,6 +161,8 @@ sealed interface LocationServicesContinuation {
 
 class LocationModuleNext : Module() {
   lateinit var mContext: Context
+  val sessionsLock = Any()
+  val watchSessions: MutableList<WeakReference<PausableWatchSession>> = mutableListOf()
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
     val gmsLocationProvider = GmsLocationProvider(
@@ -177,6 +178,12 @@ class LocationModuleNext : Module() {
   lateinit var defaultLocationProvider: LocationProvider
   lateinit var locationManager: LocationManager
   var locationServicesPromptContinuation: LocationServicesContinuation = LocationServicesContinuation.Empty
+
+  fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: WatchSession): PositionWatchHandle = synchronized(sessionsLock) {
+    val pausableSession = PausableWatchSession(initialParameters, session)
+    watchSessions.add(WeakReference(pausableSession))
+    return@synchronized PositionWatchHandle(pausableSession)
+  }
 
   override fun definition() = ModuleDefinition {
     OnCreate {
@@ -224,15 +231,16 @@ class LocationModuleNext : Module() {
       }
     }
 
-    AsyncFunction("getPosition") Coroutine { options: GetPositionOptions ->
+    AsyncFunction("getPosition") Coroutine { options: GetPositionOptions? ->
       ensureForegroundPermissions()
-      return@Coroutine defaultLocationProvider.getPosition(options.toProviderOptions()).getOrThrow()
+      val providerOptions = (options ?: GetPositionOptions()).toProviderOptions()
+      return@Coroutine defaultLocationProvider.getPosition(providerOptions).getOrThrow()
     }
 
     Function("watchPosition") { profile: LocationProfile? ->
       ensureForegroundPermissions()
       val parameters = (profile ?: LocationProfile.DEFAULT).watchParameters()
-      return@Function PositionWatchHandle(parameters, defaultLocationProvider.watchPosition().getOrThrow())
+      return@Function createPositionWatchHandle(parameters, defaultLocationProvider.watchPosition().getOrThrow())
     }
 
     Function<Boolean>("hasLocationServicesEnabled") { ->
@@ -278,7 +286,7 @@ class LocationModuleNext : Module() {
       }
 
       Function("resume") { locationWatchHandle: PositionWatchHandle ->
-        locationWatchHandle.session.resume()
+        return@Function locationWatchHandle.session.resume()
       }
 
       Function("getLastKnownPosition") { locationWatchHandle: PositionWatchHandle ->
@@ -301,12 +309,36 @@ class LocationModuleNext : Module() {
       }
 
       Function("restart") { locationWatchHandle: PositionWatchHandle ->
-        locationWatchHandle.session.restart()
-        locationWatchHandle
+        return@Function locationWatchHandle.session.restart()
       }
 
       Function("status") { locationWatchHandle: PositionWatchHandle ->
         locationWatchHandle.session.status()
+      }
+    }
+
+    OnDestroy {
+      synchronized(sessionsLock) {
+        for (session in watchSessions) {
+          session.get()?.release()
+        }
+      }
+    }
+
+    OnActivityEntersForeground {
+      synchronized(sessionsLock) {
+        for (session in watchSessions) {
+          session.get()?.onLifecycleChange(true)
+        }
+      }
+    }
+
+    OnActivityEntersBackground {
+      synchronized(sessionsLock) {
+        watchSessions.removeIf { it.get() == null }
+        for (session in watchSessions) {
+          session.get()?.onLifecycleChange(false)
+        }
       }
     }
 
@@ -343,6 +375,7 @@ class LocationModuleNext : Module() {
     )
   }
 
+  @RequiresApi(Build.VERSION_CODES.Q)
   private fun isBackgroundPermissionInManifest(): Boolean {
     appContext.permissions?.let {
       return it.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -465,6 +498,7 @@ class Coordinates (
 @OptimizedRecord
 class Position (
   @Field val coordinates: Coordinates,
+  @Field val timestamp: Double,
 
   @Field val mslAltitude: Double? = null,
   @Field val ellipsoidalAltitude: Double? = null,
@@ -541,7 +575,7 @@ fun WatchPositionParameters.toStatus(): WatchParametersStatus {
 }
 
 interface WatchSession {
-  fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit)
+  fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean
   fun stopUpdates()
 }
 
@@ -555,6 +589,7 @@ class PausableWatchSession(
   var stagedParameters: WatchPositionParameters = initialParameters
     private set
 
+  @Volatile
   var lastPosition: Position? = null
   var isPaused: Boolean = false
   var isStarted: Boolean = false
@@ -565,54 +600,66 @@ class PausableWatchSession(
   private var onPosition: ((Position) -> Unit)? = null
 
   @SuppressLint("MissingPermission")
-  private fun handleLocationUpdatesRequest() {
+  @Synchronized
+  private fun handleLocationUpdatesRequest(): Boolean {
     val shouldRequestUpdates = !isPaused && isStarted && !isReleased && isInForeground && !isSubscribed
     val shouldRemoveRequest = (isPaused || !isStarted || isReleased || !isInForeground) && isSubscribed
     val onPosition = this.onPosition
     if (shouldRequestUpdates && onPosition != null) {
-      session.startUpdates(activeParameters, onPosition)
-      isSubscribed = true
+      isSubscribed = session.startUpdates(activeParameters, onPosition)
+      return isSubscribed
     }
     if (shouldRemoveRequest) {
       session.stopUpdates()
       isSubscribed = false
     }
+    return true
   }
 
+  @Synchronized
   fun withProfile(profile: LocationProfile) {
     stagedParameters = profile.watchParameters()
   }
 
+  @Synchronized
   fun withPriority(priority: LocationPriority) {
     stagedParameters = stagedParameters.copy(priority = priority)
   }
 
+  @Synchronized
   fun withInterval(interval: Duration) {
     stagedParameters = stagedParameters.copy(interval = interval)
   }
 
+  @Synchronized
   fun withBatching(maxUpdateDelay: Duration) {
     stagedParameters = stagedParameters.copy(maxUpdateDelay = maxUpdateDelay)
   }
 
-  fun restart() {
-    if (stagedParameters == activeParameters) {
-      return
+  @Synchronized
+  fun restart(): Boolean {
+    val needsResubscribe = isStarted && !isPaused && !isReleased && isInForeground && !isSubscribed
+    if (stagedParameters == activeParameters && !needsResubscribe) {
+      return true
     }
     activeParameters = stagedParameters
     val onPosition = this.onPosition
     if (isSubscribed && onPosition != null) {
       // Atomic reconfiguration: one remove + one request with the new parameters.
       session.stopUpdates()
-      session.startUpdates(activeParameters, onPosition)
+      isSubscribed = session.startUpdates(activeParameters, onPosition)
+      return isSubscribed
     }
+    return handleLocationUpdatesRequest()
   }
 
+  @Synchronized
   fun onLifecycleChange(isInForeground: Boolean) {
     this.isInForeground = isInForeground
     handleLocationUpdatesRequest()
   }
 
+  @Synchronized
   fun start(onPosition: (Position) -> Unit) {
     isStarted = true
     this.onPosition = { position ->
@@ -622,21 +669,25 @@ class PausableWatchSession(
     handleLocationUpdatesRequest()
   }
 
+  @Synchronized
   fun stop() {
     isStarted = false
     handleLocationUpdatesRequest()
   }
 
+  @Synchronized
   fun pause() {
     isPaused = true
     handleLocationUpdatesRequest()
   }
 
-  fun resume() {
+  @Synchronized
+  fun resume(): Boolean {
     isPaused = false
-    handleLocationUpdatesRequest()
+    return handleLocationUpdatesRequest()
   }
 
+  @Synchronized
   fun release() {
     isReleased = true
     handleLocationUpdatesRequest()
@@ -646,6 +697,7 @@ class PausableWatchSession(
     return lastPosition
   }
 
+  @Synchronized
   fun status(): PositionWatchStatus {
     return PositionWatchStatus(
       isWatching = isStarted && !isReleased,
@@ -658,10 +710,8 @@ class PausableWatchSession(
 }
 
 class PositionWatchHandle(
-  initialParameters: WatchPositionParameters,
-  transport: WatchSession
+  val session: PausableWatchSession
 ): SharedObject() {
-  val session = PausableWatchSession(initialParameters, transport)
 
   override fun onStartListeningToEvent(eventName: String) {
     if (eventName == POSITION_CHANGED) {
@@ -739,6 +789,7 @@ fun Location.toPosition(): Position {
       latitude,
       longitude
     ),
+    timestamp = time.toDouble(),
     mslAltitude = mslAltitude(),
     ellipsoidalAltitude = if (hasAltitude()) altitude else null,
     speed= if (hasSpeed()) speed.toDouble() else null,
