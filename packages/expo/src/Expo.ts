@@ -5,6 +5,12 @@ export { default as registerRootComponent } from './launch/registerRootComponent
 
 export { isRunningInExpoGo, getExpoGoProjectConfig } from './environment/ExpoGo';
 
+export { checkFingerprintAsync } from './fingerprint/checkFingerprintAsync';
+export type {
+  FingerprintCheckReason,
+  FingerprintCheckResult,
+} from './fingerprint/checkFingerprintAsync';
+
 export {
   // Core classes
   EventEmitter,
