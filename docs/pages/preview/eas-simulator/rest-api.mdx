@@ -19,7 +19,7 @@ Create a session, poll it until connection details are available, and stop it wh
 
 All endpoints require an [Expo access token](/accounts/programmatic-access/), sent as a bearer token in the `Authorization` header. The account that owns the project must have EAS Simulator access.
 
-For production integrations, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project and assign it a role that can create and stop sessions. A [personal access token](/accounts/programmatic-access/#personal-access-tokens) also works for scripts.
+For production integrations, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project and assign it the [Developer role](/accounts/account-types/#manage-access), the minimum role that can create and stop sessions. A [personal access token](/accounts/programmatic-access/#personal-access-tokens) also works for scripts.
 
 ```text
 Authorization: Bearer <EXPO_TOKEN>
@@ -28,7 +28,7 @@ Content-Type: application/json
 
 The examples below read the token from the `EXPO_TOKEN` environment variable. Keep this token in your CI secret store or server environment, not in client code.
 
-> **warning** Session responses can include controller credentials. Treat connection details as secrets: do not commit them, include them in logs, or expose them in a public response. All endpoints send `Cache-Control: private, no-store` and `Pragma: no-cache`; do not cache session responses.
+> **warning** Session responses can include controller credentials. Treat connection details as secrets: do not commit them, include them in logs, or expose them in a public response. Successful responses carry `Cache-Control: private, no-store` and `Pragma: no-cache`. Do not cache session responses.
 
 ## Create a session
 
@@ -40,36 +40,37 @@ Creates a session and queues the remote device. The request returns before the d
 
 ### Request body
 
-**Choose at most one application source:** `buildId`, `applicationArchiveUrl`, or `expoGo: true`. These options are mutually exclusive. Providing more than one returns `400`. You can omit all three to start with a blank device.
+**Choose at most one application source:** `buildId`, `applicationArchiveUrl`, or `expoGo: true`. Providing more than one returns `400`. You can omit all three to start with a blank device.
 
-| Field                   | Type          | Required | Description                                                                                                                                                                                                                        |
-| ----------------------- | ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                          |
-| `platform`              | string        | Yes      | `android` or `ios`.                                                                                                                                                                                                                |
-| `name`                  | string        | No       | A descriptive session name, up to 255 characters. Must not be blank.                                                                                                                                                               |
-| `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `serve-sim`. Defaults to `agent-device`.                                                                                                                                                    |
-| `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                             |
-| `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                       |
-| `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. Omit to use the account default.                                                                             |
-| `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. If you also set `maxDurationMinutes`, must be smaller than that value. Omit to disable the idle timeout. Not supported for `serve-sim`. |
-| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build. Cannot be combined with `applicationArchiveUrl` or `expoGo: true`.                                                               |
-| `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters. Cannot be combined with `buildId` or `expoGo: true`.                                                                                          |
-| `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go. When `true`, cannot be combined with `buildId` or `applicationArchiveUrl`.                                                                                                            |
-| `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"57"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                 |
-| `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                            |
-| `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source.                                                                                                                  |
+UUID means universally unique identifier.
 
-Automatic application setup applies to `agent-device`, `argent`, and `serve-sim`. For `appium`, install and launch the app through your Appium client.
+| Field                   | Type          | Required | Description                                                                                                                                                                                                                 |
+| ----------------------- | ------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                   |
+| `platform`              | string        | Yes      | `android` or `ios`.                                                                                                                                                                                                         |
+| `name`                  | string        | No       | A descriptive session name, up to 255 characters. Must not be blank.                                                                                                                                                        |
+| `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `serve-sim`. Defaults to `agent-device`.                                                                                                                                             |
+| `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                      |
+| `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                |
+| `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The 115-minute limit excludes five minutes reserved for cleanup. Omit to use the account default.     |
+| `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. It must be smaller than `maxDurationMinutes` when both are set. Omit to disable the idle timeout. Not supported for `serve-sim`. |
+| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                           |
+| `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters.                                                                                                                                        |
+| `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go.                                                                                                                                                                                |
+| `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"57"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                          |
+| `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                     |
+| `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source.                                                                                                           |
+
+The application source options install and launch the app for `agent-device`, `argent`, and `serve-sim` sessions. For `appium`, install and launch the app through your Appium client.
 
 The REST API uses `serve-sim` for the session type that EAS CLI calls `web-preview-only`. It is only available on iOS and does not support an idle timeout. Other session types provide a controller and include a web preview on supported iOS sessions.
-
-The maximum session duration is 115 minutes, excluding the five minutes reserved for cleanup. Your account can have a lower duration limit.
 
 ### Example
 
 Replace `appId` and `buildId` with your EAS project ID and a compatible build ID:
 
 <Terminal
+  cmdCopy={`curl -X POST "https://api.expo.dev/v2/device-run-sessions" -H "Authorization: Bearer $EXPO_TOKEN" -H "Content-Type: application/json" -d '{"appId":"a415eac6-231a-4b38-b481-3255a59f13b8","platform":"ios","type":"agent-device","name":"Checkout flow screenshots","buildId":"f9609423-5072-4ea2-a0a5-c345eedf2c2a","maxDurationMinutes":30,"maxIdleTimeMinutes":5}'`}
   cmd={[
     `$ curl -X POST "https://api.expo.dev/v2/device-run-sessions" \\`,
     `    -H "Authorization: Bearer $EXPO_TOKEN" \\`,
@@ -115,11 +116,11 @@ Returns `200 OK` with the new session's metadata:
 }
 ```
 
-Save `data.id` and set it as `SESSION_ID` for the remaining examples. `url` links to the session page on expo.dev; it is not the live browser preview URL.
+Save `data.id` and set it as `SESSION_ID` for the remaining examples. `url` links to the session page on expo.dev. It is not the live browser preview URL.
 
-`buildId` contains the supplied build ID. `applicationArchiveUrl` contains the supplied archive URL or the resolved Expo Go archive URL; it is `null` when using `buildId`. Optional values such as `name`, `packageVersion`, and `maxIdleTimeMinutes` are `null` when omitted.
+`buildId` contains the supplied build ID. `applicationArchiveUrl` contains the supplied archive URL or the resolved Expo Go archive URL. It is `null` when using `buildId`. Optional values such as `name`, `packageVersion`, and `maxIdleTimeMinutes` are `null` when omitted.
 
-The response's `maxDurationMinutes` reports the session duration, excluding cleanup time. A request for 30 minutes returns `30`. It is `null` if there is no associated job.
+The response's `maxDurationMinutes` matches the requested session duration. A request for 30 minutes returns `30`.
 
 `remoteConfig` is `null` while the session is starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
 
@@ -134,6 +135,7 @@ Returns `200 OK` with the same session object as the create endpoint, including 
 ### Example
 
 <Terminal
+  cmdCopy={`curl "https://api.expo.dev/v2/device-run-sessions/$SESSION_ID" -H "Authorization: Bearer $EXPO_TOKEN"`}
   cmd={[
     `$ curl "https://api.expo.dev/v2/device-run-sessions/$SESSION_ID" \\`,
     `    -H "Authorization: Bearer $EXPO_TOKEN"`,
@@ -184,7 +186,7 @@ The REST API returns lowercase status values:
 | `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                            |
 | `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.                    |
 
-Poll this endpoint until `status` is `in-progress` and `remoteConfig` is not `null`, then connect using that configuration. Allow time between requests and set a timeout in your integration. If the status becomes `stopped` or `errored`, stop polling and inspect the session page at `url`.
+Poll this endpoint every five seconds until `status` is `in-progress` and `remoteConfig` is not `null`, then connect using that configuration. Set a timeout in your integration. If the status becomes `stopped` or `errored`, stop polling and inspect the session page at `url`.
 
 ### Connection details
 
@@ -212,6 +214,7 @@ Stops a session. This endpoint does not require a request body.
 ### Example
 
 <Terminal
+  cmdCopy={`curl -X POST "https://api.expo.dev/v2/device-run-sessions/$SESSION_ID/stop" -H "Authorization: Bearer $EXPO_TOKEN"`}
   cmd={[
     `$ curl -X POST "https://api.expo.dev/v2/device-run-sessions/$SESSION_ID/stop" \\`,
     `    -H "Authorization: Bearer $EXPO_TOKEN"`,
@@ -229,6 +232,7 @@ Always stop the session when your work finishes, including on errors or polling 
 | Status | Reason                                                                                                                                                                                                                                                 |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 400    | The request fails validation. Examples include an invalid UUID, incompatible application sources, unsupported session options, or a duration outside the account's limit. Session creation also fails if EAS Simulator is not enabled for the account. |
+| 401    | The bearer token is invalid. A request with no `Authorization` header returns `400` with `UNAUTHORIZED_ERROR` instead.                                                                                                                                 |
 | 403    | The token does not have permission to read the project or perform the requested action.                                                                                                                                                                |
 | 404    | No project or session exists with the given ID.                                                                                                                                                                                                        |
 
