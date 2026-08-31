@@ -122,6 +122,13 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func preventScreenshots() {
+    // The screenshot protection is already applied. Applying it again would nest the
+    // window layer in a second secure canvas and overwrite `originalParent`, which
+    // makes the original layer hierarchy unrecoverable.
+    guard protectionTextField == nil else {
+      return
+    }
+
     guard let keyWindow = keyWindow else {
       return
     }
