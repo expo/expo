@@ -2,7 +2,7 @@ import { useColorScheme } from 'react-native';
 import { Drawer } from 'vaul';
 
 import type { BottomSheetProps, SnapPoint } from './types';
-import { resolveContentPadding, resolveStringColor } from './utils';
+import { resolveContentPadding } from './utils';
 
 // Visually-hidden style for the screen-reader-only Drawer.Title.
 const visuallyHiddenStyle: React.CSSProperties = {
@@ -46,7 +46,6 @@ export function BottomSheet({
   });
   const vaulSnapPoints = snapPoints?.length ? snapPoints.map(snapPointToVaul) : undefined;
   const hasSnapPoints = vaulSnapPoints != null;
-  const resolvedContainerColor = resolveStringColor(containerColor);
 
   return (
     <Drawer.Root
@@ -67,7 +66,7 @@ export function BottomSheet({
             ...(showDragIndicator && dragIndicatorSpacing),
             // An explicit containerColor overrides both the 'white' default
             // above and the bare isDark fallback.
-            ...(resolvedContainerColor && { backgroundColor: resolvedContainerColor }),
+            ...(typeof containerColor === 'string' && { backgroundColor: containerColor }),
           }}
           aria-describedby={undefined}>
           {/* Radix Dialog requires a title for a11y; render visually-hidden. */}
