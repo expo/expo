@@ -33,7 +33,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
     "expo-dev-launcher": "55.0.41",
-    "expo-dev-menu": "55.0.34",
+    "expo-dev-menu": "55.0.35",
     "expo-dev-menu-interface": "55.0.2",
     "expo-manifests": "~55.0.21",
     "expo-updates-interface": "~55.1.6"

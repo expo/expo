@@ -16,7 +16,7 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "@expo/schema-utils": "^55.0.5",
-    "expo-dev-menu": "55.0.34",
+    "expo-dev-menu": "55.0.35",
     "expo-manifests": "~55.0.21"
   },
   "peerDependencies": {

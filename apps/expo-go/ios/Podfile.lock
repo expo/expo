@@ -51,10 +51,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu (55.0.34):
+  - expo-dev-menu (55.0.35):
     - boost
     - DoubleConversion
-    - expo-dev-menu/Main (= 55.0.34)
+    - expo-dev-menu/Main (= 55.0.35)
     - fast_float
     - fmt
     - glog
@@ -81,7 +81,7 @@ PODS:
     - SocketRocket
     - Yoga
   - expo-dev-menu-interface (55.0.2)
-  - expo-dev-menu/Main (55.0.34):
+  - expo-dev-menu/Main (55.0.35):
     - boost
     - DoubleConversion
     - EXManifests
@@ -4886,7 +4886,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: c9ac464913660ef8580236b0d3d6fad7a7bce552
   Expo: f988900e2b86c186b34c2a73087ec422afab1785
-  expo-dev-menu: 8b6922d29cae80e20189a7384eddf248f14301ef
+  expo-dev-menu: 809b20f54eebabb2b0541701b5f6920fad91696e
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: 6fe8d7bfc09bbc6a3ee1b6e402c27d7feef5012d
   ExpoAppleAuthentication: ab3d5d027724c02652f5be78bf81e43ac0e684c6
