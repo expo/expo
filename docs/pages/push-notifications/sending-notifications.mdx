@@ -292,6 +292,8 @@ Each message must be a JSON object with the given fields (only the `to` field is
 
 **Note on `priority`**: On Android, normal-priority messages won't open network connections on sleeping devices and their delivery may be delayed to conserve the battery. High-priority messages are more likely to be delivered immediately and may wake sleeping devices to open network connections, consuming energy. On iOS, normal-priority messages are sent at a time that takes into account power considerations for the device and may be grouped and delivered in bursts. They are throttled and may not be delivered by Apple. High-priority messages are usually sent immediately. Normal priority corresponds to APNs priority level 5 and high priority to 10.
 
+**Note on `sound` and `badge`**: On iOS, both fields need the matching permission. The system plays the sound only if the user allows sounds. The system sets the badge only if the user allows badges. `getPermissionsAsync()` reports these two settings as `ios.allowsSound` and `ios.allowsBadge`. The top-level `status` stays `granted` when either one is off. Check the two `ios` fields when a notification arrives without a sound or without a badge. The user answers these when your app asks for permission the first time, and changes them later in the Settings app.
+
 **Note on `channelId`**: If left null, a "Default" channel is used, and Expo creates the channel on the device if it does not yet exist. However, use caution, as the "Default" channel is user-facing and you may not be able to fully delete it.
 
 ### Push ticket format
