@@ -144,6 +144,13 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Normal request serves HTML');
 
+  if (!varyTokens(htmlResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the HTML variant, got: ${htmlResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ HTML variant of a negotiated page returns Vary: Accept');
+
   // With Accept: text/markdown, should serve markdown
   const mdResponse = await fetch(`${BASE_URL}/test-page`, {
     headers: { Accept: 'text/markdown' },
@@ -161,6 +168,17 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
     throw new Error(`Expected Content-Type text/markdown, got: ${mdContentType}`);
   }
   console.log('✓ Accept: text/markdown request returns correct Content-Type');
+
+  if (!varyTokens(mdResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept, got: ${mdResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request returns Vary: Accept');
+}
+
+function varyTokens(response: Response): string[] {
+  return (response.headers.get('vary') ?? '').split(',').map(token => token.trim().toLowerCase());
 }
 
 async function testMarkdownNotFoundAsync(): Promise<void> {
@@ -176,6 +194,28 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
   }
   console.log('✓ Missing .md file returns 404');
 
+  if (!varyTokens(missingMd).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the markdown 404, got: ${missingMd.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Markdown 404 response includes Vary: Accept');
+
+  const missingMdType = missingMd.headers.get('content-type') ?? '';
+
+  if (!missingMdType.includes('text/markdown')) {
+    throw new Error(`Expected markdown Content-Type on the 404, got: ${missingMdType}`);
+  }
+
+  const missingMdBody = await missingMd.text();
+
+  if (!missingMdBody.includes('/llms.txt') || !missingMdBody.includes('/sitemap.xml')) {
+    throw new Error(
+      `Expected recovery links on the markdown 404, got: ${missingMdBody.slice(0, 200)}`
+    );
+  }
+  console.log('✓ Markdown 404 responds with a markdown body and recovery links');
+
   // Nonexistent page should also 404
   const notFound = await fetch(`${BASE_URL}/nonexistent-page`, {
     headers: { Accept: 'text/markdown' },
@@ -185,6 +225,46 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
     throw new Error(`Expected 404 for nonexistent page, got: HTTP ${notFound.status}`);
   }
   console.log('✓ Nonexistent page returns 404');
+}
+
+async function testAcceptQualityValuesAsync(): Promise<void> {
+  console.log('\n--- Testing Accept header q-values ---');
+
+  const htmlPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/html;q=0.9, text/markdown;q=0.1' },
+  });
+  const htmlPreferredBody = await htmlPreferred.text();
+
+  if (!htmlPreferredBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when it carries the higher q, got: ' + htmlPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ HTML with the higher q is served over markdown');
+
+  const markdownRejected = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0, text/html' },
+  });
+  const markdownRejectedBody = await markdownRejected.text();
+
+  if (!markdownRejectedBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when markdown has q=0, got: ' + markdownRejectedBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with q=0 is never served');
+
+  const markdownPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0.9, text/html;q=0.1' },
+  });
+  const markdownPreferredBody = await markdownPreferred.text();
+
+  if (!markdownPreferredBody.includes('Test Markdown Content')) {
+    throw new Error(
+      'Expected markdown when it carries the higher q, got: ' + markdownPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with the higher q is served');
 }
 
 async function testUpgradePairNegotiationAsync(): Promise<void> {
@@ -328,6 +408,19 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
     );
   }
   console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
+
+  const mdRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build`, {
+    headers: { Accept: 'text/markdown' },
+    redirect: 'manual',
+  });
+  const mdLocation = mdRedirect.headers.get('location') ?? '';
+
+  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-eas')) {
+    throw new Error(
+      `Expected the markdown request to pass through the page redirect, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request passes through page redirects');
 }
 
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
@@ -379,6 +472,7 @@ async function mainAsync(): Promise<void> {
     await testDirectMarkdownAccessAsync();
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
+    await testAcceptQualityValuesAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();

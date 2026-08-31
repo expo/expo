@@ -6,6 +6,10 @@ import ExpoModulesCore
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
   /**
+   Adds LeafNode and MeasurableYogaNode trait in Shadow node
+   */
+  @Field var expoInternalSizeFromChildren: Bool = false
+  /**
    Whether this view owns its subtree's touches and is the origin its content is measured from. Set
    by the JavaScript side for content presented in its own view controller — see `RNHostView.tsx`,
    which reads it from the sheet or popover presenting the content.
