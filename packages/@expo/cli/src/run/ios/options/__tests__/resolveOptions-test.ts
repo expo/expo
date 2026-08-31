@@ -71,4 +71,23 @@ describe(resolveOptionsAsync, () => {
       xcodeProject: { isWorkspace: false, name: '/ios/ReactNativeProject.xcodeproj' },
     });
   });
+
+  it('uses development bundling for a custom debug configuration', async () => {
+    vol.fromJSON(fixture, '/');
+
+    jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
+
+    expect(
+      await resolveOptionsAsync('/', {
+        bundler: false,
+        configuration: 'DebugStaging',
+      })
+    ).toEqual(
+      expect.objectContaining({
+        configuration: 'DebugStaging',
+        shouldSkipInitialBundling: true,
+        shouldStartBundler: true,
+      })
+    );
+  });
 });

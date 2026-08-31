@@ -79,7 +79,7 @@ afterEach(() => {
 describe(runIosAsync, () => {
   afterEach(() => vol.reset());
 
-  it('uses production mode for a release configuration', async () => {
+  it('uses production mode for a custom release configuration', async () => {
     mockPlatform('darwin');
     vol.fromJSON(
       {
@@ -92,7 +92,7 @@ describe(runIosAsync, () => {
       '/'
     );
 
-    await runIosAsync('/', { configuration: 'Release' });
+    await runIosAsync('/', { configuration: 'StagingRelease' });
 
     expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode: 'production' });
     expect(startBundlerAsync).toHaveBeenCalledWith(
