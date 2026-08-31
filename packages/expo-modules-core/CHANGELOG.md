@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
+
 ## 57.0.14 — 2026-08-26
 
 ### 🎉 New features
