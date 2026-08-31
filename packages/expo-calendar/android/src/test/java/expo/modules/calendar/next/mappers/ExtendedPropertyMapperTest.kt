@@ -23,8 +23,37 @@ class ExtendedPropertyMapperTest {
     val result = mapper.toRecord(entity)
 
     // Then
-    Assert.assertEquals("private:x-owner", result.name)
-    Assert.assertEquals("mirror-42", result.value)
+    Assert.assertEquals("private:x-owner", result?.name)
+    Assert.assertEquals("mirror-42", result?.value)
+  }
+
+  @Test
+  fun `given an entity without a name, when toRecord, then returns null`() {
+    // Given
+    // Nothing constrains the column, so the provider can hand back a row with no name.
+    val entity = ExtendedPropertyEntity(
+      id = ExtendedPropertyId(5L),
+      eventId = EventId(9L),
+      name = null,
+      value = "mirror-42"
+    )
+
+    // When / Then
+    Assert.assertNull(mapper.toRecord(entity))
+  }
+
+  @Test
+  fun `given an entity without a value, when toRecord, then returns null`() {
+    // Given
+    val entity = ExtendedPropertyEntity(
+      id = ExtendedPropertyId(5L),
+      eventId = EventId(9L),
+      name = "private:x-owner",
+      value = null
+    )
+
+    // When / Then
+    Assert.assertNull(mapper.toRecord(entity))
   }
 
   @Test

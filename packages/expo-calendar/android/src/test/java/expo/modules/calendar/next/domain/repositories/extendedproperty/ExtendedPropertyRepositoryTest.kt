@@ -75,6 +75,29 @@ class ExtendedPropertyRepositoryTest {
   }
 
   @Test
+  fun `given a row without a name or a value, when findAllByEventId, then keeps the nulls`() = runTest {
+    // Given
+    // No database constraint forbids either column being null, so the entity has to carry what is
+    // there rather than refuse to map the row.
+    val cursor = cursorWithRows(
+      mapOf(
+        CalendarContract.ExtendedProperties._ID to 5L,
+        CalendarContract.ExtendedProperties.NAME to null,
+        CalendarContract.ExtendedProperties.VALUE to null
+      )
+    )
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
+
+    // When
+    val result = repository.findAllByEventId(EventId(99L))
+
+    // Then
+    Assert.assertEquals(1, result.size)
+    Assert.assertNull(result[0].name)
+    Assert.assertNull(result[0].value)
+  }
+
+  @Test
   fun `given event id, when findAllByEventId, then reads through the plain URI selecting on EVENT_ID`() = runTest {
     // Given
     val uriSlot = slot<Uri>()
