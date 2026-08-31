@@ -1033,130 +1033,134 @@ properties.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                fullName
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationfullname"
-                >
-                  AppleAuthenticationFullName
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
-                  The full name object with the tokenized portions
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+                  fullName
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                formatStyle
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
-              >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationfullnameformatstyle"
-                >
-                  AppleAuthenticationFullNameFormatStyle
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
                   data-text="true"
                 >
-                  The style in which the name should be formatted
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="#appleauthenticationfullname"
+                  >
+                    AppleAuthenticationFullName
+                  </a>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    The full name object with the tokenized portions
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
+                  data-text="true"
+                >
+                  formatStyle
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="#appleauthenticationfullnameformatstyle"
+                  >
+                    AppleAuthenticationFullNameFormatStyle
+                  </a>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    The style in which the name should be formatted
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -1277,89 +1281,93 @@ properties.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                user
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
-                  The unique identifier for the user whose credential state you'd like to check.
-This should come from the user field of an 
-                  <a
-                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="#appleauthenticationcredentialstate"
+                  user
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
                   >
-                    <code
-                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                      data-text="true"
+                    The unique identifier for the user whose credential state you'd like to check.
+This should come from the user field of an 
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="#appleauthenticationcredentialstate"
                     >
-                      AppleAuthenticationCredential
-                    </code>
-                  </a>
-                   object.
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                      <code
+                        class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                        data-text="true"
+                      >
+                        AppleAuthenticationCredential
+                      </code>
+                    </a>
+                     object.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -1723,93 +1731,97 @@ value depending on the state of the credential.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                options
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationrefreshoptions"
-                >
-                  AppleAuthenticationRefreshOptions
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
-                  An 
+                  options
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
                   <a
                     class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
                     href="#appleauthenticationrefreshoptions"
                   >
-                    <code
-                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                      data-text="true"
-                    >
-                      AppleAuthenticationRefreshOptions
-                    </code>
+                    AppleAuthenticationRefreshOptions
                   </a>
-                   object
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An 
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="#appleauthenticationrefreshoptions"
+                    >
+                      <code
+                        class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                        data-text="true"
+                      >
+                        AppleAuthenticationRefreshOptions
+                      </code>
+                    </a>
+                     object
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -1977,98 +1989,102 @@ refresh operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                options
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
             >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationsigninoptions"
-                >
-                  AppleAuthenticationSignInOptions
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
-                  An optional 
+                  options
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
                   <a
                     class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
                     href="#appleauthenticationsigninoptions"
                   >
-                    <code
-                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                      data-text="true"
-                    >
-                      AppleAuthenticationSignInOptions
-                    </code>
+                    AppleAuthenticationSignInOptions
                   </a>
-                   object
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An optional 
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="#appleauthenticationsigninoptions"
+                    >
+                      <code
+                        class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                        data-text="true"
+                      >
+                        AppleAuthenticationSignInOptions
+                      </code>
+                    </a>
+                     object
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -2282,93 +2298,97 @@ sign-in operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                options
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationsignoutoptions"
-                >
-                  AppleAuthenticationSignOutOptions
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
-                  An 
+                  options
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
                   <a
                     class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
                     href="#appleauthenticationsignoutoptions"
                   >
-                    <code
-                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                      data-text="true"
-                    >
-                      AppleAuthenticationSignOutOptions
-                    </code>
+                    AppleAuthenticationSignOutOptions
                   </a>
-                   object
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An 
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="#appleauthenticationsignoutoptions"
+                    >
+                      <code
+                        class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                        data-text="true"
+                      >
+                        AppleAuthenticationSignOutOptions
+                      </code>
+                    </a>
+                     object
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -2610,63 +2630,67 @@ sign-out operation.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                listener
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+              >
+                Type
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
             >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
                 <span
-                  class="text-quaternary"
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
+                  data-text="true"
                 >
-                  () =&gt;
+                  listener
                 </span>
-                 
-                void
-              </code>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span
+                    class="text-quaternary"
+                  >
+                    () =&gt;
+                  </span>
+                   
+                  void
+                </code>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -3169,431 +3193,435 @@ for more details.
       class=""
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper mb-4 overflow-clip border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                authorizationCode
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Property
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
-                  </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  A short-lived session token used by your app for proof of authorization when interacting with
+                  authorizationCode
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
+                  </span>
+                  <span>
+                    null
+                  </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    user
-                  </code>
-                  , this is ephemeral and will change each session.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      user
+                    </code>
+                    , this is ephemeral and will change each session.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                email
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
-                  </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  The user's email address. Might not be present if you didn't request the 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                  email
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
+                  </span>
+                  <span>
+                    null
+                  </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
                     data-text="true"
                   >
-                    EMAIL
-                  </code>
-                   scope. May
+                    The user's email address. Might not be present if you didn't request the 
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      EMAIL
+                    </code>
+                     scope. May
 also be null if this is not the first time the user has signed into your app. If the user chose
 to withhold their email address, this field will instead contain an obscured email address with
 an Apple domain.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                fullName
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  <a
-                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="#appleauthenticationfullname"
-                  >
-                    AppleAuthenticationFullName
-                  </a>
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
-                  </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  The user's name. May be 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
+                  fullName
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="#appleauthenticationfullname"
+                    >
+                      AppleAuthenticationFullName
+                    </a>
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
+                  </span>
+                  <span>
                     null
-                  </code>
-                   or contain 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                  </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
                     data-text="true"
                   >
-                    null
-                  </code>
-                   values if you didn't request the 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    FULL_NAME
-                  </code>
-                  
+                    The user's name. May be 
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      null
+                    </code>
+                     or contain 
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      null
+                    </code>
+                     values if you didn't request the 
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      FULL_NAME
+                    </code>
+                    
 scope, if the user denied access, or if this is not the first time the user has signed into
 your app.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                identityToken
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  identityToken
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
                   </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-                  data-text="true"
-                >
-                  A JSON Web Token (JWT) that securely communicates information about the user to your app.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
-              >
-                realUserStatus
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationuserdetectionstatus"
-                >
-                  AppleAuthenticationUserDetectionStatus
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-                  data-text="true"
-                >
-                  A value that indicates whether the user appears to the system to be a real person.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
-              >
-                state
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                  <span>
+                    null
                   </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-                  data-text="true"
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
                 >
-                  An arbitrary string that your app provided as 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
                     data-text="true"
                   >
-                    state
-                  </code>
-                   in the request that generated the
+                    A JSON Web Token (JWT) that securely communicates information about the user to your app.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  realUserStatus
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="#appleauthenticationuserdetectionstatus"
+                  >
+                    AppleAuthenticationUserDetectionStatus
+                  </a>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    A value that indicates whether the user appears to the system to be a real person.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  state
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
+                  </span>
+                  <span>
+                    null
+                  </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An arbitrary string that your app provided as 
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      state
+                    </code>
+                     in the request that generated the
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    state
-                  </code>
-                   when making the sign-in request, this field
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      state
+                    </code>
+                     when making the sign-in request, this field
 will be 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    null
-                  </code>
-                  .
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      null
+                    </code>
+                    .
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                user
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  An identifier associated with the authenticated user. You can use this to check if the user is
+                  user
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An identifier associated with the authenticated user. You can use this to check if the user is
 still authenticated later. This is stable and can be shared across apps released under the same
 development team. The same user will have a different identifier for apps released by other
 developers.
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div
@@ -3670,295 +3698,299 @@ may be
       class=""
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper mb-4 overflow-clip border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                familyName
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Property
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  familyName
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
                   </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
-              >
-                -
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
-              >
-                givenName
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                  <span>
+                    null
                   </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  givenName
                 </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                -
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
-              >
-                middleName
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
                   </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
-              >
-                -
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
-              >
-                namePrefix
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                  <span>
+                    null
                   </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  middleName
                 </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                -
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
-              >
-                nameSuffix
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
                   </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
-              >
-                -
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
-              >
-                nickname
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <span>
-                  string
-                  <span
-                    class="text-quaternary"
-                  >
-                     | 
+                  <span>
+                    null
                   </span>
-                </span>
-                <span>
-                  null
-                </span>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                -
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  namePrefix
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
+                  </span>
+                  <span>
+                    null
+                  </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  nameSuffix
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
+                  </span>
+                  <span>
+                    null
+                  </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  nickname
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <span>
+                    string
+                    <span
+                      class="text-quaternary"
+                    >
+                       | 
+                    </span>
+                  </span>
+                  <span>
+                    null
+                  </span>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div
@@ -4294,199 +4326,203 @@ for more details.
       class=""
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper mb-4 overflow-clip border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                requestedScopes
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
+                Property
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
             >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationscope"
-                >
-                  AppleAuthenticationScope
-                  []
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  Array of user information scopes to which your app is requesting access. Note that the user can
+                  requestedScopes
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="#appleauthenticationscope"
+                  >
+                    AppleAuthenticationScope
+                    []
+                  </a>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    null
-                  </code>
-                   values for any scopes you request. Additionally, note that the requested scopes
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      null
+                    </code>
+                     values for any scopes you request. Additionally, note that the requested scopes
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    null
-                  </code>
-                  . Defaults to 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    []
-                  </code>
-                   (no scopes).
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      null
+                    </code>
+                    . Defaults to 
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      []
+                    </code>
+                     (no scopes).
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                state
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
-              >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  An arbitrary string that is returned unmodified in the corresponding credential after a
+                  state
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
-                  <a
-                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="https://tools.ietf.org/html/rfc6749#section-10.12"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    RFC6749
-                  </a>
-                  .
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="https://tools.ietf.org/html/rfc6749#section-10.12"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      RFC6749
+                    </a>
+                    .
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                user
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  user
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                -
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div
@@ -4627,219 +4663,223 @@ for more details.
       class=""
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper mb-4 overflow-clip border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                nonce
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
+                Property
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
             >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  An arbitrary string that is used to prevent replay attacks. See more information on this in the
+                  nonce
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An arbitrary string that is used to prevent replay attacks. See more information on this in the
 
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      OpenID Connect specification
+                    </a>
+                    .
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  requestedScopes
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
                   <a
                     class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps"
-                    rel="noopener noreferrer"
-                    target="_blank"
+                    href="#appleauthenticationscope"
                   >
-                    OpenID Connect specification
+                    AppleAuthenticationScope
+                    []
                   </a>
-                  .
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                requestedScopes
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
-              >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#appleauthenticationscope"
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
                 >
-                  AppleAuthenticationScope
-                  []
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-                  data-text="true"
-                >
-                  Array of user information scopes to which your app is requesting access. Note that the user can
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    null
-                  </code>
-                   values for any scopes you request. Additionally, note that the requested scopes
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      null
+                    </code>
+                     values for any scopes you request. Additionally, note that the requested scopes
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    null
-                  </code>
-                  . Defaults to 
-                  <code
-                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                    data-text="true"
-                  >
-                    []
-                  </code>
-                   (no scopes).
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      null
+                    </code>
+                    . Defaults to 
+                    <code
+                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                      data-text="true"
+                    >
+                      []
+                    </code>
+                     (no scopes).
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                state
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
-              >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  An arbitrary string that is returned unmodified in the corresponding credential after a
+                  state
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
-                  <a
-                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="https://tools.ietf.org/html/rfc6749#section-10.12"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    RFC6749
-                  </a>
-                  .
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="https://tools.ietf.org/html/rfc6749#section-10.12"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      RFC6749
+                    </a>
+                    .
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div
@@ -4980,125 +5020,129 @@ for more details.
       class=""
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper mb-4 overflow-clip border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                state
-              </span>
-              <span
-                class="flex text-xs! text-tertiary"
+                Property
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                (optional)
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
             >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  An arbitrary string that is returned unmodified in the corresponding credential after a
+                  state
+                </span>
+                <span
+                  class="flex text-xs! text-tertiary"
+                >
+                  (optional)
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
-                  <a
-                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="https://tools.ietf.org/html/rfc6749#section-10.12"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    RFC6749
-                  </a>
-                  .
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="https://tools.ietf.org/html/rfc6749#section-10.12"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      RFC6749
+                    </a>
+                    .
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                user
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  user
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                string
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="text-quaternary"
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  string
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                -
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <div
+                  class="text-quaternary"
+                >
+                  -
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <h2
@@ -7329,129 +7373,133 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                start
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Date
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
-                  A date indicating the start of the range over which to measure steps.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+                  start
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                end
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Date
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
                   data-text="true"
                 >
-                  A date indicating the end of the range over which to measure steps.
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Date
+                  </a>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    A date indicating the start of the range over which to measure steps.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
+                  data-text="true"
+                >
+                  end
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Date
+                  </a>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    A date indicating the end of the range over which to measure steps.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -7943,94 +7991,98 @@ available on this device.
       </h3>
     </div>
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+      class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Parameter
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-md="api-param-name"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                callback
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Parameter
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="/versions/latest/sdk/pedometer#pedometerupdatecallbackresult"
-                >
-                  PedometerUpdateCallback
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
-                  A callback that is invoked when new step count data is available. The callback is
-provided with a single argument that is 
+                  callback
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
                   <a
                     class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="#pedometerresult"
+                    href="/versions/latest/sdk/pedometer#pedometerupdatecallbackresult"
                   >
-                    <code
-                      class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
-                      data-text="true"
-                    >
-                      PedometerResult
-                    </code>
+                    PedometerUpdateCallback
                   </a>
-                  .
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0 [&>*]:last:mb-0!"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    A callback that is invoked when new step count data is available. The callback is
+provided with a single argument that is 
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="#pedometerresult"
+                    >
+                      <code
+                        class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+                        data-text="true"
+                      >
+                        PedometerResult
+                      </code>
+                    </a>
+                    .
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <br />
     <div
@@ -8540,75 +8592,79 @@ After calling this function, the listener will no longer receive any events from
       class=""
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper mb-4 overflow-clip border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                steps
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Property
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                number
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  Number of steps taken between the given dates.
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  steps
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  number
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    Number of steps taken between the given dates.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div
@@ -8678,62 +8734,66 @@ After calling this function, the listener will no longer receive any events from
         class=""
       />
       <div
-        class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-3xl border border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mx-4 mt-0.5"
+        class="table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs mx-4 mt-0.5"
       >
-        <table
-          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        <div
+          class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
         >
-          <thead
-            class="border-b border-b-default bg-subtle"
+          <table
+            class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
           >
-            <tr
-              class="even:bg-subtle"
+            <thead
+              class="border-b border-b-default bg-subtle"
             >
-              <th
-                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+              <tr
+                class="even:bg-subtle"
               >
-                Parameter
-              </th>
-              <th
-                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-              >
-                Type
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              class="even:bg-subtle"
-            >
-              <td
-                class="border-r border-secondary p-4 text-left last:border-r-0"
-              >
-                <span
-                  class="leading-[1.6154] text-inherit font-medium"
-                  data-md="api-param-name"
-                  data-text="true"
+                <th
+                  class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
                 >
-                  result
-                </span>
-              </td>
-              <td
-                class="border-r border-secondary p-4 text-left last:border-r-0"
-              >
-                <code
-                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                  data-text="true"
+                  Parameter
+                </th>
+                <th
+                  class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
                 >
-                  <a
-                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="#pedometerresult"
+                  Type
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="even:bg-subtle"
+              >
+                <td
+                  class="border-r border-secondary p-4 text-left last:border-r-0"
+                >
+                  <span
+                    class="leading-[1.6154] text-inherit font-medium"
+                    data-md="api-param-name"
+                    data-text="true"
                   >
-                    PedometerResult
-                  </a>
-                </code>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    result
+                  </span>
+                </td>
+                <td
+                  class="border-r border-secondary p-4 text-left last:border-r-0"
+                >
+                  <code
+                    class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                    data-text="true"
+                  >
+                    <a
+                      class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                      href="#pedometerresult"
+                    >
+                      PedometerResult
+                    </a>
+                  </code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <div
@@ -8950,196 +9010,200 @@ After calling this function, the listener will no longer receive any events from
       class=""
     />
     <div
-      class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs [&::-webkit-scrollbar-track]:mx-6 mt-0.5 rounded-none border-0 border-t"
+      class="table-wrapper mb-4 overflow-clip border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
-      <table
-        class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+      <div
+        class="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden"
       >
-        <thead
-          class="border-b border-b-default bg-subtle"
+        <table
+          class="w-full rounded-none border-0 text-sm text-default [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
-          <tr
-            class="even:bg-subtle"
+          <thead
+            class="border-b border-b-default bg-subtle"
           >
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
+            <tr
+              class="even:bg-subtle"
             >
-              Property
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Type
-            </th>
-            <th
-              class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                canAskAgain
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
+                Property
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                boolean
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                Type
+              </th>
+              <th
+                class="border-r border-secondary px-4 font-medium text-secondary text-left py-2 text-xs [&_code]:text-xs [&_code]:text-secondary last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  Indicates if user can be asked again for specific permission.
+                  canAskAgain
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  boolean
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    Indicates if user can be asked again for specific permission.
 If not, one should be directed to the Settings app
 in order to enable/disable the permission.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                expires
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                PermissionExpiration
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  Determines time when the permission expires.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+                  expires
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                granted
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                boolean
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
-              >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
                   data-text="true"
                 >
-                  A convenience boolean that indicates if the permission is granted.
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr
-            class="even:bg-subtle"
-          >
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <span
-                class="leading-[1.6154] text-inherit font-medium"
-                data-text="true"
+                  PermissionExpiration
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                status
-              </span>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
-            >
-              <code
-                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
-                data-text="true"
-              >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="/versions/latest/sdk/expo#permissionstatus"
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
                 >
-                  PermissionStatus
-                </a>
-              </code>
-            </td>
-            <td
-              class="border-r border-secondary p-4 text-left last:border-r-0"
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    Determines time when the permission expires.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
             >
-              <div
-                class="px-4 [table_&]:mb-0! [table_&]:px-0"
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
               >
-                <p
-                  class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
                   data-text="true"
                 >
-                  Determines the status of the permission.
-                </p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  granted
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  boolean
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    A convenience boolean that indicates if the permission is granted.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="even:bg-subtle"
+            >
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <span
+                  class="leading-[1.6154] text-inherit font-medium"
+                  data-text="true"
+                >
+                  status
+                </span>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <code
+                  class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:text-inherit!"
+                  data-text="true"
+                >
+                  <a
+                    class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+                    href="/versions/latest/sdk/expo#permissionstatus"
+                  >
+                    PermissionStatus
+                  </a>
+                </code>
+              </td>
+              <td
+                class="border-r border-secondary p-4 text-left last:border-r-0"
+              >
+                <div
+                  class="px-4 [table_&]:mb-0! [table_&]:px-0"
+                >
+                  <p
+                    class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+                    data-text="true"
+                  >
+                    Determines the status of the permission.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
   <h2

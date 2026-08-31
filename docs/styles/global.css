@@ -87,38 +87,26 @@ details::details-content {
 
 /* Scrollbars */
 
-div:not(#root) > ::-webkit-scrollbar,
-pre[data-text]::-webkit-scrollbar,
-.table-wrapper::-webkit-scrollbar {
+div:not(#root) > ::-webkit-scrollbar {
   width: 6px;
   height: 5px;
 }
 
-div:not(#root) > ::-webkit-scrollbar-track,
-pre[data-text]::-webkit-scrollbar-track,
-.table-wrapper::-webkit-scrollbar-track {
+div:not(#root) > ::-webkit-scrollbar-track {
   background-color: transparent;
   cursor: pointer;
 }
 
-div:not(#root) > ::-webkit-scrollbar-thumb,
-pre[data-text]::-webkit-scrollbar-thumb,
-.table-wrapper::-webkit-scrollbar-thumb {
+div:not(#root) > ::-webkit-scrollbar-thumb {
   @apply bg-palette-gray5 rounded-sm;
 }
 
-div:not(#root) > ::-webkit-scrollbar-thumb:hover,
-pre[data-text]::-webkit-scrollbar-thumb:hover,
-.table-wrapper::-webkit-scrollbar-thumb:hover {
+div:not(#root) > ::-webkit-scrollbar-thumb:hover {
   @apply bg-palette-gray6;
 }
 
-div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb {
-  @apply bg-palette-gray11;
-}
-
-div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb:hover {
-  @apply bg-palette-gray12;
+div[class*='terminal-snippet'] > * {
+  scrollbar-color: var(--slate-11) transparent;
 }
 
 details > summary::-webkit-details-marker {

@@ -20,7 +20,7 @@ export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
         className={mergeClasses(
           preferredTheme === Themes.DARK && 'dark-theme',
           wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
-          'relative overflow-x-auto rounded-b-3xl border border-default bg-subtle p-4 leading-4.5! text-default [&::-webkit-scrollbar-track]:mx-6',
+          '[scrollbar-color:var(--slate-5)_transparent] relative scrollbar-thin overflow-x-auto rounded-b-3xl border border-default bg-subtle p-4 leading-4.5! text-default',
           'prose-code:px-0!',
           alwaysDark && 'dark-theme border-transparent bg-palette-black whitespace-nowrap',
           hideOverflow && 'overflow-hidden prose-code:whitespace-nowrap!',

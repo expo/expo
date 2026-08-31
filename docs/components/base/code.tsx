@@ -129,8 +129,9 @@ export function Code({ className, children, title }: CodeProps) {
 
   const forceWordWrap = params?.wrap === 'true';
   const commonClasses = mergeClasses(
+    '[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin',
     (wordWrap || forceWordWrap) && 'wrap-break-word! whitespace-pre-wrap!',
-    showExpand && !isExpanded && `overflow-y-hidden! [&::-webkit-scrollbar-track]:bg-default!`
+    showExpand && !isExpanded && 'overflow-y-hidden!'
   );
 
   return codeBlockTitle ? (
@@ -159,27 +160,29 @@ export function Code({ className, children, title }: CodeProps) {
       </SnippetContent>
     </Snippet>
   ) : (
-    <pre
-      ref={contentRef}
-      data-md-lang={language}
-      style={{
-        maxHeight: collapseBound,
-      }}
+    <div
       className={mergeClasses(
-        'relative my-4 overflow-x-auto rounded-3xl border border-secondary bg-subtle whitespace-pre [&::-webkit-scrollbar-track]:mx-6',
+        'code-block-wrapper my-4 overflow-clip rounded-3xl border border-secondary bg-subtle',
         preferredTheme === Themes.DARK && 'dark-theme',
-        commonClasses,
         '[p+&]:mt-0'
-      )}
-      {...attributes}>
-      <div className="w-fit p-4">
-        <code
-          className="text-xs text-default"
-          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-        />
-      </div>
-      {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
-    </pre>
+      )}>
+      <pre
+        ref={contentRef}
+        data-md-lang={language}
+        style={{
+          maxHeight: collapseBound,
+        }}
+        className={mergeClasses('relative overflow-x-auto whitespace-pre', commonClasses)}
+        {...attributes}>
+        <div className="w-fit p-4">
+          <code
+            className="text-xs text-default"
+            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+          />
+        </div>
+        {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
+      </pre>
+    </div>
   );
 }
 
