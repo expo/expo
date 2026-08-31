@@ -117,6 +117,15 @@ export interface BottomSheetProps {
    * When omitted, each platform keeps its own default (Compose Material3's
    * `BottomSheetDefaults.ContainerColor` on Android, opaque white via `vaul`'s
    * `Drawer.Content` on web, the system sheet background on iOS).
+   *
+   * This only paints the background -- on every platform, `children` are
+   * plain React Native views, not native Compose/SwiftUI content, so none of
+   * them pick up a contrasting text color automatically from a custom
+   * `containerColor` (Android's own `contentColor` default, derived from
+   * `containerColor`, only reaches native Compose content that reads the
+   * ambient `LocalContentColor`; a React Native `Text` sets its own `color`
+   * independently of that). A dark custom `containerColor` needs the sheet's
+   * own children to set a contrasting color explicitly, on every platform.
    * @platform android
    * @platform ios 16.4+
    * @platform web
@@ -125,7 +134,10 @@ export interface BottomSheetProps {
 
   /**
    * The preferred color of content inside the sheet that doesn't set its own
-   * color explicitly (Compose's ambient `LocalContentColor`).
+   * color explicitly (Compose's ambient `LocalContentColor`). Only affects
+   * native Compose content -- see `containerColor`'s doc for why this
+   * doesn't reach a `BottomSheet`'s (React Native) `children` on any
+   * platform, Android included.
    * @platform android
    */
   contentColor?: ColorValue;
