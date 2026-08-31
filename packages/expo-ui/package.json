@@ -144,17 +144,19 @@
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest",
+    "test:e2e:web": "playwright test --config e2e/web/playwright.config.ts",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "sf-symbols-typescript": "^2.1.0",
-    "vaul": "^1.1.2"
+    "sf-symbols-typescript": "^2.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@playwright/test": "^1.59.0",
+    "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.0",
     "@types/babel__core": "^7.20.5",
     "@types/jest": "^29.2.1",
