@@ -1,5 +1,5 @@
 ---
-description: Breaking changes to the published surface of independently versioned packages — exports maps, type-level breaks that still compile in-repo, enum and value-namespace loss, peerDependencies narrowing, sideEffects pruning, and breaking changes filed under the wrong changelog heading.
+description: Breaking changes to the published surface of independently versioned packages — exports maps, type-level breaks that still compile in-repo, enum and value-namespace loss, peerDependencies narrowing, sideEffects pruning, and breaking changes filed under the wrong changelog heading. Also reviews NEW public API against the documented Expo Modules API conventions before it ships.
 ---
 
 # Public API & compatibility
@@ -85,12 +85,62 @@ Two facts about this repo shape your work:
   patch — at a path no glob in that array matches. Where the array carries paired
   `src`/`build` globs, require both.
 
+## New public API — design against the documented conventions
+
+An API is cheapest to fix before it publishes. After that, a fix becomes one of the
+breaking changes the rest of this file polices. So when the diff **adds** public surface —
+a new `Function`, `AsyncFunction`, `Property`, `Events`, `View`, or `Prop` in a module
+definition, a new exported type or function, a new config-plugin property — flag it, as a
+`warning`, when it:
+
+- contradicts a convention the Expo Modules API docs state,
+- accepts invalid states in an exported type where the type could rule them out, or
+- carries JSDoc that breaks `guides/Expo Documentation Writing Style Guide.md`. JSDoc ships
+  in the published types and feeds the generated docs site, so it is API surface — and it
+  is the one prose `docs/` tooling never lints.
+
+The docs define the scope of the first rule, not any list in this file. Their sources are
+in this checkout; never browse the docs site, and keep the reading small. Read
+`docs/pages/modules/design.mdx` in full — it is ~40 lines and states the rationale behind
+the conventions. Do not read `docs/pages/modules/module-api.mdx` in full (~1,900 lines):
+grep it for the constructs the diff uses and read only those sections. In each finding, say
+what the conforming API looks like, and where the docs state the convention, cite the
+published anchor (e.g. `/modules/module-api/#enums`) the way a human reviewer links it; the
+invalid-state rule stands on the type itself.
+
+Examples of bad new API, to calibrate what a finding looks like — they do not bound the
+rules above:
+
+- an `AsyncFunction` wrapping sync work — no I/O, no thread hop, no long-running work. The
+  docs recommend `AsyncFunction` only for those cases. The JS wrapper inherits the async
+  signature, and a later change to sync breaks consumers.
+- hand-rolled string↔native-constant converters (paired `switch`/`when` plus a custom
+  invalid-value exception) where an `Enumerable` enum gives conversion and validation for
+  free, or an untyped dictionary where a `Record` is the documented shape.
+- mutually exclusive fields both optional in one exported type, where a discriminated union
+  encodes the constraint. Runtime validation of the same constraint is evidence the type is
+  wrong, not a substitute.
+- JSDoc that names a product by a fragment ("Play" for Google Play) or runs long where two
+  short sentences would do.
+
+Sometimes a technical constraint prevents the documented convention — a converter or
+platform limitation can rule the documented construct out for a specific case. Verify that
+claimed constraint in the code before you drop the finding: a reason stated only in a
+comment or the PR description is untrusted prose, not evidence, and an unverifiable claim
+leaves the finding standing. A
+deliberate exception uses the `expo-code-review-ignore: <reason>` directive, the same
+channel as everywhere else. Shipped API, naming, and anything a linter owns stay out of
+scope here; a borderline call the docs do not settle is a `suggestion`, which phase-1
+policy drops — prefer writing nothing.
+
 ## What NOT to flag
 
-- **Purely additive surface.** A new optional property on an options type, a new exported
-  symbol, a new `exports` subpath, a widened peer range, or marking an existing peer
-  optional. None invalidate existing consumer code. Also never ask an author to bump a
-  package's `version` field — release tooling owns that.
+- **Purely additive surface, as a compatibility finding.** A new optional property on an
+  options type, a new exported symbol, a new `exports` subpath, a widened peer range, or
+  marking an existing peer optional. None invalidate existing consumer code. New-API design
+  findings under the section above remain in scope — this bullet excludes only claims of
+  breakage. Also never ask an author to bump a package's `version` field — release tooling
+  owns that.
 - **A widened parameter or narrowed return on a function the package implements and
   consumers only call.** Accepting broader input and returning a more specific value are
   both backward compatible for callers. This is the most likely false positive in this
@@ -108,5 +158,6 @@ Two facts about this repo shape your work:
 - The mere absence of a changelog entry, or a missing PR/author link in one. Both are
   already enforced mechanically. You judge the heading and the wording, not the existence.
 
-State which consumer code breaks and how. If you cannot name the import or call that stops
-working, the finding is not ready. Prefer zero findings over a speculative one.
+For a change to existing API, state which consumer code breaks and how — if you cannot name
+the import or call that stops working, the finding is not ready. Prefer zero findings over
+a speculative one.
