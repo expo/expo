@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Replace the required `name` field of `InlineModulesXcodeParams` with the optional `appName`, used only as a tiebreak fallback when several application targets exist. ([#49413](https://github.com/expo/expo/pull/49413) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Resolve the main Xcode target by its application product type instead of the app name, so renamed and `--no-clean` projects match. Skip aggregate and legacy targets, prefer the target named after the on-disk project when several exist (warn when none matches), and match quoted target names in `xcodeProjectTargets`. ([#49413](https://github.com/expo/expo/pull/49413) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 

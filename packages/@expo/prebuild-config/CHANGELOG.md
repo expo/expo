@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [inline modules] Resolve the `mainTarget` in Podfile.properties.json from the Xcode project (application product type) instead of the app name, falling back to the folder-derived name when no iOS project exists. This keeps autolinking's target matching in sync with the pbxproj. Projects without inline modules skip the pbxproj parse. ([#49413](https://github.com/expo/expo/pull/49413) by [@vonovak](https://github.com/vonovak))
 - Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Write the `RCTMetroPort` Info.plist key so bare dev builds resolve their own Metro port instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Keep the Xcode project in sync when the app icon switches between a Liquid Glass `.icon` package and a PNG icon. ([#46070](https://github.com/expo/expo/pull/46070) by [@debugtheworldbot](https://github.com/debugtheworldbot))
