@@ -8,6 +8,7 @@ describe('react-navigation/index re-exports', () => {
     expect(Index).not.toHaveProperty('createPathConfigForStaticNavigation');
     expect(Index).not.toHaveProperty('NavigationContainer');
     expect(Index).not.toHaveProperty('BaseNavigationContainer');
+    expect(Index).not.toHaveProperty('UNSTABLE_UnhandledLinkingContext');
   });
 
   it.each([
