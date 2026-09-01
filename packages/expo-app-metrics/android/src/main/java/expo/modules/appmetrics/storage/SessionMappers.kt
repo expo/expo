@@ -5,7 +5,6 @@ import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
-import java.util.UUID
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -52,7 +51,6 @@ data class JsMetric(
   @Field val category: String,
   @Field val name: String,
   @Field val value: Double,
-  @Field val metricId: String? = UUID.randomUUID().toString(),
   @Field val timestamp: String = TimeUtils.getCurrentTimestampInISOFormat(),
   @Field val routeName: String? = null,
   @Field val updateId: String? = null,
@@ -60,7 +58,6 @@ data class JsMetric(
 ) : Record {
   fun toMetric(): Metric =
     Metric(
-      metricId = metricId ?: UUID.randomUUID().toString(),
       sessionId = sessionId,
       timestamp = timestamp,
       category = category,
@@ -74,7 +71,6 @@ data class JsMetric(
   companion object {
     fun fromMetric(metric: Metric): JsMetric =
       JsMetric(
-        metricId = metric.metricId,
         sessionId = metric.sessionId,
         timestamp = metric.timestamp,
         category = metric.category,
@@ -90,7 +86,7 @@ data class JsMetric(
 /**
  * Payload for `Session.addMetric` — mirrors the TypeScript `MetricInput` type
  * (`Metric` minus `sessionId`). The owning session is implied by the shared
- * object the metric is added to, so the id is injected via `toMetric(sessionId)`
+ * object the metric is added to, so the session id is injected via `toMetric(sessionId)`
  * rather than carried across the bridge; `updateId` is a native-side concern not
  * exposed to JS.
  */
@@ -105,7 +101,6 @@ data class SessionMetricInput(
 ) : Record {
   fun toMetric(sessionId: String): Metric =
     Metric(
-      metricId = UUID.randomUUID().toString(),
       sessionId = sessionId,
       timestamp = timestamp,
       category = category,
@@ -121,7 +116,7 @@ data class SessionMetricInput(
  * JS-facing shape of a log event. Mirrors the TypeScript `LogRecord` type and
  * decodes the storage-only JSON `attributes` column into a typed map.
  *
- * `logId`, `sessionId`, and `droppedAttributesCount` are storage- and
+ * `sessionId` and `droppedAttributesCount` are storage- and
  * dispatch-side concerns: JS consumers see the record under its parent
  * `Session.logs` (so the parent ID is implicit), and the dropped-attribute
  * bookkeeping is only meaningful on the OTel wire payload.
