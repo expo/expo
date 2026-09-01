@@ -14,6 +14,7 @@ import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
+import { type ShapeStyle } from './shapeStyle';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
@@ -363,46 +364,19 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * })]}>
  *   Gradient Text
  * </Text>
+ *
+ * // Material
+ * <Text modifiers={[foregroundStyle({ type: 'material', material: 'regular' })]}>
+ *   Text painted with a material
+ * </Text>
  * ```
  *
+ * @param style - Any [`ShapeStyle`](#shapestyle): a color, a hierarchical style, a material or a gradient.
  * @returns A view modifier that applies the specified foreground style
  * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)).
  */
-export declare const foregroundStyle: (style: Color | {
-    type: "color";
-    color: Color;
-} | {
-    type: "hierarchical";
-    style: "primary" | "secondary" | "tertiary" | "quaternary" | "quinary";
-} | {
-    type: "linearGradient";
-    colors: Color[];
-    startPoint: {
-        x: number;
-        y: number;
-    };
-    endPoint: {
-        x: number;
-        y: number;
-    };
-} | {
-    type: "radialGradient";
-    colors: Color[];
-    center: {
-        x: number;
-        y: number;
-    };
-    startRadius: number;
-    endRadius: number;
-} | {
-    type: "angularGradient";
-    colors: Color[];
-    center: {
-        x: number;
-        y: number;
-    };
-}) => ModifierConfig;
+export declare const foregroundStyle: (style: ShapeStyle) => ModifierConfig;
 /**
  * Makes text bold.
  * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
@@ -1291,6 +1265,7 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
 export * from './symbolEffect';
 export * from './scrollObservation';
