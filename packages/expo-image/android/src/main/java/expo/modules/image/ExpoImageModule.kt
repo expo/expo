@@ -15,11 +15,12 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.gif.GifDrawable as GlideGifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.EmptySignature
 import com.github.penfeizhou.animation.apng.APNGDrawable
-import com.github.penfeizhou.animation.gif.GifDrawable
+import com.github.penfeizhou.animation.gif.GifDrawable as APNGGifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
 import expo.modules.image.blurhash.BlurhashEncoder
 import expo.modules.image.enums.ContentFit
@@ -237,7 +238,7 @@ class ExpoImageModule : Module() {
         (image.ref.toBitmapOrNull()?.density ?: 1) / (screenDensity * 160.0f)
       }
       Property("isAnimated") { image: Image ->
-        if (image.ref is GifDrawable) {
+        if (image.ref is APNGGifDrawable || image.ref is GlideGifDrawable) {
           return@Property true
         }
         if (image.ref is APNGDrawable) {

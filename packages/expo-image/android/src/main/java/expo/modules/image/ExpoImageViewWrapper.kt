@@ -170,9 +170,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
   fun setIsAnimating(setAnimating: Boolean) {
-    // Animatable animations always start from the beginning when resumed.
-    // So we check first if the resource is a GifDrawable, because it can continue
-    // from where it was paused.
+    // APNG4Android's GifDrawable supports pause and resume, while the generic Animatable API only
+    // exposes start and stop.
     when (val resource = activeView.drawable) {
       is GifDrawable -> setIsAnimating(resource, setAnimating)
       is Animatable -> setIsAnimating(resource, setAnimating)
@@ -460,6 +459,19 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
     requestManager.clear(firstTarget)
     requestManager.clear(secondTarget)
+  }
+
+  fun onTargetCleared(target: ImageViewWrapperTarget) {
+    // Recycle before cancelling because a cancelled fade-out runs its end action. The end action
+    // must observe a null current target so it cannot clear a new resource when this target is reused.
+    if (firstView.currentTarget === target) {
+      firstView.recycleView()
+      firstView.animate().cancel()
+    }
+    if (secondView.currentTarget === target) {
+      secondView.recycleView()
+      secondView.animate().cancel()
+    }
   }
 
   private fun cleanIfNeeded(

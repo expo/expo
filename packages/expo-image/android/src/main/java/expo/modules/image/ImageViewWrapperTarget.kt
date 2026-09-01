@@ -26,9 +26,8 @@ import kotlin.math.max
 /**
  * A custom target to provide a smooth transition between multiple drawables.
  * It delegates images to the [ExpoImageViewWrapper], where we handle the loaded [Drawable].
- * When the target is cleared, we don't do anything. The [ExpoImageViewWrapper] is responsible for
- * clearing bitmaps before freeing targets. That may be error-prone, but that is the only way
- * of implementing the transition between bitmaps.
+ * When the target is cleared, it notifies the [ExpoImageViewWrapper] so that any view still
+ * displaying its resource can be recycled.
  */
 class ImageViewWrapperTarget(
   private val imageViewHolder: WeakReference<ExpoImageViewWrapper>
@@ -134,7 +133,9 @@ class ImageViewWrapperTarget(
     endLoadingNewImageTraceBlock()
   }
 
-  override fun onLoadCleared(placeholder: Drawable?) = Unit
+  override fun onLoadCleared(placeholder: Drawable?) {
+    imageViewHolder.get()?.onTargetCleared(this)
+  }
 
   override fun getSize(cb: SizeReadyCallback) {
     // If we can't resolve the image, we just return unknown size.
