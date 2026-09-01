@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import EASClient
 import ExpoAppMetrics
 import ExpoModulesCore
 
@@ -33,6 +34,10 @@ public final class ObserveModule: Module {
         let baseUrl = getBaseUrl(manifest)
         ObservabilityManager.setEndpointUrl(baseUrl, projectId: projectId)
       }
+    }
+
+    Constant("clientId") {
+      EASClientID.uuid().uuidString
     }
 
     AsyncFunction("dispatchEvents") {
