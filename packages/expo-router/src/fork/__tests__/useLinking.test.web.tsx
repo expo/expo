@@ -347,7 +347,6 @@ test('does not add browser history when preloading a stack route', async () => {
     <RouterRegistryProvider>
       <NavigationContainer
         ref={ref}
-        documentTitle={{ enabled: false }}
         linking={{
           prefixes: [],
           config: { screens: { home: 'home', details: 'details' } },

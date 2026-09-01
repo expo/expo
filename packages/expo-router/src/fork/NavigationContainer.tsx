@@ -4,7 +4,6 @@ import { I18nManager } from 'react-native';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { BaseNavigationContainer } from '../react-navigation/core/BaseNavigationContainer';
 import type {
-  DocumentTitleOptions,
   LinkingOptions,
   LocaleDirection,
   NavigationContainerProps,
@@ -20,7 +19,6 @@ import {
 import { getPathFromState } from './getPathFromState';
 import { getStateFromPath } from './getStateFromPath';
 import { useBackButton } from './useBackButton';
-import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
 import { useThenable } from './useThenable';
 import { validatePathConfig } from './validatePathConfig';
@@ -39,7 +37,6 @@ type Props<ParamList extends object> = Omit<NavigationContainerProps, 'initialSt
   direction?: LocaleDirection;
   linking?: LinkingOptions<ParamList>;
   fallback?: React.ReactNode;
-  documentTitle?: DocumentTitleOptions;
 };
 
 /**
@@ -52,7 +49,6 @@ type Props<ParamList extends object> = Omit<NavigationContainerProps, 'initialSt
  * @param props.theme Theme object for the UI elements.
  * @param props.linking Options for deep linking.
  * @param props.fallback Fallback component to render until we have finished getting initial state. Defaults to `null`.
- * @param props.documentTitle Options to configure the document title on Web. Updating document title is handled by default unless `documentTitle.enabled` is `false`.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
@@ -61,7 +57,6 @@ function NavigationContainerInner({
   theme = DefaultTheme,
   linking,
   fallback = null,
-  documentTitle,
   ref,
   ...rest
 }: Props<ParamListBase> & {
@@ -76,7 +71,6 @@ function NavigationContainerInner({
   const refContainer = React.useRef<NavigationContainerRef<ParamListBase> | null>(null);
 
   useBackButton(refContainer);
-  useDocumentTitle(refContainer, documentTitle);
 
   const { getInitialState } = useLinking(refContainer, {
     prefixes: [],

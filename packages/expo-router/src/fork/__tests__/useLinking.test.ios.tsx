@@ -278,10 +278,7 @@ test('shows fallback then content for an async initial URL', async () => {
 test('seeds navigation state when a synchronous initial URL is absent', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   render(
-    <NavigationContainer
-      ref={ref}
-      documentTitle={{ enabled: false }}
-      linking={{ prefixes: [], getInitialURL: () => null }}>
+    <NavigationContainer ref={ref} linking={{ prefixes: [], getInitialURL: () => null }}>
       {null}
     </NavigationContainer>
   );
