@@ -28,11 +28,11 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     }
 
     OnStopObserving(EXUpdatesStateChangeEventName) {
-      AppController.removeUpdatesEventManagerObserver()
+      AppController.removeUpdatesEventManagerObserver(self)
     }
 
     OnDestroy {
-      AppController.removeUpdatesEventManagerObserver()
+      AppController.removeUpdatesEventManagerObserver(self)
     }
 
     AsyncFunction("reload") { (options: ReloadScreenOptions?, promise: Promise) in

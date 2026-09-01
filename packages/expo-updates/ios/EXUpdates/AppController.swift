@@ -362,12 +362,12 @@ public class AppController: NSObject {
   }
 
   internal static func setUpdatesEventManagerObserver(_ observer: UpdatesEventManagerObserver) {
-    _sharedInstance?.eventManager.observer = observer
+    _sharedInstance?.eventManager.setObserver(observer)
     _sharedInstance?.onEventListenerStartObserving()
   }
 
-  internal static func removeUpdatesEventManagerObserver() {
-    _sharedInstance?.eventManager.observer = nil
+  internal static func removeUpdatesEventManagerObserver(_ observer: UpdatesEventManagerObserver) {
+    _sharedInstance?.eventManager.removeObserver(observer)
   }
 }
 
