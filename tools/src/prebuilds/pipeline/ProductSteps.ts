@@ -186,7 +186,13 @@ export const composeStep: Step<PrebuildContext> = {
       flavor,
       ctx.request.platformFilter,
       ctx.request.signing,
-      { bundleSharedDeps: ctx.request.bundleSharedDeps }
+      {
+        bundleSharedDeps: ctx.request.bundleSharedDeps,
+        versions: {
+          reactNativeVersion: ctx.reactNativeVersion,
+          hermesVersion: ctx.hermesVersion,
+        },
+      }
     );
 
     setStage(ctx, 'compose', 'success');

@@ -8,6 +8,7 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner, spawnAsync } from '../../Utils';
 import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
+import { PREBUILT_VERSIONS_FILENAME } from '../../prebuilds/Frameworks';
 import { IOS_PREBUILD_PACKAGES } from '../../prebuilds/Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { loadRequestedParcels } from './loadRequestedParcels';
@@ -21,6 +22,17 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 export const SUPPORTED_XCODE_VERSION = '26.4.1';
 
 type InstalledXcode = { developerDir: string; xcode: string | null };
+
+/**
+ * Whether a file produced by the prebuild pipeline belongs in the npm package.
+ *
+ * The versions file has to ride along with the tarballs: without it the consumer has no
+ * way to tell which React Native these binaries were compiled against, and links them
+ * against whatever the app happens to have installed.
+ */
+export function isBundledPrebuildFile(filename: string): boolean {
+  return filename.endsWith('.tar.gz') || filename === PREBUILT_VERSIONS_FILENAME;
+}
 
 // Returns major.minor.patch (`Xcode 26.4` → `26.4.0`); `null` when the prefix isn't found.
 export function parseXcodeVersion(output: string): string | null {
@@ -332,7 +344,7 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
 
               const files = await fs.promises.readdir(srcDir);
               for (const file of files) {
-                if (file.endsWith('.tar.gz')) {
+                if (isBundledPrebuildFile(file)) {
                   await fs.promises.copyFile(path.join(srcDir, file), path.join(destDir, file));
                 }
               }
