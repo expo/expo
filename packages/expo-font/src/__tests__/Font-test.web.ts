@@ -97,8 +97,6 @@ if (typeof window === 'undefined') {
   });
 
   it('parses an array of font family definitions, loading every face', async () => {
-    // Mirrors a family with a regular, an italic, and a bold face where each face only
-    // specifies the properties that differ from the others.
     await Font.loadAsync([
       {
         fontFamily: name,
@@ -110,12 +108,7 @@ if (typeof window === 'undefined') {
       },
     ]);
 
-    // All three faces must be registered; none should be skipped as an "already loaded"
-    // duplicate of the shared `fontFamily` name.
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(3);
-    // `weight`/`style`/`display` are never defaulted: forcing a value (e.g. `font-weight: 400`)
-    // on a face that didn't specify one would incorrectly restrict a variable font file to a
-    // single weight or style.
     expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(1, name, {
       uri: 'regular.ttf',
     });
