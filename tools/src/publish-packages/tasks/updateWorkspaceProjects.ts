@@ -9,6 +9,7 @@ import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { updatePackageVersions } from './updatePackageVersions';
 
 const { green, yellow, cyan } = chalk;
 
@@ -18,6 +19,7 @@ const { green, yellow, cyan } = chalk;
 export const updateWorkspaceProjects = new Task<TaskArgs>(
   {
     name: 'updateWorkspaceProjects',
+    dependsOn: [updatePackageVersions],
     filesToStage: ['**/package.json', 'pnpm-lock.yaml'],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
