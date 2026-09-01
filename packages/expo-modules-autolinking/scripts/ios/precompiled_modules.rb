@@ -80,6 +80,9 @@ module Expo
     # pod pulled it to source. The expected-tarball hint is misleading for these.
     CASCADED_UNAVAILABLE_REASONS = %i[dependency_unavailable dependent_unavailable].freeze
 
+    # bsdtar's wording when a member pattern matches nothing, as opposed to a real failure.
+    TAR_NO_MATCH_MESSAGE = 'Not found in archive'.freeze
+
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
     @repo_root = nil
@@ -2331,26 +2334,40 @@ module Expo
       # during Podfile evaluation.
       def read_xcframework_info_plists_from_tarball(tarball)
         Dir.mktmpdir('expo-xcframework-info') do |dir|
-          output, status = Open3.capture2e('tar', 'xzf', tarball, '-C', dir, '*.xcframework/Info.plist')
+          # /usr/bin/tar rather than `tar`: this relies on bsdtar's member globbing, and a
+          # GNU tar earlier in PATH would match nothing and send every pod to source.
+          output, status = Open3.capture2e('/usr/bin/tar', 'xzf', tarball, '-C', dir, '*.xcframework/Info.plist')
           plists = Dir.glob(File.join(dir, '**', '*.xcframework', 'Info.plist')).sort
 
-          # `tar` exits non-zero both when the pattern matches nothing and when the archive
-          # is damaged, and it extracts members in order, so a truncated archive can yield
-          # the first plist and then fail. Any failure with a partial result is treated as
-          # unusable: otherwise the caller's all-xcframeworks check would silently pass on
-          # a subset, and a damaged tarball would be linked instead of falling back to
-          # source as it did before.
+          # `tar` extracts members in order, so a truncated archive can yield the first
+          # plist and then fail. Treating a partial result as usable would let the caller's
+          # all-xcframeworks check pass on a subset, and link a damaged tarball that used
+          # to fall back to source.
           if !status.success? && !plists.empty?
             Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{output.strip}"
             next []
           end
 
           if plists.empty?
-            Pod::UI.warn "[Expo-precompiled] No XCFramework Info.plist found in #{File.basename(tarball)}"
+            # A pattern that matches nothing also exits non-zero, so the two cases are
+            # told apart by bsdtar's message; only the wording differs, both give up.
+            if status.success? || output.include?(TAR_NO_MATCH_MESSAGE)
+              Pod::UI.warn "[Expo-precompiled] No XCFramework Info.plist found in #{File.basename(tarball)}"
+            else
+              Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{output.strip}"
+            end
             next []
           end
 
-          plists.filter_map { |path| read_plist(path) }
+          parsed = plists.map { |path| read_plist(path) }
+          if parsed.any?(&:nil?)
+            # Dropping the unreadable one would check a subset, which is the same hole a
+            # partial extraction opens.
+            Pod::UI.warn "[Expo-precompiled] Unreadable XCFramework Info.plist in #{File.basename(tarball)}"
+            next []
+          end
+
+          parsed
         end
       rescue StandardError => e
         Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{e.message}"
