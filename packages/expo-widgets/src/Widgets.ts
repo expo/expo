@@ -114,11 +114,19 @@ export class LiveActivity<T extends object = object> {
    * Returns the props the Live Activity was started with or last updated to display.
    * This also works for activities started remotely via push-to-start, whose content the app
    * has not otherwise seen.
-   * @returns The current content props, or `null` if the activity was started without props.
+   * @returns The current content props, or `null` if the activity was started without props
+   * or they are not valid JSON.
    */
   getContentState(): T | null {
     const props = this.nativeLiveActivity.getContentState();
-    return props ? (JSON.parse(props) as T) : null;
+    if (!props) {
+      return null;
+    }
+    try {
+      return JSON.parse(props) as T;
+    } catch {
+      return null;
+    }
   }
 
   /**
