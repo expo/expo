@@ -843,12 +843,6 @@ private func createFunctionClosure(
     argumentsPtr: UnsafePointer<facebook.jsi.Value>,
     argumentsCount: Int
   ) -> facebook.jsi.Value {
-    let context = Unmanaged<UnownedThisHostFunctionContext>.fromOpaque(context).takeUnretainedValue()
-
-    guard let runtime = context.runtime else {
-      FatalError.runtimeLost()
-    }
-
     // Same call-scoped reasoning as the owning-`this` overload above (see its comment) for why the
     // buffer is built inside the synchronous `assumeIsolated` closure. Here `this` is additionally
     // handed in as a borrowed `JavaScriptUnownedValue` pointing straight at the C++-owned `this` slot:
@@ -857,13 +851,24 @@ private func createFunctionClosure(
     nonisolated(unsafe) let thisPtr = thisPtr
     nonisolated(unsafe) let argumentsPtr = argumentsPtr
 
-    return JavaScriptActor.assumeIsolated {
-      return forwardingSwiftErrorsToJS(runtime: runtime) {
-        let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
-        let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
-        return try context.call(thisValue, consume arguments).asJSIValue()
+    // `_withUnsafeGuaranteedRef` promises the compiler that the referenced object stays alive for the
+    // duration of the closure, so no retain/release is emitted for it. Both promises hold: the context
+    // is owned by the JSI host function that is calling us, and a sync host call runs while the runtime
+    // is executing JS, with the wrapper owned for the runtime's whole lifetime. The closure result must
+    // be `Copyable`, and `jsi::Value` is not, so the value is moved out through a captured local.
+    var result = facebook.jsi.Value.undefined()
+    Unmanaged<UnownedThisHostFunctionContext>.fromOpaque(context)._withUnsafeGuaranteedRef { context in
+      context.runtime._withUnsafeGuaranteedRef { runtime in
+        result = JavaScriptActor.assumeIsolated {
+          return forwardingSwiftErrorsToJS(runtime: runtime) {
+            let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
+            let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
+            return try context.call(thisValue, consume arguments).asJSIValue()
+          }
+        }
       }
     }
+    return result
   }
 
   func deallocate(context: UnsafeMutableRawPointer) {
