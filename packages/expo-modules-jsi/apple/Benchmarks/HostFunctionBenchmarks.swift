@@ -34,6 +34,23 @@ extension JSIBenchmarks {
     }
   }
 
+  /// Same as `noop host function`, but through the unowned-`this` closure form that
+  /// macro-generated `@JS` functions bind to.
+  @Test
+  func `noop unowned-this host function`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("noop") {
+        (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        return .undefined
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval("(function(n) { for (var i = 0; i < n; i++) benchFn(); })").getFunction()
+      try benchmark("host function: noop unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
   @Test
   func `host function concatenating two strings`() async throws {
     try await benchmarkCase { runtime in
