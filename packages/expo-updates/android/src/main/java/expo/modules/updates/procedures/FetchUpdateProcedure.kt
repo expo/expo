@@ -3,7 +3,6 @@ package expo.modules.updates.procedures
 import android.content.Context
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader
@@ -21,7 +20,7 @@ class FetchUpdateProcedure(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
   private val logger: UpdatesLogger,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
@@ -34,7 +33,6 @@ class FetchUpdateProcedure(
   override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
 
-    val database = databaseHolder.database
     try {
       val loaderResult = startRemoteLoader(database, procedureContext)
       processSuccessLoaderResult(loaderResult, procedureContext)
@@ -103,7 +101,7 @@ class FetchUpdateProcedure(
       context,
       updatesConfiguration,
       logger,
-      databaseHolder.database,
+      database,
       selectionPolicy,
       updatesDirectory,
       launchedUpdate,

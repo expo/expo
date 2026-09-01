@@ -96,6 +96,32 @@ struct BackgroundEventTransformerTests {
     }
 
     @Test
+    func `which contains a thread-id in aps, extracts threadIdentifier into data`() {
+      // Given
+      let inputPayload: [AnyHashable: Any] = [
+        "aps": [
+          "category": "chat",
+          "thread-id": "thread-123",
+          "content-available": 1,
+        ],
+        "body": [
+          "title": "New message"
+        ],
+        "experienceId": "@brents/microfoam",
+        "projectId": "f19296df-44bd-482a-90bb-2af254c6ac42",
+        "scopeKey": "@brents/microfoam"
+      ]
+
+      // When
+      let result = BackgroundEventTransformer.transform(inputPayload)
+
+      // Then
+      let data = result["data"] as? [String: Any]
+      #expect(data?["threadIdentifier"] as? String == "thread-123")
+      #expect(data?["categoryId"] as? String == "chat")
+    }
+
+    @Test
     func `which contains an alert field in aps, populates the notification entry`() {
       // Given
       let inputPayload: [AnyHashable: Any] = [

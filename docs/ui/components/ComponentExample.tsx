@@ -1,9 +1,7 @@
-import { useTheme } from '@expo/styleguide';
 import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren } from 'react';
 
 import { cleanCopyValue, getCodeBlockDataFromChildren } from '~/common/code-utilities';
-import { prefersDarkTheme } from '~/common/window';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { LightboxImage } from '~/ui/components/ContentSpotlight/LightboxImage';
 import { PlatformTabs } from '~/ui/components/PlatformTabs';
@@ -89,25 +87,14 @@ function resolveImages({
  * every capture carries as `-ios-` or `-android-`, so pages need no extra prop.
  */
 export function ComponentExample({ title, src, darkSrc, alt, android, ios, children }: Props) {
-  const { themeName } = useTheme();
   const context = usePageApiVersion();
-  const [isDark, setDark] = useState(false);
 
   const images = resolveImages({ src, darkSrc, alt, android, ios });
   const available = orderPlatforms(images);
   const { active, select } = usePlatformSelection(available);
 
-  useEffect(() => {
-    if (themeName === 'auto') {
-      setDark(prefersDarkTheme());
-    } else {
-      setDark(themeName === 'dark');
-    }
-  }, [themeName]);
-
   const { value } = getCodeBlockDataFromChildren(children);
   const image = images[active];
-  const activeSrc = image && isDark && image.darkSrc ? image.darkSrc : image?.src;
   const device = active === 'android' ? DEVICE_FRAMES.android : DEVICE_FRAMES.ios;
 
   return (
@@ -120,7 +107,7 @@ export function ComponentExample({ title, src, darkSrc, alt, android, ios, child
           </SnippetHeader>
           <SnippetContent className="flex-1 rounded-none border-0 p-0">{children}</SnippetContent>
         </div>
-        {image && activeSrc && (
+        {image && (
           <div className="flex w-56 shrink-0 flex-col items-center justify-center gap-3 border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
             <PlatformTabs available={available} active={active} select={select} />
             <div
@@ -143,7 +130,8 @@ export function ComponentExample({ title, src, darkSrc, alt, android, ios, child
                 className="overflow-hidden [&_button]:block [&_button]:w-full [&_button]:cursor-pointer"
                 style={{ borderRadius: device.screenRadius }}>
                 <LightboxImage
-                  src={activeSrc}
+                  src={image.src}
+                  darkSrc={image.darkSrc}
                   alt={image.alt}
                   width={device.width}
                   height={device.height}

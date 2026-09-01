@@ -54,10 +54,13 @@ export default function registerRootComponent<P extends InitialProps>(
       }
     }
 
+    // The cast keeps this compiling under both the legacy and the strict
+    // react-native API: on web the root tag is an HTMLElement (react-native-web
+    // semantics), which the strict native `RootTag` type doesn't cover.
     AppRegistry.runApplication('main', {
       rootTag,
       // Injected by SSR HTML tags.
       hydrate: globalThis.__EXPO_ROUTER_HYDRATE__,
-    });
+    } as unknown as Parameters<typeof AppRegistry.runApplication>[1]);
   }
 }

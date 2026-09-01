@@ -47,13 +47,16 @@ module Pod
       # and new sequential UUIDs can collide with existing ones, corrupting Pods.xcodeproj.
       # Fix: replace the sequential generator with collision-safe random UUIDs for any
       # objects created after predictabilize_uuids has run.
-      project = self.pods_project
-      existing_uuids = project.objects_by_uuid.keys.to_set
-      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
-        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
-        uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
-        @generated_uuids += uniques
-        @available_uuids += uniques
+      # pods_project is nil with the `skip_pods_project_generation` install option;
+      # the rest of the post-install work must still run there.
+      if (project = self.pods_project)
+        existing_uuids = project.objects_by_uuid.keys.to_set
+        project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
+          new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
+          uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
+          @generated_uuids += uniques
+          @available_uuids += uniques
+        end
       end
 
       # Run all precompiled module post-install configuration

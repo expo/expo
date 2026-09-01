@@ -646,3 +646,8 @@
 /llms-sdk-v54.0.0.txt /llms.txt 301
 /llms-sdk-v55.0.0.txt /llms.txt 301
 /llms-sdk-v56.0.0.txt /llms.txt 301
+# Agent discovery paths probed by AI-readiness checkers
+/api /versions/latest 301
+/api/ /versions/latest 301
+/developers / 301
+/developers/ / 301

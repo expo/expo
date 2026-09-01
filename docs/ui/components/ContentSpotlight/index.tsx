@@ -1,9 +1,8 @@
-import { mergeClasses, useTheme } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
-import { prefersDarkTheme } from '~/common/window';
 import { DotGrid } from '~/ui/components/Diagram/DotGrid';
 
 import { LightboxImage } from './LightboxImage';
@@ -61,16 +60,6 @@ export function ContentSpotlight({
   aspect,
 }: ContentSpotlightProps) {
   const [forceShowControls, setForceShowControls] = useState<boolean>();
-  const { themeName } = useTheme();
-  const [isDark, setDark] = useState(themeName === 'dark');
-
-  useEffect(() => {
-    if (themeName === 'auto') {
-      setDark(prefersDarkTheme());
-    } else {
-      setDark(themeName === 'dark');
-    }
-  }, [themeName]);
 
   const resolvedPlayerWidth = playerWidth ?? PLAYER_WIDTH;
   const resolvedPlayerHeight = playerHeight ?? PLAYER_HEIGHT;
@@ -87,7 +76,6 @@ export function ContentSpotlight({
   const shouldAutoplay = isInView && isVideo && (!videoId || autoplayYT);
 
   const isComponentVariant = variant === 'component' && !isVideo;
-  const activeSrc = isDark && darkSrc ? darkSrc : src;
 
   return (
     <figure
@@ -107,14 +95,19 @@ export function ContentSpotlight({
       {src && isComponentVariant ? (
         <>
           <DotGrid />
-          <picture className="relative block size-full">
-            {isDark && darkSrc && <source srcSet={darkSrc} />}
+          <picture className={mergeClasses('relative block size-full', darkSrc && 'dark:hidden')}>
             <img src={src} alt={alt} className="size-full object-cover" />
           </picture>
+          {darkSrc && (
+            <picture className="relative block size-full light:hidden">
+              <img src={darkSrc} alt={alt} className="size-full object-cover" />
+            </picture>
+          )}
         </>
       ) : src ? (
         <LightboxImage
-          src={activeSrc ?? src}
+          src={src}
+          darkSrc={darkSrc}
           alt={alt}
           width={width}
           height={height}

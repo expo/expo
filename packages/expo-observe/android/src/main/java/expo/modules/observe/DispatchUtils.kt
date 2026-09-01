@@ -89,28 +89,6 @@ object DispatchUtils {
   }
 
   /**
-   * Whether the dispatch caller should remove the just-sent pending IDs from the queue.
-   *
-   * - `Success` and `PartialSuccess` remove them — the rows have been accepted by the server
-   *   (partial success rejects a subset server-side, but the bytes still landed; re-sending
-   *   them would just re-trip the same rejection).
-   * - `NonRetryableFailure` ALSO removes them — the server has refused these rows
-   *   permanently, so retrying would produce the same answer; removing them drops the batch
-   *   so it can't wedge subsequent rounds. This is the acceptance-criterion behavior: a
-   *   400/403 must not be re-sent on the next cycle.
-   * - `PayloadTooLarge` removes the pending ID because multi-record batches are retried with
-   *   smaller chunks before this check, so reaching it means a single record exceeded the limit.
-   * - `RetryableFailure` keeps them so they can be retried.
-   */
-  fun shouldRemovePending(result: DispatchResult): Boolean = when (result) {
-    is DispatchResult.Success,
-    is DispatchResult.PartialSuccess,
-    is DispatchResult.NonRetryableFailure,
-    is DispatchResult.PayloadTooLarge -> true
-    is DispatchResult.RetryableFailure -> false
-  }
-
-  /**
    * Parses an HTTP `Retry-After` header into a delay in milliseconds from now. Accepts both
    * formats permitted by RFC 7231: an integer delta-seconds, or an HTTP-date.
    * Returns `null` if the header is absent or unparseable, so the caller can fall through to

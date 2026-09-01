@@ -5,12 +5,17 @@ buildscript {
   ext {
     minSdkVersion = 24
     targetSdkVersion = 36
-    compileSdkVersion = 36
+    compileSdkVersion = 37
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '36.0.0'
-    kotlinVersion = "2.1.20"
-    kspVersion = "2.1.20-2.0.1"
+    buildToolsVersion = '37.0.0'
+    // Kotlin 2.3.20+ is required: earlier K2 releases crash compiling ReactAndroid from
+    // source ("Cannot evaluate IR expression in annotation ... Strange deserialized enum
+    // value") on Java annotations that reference Kotlin const vals, e.g. BaseViewManager's
+    // @ReactProp(name = ViewProps.X). Keep the compose/serialization plugin pins in
+    // expoview/build.gradle in sync with this version.
+    kotlinVersion = "2.3.20"
+    kspVersion = "2.3.10"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -88,7 +93,23 @@ allprojects {
 }
 
 project(":packages:react-native:ReactAndroid").afterEvaluate { reactAndroid ->
-  reactAndroid.tasks.named("buildCodegenCLI").configure { it.enabled = false }
+  // react-native 0.87 no longer registers buildCodegenCLI; keep disabling it while the
+  // fork is on an older release. `matching` tolerates the task being absent.
+  reactAndroid.tasks.matching { it.name == "buildCodegenCLI" }.configureEach { it.enabled = false }
+}
+
+// Every module's generateCodegenSchemaFromJavaScript reads react-native-codegen/lib
+// directly, so build it once when it is missing.
+def labCodegenDir = file("$rootDir/../../../react-native-lab/react-native/packages/react-native-codegen")
+tasks.register("buildLabCodegenCli", Exec) {
+  onlyIf { !new File(labCodegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").exists() }
+  workingDir labCodegenDir
+  commandLine "bash", "scripts/oss/build.sh"
+}
+allprojects {
+  tasks.matching { it.name == "generateCodegenSchemaFromJavaScript" }.configureEach {
+    it.dependsOn(":buildLabCodegenCli")
+  }
 }
 
 // Expo Go ships a release build that keeps the JS debugger. React Native gates those native defines

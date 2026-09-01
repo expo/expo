@@ -12,7 +12,7 @@ import path from 'path';
 
 import logger from '../Logger';
 import { getHeaderFilesFromPodspecs, PodspecHeaderMappings } from './ReactHeaderMappings';
-import { createVFSOverlay } from './ReactVFSOverlay';
+import { createVFSOverlay, vfsKeyFor, HeaderSourceResolver } from './ReactVFSOverlay';
 import { VersionStamp } from './VersionStamp';
 
 interface TransformOptions {
@@ -41,11 +41,6 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
   }
   if (!fs.existsSync(reactNativePath)) {
     throw new Error(`react-native source not found at: ${reactNativePath}`);
-  }
-
-  const headersDir = path.join(xcframeworkPath, 'Headers');
-  if (!fs.existsSync(headersDir)) {
-    throw new Error(`Headers directory not found in xcframework: ${headersDir}`);
   }
 
   // RN 0.85+ ships React-VFS-template.yaml inside the xcframework with fully nested headers.
@@ -77,17 +72,49 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
   logger.verbose('  Collecting header mappings from podspecs...');
   const headerMappings = getHeaderFilesFromPodspecs(reactNativePath);
 
-  logger.verbose('  Inventorying stock xcframework headers...');
-  const stockHeaders = inventoryStockHeaders(xcframeworkPath);
+  const headersDir = path.join(xcframeworkPath, 'Headers');
+  let vfsYaml: string;
+  if (fs.existsSync(headersDir)) {
+    // Pre-0.87.0 layout: flat headers at the xcframework root (Headers/<pod>/<basename>).
+    logger.verbose('  Inventorying stock xcframework headers...');
+    const stockHeaders = inventoryStockHeaders(xcframeworkPath);
 
-  logger.verbose('  Detecting duplicate header basenames...');
-  const duplicateBasenames = findDuplicateBasenames(headerMappings);
+    logger.verbose('  Detecting duplicate header basenames...');
+    const duplicateBasenames = findDuplicateBasenames(headerMappings);
 
-  logger.verbose('  Staging missing headers to React-extra-headers/...');
-  await stageMissingHeadersAsync(outputPath, headerMappings, stockHeaders, duplicateBasenames);
+    logger.verbose('  Staging missing headers to React-extra-headers/...');
+    await stageMissingHeadersAsync(outputPath, headerMappings, stockHeaders, duplicateBasenames);
 
-  logger.verbose('  Generating VFS overlay template...');
-  const vfsYaml = createVFSOverlay(reactNativePath, stockHeaders, duplicateBasenames);
+    logger.verbose('  Generating VFS overlay template...');
+    vfsYaml = createVFSOverlay(reactNativePath, stockHeaders, duplicateBasenames);
+  } else {
+    // 0.87.0+ layout: the tarball ships no root Headers directory. The full nested
+    // header tree lives in ReactNativeHeaders.xcframework/<slice>/Headers next to
+    // React.xcframework, and React-Core's public headers live flat inside each
+    // slice's React.framework/Headers. Resolve each header against those locations
+    // and stage anything else from the RN source tree.
+    const composed = createComposedLayoutResolver(outputPath, xcframeworkPath);
+    if (!composed) {
+      throw new Error(
+        `Headers directory not found in xcframework (${headersDir}) and no ` +
+          `ReactNativeHeaders.xcframework found next to it. The React Native ` +
+          `artifact layout is not supported by this tool.`
+      );
+    }
+
+    logger.verbose('  Using composed header layout (ReactNativeHeaders.xcframework)...');
+    logger.verbose('  Staging headers missing from the prebuilt artifacts...');
+    await stageUnresolvedHeadersAsync(outputPath, headerMappings, composed.resolver);
+
+    logger.verbose('  Generating VFS overlay template...');
+    // Also expose the sidecar's module map at the virtual Headers root. It declares
+    // RCTDeprecation, yoga, the react/ runtime headers etc. as modules; without it,
+    // compiling the React framework module trips
+    // -Werror,-Wnon-modular-include-in-framework-module on those includes.
+    vfsYaml = createVFSOverlay(reactNativePath, undefined, undefined, composed.resolver, [
+      { key: 'module.modulemap', path: composed.sidecarModuleMapPath },
+    ]);
+  }
   fs.writeFileSync(path.join(outputPath, 'React-VFS-template.yaml'), vfsYaml);
 
   // Write a version stamp so we can detect when RN source changes and regenerate
@@ -97,6 +124,116 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
   VersionStamp.write(outputPath, { reactNativeVersion: rnVersion }, VFS_STAMP_FILENAME);
 
   logger.verbose('  VFS overlay generation complete (xcframework untouched).');
+}
+
+/**
+ * Builds a header resolver for the RN 0.87+ composed artifact layout.
+ *
+ * - `ReactNativeHeaders.xcframework/<slice>/Headers/<key>` holds the full nested
+ *   header tree for every namespace except React-Core (`<yoga/...>`, `<react/...>`,
+ *   `<jsi/...>`, ...). The VFS key IS the include path, so resolution is a direct
+ *   file-existence check.
+ * - React-Core's public headers (`<React/...>`) live flat inside each slice's
+ *   `React.framework/Headers`.
+ *
+ * Slices carry identical headers, so the first slice found is used. Returns null
+ * when the sidecar xcframework is absent (unknown artifact layout).
+ */
+function createComposedLayoutResolver(
+  outputPath: string,
+  xcframeworkPath: string
+): { resolver: HeaderSourceResolver; sidecarModuleMapPath: string } | null {
+  const sidecarName = 'ReactNativeHeaders.xcframework';
+  const sidecarPath = path.join(outputPath, sidecarName);
+  if (!fs.existsSync(sidecarPath)) {
+    return null;
+  }
+
+  const findSliceWithDir = (containerPath: string, subdirParts: string[]): string | null => {
+    const entries = fs.readdirSync(containerPath, { withFileTypes: true });
+    // Prefer the plain device slice for deterministic output.
+    const names = entries
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name)
+      .sort((a, b) => (a === 'ios-arm64' ? -1 : b === 'ios-arm64' ? 1 : a.localeCompare(b)));
+    for (const name of names) {
+      if (fs.existsSync(path.join(containerPath, name, ...subdirParts))) {
+        return name;
+      }
+    }
+    return null;
+  };
+
+  const sidecarSlice = findSliceWithDir(sidecarPath, ['Headers']);
+  if (!sidecarSlice) {
+    return null;
+  }
+  const sidecarHeadersAbs = path.join(sidecarPath, sidecarSlice, 'Headers');
+
+  const frameworkSlice = findSliceWithDir(xcframeworkPath, ['React.framework', 'Headers']);
+  const frameworkHeadersAbs = frameworkSlice
+    ? path.join(xcframeworkPath, frameworkSlice, 'React.framework', 'Headers')
+    : null;
+
+  const resolver: HeaderSourceResolver = (key: string) => {
+    if (fs.existsSync(path.join(sidecarHeadersAbs, key))) {
+      return `\${ROOT_PATH}/../${sidecarName}/${sidecarSlice}/Headers/${key}`;
+    }
+    if (key.startsWith('React/') && frameworkHeadersAbs) {
+      const basename = path.basename(key);
+      if (fs.existsSync(path.join(frameworkHeadersAbs, basename))) {
+        return `\${ROOT_PATH}/${frameworkSlice}/React.framework/Headers/${basename}`;
+      }
+    }
+    return null;
+  };
+
+  return {
+    resolver,
+    sidecarModuleMapPath: `\${ROOT_PATH}/../${sidecarName}/${sidecarSlice}/Headers/module.modulemap`,
+  };
+}
+
+/**
+ * Stages headers the composed-layout resolver cannot find in the prebuilt
+ * artifacts, copying them from the RN source tree into React-extra-headers/
+ * with the same layout the VFS staging fallback expects.
+ */
+async function stageUnresolvedHeadersAsync(
+  outputPath: string,
+  headerMappings: PodspecHeaderMappings,
+  resolver: HeaderSourceResolver
+): Promise<void> {
+  const stagingDir = path.join(outputPath, 'React-extra-headers');
+
+  if (fs.existsSync(stagingDir)) {
+    fs.removeSync(stagingDir);
+  }
+
+  let stagedCount = 0;
+
+  for (const headerMaps of Object.values(headerMappings)) {
+    const podSpecName = headerMaps[0].specName.replace(/-/g, '_');
+
+    for (const headerMap of headerMaps) {
+      for (const header of headerMap.headers) {
+        const key = vfsKeyFor(header.target, headerMap.headerDir, podSpecName);
+        if (resolver(key, podSpecName, header.target) !== null) {
+          continue;
+        }
+
+        const stagingPath = path.join(stagingDir, podSpecName, header.target);
+        fs.ensureDirSync(path.dirname(stagingPath));
+
+        if (fs.existsSync(header.source)) {
+          fs.copyFileSync(header.source, stagingPath);
+          stagedCount++;
+        }
+      }
+    }
+  }
+
+  logger.verbose(`  Staged ${stagedCount} headers to React-extra-headers/`);
 }
 
 /**

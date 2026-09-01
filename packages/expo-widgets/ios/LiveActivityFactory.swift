@@ -15,7 +15,6 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func start(props: String?, url: URL?, staleDate: Date?) throws -> LiveActivity {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
     guard ActivityAuthorizationInfo().areActivitiesEnabled else {
       throw LiveActivitiesNotSupportedException()
     }
@@ -38,8 +37,6 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func getInstances() throws -> [LiveActivity] {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
     let activities = Activity<LiveActivityAttributes>.activities
       // Filter LiveActivity instances for activities that don't match the factory's name.
       .filter { $0.content.state.name == name }

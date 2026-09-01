@@ -2,18 +2,17 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import type { ParamListBase } from '../routers';
+import useLatestCallback from '../../utils/useLatestCallback';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationStateContext } from './NavigationStateContext';
-import type { NavigationProp } from './types';
+import { useIsRouteFocused } from './useIsFocused';
 
 type Options = {
   key?: string;
-  navigation?: NavigationProp<ParamListBase>;
   options?: object | undefined;
 };
 
-export function useOptionsGetters({ key, options, navigation }: Options) {
+export function useOptionsGetters({ key, options }: Options) {
   const optionsRef = React.useRef<object | undefined>(options);
   const optionsGettersFromChildRef = React.useRef<Record<string, () => object | undefined | null>>(
     {}
@@ -21,22 +20,20 @@ export function useOptionsGetters({ key, options, navigation }: Options) {
 
   const { onOptionsChange } = use(NavigationBuilderContext);
   const { addOptionsGetter: parentAddOptionsGetter } = use(NavigationStateContext);
+  const isFocused = useIsRouteFocused(key);
 
   const optionsChangeListener = React.useCallback(() => {
-    const isFocused = navigation?.isFocused() ?? true;
     const hasChildren = Object.keys(optionsGettersFromChildRef.current).length;
 
     if (isFocused && !hasChildren) {
-      onOptionsChange(optionsRef.current ?? {});
+      onOptionsChange(optionsRef.current ?? {}, key);
     }
-  }, [navigation, onOptionsChange]);
+  }, [isFocused, key, onOptionsChange]);
 
   React.useEffect(() => {
     optionsRef.current = options;
     optionsChangeListener();
-
-    return navigation?.addListener('focus', optionsChangeListener);
-  }, [navigation, options, optionsChangeListener]);
+  }, [options, optionsChangeListener]);
 
   const getOptionsFromListener = React.useCallback(() => {
     for (const key in optionsGettersFromChildRef.current) {
@@ -53,9 +50,7 @@ export function useOptionsGetters({ key, options, navigation }: Options) {
     return null;
   }, []);
 
-  const getCurrentOptions = React.useCallback(() => {
-    const isFocused = navigation?.isFocused() ?? true;
-
+  const getCurrentOptions = useLatestCallback(() => {
     if (!isFocused) {
       return null;
     }
@@ -67,7 +62,7 @@ export function useOptionsGetters({ key, options, navigation }: Options) {
     }
 
     return optionsRef.current;
-  }, [navigation, getOptionsFromListener]);
+  });
 
   React.useEffect(() => {
     return parentAddOptionsGetter?.(key!, getCurrentOptions);

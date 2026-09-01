@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the embedded manifest recording the wrong `packagerHash` for assets that ship scale variants iOS does not allow (such as `@1.5x` and `@4x`): the hashes were read by the filtered scale index instead of the asset's own, so those images resolved to an empty URI and rendered blank in release builds. ([#48811](https://github.com/expo/expo/pull/48811) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix `expo-dev-client` being detected as installed when it is absent, which enabled `USE_DEV_CLIENT` and printed a `MODULE_NOT_FOUND` trace during `pod install`. ([#49233](https://github.com/expo/expo/pull/49233) by [@dennytosp](https://github.com/dennytosp))
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Fix two launch crashes reachable when a native module resolves the updates controller before `start()` runs: reading `launchedUpdateId` / `launchAssetPath` / `launchAssetUrl()` trapped on an implicitly-unwrapped optional, and the unsynchronized `stateChangeListeners` dictionary could fault while `UpdatesStateMachine` iterated it. ([#48898](https://github.com/expo/expo/pull/48898) by [@spsaucier](https://github.com/spsaucier))
@@ -25,6 +26,15 @@
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
 - [Android] Register the embedded update in a single transaction. An interrupted registration previously left an update row with no launch asset, which is treated as launchable and then fails every cold start with "Launch asset not found for update"; it now leaves no row, so the next launch registers it cleanly. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
 - [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Keep the Room-generated `UpdatesDatabase_Impl` constructor, so minified release builds no longer crash with `NoSuchMethodException` on first database access. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Propagate database failures from `addNewAssets` instead of swallowing them, which let an update be marked ready without its launch asset and then fail every launch. ([#49456](https://github.com/expo/expo/pull/49456) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Repair ready updates that are missing their launch asset by demoting them to pending during launcher selection, so a corrupted row is skipped and retried instead of failing every launch. ([#49457](https://github.com/expo/expo/pull/49457) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Register a downloaded update's assets, links, and ready status in a single transaction, so an interrupted or partially failed registration leaves no partial state behind. ([#49458](https://github.com/expo/expo/pull/49458) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Report a specific launch asset not found error when a launchable update has no linked launch asset, instead of failing silently or, for an update with no assets at all, hanging on the splash screen. ([#49459](https://github.com/expo/expo/pull/49459) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Preserve the cached update's launch failure as the emergency launch reason when the remote check finds no new update, instead of replacing it with the generic AppLoaderTask error. ([#49460](https://github.com/expo/expo/pull/49460) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Skip and repair updates that are missing their launch asset instead of selecting them for launch, which previously failed every cold start with "Launch asset not found for update". ([#49470](https://github.com/expo/expo/pull/49470) by [@alanjhughes](https://github.com/alanjhughes), based on [#48733](https://github.com/expo/expo/pull/48733) by [@martintreurnicht](https://github.com/martintreurnicht))
+- [iOS] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49504](https://github.com/expo/expo/pull/49504) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49505](https://github.com/expo/expo/pull/49505) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -36,6 +46,9 @@
 - [iOS] Resolved the reload screen's window through the shared scene geometry helper. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Link `libc++` in the test spec so the unit test bundle resolves the C++ symbols it pulls from `ExpoModulesCore`. ([#48762](https://github.com/expo/expo/pull/48762) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Run the build data consistency check inside the startup procedure so it no longer queries the database on the main thread. ([#49374](https://github.com/expo/expo/pull/49374) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Disallow main thread queries on the updates database. ([#49375](https://github.com/expo/expo/pull/49375) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Remove the `DatabaseHolder` wrapper and pass `UpdatesDatabase` directly, since its lock released before any query ran and provided no real serialization. ([#49376](https://github.com/expo/expo/pull/49376) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.11 - 2026-07-29
 

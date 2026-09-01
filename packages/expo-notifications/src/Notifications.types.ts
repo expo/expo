@@ -611,6 +611,11 @@ export type NotificationContentInput = {
    */
   categoryIdentifier?: string;
   /**
+   * An identifier used to group related notifications together in the notification center.
+   * @platform ios
+   */
+  threadIdentifier?: string;
+  /**
    * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
    * to `false` if not provided or is invalid. Corresponds directly to Android's `isOngoing` behavior.
    * In Firebase terms this property of a notification is called `sticky`.

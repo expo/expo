@@ -91,7 +91,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
       let previousValue = previousProps[key]
 
       // only set the prop if the value has changed
-      if !areValuesEqual(previousValue, convertedNewValue) {
+      if !Conversions.areValuesEqual(previousValue, convertedNewValue) {
         // TODO: @tsapeta: Figure out better way to rethrow errors from here.
         // Adding `throws` keyword to the function results in different
         // method signature in Objective-C. Maybe just call `RCTLogError`?
@@ -102,21 +102,6 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     }
   }
 
-  /**
-   Helper function to compare two values for equality using string representation.
-   */
-  private func areValuesEqual(_ lhs: Any?, _ rhs: Any?) -> Bool {
-    switch (lhs, rhs) {
-    case (nil, nil):
-      return true
-    case let (lhsValue as AnyHashable, rhsValue as AnyHashable):
-      return lhsValue == rhsValue
-    case let (lhsValue as NSObjectProtocol, rhsValue as NSObjectProtocol):
-      return lhsValue.isEqual(rhsValue)
-    default:
-      return false
-    }
-  }
   /**
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */

@@ -19,6 +19,8 @@ export function useDOMImperativeHandle<T extends DOMImperativeFactory>(
 ) {
   const isTargetWeb = !hasWebViewBridge() && typeof window.$$EXPO_INITIAL_PROPS === 'undefined';
 
+  // This generic hook forwards the caller-provided dependency list, which cannot be an array literal.
+  // oxlint-disable-next-line react/use-memo
   const stubHandlerFactory = useCallback(() => ({}) as T, deps ?? []);
 
   // This standard useImperativeHandle hook is serving for web

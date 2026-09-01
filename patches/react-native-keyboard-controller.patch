@@ -1,0 +1,13 @@
+diff --git a/android/src/main/java/com/reactnativekeyboardcontroller/views/overlay/OverKeyboardHostShadowNode.kt b/android/src/main/java/com/reactnativekeyboardcontroller/views/overlay/OverKeyboardHostShadowNode.kt
+index b11c60c..b67c72c 100644
+--- a/android/src/main/java/com/reactnativekeyboardcontroller/views/overlay/OverKeyboardHostShadowNode.kt
++++ b/android/src/main/java/com/reactnativekeyboardcontroller/views/overlay/OverKeyboardHostShadowNode.kt
+@@ -23,7 +23,7 @@ internal class OverKeyboardHostShadowNode : LayoutShadowNode() {
+     i: Int,
+   ) {
+     super.addChildAt(child, i)
+-    val displaySize = themedContext.getDisplaySize()
++    val displaySize = getThemedContext().getDisplaySize()
+     child.setStyleWidth(displaySize.x.toFloat())
+     child.setStyleHeight(displaySize.y.toFloat())
+   }

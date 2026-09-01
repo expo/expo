@@ -10,7 +10,6 @@ export function useChildListeners() {
   const { current: listeners } = React.useRef<{
     [K in keyof ListenerMap]: ListenerMap[K][];
   }>({
-    action: [],
     focus: [],
   });
 

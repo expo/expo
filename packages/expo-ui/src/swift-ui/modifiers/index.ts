@@ -21,6 +21,7 @@ import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
+import { resolveShapeStyle, type ShapeStyle } from './shapeStyle';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
@@ -457,51 +458,20 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * })]}>
  *   Gradient Text
  * </Text>
+ *
+ * // Material
+ * <Text modifiers={[foregroundStyle({ type: 'material', material: 'regular' })]}>
+ *   Text painted with a material
+ * </Text>
  * ```
  *
+ * @param style - Any [`ShapeStyle`](#shapestyle): a color, a hierarchical style, a material or a gradient.
  * @returns A view modifier that applies the specified foreground style
  * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)).
  */
-export const foregroundStyle = (
-  style:
-    | Color // Simple color (hex string, color name, or React Native ColorValue)
-    | { type: 'color'; color: Color }
-    | {
-        type: 'hierarchical';
-        style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
-      }
-    | {
-        type: 'linearGradient';
-        colors: Color[];
-        startPoint: { x: number; y: number };
-        endPoint: { x: number; y: number };
-      }
-    | {
-        type: 'radialGradient';
-        colors: Color[];
-        center: { x: number; y: number };
-        startRadius: number;
-        endRadius: number;
-      }
-    | {
-        type: 'angularGradient';
-        colors: Color[];
-        center: { x: number; y: number };
-      }
-) => {
-  if (style == null || typeof style !== 'object' || !('type' in style)) {
-    return createModifier('foregroundStyle', { styleType: 'color', color: style });
-  }
-  if (style.type === 'hierarchical') {
-    return createModifier('foregroundStyle', {
-      styleType: 'hierarchical',
-      hierarchicalStyle: style.style,
-    });
-  }
-  const { type, ...rest } = style;
-  return createModifier('foregroundStyle', { styleType: type, ...rest });
-};
+export const foregroundStyle = (style: ShapeStyle) =>
+  createModifier('foregroundStyle', { style: resolveShapeStyle(style) });
 
 /**
  * Makes text bold.
@@ -1854,6 +1824,7 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
 export * from './symbolEffect';
 export * from './scrollObservation';

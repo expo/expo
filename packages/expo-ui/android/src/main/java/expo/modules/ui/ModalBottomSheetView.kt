@@ -10,6 +10,7 @@ import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.contentColorFor
@@ -18,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
@@ -135,7 +139,14 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
   }
 
   val resolvedContainerColor = props.containerColor.composeOrNull ?: BottomSheetDefaults.ContainerColor
-  val resolvedContentColor = props.contentColor.composeOrNull ?: contentColorFor(resolvedContainerColor)
+  // Material3 themes the sheet window's system bars from the content color, so it has to contrast
+  // with the container color. contentColorFor() returns LocalContentColor for a container color that
+  // is not a color-scheme role, and that is black outside a Surface. A dark custom container color
+  // then asked for light system bars, which turned the navigation bar white.
+  val resolvedContentColor = props.contentColor.composeOrNull
+    ?: MaterialTheme.colorScheme.contentColorFor(resolvedContainerColor).takeOrElse {
+      if (resolvedContainerColor.luminance() > 0.5f) ComposeColor.Black else ComposeColor.White
+    }
   val resolvedScrimColor = props.scrimColor.composeOrNull ?: BottomSheetDefaults.ScrimColor
   val dragHandleSlotView = findChildSlotView(view, "dragHandle")
 

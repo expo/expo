@@ -1,8 +1,6 @@
-import { Button, useTheme } from '@expo/styleguide';
+import { Button, mergeClasses } from '@expo/styleguide';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
-import { ReactNode, useEffect, useState } from 'react';
-
-import { prefersDarkTheme } from '~/common/window';
+import { ReactNode } from 'react';
 
 type Props = {
   imgSrc: string;
@@ -13,23 +11,23 @@ type Props = {
 };
 
 export function Content({ imgSrc, darkImgSrc, alt, href, content }: Props) {
-  const { themeName } = useTheme();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(
-    function didMount() {
-      setIsDarkMode(themeName === 'dark' || (themeName === 'auto' && prefersDarkTheme()));
-    },
-    [themeName]
-  );
-
   return (
     <div>
       <div className="flex items-center justify-center bg-screen">
-        <picture className="relative">
-          {isDarkMode && <source srcSet={darkImgSrc} type="image/png" />}
-          <img src={imgSrc} alt={alt} className="size-75" />
+        <picture className={mergeClasses('relative', darkImgSrc && 'dark:hidden')}>
+          <img
+            src={imgSrc}
+            alt={alt}
+            loading={darkImgSrc ? 'lazy' : undefined}
+            decoding={darkImgSrc ? 'async' : undefined}
+            className="size-75"
+          />
         </picture>
+        {darkImgSrc && (
+          <picture className="relative light:hidden">
+            <img src={darkImgSrc} alt={alt} loading="lazy" decoding="async" className="size-75" />
+          </picture>
+        )}
       </div>
       <div className="flex flex-col items-start gap-3 border-t border-default bg-default px-6 pb-6">
         <div>

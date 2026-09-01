@@ -37,6 +37,57 @@ export default function ScenariosPage() {
         }}
       />
 
+      <HeadingText>Notification grouping (threadIdentifier)</HeadingText>
+      <ListButton
+        title='Schedule 3 notifications in "chat-alice" thread'
+        onPress={async () => {
+          for (let i = 1; i <= 3; i++) {
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: `Alice`,
+                body: `Message ${i} from Alice`,
+                threadIdentifier: 'chat-alice',
+              },
+              trigger: null,
+            });
+          }
+        }}
+      />
+      <ListButton
+        title='Schedule 3 notifications in "chat-bob" thread'
+        onPress={async () => {
+          for (let i = 1; i <= 3; i++) {
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: `Bob`,
+                body: `Message ${i} from Bob`,
+                threadIdentifier: 'chat-bob',
+              },
+              trigger: null,
+            });
+          }
+        }}
+      />
+      <ListButton
+        title="Schedule 1 notification with no thread"
+        onPress={async () => {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'No thread',
+              body: 'This notification has no threadIdentifier',
+            },
+            trigger: null,
+          });
+        }}
+      />
+      <ListButton
+        title="getPresentedNotificationsAsync"
+        onPress={async () => {
+          const result = await Notifications.getPresentedNotificationsAsync();
+          alert(`Presented notifications: ${JSON.stringify(result, null, 2)}`);
+        }}
+      />
+
       <HeadingText>Send push notification with deep link</HeadingText>
       <ListButton
         title="Subscribe to Topic, Send Notification manually from firebase console"

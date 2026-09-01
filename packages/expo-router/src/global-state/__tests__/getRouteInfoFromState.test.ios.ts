@@ -1,4 +1,8 @@
-import { getRouteInfoFromState, defaultRouteInfo } from '../getRouteInfoFromState';
+import {
+  areUrlObjectsEqual,
+  getRouteInfoFromState,
+  defaultRouteInfo,
+} from '../getRouteInfoFromState';
 
 describe('getRouteInfoFromState', () => {
   it('returns defaultRouteInfo when state is undefined', () => {
@@ -262,7 +266,8 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathnameWithParams).toBe('/%E0%A4%A');
   });
 
-  it('handles incomplete state with screen/params nesting', () => {
+  it('keeps scalar screen and drops nested params objects from search params', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const result = getRouteInfoFromState({
       routes: [
         {
@@ -286,9 +291,80 @@ describe('getRouteInfoFromState', () => {
       index: 0,
     });
 
-    expect(result.segments).toEqual(['(tabs)', 'settings', 'profile']);
-    expect(result.pathname).toBe('/settings/profile');
-    expect(result.pathnameWithParams).toBe('/settings/profile');
+    expect(result.segments).toEqual(['(tabs)']);
+    expect(result.pathname).toBe('/');
+    expect(result.params).toEqual({
+      screen: 'settings',
+      params: { screen: 'profile' },
+    });
+    expect(result.searchParams.get('screen')).toBe('settings');
+    expect(result.searchParams.has('params')).toBe(false);
+    expect(result.pathnameWithParams).toBe('/?screen=settings');
+    expect(warn).toHaveBeenCalledWith(
+      'Navigating with nested object params is not supported. Expo Router URL params must be serializable as strings. Use flat params or serialize the object value.'
+    );
+    warn.mockRestore();
+  });
+
+  it('does not warn for screen params while reading route info', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const rootParams = { screen: 'root' };
+    const groupParams = { screen: 'group' };
+    const pageParams = { screen: 'page' };
+    const state = {
+      routes: [
+        {
+          name: '__root',
+          params: rootParams,
+          state: {
+            routes: [
+              {
+                name: '(group)',
+                params: groupParams,
+                state: { routes: [{ name: 'page', params: pageParams }] },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    getRouteInfoFromState(state);
+    getRouteInfoFromState(state);
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('warns once for each visited route params object containing an object value', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const nestedParams = { params: { id: 'one' } };
+    const objectValueParams = { x: { a: 1 } };
+    const state = {
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: 'layout',
+                params: nestedParams,
+                state: { routes: [{ name: 'page', params: objectValueParams }] },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    getRouteInfoFromState(state);
+    getRouteInfoFromState(state);
+
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledWith(
+      'Navigating with nested object params is not supported. Expo Router URL params must be serializable as strings. Use flat params or serialize the object value.'
+    );
+    warn.mockRestore();
   });
 
   it('route name starting with / has leading slash stripped', () => {
@@ -357,5 +433,27 @@ describe('getRouteInfoFromState', () => {
 
     expect(result.segments).toEqual(['second']);
     expect(result.pathname).toBe('/second');
+  });
+});
+
+describe(areUrlObjectsEqual, () => {
+  it('compares route info semantics without comparing derived searchParams', () => {
+    const first = {
+      ...defaultRouteInfo,
+      params: { nested: ['one', 'two'] },
+      segments: ['(group)', 'page'],
+      searchParams: new URLSearchParams('first=one'),
+    };
+    const second = {
+      ...first,
+      params: { nested: ['one', 'two'] },
+      segments: ['(group)', 'page'],
+      searchParams: new URLSearchParams('second=two'),
+    };
+
+    expect(areUrlObjectsEqual(first, second)).toBe(true);
+    expect(areUrlObjectsEqual(first, { ...second, pathname: '/other' })).toBe(false);
+    expect(areUrlObjectsEqual(first, { ...second, segments: ['page'] })).toBe(false);
+    expect(areUrlObjectsEqual(first, { ...second, params: { nested: ['one'] } })).toBe(false);
   });
 });

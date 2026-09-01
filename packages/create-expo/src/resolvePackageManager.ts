@@ -1,7 +1,7 @@
 import * as PackageManager from '@expo/package-manager';
 import { execSync } from 'child_process';
 
-import { CLI_NAME } from './cmd';
+import { PACKAGE_NAME } from './utils/update-check';
 
 export type PackageManagerName = 'npm' | 'pnpm' | 'yarn' | 'bun' | 'nub';
 
@@ -66,15 +66,15 @@ export function formatSelfCommand() {
   const packageManager = resolvePackageManager();
   switch (packageManager) {
     case 'pnpm':
-      return `pnpx ${CLI_NAME}`;
+      return `pnpx ${PACKAGE_NAME}`;
     case 'bun':
-      return `bunx ${CLI_NAME}`;
+      return `bunx ${PACKAGE_NAME}`;
     case 'nub':
-      return `nubx ${CLI_NAME}`;
+      return `nubx ${PACKAGE_NAME}`;
     case 'yarn':
     case 'npm':
     default:
-      return `npx ${CLI_NAME}`;
+      return `npx ${PACKAGE_NAME}`;
   }
 }
 

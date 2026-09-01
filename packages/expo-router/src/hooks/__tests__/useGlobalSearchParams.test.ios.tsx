@@ -133,6 +133,19 @@ describe(useGlobalSearchParams, () => {
           shape: 'square',
         },
       },
+      // The first page rerenders because it remains mounted in the stack.
+      {
+        url: '/banana/circle/carrot',
+        globalParams: {
+          fruit: 'banana',
+          shape: 'circle',
+          veg: ['carrot'],
+        },
+        params: {
+          fruit: 'apple',
+          shape: 'square',
+        },
+      },
       // The new screen
       {
         url: '/banana/circle/carrot',
@@ -145,19 +158,6 @@ describe(useGlobalSearchParams, () => {
           fruit: 'banana',
           shape: 'circle',
           veg: ['carrot'],
-        },
-      },
-      // The is the first page rerendering due to being in a <Stack />
-      {
-        url: '/banana/circle/carrot',
-        globalParams: {
-          fruit: 'banana',
-          shape: 'circle',
-          veg: ['carrot'],
-        },
-        params: {
-          fruit: 'apple',
-          shape: 'square',
         },
       },
     ]);

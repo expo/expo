@@ -358,18 +358,29 @@ open class AppLoader: NSObject {
     database.databaseQueue.async {
       self.arrayLock.lock()
 
+      guard let updateResponse = self.updateResponseContainingManifest,
+        let updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        self.arrayLock.unlock()
+        self.finish(withError: UpdatesError.appLoaderFinishedWithoutManifest)
+        return
+      }
+
+      var assetsToLink: [UpdateAsset] = []
       for existingAsset in self.existingAssets {
-        var existingAssetFound: Bool = false
+        let existingAssetFound: Bool
         do {
-          existingAssetFound = try self.database.addExistingAsset(
-            existingAsset,
-            toUpdateWithId: self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest.updateId
-          )
+          existingAssetFound = try self.database.asset(withKey: existingAsset.key) != nil
         } catch {
-          self.logger.warn(message: "Error searching for existing asset in DB: \(error.localizedDescription)")
+          // treating a failed check as "not found" would re-insert an existing asset, and the
+          // key-conflicting replace cascade-deletes every update that uses the old row
+          self.arrayLock.unlock()
+          self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
+          return
         }
 
-        if !existingAssetFound {
+        if existingAssetFound {
+          assetsToLink.append(existingAsset)
+        } else {
           // the database and filesystem have gotten out of sync
           // do our best to create a new entry for this file even though it already existed on disk
           // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
@@ -392,25 +403,16 @@ open class AppLoader: NSObject {
       }
 
       do {
-        try self.database.addNewAssets(
-          self.finishedAssets,
-          toUpdateWithId: self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest.updateId
+        try self.database.finishUpdateRegistration(
+          updateManifest,
+          newAssets: self.finishedAssets,
+          existingAssets: assetsToLink,
+          markFinished: self.erroredAssets.isEmpty
         )
       } catch {
         self.arrayLock.unlock()
         self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
         return
-      }
-
-      if self.erroredAssets.isEmpty {
-        do {
-          let updateManifest = self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest
-          try self.database.markUpdateFinished(updateManifest)
-        } catch {
-          self.arrayLock.unlock()
-          self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
-          return
-        }
       }
 
       var successBlock: AppLoaderSuccessBlock?
@@ -432,7 +434,7 @@ open class AppLoader: NSObject {
         if let errorBlock = errorBlock {
           errorBlock(UpdatesError.appLoaderFailedToLoadAllAssets)
         } else if let successBlock = successBlock {
-          successBlock(self.updateResponseContainingManifest!)
+          successBlock(updateResponse)
         }
       }
     }

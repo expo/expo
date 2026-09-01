@@ -23,6 +23,7 @@ import {
   extractFrontmatter,
   findMdxSource,
   injectSceneVariants,
+  insertAgentInstructionsAfterH1,
   type ResolvedMdxImport,
 } from './generate-markdown-pages-utils.ts';
 import { SCENE_PAGES } from './scene-page-manifest.ts';
@@ -150,15 +151,19 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
       instructionSections.length > 0 ? wrapAgentInstructions(instructionSections) : null;
     const pageNote = buildPageSpecificNote(pathname);
 
+    if (agentInstructions) {
+      const description = frontmatter
+        ?.match(/^description: (.*)$/m)?.[1]
+        ?.replace(/^["']|["']$/g, '');
+      markdown = insertAgentInstructionsAfterH1(markdown, agentInstructions, description);
+    }
+
     const parts: string[] = [];
     if (frontmatter) {
       parts.push(frontmatter);
     }
     if (pageNote) {
       parts.push(pageNote);
-    }
-    if (agentInstructions) {
-      parts.push(agentInstructions);
     }
     parts.push(markdown);
     markdown = parts.join('\n');

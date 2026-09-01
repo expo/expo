@@ -16,6 +16,7 @@ export {
 } from './hooks';
 
 export { router, type ImperativeRouter } from './imperative-api';
+export { useIsNavigating as unstable_useIsNavigating } from './global-state/useIsNavigating';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };

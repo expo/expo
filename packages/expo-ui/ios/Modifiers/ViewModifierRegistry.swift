@@ -910,6 +910,26 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
+/**
+ * Prunability-stable wrapper for `AnyViewModifier`
+ */
+internal struct StableViewModifier: ViewModifier {
+  let params: [String: Any]
+  weak var appContext: AppContext?
+  let dispatcher: EventDispatcher
+
+  func body(content: Content) -> some View {
+    if let type = params["$type"] as? String,
+      let appContext,
+      let factory = ViewModifierRegistry.shared.modifierFactories[type],
+      let modifier = try? factory(params, appContext, dispatcher) {
+      content.modifier(AnyViewModifier(modifier))
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
   @Field var animatedValue: Either<Double, Bool>?
@@ -1562,10 +1582,14 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard let viewModifier = try? modifierFactories[type]?(params, appContext, globalEventDispatcher) else {
+    guard modifierFactories[type] != nil else {
       return view
     }
-    return AnyView(view.modifier(AnyViewModifier(viewModifier)))
+    return AnyView(view.modifier(StableViewModifier(
+      params: params,
+      appContext: appContext,
+      dispatcher: globalEventDispatcher
+    )))
   }
 
   /**
@@ -1595,9 +1619,9 @@ public class ViewModifierRegistry {
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
       if #available(iOS 17.0, tvOS 17.0, *) {
         return applyForegroundStyle(modifier, to: text)
-      } else if modifier.styleType == .color, let color = modifier.color {
-          return text.foregroundColor(color)
-      } 
+      } else if modifier.style?.type == .color, let color = modifier.style?.color {
+        return text.foregroundColor(color)
+      }
       return text
     default:
       #if DEBUG

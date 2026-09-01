@@ -370,8 +370,9 @@ export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrai
  */
 export type RecordingStartOptions = {
   /**
-   * The duration in seconds after which recording should automatically stop.
-   * If not provided, recording continues until manually stopped.
+   * The maximum duration of recorded audio, in seconds. Time spent paused does not count
+   * toward the limit. A limited recording keeps the same limit when resumed without options.
+   * If not provided when starting a new recording, recording continues until manually stopped.
    *
    * @platform ios
    * @platform android

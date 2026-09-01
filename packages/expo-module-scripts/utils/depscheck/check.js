@@ -98,10 +98,6 @@ const SPECIAL_DEPENDENCIES = {
 const IGNORED_IMPORTS = {
   'expo-modules-core': 'ignore-dev',
   'expo-asset': 'ignore-dev',
-
-  // This is force-resolved in the CLI and therefore, for Expo modules, is generally safe.
-  // See: https://github.com/expo/expo/blob/d63143c/packages/%40expo/cli/src/start/server/metro/withMetroMultiPlatform.ts#L603-L622
-  '@react-native/assets-registry/registry': 'ignore-dev',
 };
 
 const WORKSPACE_SPECIFIER = 'workspace:';

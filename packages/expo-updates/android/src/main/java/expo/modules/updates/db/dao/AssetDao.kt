@@ -13,7 +13,7 @@ import java.util.*
  */
 @Dao
 abstract class AssetDao {
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  @Insert
   protected abstract fun insertAssetInternal(asset: AssetEntity): Long
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -80,6 +80,11 @@ abstract class AssetDao {
   @Transaction
   open fun insertAssets(assets: List<AssetEntity>, update: UpdateEntity) {
     for (asset in assets) {
+      // A row with this key may have appeared since the caller classified the asset as new.
+      // Adopt it: replacing it would cascade-delete every update that references it.
+      if (addExistingAssetToUpdate(update, asset, asset.isLaunchAsset)) {
+        continue
+      }
       val assetId = insertAssetInternal(asset)
       insertUpdateAssetInternal(UpdateAssetEntity(update.id, assetId))
       if (asset.isLaunchAsset) {
