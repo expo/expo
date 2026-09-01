@@ -26,6 +26,7 @@
 - [universal] Added a `contentPadding` prop to `BottomSheet`, so sheet content can reach the sheet's edges instead of always sitting inside a hardcoded 16-unit inset. ([#48902](https://github.com/expo/expo/issues/48902) by [@kilarsky](https://github.com/kilarsky))
 - [android] Add `shouldDismissOnClickOutside` and `scrimColor` props to the universal `BottomSheet` component, forwarding them to `ModalBottomSheet` via `properties.shouldDismissOnClickOutside` and `scrimColor`. ([#48986](https://github.com/expo/expo/pull/48986) by [@webdevsamran](https://github.com/webdevsamran))
 - [android] Added the `amplitude`, `wavelength` and `waveSpeed` props to `LinearWavyProgressIndicator` and `CircularWavyProgressIndicator`, so the Material 3 wave can be configured instead of always using the Compose defaults. (by [@felipe-software](https://github.com/felipe-software))
+- [universal] Added `containerColor` and `contentColor` props to `BottomSheet`, and a `colors` prop to `ListItem`, so a sheet's chrome and its rows can be recolored to match an app's own theme instead of always using each platform's opaque default. Forwards to capabilities the `jetpack-compose` and `swift-ui` layers already expose (`ModalBottomSheet.containerColor`/`contentColor`, `presentationBackground`, `ListItem.colors`) without changing default behavior when omitted. ([#49575](https://github.com/expo/expo/pull/49575) by [@timheilman](https://github.com/timheilman))
 
 ### 🐛 Bug fixes
 
