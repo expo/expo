@@ -4,15 +4,19 @@ set -eo pipefail
 
 CREATE_UPDATES_RESOURCES_MODE="all"
 
+is_debug_configuration() {
+  [[ "$1" =~ [Dd][Ee][Bb][Uu][Gg] ]]
+}
+
 if [[ -n "$__EXPO_CONFIG_MODE" ]]; then
   CONFIG_MODE="$__EXPO_CONFIG_MODE"
-elif [[ "$CONFIGURATION" == *Debug* ]]; then
+elif is_debug_configuration "$CONFIGURATION"; then
   CONFIG_MODE="development"
 else
   CONFIG_MODE="production"
 fi
 
-if [[ "$CONFIGURATION" == *Debug* ]]; then
+if is_debug_configuration "$CONFIGURATION"; then
   METRO_DEV="true"
 else
   METRO_DEV="false"
