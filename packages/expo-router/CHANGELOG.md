@@ -64,7 +64,7 @@
 - Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
 - Honor loader `Cache-Control` headers via the platform HTTP cache instead of caching loader data in memory ([#48087](https://github.com/expo/expo/pull/48087) by [@hassankhan](https://github.com/hassankhan))
 - Cancel pending loader requests when their routes are removed during navigation ([#48451](https://github.com/expo/expo/pull/48451) by [@hassankhan](https://github.com/hassankhan))
-- Add a public `expo-router/native-stack` subpath so `createNativeStackNavigator` can be imported without a deep `build/` path.
+- Add a public `expo-router/native-stack` subpath so `createNativeStackNavigator` can be imported without a deep `build/` path. ([#49604](https://github.com/expo/expo/pull/49604) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
