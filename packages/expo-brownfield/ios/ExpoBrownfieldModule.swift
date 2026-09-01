@@ -15,7 +15,7 @@ public class ExpoBrownfieldModule: Module {
     }
 
     OnStopObserving {
-      BrownfieldMessagingInternal.shared.setExpoModule(nil)
+      BrownfieldMessagingInternal.shared.clearExpoModule(self)
     }
 
     Function("popToNative") { (animated: Bool) in
