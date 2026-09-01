@@ -1,4 +1,4 @@
-import { ConfigPlugin, IOSConfig, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
+import { ConfigPlugin, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
 import * as path from 'path';
 
 import { addBuildPhases } from './addBuildPhases';
@@ -89,12 +89,10 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const targetDirectory = path.join(projectRoot, targetName);
     const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
     const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
-    const projectName = IOSConfig.XcodeUtils.getProjectName(config.modRequest.projectRoot);
-    const localizableStringsFileRefs = getLocalizableStringsFileRefs(
-      xcodeProject,
-      projectName,
-      Object.keys(config.locales ?? {})
-    );
+    const languages = Object.keys(config.locales ?? {});
+    const localizableStringsFileRefs = languages.length
+      ? getLocalizableStringsFileRefs(xcodeProject, config.modRequest.projectName!, languages)
+      : [];
 
     addBuildPhases(xcodeProject, {
       targetUuid: target.uuid,
