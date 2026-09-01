@@ -4553,6 +4553,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
+      '@vercel/ncc':
+        specifier: ^0.38.4
+        version: 0.38.4
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
