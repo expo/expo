@@ -564,7 +564,7 @@ export function resolveFeedbackId(value?: string): string {
 
 function getPackageVersion(): string {
   try {
-    return require('../package.json').version;
+    return require('submit-expo-feedback/package.json')?.version ?? '0.0.0';
   } catch {
     return '0.0.0';
   }
