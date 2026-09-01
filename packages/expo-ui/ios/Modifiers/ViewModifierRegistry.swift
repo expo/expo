@@ -1619,9 +1619,9 @@ public class ViewModifierRegistry {
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
       if #available(iOS 17.0, tvOS 17.0, *) {
         return applyForegroundStyle(modifier, to: text)
-      } else if modifier.styleType == .color, let color = modifier.color {
-          return text.foregroundColor(color)
-      } 
+      } else if modifier.style?.type == .color, let color = modifier.style?.color {
+        return text.foregroundColor(color)
+      }
       return text
     default:
       #if DEBUG
