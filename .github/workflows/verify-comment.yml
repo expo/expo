@@ -1,0 +1,131 @@
+# The comment path for the @expo/verify engine: `/verify …` or
+# `@expo-bot …` typed on an issue or pull request. Thin adapter only — the
+# gate, parse, ack/announce, the run, and the failure report all live in
+# `verify run` (engine LLP 0001; expo-sandbox-mcp LLP 0020).
+#
+# STAGED: lives beside agent-commands.yml, which still owns the comment
+# path until this one is proven live; both are gated on the same comment
+# shapes, so to avoid double runs the legacy workflow's issue_comment
+# trigger is removed in the same commit that promotes this one.
+name: verify (comment)
+run-name: "verify #${{ github.event.issue.number }} — ${{ github.event.comment.user.login }}"
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: verify-target-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    # The LOOSE shape gate: command-shaped, from a maintainer-association
+    # author, not the bot itself. Exact shapes, the authoritative
+    # write-access check, and thread replies are the engine's comment
+    # path. Mirrors agent-commands.yml's gate; reserved verbs stay
+    # excluded because other workflows own them.
+    if: >-
+      github.event.comment.user.login != 'expo-bot' &&
+      (startsWith(github.event.comment.body, '/verify') ||
+      (startsWith(github.event.comment.body, '@expo-bot ') &&
+      github.event.comment.body != '@expo-bot review' &&
+      !startsWith(github.event.comment.body, '@expo-bot review ') &&
+      github.event.comment.body != '@expo-bot dismiss' &&
+      !startsWith(github.event.comment.body, '@expo-bot dismiss ') &&
+      github.event.comment.body != '@expo-bot undismiss' &&
+      !startsWith(github.event.comment.body, '@expo-bot undismiss ') &&
+      !startsWith(github.event.comment.body, '@expo-bot help') &&
+      !startsWith(github.event.comment.body, '@expo-bot  help'))) &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    # Job-level only: a verify failure must never fail the repo's checks, but
+    # the STEP must fail honestly — a step-level continue-on-error hid an
+    # engine exit 1 behind a green run (run 32919110451).
+    continue-on-error: true
+    env:
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.3.0' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2.1.229
+
+      - name: Guard profile and credential env
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
+
+      # Token custody across steps (see verify.yml): the parent MCP token is
+      # mapped into mint and revoke only; the run step holds the scoped token.
+      # A mint refused because the target's slot is held exits 0 and leaves
+      # a sidecar, so the run step still posts the failure report.
+      - name: Mint scoped token
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify mint
+        env:
+          VERIFY_TARGET: ${{ github.event.issue.number }}
+          VERIFY_RETRY: ${{ contains(github.event.comment.body, '--retry') }}
+          VERIFY_RUN_ID: ${{ github.run_id }}
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          MCP_URL: https://agile-minnow-543.convex.site
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+
+      - name: Run verify (comment path)
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify run
+        env:
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          # Comment text and identity cross as env only — never ${{ }} inside
+          # run: lines (the same rule agent-commands.yml follows).
+          VERIFY_COMMENT_BODY: ${{ github.event.comment.body }}
+          VERIFY_COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+          VERIFY_COMMENT_ID: ${{ github.event.comment.id }}
+          VERIFY_TARGET: ${{ github.event.issue.number }}
+          VERIFY_TARGET_IS_PR: ${{ github.event.issue.pull_request != null }}
+          VERIFY_MODEL: ${{ vars.VERIFY_MODEL }}
+          VERIFY_RUN_ID: ${{ github.run_id }}
+          VERIFY_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MCP_URL: https://agile-minnow-543.convex.site
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ECR_1: ${{ secrets.ECR_1 }}
+          ECR_2: ${{ secrets.ECR_2 }}
+          ECR_3: ${{ secrets.ECR_3 }}
+          ECR_4: ${{ secrets.ECR_4 }}
+          ECR_5: ${{ secrets.ECR_5 }}
+          CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+
+      - name: Revoke scoped token
+        if: always()
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify revoke
+        env:
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          MCP_URL: https://agile-minnow-543.convex.site
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verify-run-log-${{ github.event.issue.number }}
+          path: |
+            .verify-out/run-log.txt
+            .verify-out/findings.md
+            .verify-out/review.md
+            .verify-out/partial-findings.md
+            .verify-out/denied-writes.txt
+            .verify-out/publish-plan.json
+            .verify-out/publish-outcome.json
+            .verify-out/run-status.json
+          if-no-files-found: ignore
+          retention-days: 14

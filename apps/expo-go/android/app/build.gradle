@@ -95,7 +95,7 @@ android {
     }
     release {
       minifyEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
       consumerProguardFiles 'proguard-rules.pro'
       if (!System.getenv("ANDROID_UNSIGNED")) {
         // EAS and CI supply the release keystore. Local release builds fall back to the debug key so
@@ -111,13 +111,8 @@ android {
       def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
       firebaseCrashlytics {
         nativeSymbolUploadEnabled shouldUploadCrashlytics
+        unstrippedNativeLibsDir = file("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib")
       }
-    }
-  }
-
-  applicationVariants.all { variant ->
-    if (variant.buildType.name == 'release') {
-      variant.buildType.firebaseCrashlytics.unstrippedNativeLibsDir = file("${buildDir}/intermediates/merged_native_libs/${variant.name}/merge${variant.name.capitalize()}NativeLibs/out/lib")
     }
   }
 
@@ -140,7 +135,6 @@ android {
 import com.android.build.api.variant.AndroidComponentsExtension
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import com.android.build.gradle.LibraryExtension
 import org.w3c.dom.Element
 
 // Based on RNGP's AgpConfiguratorPlugin
@@ -170,7 +164,10 @@ class AgpConfiguratorPlugin implements Plugin<Project> {
         AndroidComponentsExtension ext = subproject.extensions.getByType(AndroidComponentsExtension)
         ext.finalizeDsl { androidComponentProperties ->
           if (androidComponentProperties.namespace == null) {
-            LibraryExtension android = subproject.extensions.getByType(LibraryExtension)
+            // Looked up by name: AGP 9's new DSL no longer registers the legacy
+            // com.android.build.gradle.LibraryExtension type. Groovy duck-typing
+            // resolves sourceSets/manifest on both the old and new extension.
+            def android = subproject.extensions.getByName("android")
             def manifestFile = android.sourceSets.getByName("main").manifest.srcFile
 
              if (manifestFile.exists()) {
@@ -233,35 +230,8 @@ dependencies {
   implementation 'androidx.core:core-splashscreen:1.0.1'
 
   // Our dependencies from ExpoView
-  // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:10.2.1'
-  implementation 'de.greenrobot:eventbus:2.4.0'
-
-  implementation 'com.squareup.picasso:picasso:2.5.2'
-  implementation 'com.google.android.gms:play-services-analytics:16.0.1'
-  implementation 'com.google.android.gms:play-services-maps:18.0.0'
-  implementation 'com.google.android.gms:play-services-auth:15.0.1'
-  implementation 'com.google.android.gms:play-services-location:15.0.1'
-  debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  // debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
-  releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
-  implementation 'commons-io:commons-io:1.4'
-  implementation 'com.airbnb.android:lottie:6.5.2'
-  implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation 'com.vanniktech:android-image-cropper:4.6.0'
-  implementation 'commons-codec:commons-codec:1.10'
-  implementation 'com.google.zxing:core:3.3.3'
-  implementation 'net.openid:appauth:0.4.1'
-  implementation "androidx.exifinterface:exifinterface:1.3.3"
-  implementation 'com.squareup.okio:okio:1.9.0'
-  implementation 'com.facebook.soloader:soloader:0.12.1'
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-
-  // expo-file-system
-  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

@@ -13,11 +13,14 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed a URL staying permanently broken after the server answered an image request with `200 OK` and a non-image body, such as an HTML error page. ([#48442](https://github.com/expo/expo/issues/48442) by [@julian-dueck](https://github.com/julian-dueck), [#48456](https://github.com/expo/expo/pull/48456) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
 - [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
 - [Web] Use `textContent` instead of `innerHTML` when injecting image styles, so the style tag is not a Trusted Types sink. ([#48649](https://github.com/expo/expo/pull/48649) by [@VoulgarisLeoni](https://github.com/VoulgarisLeoni))
 - [iOS] Fixed `generateBlurhashAsync` and `generateThumbhashAsync` never settling when the image could not be downloaded. ([#PR](https://github.com/expo/expo/pull/PR) ([#48894](https://github.com/expo/expo/pull/48894) by [@vonovak](https://github.com/vonovak))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

@@ -1,7 +1,7 @@
 ---
 title: Introduction to EAS Simulator
 sidebar_title: Introduction
-description: Run and control remote iOS Simulators and Android Emulators on EAS infrastructure from the CLI, an AI agent, or a browser.
+description: Run and control remote iOS Simulators and Android Emulators on EAS infrastructure from the CLI, REST API, an AI agent, or a browser.
 ---
 
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
@@ -10,7 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
 
-> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulator) if you are interested in trying it.
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
 **EAS Simulator** runs a remote iOS Simulator or Android Emulator on EAS infrastructure. You can install an app, inspect its user interface, and interact with it. You can also collect screenshots and recordings or share an iOS browser preview without running the device locally.
 
@@ -29,7 +29,7 @@ EAS Simulator does not replace local Xcode or Android Studio workflows when you 
 
 ## Use EAS Simulator with a coding agent
 
-For agentic development, start with the official EAS Simulator skill. Ask your coding agent to use the skill instead of giving it individual EAS CLI and controller commands. The skill covers the access check, build preparation, remote session, controller workflow, evidence collection, and cleanup.
+For agentic development, start with the official EAS Simulator skill. Ask your coding agent to use the skill instead of giving it individual EAS CLI and controller commands. The skill covers the access check, build preparation, session naming and limits, remote session, controller workflow, evidence collection, and cleanup.
 
 <RelatedSkills names={['eas-simulator']} />
 
@@ -49,25 +49,26 @@ A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another ba
 
 An EAS Simulator workflow has four stages:
 
-1. **Start a session** with EAS CLI. EAS boots a remote device and the selected controller.
-2. **Install your app.** The remote device starts blank, so install a local build or an EAS Build artifact.
-3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or the iOS browser preview.
-4. **Stop the session.** An unattended non-interactive session continues consuming usage until it stops.
+1. **Start a session** with EAS CLI, the [REST API](/preview/eas-simulator/rest-api/), or an authenticated [create session link](/preview/eas-simulator/create-session-links/). Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
+2. **Install your app.** Pass an EAS Build, application archive URL, or Expo Go to the start command, or install a local build through the controller after the session starts. A session without an application source starts with a blank device.
+3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or [Appium](https://appium.io/docs/en/) for programmatic control. Supported iOS sessions also include a web preview.
+4. **Stop the session.** Stop it explicitly when you finish. An unattended non-interactive session continues consuming usage until it stops or reaches a configured limit.
 
-EAS CLI manages the session lifecycle and connection configuration. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
+EAS CLI manages the session lifecycle and connection configuration. Use the REST API to manage sessions from your own HTTP client. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
 
 ## Available surfaces
 
-| Capability                                      | Availability |
-| ----------------------------------------------- | ------------ |
-| Remote iOS Simulator                            | <YesIcon />  |
-| Remote Android Emulator                         | <YesIcon />  |
-| Programmatic control with agent-device          | <YesIcon />  |
-| Programmatic control with Argent                | <YesIcon />  |
-| Live browser preview for iOS                    | <YesIcon />  |
-| Live browser preview for Android                | <NoIcon />   |
-| Physical device access                          | <NoIcon />   |
-| Fast Refresh with a development build and Metro | <YesIcon />  |
+| Capability                                                     | Availability |
+| -------------------------------------------------------------- | ------------ |
+| Remote iOS Simulator                                           | <YesIcon />  |
+| Remote Android Emulator                                        | <YesIcon />  |
+| Programmatic control with agent-device                         | <YesIcon />  |
+| Programmatic control with Argent                               | <YesIcon />  |
+| Programmatic control with [Appium](https://appium.io/docs/en/) | <YesIcon />  |
+| Live browser preview for iOS                                   | <YesIcon />  |
+| Live browser preview for Android                               | Coming soon  |
+| Physical device access                                         | <NoIcon />   |
+| Fast Refresh with Metro using Expo Go or a development build   | <YesIcon />  |
 
 Use [EAS Build](/build/introduction/) to create installable builds, and use local device tooling for physical devices.
 
@@ -88,9 +89,23 @@ Use [EAS Build](/build/introduction/) to create installable builds, and use loca
 />
 
 <BoxLink
+  title="Create session links"
+  description="Construct a URL that starts a browser preview from an EAS Build or application archive."
+  href="/preview/eas-simulator/create-session-links/"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
   title="CLI reference"
   description="Review the experimental simulator commands, flags, output, and managed environment file."
   href="/preview/eas-simulator/cli-reference/"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="REST API"
+  description="Create, inspect, connect to, and stop sessions from CI or your own HTTP client."
+  href="/preview/eas-simulator/rest-api/"
   Icon={Cloud01Icon}
 />
 

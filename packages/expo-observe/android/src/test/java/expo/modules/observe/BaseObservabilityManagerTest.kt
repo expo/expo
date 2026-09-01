@@ -1,55 +1,56 @@
 package expo.modules.observe
 
 import android.content.Context
-import expo.modules.observe.storage.PendingMetricsManager
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
-import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.SessionManager
-import expo.modules.appmetrics.storage.SessionWithLogs
-import expo.modules.appmetrics.storage.SessionWithMetrics
-import expo.modules.appmetrics.utils.TimeUtils
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class BaseObservabilityManagerTest {
-  private lateinit var mockContext: Context
-  private lateinit var mockSessionManager: SessionManager
-  private lateinit var mockEventDispatcher: EventDispatcher
-  private lateinit var mockPendingMetricsManager: PendingMetricsManager
-  private lateinit var mockPendingLogsManager: expo.modules.observe.storage.PendingLogsManager
-
-  private val testProjectId = "test-project-123"
-  private val testBaseUrl = "https://test.example.com/"
+  private val context = mockk<Context>(relaxed = true)
+  private val sessionManager = mockk<SessionManager>(relaxed = true)
+  private val eventDispatcher = mockk<EventDispatcher>(relaxed = true)
+  private var metricCursor = -1L
+  private var logCursor = -1L
 
   @Before
   fun setUp() {
-    mockContext = mockk(relaxed = true)
-    mockSessionManager = mockk(relaxed = true)
-    mockEventDispatcher = mockk(relaxed = true)
-    mockPendingMetricsManager = mockk(relaxed = true)
-    mockPendingLogsManager = mockk(relaxed = true)
-    coEvery { mockPendingMetricsManager.hasPendingMetrics() } returns true
-    coEvery { mockPendingLogsManager.hasPendingLogs() } returns true
-
-    // Default to enabled so existing tests aren't short-circuited
     mockkObject(ObservePreferences)
-    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true, sampleRate = null)
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true)
     every { ObservePreferences.getBundleDefaults(any()) } returns null
+    every { ObservePreferences.getLastDispatchedMetricId(any()) } answers { metricCursor }
+    every { ObservePreferences.setLastDispatchedMetricId(any(), any()) } answers {
+      metricCursor = secondArg()
+    }
+    every { ObservePreferences.getLastDispatchedLogId(any()) } answers { logCursor }
+    every { ObservePreferences.setLastDispatchedLogId(any(), any()) } answers {
+      logCursor = secondArg()
+    }
+    coEvery { sessionManager.getMaxMetricId() } returns null
+    coEvery { sessionManager.getMaxLogId() } returns null
   }
 
   @After
@@ -57,1281 +58,532 @@ class BaseObservabilityManagerTest {
     unmockkAll()
   }
 
-  // region dispatchingEnabled tests
+  // region Dispatching enabled tests
 
   @Test
-  fun `when dispatchingEnabled is false, pending metrics are removed without dispatching`() =
-    runTest {
-      // Arrange
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false)
+  fun `disabled dispatch fast forwards both cursors`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false)
+    coEvery { sessionManager.getMaxMetricId() } returns 12
+    coEvery { sessionManager.getMaxLogId() } returns 34
+    val manager = createManager()
 
-      val manager = createManager()
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentLogs()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert - dispatch is never called
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-
-      // Assert - sessions are never fetched
-      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
-
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-      coVerify(exactly = 0) { mockPendingMetricsManager.getPendingMetricIds(any()) }
-    }
+    assertEquals(12, metricCursor)
+    assertEquals(34, logCursor)
+    coVerify(exactly = 0) { sessionManager.getMetrics(any(), any()) }
+    coVerify(exactly = 0) { sessionManager.getLogs(any(), any()) }
+  }
 
   @Test
-  fun `when dispatchingEnabled is null on a stored config and isDebugBuild is false, metrics are dispatched`() =
-    runTest {
-      // Arrange — a stored config without an explicit dispatchingEnabled doesn't suppress dispatch on release builds.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = null)
-      val devMetric = createMetric("metric1", metricId = "dev-metric-id")
-      val devSession = createSessionWithMetrics(
-        sessionId = "dev-session",
-        environment = "development",
-        metrics = listOf(devMetric)
-      )
+  fun `disabled dispatch does not rewrite unchanged cursors`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false)
+    metricCursor = 12
+    logCursor = 34
+    coEvery { sessionManager.getMaxMetricId() } returns 12
+    coEvery { sessionManager.getMaxLogId() } returns 34
+    val manager = createManager()
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("dev-metric-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentLogs()
 
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
-      }
-
-      val manager = createManager(isDebugBuild = false)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify {
-        mockEventDispatcher.dispatch(
-          match { events ->
-            events.size == 1 && events[0].metadata.environment == "development"
-          }
-        )
-      }
-      assertEquals(1, removedIds.size)
-      assertTrue(removedIds.contains("dev-metric-id"))
-    }
+    assertEquals(12, metricCursor)
+    assertEquals(34, logCursor)
+    verify(exactly = 0) { ObservePreferences.setLastDispatchedMetricId(any(), any()) }
+    verify(exactly = 0) { ObservePreferences.setLastDispatchedLogId(any(), any()) }
+  }
 
   @Test
-  fun `when dispatchingEnabled is true, and isDebugBuild is false, metrics are dispatched`() =
-    runTest {
-      // Arrange — explicit opt-in lifts the debug default.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true)
-      val devMetric = createMetric("metric1", metricId = "dev-metric-id")
-      val devSession = createSessionWithMetrics(
-        sessionId = "dev-session",
-        environment = "development",
-        metrics = listOf(devMetric)
-      )
+  fun `when dispatchingEnabled is null on a stored config and isDebugBuild is false, metrics are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = null)
+    stubMetricDispatch()
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("dev-metric-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+    createManager().dispatchUnsentMetrics()
 
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
-      }
-
-      val manager = createManager(isDebugBuild = false)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify {
-        mockEventDispatcher.dispatch(
-          match { events ->
-            events.size == 1 && events[0].metadata.environment == "development"
-          }
-        )
-      }
-      assertEquals(1, removedIds.size)
-      assertTrue(removedIds.contains("dev-metric-id"))
-    }
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when stored config is absent and isDebugBuild is false, metrics are dispatched`() =
-    runTest {
-      // Arrange — release builds default to on.
-      every { ObservePreferences.getConfig(any()) } returns null
-      val prodMetric = createMetric("metric1", metricId = "prod-metric-id")
-      val prodSession = createSessionWithMetrics(
-        sessionId = "prod-session",
-        environment = "production",
-        metrics = listOf(prodMetric)
-      )
+  fun `when stored config is absent and isDebugBuild is false, metrics are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns null
+    stubMetricDispatch()
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("prod-metric-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+    createManager().dispatchUnsentMetrics()
 
-      val manager = createManager(isDebugBuild = false)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
-      // Act
-      manager.dispatchUnsentMetrics()
+  @Test
+  fun `when dispatchingEnabled is false, dispatchInDebug and sampleRate have no effect`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+      dispatchingEnabled = false,
+      dispatchInDebug = true,
+      sampleRate = 1.0
+    )
+    coEvery { sessionManager.getMaxMetricId() } returns 10
 
-      // Assert
-      coVerify {
-        mockEventDispatcher.dispatch(
-          match { events ->
-            events.size == 1 && events[0].metadata.environment == "production"
-          }
-        )
-      }
-    }
+    createManager(isDebugBuild = true, deterministicUniformValue = 0.0).dispatchUnsentMetrics()
+
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+  }
 
   // endregion
 
-  // region dispatchInDebug tests
+  // region Dispatch in debug tests
 
   @Test
-  fun `when dispatchInDebug is true on debug build, metrics are dispatched`() =
-    runTest {
-      // Arrange — explicit opt-in lifts the debug-build gate.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
-      val devMetric = createMetric("metric1", metricId = "dev-metric-id")
-      val devSession = createSessionWithMetrics(
-        sessionId = "dev-session",
-        environment = "development",
-        metrics = listOf(devMetric)
-      )
+  fun `when dispatchInDebug is true on debug build, metrics are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
+    stubMetricDispatch()
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("dev-metric-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+    createManager(isDebugBuild = true).dispatchUnsentMetrics()
 
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
-      }
-
-      val manager = createManager(isDebugBuild = true)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-      assertEquals(listOf("dev-metric-id"), removedIds)
-    }
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when dispatchInDebug is false explicitly on debug build, pending metrics are removed without dispatching`() =
-    runTest {
-      // Arrange — explicit opt-out behaves like the default on debug builds.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+  fun `when dispatchInDebug is false explicitly on debug build, metric cursor is fast forwarded without dispatching`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
 
-      val manager = createManager(isDebugBuild = true)
+    createManager(isDebugBuild = true).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert — short-circuit: no session lookup, no dispatch, and the pending table is cleared.
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when dispatchInDebug is true on release build, metrics dispatch normally`() =
-    runTest {
-      // Arrange — dispatchInDebug is a no-op on release builds; release always dispatches (subject to other gates).
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
-      val prodMetric = createMetric("metric1", metricId = "prod-metric-id")
-      val prodSession = createSessionWithMetrics(
-        sessionId = "prod-session",
-        environment = "production",
-        metrics = listOf(prodMetric)
-      )
+  fun `when dispatchInDebug is false on release build, metrics dispatch normally`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+    stubMetricDispatch()
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("prod-metric-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+    createManager(isDebugBuild = false).dispatchUnsentMetrics()
 
-      val manager = createManager(isDebugBuild = false)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
-
-  @Test
-  fun `when dispatchingEnabled is false, dispatchInDebug being true has no effect`() =
-    runTest {
-      // Arrange — dispatchingEnabled=false wins over dispatchInDebug=true.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
-        dispatchingEnabled = false,
-        dispatchInDebug = true
-      )
-      val manager = createManager(isDebugBuild = true)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   // endregion
 
-  // region Combined isDev signal tests (isJsDev || isDebugBuild)
+  // region Combined dev mode tests
 
   @Test
-  fun `when isJsDev is true on release native build, dispatchInDebug=false discards metrics`() =
-    runTest {
-      // Arrange — release native binary running a Metro dev JS bundle. JS dev alone gates dispatch.
-      every { ObservePreferences.getBundleDefaults(any()) } returns
-        PersistedBundleDefaults(environment = "development", isJsDev = true)
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
-      val manager = createManager(isDebugBuild = false)
+  fun `when isJsDev is true on release native build, dispatchInDebug false fast forwards the metric cursor`() = runTest {
+    every { ObservePreferences.getBundleDefaults(any()) } returns
+      PersistedBundleDefaults(environment = "development", isJsDev = true)
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
 
-      // Act
-      manager.dispatchUnsentMetrics()
+    createManager(isDebugBuild = false).dispatchUnsentMetrics()
 
-      // Assert
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when isJsDev is true and isDebugBuild is true, dispatchInDebug=true dispatches`() =
-    runTest {
-      // Arrange — both signals say dev; explicit override lifts the gate.
-      every { ObservePreferences.getBundleDefaults(any()) } returns
-        PersistedBundleDefaults(environment = "development", isJsDev = true)
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
-      val devMetric = createMetric("metric1", metricId = "dev-metric-id")
-      val devSession = createSessionWithMetrics(
-        sessionId = "dev-session",
-        environment = "development",
-        metrics = listOf(devMetric)
-      )
+  fun `when isJsDev is true and isDebugBuild is true, dispatchInDebug true dispatches`() = runTest {
+    every { ObservePreferences.getBundleDefaults(any()) } returns
+      PersistedBundleDefaults(environment = "development", isJsDev = true)
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
+    stubMetricDispatch()
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("dev-metric-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+    createManager(isDebugBuild = true).dispatchUnsentMetrics()
 
-      val manager = createManager(isDebugBuild = true)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
-
-  @Test
-  fun `when isJsDev is false and isDebugBuild is false, metrics dispatch (release everywhere)`() =
-    runTest {
-      // Arrange — full release path.
-      every { ObservePreferences.getBundleDefaults(any()) } returns
-        PersistedBundleDefaults(environment = "production", isJsDev = false)
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
-      val prodMetric = createMetric("metric1", metricId = "prod-metric-id")
-      val prodSession = createSessionWithMetrics(
-        sessionId = "prod-session",
-        environment = "production",
-        metrics = listOf(prodMetric)
-      )
-
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("prod-metric-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
-
-      val manager = createManager(isDebugBuild = false)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
-
-  @Test
-  fun `when getBundleDefaults returns null, gate is determined by isDebugBuild alone`() =
-    runTest {
-      // Arrange — cold start before JS has run. isJsDev defaults to false.
-      every { ObservePreferences.getBundleDefaults(any()) } returns null
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
-      val manager = createManager(isDebugBuild = true)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert — isDebugBuild alone gates dispatch.
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   // endregion
 
-  // region sampleRate tests
+  // region Sample rate tests
 
   @Test
-  fun `when sampleRate is null, metrics dispatch normally`() =
-    runTest {
-      // Arrange
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = null)
-      val metric = createMetric("metric1", metricId = "id1")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+  fun `when sampleRate is null, metrics dispatch normally`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = null)
+    stubMetricDispatch()
 
-      // `deterministicUniformValue` must not matter when sampleRate is null.
-      val manager = createManager(deterministicUniformValue = 0.999)
+    createManager(deterministicUniformValue = 0.999).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when deterministicUniformValue is less than sampleRate, metrics dispatch`() =
-    runTest {
-      // Arrange — sampleRate = 0.5, device value = 0.2 → in-sample
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
-      val metric = createMetric("metric1", metricId = "id1")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+  fun `when deterministicUniformValue is less than sampleRate, metrics dispatch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+    stubMetricDispatch()
 
-      val manager = createManager(deterministicUniformValue = 0.2)
+    createManager(deterministicUniformValue = 0.2).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when deterministicUniformValue is greater than sampleRate, metrics are dropped without dispatching`() =
-    runTest {
-      // Arrange — sampleRate = 0.5, device value = 0.8 → out-of-sample
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+  fun `when deterministicUniformValue is equal to sampleRate, metric cursor is fast forwarded`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
 
-      val manager = createManager(deterministicUniformValue = 0.8)
+    createManager(deterministicUniformValue = 0.5).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert — no dispatch, pending is cleared
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when deterministicUniformValue is equal to sampleRate, metrics are dropped without dispatching`() =
-    runTest {
-      // Arrange — sampleRate = 0.5, device value = 0.5 → out-of-sample (comparison is strict <).
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+  fun `when deterministicUniformValue is greater than sampleRate, metric cursor is fast forwarded`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
 
-      val manager = createManager(deterministicUniformValue = 0.5)
+    createManager(deterministicUniformValue = 0.8).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert — no dispatch, pending is cleared
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when sampleRate is 0_0, metrics are always dropped`() =
-    runTest {
-      // Arrange — any deterministic value is >= 0, so sampleRate=0 → out.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0)
-      val manager = createManager(deterministicUniformValue = 0.0)
+  fun `when sampleRate is 0_0, metric cursor is always fast forwarded`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
 
-      // Act
-      manager.dispatchUnsentMetrics()
+    createManager(deterministicUniformValue = 0.0).dispatchUnsentMetrics()
 
-      // Assert
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `when sampleRate is 1_0, metrics always dispatch`() =
-    runTest {
-      // Arrange — deterministic value of 0.999... is always < 1.0.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0)
-      val metric = createMetric("metric1", metricId = "id1")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+  fun `when sampleRate is 1_0, metrics always dispatch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0)
+    stubMetricDispatch()
 
-      val manager = createManager(deterministicUniformValue = 0.9999999)
+    createManager(deterministicUniformValue = 0.999).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `sampleRate above 1_0 is clamped and metrics dispatch`() =
-    runTest {
-      // Arrange — 2.0 → clamped to 1.0 → in-sample.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 2.0)
-      val metric = createMetric("metric1", metricId = "id1")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+  fun `sampleRate outside 0_0 to 1_0 is clamped`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 2.0)
+    stubMetricDispatch()
+    createManager(deterministicUniformValue = 0.95).dispatchUnsentMetrics()
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
 
-      val manager = createManager(deterministicUniformValue = 0.95)
+    metricCursor = -1
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = -0.5)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
+    createManager(deterministicUniformValue = 0.0).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
-
-  @Test
-  fun `sampleRate below 0_0 is clamped and metrics are dropped`() =
-    runTest {
-      // Arrange — -0.5 → clamped to 0.0 → out-of-sample.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = -0.5)
-      val manager = createManager(deterministicUniformValue = 0.0)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
-
-  @Test
-  fun `when dispatchingEnabled is false, sampleRate of 1_0 still drops metrics`() =
-    runTest {
-      // Arrange — dispatchingEnabled=false wins over sampleRate=1.0.
-      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false, sampleRate = 1.0)
-      val manager = createManager(deterministicUniformValue = 0.0)
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removeAllPendingMetrics() }
-    }
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   // endregion
 
-  // region Fetching metrics tests
+  // region Fetching and dispatch tests
 
   @Test
-  fun `dispatchUnsentMetrics does nothing when no pending metrics exist`() =
-    runTest {
-      // Arrange
-      coEvery { mockPendingMetricsManager.hasPendingMetrics() } returns false
+  fun `dispatchUnsentMetrics transforms grouped metrics to events and advances the cursor`() = runTest {
+    val metrics = listOf(metric(1, "one"), metric(2, "two"))
+    coEvery { sessionManager.getMaxMetricId() } returns 2
+    coEvery { sessionManager.getMetrics(-1, 2) } returns metrics
+    coEvery { sessionManager.getMetrics(2, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(setOf("session")) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
-      val manager = createManager()
+    createManager(chunkSize = 2).dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 0) { mockPendingMetricsManager.removePendingMetrics(any()) }
-      coVerify(exactly = 0) { mockPendingMetricsManager.getPendingMetricIds(any()) }
-      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
+    assertEquals(2, metricCursor)
+    coVerify {
+      eventDispatcher.dispatch(
+        match { events -> events.single().metrics.map { it.name } == listOf("one", "two") }
+      )
     }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics fetches pending IDs then sessions from SessionManager`() =
-    runTest {
-      // Arrange
-      val pendingIds = listOf("metric-1", "metric-2")
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(pendingIds, emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(pendingIds) } returns emptyList()
+  fun `dispatchUnsentMetrics advances past all rows with no matching sessions`() = runTest {
+    coEvery { sessionManager.getMaxMetricId() } returns 1
+    coEvery { sessionManager.getMetrics(-1, any()) } returns listOf(metric(1, "orphan"))
+    coEvery { sessionManager.getMetrics(1, any()) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns emptyList()
 
-      val manager = createManager()
+    createManager().dispatchUnsentMetrics()
 
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 2) { mockPendingMetricsManager.getPendingMetricIds(any()) }
-      coVerify(exactly = 1) { mockSessionManager.getSessionsWithMetrics(pendingIds) }
-    }
+    assertEquals(1, metricCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics cleans up orphaned pending IDs with no matching metrics`() =
-    runTest {
-      // Arrange - pending IDs exist but only some map to actual metrics
-      val metric1 = createMetric("metric1", metricId = "id1")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric1)
+  fun `dispatchUnsentMetrics dispatches valid rows and advances past rows with no matching sessions`() = runTest {
+    val metrics = listOf(
+      metric(1, "valid", sessionId = "valid-session"),
+      metric(2, "orphan", sessionId = "missing-session")
+    )
+    coEvery { sessionManager.getMaxMetricId() } returns 2
+    coEvery { sessionManager.getMetrics(-1, 2) } returns metrics
+    coEvery { sessionManager.getMetrics(2, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session(id = "valid-session"))
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 2).dispatchUnsentMetrics()
+
+    assertEquals(2, metricCursor)
+    coVerify {
+      eventDispatcher.dispatch(
+        match { events -> events.single().metrics.map { it.name } == listOf("valid") }
       )
-
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1", "orphaned-id"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-
-      val removedIdBatches = mutableListOf<List<String>>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIdBatches.add(firstArg<List<String>>().toList())
-      }
-
-      val manager = createManager()
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert - orphaned ID is cleaned up in first batch, dispatched ID in second
-      assertEquals(2, removedIdBatches.size)
-      assertEquals(listOf("orphaned-id"), removedIdBatches[0])
-      assertEquals(listOf("id1"), removedIdBatches[1])
     }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics cleans up all orphaned pending IDs when no sessions match`() =
-    runTest {
-      // Arrange - all pending IDs are orphaned
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("orphan-1", "orphan-2"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns emptyList()
+  fun `dispatchUnsentMetrics halves the chunk after 413 then resets to the default size`() = runTest {
+    val metrics = (1L..4L).map { metric(it, "metric-$it") }
+    coEvery { sessionManager.getMaxMetricId() } returns 4
+    coEvery { sessionManager.getMetrics(-1, 4) } returns metrics
+    coEvery { sessionManager.getMetrics(-1, 2) } returns metrics.take(2)
+    coEvery { sessionManager.getMetrics(2, 4) } returns metrics.drop(2)
+    coEvery { sessionManager.getMetrics(4, 4) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returnsMany listOf(
+      DispatchResult.PayloadTooLarge,
+      DispatchResult.Success,
+      DispatchResult.Success
+    )
 
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
-      }
+    createManager(chunkSize = 4).dispatchUnsentMetrics()
 
-      val manager = createManager()
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert - orphaned IDs are cleaned up, no dispatch
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      assertEquals(2, removedIds.size)
-      assertTrue(removedIds.contains("orphan-1"))
-      assertTrue(removedIds.contains("orphan-2"))
-    }
+    assertEquals(4, metricCursor)
+    coVerify(exactly = 1) { sessionManager.getMetrics(-1, 2) }
+    coVerify(exactly = 1) { sessionManager.getMetrics(2, 4) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics removes all metric IDs from pending after successful dispatch`() =
-    runTest {
-      // Arrange
-      val metric1 = createMetric("metric1", metricId = "id1")
-      val metric2 = createMetric("metric2", metricId = "id2")
-      val metric3 = createMetric("metric3", metricId = "id3")
-      val session1 = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric1, metric2)
-      )
-      val session2 = createSessionWithMetrics(
-        sessionId = "session-2",
-        environment = "production",
-        metrics = listOf(metric3)
-      )
-
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1", "id2", "id3"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session1, session2)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
-      }
-
-      val manager = createManager()
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert - ALL metric IDs from ALL sessions are removed from pending
-      assertEquals("All 3 metric IDs should be removed from pending", 3, removedIds.size)
-      assertTrue("Metric id1 should be removed from pending", removedIds.contains("id1"))
-      assertTrue("Metric id2 should be removed from pending", removedIds.contains("id2"))
-      assertTrue("Metric id3 should be removed from pending", removedIds.contains("id3"))
+  fun `dispatchUnsentMetrics halves the fetched count after missing sessions`() = runTest {
+    val metrics = listOf(
+      metric(1, "one", sessionId = "valid-session"),
+      metric(2, "two", sessionId = "valid-session"),
+      metric(3, "orphan-three", sessionId = "missing-session"),
+      metric(4, "orphan-four", sessionId = "missing-session")
+    )
+    coEvery { sessionManager.getMaxMetricId() } returns 4
+    coEvery { sessionManager.getMetrics(-1, 4) } returns metrics
+    coEvery { sessionManager.getMetrics(-1, 2) } returns metrics.take(2)
+    coEvery { sessionManager.getMetrics(2, 4) } returns metrics.drop(2)
+    coEvery { sessionManager.getMetrics(4, 4) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } answers {
+      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
     }
+    coEvery { eventDispatcher.dispatch(any()) } returnsMany listOf(
+      DispatchResult.PayloadTooLarge,
+      DispatchResult.Success
+    )
+
+    createManager(chunkSize = 4).dispatchUnsentMetrics()
+
+    assertEquals(4, metricCursor)
+    coVerify(exactly = 1) { sessionManager.getMetrics(-1, 2) }
+    coVerify(exactly = 0) { sessionManager.getMetrics(-1, 1) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics removes metric IDs from pending on NonRetryable result`() =
-    runTest {
-      // OTLP non-retryable responses (e.g. 400, 403, 404) drop the batch: the pending IDs
-      // are removed so the same rows don't keep getting refused on every dispatch round.
-      val metric1 = createMetric("metric1", metricId = "id1")
-      val metric2 = createMetric("metric2", metricId = "id2")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric1, metric2)
-      )
+  fun `dispatchUnsentMetrics drops a non-retryable chunk and stops`() = runTest {
+    val metrics = listOf(metric(1, "one"), metric(2, "two"))
+    coEvery { sessionManager.getMaxMetricId() } returns 3
+    coEvery { sessionManager.getMetrics(-1, 2) } returns metrics
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.NonRetryableFailure("HTTP 400")
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1", "id2"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.NonRetryableFailure("HTTP 400")
+    createManager(chunkSize = 2).dispatchUnsentMetrics()
 
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
-      }
-
-      val manager = createManager()
-
-      manager.dispatchUnsentMetrics()
-
-      assertEquals(2, removedIds.size)
-      assertTrue(removedIds.contains("id1"))
-      assertTrue(removedIds.contains("id2"))
-    }
+    assertEquals(2, metricCursor)
+    coVerify(exactly = 0) { sessionManager.getMetrics(2, 2) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics does not remove metric IDs from pending on Retryable result`() =
-    runTest {
-      // A retryable response (e.g. 503, transport error) should leave the pending IDs alone
-      // so the next dispatch round picks the same rows up again.
-      val metric1 = createMetric("metric1", metricId = "id1")
-      val metric2 = createMetric("metric2", metricId = "id2")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric1, metric2)
-      )
-
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1", "id2"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.RetryableFailure()
-
-      val manager = createManager()
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify(exactly = 0) { mockPendingMetricsManager.removePendingMetrics(any()) }
+  fun `dispatchUnsentMetrics stops reading chunks after cancellation`() = runTest {
+    val metrics = listOf(metric(1, "one"), metric(2, "two"))
+    coEvery { sessionManager.getMaxMetricId() } returns 3
+    coEvery { sessionManager.getMetrics(-1, 2) } returns metrics
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } coAnswers {
+      currentCoroutineContext().cancel()
+      DispatchResult.Success
     }
+
+    launch { createManager(chunkSize = 2).dispatchUnsentMetrics() }.join()
+
+    assertEquals(2, metricCursor)
+    coVerify(exactly = 0) { sessionManager.getMetrics(2, 2) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics dispatches a backlog in successive chunks`() =
-    runTest {
-      val pendingIds = mutableListOf("metric-1", "metric-2", "metric-3")
-      val requestedChunks = mutableListOf<List<String>>()
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers { pendingIds.take(2) }
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        val ids = firstArg<List<String>>()
-        requestedChunks.add(ids)
-        ids.map { id ->
-          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        val ids = firstArg<List<String>>()
-        removedIds.addAll(ids)
-        pendingIds.removeAll(ids.toSet())
-      }
+  fun `dispatchUnsentMetrics dispatches a backlog in successive chunks`() = runTest {
+    val first = listOf(metric(1, "one"), metric(2, "two"))
+    val second = listOf(metric(3, "three"), metric(4, "four"))
+    coEvery { sessionManager.getMaxMetricId() } returns 4
+    coEvery { sessionManager.getMetrics(-1, 2) } returns first
+    coEvery { sessionManager.getMetrics(2, 2) } returns second
+    coEvery { sessionManager.getMetrics(4, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
-      createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
+    createManager(chunkSize = 2).dispatchUnsentMetrics()
 
-      assertEquals(
-        listOf(listOf("metric-1", "metric-2"), listOf("metric-3")),
-        requestedChunks
-      )
-      assertEquals(listOf("metric-1", "metric-2", "metric-3"), removedIds)
-      coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 3) { mockPendingMetricsManager.getPendingMetricIds(2) }
-    }
+    assertEquals(4, metricCursor)
+    coVerify(exactly = 2) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics stops reading chunks after cancellation`() =
-    runTest {
-      val pendingIds = mutableListOf("metric-1", "metric-2", "metric-3")
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers { pendingIds.take(2) }
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } coAnswers {
-        pendingIds.removeAll(firstArg<List<String>>().toSet())
-        currentCoroutineContext().cancel()
-      }
+  fun `dispatchUnsentMetrics drops a single metric that still gets 413`() = runTest {
+    stubMetricDispatch(result = DispatchResult.PayloadTooLarge)
 
-      launch {
-        createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
-      }.join()
+    createManager().dispatchUnsentMetrics()
 
-      assertEquals(listOf("metric-3"), pendingIds)
-      coVerify(exactly = 1) { mockPendingMetricsManager.getPendingMetricIds(2) }
-    }
+    assertEquals(1, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+    coVerify(exactly = 0) { sessionManager.getMetrics(1, any()) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics halves the chunk after 413 then resets to the default size`() =
-    runTest {
-      val requestedLimits = mutableListOf<Int>()
-      val defaultChunks = ArrayDeque(
-        listOf(
-          listOf("metric-1", "metric-2", "metric-3", "metric-4"),
-          listOf("metric-3", "metric-4"),
-          emptyList()
-        )
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(4) } answers {
-        requestedLimits.add(4)
-        defaultChunks.removeFirst()
-      }
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers {
-        requestedLimits.add(2)
-        listOf("metric-1", "metric-2")
-      }
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returnsMany listOf(
-        DispatchResult.PayloadTooLarge,
-        DispatchResult.Success,
-        DispatchResult.Success
-      )
-      val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedChunks.add(firstArg<List<String>>())
-      }
+  fun `dispatchUnsentLogs transforms grouped logs to events and advances independently`() = runTest {
+    val logs = listOf(log(4, "first"), log(5, "second"))
+    coEvery { sessionManager.getMaxLogId() } returns 5
+    coEvery { sessionManager.getLogs(-1, 2) } returns logs
+    coEvery { sessionManager.getLogs(5, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(setOf("session")) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
 
-      createManager(dispatchChunkSize = 4).dispatchUnsentMetrics()
+    createManager(chunkSize = 2).dispatchUnsentLogs()
 
-      assertEquals(listOf(4, 2, 4, 4), requestedLimits)
-      assertEquals(
-        listOf(listOf("metric-1", "metric-2"), listOf("metric-3", "metric-4")),
-        removedChunks
+    assertEquals(5, logCursor)
+    assertEquals(-1, metricCursor)
+    coVerify {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("first", "second") }
       )
     }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics halves the dispatched count after removing orphans`() =
-    runTest {
-      val requestedLimits = mutableListOf<Int>()
-      val defaultChunks = ArrayDeque(
-        listOf(
-          listOf("metric-1", "metric-2", "orphan-1", "orphan-2"),
-          emptyList()
-        )
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(4) } answers {
-        requestedLimits.add(4)
-        defaultChunks.removeFirst()
-      }
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(1) } answers {
-        requestedLimits.add(1)
-        listOf("metric-1")
-      }
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        firstArg<List<String>>().filter { it.startsWith("metric-") }.map { id ->
-          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returnsMany listOf(
-        DispatchResult.PayloadTooLarge,
-        DispatchResult.Success
-      )
+  fun `dispatchUnsentLogs dispatches valid rows and advances past rows with no matching sessions`() = runTest {
+    val logs = listOf(
+      log(1, "valid", sessionId = "valid-session"),
+      log(2, "orphan", sessionId = "missing-session")
+    )
+    coEvery { sessionManager.getMaxLogId() } returns 2
+    coEvery { sessionManager.getLogs(-1, 2) } returns logs
+    coEvery { sessionManager.getLogs(2, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session(id = "valid-session"))
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
 
-      createManager(dispatchChunkSize = 4).dispatchUnsentMetrics()
+    createManager(chunkSize = 2).dispatchUnsentLogs()
 
-      assertEquals(listOf(4, 1, 4), requestedLimits)
+    assertEquals(2, logCursor)
+    coVerify {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("valid") }
+      )
     }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics drops a single metric that still gets 413`() =
-    runTest {
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(4) } returnsMany
-        listOf(listOf("metric-1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(
-        createSessionWithMetrics(
-          "session-1",
-          "production",
-          listOf(createMetric("metric-1", metricId = "metric-1"))
-        )
-      )
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.PayloadTooLarge
+  fun `dispatchUnsentLogs dispatches a backlog in successive chunks`() = runTest {
+    val first = listOf(log(1, "one"), log(2, "two"))
+    val second = listOf(log(3, "three"), log(4, "four"))
+    coEvery { sessionManager.getMaxLogId() } returns 4
+    coEvery { sessionManager.getLogs(-1, 2) } returns first
+    coEvery { sessionManager.getLogs(2, 2) } returns second
+    coEvery { sessionManager.getLogs(4, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
 
-      createManager(dispatchChunkSize = 4).dispatchUnsentMetrics()
+    createManager(chunkSize = 2).dispatchUnsentLogs()
 
-      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("metric-1")) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.getPendingMetricIds(4) }
-    }
+    assertEquals(4, logCursor)
+    coVerify(exactly = 2) { eventDispatcher.dispatchLogs(any()) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics halves to one then drops the oversized metric`() =
-    runTest {
-      val requestedLimits = mutableListOf<Int>()
-      val defaultChunks = ArrayDeque(
-        listOf(listOf("metric-1", "metric-2"), emptyList())
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers {
-        requestedLimits.add(2)
-        defaultChunks.removeFirst()
-      }
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(1) } answers {
-        requestedLimits.add(1)
-        listOf("metric-1")
-      }
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.PayloadTooLarge
-
-      createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
-
-      assertEquals(listOf(2, 1), requestedLimits)
-      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("metric-1")) }
+  fun `dispatchUnsentLogs stops reading chunks after cancellation`() = runTest {
+    val logs = listOf(log(1, "one"), log(2, "two"))
+    coEvery { sessionManager.getMaxLogId() } returns 3
+    coEvery { sessionManager.getLogs(-1, 2) } returns logs
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } coAnswers {
+      currentCoroutineContext().cancel()
+      DispatchResult.Success
     }
+
+    launch { createManager(chunkSize = 2).dispatchUnsentLogs() }.join()
+
+    assertEquals(2, logCursor)
+    coVerify(exactly = 0) { sessionManager.getLogs(2, 2) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics does not set the retry gate after 413`() =
-    runTest {
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } returnsMany
-        listOf(listOf("metric-1"), listOf("metric-2"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returnsMany listOf(
-        DispatchResult.PayloadTooLarge,
-        DispatchResult.Success
-      )
-      val manager = createManager(
-        currentTimeMs = { 1_700_000_000_000L },
-        dispatchChunkSize = 2
-      )
-
-      manager.dispatchUnsentMetrics()
-      manager.dispatchUnsentMetrics()
-
-      coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
+  fun `dispatchUnsentLogs halves the fetched count after missing sessions`() = runTest {
+    val logs = listOf(
+      log(1, "one", sessionId = "valid-session"),
+      log(2, "two", sessionId = "valid-session"),
+      log(3, "orphan-three", sessionId = "missing-session"),
+      log(4, "orphan-four", sessionId = "missing-session")
+    )
+    coEvery { sessionManager.getMaxLogId() } returns 4
+    coEvery { sessionManager.getLogs(-1, 4) } returns logs
+    coEvery { sessionManager.getLogs(-1, 2) } returns logs.take(2)
+    coEvery { sessionManager.getLogs(2, 4) } returns logs.drop(2)
+    coEvery { sessionManager.getLogs(4, 4) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } answers {
+      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
     }
+    coEvery { eventDispatcher.dispatchLogs(any()) } returnsMany listOf(
+      DispatchResult.PayloadTooLarge,
+      DispatchResult.Success
+    )
+
+    createManager(chunkSize = 4).dispatchUnsentLogs()
+
+    assertEquals(4, logCursor)
+    coVerify(exactly = 1) { sessionManager.getLogs(-1, 2) }
+    coVerify(exactly = 0) { sessionManager.getLogs(-1, 1) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics stops after a retryable chunk and sets the gate`() =
-    runTest {
-      val session = createSessionWithMetrics(
-        "session-1",
-        "production",
-        listOf(
-          createMetric("metric-1", metricId = "metric-1"),
-          createMetric("metric-2", metricId = "metric-2")
-        )
-      )
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } returns listOf("metric-1", "metric-2")
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns
-        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
+  fun `dispatchUnsentLogs drops a single log that still gets 413`() = runTest {
+    stubLogDispatch(result = DispatchResult.PayloadTooLarge)
 
-      val manager = createManager(
-        currentTimeMs = { 1_700_000_000_000L },
-        dispatchChunkSize = 2
-      )
-      manager.dispatchUnsentMetrics()
-      manager.dispatchUnsentMetrics()
+    createManager().dispatchUnsentLogs()
 
-      coVerify(exactly = 1) { mockPendingMetricsManager.getPendingMetricIds(2) }
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 0) { mockPendingMetricsManager.removePendingMetrics(any()) }
-    }
+    assertEquals(1, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(any()) }
+    coVerify(exactly = 0) { sessionManager.getLogs(1, any()) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics drops a non-retryable chunk and stops`() =
-    runTest {
-      val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } returnsMany
-        listOf(listOf("metric-1", "metric-2"), listOf("metric-3"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returnsMany listOf(
-        DispatchResult.NonRetryableFailure("HTTP 400"),
-        DispatchResult.Success
-      )
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedChunks.add(firstArg<List<String>>())
-      }
+  fun `dispatchUnsentLogs drops a non-retryable chunk and stops`() = runTest {
+    val logs = listOf(log(1, "one"), log(2, "two"))
+    coEvery { sessionManager.getMaxLogId() } returns 3
+    coEvery { sessionManager.getLogs(-1, 2) } returns logs
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.NonRetryableFailure("HTTP 400")
 
-      createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
+    createManager(chunkSize = 2).dispatchUnsentLogs()
 
-      assertEquals(listOf(listOf("metric-1", "metric-2")), removedChunks)
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.getPendingMetricIds(2) }
-    }
-
-  @Test
-  fun `dispatchUnsentMetrics removes an orphaned chunk and continues`() =
-    runTest {
-      val pendingIds = mutableListOf("orphan-1", "metric-1", "metric-2")
-      val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers { pendingIds.take(2) }
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
-        firstArg<List<String>>()
-          .filter { it.startsWith("metric-") }
-          .map { id ->
-            createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
-          }
-      }
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        val ids = firstArg<List<String>>()
-        removedChunks.add(ids)
-        pendingIds.removeAll(ids.toSet())
-      }
-
-      createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
-
-      assertEquals(
-        listOf(listOf("orphan-1"), listOf("metric-1"), listOf("metric-2")),
-        removedChunks
-      )
-      coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs dispatches a backlog in successive chunks`() =
-    runTest {
-      val pendingIds = mutableListOf("log-1", "log-2", "log-3")
-      val requestedChunks = mutableListOf<List<String>>()
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers { pendingIds.take(2) }
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        val ids = firstArg<List<String>>()
-        requestedChunks.add(ids)
-        ids.map { id ->
-          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
-      coEvery { mockPendingLogsManager.removePendingLogs(any()) } answers {
-        val ids = firstArg<List<String>>()
-        removedIds.addAll(ids)
-        pendingIds.removeAll(ids.toSet())
-      }
-
-      createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
-
-      assertEquals(listOf(listOf("log-1", "log-2"), listOf("log-3")), requestedChunks)
-      assertEquals(listOf("log-1", "log-2", "log-3"), removedIds)
-      coVerify(exactly = 2) { mockEventDispatcher.dispatchLogs(any()) }
-      coVerify(exactly = 3) { mockPendingLogsManager.getPendingLogIds(2) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs stops reading chunks after cancellation`() =
-    runTest {
-      val pendingIds = mutableListOf("log-1", "log-2", "log-3")
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers { pendingIds.take(2) }
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
-      coEvery { mockPendingLogsManager.removePendingLogs(any()) } coAnswers {
-        pendingIds.removeAll(firstArg<List<String>>().toSet())
-        currentCoroutineContext().cancel()
-      }
-
-      launch {
-        createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
-      }.join()
-
-      assertEquals(listOf("log-3"), pendingIds)
-      coVerify(exactly = 1) { mockPendingLogsManager.getPendingLogIds(2) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs halves the chunk after 413 then resets to the default size`() =
-    runTest {
-      val requestedLimits = mutableListOf<Int>()
-      val defaultChunks = ArrayDeque(
-        listOf(
-          listOf("log-1", "log-2", "log-3", "log-4"),
-          listOf("log-3", "log-4"),
-          emptyList()
-        )
-      )
-      coEvery { mockPendingLogsManager.getPendingLogIds(4) } answers {
-        requestedLimits.add(4)
-        defaultChunks.removeFirst()
-      }
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers {
-        requestedLimits.add(2)
-        listOf("log-1", "log-2")
-      }
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returnsMany listOf(
-        DispatchResult.PayloadTooLarge,
-        DispatchResult.Success,
-        DispatchResult.Success
-      )
-      val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingLogsManager.removePendingLogs(any()) } answers {
-        removedChunks.add(firstArg<List<String>>())
-      }
-
-      createManager(dispatchChunkSize = 4).dispatchUnsentLogs()
-
-      assertEquals(listOf(4, 2, 4, 4), requestedLimits)
-      assertEquals(listOf(listOf("log-1", "log-2"), listOf("log-3", "log-4")), removedChunks)
-    }
-
-  @Test
-  fun `dispatchUnsentLogs drops a single log that still gets 413`() =
-    runTest {
-      coEvery { mockPendingLogsManager.getPendingLogIds(4) } returnsMany
-        listOf(listOf("log-1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(
-        createSessionWithLogs(
-          "session-1",
-          "production",
-          listOf(createLog("log-1", logId = "log-1"))
-        )
-      )
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.PayloadTooLarge
-
-      createManager(dispatchChunkSize = 4).dispatchUnsentLogs()
-
-      coVerify(exactly = 1) { mockPendingLogsManager.removePendingLogs(listOf("log-1")) }
-      coVerify(exactly = 1) { mockPendingLogsManager.getPendingLogIds(4) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs halves the dispatched count after removing orphans`() =
-    runTest {
-      val requestedLimits = mutableListOf<Int>()
-      val defaultChunks = ArrayDeque(
-        listOf(
-          listOf("log-1", "log-2", "orphan-1", "orphan-2"),
-          emptyList()
-        )
-      )
-      coEvery { mockPendingLogsManager.getPendingLogIds(4) } answers {
-        requestedLimits.add(4)
-        defaultChunks.removeFirst()
-      }
-      coEvery { mockPendingLogsManager.getPendingLogIds(1) } answers {
-        requestedLimits.add(1)
-        listOf("log-1")
-      }
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        firstArg<List<String>>().filter { it.startsWith("log-") }.map { id ->
-          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returnsMany listOf(
-        DispatchResult.PayloadTooLarge,
-        DispatchResult.Success
-      )
-
-      createManager(dispatchChunkSize = 4).dispatchUnsentLogs()
-
-      assertEquals(listOf(4, 1, 4), requestedLimits)
-    }
-
-  @Test
-  fun `dispatchUnsentLogs halves to one then drops the oversized log`() =
-    runTest {
-      val requestedLimits = mutableListOf<Int>()
-      val defaultChunks = ArrayDeque(
-        listOf(listOf("log-1", "log-2"), emptyList())
-      )
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers {
-        requestedLimits.add(2)
-        defaultChunks.removeFirst()
-      }
-      coEvery { mockPendingLogsManager.getPendingLogIds(1) } answers {
-        requestedLimits.add(1)
-        listOf("log-1")
-      }
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.PayloadTooLarge
-
-      createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
-
-      assertEquals(listOf(2, 1), requestedLimits)
-      coVerify(exactly = 1) { mockPendingLogsManager.removePendingLogs(listOf("log-1")) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs does not set the retry gate after 413`() =
-    runTest {
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } returnsMany
-        listOf(listOf("log-1"), listOf("log-2"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returnsMany listOf(
-        DispatchResult.PayloadTooLarge,
-        DispatchResult.Success
-      )
-      val manager = createManager(
-        currentTimeMs = { 1_700_000_000_000L },
-        dispatchChunkSize = 2
-      )
-
-      manager.dispatchUnsentLogs()
-      manager.dispatchUnsentLogs()
-
-      coVerify(exactly = 2) { mockEventDispatcher.dispatchLogs(any()) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs stops after a retryable chunk and sets the gate`() =
-    runTest {
-      val session = createSessionWithLogs(
-        "session-1",
-        "production",
-        listOf(
-          createLog("log-1", logId = "log-1"),
-          createLog("log-2", logId = "log-2")
-        )
-      )
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } returns listOf("log-1", "log-2")
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns
-        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
-
-      val manager = createManager(
-        currentTimeMs = { 1_700_000_000_000L },
-        dispatchChunkSize = 2
-      )
-      manager.dispatchUnsentLogs()
-      manager.dispatchUnsentLogs()
-
-      coVerify(exactly = 1) { mockPendingLogsManager.getPendingLogIds(2) }
-      coVerify(exactly = 1) { mockEventDispatcher.dispatchLogs(any()) }
-      coVerify(exactly = 0) { mockPendingLogsManager.removePendingLogs(any()) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs drops a non-retryable chunk and stops`() =
-    runTest {
-      val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } returnsMany
-        listOf(listOf("log-1", "log-2"), listOf("log-3"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        firstArg<List<String>>().map { id ->
-          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-        }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returnsMany listOf(
-        DispatchResult.NonRetryableFailure("HTTP 400"),
-        DispatchResult.Success
-      )
-      coEvery { mockPendingLogsManager.removePendingLogs(any()) } answers {
-        removedChunks.add(firstArg<List<String>>())
-      }
-
-      createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
-
-      assertEquals(listOf(listOf("log-1", "log-2")), removedChunks)
-      coVerify(exactly = 1) { mockEventDispatcher.dispatchLogs(any()) }
-      coVerify(exactly = 1) { mockPendingLogsManager.getPendingLogIds(2) }
-    }
-
-  @Test
-  fun `dispatchUnsentLogs removes an orphaned chunk and continues`() =
-    runTest {
-      val pendingIds = mutableListOf("orphan-1", "log-1", "log-2")
-      val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers { pendingIds.take(2) }
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
-        firstArg<List<String>>()
-          .filter { it.startsWith("log-") }
-          .map { id ->
-            createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
-          }
-      }
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
-      coEvery { mockPendingLogsManager.removePendingLogs(any()) } answers {
-        val ids = firstArg<List<String>>()
-        removedChunks.add(ids)
-        pendingIds.removeAll(ids.toSet())
-      }
-
-      createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
-
-      assertEquals(listOf(listOf("orphan-1"), listOf("log-1"), listOf("log-2")), removedChunks)
-      coVerify(exactly = 2) { mockEventDispatcher.dispatchLogs(any()) }
-    }
+    assertEquals(2, logCursor)
+    coVerify(exactly = 0) { sessionManager.getLogs(2, 2) }
+  }
 
   // endregion
 
   // region Cleanup tests
 
   @Test
-  fun `cleanup prunes pending metrics, pending logs, stale sessions, and stale logs`() =
-    runTest {
-      // Arrange
-      val manager = createManager()
+  fun `cleanup prunes app metrics storage and deletes the legacy database`() = runTest {
+    createManager().cleanup()
 
-      // Act
-      manager.cleanup()
-
-      // Assert
-      coVerify(exactly = 1) { mockPendingMetricsManager.cleanupOldPendingMetrics() }
-      coVerify(exactly = 1) { mockPendingLogsManager.cleanupOldPendingLogs() }
-      coVerify(exactly = 1) { mockSessionManager.cleanupOldSessions() }
-      coVerify(exactly = 1) { mockSessionManager.cleanupOldLogs() }
-    }
+    coVerify(exactly = 1) { sessionManager.cleanupOldSessions() }
+    coVerify(exactly = 1) { sessionManager.cleanupOldLogs() }
+    verify(exactly = 1) { context.deleteDatabase("eas_observe") }
+  }
 
   // endregion
 
@@ -1339,74 +591,55 @@ class BaseObservabilityManagerTest {
 
   @Test
   fun `Metadata fromSessionMetadata transforms all fields correctly`() {
-    // Arrange
-    val session = Session(
-      id = "test-session",
-      startTimestamp = "2025-01-01T00:00:00.000Z",
-      isActive = true,
-      environment = "production",
-      appName = "TestApp",
-      appIdentifier = "com.test.app",
-      appVersion = "1.2.3",
-      appBuildNumber = "42",
-      appUpdateId = "update-123",
-      deviceOs = "Android",
-      deviceOsVersion = "14",
-      deviceModel = "Pixel 8",
-      deviceName = "oriole",
-      expoSdkVersion = "52.0.0",
-      reactNativeVersion = "0.76.0",
-      clientVersion = "1.0.0",
-      languageTag = "en-US"
+    val metadata = Metadata.fromSessionMetadata(
+      Session(
+        id = "session",
+        startTimestamp = "2025-01-01T00:00:00Z",
+        environment = "production",
+        appName = "TestApp",
+        appIdentifier = "dev.expo.test",
+        appVersion = "1.2.3",
+        appBuildNumber = "42",
+        appUpdateId = "update",
+        appUpdateRuntimeVersion = "1",
+        appUpdateRequestHeaders = """{"expo-channel-name":"production"}""",
+        appEasBuildId = "build",
+        deviceOs = "Android",
+        deviceOsVersion = "16",
+        deviceModel = "Pixel",
+        deviceName = "pixel",
+        expoSdkVersion = "55",
+        reactNativeVersion = "0.81",
+        clientVersion = "1",
+        languageTag = "en-US"
+      )
     )
 
-    // Act
-    val metadata = Metadata.fromSessionMetadata(session)
-
-    // Assert
     assertEquals("TestApp", metadata.appName)
-    assertEquals("com.test.app", metadata.appIdentifier)
+    assertEquals("dev.expo.test", metadata.appIdentifier)
     assertEquals("1.2.3", metadata.appVersion)
     assertEquals("42", metadata.appBuildNumber)
-    assertEquals("update-123", metadata.appUpdatesInfo?.updateId)
+    assertEquals("update", metadata.appUpdatesInfo?.updateId)
+    assertEquals("1", metadata.appUpdatesInfo?.runtimeVersion)
+    assertEquals("production", metadata.appUpdatesInfo?.channel)
+    assertEquals("build", metadata.appEasBuildId)
     assertEquals("Android", metadata.deviceOs)
-    assertEquals("14", metadata.deviceOsVersion)
-    assertEquals("Pixel 8", metadata.deviceModel)
-    assertEquals("oriole", metadata.deviceName)
-    assertEquals("52.0.0", metadata.expoSdkVersion)
-    assertEquals("0.76.0", metadata.reactNativeVersion)
-    assertEquals("1.0.0", metadata.clientVersion)
+    assertEquals("16", metadata.deviceOsVersion)
+    assertEquals("Pixel", metadata.deviceModel)
+    assertEquals("pixel", metadata.deviceName)
+    assertEquals("55", metadata.expoSdkVersion)
+    assertEquals("0.81", metadata.reactNativeVersion)
+    assertEquals("1", metadata.clientVersion)
     assertEquals("en-US", metadata.languageTag)
     assertEquals("production", metadata.environment)
   }
 
   @Test
   fun `Metadata fromSessionMetadata handles null fields`() {
-    // Arrange
-    val session = Session(
-      id = "test-session",
-      startTimestamp = "2025-01-01T00:00:00.000Z",
-      isActive = true,
-      environment = null,
-      appName = null,
-      appIdentifier = null,
-      appVersion = null,
-      appBuildNumber = null,
-      appUpdateId = null,
-      deviceOs = null,
-      deviceOsVersion = null,
-      deviceModel = null,
-      deviceName = null,
-      expoSdkVersion = null,
-      reactNativeVersion = null,
-      clientVersion = null,
-      languageTag = null
+    val metadata = Metadata.fromSessionMetadata(
+      Session(id = "session", startTimestamp = "2025-01-01T00:00:00Z")
     )
 
-    // Act
-    val metadata = Metadata.fromSessionMetadata(session)
-
-    // Assert
     assertNull(metadata.appName)
     assertEquals("", metadata.appIdentifier)
     assertNull(metadata.appVersion)
@@ -1425,406 +658,228 @@ class BaseObservabilityManagerTest {
 
   @Test
   fun `EASMetric fromMetric transforms all fields correctly`() {
-    // Arrange
-    val metric = Metric(
-      metricId = "metric-123",
-      sessionId = "session-456",
-      timestamp = "2025-01-01T12:00:00.000Z",
-      category = "performance",
-      name = "app_start",
-      value = 1500.5,
-      routeName = "/home",
-      params = """{"key":"value"}"""
+    val easMetric = EASMetric.fromMetric(
+      Metric(
+        id = 1,
+        sessionId = "session",
+        timestamp = "2025-01-01T00:00:00Z",
+        category = "navigation",
+        name = "route",
+        value = 1.5,
+        routeName = "/home",
+        updateId = "update",
+        params = """{"key":"value"}"""
+      )
     )
 
-    // Act
-    val easMetric = EASMetric.fromMetric(metric)
-
-    // Assert
-    assertEquals("session-456", easMetric.sessionId)
-    assertEquals("2025-01-01T12:00:00.000Z", easMetric.timestamp)
-    assertEquals("performance", easMetric.category)
-    assertEquals("app_start", easMetric.name)
-    assertEquals(1500.5, easMetric.value, 0.001)
+    assertEquals("session", easMetric.sessionId)
+    assertEquals("2025-01-01T00:00:00Z", easMetric.timestamp)
+    assertEquals("navigation", easMetric.category)
+    assertEquals("route", easMetric.name)
+    assertEquals(1.5, easMetric.value, 0.0)
     assertEquals("/home", easMetric.routeName)
-    assertEquals(
-      buildJsonObject { put("key", "value") },
-      easMetric.customParams
-    )
+    assertEquals("update", easMetric.updateId)
+    assertEquals(buildJsonObject { put("key", "value") }, easMetric.customParams)
   }
 
   @Test
   fun `EASMetric fromMetric handles null optional fields`() {
-    // Arrange
-    val metric = Metric(
-      metricId = "metric-123",
-      sessionId = "session-456",
-      timestamp = "2025-01-01T12:00:00.000Z",
-      category = "performance",
-      name = "app_start",
-      value = 1500.5,
-      routeName = null,
-      params = null
-    )
+    val easMetric = EASMetric.fromMetric(metric(1, "metric"))
 
-    // Act
-    val easMetric = EASMetric.fromMetric(metric)
-
-    // Assert
     assertNull(easMetric.routeName)
+    assertNull(easMetric.updateId)
     assertNull(easMetric.customParams)
   }
 
   @Test
-  fun `dispatchUnsentMetrics transforms SessionWithMetrics to Event correctly`() =
-    runTest {
-      // Arrange
-      val metric1 = createMetric("loadTime", value = 0.5, category = "appStartup", metricId = "m1")
-      val metric2 = createMetric("launchTime", value = 1.2, category = "appStartup", metricId = "m2")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        appName = "MyApp",
-        appVersion = "2.0.0",
-        metrics = listOf(metric1, metric2)
+  fun `dispatchUnsentMetrics creates separate events for each session`() = runTest {
+    val metrics = listOf(
+      metric(1, "one", sessionId = "session-1"),
+      metric(2, "two", sessionId = "session-2")
+    )
+    stubMetricDispatch(
+      metrics = metrics,
+      sessions = listOf(
+        session(id = "session-1", appVersion = "1.0.0"),
+        session(id = "session-2", appVersion = "2.0.0")
       )
+    )
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("m1", "m2"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+    createManager().dispatchUnsentMetrics()
 
-      val manager = createManager()
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert
-      coVerify {
-        mockEventDispatcher.dispatch(
-          match { events ->
-            events.size == 1 &&
-              events[0].metadata.appName == "MyApp" &&
-              events[0].metadata.appVersion == "2.0.0" &&
-              events[0].metadata.environment == "production" &&
-              events[0].metrics.size == 2 &&
-              events[0].metrics.any { it.name == "loadTime" && it.value == 0.5 } &&
-              events[0].metrics.any { it.name == "launchTime" && it.value == 1.2 }
-          }
-        )
-      }
+    coVerify {
+      eventDispatcher.dispatch(
+        match { events ->
+          events.size == 2 && events.map { it.metadata.appVersion }.toSet() == setOf("1.0.0", "2.0.0")
+        }
+      )
     }
-
-  @Test
-  fun `dispatchUnsentMetrics creates separate events for each session`() =
-    runTest {
-      // Arrange
-      val metric1 = createMetric("metric1", metricId = "metric-id-1")
-      val metric2 = createMetric("metric2", metricId = "metric-id-2")
-      val session1 = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        appVersion = "1.0.0",
-        metrics = listOf(metric1)
-      )
-      val session2 = createSessionWithMetrics(
-        sessionId = "session-2",
-        environment = "production",
-        appVersion = "2.0.0",
-        metrics = listOf(metric2)
-      )
-
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("metric-id-1", "metric-id-2"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session1, session2)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-
-      val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
-      }
-
-      val manager = createManager()
-
-      // Act
-      manager.dispatchUnsentMetrics()
-
-      // Assert - separate events created
-      coVerify {
-        mockEventDispatcher.dispatch(
-          match { events ->
-            events.size == 2 &&
-              events.any { it.metadata.appVersion == "1.0.0" } &&
-              events.any { it.metadata.appVersion == "2.0.0" }
-          }
-        )
-      }
-
-      // Assert - ALL metric IDs from both sessions are removed from pending
-      assertEquals(2, removedIds.size)
-      assertTrue("Metric 1 should be removed from pending", removedIds.contains("metric-id-1"))
-      assertTrue("Metric 2 should be removed from pending", removedIds.contains("metric-id-2"))
-    }
+  }
 
   // endregion
 
   // region Retry-gate tests
 
   @Test
-  fun `dispatchUnsentMetrics is suppressed when retry gate is active`() =
-    runTest {
-      // First dispatch returns Retryable with Retry-After=60s; that sets the gate. Second
-      // dispatch (same simulated clock) should short-circuit before calling the dispatcher
-      // again. Verifies the C2 acceptance criterion: a Retryable response must defer the
-      // next round, not just leave the rows pending.
-      val metric = createMetric("metric1", metricId = "id1")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
+  fun `dispatchUnsentMetrics stops after a retryable chunk and sets the gate`() = runTest {
+    coEvery { sessionManager.getMaxMetricId() } returns 1
+    coEvery { sessionManager.getMetrics(-1, any()) } returns listOf(metric(1, "one"))
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.RetryableFailure(60_000)
+    val manager = createManager(currentTimeMs = { 1_000 })
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns
-        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentMetrics()
 
-      val fixedNow = 1_700_000_000_000L
-      val manager = createManager(currentTimeMs = { fixedNow })
-
-      manager.dispatchUnsentMetrics()
-      manager.dispatchUnsentMetrics()
-
-      // The second call must NOT reach the dispatcher — only one call total.
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
+    assertEquals(-1, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
   @Test
-  fun `metrics Retryable does not gate logs (per-signal gates are independent)`() =
-    runTest {
-      // The metrics and logs endpoints fail independently in practice — one schema
-      // disagreement on the metrics side shouldn't suppress a healthy logs stream. After a
-      // metrics dispatch sets its own gate, a logs dispatch must still proceed (and reach
-      // the dispatcher).
-      val metric = createMetric("metric1", metricId = "id1")
-      val metricSession = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
-      val logRecord = createLog("log1", logId = "log-1")
-      val logSession = createSessionWithLogs(
-        sessionId = "session-2",
-        environment = "production",
-        logs = listOf(logRecord)
-      )
+  fun `dispatchUnsentLogs stops after a retryable chunk and sets the gate`() = runTest {
+    stubLogDispatch(result = DispatchResult.RetryableFailure(60_000))
+    val manager = createManager(currentTimeMs = { 1_000 })
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(metricSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns
-        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
+    manager.dispatchUnsentLogs()
+    manager.dispatchUnsentLogs()
 
-      coEvery { mockPendingLogsManager.getPendingLogIds(any()) } returnsMany listOf(listOf("log-1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(logSession)
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
-
-      val fixedNow = 1_700_000_000_000L
-      val manager = createManager(currentTimeMs = { fixedNow })
-
-      manager.dispatchUnsentMetrics()
-      manager.dispatchUnsentLogs()
-
-      // Logs MUST reach the dispatcher; the metrics gate doesn't suppress it.
-      coVerify(exactly = 1) { mockEventDispatcher.dispatchLogs(any()) }
-    }
+    assertEquals(-1, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(any()) }
+  }
 
   @Test
-  fun `logs Retryable does not gate metrics (per-signal gates are independent)`() =
-    runTest {
-      // Symmetric test: a logs failure doesn't suppress metrics.
-      val metric = createMetric("metric1", metricId = "id1")
-      val metricSession = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
-      val logRecord = createLog("log1", logId = "log-1")
-      val logSession = createSessionWithLogs(
-        sessionId = "session-2",
-        environment = "production",
-        logs = listOf(logRecord)
-      )
+  fun `metrics Retryable does not gate logs (per-signal gates are independent)`() = runTest {
+    stubMetricDispatch(result = DispatchResult.RetryableFailure(60_000))
+    stubLogDispatch()
+    val manager = createManager(currentTimeMs = { 1_000 })
 
-      coEvery { mockPendingLogsManager.getPendingLogIds(any()) } returnsMany listOf(listOf("log-1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(logSession)
-      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns
-        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentLogs()
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany listOf(listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(metricSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
-
-      val fixedNow = 1_700_000_000_000L
-      val manager = createManager(currentTimeMs = { fixedNow })
-
-      manager.dispatchUnsentLogs()
-      manager.dispatchUnsentMetrics()
-
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
-    }
+    assertEquals(-1, metricCursor)
+    assertEquals(1, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(any()) }
+  }
 
   @Test
-  fun `dispatchUnsentMetrics resumes after the retry gate expires`() =
-    runTest {
-      // First dispatch sets a gate at now+60s. We then advance the simulated clock past the
-      // gate; the second dispatch should proceed.
-      val metric = createMetric("metric1", metricId = "id1")
-      val session = createSessionWithMetrics(
-        sessionId = "session-1",
-        environment = "production",
-        metrics = listOf(metric)
-      )
+  fun `logs Retryable does not gate metrics (per-signal gates are independent)`() = runTest {
+    stubLogDispatch(result = DispatchResult.RetryableFailure(60_000))
+    stubMetricDispatch()
+    val manager = createManager(currentTimeMs = { 1_000 })
 
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(any()) } returnsMany
-        listOf(listOf("id1"), listOf("id1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returnsMany listOf(
-        DispatchResult.RetryableFailure(retryAfterMs = 60_000L),
-        DispatchResult.Success
-      )
+    manager.dispatchUnsentLogs()
+    manager.dispatchUnsentMetrics()
 
-      var nowMs = 1_700_000_000_000L
-      val manager = createManager(currentTimeMs = { nowMs })
+    assertEquals(-1, logCursor)
+    assertEquals(1, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
 
-      manager.dispatchUnsentMetrics()
-      nowMs += 120_000L // jump past the 60-second gate
-      manager.dispatchUnsentMetrics()
+  @Test
+  fun `dispatchUnsentMetrics resumes after the retry gate expires`() = runTest {
+    var now = 1_000L
+    coEvery { sessionManager.getMaxMetricId() } returns 1
+    coEvery { sessionManager.getMetrics(-1, any()) } returns listOf(metric(1, "metric"))
+    coEvery { sessionManager.getMetrics(1, any()) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returnsMany listOf(
+      DispatchResult.RetryableFailure(60_000),
+      DispatchResult.Success
+    )
+    val manager = createManager(currentTimeMs = { now })
 
-      coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
-    }
+    manager.dispatchUnsentMetrics()
+    now += 60_001
+    manager.dispatchUnsentMetrics()
+
+    assertEquals(1, metricCursor)
+    coVerify(exactly = 2) { eventDispatcher.dispatch(any()) }
+  }
 
   // endregion
 
   // region Helper methods
 
+  private fun stubMetricDispatch(
+    metrics: List<Metric> = listOf(metric(1, "metric")),
+    sessions: List<Session> = listOf(session()),
+    result: DispatchResult = DispatchResult.Success
+  ) {
+    val highestId = metrics.maxOf { it.id }
+    coEvery { sessionManager.getMaxMetricId() } returns highestId
+    coEvery { sessionManager.getMetrics(-1, any()) } returns metrics
+    coEvery { sessionManager.getMetrics(highestId, any()) } returns emptyList()
+    coEvery { sessionManager.getSessions(metrics.mapTo(linkedSetOf()) { it.sessionId }) } returns sessions
+    coEvery { eventDispatcher.dispatch(any()) } returns result
+  }
+
+  private fun stubLogDispatch(
+    logs: List<LogRecord> = listOf(log(1, "log")),
+    sessions: List<Session> = listOf(session()),
+    result: DispatchResult = DispatchResult.Success
+  ) {
+    val highestId = logs.maxOf { it.id }
+    coEvery { sessionManager.getMaxLogId() } returns highestId
+    coEvery { sessionManager.getLogs(-1, any()) } returns logs
+    coEvery { sessionManager.getLogs(highestId, any()) } returns emptyList()
+    coEvery { sessionManager.getSessions(logs.mapTo(linkedSetOf()) { it.sessionId }) } returns sessions
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns result
+  }
+
   private fun createManager(
+    chunkSize: Int = DISPATCH_CHUNK_SIZE,
+    currentTimeMs: () -> Long = { 0 },
     isDebugBuild: Boolean = false,
-    deterministicUniformValue: Double = 0.0,
-    currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() },
-    dispatchChunkSize: Int = DISPATCH_CHUNK_SIZE
+    deterministicUniformValue: Double = 0.0
   ): BaseObservabilityManager {
     val manager = BaseObservabilityManager(
-      context = mockContext,
-      sessionManager = mockSessionManager,
-      pendingMetricsManager = mockPendingMetricsManager,
-      pendingLogsManager = mockPendingLogsManager,
-      projectId = testProjectId,
-      baseUrl = testBaseUrl,
+      context = context,
+      sessionManager = sessionManager,
+      projectId = "project",
+      baseUrl = "https://example.com/",
       isDebugBuild = isDebugBuild,
       deterministicUniformValueProvider = { deterministicUniformValue },
       currentTimeMs = currentTimeMs,
-      dispatchChunkSize = dispatchChunkSize
+      dispatchChunkSize = chunkSize
     )
-    // Replace the internal EventDispatcher with our mock
     val field = BaseObservabilityManager::class.java.getDeclaredField("eventDispatcher")
     field.isAccessible = true
-    field.set(manager, mockEventDispatcher)
+    field.set(manager, eventDispatcher)
     return manager
   }
 
-  private fun createSessionWithMetrics(
-    sessionId: String,
-    environment: String?,
-    metrics: List<Metric>,
-    appName: String = "TestApp",
-    appVersion: String = "1.0.0"
-  ): SessionWithMetrics {
-    val session = Session(
-      id = sessionId,
-      startTimestamp = "2025-01-01T00:00:00.000Z",
-      isActive = true,
-      environment = environment,
-      appName = appName,
-      appIdentifier = "com.test.app",
-      appVersion = appVersion,
-      appBuildNumber = "1",
-      appUpdateId = null,
-      deviceOs = "Android",
-      deviceOsVersion = "14",
-      deviceModel = "Test Device",
-      deviceName = "test",
-      expoSdkVersion = "52.0.0",
-      reactNativeVersion = "0.76.0",
-      clientVersion = null,
-      languageTag = "en-US"
-    )
-    return SessionWithMetrics(
-      session = session,
-      metrics = metrics.map { it.copy(sessionId = sessionId) }
-    )
-  }
+  private fun session(
+    id: String = "session",
+    appName: String? = null,
+    appVersion: String? = null,
+    environment: String? = null
+  ) = Session(
+    id = id,
+    startTimestamp = "2025-01-01T00:00:00Z",
+    environment = environment,
+    appName = appName,
+    appIdentifier = "dev.expo.test",
+    appVersion = appVersion,
+    expoSdkVersion = "55",
+    reactNativeVersion = "0.81"
+  )
 
-  private fun createMetric(
-    name: String,
-    metricId: String = "metric-${System.nanoTime()}",
-    value: Double = 123.45,
-    category: String = "test"
-  ): Metric =
-    Metric(
-      metricId = metricId,
-      sessionId = "",
-      timestamp = "2025-01-01T00:00:00.000Z",
-      category = category,
-      name = name,
-      value = value,
-      routeName = null,
-      params = null
-    )
+  private fun metric(id: Long, name: String, sessionId: String = "session") = Metric(
+    sessionId = sessionId,
+    timestamp = "2025-01-01T00:00:00Z",
+    category = "test",
+    name = name,
+    value = 1.0,
+    id = id
+  )
 
-  private fun createSessionWithLogs(
-    sessionId: String,
-    environment: String?,
-    logs: List<LogRecord>,
-    appName: String = "TestApp",
-    appVersion: String = "1.0.0"
-  ): SessionWithLogs {
-    val session = Session(
-      id = sessionId,
-      startTimestamp = "2025-01-01T00:00:00.000Z",
-      isActive = true,
-      environment = environment,
-      appName = appName,
-      appIdentifier = "com.test.app",
-      appVersion = appVersion,
-      appBuildNumber = "1",
-      appUpdateId = null,
-      deviceOs = "Android",
-      deviceOsVersion = "14",
-      deviceModel = "Test Device",
-      deviceName = "test",
-      expoSdkVersion = "52.0.0",
-      reactNativeVersion = "0.76.0",
-      clientVersion = null,
-      languageTag = "en-US"
-    )
-    return SessionWithLogs(
-      session = session,
-      logs = logs.map { it.copy(sessionId = sessionId) }
-    )
-  }
-
-  private fun createLog(
-    name: String,
-    logId: String = "log-${System.nanoTime()}",
-    body: String = "test log body",
-    severity: String = "info"
-  ): LogRecord =
-    LogRecord(
-      logId = logId,
-      sessionId = "",
-      timestamp = "2025-01-01T00:00:00.000Z",
-      name = name,
-      body = body,
-      severity = severity
-    )
+  private fun log(id: Long, name: String, sessionId: String = "session") = LogRecord(
+    sessionId = sessionId,
+    timestamp = "2025-01-01T00:00:00Z",
+    name = name,
+    severity = "info",
+    id = id
+  )
 
   // endregion
 }

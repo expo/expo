@@ -16,10 +16,6 @@ export { findFocusedRoute } from '../../fork/findFocusedRoute';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { getActionFromState } from './getActionFromState';
-/**
- * @deprecated Will be removed in a future SDK.
- */
 export { getFocusedRouteNameFromRoute } from './getFocusedRouteNameFromRoute';
 /**
  * @deprecated Will be removed in a future SDK.
@@ -51,7 +47,6 @@ export { NavigationProvider } from './NavigationProvider';
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationRouteContext } from './NavigationProvider';
-export { PreventRemoveContext } from './PreventRemoveContext';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -85,7 +80,6 @@ export { useNavigationBuilder } from './useNavigationBuilder';
 export { useNavigationContainerRef } from './useNavigationContainerRef';
 export { useNavigationState } from './useNavigationState';
 export { usePreventRemove } from './usePreventRemove';
-export { usePreventRemoveContext } from './usePreventRemoveContext';
 /**
  * @deprecated Import `useRoute` from `expo-router` instead. Will be removed in a future SDK.
  */

@@ -120,8 +120,13 @@ jobs:
             -e APP_ID=dev.expo.brownfieldintegratedtester \
             $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml \
             $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+          # The dev menu shows the runtime version derived from the installed expo
+          # package (exposdk:<major>.0.0). Resolve it so the flow doesn't go stale
+          # on SDK bumps.
+          EXPO_SDK_MAJOR=$(cd $GITHUB_WORKSPACE/apps/brownfield-tester/expo-app && node -p "require('expo/package.json').version.split('.')[0]")
           retry maestro test \
             -e APP_ID=dev.expo.brownfieldintegratedtester \
+            -e RUNTIME_VERSION="exposdk:${EXPO_SDK_MAJOR}.0.0" \
             $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
 
   ios_build_and_e2e:

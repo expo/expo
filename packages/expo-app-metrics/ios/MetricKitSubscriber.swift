@@ -57,7 +57,8 @@ private func persistCrashReport(_ crashReport: CrashReport, sessionId: String) {
     return
   }
   do {
-    try AppMetrics.database?.setCrashReport(sessionId: sessionId, payload: payload)
+    let log = LogRow.from(log: crashReport.toLogRecord(), sessionId: sessionId)
+    try AppMetrics.database?.storeCrashReportIfNew(sessionId: sessionId, payload: payload, log: log)
   } catch {
     logger.warn("[AppMetrics] Failed to persist crash report for session \(sessionId): \(error.localizedDescription)")
   }

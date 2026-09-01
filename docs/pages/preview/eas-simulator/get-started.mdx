@@ -10,7 +10,7 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulator) if you are interested in trying it.
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
 <Prerequisites>
   <Requirement title="An Expo account with EAS Simulator access">
@@ -23,7 +23,8 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
   </Requirement>
   <Requirement title="A recent EAS CLI">
     The `simulator:*` commands are experimental and hidden. [Install or update EAS CLI](/eas/cli/)
-    before using them.
+    before using them. Since the preview changes quickly, use `eas simulator:start --help` to check
+    the flags supported by your installed version.
   </Requirement>
 </Prerequisites>
 
@@ -34,6 +35,8 @@ If you use an AI agent, install [Expo Skills](/skills/) and ask it to use the EA
 <RelatedSkills names={['eas-simulator']} />
 
 ## Start a session manually
+
+The steps below use EAS CLI. To manage sessions directly from your own HTTP client, see the [REST API reference](/preview/eas-simulator/rest-api/). To start a browser-preview-only session when someone opens an authenticated expo.dev URL, see [Create session links](/preview/eas-simulator/create-session-links/).
 
 <Step label="1">
 
@@ -68,7 +71,7 @@ An enabled account returns:
 }
 ```
 
-If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulator) for access.
+If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulators) for access.
 
 </Step>
 
@@ -88,9 +91,9 @@ Do not commit or share this file. It includes the token that lets a controller r
 
 <Step label="4">
 
-### Choose a controller and start a remote device
+### Choose a session type and start a remote device
 
-Choose the controller you plan to use for installation and device actions. Pass its type explicitly when you start the session.
+Choose the controller you plan to use for installation and device actions. On iOS, each controller-backed session also includes a web preview. If you only need the web preview, use `web-preview-only` without a controller. Pass the session type explicitly when you start the session.
 
 <Tabs>
 
@@ -98,7 +101,11 @@ Choose the controller you plan to use for installation and device actions. Pass 
 
 See [agent-device and Expo](/agents/agent-device/) for controller setup and commands.
 
-<Terminal cmd={['$ eas simulator:start --platform ios --type agent-device --non-interactive']} />
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
 
 </Tab>
 
@@ -106,21 +113,55 @@ See [agent-device and Expo](/agents/agent-device/) for controller setup and comm
 
 See [Argent and Expo](/agents/argent/) for controller setup and commands.
 
-<Terminal cmd={['$ eas simulator:start --platform ios --type argent --non-interactive']} />
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type argent --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Appium">
+
+Use an Appium client when you already have Appium tests or automation. EAS CLI writes the remote server URL and capabilities to the session configuration.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Web preview only">
+
+Use the iOS web preview without provisioning a programmatic controller.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type web-preview-only --name "Design review" --non-interactive',
+  ]}
+/>
 
 </Tab>
 
 </Tabs>
 
-Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview.
+Give each session a short name that describes its purpose. The name appears in `simulator:list`, `simulator:get`, and on expo.dev, which makes parallel and historical sessions easier to identify.
+
+Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview. Use `--device` to select a specific iOS Simulator name or unique device identifier (UDID), or an Android virtual device hardware profile. If the flag is omitted, the remote runner chooses a device.
+
+For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. You can also use `--max-idle-time-minutes` to stop after a period without session activity. A custom maximum duration is available on paid plans.
 
 When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
 
-The start command waits for the selected controller to become ready, then writes **.env.eas-simulator**. It also prints:
+The start command waits for the session to become ready, then writes **.env.eas-simulator**. It also prints:
 
 - A direct simulator session page on expo.dev
 - A temporary `webPreviewUrl` for supported iOS sessions
 - The command pattern for controlling the device
+
+To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Run and control an app](/preview/eas-simulator/run-and-control/) for complete examples.
 
 > **warning** `--non-interactive` does not automatically stop the session. The command returns when the session is ready, and the remote device remains active.
 

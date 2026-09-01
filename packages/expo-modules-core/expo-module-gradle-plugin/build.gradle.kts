@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.1.20"
+  kotlin("jvm") version "2.2.21"
   id("java-gradle-plugin")
 }
 

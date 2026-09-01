@@ -3,7 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { createContext, use, useState } from 'react';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -49,7 +49,12 @@ it('redirects a guarded route to the anchor default during the initial load', ()
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'index', 'b', 'c']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'index',
+    'b',
+    'c',
+  ]);
 });
 
 it('redirects nested guarded routes to the anchor and unlocks them as guards flip', () => {
@@ -138,7 +143,12 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen.getByTestId('c')).toBeVisible();
   expect(screen).toHavePathname('/c');
 
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'b',
+    'c',
+    'index',
+  ]);
 });
 
 it('defaults a guarded route to the navigator anchor', () => {
@@ -187,7 +197,11 @@ it('defaults a guarded route to the navigator anchor', () => {
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'index']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'b',
+    'index',
+  ]);
 });
 
 it('redirects a guarded route to an explicit redirectTo target', () => {
@@ -641,7 +655,7 @@ describe('all routes guarded', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen).toHavePathname('/second');
 
-    const stateBefore = store.state!.routes[0]!.state!;
+    const stateBefore = navigationRef.getRootState().routes[0]!.state!;
     const focusedKeyBefore = stateBefore.routes[stateBefore.index!]!.key;
 
     // Guard everything: content hides but the navigator must stay mounted.
@@ -659,7 +673,7 @@ describe('all routes guarded', () => {
 
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen).toHavePathname('/second');
-    const stateAfter = store.state!.routes[0]!.state!;
+    const stateAfter = navigationRef.getRootState().routes[0]!.state!;
     expect(stateAfter.routes[stateAfter.index!]!.key).toBe(focusedKeyBefore);
     // Non-focused guarded history entries are pruned while the guard is down,
     // so only the focused route survives the flip.

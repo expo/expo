@@ -74,16 +74,19 @@ export function TalkGridCell({
       )}
       isStyled>
       <div>
-        <div
-          style={{
-            backgroundImage: `url(${
+        <div className="h-34.5 border-b border-b-default max-sm:h-42">
+          <img
+            src={
               thumbnail
                 ? `/static/thumbnails/${thumbnail}`
-                : `https://i.ytimg.com/vi_webp/${videoId}/maxresdefault.webp`
-            })`,
-          }}
-          className="h-34.5 border-b border-b-default bg-cover bg-center max-sm:h-42"
-        />
+                : `https://i.ytimg.com/vi_webp/${videoId}/sddefault.webp`
+            }
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover object-center"
+          />
+        </div>
         <div className="flex min-h-7.5 items-start justify-between gap-1 bg-default px-4 py-3">
           <LABEL className="block leading-normal">{title}</LABEL>
           <ArrowUpRightIcon

@@ -1,10 +1,10 @@
-import { nanoid } from 'nanoid/non-secure';
-
+import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   NavigationAction,
   NavigationState,
   PartialState,
+  RouterActionResult,
 } from './types';
 
 /**
@@ -39,7 +39,7 @@ export const BaseRouter = {
   getStateForAction<State extends NavigationState>(
     state: State,
     action: CommonNavigationAction
-  ): State | PartialState<State> | null {
+  ): RouterActionResult<State> | null {
     switch (action.type) {
       case 'SET_PARAMS':
       case 'REPLACE_PARAMS': {
@@ -52,18 +52,21 @@ export const BaseRouter = {
         }
 
         return {
-          ...state,
-          routes: state.routes.map((r, i) =>
-            i === index
-              ? {
-                  ...r,
-                  params:
-                    action.type === 'REPLACE_PARAMS'
-                      ? action.payload.params
-                      : { ...r.params, ...action.payload.params },
-                }
-              : r
-          ),
+          state: {
+            ...state,
+            routes: state.routes.map((r, i) =>
+              i === index
+                ? {
+                    ...r,
+                    params:
+                      action.type === 'REPLACE_PARAMS'
+                        ? action.payload.params
+                        : { ...r.params, ...action.payload.params },
+                  }
+                : r
+            ),
+          },
+          affectedRouteKey: state.routes[index]!.key,
         };
       }
 
@@ -85,15 +88,31 @@ export const BaseRouter = {
             return null;
           }
 
-          return {
+          const minter = createRouteKeyMinter({
+            key: state.key,
+            routeKeySeq: Math.max(state.routeKeySeq, nextState.routeKeySeq ?? 0),
+          });
+          const result = {
             ...nextState,
             routes: nextState.routes.map((route) =>
-              route.key ? route : { ...route, key: `${route.name}-${nanoid()}` }
+              route.key ? route : { ...route, key: minter.mint(route.name) }
             ),
+            routeKeySeq: minter.routeKeySeq,
+          };
+
+          return {
+            state: result,
+            affectedRouteKey: result.routes[result.index]?.key,
           };
         }
 
-        return nextState;
+        // TODO: support completing partial reset payloads at dispatch (follow-up PR).
+        // Until then the action is ignored so a partial payload warns instead of
+        // crashing the render.
+        console.warn(
+          'The RESET action payload must contain a complete navigation state. Partial states can no longer be completed during render. Include `key`, `index`, `routeNames`, `routeKeySeq`, and `stale: false` when resetting.'
+        );
+        return null;
       }
 
       default:

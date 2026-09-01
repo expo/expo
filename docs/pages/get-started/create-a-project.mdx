@@ -6,6 +6,7 @@ hideTOC: true
 
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Expo is a React Native framework that makes developing Android and iOS apps easier. Our framework provides file-based routing, a standard library of native modules, and much more. Expo is open source with an active community on [GitHub](https://github.com/expo/expo) and [Discord](https://chat.expo.dev).
 
@@ -63,11 +64,37 @@ To create a known example directly, pass its name:
 
 > **info** The rest of the guides in this **"Get started"** section follows the default project. An example app may be organized differently but the concepts are the same.
 
-## Expo Skills for AI agents
+## Set up an AI agent
 
-If you use an AI agent, install [Expo Skills](/skills/) to teach it where files live in a new Expo project:
+A new project includes the project context files that AI agents read: **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json**. Claude Code and Codex also have an official Expo plugin. Using one command, you can install [Expo Skills](/skills/) and register the [Expo Model Context Protocol (MCP) Server](/mcp/):
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+<Terminal cmd={['$ claude plugin install expo@claude-plugins-official']} />
+
+Then run `/mcp` inside your Claude Code session to sign in to your Expo account.
+
+</Tab>
+
+<Tab label="Codex">
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+Then sign in to your Expo account:
+
+<Terminal cmd={['$ codex mcp login expo']} />
+
+</Tab>
+
+</Tabs>
+
+The plugin also installs the skill that teaches an agent where files live in a new Expo project:
 
 <RelatedSkills names={['expo-project-structure']} />
+
+For Cursor and other agents, install [Expo Skills](/skills/) and the [Expo MCP Server](/mcp/) separately. The [AI agents and Expo](/agents/) overview covers setup for each agent.
 
 ## Next step
 

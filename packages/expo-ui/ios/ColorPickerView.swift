@@ -49,7 +49,7 @@ struct ColorPickerView: ExpoSwiftUI.View {
       components.count > 1 ? components[1] : components[0],
       components.count > 2 ? components[2] : components[0],
       newColor.cgColor.alpha
-    ].map { Int(max(0, min(255, $0 * 255))) }
+    ].map { Int(max(0, min(255, ($0 * 255).rounded()))) }
 
     let format = supportsOpacity ? "#%02X%02X%02X%02X" : "#%02X%02X%02X"
     return String(format: format, rgba[0], rgba[1], rgba[2], supportsOpacity ? rgba[3] : 255)
