@@ -47,6 +47,7 @@
     "@expo/plist": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/prompts": "^2.0.6",
+    "@vercel/ncc": "^0.38.4",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",

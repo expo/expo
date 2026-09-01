@@ -6619,6 +6619,9 @@ importers:
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
+      '@vercel/ncc':
+        specifier: ^0.38.4
+        version: 0.38.4
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
