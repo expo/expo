@@ -87,7 +87,6 @@ class FontFamilyFacesTest {
 
   @Test
   fun defaultFaceIndexItalicWinsOnStrictlyCloserDistance() {
-    // italic 400 -> distance 0; upright 500 -> distance 100. Italic wins on distance.
     val faces = listOf(
       FontFaceRecord(localUri = "italic400.ttf", weight = 400, style = "italic"),
       FontFaceRecord(localUri = "upright500.ttf", weight = 500, style = null)
@@ -98,7 +97,6 @@ class FontFamilyFacesTest {
 
   @Test
   fun defaultFaceIndexUprightWinsAtEqualDistance() {
-    // italic 300 -> distance 100; upright 500 -> distance 100. Equal distance: upright wins.
     val faces = listOf(
       FontFaceRecord(localUri = "italic300.ttf", weight = 300, style = "italic"),
       FontFaceRecord(localUri = "upright500.ttf", weight = 500, style = null)

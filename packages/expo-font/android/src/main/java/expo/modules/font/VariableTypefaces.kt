@@ -39,10 +39,6 @@ internal object VariableTypefaces {
     return wrapWithSystemFallback(family)
   }
 
-  /**
-   * Wraps [family] in a [Typeface] that falls back to the system sans-serif font for glyphs the
-   * family doesn't cover.
-   */
   fun wrapWithSystemFallback(family: FontFamily): Typeface =
     Typeface.CustomFallbackBuilder(family)
       .setSystemFallback(SYSTEM_FALLBACK)

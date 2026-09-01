@@ -262,8 +262,7 @@ export default function FontScreen() {
 const VARIABLE_FONT_FAMILY = 'RobotoFlex-variable';
 const WEIGHTS = ['100', '200', '300', '400', '500', '600', '700', '800', '900'] as const;
 
-// RobotoFlex-variable loads at app startup (loadAssetsAsync), before any screen renders, so no
-// loaded/error gate is needed here.
+// RobotoFlex-variable loads at app startup, before any screen renders, so no loaded/error gate is needed here.
 const WEIGHT_INSTANCING_GROUPS: FaceMetricsGroup[] = [
   {
     title: 'Weight instancing — Roboto Flex',
@@ -280,9 +279,8 @@ const WEIGHT_INSTANCING_GROUPS: FaceMetricsGroup[] = [
         style: { fontFamily: VARIABLE_FONT_FAMILY, fontWeight: '100' },
         role: 'measured',
         baseKey: 'weight400',
-        // A real Roboto Flex `wght` 100 instance is only 1.2–1.6% narrower than 400 (from the
-        // font's tables; engines applying the `opsz` axis measure the larger value). A
-        // non-instanced fallback renders at the default weight, 0.0%.
+        // Roboto Flex's `wght` 100 instance is only 1.2–1.6% narrower than 400; a non-instanced
+        // fallback renders at 0.0%.
         thresholdPercent: 0.6,
       },
       {
@@ -430,15 +428,13 @@ function MultiFaceFamilySection() {
   );
 }
 
-// A real face changes the rendered width of the sample; a synthesized bold (stroke thickening)
-// or italic (skew) keeps it. Inter's italic shares its upright's advance widths (within 0.03%),
-// so the italic check uses an OpenSans Condensed pair, whose italic differs by ~2.6%.
+// A real face changes the rendered width of the sample; a synthesized bold or italic keeps it.
+// Inter's italic shares its upright's advance widths, so the italic check uses an OpenSans
+// Condensed pair instead, whose italic differs by ~2.6%.
 const FACE_METRICS_SAMPLE = 'Hamburgefonstiv 1234';
 const FACE_METRICS_FONT_SIZE = 30;
 const REAL_FACE_THRESHOLD_PERCENT = 1.5;
 
-// 'na' rows are specimens excluded from the verdict, shown with `note` instead of a result mark.
-// A `control` row passes when it stays close to its base instead of differing from it.
 type FaceMetricsRow = {
   key: string;
   label: string;
@@ -533,7 +529,6 @@ function FaceMetricsTable({ groups, caption }: { groups: FaceMetricsGroup[]; cap
   const textColor = theme.text.default;
   const [widths, setWidths] = useState<Record<string, number>>({});
 
-  // Union of every group's rows, deduped by key, so each specimen renders once.
   const allRows: FaceMetricsRow[] = [];
   const seenKeys = new Set<string>();
   for (const group of groups) {
