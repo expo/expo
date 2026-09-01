@@ -1,8 +1,3 @@
-/**
- * @deprecated `ExpoRoot` mounts the navigation container automatically — there is no need
- * to render `BaseNavigationContainer` directly. Will be removed in a future SDK.
- */
-export { BaseNavigationContainer } from './BaseNavigationContainer';
 export { createNavigationContainerRef } from './createNavigationContainerRef';
 export { createNavigatorFactory } from './createNavigatorFactory';
 /**

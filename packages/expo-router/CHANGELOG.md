@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `UNSTABLE_UnhandledLinkingContext` from `expo-router/react-navigation`. ([#49616](https://github.com/expo/expo/pull/49616) by [@Ubax](https://github.com/Ubax))
+- Remove `BaseNavigationContainer` export from `expo-router/react-navigation`. ([#49587](https://github.com/expo/expo/pull/49587) by [@Ubax](https://github.com/Ubax))
 - Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Remove `beforeRemove`, `__unsafe_action__`, `PreventRemoveContext`, and `usePreventRemoveContext` from `expo-router/react-navigation`. ([#49408](https://github.com/expo/expo/pull/49408) by [@Ubax](https://github.com/Ubax))
 - Preserve the focused route when switching navigator types in a conditional layout. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
@@ -46,7 +48,7 @@
 
 ### 🎉 New features
 
-- [Android] Add `cornerRadius` support to dropdown menu
+- [Android] Add `cornerRadius` support to dropdown menu. ([#49515](https://github.com/expo/expo/pull/49515) by [@aaronleopold](https://github.com/aaronleopold))
 - Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Add unstable `NavigationAwareActivity` component. ([#49164](https://github.com/expo/expo/pull/49164) by [@Ubax](https://github.com/Ubax))
 - Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
@@ -85,6 +87,7 @@
 
 ### 💡 Others
 
+- Pass toolbar menu icons straight to react-navigation instead of converting them to react-native-screens icons. (by [@Ubax](https://github.com/Ubax)) ([#49584](https://github.com/expo/expo/pull/49584) by [@Ubax](https://github.com/Ubax))
 - Remove module-level mutable navigation state from Expo Router. ([#49403](https://github.com/expo/expo/pull/49403) by [@Ubax](https://github.com/Ubax))
 - Remove the dev-only `stack` field from the `__unsafe_action__` event in `expo-router/react-navigation`. ([#49431](https://github.com/expo/expo/pull/49431) by [@Ubax](https://github.com/Ubax))
 - Read navigation state from the React tree instead of imperative refs. ([#49433](https://github.com/expo/expo/pull/49433) by [@Ubax](https://github.com/Ubax))

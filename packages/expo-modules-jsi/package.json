@@ -11,6 +11,7 @@
     }
   },
   "scripts": {
+    "benchmark": "TEST_RUNNER_EXPO_BENCHMARK=1 DESTINATION=\"${DESTINATION:-platform=macOS,variant=Mac Catalyst}\" apple/scripts/test.sh -configuration Release -only-testing Benchmarks",
     "build:xcframework": "apple/scripts/build-xcframework.sh",
     "clean": "apple/scripts/clear-caches.sh",
     "swift:format": "../../scripts/swift-format.sh",

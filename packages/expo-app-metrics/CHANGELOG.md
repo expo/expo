@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Remove `SessionManager` insert listeners and `JsMetric.metricId` ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
+- [iOS] [Android] Dispatch attributed native crashes as fatal exception logs. ([#49489](https://github.com/expo/expo/pull/49489) by [@Ubax](https://github.com/Ubax))
 - Add an optional `displayName` to `logEvent` ([#47289](https://github.com/expo/expo/pull/47289) by [@Ubax](https://github.com/Ubax))
 - Capture React render-phase errors via `AppMetricsErrorBoundary`. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 - Describe the network a launch ran on: connection cost, request throughput, and a `slowest.*` group replacing `expo.network.requests.slowestDuration` and `slowestHost`. ([#48518](https://github.com/expo/expo/pull/48518) by [@tsapeta](https://github.com/tsapeta))

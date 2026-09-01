@@ -41,8 +41,7 @@ export function useLinking(
     getInitialURL = getInitialURLWithTimeout,
     getStateFromPath = getStateFromPathDefault,
     getPathFromState = getPathFromStateDefault,
-  }: Options,
-  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
+  }: Options
 ) {
   const routerConfig = use(RouterConfigContext);
 
@@ -90,8 +89,6 @@ export function useLinking(
         ? createSeededRootState(parsedState, routeNode)
         : completeParsedState(parsedState, ROOT_CHAIN);
 
-      // If the link were handled, it gets cleared in NavigationContainer
-      onUnhandledLinking(path);
       return state;
     };
     const url = getInitialURL();
@@ -119,7 +116,6 @@ export function useLinking(
     config,
     getStateFromPath,
     getPathFromState,
-    onUnhandledLinking,
   });
 
   return {
@@ -172,13 +168,11 @@ function useBrowserHistorySync({
   config,
   getStateFromPath,
   getPathFromState,
-  onUnhandledLinking,
 }: {
   ref: RefObject<NavigationContainerRef<ParamListBase> | null>;
   config: LinkingOptions<ParamListBase>['config'];
   getStateFromPath: GetStateFromPath;
   getPathFromState: GetPathFromState;
-  onUnhandledLinking: (path: string | undefined) => void;
 }) {
   const routerConfig = use(RouterConfigContext);
   const enqueue = useEnqueueRoutingIntent();
@@ -245,7 +239,6 @@ function useBrowserHistorySync({
       const segments = getRouteInfoFromState(navigation.getRootState()).segments;
       const parsedState = getStateFromPathRef.current(path, configRef.current, segments);
       if (parsedState) {
-        onUnhandledLinking(path);
         const routeNames = getRootStackRouteNames();
         if (parsedState.routes.some((route) => !routeNames.includes(route.name))) {
           return;
@@ -289,7 +282,7 @@ function useBrowserHistorySync({
       unsubscribe();
       pendingHistoryOperationsRef.current = [];
     };
-  }, [enqueue, history, onUnhandledLinking, ref]);
+  }, [enqueue, history, ref]);
 
   useEffect(() => {
     const getPathForRoute = (

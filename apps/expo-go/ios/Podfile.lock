@@ -4682,7 +4682,7 @@ SPEC CHECKSUMS:
   ExpoNotifications: 0f253ad90f108c1c4045b541294164865c6aadc8
   ExpoPrint: 7e7a9bc7c12b9b336f34c4458d0c9ba14f243759
   ExpoRouter: 224087330cc8f5a39700e6f4d7a55f55ecb2f90d
-  ExpoScreenCapture: 1728376b2a32a05dc1f6bae6a8d19b1bd33926f9
+  ExpoScreenCapture: 387b18f4a51561916cbff71d6e0e7b386af31171
   ExpoScreenOrientation: 799a4681fba805f73bf92bfbe98f38c16e3d1dd6
   ExpoSecureStore: 94793113049a2d7478dfe1a13aa15081e9f61755
   ExpoSensors: e71c7b6cb0c09d3427ef6ae29c69532a10c86b05
@@ -4713,11 +4713,11 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
-  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
+  glog: 0456694f3aaf09460b660ea327cfc11defbeea4c
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 349ded4feea539299cee22cb680b0d50402116e5
+  hermes-engine: 1aac0336ab06465103e89322838baf2911318c89
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4727,7 +4727,7 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  RCT-Folly: 36c4f904fb6cd0219dcb76b94e9502d2a72fab0b
+  RCT-Folly: 121436bcc4611f6bde5c09bf35f0a7a82cef1969
   RCTDeprecation: cac9521ce0b8092a1fb13d32a768c5ba2752b55f
   RCTRequired: cfc25ba224a2a3dbb1b3368a7d19b0fb6ec5ed1e
   RCTSwiftUI: 20555e38bdfa7b5cc21d3201ec9c34ec24969919

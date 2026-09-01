@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { RemovalPreventionProvider } from '../../../global-state/removalPrevention';
 import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import { RoutingQueueProvider } from '../../../global-state/routingQueueContext';
 import {
@@ -32,6 +33,16 @@ beforeEach(() => {
   require('nanoid/non-secure').__key = 0;
 });
 
+function RootProviders({ children }: React.PropsWithChildren) {
+  return (
+    <RoutingQueueProvider>
+      <RouterRegistryProvider>
+        <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
+      </RouterRegistryProvider>
+    </RoutingQueueProvider>
+  );
+}
+
 test('throws when nesting containers', () => {
   expect(() =>
     render(
@@ -44,12 +55,33 @@ test('throws when nesting containers', () => {
   ).toThrow("install '@react-navigation/native' and use its NavigationContainer instead.");
 });
 
+test('throws when rendered outside ExpoRoot', () => {
+  expect(() =>
+    render(
+      <RawBaseNavigationContainer
+        initialState={
+          {
+            stale: false,
+            routeKeySeq: 0,
+            key: 'root',
+            index: 0,
+            routeNames: ['home'],
+            routes: [{ key: 'home', name: 'home' }],
+          } as NavigationState
+        }>
+        {null}
+      </RawBaseNavigationContainer>
+    )
+  ).toThrow('Render the navigation container inside `ExpoRoot`.');
+});
+
 test('rejects a partial initial state', () => {
   const initialState = { routes: [{ name: 'home' }] };
 
   expect(() =>
     render(
-      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>
+      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>,
+      { wrapper: RootProviders }
     )
   ).toThrow('The navigation container received an incomplete initial state.');
 });
@@ -74,7 +106,8 @@ test('rejects a partial nested initial state', () => {
 
   expect(() =>
     render(
-      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>
+      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>,
+      { wrapper: RootProviders }
     )
   ).toThrow('The navigation container received an incomplete initial state.');
 });
@@ -90,7 +123,8 @@ test('rejects an initial state without an index', () => {
 
   expect(() =>
     render(
-      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>
+      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>,
+      { wrapper: RootProviders }
     )
   ).toThrow('The navigation container received an incomplete initial state.');
 });
@@ -107,7 +141,8 @@ test('rejects an initial state without route keys', () => {
 
   expect(() =>
     render(
-      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>
+      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>,
+      { wrapper: RootProviders }
     )
   ).toThrow('The navigation container received an incomplete initial state.');
 });
@@ -136,11 +171,13 @@ test('preserves a complete initial state by identity', () => {
   render(
     <RoutingQueueProvider>
       <RouterRegistryProvider>
-        <RawBaseNavigationContainer ref={ref} initialState={initialState}>
-          <Stack>
-            <Screen name="home">{() => null}</Screen>
-          </Stack>
-        </RawBaseNavigationContainer>
+        <RemovalPreventionProvider>
+          <RawBaseNavigationContainer ref={ref} initialState={initialState}>
+            <Stack>
+              <Screen name="home">{() => null}</Screen>
+            </Stack>
+          </RawBaseNavigationContainer>
+        </RemovalPreventionProvider>
       </RouterRegistryProvider>
     </RoutingQueueProvider>
   );
@@ -205,17 +242,19 @@ test('handle dispatching with ref', () => {
   const element = (
     <RoutingQueueProvider>
       <RouterRegistryProvider>
-        <RawBaseNavigationContainer
-          ref={ref}
-          initialState={initialState}
-          onStateChange={onStateChange}>
-          <RootNavigator>
-            <Screen name="foo">{() => null}</Screen>
-            <Screen name="foo2">{() => null}</Screen>
-            <Screen name="bar">{() => null}</Screen>
-            <Screen name="baz">{() => null}</Screen>
-          </RootNavigator>
-        </RawBaseNavigationContainer>
+        <RemovalPreventionProvider>
+          <RawBaseNavigationContainer
+            ref={ref}
+            initialState={initialState}
+            onStateChange={onStateChange}>
+            <RootNavigator>
+              <Screen name="foo">{() => null}</Screen>
+              <Screen name="foo2">{() => null}</Screen>
+              <Screen name="bar">{() => null}</Screen>
+              <Screen name="baz">{() => null}</Screen>
+            </RootNavigator>
+          </RawBaseNavigationContainer>
+        </RemovalPreventionProvider>
       </RouterRegistryProvider>
     </RoutingQueueProvider>
   );

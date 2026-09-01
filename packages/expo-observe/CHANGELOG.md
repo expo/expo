@@ -18,6 +18,7 @@
 
 ### 💡 Others
 
+- [Android] Replace pending telemetry queues with persisted row-id cursors. ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
 - [iOS] Dispatch pending metrics and logs in chunks of 200 and retry HTTP 413 responses with smaller batches. ([#49121](https://github.com/expo/expo/pull/49121) by [@Ubax](https://github.com/Ubax))
 - [Android] Retry a dispatch that gets HTTP 413 ([#49016](https://github.com/expo/expo/pull/49016) by [@Ubax](https://github.com/Ubax))
 - [Android] Dispatch pending metrics and logs in bounded, oldest-first chunks without replacing active background work. ([#49012](https://github.com/expo/expo/pull/49012) by [@Ubax](https://github.com/Ubax))

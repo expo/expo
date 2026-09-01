@@ -22,6 +22,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix Expo module views not receiving props with React Native 0.87.
 - [iOS][Android] Fixed a `matchContents` `RNHostView` and the `matchContents` host around it feeding each other's size back and forth, which grew the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed SwiftUI view props re-decoding every field on every props update. Fabric sends the whole props map rather than a delta, so an unrelated prop change replaced each decoded value with an equal but distinct one, which cost a decode per field and stopped SwiftUI from pruning the view tree that reads it. A field whose raw value is unchanged now keeps the value decoded before, the same way `ExpoFabricView.updateProps` already worked for UIKit views. ([#48426](https://github.com/expo/expo/pull/48426) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed `matchContents` hosts sometimes being laid out at a stale size. Regression from [#48059](https://github.com/expo/expo/pull/48059). ([#49211](https://github.com/expo/expo/pull/49211) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
@@ -53,6 +54,7 @@
 - [iOS] Added `SceneGeometry.foregroundScene()`, which returns nil when no scene is on screen so callers can avoid presenting UI into a background scene. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
 - Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
+- Added internal `ExpoModulesProviderModuleName` lookup key for `ExpoModulesProvider` class. ([#49539](https://github.com/expo/expo/pull/49539) by [@kudo](https://github.com/kudo))
 
 ## 57.0.8 - 2026-07-29
 

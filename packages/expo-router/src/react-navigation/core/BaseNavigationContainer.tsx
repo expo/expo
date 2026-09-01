@@ -10,13 +10,11 @@ import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
 } from '../../global-state/getRouteInfoFromState';
-import {
-  GlobalRoutesWithRemovalPreventedContext,
-  RemovalPreventionProvider,
-} from '../../global-state/removalPrevention';
+import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/removalPrevention';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
-import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
+import { RouterRegistryContext } from '../../global-state/routerRegistry';
+import { RoutingQueueApiContext } from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import { useNavigationTreeReportEvents } from '../../global-state/useNavigationTreeReportEvents';
 import useLatestCallback from '../../utils/useLatestCallback';
@@ -69,32 +67,13 @@ const duplicateNameWarnings: string[] = [];
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
-  const registry = use(RouterRegistryContext);
-  const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
-
-  // TODO(@ubax): investigate if this is really needed
-  let content = <BaseNavigationContainerInner {...props} />;
-  if (routesWithRemovalPrevented === undefined) {
-    content = <RemovalPreventionProvider>{content}</RemovalPreventionProvider>;
-  }
-  if (registry === undefined) {
-    content = <RouterRegistryProvider>{content}</RouterRegistryProvider>;
-  }
-  return content;
-}
-
-function BaseNavigationContainerInner({
-  ref,
-  initialState,
-  onStateChange,
-  onReady,
-  UNSTABLE_routeNode,
-  theme,
-  children,
-}: InternalNavigationContainerProps) {
+  const { ref, initialState, onStateChange, onReady, UNSTABLE_routeNode, theme, children } = props;
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
+  const routingQueue = use(RoutingQueueApiContext);
+  const registry = use(RouterRegistryContext);
+  const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   if (!parent.isDefault) {
     throw new Error(
@@ -102,8 +81,16 @@ function BaseNavigationContainerInner({
     );
   }
 
-  const registry = use(RouterRegistryContext)!;
-  const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext)!;
+  if (
+    routingQueue === undefined ||
+    registry === undefined ||
+    routesWithRemovalPrevented === undefined
+  ) {
+    throw new Error(
+      'The navigation container requires the shared routing state provided by `ExpoRoot`. Render the navigation container inside `ExpoRoot`.'
+    );
+  }
+
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
   // TODO(@ubax): consider moving this state to ExpoRoot.

@@ -2,13 +2,21 @@
 import type { Spec } from 'arg';
 import chalk from 'chalk';
 
-import { CLI_NAME } from './cmd';
 import { ExitError } from './error';
 import { Log } from './log';
 import { formatSelfCommand } from './resolvePackageManager';
 import { assertWithOptionsArgs, printHelp, resolveStringOrBooleanArgsAsync } from './utils/args';
+import { PACKAGE_NAME } from './utils/update-check';
 
 const debug = require('debug')('expo:init:cli') as typeof console.log;
+
+const getPackageJson = () => {
+  try {
+    return require('create-expo/package.json');
+  } catch {
+    return null;
+  }
+};
 
 async function run() {
   const argv = process.argv.slice(2) ?? [];
@@ -30,14 +38,14 @@ async function run() {
   });
 
   if (args['--version']) {
-    Log.exit(require('../package.json').version, 0);
+    Log.exit(getPackageJson()?.version ?? '0.0.0', 0);
   }
 
   if (args['--help']) {
-    const nameWithoutCreate = CLI_NAME.replace('create-', '');
+    const nameWithoutCreate = PACKAGE_NAME.replace('create-', '');
     printHelp(
       `Creates a new Expo project`,
-      chalk`npx ${CLI_NAME} {cyan <path>} [options]`,
+      chalk`npx ${PACKAGE_NAME} {cyan <path>} [options]`,
       [
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
@@ -60,7 +68,7 @@ async function run() {
     {gray The package manager used for installing}
     {gray node modules is based on how you invoke the CLI:}
 
-    {bold  npm:} {cyan npx ${CLI_NAME}}
+    {bold  npm:} {cyan npx ${PACKAGE_NAME}}
     {bold yarn:} {cyan yarn create ${nameWithoutCreate}}
     {bold pnpm:} {cyan pnpm create ${nameWithoutCreate}}
     {bold  bun:} {cyan bun create ${nameWithoutCreate}}

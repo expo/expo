@@ -15,16 +15,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import expo.modules.observe.storage.PendingLogsManager
-import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
- * Background worker that dispatches previously queued metrics to EAS Observe.
- *
- * This worker intentionally does NOT register a [SessionManager.MetricsInsertListener].
- * It only dispatches metrics that were already queued in the pending table by the foreground
- * [ObservabilityManager].
+ * Background worker that dispatches stored metrics and logs to EAS Observe.
  */
 class ObservabilityBackgroundWorker(
   context: Context,
@@ -42,15 +36,10 @@ class ObservabilityBackgroundWorker(
       context = context
     )
 
-    val pendingMetricsManager = PendingMetricsManager(context)
-    val pendingLogsManager = PendingLogsManager(context)
-
     BaseObservabilityManager(
       context = context,
       projectId = projectId,
       sessionManager = sessionManager,
-      pendingMetricsManager = pendingMetricsManager,
-      pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
       isDebugBuild = BuildConfig.DEBUG
     )

@@ -44,18 +44,14 @@ test('queues an incoming deep link using its extracted app path', () => {
   const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
 
   function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        getStateFromPath,
-        subscribe: (nextListener) => {
-          listener = nextListener;
-          return () => {};
-        },
+    useLinking(ref, {
+      prefixes: ['example://'],
+      getStateFromPath,
+      subscribe: (nextListener) => {
+        listener = nextListener;
+        return () => {};
       },
-      () => {}
-    );
+    });
     return null;
   }
 
@@ -90,19 +86,15 @@ test('keeps the current route group when parsing an incoming deep link', () => {
   const parsePath = jest.fn(getStateFromPath);
 
   function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        config,
-        getStateFromPath: parsePath,
-        subscribe: (nextListener) => {
-          listener = nextListener;
-          return () => {};
-        },
+    useLinking(ref, {
+      prefixes: ['example://'],
+      config,
+      getStateFromPath: parsePath,
+      subscribe: (nextListener) => {
+        listener = nextListener;
+        return () => {};
       },
-      () => {}
-    );
+    });
     return null;
   }
 
@@ -113,40 +105,6 @@ test('keeps the current route group when parsing an incoming deep link', () => {
   expect(
     getRouteInfoFromState(getStateFromPath('/shared', config, ['(b)', 'other'])).segments
   ).toEqual(['(b)', 'shared']);
-});
-
-test('reports an incoming deep link using its extracted app path', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-  // Only `getRootState` is used by the linking subscription.
-  ref.current = {
-    getRootState: () => ({ routeNames: ['home'], routes: [{ name: '__root' }] }),
-  } as typeof ref.current;
-  let listener: ((url: string) => void) | undefined;
-  const onUnhandledLinking = jest.fn();
-
-  function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['myapp://'],
-        getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
-        subscribe: (nextListener) => {
-          listener = nextListener;
-          return () => {};
-        },
-      },
-      onUnhandledLinking
-    );
-    return null;
-  }
-
-  render(<Sample />);
-  act(() => listener?.('myapp://foo/bar'));
-
-  expect(onUnhandledLinking).toHaveBeenCalledWith('/foo/bar');
-  expect(getPendingIntents()[0]).toMatchObject({
-    payload: { href: '/foo/bar' },
-  });
 });
 
 test('resolves a completed state from an async initial URL', async () => {
@@ -168,15 +126,11 @@ test('resolves a completed state from an async initial URL', async () => {
   }));
 
   const { result } = renderHook(() =>
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        getInitialURL: () => Promise.resolve('example://home/42'),
-        getStateFromPath,
-      },
-      () => {}
-    )
+    useLinking(ref, {
+      prefixes: ['example://'],
+      getInitialURL: () => Promise.resolve('example://home/42'),
+      getStateFromPath,
+    })
   );
 
   const state = await result.current.getInitialState();
@@ -204,15 +158,11 @@ test('resubscribes on re-render and cleans up the previous subscription', () => 
   });
 
   function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
-        subscribe,
-      },
-      () => {}
-    );
+    useLinking(ref, {
+      prefixes: ['example://'],
+      getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
+      subscribe,
+    });
     return null;
   }
 
@@ -239,11 +189,11 @@ test('async initial URL is parsed with first-render options', async () => {
   let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
 
   function Sample({ getStateFromPath }: { getStateFromPath: typeof firstGetStateFromPath }) {
-    getInitialState = useLinking(
-      ref,
-      { prefixes: ['example://'], getInitialURL: () => initialURL, getStateFromPath },
-      () => {}
-    ).getInitialState;
+    getInitialState = useLinking(ref, {
+      prefixes: ['example://'],
+      getInitialURL: () => initialURL,
+      getStateFromPath,
+    }).getInitialState;
     return null;
   }
 
@@ -370,8 +320,8 @@ test('throws if multiple instances of useLinking are used', () => {
   const options = { prefixes: [] };
 
   function Sample() {
-    useLinking(ref, options, () => {});
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
+    useLinking(ref, options);
     return null;
   }
 
@@ -389,12 +339,12 @@ test('throws if multiple instances of useLinking are used', () => {
   element?.unmount();
 
   function A() {
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
     return null;
   }
 
   function B() {
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
     return null;
   }
 
@@ -413,7 +363,7 @@ test('throws if multiple instances of useLinking are used', () => {
   element?.unmount();
 
   function Sample2() {
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
     return null;
   }
 

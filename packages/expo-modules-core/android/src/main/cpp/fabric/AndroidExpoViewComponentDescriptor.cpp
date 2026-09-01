@@ -30,13 +30,20 @@ react::Props::Shared AndroidExpoViewComponentDescriptor::cloneProps(
 
   rawProps.parse(rawPropsParser_);
 
+  const auto &sourceProps = props
+    ? dynamic_cast<const AndroidExpoViewProps &>(*props)
+    : *ExpoViewShadowNode<AndroidExpoViewProps>::defaultSharedProps();
+
   auto shadowNodeProps = std::make_shared<AndroidExpoViewProps>(
     context,
-    props ? dynamic_cast<const AndroidExpoViewProps &>(*props)
-      : *ExpoViewShadowNode<AndroidExpoViewProps>::defaultSharedProps(),
+    sourceProps,
     rawProps,
     filterObjectKeys_
   );
+
+#ifdef RN_SERIALIZABLE_STATE
+  shadowNodeProps->initializeDynamicProps(sourceProps, rawProps, filterObjectKeys_);
+#endif
 
   // TODO(@lukmccall): We probably can remove this loop
   if (react::ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {

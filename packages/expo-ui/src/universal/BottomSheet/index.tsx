@@ -35,6 +35,7 @@ export function BottomSheet({
   snapPoints,
   testID,
   contentPadding,
+  containerColor,
 }: BottomSheetProps) {
   const isDark = useColorScheme() === 'dark';
   const { top, bottom, left, right } = resolveContentPadding(contentPadding, {
@@ -63,6 +64,9 @@ export function BottomSheet({
             // The drawer has to fill the viewport or it gets pushed off-screen.
             ...(hasSnapPoints ? snapPointContentStyle : noSnapPointContentStyle),
             ...(showDragIndicator && dragIndicatorSpacing),
+            // An explicit containerColor overrides both the 'white' default
+            // above and the bare isDark fallback.
+            ...(typeof containerColor === 'string' && { backgroundColor: containerColor }),
           }}
           aria-describedby={undefined}>
           {/* Radix Dialog requires a title for a11y; render visually-hidden. */}

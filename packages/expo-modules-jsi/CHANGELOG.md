@@ -27,6 +27,7 @@
 - [iOS] `CppError::tryCatch` now takes a C++ callable instead of an Objective-C block. Every caller already passes a pure C++ body, so the block bridged no Swift closure and only added a non-inlinable indirect call and an Objective-C runtime dependency on the JS call/eval error-handling path. ([#48333](https://github.com/expo/expo/pull/48333) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptActor.assumeIsolated` no longer heap-allocates a closure box per call by keeping its `operation` non-escaping, making synchronous host calls ~1.6× faster. ([#47837](https://github.com/expo/expo/pull/47837) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptValue.undefined` and `JavaScriptValue.null` now return shared immortal instances instead of allocating a new value on each access, removing one allocation from every void-returning host call. ([#49545](https://github.com/expo/expo/pull/49545) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added an opt-in benchmark target that measures value access, host function calls, and JS function calls; run it with `pnpm benchmark`. ([#49579](https://github.com/expo/expo/pull/49579) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.4 — 2026-07-22
 

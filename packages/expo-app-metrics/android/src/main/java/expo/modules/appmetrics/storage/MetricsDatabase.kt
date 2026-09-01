@@ -3,20 +3,20 @@ package expo.modules.appmetrics.storage
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
+import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
-import androidx.room.ForeignKey
+import androidx.room.Relation
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.Embedded
-import androidx.room.Relation
 import androidx.room.Transaction
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 object MetricsConstants {
   const val SECONDS_TO_REMOVE_OLD_METRICS: Long = 7 * 24 * 60 * 60 // 7 days in seconds
@@ -24,7 +24,7 @@ object MetricsConstants {
 
 @Database(
   entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class],
-  version = 16,
+  version = 17,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -105,7 +105,7 @@ data class Session(
 )
 @Serializable
 data class Metric(
-  @PrimaryKey val metricId: String = UUID.randomUUID().toString(),
+  @PrimaryKey(autoGenerate = true) val id: Long = 0,
   val sessionId: String,
   // ISO 8601 date string
   val timestamp: String,
@@ -147,7 +147,7 @@ data class SessionWithMetrics(
 )
 @Serializable
 data class LogRecord(
-  @PrimaryKey val logId: String = UUID.randomUUID().toString(),
+  @PrimaryKey(autoGenerate = true) val id: Long = 0,
   val sessionId: String,
   // ISO 8601 date string
   val timestamp: String,
@@ -158,11 +158,6 @@ data class LogRecord(
   // JSON string. Typed encoding happens at OTel time, not at storage time.
   val attributes: String? = null,
   val droppedAttributesCount: Int = 0
-)
-
-data class SessionWithLogs(
-  val session: Session,
-  val logs: List<LogRecord>
 )
 
 @Entity(
@@ -216,8 +211,11 @@ interface MetricDao {
   @Delete
   suspend fun delete(metrics: List<Metric>)
 
-  @Query("SELECT * FROM metrics WHERE metricId IN (:metricIds) ORDER BY timestamp ASC")
-  suspend fun getByIds(metricIds: List<String>): List<Metric>
+  @Query("SELECT * FROM metrics WHERE id > :afterId ORDER BY id ASC LIMIT :limit")
+  suspend fun getAfterId(afterId: Long, limit: Int): List<Metric>
+
+  @Query("SELECT MAX(id) FROM metrics")
+  suspend fun getMaxId(): Long?
 
   @Query("SELECT * FROM metrics WHERE sessionId = :sessionId ORDER BY timestamp ASC")
   suspend fun getMetricsForSession(sessionId: String): List<Metric>
@@ -231,8 +229,11 @@ interface LogDao {
   @Delete
   suspend fun delete(logs: List<LogRecord>)
 
-  @Query("SELECT * FROM logs WHERE logId IN (:logIds) ORDER BY timestamp ASC")
-  suspend fun getByIds(logIds: List<String>): List<LogRecord>
+  @Query("SELECT * FROM logs WHERE id > :afterId ORDER BY id ASC LIMIT :limit")
+  suspend fun getAfterId(afterId: Long, limit: Int): List<LogRecord>
+
+  @Query("SELECT MAX(id) FROM logs")
+  suspend fun getMaxId(): Long?
 
   @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
   suspend fun deleteLogsOlderThan(cutoffTimestamp: String)

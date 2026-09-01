@@ -2,25 +2,21 @@ import React from 'react';
 import { I18nManager } from 'react-native';
 
 import { RouterConfigContext } from '../global-state/routerConfigContext';
-import { RoutingQueueApiContext, RoutingQueueProvider } from '../global-state/routingQueueContext';
+import { BaseNavigationContainer } from '../react-navigation/core/BaseNavigationContainer';
 import type {
   DocumentTitleOptions,
   LinkingOptions,
   LocaleDirection,
   NavigationContainerProps,
   NavigationContainerRef,
-  NavigationState,
   ParamListBase,
 } from '../react-navigation/native';
 import {
-  BaseNavigationContainer,
   DefaultTheme,
   LinkingContext,
   LocaleDirContext,
   ThemeProvider,
-  UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
 } from '../react-navigation/native';
-import useLatestCallback from '../utils/useLatestCallback';
 import { getPathFromState } from './getPathFromState';
 import { getStateFromPath } from './getStateFromPath';
 import { useBackButton } from './useBackButton';
@@ -61,19 +57,17 @@ type Props<ParamList extends object> = Omit<NavigationContainerProps, 'initialSt
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
-function NavigationContainerInner(
-  {
-    direction = I18nManager.getConstants().isRTL ? 'rtl' : 'ltr',
-    theme = DefaultTheme,
-    linking,
-    fallback = null,
-    documentTitle,
-    onReady,
-    onStateChange,
-    ...rest
-  }: Props<ParamListBase>,
-  ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
-) {
+function NavigationContainerInner({
+  direction = I18nManager.getConstants().isRTL ? 'rtl' : 'ltr',
+  theme = DefaultTheme,
+  linking,
+  fallback = null,
+  documentTitle,
+  ref,
+  ...rest
+}: Props<ParamListBase> & {
+  ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>;
+}) {
   const routerConfig = React.use(RouterConfigContext);
 
   if (linking?.config) {
@@ -85,49 +79,12 @@ function NavigationContainerInner(
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
 
-  const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
-
-  const { getInitialState } = useLinking(
-    refContainer,
-    {
-      prefixes: [],
-      ...linking,
-    },
-    setLastUnhandledLink
-  );
-
-  const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
-
-  const unhandledLinkingContext = React.useMemo(
-    () => ({ lastUnhandledLink, setLastUnhandledLink }),
-    [lastUnhandledLink, setLastUnhandledLink]
-  );
-
-  const onReadyForLinkingHandling = useLatestCallback(() => {
-    // If the screen path matches lastUnhandledLink, we do not track it
-    const path = refContainer.current?.getCurrentRoute()?.path;
-    setLastUnhandledLink((previousLastUnhandledLink) => {
-      if (previousLastUnhandledLink === path) {
-        return undefined;
-      }
-      return previousLastUnhandledLink;
-    });
-    onReady?.();
+  const { getInitialState } = useLinking(refContainer, {
+    prefixes: [],
+    ...linking,
   });
 
-  const onStateChangeForLinkingHandling = useLatestCallback(
-    (state: Readonly<NavigationState> | undefined) => {
-      // If the screen path matches lastUnhandledLink, we do not track it
-      const path = refContainer.current?.getCurrentRoute()?.path;
-      setLastUnhandledLink((previousLastUnhandledLink) => {
-        if (previousLastUnhandledLink === path) {
-          return undefined;
-        }
-        return previousLastUnhandledLink;
-      });
-      onStateChange?.(state);
-    }
-  );
+  const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
   // Add additional linking related info to the ref
   // This will be used by the devtools
   React.useEffect(() => {
@@ -162,37 +119,21 @@ function NavigationContainerInner(
 
   return (
     <LocaleDirContext.Provider value={direction}>
-      <UnhandledLinkingContext.Provider value={unhandledLinkingContext}>
-        <LinkingContext.Provider value={linkingContext}>
-          <BaseNavigationContainer
-            {...rest}
-            theme={theme}
-            onReady={onReadyForLinkingHandling}
-            onStateChange={onStateChangeForLinkingHandling}
-            initialState={initialState}
-            UNSTABLE_routeNode={routerConfig?.routeNode ?? undefined}
-            ref={refContainer}
-          />
-        </LinkingContext.Provider>
-      </UnhandledLinkingContext.Provider>
+      <LinkingContext.Provider value={linkingContext}>
+        <BaseNavigationContainer
+          {...rest}
+          theme={theme}
+          initialState={initialState}
+          UNSTABLE_routeNode={routerConfig?.routeNode ?? undefined}
+          ref={refContainer}
+        />
+      </LinkingContext.Provider>
     </LocaleDirContext.Provider>
   );
 }
 
-const NavigationContainerContent = React.forwardRef(NavigationContainerInner);
-
-// TODO(@ubax): Remove this component once we require single container in the whole app
-function NavigationContainerWithQueue(
-  props: Props<ParamListBase>,
-  ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
-) {
-  const api = React.use(RoutingQueueApiContext);
-  const content = <NavigationContainerContent {...props} ref={ref} />;
-
-  return api === undefined ? <RoutingQueueProvider>{content}</RoutingQueueProvider> : content;
-}
-
-export const NavigationContainer = React.forwardRef(NavigationContainerWithQueue) as <
+// The implementation uses the base param list, while callers retain their concrete route types.
+export const NavigationContainer = NavigationContainerInner as <
   RootParamList extends object = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {
