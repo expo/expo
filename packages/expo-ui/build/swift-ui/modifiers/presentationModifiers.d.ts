@@ -1,4 +1,5 @@
 import { type ModifierConfig } from './createModifier';
+import type { Color } from './types';
 /**
  * Presentation detent type for controlling sheet heights.
  * - `'medium'`: System medium height (approximately half screen)
@@ -52,12 +53,12 @@ export declare const presentationBackgroundInteraction: (interaction: Presentati
  * Sets the background of a sheet presentation. Paints the entire sheet chrome
  * including the drag-indicator zone and home-indicator safe-area inset, which
  * a regular `background()` modifier cannot reach.
- * @param color - The background color (hex string). For example, `#FF0000`.
+ * @param color - The background color.
  * @platform ios 16.4+
  * @see Official [SwiftUI
 documentation](https://developer.apple.com/documentation/swiftui/view/presentationbackground(_:)).
  */
-export declare const presentationBackground: (color: string) => ModifierConfig;
+export declare const presentationBackground: (color: Color) => ModifierConfig;
 /**
  * Disables interactive dismissal of a sheet.
  * @param isDisabled - Whether interactive dismiss is disabled (default: true).
