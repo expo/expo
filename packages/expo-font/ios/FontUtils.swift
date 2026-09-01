@@ -99,20 +99,11 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
   return [defaultPostScriptName ?? postScriptNames[0]]
 }
 
-/**
- The PostScript name ``CGFont`` reports for the file's default instance (its variation axes'
- default location), or `nil` when it can't be read. Shared by ``postScriptNames(inFileAt:alias:)``
- and ``fontTraits(inFileAt:)`` so both agree on which descriptor is the default one.
- */
 internal func defaultInstancePostScriptName(url: CFURL) -> String? {
   return CGDataProvider(url: url).flatMap { CGFont($0)?.postScriptName as String? }
 }
 
-/**
- The italic flag and raw `kCTFontWeightTrait` (0.0 = regular, negative lighter, positive bolder)
- from the file's default-instance font descriptor (falling back to the first descriptor when the
- default instance's name can't be read or matched), or `nil` when the file has no readable traits.
- */
+// `kCTFontWeightTrait` is 0.0 for regular, negative for lighter, positive for bolder.
 internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: CGFloat)? {
   guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(url) as? [CTFontDescriptor],
     !fontDescriptors.isEmpty else {
