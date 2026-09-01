@@ -11,7 +11,10 @@ protocol CameraPhotoCaptureDelegate: AnyObject {
   var presetCamera: AVCaptureDevice.Position { get }
   var mirror: Bool { get }
   var flashMode: FlashMode { get }
+  var animateShutter: Bool { get }
   var onPictureSaved: EventDispatcher { get }
+
+  func playShutterAnimation()
 }
 
 class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
@@ -111,9 +114,18 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
   }
 
   func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+    willCapturePhoto()
+  }
+
+  func willCapturePhoto() {
     if photoCaptureOptions?.shutterSound == false {
       AudioServicesDisposeSystemSoundID(1108)
     }
+
+    guard let captureDelegate, captureDelegate.animateShutter else {
+      return
+    }
+    captureDelegate.playShutterAnimation()
   }
 
   func photoOutput(
