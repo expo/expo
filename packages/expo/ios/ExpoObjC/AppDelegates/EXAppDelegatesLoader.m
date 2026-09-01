@@ -4,11 +4,11 @@
 
 #import <Expo/EXAppDelegatesLoader.h>
 
-#if __has_include(<Expo/Expo-Swift.h>)
-#import <Expo/Expo-Swift.h>
-#else
-#import "Expo-Swift.h"
-#endif
+// `AppDelegatesLoaderDelegate` and `EXAppDelegateSubscriberProtocol` both live in
+// ExpoModulesCore, so import its generated Swift header rather than `Expo-Swift.h`.
+// This keeps the ObjC target from depending on the `Expo` Swift target (which would
+// be a SwiftPM target cycle).
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
 
 // Make the legacy wrapper conform to the protocol for subscribers.
 @interface EXLegacyAppDelegateWrapper () <EXAppDelegateSubscriberProtocol>
