@@ -49,7 +49,7 @@ A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another ba
 
 An EAS Simulator workflow has four stages:
 
-1. **Start a session** with EAS CLI or the [REST API](/preview/eas-simulator/rest-api/). Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
+1. **Start a session** with EAS CLI, the [REST API](/preview/eas-simulator/rest-api/), or an authenticated [create session link](/preview/eas-simulator/create-session-links/). Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
 2. **Install your app.** Pass an EAS Build, application archive URL, or Expo Go to the start command, or install a local build through the controller after the session starts. A session without an application source starts with a blank device.
 3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or [Appium](https://appium.io/docs/en/) for programmatic control. Supported iOS sessions also include a web preview.
 4. **Stop the session.** Stop it explicitly when you finish. An unattended non-interactive session continues consuming usage until it stops or reaches a configured limit.
@@ -85,6 +85,13 @@ Use [EAS Build](/build/introduction/) to create installable builds, and use loca
   title="Run and control your app"
   description="Install a local or EAS build, interact with the app, and capture evidence."
   href="/preview/eas-simulator/run-and-control/"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="Create session links"
+  description="Construct a URL that starts a browser preview from an EAS Build or application archive."
+  href="/preview/eas-simulator/create-session-links/"
   Icon={Cloud01Icon}
 />
 

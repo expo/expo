@@ -895,7 +895,7 @@ describe('processBarButtonItems', () => {
 // ─── getMenuItem (via menu items) ───────────────────────────────────────────────
 // TODO(@ubax): Consider refactoring getMenuItem to be a separate function that can be tested in isolation instead of testing it indirectly via headerLeft items
 describe('getMenuItem', () => {
-  test('action item: label becomes title, description becomes subtitle', () => {
+  test('action item transforms label, description, and icon', () => {
     const onPress = jest.fn();
     const { result } = renderHook(() =>
       useHeaderConfigProps(
@@ -908,7 +908,13 @@ describe('getMenuItem', () => {
                 onPress: jest.fn(),
                 menu: {
                   items: [
-                    { type: 'action', label: 'Copy', description: 'Copy to clipboard', onPress },
+                    {
+                      type: 'action',
+                      label: 'Copy',
+                      description: 'Copy to clipboard',
+                      icon: { type: 'image', source: { uri: 'copy.png' }, tinted: false },
+                      onPress,
+                    },
                   ],
                 },
               },
@@ -919,6 +925,7 @@ describe('getMenuItem', () => {
     const menuItem = (result.current.headerLeftBarButtonItems![0] as any).menu.items[0];
     expect(menuItem.title).toBe('Copy');
     expect(menuItem.subtitle).toBe('Copy to clipboard');
+    expect(menuItem.icon).toEqual({ type: 'imageSource', imageSource: { uri: 'copy.png' } });
     expect(menuItem.label).toBeUndefined();
     expect(menuItem.description).toBeUndefined();
   });

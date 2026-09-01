@@ -1,7 +1,5 @@
 'use client';
 import { Children, useMemo, type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
-import type { PlatformIconIOS } from 'react-native-screens';
 
 import type {
   NativeStackHeaderItemMenu,
@@ -190,19 +188,6 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
   return item;
 }
 
-// Custom menu action icons are not supported in react-navigation yet
-// But they are supported in react-native-screens
-// TODO(@ubax): Remove this workaround once react-navigation supports custom icons for menu actions.
-// https://linear.app/expo/issue/ENG-19853/remove-custom-conversion-logic-for-icon-from-packagesexpo
-function convertImageIconToPlatformIcon(icon: {
-  source: ImageSourcePropType;
-  tinted?: boolean;
-}): PlatformIconIOS {
-  return icon.tinted
-    ? { type: 'templateSource', templateSource: icon.source }
-    : { type: 'imageSource', imageSource: icon.source };
-}
-
 function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
   props: StackToolbarMenuProps
 ): NativeStackHeaderItemMenuSubmenu | undefined {
@@ -241,13 +226,7 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
   // TODO: Add elementSize to react-native-screens
 
   if (sharedProps.icon) {
-    if (sharedProps.icon.type === 'sfSymbol') {
-      item.icon = sharedProps.icon;
-    } else {
-      item.icon = convertImageIconToPlatformIcon(
-        sharedProps.icon
-      ) as unknown as NativeStackHeaderItemMenuSubmenu['icon'];
-    }
+    item.icon = sharedProps.icon;
   }
 
   return item;
@@ -317,13 +296,7 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
     item.keepsMenuPresented = unstable_keepPresented;
   }
   if (sharedProps.icon) {
-    if (sharedProps.icon.type === 'sfSymbol') {
-      item.icon = sharedProps.icon;
-    } else {
-      item.icon = convertImageIconToPlatformIcon(
-        sharedProps.icon
-      ) as unknown as NativeStackHeaderItemMenuAction['icon'];
-    }
+    item.icon = sharedProps.icon;
   }
   return item;
 }

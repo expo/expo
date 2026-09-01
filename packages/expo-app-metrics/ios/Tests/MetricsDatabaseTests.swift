@@ -549,6 +549,32 @@ struct MetricsDatabaseTests {
   }
 
   @Test
+  func `stores a crash report and log only once`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let log = makeLogRow(sessionId: "s", severity: "fatal", name: "exception")
+
+      try database.storeCrashReportIfNew(sessionId: "s", payload: "{\"v\":1}", log: log)
+      try database.storeCrashReportIfNew(sessionId: "s", payload: "{\"v\":2}", log: log)
+
+      #expect(try database.getCrashReport(sessionId: "s") == "{\"v\":1}")
+      #expect(try database.getLogs(sessionId: "s").map(\.name) == ["exception"])
+    }
+  }
+
+  @Test
+  func `stores the crash report without a log when the session does not exist`() throws {
+    try withTemporaryDatabase { database in
+      let log = makeLogRow(sessionId: "missing", severity: "fatal", name: "exception")
+
+      try database.storeCrashReportIfNew(sessionId: "missing", payload: "{}", log: log)
+
+      #expect(try database.getCrashReport(sessionId: "missing") == "{}")
+      #expect(try database.getLogs(sessionId: "missing").isEmpty)
+    }
+  }
+
+  @Test
   func `getCrashReport returns nil when there is no entry`() throws {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "s"))

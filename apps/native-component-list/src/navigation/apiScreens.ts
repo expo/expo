@@ -420,6 +420,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ScreenCaptureAdvancedScreen'));
+    },
+    name: 'ScreenCaptureAdvanced',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SensorScreen'));
     },
     name: 'Sensor',
