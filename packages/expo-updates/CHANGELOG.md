@@ -35,6 +35,7 @@
 - [Android] Skip and repair updates that are missing their launch asset instead of selecting them for launch, which previously failed every cold start with "Launch asset not found for update". ([#49470](https://github.com/expo/expo/pull/49470) by [@alanjhughes](https://github.com/alanjhughes), based on [#48733](https://github.com/expo/expo/pull/48733) by [@martintreurnicht](https://github.com/martintreurnicht))
 - [iOS] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49504](https://github.com/expo/expo/pull/49504) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49505](https://github.com/expo/expo/pull/49505) by [@alanjhughes](https://github.com/alanjhughes))
+- Date the embedded bundle by the source commit's committer date instead of when the native build ran, so a build that outlasts the gap between two commits no longer outranks an update published from the newer one (the update downloads and then never launches). Falls back to the build time outside a clean git checkout, and `EXPO_UPDATES_COMMIT_TIME_OVERRIDE` overrides both. ([#49582](https://github.com/expo/expo/pull/49582) by [@marcodejongh](https://github.com/marcodejongh))
 
 ### 💡 Others
 
