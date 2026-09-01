@@ -1,6 +1,7 @@
 import type { BuildCacheProvider } from '@expo/config';
 
 import type { OSType } from '../../start/platforms/ios/simctl';
+import type { EnvironmentMode } from '../../utils/nodeEnv';
 import type { BundlerProps } from '../resolveBundlerProps';
 
 export type XcodeConfiguration = string;
@@ -45,6 +46,7 @@ export type BuildProps = {
   /** OS type from scheme resolution, used for generic destination when device is null. */
   osType: OSType;
   configuration: XcodeConfiguration;
+  mode: EnvironmentMode;
   /** Disable the initial bundling from the native script. */
   shouldSkipInitialBundling: boolean;
   /** Should use derived data for builds. */

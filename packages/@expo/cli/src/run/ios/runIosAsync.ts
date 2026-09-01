@@ -38,7 +38,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   // Resolve the CLI arguments into useable options.
-  const props = await profile(resolveOptionsAsync)(projectRoot, options);
+  const props = await profile(resolveOptionsAsync)(projectRoot, options, mode);
 
   if (props.device) {
     event('device:selected', {

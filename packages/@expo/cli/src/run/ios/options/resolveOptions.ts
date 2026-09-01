@@ -3,18 +3,19 @@ import { getConfig } from '@expo/config';
 import type { OSType } from '../../../start/platforms/ios/simctl';
 import { isOSType } from '../../../start/platforms/ios/simctl';
 import { resolveBuildCacheProvider } from '../../../utils/build-cache-providers';
+import type { EnvironmentMode } from '../../../utils/nodeEnv';
 import { profile } from '../../../utils/profile';
 import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
 import type { BuildProps, Options } from '../XcodeBuild.types';
 import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
-import { resolveXcodeConfigurationMode } from './resolveXcodeConfiguration';
 import { resolveXcodeProject } from './resolveXcodeProject';
 
 /** Resolve arguments for the `run:ios` command. */
 export async function resolveOptionsAsync(
   projectRoot: string,
-  options: Options
+  options: Options,
+  mode: EnvironmentMode
 ): Promise<BuildProps> {
   const xcodeProject = resolveXcodeProject(projectRoot);
 
@@ -54,12 +55,11 @@ export async function resolveOptionsAsync(
     projectRoot
   );
 
-  // This optimization skips resetting the Metro cache needlessly.
-  // The cache is reset in `../node_modules/react-native/scripts/react-native-xcode.sh` when the
-  // project is running in Debug and built onto a physical device. It seems that this is done because
-  // the script is run from Xcode and unaware of the CLI instance.
-  const isDevelopment = resolveXcodeConfigurationMode(configuration) === 'development';
-  const shouldSkipInitialBundling = isDevelopment && !isSimulator;
+  const isDevelopment = mode === 'development';
+  // React Native only recognizes case-sensitive `Debug` configurations. Skip native bundling for
+  // other development configurations so the build keeps using Metro.
+  const shouldSkipInitialBundling =
+    isDevelopment && (!isSimulator || !configuration.includes('Debug'));
 
   return {
     ...bundlerProps,
@@ -71,6 +71,7 @@ export async function resolveOptionsAsync(
     device,
     osType,
     configuration,
+    mode,
     shouldSkipInitialBundling,
     buildCache: options.buildCache !== false,
     scheme,
