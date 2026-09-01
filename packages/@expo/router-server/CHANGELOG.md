@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Keep files outside the app root out of the typed routes declaration on Windows, and key files inside it with forward slashes. ([#49629](https://github.com/expo/expo/pull/49629) by [@LizunovSergey](https://github.com/LizunovSergey))
+
 ### 💡 Others
 
 - [Internal] Inject CSS and JavaScript bundle tags within `getStaticContent()`. ([#47006](https://github.com/expo/expo/pull/47006) by [@hassankhan](https://github.com/hassankhan))
