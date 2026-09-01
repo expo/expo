@@ -168,13 +168,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
             exitInfoProvider = ExitInfoProviderImpl(context),
             lastProcessedExitStore = PreferencesLastProcessedExitStore(context),
             appVersion = metadata?.appVersion
-          ) { sessionId, origin, report ->
+          ) { sessionId, origin, report, logDetails ->
             attributeAndStoreCrashReport(
               sessionManager = sessionManager,
               currentSessionId = mainSession.sessionId,
               sessionId = sessionId,
               origin = origin,
-              report = report
+              report = report,
+              logDetails = logDetails
             )
           }.process()
         }

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS] [Android] Dispatch attributed native crashes as fatal exception logs. ([#49489](https://github.com/expo/expo/pull/49489) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

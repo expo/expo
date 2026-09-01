@@ -1,6 +1,7 @@
 package expo.modules.appmetrics.storage
 
 import android.content.Context
+import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.GlobalAttributes
@@ -99,6 +100,25 @@ class SessionManager(
     )
   }
 
+  /**
+   * Stores a crash report and its log for `sessionId`, but only when the session
+   * has no report yet. Reprocessing the same crash must not add a second log.
+   */
+  suspend fun storeCrashReportIfNew(sessionId: String, payload: String, log: LogRecord) {
+    database.withTransaction {
+      if (database.crashReportDao().getBySessionId(sessionId) == null) {
+        database.crashReportDao().upsert(
+          CrashReportEntity(
+            sessionId = sessionId,
+            payload = payload,
+            createdAt = TimeUtils.getCurrentTimestampInISOFormat()
+          )
+        )
+        database.logDao().insertAll(logsWithSession(listOf(log), sessionId))
+      }
+    }
+  }
+
   suspend fun getCrashReport(sessionId: String): String? =
     database.crashReportDao().getBySessionId(sessionId)?.payload
 
@@ -168,14 +188,16 @@ class SessionManager(
     logs: List<LogRecord>,
     sessionId: String
   ) {
-    val logsWithSession = logs.map { log ->
+    database.logDao().insertAll(logsWithSession(logs, sessionId))
+  }
+
+  private fun logsWithSession(logs: List<LogRecord>, sessionId: String): List<LogRecord> =
+    logs.map { log ->
       log.copy(
         sessionId = sessionId,
         attributes = mergeGlobalAttributesIntoJsonString(log.attributes)
       )
     }
-    database.logDao().insertAll(logsWithSession)
-  }
 
   suspend fun cleanupOldLogs() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
