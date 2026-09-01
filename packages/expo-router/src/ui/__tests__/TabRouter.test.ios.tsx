@@ -15,7 +15,6 @@ function buildTabState(
     index,
     routeNames: routes.map((route) => route.name),
     routes,
-    history: [{ type: 'route', key: routes[0]!.key }],
   };
 }
 
@@ -57,12 +56,11 @@ test('reselecting a seeded tab returns tab metadata', () => {
           state: { routes: [{ name: 'child' }] },
         },
       ],
-      history: [{ type: 'route', key: 'first-key' }],
     },
   });
 });
 
-test('reselecting a tab with matching carried state preserves its history', () => {
+test('reselecting a tab with matching carried state preserves the state', () => {
   const router = ExpoTabRouter({ triggerMap: {} });
   const options = { routeNames: ['first', 'second'], routeGetIdList: {} };
   const childState = {

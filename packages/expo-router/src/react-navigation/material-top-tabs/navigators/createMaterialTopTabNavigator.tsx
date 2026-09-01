@@ -39,6 +39,7 @@ function MaterialTopTabNavigatorContent({
   navigateToTabSync,
   ...rest
 }: ContentArgs) {
+  const { backBehavior, ...viewProps } = rest as typeof rest & { backBehavior?: string };
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
@@ -65,6 +66,7 @@ function MaterialTopTabNavigatorContent({
     descriptors: topTabDescriptors,
     preload,
     lazyByDefault: false,
+    preloadAll: backBehavior === 'order',
   });
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
@@ -73,7 +75,7 @@ function MaterialTopTabNavigatorContent({
 
   return (
     <MaterialTopTabView
-      {...rest}
+      {...viewProps}
       state={{
         ...state,
         routes: visibleRoutes,

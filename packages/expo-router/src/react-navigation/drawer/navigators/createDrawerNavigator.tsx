@@ -47,7 +47,9 @@ function DrawerNavigatorContent({
   defaultStatus = 'closed',
   drawerContent,
   detachInactiveScreens,
+  ...rest
 }: ContentArgs) {
+  const { backBehavior } = rest as typeof rest & { backBehavior?: string };
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
     routeNames: drawerState.routeNames,
@@ -63,6 +65,7 @@ function DrawerNavigatorContent({
     descriptors: drawerDescriptors,
     preload,
     lazyByDefault: true,
+    preloadAll: backBehavior === 'order',
   });
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {

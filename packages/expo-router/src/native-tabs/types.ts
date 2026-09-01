@@ -418,7 +418,7 @@ export interface NativeTabsProps extends PropsWithChildren {
    *
    * @platform android
    */
-  backBehavior?: 'none' | 'initialRoute' | 'history';
+  backBehavior?: 'none' | 'initialRoute' | 'history' | 'order';
   /**
    * The visibility mode of the tab item label.
    *

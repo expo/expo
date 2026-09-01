@@ -77,6 +77,7 @@ function NativeTabsContent({
   }
 
   const { routes } = state;
+  const { backBehavior, ...viewProps } = rest as typeof rest & { backBehavior?: string };
 
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes,
@@ -100,6 +101,7 @@ function NativeTabsContent({
     descriptors,
     preload,
     lazyByDefault: false,
+    preloadAll: backBehavior === 'order',
   });
 
   const provenanceRef = useRef(0);
@@ -156,7 +158,7 @@ function NativeTabsContent({
     NativeTabsViewProps,
     'focusedIndex' | 'provenance' | 'tabs' | 'onTabChange'
   > &
-    Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
+    Record<Exclude<keyof typeof viewProps, keyof NativeTabsViewProps>, never> = viewProps;
 
   if (visibleTabs.length === 0 || focusedIndex < 0) {
     return null;

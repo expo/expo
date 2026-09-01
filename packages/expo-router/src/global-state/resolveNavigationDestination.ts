@@ -232,8 +232,7 @@ function createDestinationState(
 ): NavigationState {
   const targetRoute = getFocusedRoute(targetState);
   const initialRouteName = getValidInitialRouteName(routeNode);
-  // Sort like a mounted navigator does, so the route names match on mount and no
-  // ROUTE_NAMES_CHANGED action is queued.
+  // Seed the same route-name set as the mounted navigator so HMR reconciliation is unnecessary.
   const routeNames = [...routeNode.children]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
