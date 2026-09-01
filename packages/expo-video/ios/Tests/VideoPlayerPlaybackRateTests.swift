@@ -65,6 +65,11 @@ private final class TestAVPlayer: AVPlayer {
     }
     set {
       simulatedRate = newValue
+      if newValue == 0 {
+        simulatedTimeControlStatus = .paused
+      } else if simulatedTimeControlStatus == .paused {
+        simulatedTimeControlStatus = .waitingToPlayAtSpecifiedRate
+      }
     }
   }
 
@@ -84,11 +89,6 @@ private final class TestAVPlayer: AVPlayer {
   override func play() {
     simulatedTimeControlStatus = .playing
     rate = defaultRate
-  }
-
-  override func pause() {
-    simulatedTimeControlStatus = .paused
-    rate = 0
   }
 
   func waitToPlay(at rate: Float) {
