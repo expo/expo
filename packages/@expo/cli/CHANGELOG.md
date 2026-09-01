@@ -28,6 +28,7 @@
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - Show the Xcode build log path when `run:ios` fails. ([#48624](https://github.com/expo/expo/pull/48624) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fix iOS asset catalog scale-to-file pairing for assets with non-standard scales. ([#48525](https://github.com/expo/expo/pull/48525) by [@janicduplessis](https://github.com/janicduplessis))
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
 - Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
