@@ -38,10 +38,7 @@ internal sealed interface FontSource {
    */
   fun readForInstancing(): ByteBuffer?
 
-  /**
-   * A [Font.Builder] for this face, with no weight or slant set yet. The builder reads the file
-   * itself — no [readForInstancing] buffer needed.
-   */
+  // Reads the file itself; no [readForInstancing] buffer needed.
   @RequiresApi(Build.VERSION_CODES.Q)
   fun newFontBuilder(): Font.Builder
 
