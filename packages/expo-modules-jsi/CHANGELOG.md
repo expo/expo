@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Added an opt-in benchmark target that measures value access, host function calls, and JS function calls; run it with `pnpm benchmark`. ([#49579](https://github.com/expo/expo/pull/49579) by [@tsapeta](https://github.com/tsapeta))
+
 ## 57.0.7 — 2026-09-01
 
 ### 💡 Others
