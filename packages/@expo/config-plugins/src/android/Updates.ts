@@ -105,10 +105,9 @@ export async function applyRuntimeVersionFromConfigForProjectRootAsync(
     return setStringItem(
       [
         // `expo_runtime_version` is a technical identifier read back by expo-updates, not
-        // user-facing copy. It must be marked non-translatable so localization tooling doesn't
-        // emit a locale-qualified copy of it — Android prefers the locale-qualified value, so a
-        // translated copy makes devices in that locale report a stale runtime version and
-        // silently stop receiving updates.
+        // user-facing copy, so translation tooling that reads `res/values/strings.xml` should
+        // leave it alone. Note the attribute is a source-XML signal only: it is not carried
+        // into the compiled resource table.
         buildResourceItem({
           name: 'expo_runtime_version',
           value: runtimeVersion,
