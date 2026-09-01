@@ -38,11 +38,11 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^0.10.1",
+    "@expo/image-utils": "workspace:^",
     "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
-    "expo-application": "workspace:~56.0.3",
-    "expo-constants": "workspace:~56.0.16"
+    "expo-application": "workspace:~",
+    "expo-constants": "workspace:~"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
