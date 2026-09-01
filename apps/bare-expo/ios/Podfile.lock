@@ -607,6 +607,8 @@ PODS:
     - RNScreens
   - ExpoScreenCapture (57.0.1):
     - ExpoModulesCore
+  - ExpoScreenCapture/Tests (57.0.1):
+    - ExpoModulesCore
   - ExpoScreenOrientation (57.0.1):
     - ExpoModulesCore
     - hermes-engine
@@ -3215,6 +3217,7 @@ DEPENDENCIES:
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
+  - ExpoScreenCapture/Tests (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
   - ExpoSensors (from `../../../packages/expo-sensors/ios`)
@@ -3917,7 +3920,7 @@ SPEC CHECKSUMS:
   ExpoObserve: aa4fcbe7ed0a7ba387984a38e24c2ecaa8895fd0
   ExpoPrint: 7e7a9bc7c12b9b336f34c4458d0c9ba14f243759
   ExpoRouter: 224087330cc8f5a39700e6f4d7a55f55ecb2f90d
-  ExpoScreenCapture: 1728376b2a32a05dc1f6bae6a8d19b1bd33926f9
+  ExpoScreenCapture: 387b18f4a51561916cbff71d6e0e7b386af31171
   ExpoScreenOrientation: 33c9de0c9e01dd8d1244f2b1ef433d0171079771
   ExpoSecureStore: 94793113049a2d7478dfe1a13aa15081e9f61755
   ExpoSensors: e71c7b6cb0c09d3427ef6ae29c69532a10c86b05
