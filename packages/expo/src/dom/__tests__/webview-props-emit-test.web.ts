@@ -67,8 +67,6 @@ describeWithDOM('$$props emit', () => {
 
     await render({ title: 'initial' });
 
-    // The DOM side has no `$$props` listener yet, and on the first commit the
-    // native view is not resolvable by tag, so this rejected instead.
     expect(injectJavaScript).not.toHaveBeenCalled();
   });
 

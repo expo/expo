@@ -23,7 +23,7 @@
 - Fix async imports (`import(...)`) via `asyncRequireModule` not a thenable instead of a full promise shape ([#48550](https://github.com/expo/expo/pull/48550) by [@kitten](https://github.com/kitten))
 - Fix `window.location` being called regardless of `@expo/metro-runtime` being present on native when an async chunk loads after Metro disconnects ([#48944](https://github.com/expo/expo/pull/48944) by [@expo-bot](https://github.com/expo-bot))
 - Fix DOM components dropping prop updates that are emitted while the WebView is still loading. ([#48813](https://github.com/expo/expo/pull/48813) by [@expo-bot](https://github.com/expo-bot))
-- [Android] Fix DOM components logging an uncaught `DomWebView.injectJavaScript` rejection on cold start by not emitting props before the DOM side is ready. ([#49173](https://github.com/expo/expo/issues/49173) by [@ahmdshrif](https://github.com/ahmdshrif))
+- [Android] Fix DOM components logging an uncaught `DomWebView.injectJavaScript` rejection on cold start by not emitting props before the DOM side is ready. ([#49257](https://github.com/expo/expo/pull/49257) by [@ahmdshrif](https://github.com/ahmdshrif))
 - Fix `import.meta.url` being `null` on web when `transform.inlineRequires` is enabled. ([#49045](https://github.com/expo/expo/pull/49045) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
