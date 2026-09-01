@@ -1,7 +1,7 @@
 'use client';
 
 import type { DependencyList } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 
 import type { SharedObject } from '../ts-declarations/SharedObject';
 
@@ -83,8 +83,10 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
   const pendingUpdateRef = useRef<PendingUpdate<TSharedObject> | null>(null);
   const pendingUpdatePromiseRef = useRef<Promise<void> | null>(null);
   const isFastRefresh = useRef(false);
+  const releasedObjectRef = useRef<TSharedObject | null>(null);
   const previousDependencies = useRef<DependencyList>(dependencies);
   const lifecycleRef = useRef(lifecycle);
+  const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
 
   // Keep lifecycle callbacks fresh without making effects depend on the lifecycle object identity.
   lifecycleRef.current = lifecycle;
@@ -168,10 +170,20 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
   useEffect(() => {
     isFastRefresh.current = false;
 
+    // `<Activity mode="hidden">` destroys the effects but keeps the hook state, so the cleanup
+    // below already released the current object. Create a new one for this mount, otherwise the
+    // hook would return a released object for as long as the component stays mounted.
+    if (releasedObjectRef.current !== null && releasedObjectRef.current === objectRef.current) {
+      releasedObjectRef.current = null;
+      objectRef.current = lifecycleRef.current.factory();
+      forceUpdate();
+    }
+
     return () => {
       // This will be called on every fast refresh and on unmount, but we only want to release the object on unmount.
       if (!isFastRefresh.current && objectRef.current) {
         const obj = objectRef.current;
+        releasedObjectRef.current = obj;
         const doRelease = () => releaseObject(obj);
         if (pendingUpdatePromiseRef.current) {
           pendingUpdatePromiseRef.current.then(doRelease, doRelease);
@@ -182,5 +194,7 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
     };
   }, []);
 
-  return object;
+  // `objectRef` is the source of truth — the effect above can replace the object without the memo
+  // re-running, because the dependencies do not change when the tree is shown again.
+  return objectRef.current ?? object;
 }
