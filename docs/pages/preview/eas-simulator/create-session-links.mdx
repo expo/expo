@@ -34,7 +34,7 @@ Every create session link requires exactly one application source:
 
 Do not include more than one application source. A link without an application source cannot create a session.
 
-An empty application source value, such as `buildId=`, is treated as absent.
+EAS treats an empty application source value, such as `buildId=`, as absent.
 
 ### Add other parameters
 
@@ -64,7 +64,7 @@ console.log(url.toString());
 
 ## Examples
 
-### Start an EAS Build
+### Start a session from an EAS Build
 
 ```text
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID
@@ -86,7 +86,7 @@ EAS resolves the fingerprint to the most recent installable iOS Simulator build.
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID&name=PR%20preview&deviceIdentifier=iPhone%2016%20Pro
 ```
 
-### Start an application archive
+### Start a session from an application archive
 
 ```text
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?applicationArchiveUrl=https%3A%2F%2Fcdn.example.com%2FMyApp.app.zip&platform=ios
