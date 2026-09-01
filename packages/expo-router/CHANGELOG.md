@@ -67,6 +67,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `router.canDismiss()` for seeded stack states
 - Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
 - Make layouts with explicitly declared screens honor `unstable_settings.initialRouteName` instead of declaration order, which can change deep-link back stacks. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))
 - Prevent unfocused nested native tab navigators from redirecting global router state. ([#48257](https://github.com/expo/expo/pull/48257) by [@Ubax](https://github.com/Ubax))

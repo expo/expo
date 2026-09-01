@@ -107,7 +107,7 @@ function BaseNavigationContainerInner({
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
+  const { state, flags, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
     useNavigationTreeReducer({
       initialState,
       routeNode: UNSTABLE_routeNode,
@@ -152,6 +152,8 @@ function BaseNavigationContainerInner({
     }
   });
 
+  const canDismiss = useLatestCallback(() => flags.canDismiss);
+
   const getRootState = useLatestCallback(() => state);
 
   const getCurrentRoute = useLatestCallback(() => {
@@ -183,6 +185,7 @@ function BaseNavigationContainerInner({
       dispatch,
       dispatchSync,
       isFocused: () => true,
+      canDismiss,
       canGoBack,
       getParent: () => undefined,
       getState: getRootState,
@@ -195,6 +198,7 @@ function BaseNavigationContainerInner({
       },
     }),
     [
+      canDismiss,
       canGoBack,
       dispatch,
       dispatchSync,

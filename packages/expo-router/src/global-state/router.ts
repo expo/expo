@@ -11,7 +11,6 @@ import {
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
-import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
 import { navigationRef } from './navigationRef';
 import type { RoutingIntent } from './routingQueue';
@@ -126,22 +125,7 @@ export function canDismiss(): boolean {
   if (!navigationRef.isReady()) {
     return false;
   }
-  // TODO(@ubax): check whether this is still needed
-  let state = navigationRef.getRootState();
-
-  // Keep traversing down the state tree until we find a stack navigator that we can pop
-  while (state) {
-    // TODO(ENG-22019): Detect typeless stacks, including anchor/initialRouteName states that start
-    // with multiple routes.
-    if (state.type === 'stack' && getHistoryLength(state) > 1) {
-      return true;
-    }
-    if (state.index === undefined) return false;
-
-    state = state.routes?.[state.index]?.state as any;
-  }
-
-  return false;
+  return navigationRef.current?.canDismiss() ?? false;
 }
 
 export function setParams(

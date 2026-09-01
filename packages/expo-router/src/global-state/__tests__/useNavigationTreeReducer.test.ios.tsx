@@ -4,7 +4,7 @@ import type { NavigationAction, NavigationState } from '../../react-navigation/r
 import { getNavigateAction } from '../getNavigationAction';
 import type { RouterRegistry } from '../routerRegistry';
 import type { LinkToOptions } from '../types';
-import { useNavigationTreeReducer } from '../useNavigationTreeReducer';
+import { computeCanDismissFlags, useNavigationTreeReducer } from '../useNavigationTreeReducer';
 import { node } from './__fixtures__/routeNode';
 import { entry } from './__fixtures__/routerEntry';
 
@@ -59,6 +59,37 @@ function renderReducer({
   );
   return { ...result, reports };
 }
+
+describe('canDismiss flags', () => {
+  const stackEntry = {
+    ...entry(() => null),
+    canDismiss: (state: NavigationState) => state.index > 0,
+  };
+
+  it('uses the registered predicate for the focused chain', () => {
+    expect(
+      computeCanDismissFlags({ ...initialState, index: 1 }, new Map([['root', stackEntry]]))
+    ).toEqual({ canDismiss: true });
+  });
+
+  it('does not infer dismissability for an unregistered navigator', () => {
+    expect(computeCanDismissFlags({ ...initialState, index: 1 }, new Map())).toEqual({
+      canDismiss: false,
+    });
+  });
+
+  it('recomputes flags when the registry changes', () => {
+    const result = renderReducer({ state: { ...initialState, index: 1 }, registry: new Map() });
+    expect(result.result.current.flags.canDismiss).toBe(false);
+
+    result.rerender({
+      registry: new Map([['root', stackEntry]]),
+      routesWithRemovalPrevented: new Set(),
+    });
+
+    expect(result.result.current.flags.canDismiss).toBe(true);
+  });
+});
 
 test('reports and vetoes removal of a prevented route', () => {
   const action = { type: 'REMOVE' };

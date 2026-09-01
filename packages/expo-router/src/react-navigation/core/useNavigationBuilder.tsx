@@ -449,6 +449,11 @@ export function useNavigationBuilder<
     () => ({
       reduce,
       shouldActionChangeFocus: router.shouldActionChangeFocus,
+      canDismiss: router.canDismiss
+        ? (registryState) =>
+            // The registry erases each router's narrower state type at this boundary.
+            router.canDismiss?.(registryState as State) ?? false
+        : undefined,
       getStateForRouteFocus: (registryState, routeKey) =>
         router.getStateForRouteFocus(registryState as State, routeKey),
       routeNode: routeNode ?? undefined,

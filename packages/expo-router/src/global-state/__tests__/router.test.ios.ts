@@ -25,6 +25,7 @@ jest.mock('../navigationRef', () => ({
     isReady: jest.fn(() => true),
     getRootState: jest.fn(),
     current: {
+      canDismiss: jest.fn(),
       canGoBack: jest.fn(),
       setParams: jest.fn(),
       goBack: jest.fn(),
@@ -71,107 +72,18 @@ it('throws before the module-level router is installed', () => {
 });
 
 describe('canDismiss', () => {
-  it('returns false when state is undefined', () => {
+  it('returns false without reading the ref when navigation is not ready', () => {
     (navigationRef.isReady as jest.Mock).mockReturnValue(false);
+
     expect(canDismiss()).toBe(false);
+    expect(navigationRef.current!.canDismiss).not.toHaveBeenCalled();
   });
 
-  it('returns false for single-route stack', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'stack',
-      routes: [{ name: 'home' }],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(false);
-  });
+  it.each([false, true])('forwards %s from the navigation container', (value) => {
+    (navigationRef.current!.canDismiss as jest.Mock).mockReturnValue(value);
 
-  it('returns true for stack with >1 routes', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'stack',
-      routes: [{ name: 'home' }, { name: 'detail' }],
-      index: 1,
-    });
-    expect(canDismiss()).toBe(true);
-  });
-
-  it('traverses nested navigators (tab → stack with 2 routes → true)', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [{ name: 'page1' }, { name: 'page2' }],
-            index: 1,
-          },
-        },
-      ],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(true);
-  });
-
-  it('returns false when index is undefined in state', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [{ name: 'tab1' }],
-    });
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns false for non-stack navigator with single route', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [{ name: 'only-page' }],
-            index: 0,
-          },
-        },
-      ],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('traverses deeply nested navigators (tab → stack → tab → stack with 2 routes)', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [
-              {
-                name: 'nested-tab',
-                state: {
-                  type: 'tab',
-                  routes: [
-                    {
-                      name: 'inner-tab',
-                      state: {
-                        type: 'stack',
-                        routes: [{ name: 'page1' }, { name: 'page2' }],
-                        index: 1,
-                      },
-                    },
-                  ],
-                  index: 0,
-                },
-              },
-            ],
-            index: 0,
-          },
-        },
-      ],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(true);
+    expect(canDismiss()).toBe(value);
+    expect(navigationRef.current!.canDismiss).toHaveBeenCalledTimes(1);
   });
 });
 

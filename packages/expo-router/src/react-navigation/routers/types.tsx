@@ -181,6 +181,12 @@ export type Router<
   getStateForRouteFocus(state: State, key: string): State;
 
   /**
+   * Returns whether the navigator can dismiss its focused route.
+   * Custom routers that handle `POP` should implement this for `router.canDismiss()` support.
+   */
+  canDismiss?(state: State): boolean;
+
+  /**
    * Take the current state and action, and return a new state and the affected route key.
    * If the action cannot be handled, return `null`. Custom routers must explicitly handle
    * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.

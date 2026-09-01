@@ -68,14 +68,26 @@ function getNavigatorState(result: ReturnType<typeof renderRouter>) {
   return result.getRouterState()!.routes[0]!.state!;
 }
 
+function UnmountingStackLayout() {
+  const [mounted, setMounted] = useState(true);
+  return (
+    <>
+      <Pressable testID="unmount-stack" onPress={() => setMounted(false)} />
+      {mounted ? <Stack /> : null}
+    </>
+  );
+}
+
 it('reconciles state when a stack layout becomes tabs after navigation', async () => {
   const result = renderRouter(makeRoutes('stack', 'tabs'), { initialUrl: '/' });
   act(() => router.push('/second'));
   expect(getNavigatorState(result).type).toBe('stack');
+  expect(router.canDismiss()).toBe(true);
 
   await userEvent.press(screen.getByTestId('toggle'));
 
   expect(screen.getByTestId('second')).toBeVisible();
+  expect(router.canDismiss()).toBe(false);
   expect(getNavigatorState(result)).toMatchObject({
     type: 'tab',
     index: 0,
@@ -99,6 +111,30 @@ it('reconciles state when a tabs layout becomes a stack after navigation', async
   });
   expect(getNavigatorState(result)).not.toHaveProperty('history');
   assertCompleteState(result.getRouterState()!);
+});
+
+it('clears canDismiss when a nested stack unmounts', async () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
+      'one/_layout': UnmountingStackLayout,
+      'one/index': () => <Text>Index</Text>,
+      'one/second': () => <Text>Second</Text>,
+      two: () => <Text>Two</Text>,
+    },
+    { initialUrl: '/one' }
+  );
+  act(() => router.push('/one/second'));
+  expect(router.canDismiss()).toBe(true);
+
+  await userEvent.press(screen.getByTestId('unmount-stack'));
+
+  expect(router.canDismiss()).toBe(false);
 });
 
 it('reconciles state when a stack layout becomes a drawer after navigation', async () => {

@@ -44,7 +44,8 @@ type TreeOperation =
   | {
       type: 'REPORT_CONSUMED';
       eventIds: readonly number[];
-    };
+    }
+  | { type: 'REGISTRY_CHANGED' };
 
 type Options = {
   initialState: InitialState | undefined;
@@ -82,12 +83,27 @@ export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
 
 type NavigationTreeResult = {
   state: NavigationState;
+  flags: { canDismiss: boolean };
   report: NavigationTreeReport | undefined;
   eventSeq: number;
 };
 
 const warnedActions = new WeakSet<NavigationAction>();
 const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
+
+export function computeCanDismissFlags(
+  state: NavigationState,
+  registry: RouterRegistry
+): NavigationTreeResult['flags'] {
+  let focusedState: NavigationState | undefined = state;
+  while (focusedState) {
+    if (registry.get(focusedState.key)?.canDismiss?.(focusedState)) {
+      return { canDismiss: true };
+    }
+    focusedState = focusedState.routes[focusedState.index]?.state as NavigationState | undefined;
+  }
+  return { canDismiss: false };
+}
 
 function warnIfStaleState(state: NavigationState) {
   if (process.env.NODE_ENV !== 'development') {
@@ -260,6 +276,7 @@ function navigationTreeReducer(
 
       return {
         state: committedState,
+        flags: computeCanDismissFlags(committedState, config.registry),
         report,
         eventSeq: result.eventSeq + events.length,
       };
@@ -277,7 +294,12 @@ function navigationTreeReducer(
       const completeState = config.routeNode
         ? completeNavigationState(nextState, config.routeNode)
         : nextState;
-      return { ...result, state: deepFreeze(completeState) };
+      const committedState = deepFreeze(completeState);
+      return {
+        ...result,
+        state: committedState,
+        flags: computeCanDismissFlags(committedState, config.registry),
+      };
     }
     case 'NAVIGATOR_CHANGED': {
       const navigatorState = findStateByKey(state, operation.stateKey);
@@ -289,7 +311,14 @@ function navigationTreeReducer(
       const completeState = config.routeNode
         ? completeNavigationState(nextState, config.routeNode)
         : nextState;
-      return { ...result, state: deepFreeze(completeState) };
+      const committedState = deepFreeze(completeState);
+      // A navigator reset always focuses index 0 or -1, so a stale registry predicate cannot make
+      // this flag true. `REGISTRY_CHANGED` corrects other predicate changes after registration.
+      return {
+        ...result,
+        state: committedState,
+        flags: computeCanDismissFlags(committedState, config.registry),
+      };
     }
     case 'REPORT_CONSUMED': {
       if (!result.report) {
@@ -301,6 +330,10 @@ function navigationTreeReducer(
         return result;
       }
       return { ...result, report: events.length > 0 ? { events } : undefined };
+    }
+    case 'REGISTRY_CHANGED': {
+      const flags = computeCanDismissFlags(state, config.registry);
+      return flags.canDismiss === result.flags.canDismiss ? result : { ...result, flags };
     }
   }
 }
@@ -324,7 +357,13 @@ export function useNavigationTreeReducer({
         );
       }
       // TODO(@ubax): check if deepFreeze is needed here.
-      return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
+      const state = deepFreeze(value);
+      return {
+        state,
+        flags: computeCanDismissFlags(state, registry),
+        report: undefined,
+        eventSeq: 0,
+      };
     }
   );
   const previousRegistryRef = React.useRef(registry);
@@ -387,10 +426,14 @@ export function useNavigationTreeReducer({
         });
       }
     }
+    // This runs inside an effect; the rule doesn't recognize the `useClientLayoutEffect` wrapper.
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
+    process({ type: 'REGISTRY_CHANGED' });
   }, [registry]);
 
   return {
     state: result.state,
+    flags: result.flags,
     report: result.report,
     consumeReportEvents,
     resetNavigator,

@@ -770,6 +770,10 @@ type MaybeParamListRoute<ParamList extends {}> = ParamList extends ParamListBase
 export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<ParamList> &
   EventConsumer<NavigationContainerEventMap> & {
     /**
+     * Returns whether the focused navigation chain contains a route that can be dismissed.
+     */
+    canDismiss(): boolean;
+    /**
      * Get the current state of the navigation tree.
      */
     getRootState(): NavigationState;

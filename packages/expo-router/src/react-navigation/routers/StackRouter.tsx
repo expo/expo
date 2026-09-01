@@ -195,6 +195,8 @@ export function StackRouter(options: StackRouterOptions) {
     // TODO: Keep this value in sync with the `ensureStateType` calls below.
     type: 'stack',
 
+    canDismiss: (state) => state.index > 0,
+
     getStateForDeclaredRoutes(state, routeNames) {
       const filteredState = BaseRouter.getStateForDeclaredRoutes(state, routeNames);
 

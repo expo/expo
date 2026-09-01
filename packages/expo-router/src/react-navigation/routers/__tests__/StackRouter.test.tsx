@@ -55,6 +55,13 @@ describe('state without router type', () => {
     expect(result?.state.type).toBe('stack');
   });
 
+  test('can dismiss only when the focused index is above zero', () => {
+    const router = StackRouter({});
+
+    expect(router.canDismiss?.(createState(0))).toBe(false);
+    expect(router.canDismiss?.(createState(1))).toBe(true);
+  });
+
   test('preserves the type from complete RESET state', () => {
     const state = createState();
     const result = StackRouter({}).getStateForAction(

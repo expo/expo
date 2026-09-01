@@ -17,6 +17,7 @@ export type RouterRegistryEntry = {
   ) => RouterActionResult<NavigationState> | null;
   shouldActionChangeFocus?: (action: NavigationAction) => boolean;
   getStateForRouteFocus?: (state: NavigationState, routeKey: string) => NavigationState;
+  canDismiss?: (state: NavigationState) => boolean;
   routeNode?: RouteNode;
 };
 

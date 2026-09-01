@@ -40,8 +40,7 @@ describe('canDismiss', () => {
     expect(router.canDismiss()).toBe(true);
   });
 
-  // TODO(ENG-22019): Detect typeless stacks created by the default Stack.
-  it.skip('should work within the default Stack', () => {
+  it('should work within the default Stack', () => {
     renderRouter(
       {
         a: () => null,
@@ -55,6 +54,54 @@ describe('canDismiss', () => {
     expect(router.canDismiss()).toBe(false);
     act(() => router.push('/b'));
     expect(router.canDismiss()).toBe(true);
+  });
+
+  it('works with an anchored initial stack state', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { initialRouteName: 'a' },
+          default: () => <Stack />,
+        },
+        a: () => null,
+        b: () => null,
+      },
+      { initialUrl: '/b' }
+    );
+
+    expect(router.canDismiss()).toBe(true);
+    act(() => router.dismiss());
+    expect(screen).toHavePathname('/a');
+  });
+
+  it('tracks the focused stack nested inside tabs', () => {
+    renderRouter(
+      {
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="one" />
+            <Tabs.Screen name="two" />
+          </Tabs>
+        ),
+        'one/_layout': () => <Stack />,
+        'one/index': () => null,
+        'one/detail': () => null,
+        two: () => null,
+      },
+      { initialUrl: '/one' }
+    );
+
+    expect(router.canDismiss()).toBe(false);
+    act(() => router.push('/one/detail'));
+    expect(router.canDismiss()).toBe(true);
+  });
+
+  it('does not treat a prefetched route as dismissable', () => {
+    renderRouter({ index: () => null, detail: () => null });
+
+    act(() => router.prefetch('/detail'));
+
+    expect(router.canDismiss()).toBe(false);
   });
 
   it('should always return false while not within a stack', () => {
