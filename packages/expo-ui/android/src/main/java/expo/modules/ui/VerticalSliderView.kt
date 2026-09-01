@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
-
 package expo.modules.ui
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,9 +7,9 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.VerticalSlider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import expo.modules.kotlin.viewevent.getValue
@@ -33,6 +31,7 @@ data class VerticalSliderProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) {
   val onValueChange by remember { this@VerticalSliderContent.EventDispatcher<SliderValueChangedEvent>() }
@@ -43,13 +42,20 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
   val effectiveUpper = minOf(props.max, props.upperLimit ?: Float.POSITIVE_INFINITY)
 
   var localValue by remember { mutableFloatStateOf(props.value.coerceIn(effectiveLower, effectiveUpper)) }
-  var isDragging by remember { mutableStateOf(false) }
   val clampedPropsValue = props.value.coerceIn(effectiveLower, effectiveUpper)
   var prevPropsValue by remember { mutableFloatStateOf(clampedPropsValue) }
 
+  val sliderState = remember(props.min, props.max, props.steps) {
+    SliderState(
+      value = localValue.coerceIn(effectiveLower, effectiveUpper),
+      steps = props.steps,
+      valueRange = props.min..props.max
+    )
+  }
+
   if (clampedPropsValue != prevPropsValue) {
     prevPropsValue = clampedPropsValue
-    if (!isDragging) {
+    if (!sliderState.isDragging) {
       localValue = clampedPropsValue
     }
   }
@@ -71,24 +77,20 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     globalEventDispatcher
   )
 
-  val sliderState = remember(props.min, props.max, props.steps) {
-    SliderState(
-      value = localValue,
-      steps = props.steps,
-      valueRange = props.min..props.max
-    )
+  SideEffect {
+    sliderState.onValueChange = {
+      val clamped = it.coerceIn(effectiveLower, effectiveUpper)
+      localValue = clamped
+      onValueChange(SliderValueChangedEvent(clamped))
+    }
+    sliderState.onValueChangeFinished = {
+      onValueChangeFinished(Unit)
+    }
+    val target = localValue.coerceIn(effectiveLower, effectiveUpper)
+    if (sliderState.value != target) {
+      sliderState.value = target
+    }
   }
-  sliderState.onValueChange = {
-    val clamped = it.coerceIn(effectiveLower, effectiveUpper)
-    isDragging = true
-    localValue = clamped
-    onValueChange(SliderValueChangedEvent(clamped))
-  }
-  sliderState.onValueChangeFinished = {
-    isDragging = false
-    onValueChangeFinished(Unit)
-  }
-  sliderState.value = localValue
 
   when {
     thumbSlotView != null && trackSlotView != null -> VerticalSlider(
