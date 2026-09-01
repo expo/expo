@@ -56,8 +56,7 @@ export function useLinking(
       };
     },
     getStateFromPath = getStateFromPathDefault,
-  }: Options,
-  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
+  }: Options
 ) {
   const routerConfig = use(RouterConfigContext);
   const enqueue = useEnqueueRoutingIntent();
@@ -138,21 +137,8 @@ export function useLinking(
         : completeParsedState(parsedState, ROOT_CHAIN);
     };
 
-    if (url != null) {
-      if (typeof url !== 'string') {
-        return url.then((url) => {
-          const state = createInitialState(url);
-
-          if (typeof url === 'string') {
-            // If the link were handled, it gets cleared in NavigationContainer
-            onUnhandledLinking(getInitialPath(prefixes, url));
-          }
-
-          return state;
-        });
-      } else {
-        onUnhandledLinking(getInitialPath(prefixes, url));
-      }
+    if (url != null && typeof url !== 'string') {
+      return url.then(createInitialState);
     }
 
     const state = createInitialState(url);
@@ -167,7 +153,7 @@ export function useLinking(
     };
 
     return thenable as PromiseLike<NavigationState | undefined>;
-  }, [config, filter, getInitialURL, getStateFromPath, onUnhandledLinking, prefixes, routerConfig]);
+  }, [config, filter, getInitialURL, getStateFromPath, prefixes, routerConfig]);
 
   useEffect(() => {
     const listener = (url: string) => {
@@ -176,8 +162,6 @@ export function useLinking(
       const state = navigation ? getStateFromURL(url) : undefined;
 
       if (navigation && state) {
-        // If the link were handled, it gets cleared in NavigationContainer
-        onUnhandledLinking(path);
         const rootState = navigation.getRootState();
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
           return;
@@ -195,7 +179,7 @@ export function useLinking(
     };
 
     return subscribe(listener);
-  }, [enqueue, getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
+  }, [enqueue, getStateFromURL, prefixes, ref, subscribe]);
 
   return {
     getInitialState,

@@ -87,7 +87,7 @@ function renderHistoryListener({
   const ref = { current: navigation } as unknown as Parameters<typeof useLinking>[0];
 
   function Sample() {
-    useLinking(ref, { prefixes: [], getStateFromPath }, jest.fn());
+    useLinking(ref, { prefixes: [], getStateFromPath });
     return null;
   }
 
@@ -230,7 +230,7 @@ test('keeps the current route group when parsing a popstate path', () => {
   const parsePath = jest.fn(getStateFromPath);
 
   function Sample() {
-    useLinking(ref, { prefixes: [], config, getStateFromPath: parsePath }, jest.fn());
+    useLinking(ref, { prefixes: [], config, getStateFromPath: parsePath });
     return null;
   }
 
@@ -273,11 +273,11 @@ test('parses the initial URL instead of returning existing navigation state', as
   const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
 
   function Sample() {
-    getInitialState = useLinking(
-      mockNavigationRef,
-      { prefixes: [], getInitialURL: () => 'http://localhost/home', getStateFromPath },
-      jest.fn()
-    ).getInitialState;
+    getInitialState = useLinking(mockNavigationRef, {
+      prefixes: [],
+      getInitialURL: () => 'http://localhost/home',
+      getStateFromPath,
+    }).getInitialState;
     return null;
   }
 
@@ -303,11 +303,11 @@ test('getInitialState is computed once with first-render options', async () => {
   let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
 
   function Sample({ getStateFromPath }: { getStateFromPath: typeof firstGetStateFromPath }) {
-    getInitialState = useLinking(
-      mockNavigationRef,
-      { prefixes: [], getInitialURL: () => 'http://localhost/home', getStateFromPath },
-      jest.fn()
-    ).getInitialState;
+    getInitialState = useLinking(mockNavigationRef, {
+      prefixes: [],
+      getInitialURL: () => 'http://localhost/home',
+      getStateFromPath,
+    }).getInitialState;
     return null;
   }
 
