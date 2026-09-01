@@ -16,6 +16,7 @@
 
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 - Print the "make sure you have modules installed" warning when the dependency install fails ([#48929](https://github.com/expo/expo/issues/48929)) ([#48946](https://github.com/expo/expo/pull/48946) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
