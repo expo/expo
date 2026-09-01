@@ -22,7 +22,6 @@ import {
   CommonActions,
   type InitialState,
   type NavigationAction,
-  type NavigationState,
   type ParamListBase,
   type Route,
 } from '../routers';
@@ -60,14 +59,13 @@ const duplicateNameWarnings: string[] = [];
  *
  * @param props.initialState Initial state object for the navigation tree.
  * @param props.onReady Callback which is called after the navigation tree mounts.
- * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
  * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
-  const { ref, initialState, onStateChange, onReady, UNSTABLE_routeNode, theme, children } = props;
+  const { ref, initialState, onReady, UNSTABLE_routeNode, theme, children } = props;
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
@@ -104,9 +102,6 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       redirects: routerConfig?.redirects,
     });
   useNavigationTreeReportEvents(report, consumeReportEvents);
-
-  const hasNotifiedInitialStateRef = React.useRef(false);
-  const lastNotifiedStateRef = React.useRef<NavigationState | undefined>(undefined);
 
   const { listeners, addListener } = useChildListeners();
 
@@ -247,10 +242,8 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   }
 
   const onReadyRef = React.useRef(onReady);
-  const onStateChangeRef = React.useRef(onStateChange);
 
   React.useEffect(() => {
-    onStateChangeRef.current = onStateChange;
     onReadyRef.current = onReady;
   });
 
@@ -331,24 +324,8 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   }, [getRootState, state]);
 
   useClientLayoutEffect(() => {
-    const hydratedState = getRootState();
-
-    // TODO(@ubax): invesitagte if there is cleaner way to do it
-    // If not consider deprecating the prop
-    const onStateChange = onStateChangeRef.current;
-    const shouldNotifyStateChange =
-      hasNotifiedInitialStateRef.current &&
-      lastNotifiedStateRef.current !== hydratedState &&
-      onStateChange !== undefined;
-    hasNotifiedInitialStateRef.current = true;
-    lastNotifiedStateRef.current = hydratedState;
-
     emitter.emit({ type: 'state', data: { state } });
-
-    if (shouldNotifyStateChange) {
-      onStateChange(hydratedState);
-    }
-  }, [getRootState, emitter, state]);
+  }, [emitter, state]);
 
   return (
     <NavigationContainerRefContext.Provider value={navigation}>
