@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo export` corrupting Hermes bytecode when renaming DOM component html assets: the rename is now applied to the serialized JS and bytecode compilation is deferred until after DOM component exports. Previously the placeholder filename was binary-patched inside the compiled `.hbc`, which could overwrite bytes of neighbouring overlap-packed strings (e.g. unrelated string literals such as API keys). ([#49627](https://github.com/expo/expo/pull/49627) by [@ibrahimchraibi](https://github.com/ibrahimchraibi))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23

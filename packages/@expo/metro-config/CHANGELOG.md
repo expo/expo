@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Extract the chunk Hermes bytecode step into `transformJsAssetToHermesBytecodeAsync` so `expo export` can defer bytecode compilation until after DOM component html renames. ([#49627](https://github.com/expo/expo/pull/49627) by [@ibrahimchraibi](https://github.com/ibrahimchraibi))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
