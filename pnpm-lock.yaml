@@ -4148,10 +4148,10 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~57.0.17
+        specifier: workspace:~57.0.18
         version: link:../expo-dev-launcher
       expo-dev-menu:
-        specifier: workspace:~57.0.16
+        specifier: workspace:~57.0.17
         version: link:../expo-dev-menu
       expo-dev-menu-interface:
         specifier: workspace:~57.0.0
@@ -4182,7 +4182,7 @@ importers:
         specifier: workspace:^57.0.2
         version: link:../@expo/schema-utils
       expo-dev-menu:
-        specifier: workspace:~57.0.16
+        specifier: workspace:~57.0.17
         version: link:../expo-dev-menu
       expo-manifests:
         specifier: workspace:~57.0.1
@@ -18939,7 +18939,9 @@ snapshots:
       metro-runtime: 0.84.5
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
