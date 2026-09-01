@@ -300,6 +300,32 @@ describe('React header flags: modular module map', () => {
     );
   });
 
+  it('ignores a flavor whose slot exists but is still being extracted', () => {
+    const { cachePath, debugBase } = makeReactCache();
+    const headersDir = writeModularHeaders(debugBase);
+
+    // downloadArtifactAsync mkdirs the flavor slot before extracting into it, and the pipeline
+    // downloads flavors concurrently, so the release slot can exist and be empty while Debug
+    // generates. An interrupted download leaves the same state permanently.
+    fs.mkdirSync(path.join(cachePath, 'react', version, 'release'), { recursive: true });
+
+    const settings = buildSwiftSettings(
+      ['React'],
+      makeArtifactPaths(cachePath, version),
+      path.join(cachePath, 'pkg'),
+      'Debug'
+    );
+    const clangFlags = clangFlagsOf(settings);
+    assert.ok(
+      clangFlags.includes(`-fmodule-map-file=${path.join(headersDir, 'module.modulemap')}`),
+      `missing module map flag for the built flavor in: ${clangFlags}`
+    );
+    assert.ok(
+      clangFlags.includes(`-I ${headersDir}`),
+      `missing include path for the built flavor in: ${clangFlags}`
+    );
+  });
+
   it('ignores a flavor that was never downloaded', () => {
     const { cachePath, debugBase } = makeReactCache();
     writeModularHeaders(debugBase);
