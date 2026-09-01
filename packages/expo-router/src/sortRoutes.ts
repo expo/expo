@@ -11,6 +11,38 @@ function sortDynamicConvention(a: DynamicConvention, b: DynamicConvention) {
   return 0;
 }
 
+function isIndexLikeSegment(segment: string): boolean {
+  return segment === 'index' || matchGroupName(segment) != null;
+}
+
+function compareSegments(a: string, b: string): number {
+  const aSegments = a.split('/');
+  const bSegments = b.split('/');
+  const length = Math.min(aSegments.length, bSegments.length);
+
+  for (let i = 0; i < length; i++) {
+    const aSegment = aSegments[i]!;
+    const bSegment = bSegments[i]!;
+
+    if (aSegment === bSegment) {
+      continue;
+    }
+
+    const aIndex = isIndexLikeSegment(aSegment);
+    const bIndex = isIndexLikeSegment(bSegment);
+
+    if (aIndex && !bIndex) {
+      return -1;
+    }
+    if (!aIndex && bIndex) {
+      return 1;
+    }
+    return aSegment.length - bSegment.length || a.length - b.length;
+  }
+
+  return aSegments.length - bSegments.length;
+}
+
 export function sortRoutes(a: RouteNode, b: RouteNode): number {
   if (a.dynamic && !b.dynamic) {
     return 1;
@@ -57,8 +89,11 @@ export function sortRoutes(a: RouteNode, b: RouteNode): number {
   if (!aIndex && bIndex) {
     return 1;
   }
+  if (aIndex && bIndex) {
+    return a.route.length - b.route.length;
+  }
 
-  return a.route.length - b.route.length;
+  return compareSegments(a.route, b.route);
 }
 
 export function sortRoutesWithInitial(initialRouteName?: string) {

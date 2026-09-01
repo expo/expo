@@ -160,15 +160,15 @@ it(`converts index routes`, () => {
     htmlRoutes: [
       { file: './index.tsx', namedRegex: '^/(?:/)?$', page: '/index', routeKeys: {} },
       {
-        file: './a/index/b.tsx',
-        namedRegex: '^/a/index/b(?:/)?$',
-        page: '/a/index/b',
-        routeKeys: {},
-      },
-      {
         file: './a/index/index.js',
         namedRegex: '^/a/index(?:/)?$',
         page: '/a/index/index',
+        routeKeys: {},
+      },
+      {
+        file: './a/index/b.tsx',
+        namedRegex: '^/a/index/b(?:/)?$',
+        page: '/a/index/b',
         routeKeys: {},
       },
     ],
