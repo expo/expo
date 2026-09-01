@@ -50,8 +50,8 @@ it('redirects a guarded route to the anchor default during the initial load', ()
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
   expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
-    'a',
     'index',
+    'a',
     'b',
     'c',
   ]);
@@ -144,10 +144,10 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen).toHavePathname('/c');
 
   expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'index',
     'a',
     'b',
     'c',
-    'index',
   ]);
 });
 
@@ -198,9 +198,9 @@ it('defaults a guarded route to the navigator anchor', () => {
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
   expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
-    'a',
     'b',
     'index',
+    'a',
   ]);
 });
 

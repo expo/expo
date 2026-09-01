@@ -2,7 +2,8 @@ import type * as CommonActions from './CommonActions';
 
 export type CommonNavigationAction =
   | CommonActions.Action
-  | CommonActions.InternalRouteNamesChangedAction;
+  | CommonActions.InternalRouteNamesChangedAction
+  | CommonActions.InternalRouteNamesOrderChangedAction;
 
 export type NavigationRoute<
   ParamList extends ParamListBase,

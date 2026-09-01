@@ -7,7 +7,7 @@ import {
   type TabRouterOptions as RNTabRouterOptions,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
-import { ensureStateHistory } from '../react-navigation/routers/TabRouter';
+import { ensureFullHistory } from '../react-navigation/routers/TabRouter';
 import { attachRouteState, type RouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { getTabRoute, type TriggerMap } from './common';
@@ -68,14 +68,13 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       if (!isSwitching && route.state !== undefined) {
         const selectedRoute = attachRouteState(route, action);
         if (selectedRoute === route) {
-          state = ensureStateType(
-            ensureStateHistory(
-              state,
-              options.backBehavior ?? 'firstRoute',
-              options.initialRouteName
-            ),
-            'tab'
-          );
+          if (options.backBehavior === 'fullHistory') {
+            state = ensureFullHistory(state);
+          } else if (state.history !== undefined) {
+            const { history: _, ...stateWithoutHistory } = state;
+            state = stateWithoutHistory;
+          }
+          state = ensureStateType(state, 'tab');
           return { state, affectedRouteKey: route.key };
         }
       }

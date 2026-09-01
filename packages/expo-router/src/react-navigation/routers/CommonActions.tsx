@@ -69,6 +69,15 @@ export type InternalRouteNamesChangedAction = {
   target?: string;
 };
 
+/**
+ * @internal
+ */
+export type InternalRouteNamesOrderChangedAction = {
+  type: 'ROUTE_NAMES_ORDER_CHANGED';
+  payload: { routeNames: string[] };
+  target?: string;
+};
+
 export type Action =
   | GoBackAction
   | NavigateAction

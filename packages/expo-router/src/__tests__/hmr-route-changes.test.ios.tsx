@@ -245,10 +245,7 @@ it('repairs top tabs state when all screen files are replaced', () => {
   const state = result.getRouterState()!.routes[0]!.state!;
   expect(state.routeNames).toStrictEqual(['third', 'fourth']);
   expect(state.routes.map((route) => route.name)).toStrictEqual(['third', 'fourth']);
-  // TODO: Assert that this warning is not called once HMR state and descriptors reconcile together.
-  expect(warn).toHaveBeenCalledWith(
-    'No screens are declared in ./_layout.js, so the navigator renders nothing. Only screens declared in the layout become visible. Declare each screen you want to show, for example <Tabs.Screen name="index" /> or <NativeTabs.Trigger name="index" />. Undeclared routes: index, second.'
-  );
+  expect(warn).not.toHaveBeenCalled();
   warn.mockRestore();
 });
 
