@@ -7,7 +7,10 @@
     "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
     "ios": {
-      "bundleIdentifier": "dev.expo.routertester"
+      "bundleIdentifier": "dev.expo.routertester",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "dev.expo.routertester",
@@ -16,7 +19,9 @@
         "backgroundColor": "#FFFFFF"
       }
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": true
     },
