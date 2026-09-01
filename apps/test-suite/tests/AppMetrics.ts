@@ -524,15 +524,15 @@ export function test({ describe, expect, it, afterEach }: JasmineInterface) {
 
   describe('error handler', () => {
     // `installErrorHandler` ran on import, wrapping `global.ErrorUtils`. The end-to-end test drives
-    // the native `reportError` path with a non-fatal error and reads the recorded `exception` log
+    // the native `reportError` path with a non-fatal error and reads the recorded `js.exception` log
     // event back from the main session. (A fatal error can't be round-tripped in-process: it goes to
     // the file sink and is ingested on the next launch — see the native `PendingErrorStore` tests.)
     // A separate test drives the installed global handler to cover the JS wrapper's forwarding logic.
     //
-    // The event follows OpenTelemetry's exception-in-logs convention: event name `exception`, with
+    // The event follows OpenTelemetry's exception-in-logs convention: event name `js.exception`, with
     // `exception.type` / `exception.message` / `exception.stacktrace` attributes, plus `expo.error.*`
     // for the bits OTel has no field for (capture source, fatal flag).
-    async function waitForExceptionLog(
+    async function waitForJsExceptionLog(
       predicate: (log: LogRecord) => boolean,
       timeoutMs = EVENT_TIMEOUT_MS
     ): Promise<LogRecord> {
@@ -540,13 +540,13 @@ export function test({ describe, expect, it, afterEach }: JasmineInterface) {
       const deadline = Date.now() + timeoutMs;
       while (Date.now() < deadline) {
         const logs = await session.getLogs();
-        const match = logs.find((log) => log.name === 'exception' && predicate(log));
+        const match = logs.find((log) => log.name === 'js.exception' && predicate(log));
         if (match) {
           return match;
         }
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
-      throw new Error(`Timed out after ${timeoutMs}ms waiting for the exception log event`);
+      throw new Error(`Timed out after ${timeoutMs}ms waiting for the js.exception log event`);
     }
 
     it('installs by wrapping the global ErrorUtils handler', () => {
@@ -557,7 +557,7 @@ export function test({ describe, expect, it, afterEach }: JasmineInterface) {
     // Only non-fatal errors are readable via `getLogs` in-process: the fatal path writes to the file
     // sink and is ingested on the next launch, so it can't be round-tripped here. Fatal persistence is
     // covered by the native `PendingErrorStore` write/drain tests.
-    it('records a non-fatal error as an exception log event with OTel attributes', async () => {
+    it('records a non-fatal error as a js.exception log event with OTel attributes', async () => {
       const message = `test-suite error ${Date.now()}`;
       AppMetrics.reportError({
         source: 'global',
@@ -567,7 +567,7 @@ export function test({ describe, expect, it, afterEach }: JasmineInterface) {
         isFatal: false,
       });
 
-      const log = await waitForExceptionLog(
+      const log = await waitForJsExceptionLog(
         (entry) => (entry.attributes ?? {})['exception.message'] === message
       );
       expect(log.severity).toBe('error');

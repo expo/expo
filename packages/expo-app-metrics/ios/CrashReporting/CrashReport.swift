@@ -3,7 +3,7 @@
 /// Structured crash report extracted from MetricKit's `MXCrashDiagnostic`.
 ///
 /// This is the native-crash shape: a Mach exception, signal, and native call-stack tree over a
-/// payload time window. Unhandled JavaScript errors are recorded separately as `exception` log
+/// payload time window. Unhandled JavaScript errors are recorded separately as `js.exception` log
 /// events (see `ErrorReport`).
 public struct CrashReport: Codable, Sendable {
   private static let maxLogStackFrames = 25

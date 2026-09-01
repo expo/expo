@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
  * normal async (coroutine + Room) log path can race the shutdown and lose the record. Instead, the
  * fatal path writes the error to a small JSON file **synchronously** on the calling thread (no
  * coroutine, no database) before React Native tears the app down. On the next launch the pending
- * files are drained into the regular log pipeline as `exception` events.
+ * files are drained into the regular log pipeline as `js.exception` events.
  */
 object PendingErrorStore {
   private const val TAG = "AppMetrics"

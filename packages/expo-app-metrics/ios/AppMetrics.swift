@@ -23,7 +23,7 @@ public struct AppMetrics {
 
   /// Ingests fatal JavaScript errors that were written to disk before the process was terminated on a
   /// previous launch (see `PendingErrorStore`). Reads the files synchronously, then inserts each as an
-  /// `exception` log attributed to the session it was captured in. Called once at launch.
+  /// `js.exception` log attributed to the session it was captured in. Called once at launch.
   static func ingestPendingErrors() {
     let pendingErrors = PendingErrorStore.drain()
     guard !pendingErrors.isEmpty else {
