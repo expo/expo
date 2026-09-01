@@ -205,18 +205,6 @@ async function registerForPushNotificationsAsync() {
 ```ts
 import * as Notifications from 'expo-notifications';
 
-// First, set the handler that will cause the notification
-// to show the alert
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
-
-// Second, call scheduleNotificationAsync()
 Notifications.scheduleNotificationAsync({
   content: {
     title: 'Look at that notification',
@@ -377,6 +365,12 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
         'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.',
     },
     {
+      name: 'largeIcon',
+      platform: 'android',
+      description:
+        'Local path to an image to use as the large icon for notifications. The image is resized to 64x64 dp and shown next to the notification text. A notification that carries its own image uses that image instead.',
+    },
+    {
       name: 'color',
       default: '#ffffff',
       platform: 'android',
@@ -413,6 +407,7 @@ Here is an example of using the config plugin in the app config file:
         "expo-notifications",
         {
           "icon": "./local/assets/notification_icon.png",
+          "largeIcon": "./local/assets/notification_large_icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
           "sounds": [

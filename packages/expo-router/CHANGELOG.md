@@ -4,8 +4,24 @@
 
 ### 🛠 Breaking changes
 
-- Remove `getInitialState` from the `Router` interface. Custom routers no longer create initial state; the navigator creates it and passes it to `getRehydratedState`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
-- Remove `routeParamList` from `RouterConfigOptions` and remove the `RouterActionOptions` type. Custom routers receive `RouterConfigOptions` in both `getRehydratedState` and `getStateForAction`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
+- Dispatch queued navigation actions in React transitions. The current screen stays visible while the destination suspends, so `SuspenseFallback` no longer renders for navigation-triggered suspense. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
+- Remove `beforeRemove`, `__unsafe_action__`, `PreventRemoveContext`, and `usePreventRemoveContext` from `expo-router/react-navigation`. ([#49408](https://github.com/expo/expo/pull/49408) by [@Ubax](https://github.com/Ubax))
+- Preserve the focused route when switching navigator types in a conditional layout. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Generate deterministic navigation states and route keys. Complete states from custom routers or persisted state must include `routeKeySeq`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Defer `navigation.dispatch` and navigation helper actions until after commit. Use `navigation.dispatchSync` for synchronous dispatch; dispatch functions are no longer supported. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Require complete state in `CommonActions.reset` and remove `Router.getRehydratedState` from `expo-router/react-navigation`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Remove `resetRoot` from `NavigationContainerRef` and `createNavigationContainerRef`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Remove `NavigatorScreenParams`, `getActionFromState`, and `LinkingOptions.getActionFromState` from `expo-router/react-navigation`. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Represent nested navigation only as navigation state. The `screen`, `params`, and `initial` params are now ordinary user params. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Stop copying ancestor route params into descendant routes during imperative navigation, matching cold-start deep-link behavior. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Custom routers must return `{ state, affectedRouteKey }` from `getStateForAction` instead of returning navigation state directly. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- The `freezeOnBlur` screen option is disabled and screens are never frozen when blurred. ([#49163](https://github.com/expo/expo/pull/49163) by [@Ubax](https://github.com/Ubax))
+- Remove the experimental web modal implementation. See the [web modals guide](https://docs.expo.dev/router/advanced/web-modals/). ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
+- Remove `NavigationIndependentTree` and `useNavigationIndependentTree` from `expo-router/react-navigation`. To embed an isolated navigation tree in a screen, use `@react-navigation/native`. ([#49172](https://github.com/expo/expo/pull/49172) by [@Ubax](https://github.com/Ubax))
+- Remove the deprecated `Link` and `useLinkProps` exports from `expo-router/react-navigation`. Use `Link` from `expo-router` with an `href` instead. ([#48895](https://github.com/expo/expo/pull/48895) by [@Ubax](https://github.com/Ubax))
+- Remove the deprecated `navigateDeprecated` action and the `navigationInChildEnabled` container prop from `expo-router/react-navigation`. ([#49102](https://github.com/expo/expo/pull/49102) by [@Ubax](https://github.com/Ubax))
+- Remove `getInitialState` from the `Router` interface. Custom routers no longer create initial state. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
+- Remove `routeParamList` from `RouterConfigOptions` and remove the `RouterActionOptions` type. Custom routers receive `RouterConfigOptions` in `getStateForAction`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
 - Remove the deprecated `NavigationContainer` export ([#48760](https://github.com/expo/expo/pull/48760) by [@Ubax](https://github.com/Ubax))
 - Remove the static `default` field from `DrawerNavigationState` and deprecate `getDrawerStatusFromState`. ([#48750](https://github.com/expo/expo/pull/48750) by [@Ubax](https://github.com/Ubax))
 - Remove the `preloadedRouteKeys` field from `TabNavigationState`. ([#48718](https://github.com/expo/expo/pull/48718) by [@Ubax](https://github.com/Ubax))
@@ -30,6 +46,11 @@
 
 ### 🎉 New features
 
+- [Android] Add `cornerRadius` support to dropdown menu
+- Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
+- Add unstable `NavigationAwareActivity` component. ([#49164](https://github.com/expo/expo/pull/49164) by [@Ubax](https://github.com/Ubax))
+- Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
+- Export `NativeStackView` for custom navigator implementations on web. ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
 - Add global registry for routers. ([#48707](https://github.com/expo/expo/pull/48707) by [@Ubax](https://github.com/Ubax))
 - Improve withLayoutContext types ([#48356](https://github.com/expo/expo/pull/48356) by [@Ubax](https://github.com/Ubax))
 - Expose `unstable_nativeProps` props from Stack component ([#48152](https://github.com/expo/expo/pull/48152) by [@Ubax](https://github.com/Ubax))
@@ -37,13 +58,16 @@
 - Re-export drawer content components and types (`DrawerContentScrollView`, `DrawerItem`, `DrawerItemList`, `DrawerContentComponentProps`, `DrawerNavigationProp`, and more) from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
 - Add `pageHeaders` config plugin option for declaring per-path response headers ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Upgrade react-native-screens to 4.26.0 ([#47770](https://github.com/expo/expo/pull/47770) by [@Ubax](https://github.com/Ubax))
+- Upgrade react-native-screens to 4.27.0 ([#49122](https://github.com/expo/expo/pull/49122) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Improve standard-navigation types for `createProps`. ([#47825](https://github.com/expo/expo/pull/47825) by [@Ubax](https://github.com/Ubax))
 - Add a `processScreens` option to the `standard-navigation` integration. ([#48290](https://github.com/expo/expo/pull/48290) by [@Ubax](https://github.com/Ubax))
 - Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
 - Honor loader `Cache-Control` headers via the platform HTTP cache instead of caching loader data in memory ([#48087](https://github.com/expo/expo/pull/48087) by [@hassankhan](https://github.com/hassankhan))
+- Cancel pending loader requests when their routes are removed during navigation ([#48451](https://github.com/expo/expo/pull/48451) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
+- Fix `useLoaderData()` throwing "Update hook called on initial render" when React replays a suspended route after its loader settles during a transition. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
 - Make layouts with explicitly declared screens honor `unstable_settings.initialRouteName` instead of declaration order, which can change deep-link back stacks. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))
 - Prevent unfocused nested native tab navigators from redirecting global router state. ([#48257](https://github.com/expo/expo/pull/48257) by [@Ubax](https://github.com/Ubax))
 - Fixed `Tabs` and `TopTabs` (`expo-router/js-tabs`, `expo-router/js-top-tabs`) not being usable from RSC ([#48330](https://github.com/expo/expo/pull/48330) by [@Ubax](https://github.com/Ubax))
@@ -57,9 +81,20 @@
 - Fix `replace` navigation in tabs leaving the replaced route in history. ([#48256](https://github.com/expo/expo/pull/48256) by [@Ubax](https://github.com/Ubax))
 - Prevent `useLoaderData()` from re-rendering readers of unrelated loader paths ([#48523](https://github.com/expo/expo/pull/48523) by [@hassankhan](https://github.com/hassankhan))
 - Fix package export for `expo-router/unstable-split-view` ([#49001](https://github.com/expo/expo/pull/49001) by [@hassankhan](https://github.com/hassankhan))
+- [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when the normal and selected icons resolved to different rendering modes. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 
 ### 💡 Others
 
+- Remove module-level mutable navigation state from Expo Router. ([#49403](https://github.com/expo/expo/pull/49403) by [@Ubax](https://github.com/Ubax))
+- Remove the dev-only `stack` field from the `__unsafe_action__` event in `expo-router/react-navigation`. ([#49431](https://github.com/expo/expo/pull/49431) by [@Ubax](https://github.com/Ubax))
+- Read navigation state from the React tree instead of imperative refs. ([#49433](https://github.com/expo/expo/pull/49433) by [@Ubax](https://github.com/Ubax))
+- Scope routing queues to each router root and bind `useRouter()` to its owning container. ([#49351](https://github.com/expo/expo/pull/49351) by [@Ubax](https://github.com/Ubax))
+- Derive `useIsFocused` from context. ([#49390](https://github.com/expo/expo/pull/49390) by [@Ubax](https://github.com/Ubax))
+- Base `useNavigationState` on global state. ([#49381](https://github.com/expo/expo/pull/49381) by [@jakub-agent](https://github.com/jakub-agent))
+- Move Expo Router store values into React context. ([#49218](https://github.com/expo/expo/pull/49218) by [@Ubax](https://github.com/Ubax))
+- Remove the ignored `linking.enabled` option. ([#49103](https://github.com/expo/expo/pull/49103) by [@Ubax](https://github.com/Ubax))
+- Build the complete initial navigation state from a deep link. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
+- Rename the routing queue intent `ROUTER_LINK` to `NAVIGATE_TO_HREF` and add a generic `ACTION` intent for raw navigation actions. ([#49297](https://github.com/expo/expo/pull/49297) by [@Ubax](https://github.com/Ubax))
 - Render only the focused tab route during the first render. ([#48618](https://github.com/expo/expo/pull/48618) by [@Ubax](https://github.com/Ubax))
 - Order JS Tabs, NativeTabs, headless tabs and Drawer by `routeNames` order ([#48374](https://github.com/expo/expo/pull/48374) by [@Ubax](https://github.com/Ubax))
 - Integrate native stack with standard navigation ([#48114](https://github.com/expo/expo/pull/48114) by [@Ubax](https://github.com/Ubax))

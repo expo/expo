@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI LazyHStack matches the official SwiftUI [LazyHStack API](https://developer.apple.com/documentation/swiftui/lazyhstack) and arranges its children horizontally, creating items only as needed (when they become visible during scrolling).
 
@@ -23,7 +24,13 @@ Expo UI LazyHStack matches the official SwiftUI [LazyHStack API](https://develop
 
 LazyHStack should be used inside a `ScrollView` with `axes="horizontal"` to enable lazy rendering.
 
-```tsx BasicLazyHStackExample.tsx
+<ComponentExample
+  title="BasicLazyHStackExample.tsx"
+  src="/static/images/expo-ui/examples/lazyhstack-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyhstack-basic-ios-dark.webp"
+  alt="A horizontal row of items numbered zero to five, centered on the screen.">
+
+```tsx
 import {
   Host,
   ScrollView,
@@ -46,11 +53,19 @@ export default function BasicLazyHStackExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With alignment
 
 The `alignment` prop controls vertical alignment of children. Available options are: `top`, `center`, `bottom`, `firstTextBaseline`, and `lastTextBaseline`.
 
-```tsx LazyHStackAlignmentExample.tsx
+<ComponentExample
+  title="LazyHStackAlignmentExample.tsx"
+  src="/static/images/expo-ui/examples/lazyhstack-alignment-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyhstack-alignment-ios-dark.webp"
+  alt="Three rectangles of different heights in a row, aligned along their top edges.">
+
+```tsx
 import {
   Host,
   ScrollView,
@@ -61,7 +76,9 @@ import { frame } from '@expo/ui/swift-ui/modifiers';
 
 export default function LazyHStackAlignmentExample() {
   return (
-    <Host style={{ flex: 1 }}>
+    <Host
+      matchContents={{ horizontal: true }}
+      style={{ flex: 1, alignSelf: 'center' }}>
       <ScrollView axes="horizontal">
         <LazyHStack spacing={12} alignment="top">
           <Rectangle
@@ -79,6 +96,8 @@ export default function LazyHStackAlignmentExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

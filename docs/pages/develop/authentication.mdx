@@ -268,9 +268,11 @@ Once you have a working authentication system in place, you can improve the user
 
 <Collapsible summary="Biometrics">
 
-Biometrics like Face ID and Touch ID can be used to unlock the app or confirm identity after a valid session is established. These are not authentication methods on their own, but act as a local gate that makes re-authentication faster and more secure.
+Biometrics like Face ID and Touch ID can unlock an app or confirm identity after a valid session is established. A biometric prompt alone does not authenticate with your server. It acts as a local gate that protects access to content or credentials on the device.
 
 React Native provides access to biometric APIs through libraries like [`expo-local-authentication`](/versions/latest/sdk/local-authentication) or [`react-native-biometrics`](https://github.com/SelfLender/react-native-biometrics).
+
+An authentication provider can combine the system biometric prompt with a device-bound credential to authenticate with its server and create a new session. For example, [Clerk biometric sign-in](https://clerk.com/docs/expo/guides/development/custom-flows/authentication/biometric-sign-in) enrolls an app installation as a trusted device. After the user approves the biometric prompt, the device signs a one-time challenge while the private key remains on the device. Unlike a passkey, this credential is scoped to the app installation and does not use [WebAuthn](https://www.w3.org/TR/webauthn-2/).
 
 </Collapsible>
 

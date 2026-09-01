@@ -6,6 +6,13 @@ export default defineConfig({
   ignorePatterns: base.ignorePatterns,
   overrides: [
     {
+      // Vendored React Navigation code; keep the diff against upstream minimal.
+      files: ['src/react-navigation/**'],
+      rules: {
+        'react/preserve-manual-memoization': 'off',
+      },
+    },
+    {
       files: ['src/loaders/LoaderClient.ts'],
       rules: {
         'no-restricted-imports': [

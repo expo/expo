@@ -237,13 +237,19 @@ export default function FontDesignsExample() {
 
 Use the `font` modifier with a `family` parameter to use custom fonts. You can load custom fonts using [`expo-font`](/versions/latest/sdk/font/) library.
 
-```tsx CustomFontExample.tsx
+<ComponentExample
+  title="CustomFontExample.tsx"
+  src="/static/images/expo-ui/examples/text-custom-font-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/text-custom-font-ios-dark.webp"
+  alt="Two lines of text, Inter Bold above Inter Regular.">
+
+```tsx
 import { Host, Text, VStack } from '@expo/ui/swift-ui';
 import { font } from '@expo/ui/swift-ui/modifiers';
 
 export default function CustomFontExample() {
   return (
-    <Host matchContents>
+    <Host matchContents style={{ alignSelf: 'center' }}>
       <VStack spacing={4}>
         <Text
           modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>
@@ -258,6 +264,8 @@ export default function CustomFontExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Text with line limit
 

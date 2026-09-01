@@ -115,6 +115,350 @@ class UpdatesDatabaseTests {
     }
   }
 
+  // MARK: - addNewAssets failure handling
+
+  @Suite("addNewAssets failure handling", .serialized)
+  struct AddNewAssetsFailureTests {
+    var testDatabaseDir: URL
+    var db: UpdatesDatabase
+    var manifest: ExpoUpdatesManifest
+    var config: UpdatesConfig
+
+    init() throws {
+      let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
+      testDatabaseDir = applicationSupportDir!.appendingPathComponent("AddNewAssetsFailureTests")
+
+      try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
+
+      if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
+        try FileManager.default.createDirectory(atPath: testDatabaseDir.path, withIntermediateDirectories: true)
+      }
+
+      db = UpdatesDatabase()
+
+      manifest = ExpoUpdatesManifest(rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": "0eef8214-4833-4089-9dff-b4138a14f196",
+        "createdAt": "2020-11-11T00:17:54.797Z",
+        "launchAsset": ["url": "https://url.to/bundle.js", "contentType": "application/javascript"]
+      ])
+
+      config = try UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      ])
+
+      db.databaseQueue.sync {
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
+      }
+    }
+
+    @Test
+    func `throws and rolls back when a statement fails`() throws {
+      let update = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: manifest,
+        extensions: [:],
+        config: config,
+        database: db
+      )
+
+      let asset = UpdateAsset(key: "bundle-key", type: "js")
+      asset.downloadTime = Date()
+      asset.contentHash = "hash"
+      asset.filename = "bundle.js"
+      asset.isLaunchAsset = true
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update, config: config)
+
+        // force the per-asset join insert to fail
+        _ = try! db.execute(sql: "DROP TABLE updates_assets", withArgs: nil)
+
+        do {
+          try db.addNewAssets([asset], toUpdateWithId: update.updateId)
+          Issue.record("Expected addNewAssets to throw when a statement fails")
+        } catch {}
+
+        // the whole batch must have been rolled back
+        #expect(try! db.asset(withKey: "bundle-key") == nil)
+      }
+    }
+
+    @Test
+    func `throws when a transaction is already open`() throws {
+      let update = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: manifest,
+        extensions: [:],
+        config: config,
+        database: db
+      )
+
+      let asset = UpdateAsset(key: "bundle-key", type: "js")
+      asset.downloadTime = Date()
+      asset.contentHash = "hash"
+      asset.filename = "bundle.js"
+      asset.isLaunchAsset = true
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update, config: config)
+
+        // an already-open transaction makes the internal BEGIN fail
+        _ = try! db.execute(sql: "BEGIN;", withArgs: nil)
+        defer { _ = try? db.execute(sql: "ROLLBACK;", withArgs: nil) }
+
+        do {
+          try db.addNewAssets([asset], toUpdateWithId: update.updateId)
+          Issue.record("Expected addNewAssets to throw when its transaction cannot start")
+        } catch UpdatesDatabaseError.transactionBeginError {
+        } catch {
+          Issue.record("Expected transactionBeginError but got \(error)")
+        }
+      }
+    }
+  }
+
+  // MARK: - repair updates missing launch asset
+
+  @Suite("repair updates missing launch asset", .serialized)
+  struct RepairMissingLaunchAssetTests {
+    var testDatabaseDir: URL
+    var db: UpdatesDatabase
+    var config: UpdatesConfig
+
+    init() throws {
+      let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
+      testDatabaseDir = applicationSupportDir!.appendingPathComponent("RepairMissingLaunchAssetTests")
+
+      try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
+
+      if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
+        try FileManager.default.createDirectory(atPath: testDatabaseDir.path, withIntermediateDirectories: true)
+      }
+
+      db = UpdatesDatabase()
+
+      config = try UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      ])
+
+      db.databaseQueue.sync {
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
+      }
+    }
+
+    private func makeUpdate(id: String) -> Update {
+      let manifest = ExpoUpdatesManifest(rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": id,
+        "createdAt": "2020-11-11T00:17:54.797Z",
+        "launchAsset": ["url": "https://url.to/bundle.js", "contentType": "application/javascript"]
+      ])
+      return ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: manifest,
+        extensions: [:],
+        config: config,
+        database: db
+      )
+    }
+
+    @Test
+    func `demotes ready updates without a launch asset during selection`() throws {
+      let update = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f196")
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update, config: config)
+        // simulate the broken end state: finished without any assets linked
+        try! db.markUpdateFinished(update)
+
+        let launchable = try! db.launchableUpdates(withConfig: config)
+        #expect(launchable.isEmpty)
+
+        let reloaded = try! db.update(withId: update.updateId, config: config)
+        #expect(reloaded?.status == .StatusPending)
+      }
+    }
+
+    @Test
+    func `returns ready updates with a launch asset untouched`() throws {
+      let update = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f197")
+
+      let launchAsset = UpdateAsset(key: "bundle-key", type: "js")
+      launchAsset.downloadTime = Date()
+      launchAsset.contentHash = "hash"
+      launchAsset.filename = "bundle.js"
+      launchAsset.isLaunchAsset = true
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update, config: config)
+        try! db.addNewAssets([launchAsset], toUpdateWithId: update.updateId)
+        try! db.markUpdateFinished(update)
+
+        let launchable = try! db.launchableUpdates(withConfig: config)
+        #expect(launchable.map(\.updateId) == [update.updateId])
+
+        let reloaded = try! db.update(withId: update.updateId, config: config)
+        #expect(reloaded?.status == .StatusReady)
+      }
+    }
+  }
+
+  // MARK: - finishUpdateRegistration
+
+  @Suite("finishUpdateRegistration", .serialized)
+  struct FinishUpdateRegistrationTests {
+    var testDatabaseDir: URL
+    var db: UpdatesDatabase
+    var config: UpdatesConfig
+
+    init() throws {
+      let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
+      testDatabaseDir = applicationSupportDir!.appendingPathComponent("FinishUpdateRegistrationTests")
+
+      try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
+
+      if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
+        try FileManager.default.createDirectory(atPath: testDatabaseDir.path, withIntermediateDirectories: true)
+      }
+
+      db = UpdatesDatabase()
+
+      config = try UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      ])
+
+      db.databaseQueue.sync {
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
+      }
+    }
+
+    private func makeUpdate(id: String, createdAt: String) -> Update {
+      let manifest = ExpoUpdatesManifest(rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": id,
+        "createdAt": createdAt,
+        "launchAsset": ["url": "https://url.to/bundle.js", "contentType": "application/javascript"]
+      ])
+      return ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: manifest,
+        extensions: [:],
+        config: config,
+        database: db
+      )
+    }
+
+    private func makeAsset(key: String, isLaunchAsset: Bool = false) -> UpdateAsset {
+      let asset = UpdateAsset(key: key, type: "js")
+      asset.downloadTime = Date()
+      asset.contentHash = key
+      asset.filename = "\(key).js"
+      asset.isLaunchAsset = isLaunchAsset
+      return asset
+    }
+
+    private func joinRowCount(forUpdateId updateId: UUID) -> Int {
+      db.databaseQueue.sync {
+        try! db.execute(sql: "SELECT asset_id FROM updates_assets WHERE update_id = ?1;", withArgs: [updateId]).count
+      }
+    }
+
+    @Test
+    func `registers assets and marks the update finished`() throws {
+      let update1 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f196", createdAt: "2020-11-11T00:17:54.797Z")
+      let update2 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f197", createdAt: "2020-11-11T00:17:55.797Z")
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update1, config: config)
+        try! db.addNewAssets([makeAsset(key: "asset-a")], toUpdateWithId: update1.updateId)
+
+        try! db.addUpdate(update2, config: config)
+        try! db.finishUpdateRegistration(
+          update2,
+          newAssets: [makeAsset(key: "asset-b", isLaunchAsset: true)],
+          existingAssets: [makeAsset(key: "asset-a")],
+          markFinished: true
+        )
+      }
+
+      db.databaseQueue.sync {
+        let reloaded = try! db.update(withId: update2.updateId, config: config)
+        #expect(reloaded?.status == .StatusReady)
+      }
+      #expect(joinRowCount(forUpdateId: update2.updateId) == 2)
+    }
+
+    @Test
+    func `persists nothing when any statement fails`() throws {
+      let update1 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f198", createdAt: "2020-11-11T00:17:56.797Z")
+      let update2 = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f199", createdAt: "2020-11-11T00:17:57.797Z")
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update1, config: config)
+        try! db.addNewAssets([makeAsset(key: "asset-a")], toUpdateWithId: update1.updateId)
+
+        try! db.addUpdate(update2, config: config)
+
+        // fail the insert of the new asset, after the existing asset was linked
+        _ = try! db.execute(
+          sql: """
+            CREATE TRIGGER fail_asset_b BEFORE INSERT ON assets WHEN NEW."key" = 'asset-b'
+            BEGIN SELECT RAISE(ABORT, 'injected failure'); END;
+          """,
+          withArgs: nil
+        )
+
+        do {
+          try db.finishUpdateRegistration(
+            update2,
+            newAssets: [makeAsset(key: "asset-b", isLaunchAsset: true)],
+            existingAssets: [makeAsset(key: "asset-a")],
+            markFinished: true
+          )
+          Issue.record("Expected finishUpdateRegistration to throw when a statement fails")
+        } catch let error as UpdatesDatabaseUtilsError {
+          #expect(error.info?.message.contains("injected failure") == true)
+        } catch {
+          Issue.record("Expected the injected statement failure but got \(error)")
+        }
+      }
+
+      db.databaseQueue.sync {
+        let reloaded = try! db.update(withId: update2.updateId, config: config)
+        #expect(reloaded?.status == .StatusPending)
+      }
+      #expect(joinRowCount(forUpdateId: update2.updateId) == 0)
+    }
+
+    @Test
+    func `throws when marking finished without a launch asset`() throws {
+      let update = makeUpdate(id: "0eef8214-4833-4089-9dff-b4138a14f19a", createdAt: "2020-11-11T00:17:58.797Z")
+
+      db.databaseQueue.sync {
+        try! db.addUpdate(update, config: config)
+
+        do {
+          try db.finishUpdateRegistration(
+            update,
+            newAssets: [makeAsset(key: "image-a")],
+            existingAssets: [],
+            markFinished: true
+          )
+          Issue.record("Expected finishUpdateRegistration to throw when no launch asset was linked")
+        } catch UpdatesDatabaseError.finishedUpdateMissingLaunchAsset {
+        } catch {
+          Issue.record("Expected finishedUpdateMissingLaunchAsset but got \(error)")
+        }
+      }
+
+      db.databaseQueue.sync {
+        let reloaded = try! db.update(withId: update.updateId, config: config)
+        #expect(reloaded?.status == .StatusPending)
+      }
+      #expect(joinRowCount(forUpdateId: update.updateId) == 0)
+    }
+  }
+
   // MARK: - setExtraClientParams
 
   @Suite("setExtraClientParams", .serialized)

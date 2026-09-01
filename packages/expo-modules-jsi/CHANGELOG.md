@@ -20,11 +20,13 @@
 - [iOS] Fixed `JavaScriptPropNameID(_:string:)` and the array's string-keyed subscript truncating non-ASCII property keys: they passed `String.count` (the grapheme-cluster count) as the UTF-8 byte length to `PropNameID::forUtf8`, so keys like `"café"` or `"🎉"` were built from mangled bytes and no longer matched the intended property. ([#48329](https://github.com/expo/expo/pull/48329) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed the xcframework prebuild failing under Xcode 27 due to new foreign reference ownership warnings emitted for `RuntimeScheduler` constructors. ([#49120](https://github.com/expo/expo/pull/49120) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
 - [iOS] `CppError::tryCatch` now takes a C++ callable instead of an Objective-C block. Every caller already passes a pure C++ body, so the block bridged no Swift closure and only added a non-inlinable indirect call and an Objective-C runtime dependency on the JS call/eval error-handling path. ([#48333](https://github.com/expo/expo/pull/48333) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptActor.assumeIsolated` no longer heap-allocates a closure box per call by keeping its `operation` non-escaping, making synchronous host calls ~1.6× faster. ([#47837](https://github.com/expo/expo/pull/47837) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptValue.undefined` and `JavaScriptValue.null` now return shared immortal instances instead of allocating a new value on each access, removing one allocation from every void-returning host call. ([#49545](https://github.com/expo/expo/pull/49545) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.4 — 2026-07-22
 

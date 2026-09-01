@@ -23,6 +23,8 @@
 - [iOS] Point at the Local Network setting when a local dev server URL can't be reached, and log instead of silently dropping discovered servers that fail to resolve. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Reload the recently opened apps list when the launcher appears so it no longer shows up empty or stale. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
 - Exclude the manifest parser requests from app metrics, so the bundler reachability check no longer skews the observed network summary. ([#48616](https://github.com/expo/expo/pull/48616) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Remove an unused `RCTRootContentView.h` import. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

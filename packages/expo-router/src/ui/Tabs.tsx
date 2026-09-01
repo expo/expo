@@ -26,7 +26,7 @@ import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
 import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
-import { TabTriggerMapContext } from './TabContext';
+import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
 import { isTabList } from './TabList';
 import type { ExpoTabRouterOptions } from './TabRouter';
 import { ExpoTabRouter } from './TabRouter';
@@ -151,6 +151,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const { triggers, ...rest } = options;
   // Ensure we extend the parent triggers, so we can trigger them as well
   const parentTriggerMap = use(TabTriggerMapContext);
+  const parentNavigatorStates = use(TabNavigatorStatesContext);
   const routeNode = useRouteNode();
   const contextKey = useContextKey();
   const linking = use(LinkingContext).options;
@@ -202,6 +203,10 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       ) as typeof sparseDescriptors,
     [describe, sparseDescriptors, state]
   );
+  const navigatorStates = useMemo(
+    () => ({ ...parentNavigatorStates, [contextKey]: state }),
+    [contextKey, parentNavigatorStates, state]
+  );
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () => ({
@@ -218,9 +223,11 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
       <TabVisibilityRedirect state={state} descriptors={descriptors} />
       <TabTriggerMapContext.Provider value={triggerMap}>
-        <NavigatorContext.Provider value={navigatorContextValue}>
-          <RNNavigationContent>{children}</RNNavigationContent>
-        </NavigatorContext.Provider>
+        <TabNavigatorStatesContext.Provider value={navigatorStates}>
+          <NavigatorContext.Provider value={navigatorContextValue}>
+            <RNNavigationContent>{children}</RNNavigationContent>
+          </NavigatorContext.Provider>
+        </TabNavigatorStatesContext.Provider>
       </TabTriggerMapContext.Provider>
     </GuardContextProvider>
   )) as TabsContextValue['NavigationContent'];

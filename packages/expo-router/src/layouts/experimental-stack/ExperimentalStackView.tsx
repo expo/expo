@@ -4,10 +4,13 @@ import { StyleSheet, View } from 'react-native';
 import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
 import {
+  isRouteRemovalPrevented,
+  useRoutesWithRemovalPrevented,
+} from '../../global-state/removalPrevention';
+import {
   type ParamListBase,
   StackActions,
   type StackNavigationState,
-  usePreventRemoveContext,
 } from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
@@ -32,7 +35,7 @@ type Props = {
 
 export function ExperimentalStackView({ state, navigation, descriptors }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
-  const { preventedRoutes } = usePreventRemoveContext();
+  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
   return (
     <View style={styles.container}>
@@ -41,7 +44,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
           const descriptor = descriptors[route.key]!;
           const isPreloaded = index > state.index;
           const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
-          const preventFromContext = preventedRoutes[route.key]?.preventRemove ?? false;
+          const preventFromContext = isRouteRemovalPrevented(route, routesWithRemovalPrevented);
 
           return (
             <ScreenView
@@ -83,7 +86,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
                 // Native dismissal (e.g. swipe-to-dismiss). JS state still has the route —
                 // catch up by dispatching pop and arming useDismissedRouteError so a stale
                 // `usePreventRemove` surfaces an actionable console.error.
-                navigation.dispatch({
+                navigation.dispatchSync({
                   ...StackActions.pop(),
                   source: route.key,
                   target: state.key,
@@ -94,7 +97,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
                 if (preventFromContext) {
                   // A real pop runs child-first prevention checks and notifies the nested route
                   // that owns the guard; emitting directly here would only reach this route.
-                  navigation.dispatch({
+                  navigation.dispatchSync({
                     ...StackActions.pop(),
                     source: route.key,
                     target: state.key,

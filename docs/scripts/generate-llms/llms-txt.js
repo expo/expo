@@ -7,6 +7,7 @@ import { getMarkdownUrl, toBlockquote } from './shared.js';
 import { EXPO_DESCRIPTION, PAGE_DESCRIPTION_OVERRIDES } from './transforms/descriptions.js';
 import { MISCONCEPTIONS_SECTION } from './transforms/misconceptions.js';
 import { PERFORMANCE_SECTION } from './transforms/performance.js';
+import { WHEN_TO_USE_SECTION } from './transforms/when-to-use.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
@@ -71,6 +72,7 @@ function generateFullMarkdown({ title, description, sections }) {
     `# ${title}\n\n${toBlockquote(description)}\n\n` +
     MISCONCEPTIONS_SECTION +
     PERFORMANCE_SECTION +
+    WHEN_TO_USE_SECTION +
     filteredSections.map(generateSectionMarkdown).join('').trimEnd() +
     '\n'
   );
@@ -133,17 +135,20 @@ function processPage(page) {
   return processPageData(page.href, page.name);
 }
 
-function processGroup(group) {
-  const items = (group.children ?? [])
-    .filter(child => child.type === 'page')
-    .map(processPage)
+function collectPages(node) {
+  return (node.children ?? [])
+    .flatMap(child => (child.type === 'page' ? processPage(child) : collectPages(child)))
     .filter(Boolean);
+}
+
+function processGroup(group) {
+  const items = collectPages(group);
 
   return items.length > 0 ? { title: group.name, items } : null;
 }
 
 function hasContent(section) {
-  return section?.items?.length ?? section?.groups?.length ?? section?.sections?.length;
+  return section?.items.length > 0 || section?.groups.length > 0 || section?.sections.length > 0;
 }
 
 const COLLAPSED_SECTIONS = new Set(['Expo UI']);
@@ -159,6 +164,10 @@ function collapseToOverviews(section) {
     .map(item => ({ ...item, overview: true }));
 
   return { ...section, items: [...section.items, ...overviews], groups: [], sections: [] };
+}
+
+function processNestedSection(node) {
+  return { title: node.name, items: collectPages(node), groups: [], sections: [] };
 }
 
 function processSection(node) {
@@ -190,7 +199,7 @@ function processSection(node) {
         break;
       }
       case 'section': {
-        const sectionData = processSection(child);
+        const sectionData = processNestedSection(child);
         if (hasContent(sectionData)) {
           section.sections.push(sectionData);
         }

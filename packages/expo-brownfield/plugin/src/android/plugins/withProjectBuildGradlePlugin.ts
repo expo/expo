@@ -10,19 +10,19 @@ const PLUGIN_NAME = 'expo-brownfield-publish';
 // AGP 8.12.0's Fused Library plugin's `rewriteClasses` task uses an ASM API version
 // below 9 at the call site and can't read `PermittedSubclasses` bytecode attributes
 // emitted for every Kotlin `sealed class`. AGP 8.13.0+ raises the hardcoded API
-// version. Bump only when the user opts into fused mode via `--fused` (which passes
+// version. Applied only when the user opts into fused mode via `--fused` (which passes
 // `-Pbrownfield.fused=true`), so default builds keep using the version catalog's AGP.
-const FUSED_AGP_VERSION = '8.13.0';
+const FUSED_AGP_MIN_VERSION = '8.13.0';
 const FUSED_AGP_MARKER = 'brownfield.fused';
 
 const withProjectBuildGradlePlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withProjectBuildGradle(config, (config) => {
     let lines = config.modResults.contents.split('\n');
 
-    if (!config.modResults.contents.includes(FUSED_AGP_MARKER)) {
-      lines = addFusedAgpResolutionStrategy(lines);
-    }
-
+    // Order matters: `addPluginClasspathStatement` inserts after the last line containing
+    // `classpath(`, and the fused block declares a constraint on `classpath(...)`. Appending
+    // that block first would make it the last match and the plugin classpath would land
+    // inside the constraint. Add the classpath statement first, then append the block.
     if (!config.modResults.contents.includes(PLUGIN_CLASSPATH)) {
       lines = addPluginClasspathStatement(lines);
       lines = addApplyStatement(lines);
@@ -32,6 +32,10 @@ const withProjectBuildGradlePlugin: ConfigPlugin<PluginConfig> = (config, plugin
         pluginConfig.projectRoot,
         pluginConfig.libraryName
       );
+    }
+
+    if (!config.modResults.contents.includes(FUSED_AGP_MARKER)) {
+      lines = addFusedAgpResolutionStrategy(lines);
     }
 
     config.modResults.contents = lines.join('\n');
@@ -45,18 +49,27 @@ const addFusedAgpResolutionStrategy = (lines: string[]): string[] => {
   // top-level buildscript blocks, so this composes with the project's existing one
   // without clobbering it. The `findProperty` check makes the override conditional on
   // `-Pbrownfield.fused=true` (set by `expo-brownfield build:android --fused`); without
-  // the flag the resolution-strategy block never runs and AGP stays at the catalog
-  // version.
+  // the flag the constraint is never declared and AGP stays at the catalog version.
+  //
+  // Declared as a constraint with `require` (a floor) rather than `resolutionStrategy.force`
+  // (a pin). Forcing pinned every fused build to 8.13.0 even on newer AGP, which downgrades
+  // React Native's Gradle plugin below the AGP it was compiled against — on RN 0.87 that is
+  // AGP 9.2.1, and the mismatch fails at configuration time with:
+  //   NoSuchMethodError: ApplicationExtension.getBuildFeatures()
   const block = [
     '',
     'buildscript {',
-    '  // expo-brownfield: bump AGP only when `--fused` is active (CLI passes',
+    '  // expo-brownfield: require a minimum AGP only when `--fused` is active (CLI passes',
     `  // -P${FUSED_AGP_MARKER}=true). AGP 8.12.0's Fused Library can't read Kotlin`,
     '  // sealed-class bytecode (PermittedSubclasses requires ASM API >= 9, fixed',
-    `  // in AGP ${FUSED_AGP_VERSION}).`,
+    `  // in AGP ${FUSED_AGP_MIN_VERSION}). Newer AGP still wins.`,
     `  if (findProperty('${FUSED_AGP_MARKER}') == 'true') {`,
-    '    configurations.classpath {',
-    `      resolutionStrategy.force 'com.android.tools.build:gradle:${FUSED_AGP_VERSION}'`,
+    '    dependencies {',
+    '      constraints {',
+    "        classpath('com.android.tools.build:gradle') {",
+    `          version { require '${FUSED_AGP_MIN_VERSION}' }`,
+    '        }',
+    '      }',
     '    }',
     '  }',
     '}',

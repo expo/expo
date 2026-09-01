@@ -1,12 +1,25 @@
 import chalk from 'chalk';
-import os from 'os';
 
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
+import { ora } from '../../../utils/ora';
 import { event } from '../events';
 import { ADBServer } from './ADBServer';
+import { isAdbDeviceStateUsable, parseAdbDeviceList } from './adbDeviceList';
+import {
+  createAdbOperationError,
+  formatAdbDiscoveryError,
+  shouldProbeAdbHost,
+} from './adbDiagnostics';
+import {
+  ADB_HOST_PROBE_WAIT_LIMIT_MS,
+  AdbHostProbeResult,
+  probeAdbHostVersionAsync,
+  resolveAdbEndpoint,
+} from './adbEndpoint';
 
 export enum DeviceABI {
   // The arch specific android target platforms are soft-deprecated.
@@ -38,6 +51,12 @@ export type Device = {
   isAuthorized: boolean;
   /** The connection type to ADB, only available when `type: device` */
   connectionType?: 'USB' | 'Network';
+  /** Raw state reported by ADB. Absent for an AVD that is not attached. */
+  state?: string;
+  /** Stable transport identity reported by `adb devices -l`, when available. */
+  transportId?: string;
+  /** Whether Expo may launch this inventory record with `emulator @name`. */
+  isLaunchable?: boolean;
 };
 
 type DeviceContext = Pick<Device, 'pid'>;
@@ -53,6 +72,9 @@ const PROP_CPU_ABI_LIST_NAME = 'ro.product.cpu.abilist';
 // Can sometimes be null
 // http://developer.android.com/ndk/guides/abis.html
 const PROP_BOOT_ANIMATION_STATE = 'init.svc.bootanim';
+const DEVICE_DISCOVERY_WAIT_LIMIT_MS = 10_000;
+const DEVICE_DISCOVERY_RETRY_DELAY_MS = 200;
+const DEVICE_DISCOVERY_RETRY_WINDOW_MS = 2_000;
 
 let _server: ADBServer | null;
 
@@ -74,10 +96,13 @@ export function logUnauthorized(device: Device) {
 /** Returns true if the provided package name is installed on the provided Android device. */
 export async function isPackageInstalledAsync(
   device: DeviceContext,
-  androidPackage: string
+  androidPackage: string,
+  signal?: AbortSignal
 ): Promise<boolean> {
-  const packages = await getServer().runAsync(
-    adbShellArgs(device.pid, 'pm', 'list', 'packages', '--user', env.EXPO_ADB_USER, androidPackage)
+  const packages = await getServer().runDeviceQueryAsync(
+    adbShellArgs(device.pid, 'pm', 'list', 'packages', '--user', env.EXPO_ADB_USER, androidPackage),
+    'package query',
+    signal
   );
 
   const lines = packages.split(/\r?\n/);
@@ -103,7 +128,8 @@ export async function launchActivityAsync(
   }: {
     launchActivity: string;
     url?: string;
-  }
+  },
+  signal?: AbortSignal
 ) {
   const command: string[] = [
     'am',
@@ -120,7 +146,7 @@ export async function launchActivityAsync(
     command.push('-d', url);
   }
 
-  return openAsync(adbShellArgs(device.pid, ...command));
+  return openAsync(adbShellArgs(device.pid, ...command), 'activity launch', signal);
 }
 
 /**
@@ -133,48 +159,92 @@ export async function openUrlAsync(
     url,
   }: {
     url: string;
-  }
+  },
+  signal?: AbortSignal
 ) {
   return openAsync(
-    adbShellArgs(device.pid, 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url)
+    adbShellArgs(device.pid, 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url),
+    'URL launch',
+    signal
   );
 }
 
 /** Runs a generic command watches for common errors in order to throw with an expected code. */
-async function openAsync(args: string[]): Promise<string> {
-  const results = await getServer().runAsync(args);
-  if (
-    results.includes(CANT_START_ACTIVITY_ERROR) ||
-    results.match(/Error: Activity class .* does not exist\./g)
-  ) {
-    throw new CommandError('APP_NOT_INSTALLED', results.substring(results.indexOf('Error: ')));
+async function openAsync(args: string[], operation: string, signal?: AbortSignal): Promise<string> {
+  let results: string;
+  try {
+    results = await getServer().runDeviceMutationAsync(args, operation, signal);
+  } catch (error) {
+    const output =
+      error && typeof error === 'object'
+        ? [
+            'stdout' in error ? error.stdout : undefined,
+            'stderr' in error ? error.stderr : undefined,
+            error instanceof Error ? error.message : undefined,
+          ]
+            .filter((value): value is string => typeof value === 'string')
+            .join('\n')
+        : String(error);
+    if (isMissingActivityOutput(output)) {
+      throw new CommandError('APP_NOT_INSTALLED', extractActivityError(output));
+    }
+    throw error;
+  }
+  if (isMissingActivityOutput(results)) {
+    throw new CommandError('APP_NOT_INSTALLED', extractActivityError(results));
   }
   return results;
+}
+
+function isMissingActivityOutput(output: string): boolean {
+  return (
+    output.includes(CANT_START_ACTIVITY_ERROR) ||
+    /Error: Activity class .* does not exist\./.test(output)
+  );
+}
+
+function extractActivityError(output: string): string {
+  const errorIndex = output.indexOf('Error: ');
+  return errorIndex >= 0 ? output.substring(errorIndex) : output;
 }
 
 /** Uninstall an app given its Android package name. */
 export async function uninstallAsync(
   device: DeviceContext,
-  { appId }: { appId: string }
+  { appId }: { appId: string },
+  signal?: AbortSignal
 ): Promise<string> {
-  return await getServer().runAsync(
-    adbArgs(device.pid, 'uninstall', '--user', env.EXPO_ADB_USER, appId)
+  return await getServer().runDeviceMutationAsync(
+    adbArgs(device.pid, 'uninstall', '--user', env.EXPO_ADB_USER, appId),
+    'app uninstall',
+    signal
   );
 }
 
 /** Get package info from an app based on its Android package name. */
 export async function getPackageInfoAsync(
   device: DeviceContext,
-  { appId }: { appId: string }
+  { appId }: { appId: string },
+  signal?: AbortSignal
 ): Promise<string> {
-  return await getServer().runAsync(adbShellArgs(device.pid, 'dumpsys', 'package', appId));
+  return await getServer().runDeviceQueryAsync(
+    adbShellArgs(device.pid, 'dumpsys', 'package', appId),
+    'package info query',
+    signal
+  );
 }
 
 /** Install an app on a connected device. */
-export async function installAsync(device: DeviceContext, { filePath }: { filePath: string }) {
+export async function installAsync(
+  device: DeviceContext,
+  { filePath }: { filePath: string },
+  signal?: AbortSignal
+) {
   // TODO: Handle the `INSTALL_FAILED_INSUFFICIENT_STORAGE` error.
-  return await getServer().runAsync(
-    adbArgs(device.pid, 'install', '-r', '-d', '--user', env.EXPO_ADB_USER, filePath)
+  return await getServer().runDeviceMutationAsync(
+    adbArgs(device.pid, 'install', '-r', '-d', '--user', env.EXPO_ADB_USER, filePath),
+    'app install',
+    signal
   );
 }
 
@@ -201,88 +271,189 @@ function shellQuote(value: string): string {
 }
 
 // TODO: This is very expensive for some operations.
-export async function getAttachedDevicesAsync(): Promise<Device[]> {
-  const output = await getServer().runAsync(['devices', '-l']);
+type GetAttachedDevicesOptions = {
+  server?: ADBServer;
+  signal?: AbortSignal;
+  waitLimitMs?: number;
+  probeWaitLimitMs?: number;
+  shouldShowWaitingMessage?: boolean;
+};
 
-  const splitItems = output
-    .trim()
-    .replace(/\n$/, '')
-    .split(os.EOL)
-    // Filter ADB trace logs from the output, e.g.
-    // adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:393] adb_query: host:devices-l
-    // 03-04 12:29:44.557 16415 16415 D adb     : commandline.cpp:1646 Using server socket: tcp:172.27.192.1:5037
-    // 03-04 12:29:44.557 16415 16415 D adb     : adb_client.cpp:160 _adb_connect: host:version
-    .filter((line) => !line.match(/\.cpp:[0-9]+/));
+export async function getAttachedDevicesAsync(
+  options: GetAttachedDevicesOptions = {}
+): Promise<Device[]> {
+  return getAttachedDevicesWithOptionsAsync(options, false);
+}
 
-  // First line is `"List of devices attached"`, remove it
-  // @ts-ignore: todo
-  const attachedDevices: {
-    props: string[];
-    type: Device['type'];
-    isAuthorized: Device['isAuthorized'];
-    isBooted: Device['isBooted'];
-    connectionType?: Device['connectionType'];
-  }[] = splitItems
-    .slice(1, splitItems.length)
-    .map((line) => {
+export async function waitForAttachedDevicesAsync(): Promise<Device[]> {
+  return getAttachedDevicesWithOptionsAsync({ shouldShowWaitingMessage: true }, true);
+}
+
+async function getAttachedDevicesWithOptionsAsync(
+  {
+    server = getServer(),
+    signal,
+    waitLimitMs,
+    probeWaitLimitMs = ADB_HOST_PROBE_WAIT_LIMIT_MS,
+    shouldShowWaitingMessage = false,
+  }: GetAttachedDevicesOptions,
+  shouldRetryEmptyResult: boolean
+): Promise<Device[]> {
+  const discoveryWaitLimitMs = waitLimitMs ?? DEVICE_DISCOVERY_WAIT_LIMIT_MS;
+  const discoveryDeadline = Date.now() + discoveryWaitLimitMs;
+  const retryDeadline = Math.min(discoveryDeadline, Date.now() + DEVICE_DISCOVERY_RETRY_WINDOW_MS);
+  const waitSignal = AbortSignal.timeout(discoveryWaitLimitMs);
+  const operationSignal = signal ? AbortSignal.any([signal, waitSignal]) : waitSignal;
+  const endpoint = resolveAdbEndpoint();
+  const spinner =
+    shouldShowWaitingMessage && isInteractive()
+      ? ora('Waiting for ADB device discovery').start()
+      : null;
+
+  let retryError: unknown;
+  try {
+    while (true) {
+      try {
+        const output = await server.runHostQueryAsync(
+          ['devices', '-l'],
+          'device discovery',
+          signal,
+          Math.max(1, discoveryDeadline - Date.now())
+        );
+        const devices = await parseAttachedDevicesAsync(output, operationSignal);
+        if (devices.length || !shouldRetryEmptyResult) {
+          return devices;
+        }
+        retryError = undefined;
+      } catch (error) {
+        if (operationSignal.aborted && error === operationSignal.reason) throw error;
+        if (!shouldRetryAdbDiscovery(error)) {
+          throw error;
+        }
+        retryError = error;
+      }
+
+      const retryTimeRemaining = retryDeadline - Date.now();
+      if (retryTimeRemaining <= 0) {
+        if (retryError) throw retryError;
+        return [];
+      }
+      await waitForRetryAsync(
+        Math.min(DEVICE_DISCOVERY_RETRY_DELAY_MS, retryTimeRemaining),
+        operationSignal
+      );
+    }
+  } catch (caughtError) {
+    // Caller cancellation is not a discovery failure, so skip the diagnostic probe
+    if (signal?.aborted && caughtError === signal.reason) {
+      throw caughtError;
+    }
+
+    const error =
+      retryError != null && operationSignal.aborted && caughtError === operationSignal.reason
+        ? retryError
+        : caughtError;
+
+    let hostProbe: AdbHostProbeResult | undefined;
+    if (shouldProbeAdbHost(error) && !operationSignal.aborted) {
+      try {
+        const probeSignal = AbortSignal.any([
+          operationSignal,
+          AbortSignal.timeout(probeWaitLimitMs),
+        ]);
+        hostProbe = await probeAdbHostVersionAsync(endpoint, probeSignal);
+      } catch (probeError) {
+        if (signal?.aborted && probeError === signal.reason) {
+          throw probeError;
+        } else if (!operationSignal.aborted) {
+          hostProbe = {
+            kind: 'connection-failure',
+          };
+        }
+      }
+    }
+    throw new CommandError('ADB_DISCOVERY', formatAdbDiscoveryError(error, endpoint, hostProbe));
+  } finally {
+    spinner?.stop();
+  }
+}
+
+async function parseAttachedDevicesAsync(output: string, signal: AbortSignal): Promise<Device[]> {
+  return Promise.all(
+    parseAdbDeviceList(output).map(async (record): Promise<Device> => {
       // unauthorized: ['FA8251A00719', 'unauthorized', 'usb:338690048X', 'transport_id:5']
       // authorized: ['FA8251A00719', 'device', 'usb:336592896X', 'product:walleye', 'model:Pixel_2', 'device:walleye', 'transport_id:4']
       // emulator: ['emulator-5554', 'offline', 'transport_id:1']
-      const props = line.split(' ').filter(Boolean);
-      const type = line.includes('emulator') ? 'emulator' : 'device';
+      const type: Device['type'] = /^emulator-\d+$/.test(record.serial) ? 'emulator' : 'device';
 
-      let connectionType;
-      if (type === 'device' && line.includes('usb:')) {
-        connectionType = 'USB';
-      } else if (type === 'device' && line.includes('_adb-tls-connect.')) {
-        connectionType = 'Network';
-      }
+      const connectionType: Device['connectionType'] =
+        type !== 'device'
+          ? undefined
+          : record.metadata.some((field) => field.startsWith('usb:'))
+            ? 'USB'
+            : record.serial.includes('_adb-tls-connect.')
+              ? 'Network'
+              : undefined;
 
-      const isBooted = type === 'emulator' || props[1] !== 'offline';
-      const isAuthorized =
-        connectionType === 'Network'
-          ? line.includes('model:') // Network connected devices show `model:<name>` when authorized
-          : props[1] !== 'unauthorized';
+      const { serial: pid, state, transportId, metadata: deviceInfo } = record;
+      const isUsable = isAdbDeviceStateUsable(state);
 
-      return { props, type, isAuthorized, isBooted, connectionType };
-    })
-    .filter(({ props: [pid] }) => !!pid);
-
-  const devicePromises = attachedDevices.map<Promise<Device>>(async (props) => {
-    const {
-      type,
-      props: [pid, ...deviceInfo],
-      isAuthorized,
-      isBooted,
-    } = props;
-
-    let name: string | null = null;
-
-    if (type === 'device') {
-      if (isAuthorized) {
-        // Possibly formatted like `model:Pixel_2`
-        // Transform to `Pixel_2`
-        const modelItem = deviceInfo.find((info) => info.includes('model:'));
-        if (modelItem) {
-          name = modelItem.replace('model:', '');
+      let name: string;
+      if (type === 'device') {
+        // Unauthorized devices do not report model metadata.
+        const model = isUsable
+          ? deviceInfo.find((field) => field.startsWith('model:'))?.slice('model:'.length)
+          : undefined;
+        name = model || `Device ${pid}`;
+      } else {
+        // Resolve names in every emulator state so booting transports merge with AVD inventory.
+        // A broken emulator console must not discard otherwise healthy attached devices.
+        try {
+          name = (await getAdbNameForDeviceIdAsync({ pid }, signal)) || `Device ${pid}`;
+        } catch (error) {
+          if (signal.aborted && error === signal.reason) throw error;
+          name = `Device ${pid}`;
         }
       }
-      // unauthorized devices don't have a name available to read
-      if (!name) {
-        // Device FA8251A00719
-        name = `Device ${pid}`;
-      }
-    } else {
-      // Given an emulator pid, get the emulator name which can be used to start the emulator later.
-      name = (await getAdbNameForDeviceIdAsync({ pid })) ?? '';
-    }
 
-    return props.connectionType
-      ? { pid, name, type, isAuthorized, isBooted, connectionType: props.connectionType }
-      : { pid, name, type, isAuthorized, isBooted };
+      return {
+        pid,
+        name,
+        type,
+        isAuthorized: isUsable,
+        isBooted: isUsable,
+        isLaunchable: false,
+        state,
+        transportId,
+        connectionType,
+      };
+    })
+  );
+}
+
+function shouldRetryAdbDiscovery(error: unknown): boolean {
+  return (
+    !(error instanceof Error && error.name === 'AbortError') &&
+    error instanceof Error &&
+    /(?:cannot connect|connection refused|server didn't ACK|daemon (?:not running|still not running)|smartsocket)/i.test(
+      error.message
+    )
+  );
+}
+
+function waitForRetryAsync(delayMs: number, signal: AbortSignal): Promise<void> {
+  if (signal.aborted) return Promise.reject(signal.reason);
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      signal.removeEventListener('abort', handleAbort);
+      resolve();
+    }, delayMs);
+    const handleAbort = () => {
+      clearTimeout(timeout);
+      reject(signal.reason);
+    };
+    signal.addEventListener('abort', handleAbort, { once: true });
   });
-
-  return Promise.all(devicePromises);
 }
 
 /**
@@ -290,8 +461,15 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
  *
  * @param device.pid a value like `emulator-5554` from `abd devices`
  */
-export async function getAdbNameForDeviceIdAsync(device: DeviceContext): Promise<string | null> {
-  const results = await getServer().runAsync(adbArgs(device.pid, 'emu', 'avd', 'name'));
+export async function getAdbNameForDeviceIdAsync(
+  device: DeviceContext,
+  signal?: AbortSignal
+): Promise<string | null> {
+  const results = await getServer().runDeviceQueryAsync(
+    adbArgs(device.pid, 'emu', 'avd', 'name'),
+    'emulator name query',
+    signal
+  );
 
   if (results.match(/could not connect to TCP port .*: Connection refused/)) {
     // Can also occur when the emulator does not exist.
@@ -302,15 +480,14 @@ export async function getAdbNameForDeviceIdAsync(device: DeviceContext): Promise
 }
 
 export async function isDeviceBootedAsync({
+  pid,
   name,
-}: { name?: string } = {}): Promise<Device | null> {
+}: Partial<Pick<Device, 'pid' | 'name'>> = {}): Promise<Device | null> {
   const devices = await getAttachedDevicesAsync();
 
-  if (!name) {
-    return devices[0] ?? null;
-  }
-
-  return devices.find((device) => device.name === name) ?? null;
+  if (pid) return devices.find((device) => device.pid === pid) ?? null;
+  if (name) return devices.find((device) => device.name === name) ?? null;
+  return devices[0] ?? null;
 }
 
 /**
@@ -319,13 +496,12 @@ export async function isDeviceBootedAsync({
  *
  * @param pid
  */
-export async function isBootAnimationCompleteAsync(pid?: string): Promise<boolean> {
-  try {
-    const props = await getPropertyDataForDeviceAsync({ pid }, PROP_BOOT_ANIMATION_STATE);
-    return !!props[PROP_BOOT_ANIMATION_STATE]?.match(/stopped/);
-  } catch {
-    return false;
-  }
+export async function isBootAnimationCompleteAsync(
+  pid?: string,
+  signal?: AbortSignal
+): Promise<boolean> {
+  const props = await getPropertyDataForDeviceAsync({ pid }, PROP_BOOT_ANIMATION_STATE, signal);
+  return !!props[PROP_BOOT_ANIMATION_STATE]?.match(/stopped/);
 }
 
 /** Get a list of ABIs for the provided device. */
@@ -348,20 +524,26 @@ export async function getDeviceABIsAsync(
 
 export async function getPropertyDataForDeviceAsync(
   device: DeviceContext,
-  prop?: string
+  prop?: string,
+  signal?: AbortSignal
 ): Promise<DeviceProperties> {
   const propCommand = prop
     ? adbShellArgs(device.pid, 'getprop', prop)
     : adbShellArgs(device.pid, 'getprop');
   try {
-    // Prevent reading as UTF8.
-    const results = await getServer().getFileOutputAsync(propCommand);
+    const results = await getServer().getFileOutputAsync(propCommand, {
+      signal,
+    });
     // Like:
     // [wifi.direct.interface]: [p2p-dev-wlan0]
     // [wifi.interface]: [wlan0]
 
     if (prop) {
-      event('adb_property_data', { devicePid: device.pid, prop, data: results });
+      event('adb_property_data', {
+        devicePid: device.pid,
+        prop,
+        data: results,
+      });
       return {
         [prop]: results,
       };
@@ -372,8 +554,7 @@ export async function getPropertyDataForDeviceAsync(
 
     return props;
   } catch (error: any) {
-    // TODO: Ensure error has message and not stderr
-    throw new CommandError(`Failed to get properties for device (${device.pid}): ${error.message}`);
+    throw createAdbOperationError('ADB_PROPERTY', error, device);
   }
 }
 

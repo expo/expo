@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 57.0.8 - 2026-07-29

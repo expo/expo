@@ -9,6 +9,7 @@
 - Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
 - add expo-observe integration ([#47145](https://github.com/expo/expo/pull/47145) by [@Ubax](https://github.com/Ubax))
 - [iOS][Android] Added a `skipOnCacheHit` field to `transition` that skips the fade the first time a cached image appears (`'memory'` for memory-cache hits, `'all'` for any cache hit), so already-loaded images don't re-animate on mount, tab change, or when scrolling back into view. A transition from a `source` change still plays. ([#48181](https://github.com/expo/expo/pull/48181) by [@janicduplessis](https://github.com/janicduplessis))
+- Added an `includeUrlParams` option to the expo-observe integration; reported image URLs now have their query string and fragment removed unless it is enabled, basic-auth credentials are always removed, and only `http(s)`, `file`, and `android.resource` URLs are reported. ([#49083](https://github.com/expo/expo/pull/49083) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -17,6 +18,8 @@
 - [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
 - [Web] Use `textContent` instead of `innerHTML` when injecting image styles, so the style tag is not a Trusted Types sink. ([#48649](https://github.com/expo/expo/pull/48649) by [@VoulgarisLeoni](https://github.com/VoulgarisLeoni))
 - [iOS] Fixed `generateBlurhashAsync` and `generateThumbhashAsync` never settling when the image could not be downloaded. ([#PR](https://github.com/expo/expo/pull/PR) ([#48894](https://github.com/expo/expo/pull/48894) by [@vonovak](https://github.com/vonovak))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

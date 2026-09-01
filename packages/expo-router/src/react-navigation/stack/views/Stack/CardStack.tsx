@@ -647,7 +647,6 @@ export class CardStack extends React.Component<Props, State> {
             const {
               headerShown = true,
               headerTransparent,
-              freezeOnBlur,
               autoHideHomeIndicator,
             } = scene.descriptor.options;
 
@@ -677,8 +676,6 @@ export class CardStack extends React.Component<Props, State> {
                 style={[styles.boxNone, StyleSheet.absoluteFill]}
                 enabled={detachInactiveScreens}
                 active={activityState}
-                freezeOnBlur={freezeOnBlur}
-                shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}
                 homeIndicatorHidden={autoHideHomeIndicator}>
                 <CardContainer
                   index={index}

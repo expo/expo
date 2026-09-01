@@ -95,4 +95,6 @@ dependencies {
     compileOnly 'io.github.ronickg:openssl:3.3.2-1'
   }
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
+
+  testImplementation 'junit:junit:4.13.2'
 }
