@@ -646,6 +646,7 @@ export const eas = [
     ]),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
+      makePage('eas/observe/reference/client-id.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
   ]),

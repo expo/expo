@@ -1,0 +1,59 @@
+---
+title: Client ID
+sidebar_title: Client ID
+description: Read the EAS client ID that EAS Observe records on every metric and event, and use it to correlate data with other services.
+---
+
+Every metric, event, and log record that EAS Observe sends carries an **EAS client ID**: a random identifier for one installation of your app. The dashboard and the EAS CLI use it to group data by installation, and `Observe.clientId` exposes the same value to your app.
+
+Use it to look up an installation's Observe data from another tool, such as your crash reporter, your analytics provider, or your own backend.
+
+## Read the client ID
+
+`Observe.clientId` is a string on Android and iOS, and `null` on web:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+console.log(Observe.clientId);
+// 'f81d4fae-7dec-41d0-a765-00a0c91e6bf6'
+```
+
+The value is available as soon as `expo-observe` is imported. You do not need to call `configure()` first.
+
+## Correlate with another service
+
+Attach the client ID to the data you send elsewhere. Then, when you find a problem in that service, you can query the same installation in EAS Observe.
+
+The following example sends the client ID alongside a report to your own backend:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+async function reportFeedback(message: string) {
+  await fetch('https://example.com/feedback', {
+    method: 'POST',
+    body: JSON.stringify({
+      message,
+      easClientId: Observe.clientId,
+    }),
+  });
+}
+```
+
+Crash reporting and analytics SDKs usually offer a tag, a custom property, or a context field for this. Set it once at startup, then use the value to find the matching installation in EAS Observe.
+
+To go the other direction, run [`eas observe:metrics`](/eas/observe/eas-cli/#eas-observemetrics) or [`eas observe:events`](/eas/observe/eas-cli/#eas-observeevents) with `--json`. Each sample includes its `easClientId`.
+
+## How the client ID behaves
+
+- The ID is generated on the device the first time an EAS client library needs it, and is stored in native preferences. It is not derived from any hardware or account identifier.
+- It is stable across app launches, app updates, and EAS Updates.
+- It is shared with the other EAS client libraries in your app, such as `expo-updates`. The same installation has one ID across all of them.
+- It changes when the app is reinstalled or its data is cleared. A device restore from backup can carry the previous ID over.
+
+Because the ID identifies an installation rather than a person, treat it as pseudonymous data. If you send it to a third-party service, check that your privacy policy covers that use.
+
+## Sampling and the client ID
+
+The [`sampleRate`](/eas/observe/configuration/#sampling) decision is derived from the client ID, which is why an installation stays in-sample or out-of-sample across launches. `Observe.clientId` returns the ID whether or not the installation is in-sample, so you can log it even when the app dispatches no metrics.
