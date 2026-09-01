@@ -1,0 +1,32 @@
+diff --git a/lib/commonjs/fabric/NativeScreensModule.js b/lib/commonjs/fabric/NativeScreensModule.js
+index 18cecae09e992721d0c0c66577cd824b9f91c5c5..9353efa17e031dbc754e052ba29b209b6ef7901a 100644
+--- a/lib/commonjs/fabric/NativeScreensModule.js
++++ b/lib/commonjs/fabric/NativeScreensModule.js
+@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports.default = void 0;
+ var _reactNative = require("react-native");
+-var _default = exports.default = _reactNative.TurboModuleRegistry.get('RNSModule');
++var _default = exports.default = _reactNative.TurboModuleRegistry?.get('RNSModule');
+ //# sourceMappingURL=NativeScreensModule.js.map
+diff --git a/lib/module/fabric/NativeScreensModule.js b/lib/module/fabric/NativeScreensModule.js
+index 09cbf2706d030101183479f1e97cd548dad6e8c3..c8536a6561a61eafd3572f8f6cfea55664f6d14a 100644
+--- a/lib/module/fabric/NativeScreensModule.js
++++ b/lib/module/fabric/NativeScreensModule.js
+@@ -1,5 +1,5 @@
+ 'use client';
+ 
+ import { TurboModuleRegistry } from 'react-native';
+-export default TurboModuleRegistry.get('RNSModule');
++export default TurboModuleRegistry?.get('RNSModule');
+ //# sourceMappingURL=NativeScreensModule.js.map
+diff --git a/src/fabric/NativeScreensModule.ts b/src/fabric/NativeScreensModule.ts
+index d95e19c51928ae2e45727c12ca31b6b645a80073..cb944f281a48a16948d724659eced6b474e58687 100644
+--- a/src/fabric/NativeScreensModule.ts
++++ b/src/fabric/NativeScreensModule.ts
+@@ -5,4 +5,4 @@ import { TurboModuleRegistry } from 'react-native';
+ 
+ export interface Spec extends TurboModule {}
+ 
+-export default TurboModuleRegistry.get<Spec>('RNSModule');
++export default TurboModuleRegistry?.get<Spec>('RNSModule');

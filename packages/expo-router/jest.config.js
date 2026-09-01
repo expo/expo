@@ -19,8 +19,6 @@ function withDefaults({ watchPlugins, ...config }) {
     moduleNameMapper: {
       // Existing mappings (if any) should come first so users can override if needed.
       ...(config.moduleNameMapper || {}),
-      // TODO(@ubax): remove this once screens stop hard requesting native module
-      '^[.]/fabric/NativeScreensModule$': '<rootDir>/__mocks__/nativeScreensModule.js',
       // CSS Modules: treat class names as keys for predictable snapshots.
       '^.+\\.module\\.css$': '<rootDir>/__mocks__/styleMock.js',
       // Plain CSS (and other style files) can be stubbed with an empty object.
