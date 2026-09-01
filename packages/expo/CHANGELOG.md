@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix a Hermes JSI crash during reloads where two overlapping `RCTHost` runtime callbacks shared `EXReactNativeFactory`'s app context ivar, letting one callback decorate objects against the other callback's runtime. ([#48576](https://github.com/expo/expo/issues/48576) by [@LizunovSergey](https://github.com/LizunovSergey))
-
 ### 💡 Others
+
+## 57.0.19 — 2026-09-01
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a Hermes JSI crash during reloads where two overlapping `RCTHost` runtime callbacks shared `EXReactNativeFactory`'s app context ivar, letting one callback decorate objects against the other callback's runtime. ([#48576](https://github.com/expo/expo/issues/48576) by [@LizunovSergey](https://github.com/LizunovSergey))
 
 ## 57.0.18 — 2026-08-28
 

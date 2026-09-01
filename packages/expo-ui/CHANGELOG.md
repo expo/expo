@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.15 — 2026-09-01
+
+### 🎉 New features
+
 - [universal] Added `containerColor` and `contentColor` props to `BottomSheet`, and a `colors` prop to `ListItem`, so a sheet's chrome and its rows can be recolored to match an app's own theme instead of always using each platform's opaque default. Forwards to capabilities the `jetpack-compose` and `swift-ui` layers already expose (`ModalBottomSheet.containerColor`/`contentColor`, `presentationBackground`, `ListItem.colors`) without changing default behavior when omitted. ([#49575](https://github.com/expo/expo/pull/49575) by [@timheilman](https://github.com/timheilman))
 - [iOS] Added the `ShapeStyle` type, shared by the modifiers that paint an area, and taught `foregroundStyle` to accept materials (`ultraThin`, `thin`, `regular`, `thick`, `ultraThick` and `bar`). ([#48905](https://github.com/expo/expo/pull/48905) by [@Den1Marshall](https://github.com/Den1Marshall))
 
@@ -14,8 +22,6 @@
 - [iOS][Android] Fixed a `matchContents` `RNHostView` inside a `matchContents` `Host` growing the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix modifier application rebuilding a fresh `AnyViewModifier` every body evaluation, which defeated AttributeGraph subtree pruning during scroll. ([#48426](https://github.com/expo/expo/pull/48426) by [@wielski](https://github.com/wielski))
 - [Android] Fix a drag that starts on a hosted `TextInput` not scrolling the `ScrollView` around it. React Native's text input asks its ancestors not to intercept the gesture, then releases them one move later, and Jetpack Compose read that release as "Compose claimed the gesture" and cancelled the hosted subtree. `RNHostView` no longer passes such a release on to Compose. ([#49510](https://github.com/expo/expo/issues/49510) by [@kilarsky](https://github.com/kilarsky)) ([#49520](https://github.com/expo/expo/pull/49520) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
-
-### 💡 Others
 
 ## 57.0.14 — 2026-08-26
 

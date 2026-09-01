@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed a crash when a key event arrived after the launcher had invalidated the current activity, e.g. while switching to another app. ([#49565](https://github.com/expo/expo/pull/49565) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 57.0.17 — 2026-09-01
+
+### 🐛 Bug fixes
+
+- [Android] Fixed a crash when a key event arrived after the launcher had invalidated the current activity, e.g. while switching to another app. ([#49565](https://github.com/expo/expo/pull/49565) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.16 — 2026-08-26
 
