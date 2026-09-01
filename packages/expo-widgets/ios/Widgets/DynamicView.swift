@@ -9,7 +9,16 @@ import ExpoUI
 // and `.animation` alike. Instead, keep one identity object per logical node,
 // addressed by its position (or JSX `key`) in the tree.
 final class NodeIdentityWrapper {
+  // The cache must be bounded: Live Activity keys embed the activity id, so every
+  // activity an app starts adds a fresh set of entries, and widget extension
+  // processes are memory-limited. Oldest-first eviction is safe with respect to
+  // ObjectIdentifier reuse — every view in a live tree holds a strong reference
+  // to its wrapper, so an evicted wrapper cannot be deallocated (and its address
+  // cannot be recycled) while anything still uses it as an id. Eviction only
+  // costs such a node its animation continuity on a later re-render.
+  private static let capacity = 4096
   private static var cache: [String: NodeIdentityWrapper] = [:]
+  private static var insertionOrder: [String] = []
   private static let lock = NSLock()
 
   let key: String
@@ -24,8 +33,12 @@ final class NodeIdentityWrapper {
     if let existing = cache[key] {
       return existing
     }
+    if cache.count >= capacity, !insertionOrder.isEmpty {
+      cache.removeValue(forKey: insertionOrder.removeFirst())
+    }
     let created = NodeIdentityWrapper(key: key)
     cache[key] = created
+    insertionOrder.append(key)
     return created
   }
 }
@@ -65,7 +78,11 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
     self.entryIndex = entryIndex
     self.environmentString = environmentString
     self.path = path
-    self.identity = NodeIdentityWrapper.identity(for: "\(name)|\(kind)|\(entryIndex.map(String.init) ?? "-")|\(path)")
+    // `entryIndex` is deliberately not part of the identity key: WidgetKit renders
+    // each timeline entry into its own archive, so two entries' nodes are never
+    // siblings in one ForEach, and sharing identity across entries is what lets
+    // a timeline advance animate instead of hard-cutting.
+    self.identity = NodeIdentityWrapper.identity(for: "\(name)|\(kind)|\(path)")
   }
 
   // Children are addressed by their JSX `key` when present, otherwise by index,
@@ -204,8 +221,17 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [Any] {
+        // Two siblings carrying the same JSX key (and type) would share one path
+        // and therefore one identity, but `ForEach` requires unique ids — so a
+        // path that is already taken is disambiguated with the raw slot, keeping
+        // key-based stability for the well-formed case.
+        var usedPaths = Set<String>()
         initialProps.children = flattenChildNodes(children).map { slot, child in
-          WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: slot))
+          var slotPath = childPath(for: child, at: slot)
+          while !usedPaths.insert(slotPath).inserted {
+            slotPath += "#\(slot)"
+          }
+          return WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: slotPath)
         }
       } else if let child = props["children"] as? [String: Any] {
         initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: 0))]
