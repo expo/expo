@@ -798,8 +798,9 @@ private func createFunctionClosure(
     context: UnsafeMutableRawPointer,
     thisPtr: UnsafePointer<facebook.jsi.Value>,
     argumentsPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsCount: Int
-  ) -> facebook.jsi.Value {
+    argumentsCount: Int,
+    resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
+  ) {
     // `assumeIsolated` runs `operation` synchronously, in this very scope — it never escapes and never
     // hops threads (see `JavaScriptActor.assumeIsolated`). So rather than materializing the move-only
     // `JavaScriptValuesBuffer` out here and smuggling it across the closure boundary through a
@@ -811,13 +812,13 @@ private func createFunctionClosure(
     // floor.
     nonisolated(unsafe) let thisPtr = thisPtr
     nonisolated(unsafe) let argumentsPtr = argumentsPtr
+    nonisolated(unsafe) let resultPtr = resultPtr
 
     // See the unowned-`this` overload below for why the context and runtime are read through
-    // `_withUnsafeGuaranteedRef` and the result leaves through a captured local.
-    var result = facebook.jsi.Value.undefined()
+    // `_withUnsafeGuaranteedRef`.
     Unmanaged<HostFunctionContext>.fromOpaque(context)._withUnsafeGuaranteedRef { context in
       context.runtime._withUnsafeGuaranteedRef { runtime in
-        result = JavaScriptActor.assumeIsolated {
+        resultPtr.pointee = JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
             let this = UnsafeMutablePointer(mutating: thisPtr).move()
             let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
@@ -827,7 +828,6 @@ private func createFunctionClosure(
         }
       }
     }
-    return result
   }
 
   func deallocate(context: UnsafeMutableRawPointer) {
@@ -848,8 +848,9 @@ private func createFunctionClosure(
     context: UnsafeMutableRawPointer,
     thisPtr: UnsafePointer<facebook.jsi.Value>,
     argumentsPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsCount: Int
-  ) -> facebook.jsi.Value {
+    argumentsCount: Int,
+    resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
+  ) {
     // Same call-scoped reasoning as the owning-`this` overload above (see its comment) for why the
     // buffer is built inside the synchronous `assumeIsolated` closure. Here `this` is additionally
     // handed in as a borrowed `JavaScriptUnownedValue` pointing straight at the C++-owned `this` slot:
@@ -857,16 +858,17 @@ private func createFunctionClosure(
     // per-call `weak`-runtime form/destroy and heap object that the owning `this` pays.
     nonisolated(unsafe) let thisPtr = thisPtr
     nonisolated(unsafe) let argumentsPtr = argumentsPtr
+    nonisolated(unsafe) let resultPtr = resultPtr
 
     // `_withUnsafeGuaranteedRef` promises the compiler that the referenced object stays alive for the
     // duration of the closure, so no retain/release is emitted for it. Both promises hold: the context
     // is owned by the JSI host function that is calling us, and a sync host call runs while the runtime
     // is executing JS, with the wrapper owned for the runtime's whole lifetime. The closure result must
-    // be `Copyable`, and `jsi::Value` is not, so the value is moved out through a captured local.
-    var result = facebook.jsi.Value.undefined()
+    // be `Copyable`, and `jsi::Value` is not, so the value is written to the caller's result slot
+    // instead of being returned.
     Unmanaged<UnownedThisHostFunctionContext>.fromOpaque(context)._withUnsafeGuaranteedRef { context in
       context.runtime._withUnsafeGuaranteedRef { runtime in
-        result = JavaScriptActor.assumeIsolated {
+        resultPtr.pointee = JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
             let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
             let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
@@ -875,7 +877,6 @@ private func createFunctionClosure(
         }
       }
     }
-    return result
   }
 
   func deallocate(context: UnsafeMutableRawPointer) {
