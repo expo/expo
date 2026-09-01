@@ -23,6 +23,7 @@ import java.net.Proxy
 import java.util.Date
 import java.util.UUID
 import java.util.WeakHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Sentinel header recognised by `NetworkRequestInterceptor` to skip observation. expo-observe's
@@ -509,8 +510,8 @@ private class BodyCloseSignal(
   private val delegate: ResponseBody,
   private val onComplete: () -> Unit
 ) : ResponseBody() {
-  @Volatile
-  private var completed: Boolean = false
+  // EOF and close can race when callers consume and dispose a response on different threads.
+  private val completed = AtomicBoolean(false)
 
   // OkHttp's contract returns the same `BufferedSource` on repeated `source()` calls, so we
   // cache ours too — wrapping twice would fire the completion callback twice.
@@ -538,10 +539,9 @@ private class BodyCloseSignal(
   override fun source(): BufferedSource = signalingSource
 
   private fun fireCompleteOnce() {
-    if (completed) {
+    if (!completed.compareAndSet(false, true)) {
       return
     }
-    completed = true
     onComplete()
   }
 }

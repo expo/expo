@@ -15,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed network request observers emitting duplicate events or continuing after their listeners were removed. ([#49609](https://github.com/expo/expo/pull/49609) by [@behenate](https://github.com/behenate))
 - [iOS] Preserve millisecond precision in log event timestamps. ([#49141](https://github.com/expo/expo/pull/49141) by [@Ubax](https://github.com/Ubax))
 - [android] Fix `UnsupportedOperationException` and `NoSuchMethodError` on Android 7.x ([#48577](https://github.com/expo/expo/pull/48577) by [@Ubax](https://github.com/Ubax))
 - [iOS] Retry the OTA `AppInfo` patch on updates state changes, so a launch where the module registry is created before `expo-updates` has assigned its startup procedure no longer keeps the embedded build's update attribution for the whole session. ([#48899](https://github.com/expo/expo/pull/48899) by [@spsaucier](https://github.com/spsaucier))
