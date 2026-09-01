@@ -8,11 +8,11 @@ struct DateMapper: ContactRecordMapper {
   typealias TDomainValue = NSDateComponents
 
   func newRecordToCNLabeledValue(_ record: NewDateRecord) throws -> CNLabeledValue<NSDateComponents> {
-    return try CNLabeledValue(label: record.label, value: record.date.toDateComponent() as NSDateComponents)
+    return try CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: record.date.toDateComponent() as NSDateComponents)
   }
 
   func existingRecordToCNLabeledValue(_ record: ExistingDateRecord) throws -> CNLabeledValue<NSDateComponents> {
-    return try CNLabeledValue(label: record.label, value: record.date.toDateComponent() as NSDateComponents)
+    return try CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: record.date.toDateComponent() as NSDateComponents)
   }
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<NSDateComponents>) -> ExistingDateRecord {
@@ -24,14 +24,14 @@ struct DateMapper: ContactRecordMapper {
         month: dateComponents.month,
         day: dateComponents.day
       ),
-      label: labeledValue.label ?? ""
+      label: ContactLabelMapper.toRecordLabel(labeledValue.label ?? "")
     )
   }
 
   func apply(patch: PatchDateRecord, to cnLabeledValue: CNLabeledValue<NSDateComponents>) throws -> CNLabeledValue<NSDateComponents> {
     var toModify = cnLabeledValue
     if case .value(let label) = patch.label {
-      toModify = toModify.settingLabel(label)
+      toModify = toModify.settingLabel(label.map(ContactLabelMapper.toCNLabel))
     }
     if case .value(let date) = patch.date {
       let newValue = try date?.toDateComponent() ?? DateComponents()

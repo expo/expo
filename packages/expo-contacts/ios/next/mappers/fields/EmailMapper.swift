@@ -8,25 +8,25 @@ struct EmailMapper: ContactRecordMapper {
   typealias TDomainValue = NSString
 
   func newRecordToCNLabeledValue(_ record: NewEmailRecord) -> CNLabeledValue<NSString> {
-    return CNLabeledValue(label: record.label, value: record.address as NSString)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: record.address as NSString)
   }
 
   func existingRecordToCNLabeledValue(_ record: ExistingEmailRecord) -> CNLabeledValue<NSString> {
-    return CNLabeledValue(label: record.label, value: record.address as NSString)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: record.address as NSString)
   }
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<NSString>) -> ExistingEmailRecord {
     return ExistingEmailRecord(
       id: labeledValue.identifier,
       address: labeledValue.value as String,
-      label: labeledValue.label ?? CNLabelOther
+      label: ContactLabelMapper.toRecordLabel(labeledValue.label ?? CNLabelOther)
     )
   }
 
   func apply(patch: PatchEmailRecord, to cnLabeledValue: CNLabeledValue<NSString>) -> CNLabeledValue<NSString> {
     var toModify = cnLabeledValue
     if case .value(let label) = patch.label {
-      toModify = toModify.settingLabel(label)
+      toModify = toModify.settingLabel(label.map(ContactLabelMapper.toCNLabel))
     }
     if case .value(let address) = patch.address {
       toModify = toModify.settingValue((address ?? "") as NSString)

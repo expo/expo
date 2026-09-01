@@ -12,7 +12,7 @@ struct ImAddressMapper: ContactRecordMapper {
       username: record.username,
       service: record.service
     )
-    return CNLabeledValue(label: record.label, value: imAddress)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: imAddress)
   }
 
   func existingRecordToCNLabeledValue(_ record: ExistingImAddressRecord) -> CNLabeledValue<CNInstantMessageAddress> {
@@ -20,7 +20,7 @@ struct ImAddressMapper: ContactRecordMapper {
       username: record.username,
       service: record.service
     )
-    return CNLabeledValue(label: record.label, value: imAddress)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: imAddress)
   }
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<CNInstantMessageAddress>) -> ExistingImAddressRecord {
@@ -28,7 +28,7 @@ struct ImAddressMapper: ContactRecordMapper {
 
     return ExistingImAddressRecord(
       id: labeledValue.identifier,
-      label: labeledValue.label ?? CNLabelOther,
+      label: ContactLabelMapper.toRecordLabel(labeledValue.label ?? CNLabelOther),
       username: imAddress.username,
       service: imAddress.service
     )
@@ -48,7 +48,7 @@ struct ImAddressMapper: ContactRecordMapper {
     var toModify = cnLabeledValue
 
     if case .value(let label) = patch.label {
-      toModify = toModify.settingLabel(label)
+      toModify = toModify.settingLabel(label.map(ContactLabelMapper.toCNLabel))
     }
 
     var currentUsername = toModify.value.username

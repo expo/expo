@@ -14,7 +14,7 @@ struct SocialProfileMapper: ContactRecordMapper {
       service: record.service,
       userId: record.userId
     )
-    return CNLabeledValue(label: record.label, value: socialProfile)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: socialProfile)
   }
 
   func existingRecordToCNLabeledValue(_ record: ExistingSocialProfileRecord) -> CNLabeledValue<CNSocialProfile> {
@@ -24,7 +24,7 @@ struct SocialProfileMapper: ContactRecordMapper {
       service: record.service,
       userId: record.userId
     )
-    return CNLabeledValue(label: record.label, value: socialProfile)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: socialProfile)
   }
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<CNSocialProfile>) -> ExistingSocialProfileRecord {
@@ -32,7 +32,7 @@ struct SocialProfileMapper: ContactRecordMapper {
 
     return ExistingSocialProfileRecord(
       id: labeledValue.identifier,
-      label: labeledValue.label ?? CNLabelOther,
+      label: ContactLabelMapper.toRecordLabel(labeledValue.label ?? CNLabelOther),
       username: socialProfile.username,
       service: socialProfile.service,
       url: socialProfile.urlString,
@@ -58,7 +58,7 @@ struct SocialProfileMapper: ContactRecordMapper {
     var toModify = cnLabeledValue
 
     if case .value(let label) = patch.label {
-      toModify = toModify.settingLabel(label)
+      toModify = toModify.settingLabel(label.map(ContactLabelMapper.toCNLabel))
     }
 
     var currentUrlString = toModify.value.urlString
