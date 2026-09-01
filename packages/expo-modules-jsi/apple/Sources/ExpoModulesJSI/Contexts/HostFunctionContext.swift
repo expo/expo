@@ -1,11 +1,15 @@
 /// Context that captures Swift values to pass them to JSI host function as an unmanaged pointer for interoperability with C++.
 internal final class HostFunctionContext: Sendable {
-  weak let runtime: JavaScriptRuntime?
+  // Stored as `Unmanaged` rather than `weak`, for the same reason as in
+  // ``UnownedThisHostFunctionContext`` below: the JSI host function owns the context and cannot
+  // outlive its runtime, and the per-call weak load plus strong release measured at about 10 ns
+  // of a no-op call through this form.
+  let runtime: Unmanaged<JavaScriptRuntime>
   let name: String?
   let call: JavaScriptRuntime.SyncFunctionClosure
 
   init(runtime: JavaScriptRuntime, name: String? = nil, _ function: @escaping JavaScriptRuntime.SyncFunctionClosure) {
-    self.runtime = runtime
+    self.runtime = Unmanaged.passUnretained(runtime)
     self.name = name
     self.call = function
   }
