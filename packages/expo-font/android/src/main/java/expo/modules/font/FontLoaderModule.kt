@@ -4,8 +4,6 @@ package expo.modules.font
 
 import android.content.Context
 import android.graphics.Typeface
-import android.graphics.fonts.FontFamily
-import android.graphics.fonts.FontStyle
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -84,50 +82,8 @@ open class FontLoaderModule : Module() {
 
   @RequiresApi(Build.VERSION_CODES.Q)
   private fun buildMultiFaceTypeface(fontFamilyName: String, faces: List<FontFaceRecord>): Typeface {
-    val fonts = faces.map { face ->
-      val builder = FontSource.resolve(face.localUri, fontFamilyName, context).newFontBuilder()
-      face.weight?.let { builder.setWeight(it) }
-      face.style?.let {
-        builder.setSlant(
-          if (it == "italic") FontStyle.FONT_SLANT_ITALIC else FontStyle.FONT_SLANT_UPRIGHT
-        )
-      }
-
-      try {
-        builder.build()
-      } catch (e: IOException) {
-        throw CodedException(
-          "Could not read font face '${face.localUri}' for family '$fontFamilyName'. The file " +
-            "may be corrupted or in a format Android can't parse. Open it in a font editor to " +
-            "check it, or replace it with a valid .ttf or .otf file.",
-          e
-        )
-      }
-    }
-
-    val resolvedFaces = faces.zip(fonts).map { (face, font) ->
-      FontFaceRecord(
-        localUri = face.localUri,
-        weight = font.style.weight,
-        style = if (font.style.slant == FontStyle.FONT_SLANT_ITALIC) "italic" else "normal"
-      )
-    }
-    FontFamilyFaces.assertNoDuplicateFaces(fontFamilyName, resolvedFaces)
-
-    val familyBuilder = FontFamily.Builder(fonts[0])
-    for (font in fonts.drop(1)) {
-      try {
-        familyBuilder.addFont(font)
-      } catch (e: IllegalArgumentException) {
-        throw CodedException(
-          "expo-font couldn't build the font family '$fontFamilyName' because of an internal " +
-            "error. Please report this at https://github.com/expo/expo/issues.",
-          e
-        )
-      }
-    }
-
-    return VariableTypefaces.wrapWithSystemFallback(familyBuilder.build())
+    val sources = faces.map { FontSource.resolve(it.localUri, fontFamilyName, context) }
+    return MultiFaceTypeface.build(fontFamilyName, faces, sources)
   }
 
   /**

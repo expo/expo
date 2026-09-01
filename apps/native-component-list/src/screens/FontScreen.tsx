@@ -376,6 +376,20 @@ function MultiFaceFamilySection() {
         },
       ],
     },
+    // One variable file declared as two faces of a family. Only Android keeps the `wght` axis of
+    // a family's face; iOS and web read one weight per file, so this family and its check are
+    // Android-only.
+    ...(Platform.OS === 'android'
+      ? [
+          {
+            fontFamily: 'RobotoFlex-multiface',
+            fontDefinitions: [
+              { path: require('../../assets/fonts/RobotoFlex.ttf') },
+              { path: require('../../assets/fonts/RobotoFlex.ttf'), style: 'italic' as const },
+            ],
+          },
+        ]
+      : []),
   ]);
 
   return (
@@ -513,6 +527,28 @@ const MULTIFACE_METRICS_GROUPS: FaceMetricsGroup[] = [
       },
     ],
   },
+  ...(Platform.OS === 'android'
+    ? [
+        {
+          title: 'Variable family instancing — Roboto Flex',
+          rows: [
+            {
+              key: 'variableFamily400',
+              label: 'weight 400',
+              style: { fontFamily: 'RobotoFlex-multiface', fontWeight: '400' },
+              role: 'baseline',
+            },
+            {
+              key: 'variableFamily900',
+              label: 'weight 900',
+              style: { fontFamily: 'RobotoFlex-multiface', fontWeight: '900' },
+              role: 'measured',
+              baseKey: 'variableFamily400',
+            },
+          ],
+        } satisfies FaceMetricsGroup,
+      ]
+    : []),
 ];
 
 const MULTIFACE_METRICS_CAPTION =
