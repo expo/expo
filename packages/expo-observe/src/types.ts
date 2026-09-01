@@ -133,6 +133,32 @@ export type ObserveModuleEvents = {
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   /**
+   * The EAS client id: a random, pseudonymous identifier for this app installation, shared by all
+   * EAS client libraries. Observe records it on every metric and log event as the
+   * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
+   *
+   * The id is stored in native preferences and is stable across app launches and app updates. It
+   * is regenerated when the app is reinstalled or its data is cleared, so it identifies an
+   * installation, not a user or a device.
+   *
+   * `null` on web, where there is no EAS client id.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * // Attach the same id to data you send elsewhere to line it up with Observe.
+   * await fetch('https://example.com/events', {
+   *   method: 'POST',
+   *   body: JSON.stringify({ easClientId: Observe.clientId }),
+   * });
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  readonly clientId: string | null;
+  /**
    * Dispatches pending events to the server immediately.
    *
    * Events are dispatched automatically when the app moves to the background. On Android,
