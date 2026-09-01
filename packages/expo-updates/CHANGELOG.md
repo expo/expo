@@ -34,6 +34,7 @@
 - [iOS] Preserve the cached update's launch failure as the emergency launch reason when the remote check finds no new update, instead of replacing it with the generic AppLoaderTask error. ([#49460](https://github.com/expo/expo/pull/49460) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Skip and repair updates that are missing their launch asset instead of selecting them for launch, which previously failed every cold start with "Launch asset not found for update". ([#49470](https://github.com/expo/expo/pull/49470) by [@alanjhughes](https://github.com/alanjhughes), based on [#48733](https://github.com/expo/expo/pull/48733) by [@martintreurnicht](https://github.com/martintreurnicht))
 - [iOS] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49504](https://github.com/expo/expo/pull/49504) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49505](https://github.com/expo/expo/pull/49505) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
