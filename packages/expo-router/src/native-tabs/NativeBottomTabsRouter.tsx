@@ -53,6 +53,34 @@ function removeZoomParamsFromState<T extends NavigationState | PartialState<Navi
   return changed ? ({ ...state, routes } as T) : state;
 }
 
+function appendNoAnimationParamToFocusedRoutes<
+  T extends NavigationState | PartialState<NavigationState>,
+>(state: T): T {
+  const focusedIndex = state.index ?? state.routes.length - 1;
+  const focusedRoute = state.routes[focusedIndex];
+  if (!focusedRoute) {
+    return state;
+  }
+
+  const childState = focusedRoute.state
+    ? appendNoAnimationParamToFocusedRoutes(focusedRoute.state)
+    : undefined;
+  const routes = state.routes.map((route, index) =>
+    index === focusedIndex
+      ? {
+          ...route,
+          params: appendInternalExpoRouterParams(route.params, {
+            [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+          }),
+          ...(childState ? { state: childState } : undefined),
+        }
+      : route
+  );
+
+  // The mapped routes preserve the input state's full or partial route shape.
+  return { ...state, routes } as T;
+}
+
 export function NativeBottomTabsRouter(options: TabRouterOptions) {
   const tabRouter = TabRouter({ ...options });
 
@@ -71,6 +99,13 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
           if (!newStateFromNavigation) {
             return actionResult;
           }
+          const focusedRouteKey = state.routes[state.index]?.key;
+          const nextFocusedRouteKey =
+            newStateFromNavigation.routes[newStateFromNavigation.index]?.key;
+          const didTabChange =
+            focusedRouteKey !== undefined &&
+            nextFocusedRouteKey !== undefined &&
+            focusedRouteKey !== nextFocusedRouteKey;
           const index = newStateFromNavigation.routes.findIndex(
             (route) => route.name === action.payload.name
           );
@@ -89,13 +124,6 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
                 action.payload.params
               );
 
-              // TODO(@uabx): After __internal__routerActionState, change this to just state
-              const isDeepDestination =
-                action.payload.state?.__internal__routerActionState === true;
-              if (isDeepDestination) {
-                expoParams[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME] = true;
-              }
-
               if (process.env.NODE_ENV !== 'production') {
                 if (expoParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]) {
                   console.warn(
@@ -111,7 +139,14 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
                 appendInternalExpoRouterParams(route.params, expoParams),
                 zoomParamNames
               );
-              const childState = route.state ? removeZoomParamsFromState(route.state) : undefined;
+              let childState = route.state ? removeZoomParamsFromState(route.state) : undefined;
+              if (
+                childState &&
+                didTabChange &&
+                action.payload.state?.__internal__routerActionState === true
+              ) {
+                childState = appendNoAnimationParamToFocusedRoutes(childState);
+              }
               return {
                 ...route,
                 ...(childState ? { state: childState } : undefined),
