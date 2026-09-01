@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a data race on `DevMenuManager`'s registered callbacks and app context that could crash the app when one app context registered its dev menu callbacks while another tore down, such as on a dev-client reload. ([#49559](https://github.com/expo/expo/pull/49559) by [@vonovak](https://github.com/vonovak))
 - [Android] Fix the dev menu not closing when the keyboard shortcut is pressed while it's already open. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build failure from `RCTDevMenu.devMenuEnabled` / `keyboardShortcutsEnabled` access, which react-native-macos does not have. ([#47693](https://github.com/expo/expo/pull/47693) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Fixed the dev menu sizing itself from the main screen instead of the app's own window, and the FAB choosing its slide-in edge from the screen rather than its window. ([#48171](https://github.com/expo/expo/pull/48171) by [@alanjhughes](https://github.com/alanjhughes))
