@@ -28,11 +28,12 @@ describe(resolveOptionsAsync, () => {
   it(`resolves default options`, async () => {
     vol.fromJSON(fixture, '/');
 
-    expect(await resolveOptionsAsync('/', {})).toEqual({
+    expect(await resolveOptionsAsync('/', {}, 'development')).toEqual({
       buildCache: true,
       configuration: 'Debug',
       device: { name: 'mock', udid: '123' },
       isSimulator: true,
+      mode: 'development',
       osType: 'iOS',
       port: 8081,
       projectRoot: '/',
@@ -48,20 +49,25 @@ describe(resolveOptionsAsync, () => {
     jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
 
     expect(
-      await resolveOptionsAsync('/', {
-        buildCache: false,
-        bundler: true,
-        device: 'search',
-        install: true,
-        port: 8081,
-        configuration: 'Release',
-        scheme: 'MyScheme',
-      })
+      await resolveOptionsAsync(
+        '/',
+        {
+          buildCache: false,
+          bundler: true,
+          device: 'search',
+          install: true,
+          port: 8081,
+          configuration: 'Release',
+          scheme: 'MyScheme',
+        },
+        'production'
+      )
     ).toEqual({
       buildCache: false,
       configuration: 'Release',
       device: { name: 'mock', udid: '123' },
       isSimulator: false,
+      mode: 'production',
       osType: 'iOS',
       port: 8081,
       projectRoot: '/',
@@ -72,19 +78,21 @@ describe(resolveOptionsAsync, () => {
     });
   });
 
-  it('uses development bundling for a custom debug configuration', async () => {
+  it('skips native bundling for a lowercase custom Debug configuration', async () => {
     vol.fromJSON(fixture, '/');
 
-    jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
-
     expect(
-      await resolveOptionsAsync('/', {
-        bundler: false,
-        configuration: 'DebugStaging',
-      })
+      await resolveOptionsAsync(
+        '/',
+        {
+          bundler: false,
+          configuration: 'debugStaging',
+        },
+        'development'
+      )
     ).toEqual(
       expect.objectContaining({
-        configuration: 'DebugStaging',
+        configuration: 'debugStaging',
         shouldSkipInitialBundling: true,
         shouldStartBundler: true,
       })
