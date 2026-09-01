@@ -64,6 +64,13 @@ describe(background, () => {
     });
   });
 
+  it('accepts an undefined shape', () => {
+    expect(background('#FF0000', undefined)).toEqual({
+      $type: 'background',
+      style: { type: 'color', color: '#FF0000' },
+    });
+  });
+
   it('forwards the safe area edges', () => {
     expect(background('#FF0000', { ignoresSafeAreaEdges: 'horizontal' })).toEqual({
       $type: 'background',

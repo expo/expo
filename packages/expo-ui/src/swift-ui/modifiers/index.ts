@@ -1002,9 +1002,10 @@ export const overlay = (params: {
 /**
  * Adds a background behind the view.
  * @param params - Background color and alignment.
- * @deprecated Wraps `background(_:alignment:)`, which SwiftUI deprecated in iOS 15. Use the
- * `background` modifier for a plain fill, or the `Background` component when the background has to
- * be a view or needs an alignment.
+ * @deprecated Wraps `background(_:alignment:)`, which SwiftUI deprecated in favor of
+ * `background(alignment:content:)`, available since iOS 15. Use the `background` modifier for a
+ * plain fill, or the `Background` component when the background has to be a view or needs an
+ * alignment.
  */
 export const backgroundOverlay = (params: {
   color?: Color;

@@ -38,7 +38,7 @@ export type BackgroundOptions = {
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/background(_:ignoressafeareaedges:)).
  */
 export function background(style: ShapeStyle, options?: BackgroundOptions): ModifierConfig;
-export function background(style: ShapeStyle, shape: Shape): ModifierConfig;
+export function background(style: ShapeStyle, shape?: Shape): ModifierConfig;
 export function background(
   style: ShapeStyle,
   shapeOrOptions?: Shape | BackgroundOptions
