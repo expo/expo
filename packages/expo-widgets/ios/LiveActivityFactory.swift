@@ -44,6 +44,10 @@ final class LiveActivityFactory: SharedObject {
       .filter { $0.activityState == .active || $0.activityState == .stale }
       
     let activeIDs = Set(activities.map(\.id))
+    let endedIDs = Set(instances.keys).subtracting(activeIDs)
+    for id in endedIDs {
+      WidgetsStorage.removeLiveActivityInteractionState(forActivityID: id)
+    }
     instances = instances.filter { activeIDs.contains($0.key) }
 
     return activities.map { activity in
