@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
+- [Android] Mark the `expo_runtime_version` string resource as `translatable="false"`, so localization tooling and Android Lint treat it as the technical identifier it is rather than user-facing copy. ([#48232](https://github.com/expo/expo/pull/48232) by [@ahmdshrif](https://github.com/ahmdshrif))
 
 ### 💡 Others
 
