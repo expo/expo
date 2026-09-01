@@ -867,10 +867,19 @@ module Expo
       # Headers/module.modulemap. Pointing -fmodule-map-file at a missing file fails `ScanDependencies`
       # ("module map file ... not found"), so when it is absent we inject nothing and warn — the
       # faithful path is a tarball that ships ReactNativeHeaders via RCT_TESTONLY_RNCORE_TARBALL_PATH.
+      #
+      # The absence of the pod itself is a different case and must stay silent. prebuilt_react_active?
+      # reads RCT_USE_PREBUILT_RNCORE as "prebuilt unless explicitly 0", while React Native's own
+      # rncore.rb requires an explicit "1"; with the variable unset RN builds React from source and
+      # never installs React-Core-prebuilt. There is nothing to extend in that sandbox, so warning
+      # about a missing module map would be noise on a perfectly good source build.
       def ensure_modular_react_header_flags(installer)
         return unless prebuilt_react_active?
 
-        module_map_file = File.join(installer.sandbox.root, 'React-Core-prebuilt', 'Headers', 'module.modulemap')
+        react_prebuilt_dir = File.join(installer.sandbox.root, 'React-Core-prebuilt')
+        return unless Dir.exist?(react_prebuilt_dir)
+
+        module_map_file = File.join(react_prebuilt_dir, 'Headers', 'module.modulemap')
         unless File.exist?(module_map_file)
           Pod::UI.warn "[Expo] Prebuilt React-Core-prebuilt is missing Headers/module.modulemap — " \
             "skipping Expo module-map coverage. If the build fails with a missing module map or " \

@@ -1250,14 +1250,24 @@ function collectHeaderMapFlags(
       // against 0.87.0-rc.3 artifacts, where both flavors compose and verify without one.
       const moduleMapXcframework = artifactConfig?.moduleMapXcframework;
       if (lowerName === 'react' && moduleMapXcframework) {
-        const pushModularFlags = (flags: string[], basePath?: string) => {
-          // A flavor is only downloaded when it is built: `et prebuild --flavor Debug` leaves the
-          // release slot absent, and that flavor's flags are inert in the run that emits them.
-          if (!basePath || !fs.existsSync(basePath)) {
+        const pushModularFlags = (
+          flags: string[],
+          basePath: string | undefined,
+          flavor: BuildFlavor
+        ) => {
+          if (!basePath) {
             return;
           }
           const headersDir = findModularHeadersDir(path.join(basePath, moduleMapXcframework));
           if (!headersDir) {
+            // Both flavors' flags are emitted every run, but only the one being built has to be on
+            // disk. The other may be mid-download — Artifacts.downloadArtifactAsync creates the
+            // flavor directory before it extracts into it, and the pipeline downloads flavors
+            // concurrently — or simply absent, since `et prebuild --flavor Debug` never fetches
+            // release. Its flags are inert here either way, so only fail for the built flavor.
+            if (flavor !== buildType) {
+              return;
+            }
             throw new Error(
               `The React Native artifact at ${basePath} has no usable ${moduleMapXcframework}, so ` +
                 `the lowercase react/ and yoga/ header namespaces cannot be resolved.\n` +
@@ -1273,8 +1283,8 @@ function collectHeaderMapFlags(
           flags.push(`-fmodule-map-file=${path.join(headersDir, 'module.modulemap')}`);
           flags.push('-I', headersDir);
         };
-        pushModularFlags(debug, config.debugBasePath);
-        pushModularFlags(release, config.releaseBasePath);
+        pushModularFlags(debug, config.debugBasePath, 'Debug');
+        pushModularFlags(release, config.releaseBasePath, 'Release');
         continue;
       }
 
