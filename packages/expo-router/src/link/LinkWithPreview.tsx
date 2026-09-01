@@ -43,7 +43,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
     }
   }, [hrefWithoutQuery]);
 
-  const [{ nextScreenId, tabPath }, prefetch] = useNextScreenId();
+  const [{ nextScreenId, activationPath }, prefetch] = useNextScreenId();
 
   useEffect(() => {
     if (rest.replace) {
@@ -89,11 +89,9 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
 
   const isPreviewTapped = useRef(false);
 
-  const tabPathValue = useMemo(
-    () => ({
-      path: tabPath,
-    }),
-    [tabPath]
+  const previewActivationPath = useMemo(
+    () => (activationPath ? { path: activationPath } : undefined),
+    [activationPath]
   );
 
   const hasPreview = !!previewElement;
@@ -104,8 +102,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
 
   return (
     <NativeLinkPreview
-      nextScreenId={isPad ? undefined : nextScreenId}
-      tabPath={isPad ? undefined : tabPathValue}
+      previewActivationPath={isPad ? undefined : previewActivationPath}
       onWillPreviewOpen={() => {
         if (hasPreview) {
           isPreviewTapped.current = false;

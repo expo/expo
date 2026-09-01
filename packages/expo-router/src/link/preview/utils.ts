@@ -1,106 +1,73 @@
 import type { ExpoLinkingOptions } from '../../getLinkingConfig';
 import type { UrlObject } from '../../global-state/getRouteInfoFromState';
-import { findDivergentState } from '../../global-state/routing';
 import type { ReactNavigationState } from '../../global-state/types';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
-import type {
-  ParamListBase,
-  NavigationRoute,
-  NavigationState,
-  PartialState,
-  TabNavigationState,
-} from '../../react-navigation/native';
+import type { NavigationState, PartialState } from '../../react-navigation/native';
 import type { Href } from '../../types';
 import { getStateForHref } from '../getStateForHref';
 import { resolveHref } from '../href';
-import type { TabPath } from './native';
+import type { PreviewActivationRoute } from './native';
 
-export function getTabPathFromRootStateByHref(
+export function getPreviewActivationPathByHref(
   href: Href,
   rootState: ReactNavigationState,
   routeInfo: Pick<UrlObject, 'segments'>,
   linking: ExpoLinkingOptions | undefined
-): TabPath[] {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
-    return [];
-  }
-  // Replicating the logic from `linkTo`
-  const { navigationRoutes } = findDivergentState(hrefState, state as NavigationState, true);
-
-  if (!navigationRoutes.length) {
-    return [];
-  }
-
-  const tabPath: TabPath[] = [];
-  navigationRoutes.forEach((route, i, arr) => {
-    // TODO(ENG-22021): Fix link preview by detecting navigator type on native. https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
-    if (route.state?.type === 'tab') {
-      const tabState = route.state as TabNavigationState<ParamListBase>;
-      const oldTabKey = tabState.routes[tabState.index]!.key;
-      // The next route will be either stack inside a tab or a new tab key
-      if (!arr[i + 1]) {
-        throw new Error(
-          `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
-        );
-      }
-      const newTabKey = arr[i + 1]!.key;
-      tabPath.push({ oldTabKey, newTabKey });
-    }
-  });
-  return tabPath;
-}
-
-export function getPreloadedRouteFromRootStateByHref(
-  href: Href,
-  rootState: ReactNavigationState,
-  routeInfo: Pick<UrlObject, 'segments'>,
-  linking: ExpoLinkingOptions | undefined
-): NavigationRoute<ParamListBase, string> | undefined {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
-    return undefined;
-  }
-  return findPreloadedRoute(hrefState, state as NavigationState);
-}
-
-// TODO(@ubax):Try to simplify this logic and move it to native if possible
-// ENG-22021
-function findPreloadedRoute(
-  targetState: PartialState<NavigationState>,
-  navigationState: NavigationState
-): NavigationRoute<ParamListBase, string> | undefined {
-  const targetRoute = targetState.routes[targetState.index ?? targetState.routes.length - 1];
-  if (!targetRoute) {
-    return undefined;
-  }
-
-  // We can safely check for type here, since we are looking for preloaded route
-  // In order to create a preloaded route, an action needs to be dispatched, so type
-  // will be defined
-  if (navigationState.type === 'stack') {
-    const focusedRoute = navigationState.routes[navigationState.index]!;
-    const preloadedRoute = navigationState.routes
-      .slice(navigationState.index + 1)
-      .find((route) => routesHaveSameShape(route, targetRoute));
-    if (preloadedRoute) {
-      // A focused route with the same shape means the destination is already active.
-      return routesHaveSameShape(focusedRoute, targetRoute) ? undefined : preloadedRoute;
-    }
-  }
-
-  // TODO(ENG-22021): Resolve navigator types independently of state for the tab checks in this loop.
-  // https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
-  const navigationRoute =
-    navigationState.type === 'tab'
-      ? navigationState.routes.find((route) => route.name === targetRoute.name)
-      : navigationState.routes[navigationState.index ?? 0];
-
-  return targetRoute.state && navigationRoute?.name === targetRoute.name && navigationRoute.state
-    ? findPreloadedRoute(targetRoute.state, navigationRoute.state as NavigationState)
+): PreviewActivationRoute[] | undefined {
+  const targetState = getStateForHref(resolveHref(href), routeInfo, linking);
+  // Prefetched navigation states are fully keyed even when represented as partial states.
+  return targetState
+    ? findPreviewActivationPath(targetState, rootState as NavigationState, [], true)
     : undefined;
+}
+
+function findPreviewActivationPath(
+  targetState: PartialState<NavigationState>,
+  navigationState: NavigationState,
+  path: PreviewActivationRoute[],
+  isOnFocusedChain: boolean
+): PreviewActivationRoute[] | undefined {
+  const targetRoute = targetState.routes[targetState.index ?? targetState.routes.length - 1];
+  const focusedIndex = navigationState.index ?? 0;
+  const focusedRoute = navigationState.routes[focusedIndex];
+  if (!targetRoute || !focusedRoute) {
+    return undefined;
+  }
+
+  if (routesHaveSameShape(focusedRoute, targetRoute)) {
+    return isOnFocusedChain
+      ? undefined
+      : [...path, { key: focusedRoute.key, name: focusedRoute.name }];
+  }
+
+  const preloadedRoute = navigationState.routes
+    .slice(focusedIndex + 1)
+    .find((route) => routesHaveSameShape(route, targetRoute));
+  if (preloadedRoute) {
+    return [...path, { key: preloadedRoute.key, name: preloadedRoute.name }];
+  }
+
+  const navigationRoute =
+    focusedRoute.name === targetRoute.name
+      ? focusedRoute
+      : navigationState.routes.find((route) => route.name === targetRoute.name);
+  if (!navigationRoute) {
+    return undefined;
+  }
+
+  const nextPath = [...path, { key: navigationRoute.key, name: navigationRoute.name }];
+  const nextIsOnFocusedChain = isOnFocusedChain && navigationRoute === focusedRoute;
+  // The live child state is fully keyed after prefetching.
+  return targetRoute.state && navigationRoute.state
+    ? findPreviewActivationPath(
+        targetRoute.state,
+        navigationRoute.state as NavigationState,
+        nextPath,
+        nextIsOnFocusedChain
+      )
+    : nextIsOnFocusedChain
+      ? undefined
+      : nextPath;
 }
 
 function routesHaveSameShape(

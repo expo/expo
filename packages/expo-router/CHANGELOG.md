@@ -140,6 +140,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [ios] Fix link previews failing to activate preloaded screens or switch native tabs
 - Mark routes after the focused one as preloaded in states returned by the singular `Stack` router. ([#49914](https://github.com/expo/expo/pull/49914) by [@Ubax](https://github.com/Ubax))
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
 - Test `createProps` dispatch timing. ([#49955](https://github.com/expo/expo/pull/49955) by [@Ubax](https://github.com/Ubax))
