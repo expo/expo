@@ -52,8 +52,10 @@ export type FontFaceDefinition = {
   path: FontSource;
   /**
    * On Android, the declared weight used to select this face. When unset, the weight read from
-   * the font file applies. On API levels below 29, only the family's default face (closest to a
-   * regular, upright weight and style) is loaded.
+   * the font file applies, and a variable font face keeps its whole `wght` axis &mdash;
+   * `fontWeight` renders the matching instance. Setting a weight on a variable font face pins it
+   * to that single instance. On API levels below 29, only the family's default face (closest to
+   * a regular, upright weight and style) is loaded.
    *
    * On iOS, this value isn't used to select the face; iOS reads the weight embedded in the font
    * file's own metadata instead.
