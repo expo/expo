@@ -33,6 +33,12 @@ function decorateNode(
   }
 
   if (!isReactElementNode(node)) {
+    if (node && typeof node === 'object') {
+      const dictionary = node as Record<string, unknown>;
+      for (const [key, child] of Object.entries(dictionary)) {
+        dictionary[key] = decorateNode(child, context);
+      }
+    }
     return node;
   }
 

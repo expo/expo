@@ -105,4 +105,32 @@ describe('jsx-runtime-stub', () => {
     expect(firstPress).not.toHaveBeenCalled();
     expect(secondPress).toHaveBeenCalledTimes(1);
   });
+
+  it('handles presses inside Live Activity layout sections', () => {
+    const bannerPress = jest.fn(() => ({ section: 'banner' }));
+    const expandedPress = jest.fn(() => ({ section: 'expandedCenter' }));
+
+    globalThis.__expoWidgetLayout = () => ({
+      banner: jsx('Button', {
+        label: 'Banner',
+        onButtonPress: bannerPress,
+      }),
+      expandedCenter: jsx('View', {
+        children: jsx('Button', {
+          label: 'Expanded',
+          onButtonPress: expandedPress,
+        }),
+      }),
+    });
+
+    const tree = globalThis.__expoWidgetRender({}, { timestamp: 1 }) as any;
+    const expandedTarget = tree.expandedCenter.props.children.props.target;
+    const result = globalThis.__expoWidgetHandlePress({}, { timestamp: 1, target: expandedTarget });
+
+    expect(tree.banner.props.target).toBe('__expo_widgets_target_0');
+    expect(expandedTarget).toBe('__expo_widgets_target_1');
+    expect(result).toEqual({ section: 'expandedCenter' });
+    expect(bannerPress).not.toHaveBeenCalled();
+    expect(expandedPress).toHaveBeenCalledTimes(1);
+  });
 });

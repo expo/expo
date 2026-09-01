@@ -25,12 +25,14 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Clear stored Live Activity interaction state after activities end or disappear.
 - [iOS] Fix widget and Live Activity `Text` modifiers being applied twice. ([#49535](https://github.com/expo/expo/pull/49535) by [@gee1k](https://github.com/gee1k))
 - Resolve deep `react-native/*` imports as empty modules when bundling widget layouts, fixing every widget failing with "Could not create context for layout evaluation" after `@expo/ui` 57.0.14 introduced such an import. ([#49491](https://github.com/expo/expo/pull/49491) by [@usmsam](https://github.com/usmsam))
 - [iOS] Fix XCFramework precompilation failing on the unguarded `ActivityViewContext` parameter of `getLiveActivityEnvironment`, which requires iOS 16.1. ([#49076](https://github.com/expo/expo/pull/49076) by [@brentvatne](https://github.com/brentvatne))
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix `LiveActivityFactory.getInstances()` returning live activities that belong to other factories or that have already ended. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
 - [iOS] Deliver the Live Activity `start()` URL to the Lock Screen banner, and scope it to the activity that set it instead of storing it globally per factory name. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
+- Enable button interactions inside sectioned Live Activity layouts without overwriting server updates.
 - [Android] Add 16KB page size support. ([#47135](https://github.com/expo/expo/pull/47135) by [@jakex7](https://github.com/jakex7))
 - Make deprecated root-level widget config fields optional. ([#47933](https://github.com/expo/expo/pull/47933) by [@eliotgevers](https://github.com/eliotgevers))
 - [iOS][plugin] Only add the `aps-environment` entitlement when `enablePushNotifications` is enabled, and keep a pre-existing value. ([#47645](https://github.com/expo/expo/pull/47645) by [@kadikraman](https://github.com/kadikraman))

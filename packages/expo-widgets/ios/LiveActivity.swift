@@ -22,6 +22,10 @@ final class LiveActivity: SharedObject {
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {
+    // Final ActivityKit content must not inherit locally-owned button state.
+    // Otherwise a scheduled dismissal can remain visible with stale overrides.
+    WidgetsStorage.removeLiveActivityInteractionState(forActivityID: id)
+
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
