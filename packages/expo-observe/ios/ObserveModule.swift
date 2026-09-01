@@ -37,7 +37,7 @@ public final class ObserveModule: Module {
     }
 
     Constant("clientId") {
-      EASClientID.uuid().uuidString
+      EASClientID.uuid().uuidString.lowercased()
     }
 
     AsyncFunction("dispatchEvents") {

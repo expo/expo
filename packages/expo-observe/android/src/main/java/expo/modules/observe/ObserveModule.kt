@@ -60,7 +60,7 @@ class ObserveModule : Module() {
       }
 
       Constant("clientId") {
-        EASClientID(context).uuid.toString()
+        EASClientID(context).uuid.toString().lowercase()
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->
