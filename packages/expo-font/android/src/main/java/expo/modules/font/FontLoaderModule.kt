@@ -79,7 +79,6 @@ open class FontLoaderModule : Module() {
    * from it — or, on API 29+, every weight a variable font's `wght` axis covers.
    */
   private fun loadSingleFaceTypeface(fontFamilyName: String, localUri: String): Typeface {
-    // TODO(nikki): make sure path is in experience's scope
     val source = FontSource.resolve(localUri, fontFamilyName, context)
 
     val instanced = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
