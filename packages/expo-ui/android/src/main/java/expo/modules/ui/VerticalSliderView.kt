@@ -81,6 +81,7 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     sliderState.onValueChange = {
       val clamped = it.coerceIn(effectiveLower, effectiveUpper)
       localValue = clamped
+      sliderState.value = clamped
       onValueChange(SliderValueChangedEvent(clamped))
     }
     sliderState.onValueChangeFinished = {
