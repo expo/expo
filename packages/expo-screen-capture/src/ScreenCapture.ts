@@ -41,7 +41,12 @@ export async function preventScreenCaptureAsync(key: string = 'default'): Promis
 
   if (!activeTags.has(key)) {
     activeTags.add(key);
-    await ExpoScreenCapture.preventScreenCapture();
+    try {
+      await ExpoScreenCapture.preventScreenCapture();
+    } catch (error) {
+      activeTags.delete(key);
+      throw error;
+    }
   }
 }
 
@@ -77,7 +82,9 @@ export async function allowScreenCaptureAsync(key: string = 'default'): Promise<
  */
 export function usePreventScreenCapture(key: string = 'default'): void {
   useEffect(() => {
-    preventScreenCaptureAsync(key);
+    preventScreenCaptureAsync(key).catch((error) => {
+      console.error(`Failed to prevent screen capture: ${error}`);
+    });
 
     return () => {
       allowScreenCaptureAsync(key);

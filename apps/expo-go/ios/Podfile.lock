@@ -4624,7 +4624,7 @@ SPEC CHECKSUMS:
   ExpoNotifications: d432d5b2904f700a6a2dc29eca52e531c4cc1611
   ExpoPrint: 460476a4b6291114e4d515e8df4c0225b92161b0
   ExpoRouter: fa0e119f32bdc83dcccfa2b08859e8e582c233d2
-  ExpoScreenCapture: bd0a12b12fb7f487d8d2ce7b7c780145d308d420
+  ExpoScreenCapture: a49ce2282e29ea91523da094666830391574ee30
   ExpoScreenOrientation: f826c62468d73099a505ba8f43b02f9f976fe47c
   ExpoSecureStore: ff1fd5e073957417ba8f9dec0bebcbd55a60e747
   ExpoSensors: a2f4f23f3648c1124923be5356a0d1737d87bde6
