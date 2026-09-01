@@ -25,7 +25,7 @@ describe('get-app-config-ios.sh', () => {
     },
     {
       build: 'a custom Debug build',
-      configuration: 'DebugStaging',
+      configuration: 'debugStaging',
       inheritedMode: '',
       expectedMode: 'development',
     },
