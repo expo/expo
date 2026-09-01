@@ -65,7 +65,7 @@ class SessionSharedObjectTest {
       assertNotNull(sessionManager.getSessionRow(session.sessionId))
       assertEquals(
         setOf("metric-1"),
-        sessionManager.getMetricsForSession(session.sessionId).map { it.metricId }.toSet()
+        sessionManager.getMetricsForSession(session.sessionId).map { it.name }.toSet()
       )
     }
 
@@ -85,7 +85,7 @@ class SessionSharedObjectTest {
       assertNotNull(sessionManager.getSessionRow(session.sessionId))
       assertEquals(
         setOf("log-1"),
-        sessionManager.getLogsForSession(session.sessionId).map { it.logId }.toSet()
+        sessionManager.getLogsForSession(session.sessionId).map { it.name }.toSet()
       )
     }
 
@@ -238,8 +238,8 @@ class SessionSharedObjectTest {
       session.addMetrics(listOf(createMetric("metric-1", session.sessionId)))
       session.addLogs(listOf(createLog("log-1", session.sessionId)))
 
-      assertEquals(setOf("metric-1"), session.getMetrics().map { it.metricId }.toSet())
-      assertEquals(setOf("log-1"), session.getLogs().map { it.logId }.toSet())
+      assertEquals(setOf("metric-1"), session.getMetrics().map { it.name }.toSet())
+      assertEquals(setOf("log-1"), session.getLogs().map { it.name }.toSet())
     }
 
   @Test
@@ -268,29 +268,27 @@ class SessionSharedObjectTest {
   // region Helpers
 
   private fun createMetric(
-    metricId: String,
+    name: String,
     sessionId: String
   ): Metric =
     Metric(
-      metricId = metricId,
       sessionId = sessionId,
       timestamp = "2025-01-01T00:00:00.000Z",
       category = "test",
-      name = "test-metric",
+      name = name,
       value = 123.45,
       routeName = null,
       params = null
     )
 
   private fun createLog(
-    logId: String,
+    name: String,
     sessionId: String
   ): LogRecord =
     LogRecord(
-      logId = logId,
       sessionId = sessionId,
       timestamp = "2025-01-01T00:00:00.000Z",
-      name = "test.event",
+      name = name,
       body = null,
       severity = "info",
       attributes = null,

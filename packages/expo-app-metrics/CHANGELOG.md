@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Remove `SessionManager` insert listeners and `JsMetric.metricId` ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
