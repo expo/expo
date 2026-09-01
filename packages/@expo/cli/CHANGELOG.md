@@ -24,6 +24,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo export` corrupting Hermes bytecode when renaming DOM component html assets: the rename is now applied to the serialized JS and bytecode compilation is deferred until after DOM component exports. Previously the placeholder filename was binary-patched inside the compiled `.hbc`, which could overwrite bytes of neighbouring overlap-packed strings (e.g. unrelated string literals such as API keys). ([#49627](https://github.com/expo/expo/pull/49627) by [@ibrahimchraibi](https://github.com/ibrahimchraibi))
+
 - Stop writing DOM component source maps into the app binary during `expo export:embed`, so Android release builds no longer ship `www.bundle` source maps with the original app source. ([#49480](https://github.com/expo/expo/pull/49480) by [@expo-bot](https://github.com/expo-bot))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
