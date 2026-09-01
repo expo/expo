@@ -16,9 +16,9 @@ import java.io.File
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,10 +37,16 @@ import org.junit.runner.RunWith
  * device — to get two faces whose glyphs actually differ, then build the same two-member
  * FontFamily FontLoaderModule builds and check that `Typeface.create` picks the declared face.
  *
- * Requires a device/emulator running API 29+ with a `wght`-varying Roboto-Regular.ttf under
- * /system/fonts; skips (via assumeTrue) when either is unavailable. Not run by
- * `et native-unit-tests` (that only runs JVM src/test) — needs `connectedAndroidTest` against a
- * device or emulator.
+ * Runs through `connectedAndroidTest` against a device or emulator: in CI through the Android
+ * Instrumentation Tests workflow, which triggers on changes under `packages/expo-font/android`
+ * and boots an API 36 emulator; locally through
+ * `et native-unit-tests -p android -t instrumented`. The default `-t local` runs only the JVM
+ * tests under src/test and leaves this file out.
+ *
+ * The fixture is asserted, not assumed. An image without a `wght`-varying
+ * /system/fonts/Roboto-Regular.ttf fails these tests instead of skipping them, so a run that
+ * cannot build the fixture cannot report green. API level is the one exception: `@SdkSuppress`
+ * filters the class below API 29, and the runner reports that as a skip.
  */
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
@@ -53,15 +59,25 @@ class MultiFaceTypefaceTest {
 
   @Before
   fun findWeightAxis() {
-    assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-    assumeTrue(regularFile.exists() && variableFile.exists())
+    assertTrue(
+      "These tests need $regularFile and $variableFile, and at least one is missing. The image " +
+        "under test does not ship the AOSP font set the fixture is built from. Run them on an " +
+        "emulator image that ships it, or point the fixture at font files this image has.",
+      regularFile.exists() && variableFile.exists()
+    )
 
     val axis = FontVariationAxes.readWeightAxis(map(variableFile))
-    assumeTrue("Roboto-Regular.ttf has no `wght` axis on this device", axis != null)
+    assertNotNull(
+      "$variableFile on this image has no `wght` axis. The fixture instances that axis at two " +
+        "weights to get faces whose glyphs differ, so without it there is nothing to compare. " +
+        "Run these tests on an image whose Roboto-Regular.ttf is a variable font.",
+      axis
+    )
 
     val weights = FontVariationAxes.weightsFor(axis!!)
-    assumeTrue(
-      "Roboto-Regular.ttf's axis is too narrow to compare weights: $axis",
+    assertTrue(
+      "$variableFile's `wght` axis is too narrow to compare two weights: $axis. The fixture " +
+        "needs two distinct weights to render different amounts of ink.",
       weights.size >= 2
     )
 
