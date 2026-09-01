@@ -2334,12 +2334,19 @@ module Expo
           output, status = Open3.capture2e('tar', 'xzf', tarball, '-C', dir, '*.xcframework/Info.plist')
           plists = Dir.glob(File.join(dir, '**', '*.xcframework', 'Info.plist')).sort
 
+          # `tar` exits non-zero both when the pattern matches nothing and when the archive
+          # is damaged, and it extracts members in order, so a truncated archive can yield
+          # the first plist and then fail. Any failure with a partial result is treated as
+          # unusable: otherwise the caller's all-xcframeworks check would silently pass on
+          # a subset, and a damaged tarball would be linked instead of falling back to
+          # source as it did before.
+          if !status.success? && !plists.empty?
+            Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{output.strip}"
+            next []
+          end
+
           if plists.empty?
-            if status.success?
-              Pod::UI.warn "[Expo-precompiled] No XCFramework Info.plist found in #{File.basename(tarball)}"
-            else
-              Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{output.strip}"
-            end
+            Pod::UI.warn "[Expo-precompiled] No XCFramework Info.plist found in #{File.basename(tarball)}"
             next []
           end
 
