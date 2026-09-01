@@ -4,6 +4,12 @@
   "private": true,
   "license": "MIT",
   "author": "Expo",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.33.0"
+    }
+  },
   "workspaces": {
     "packages": [
       "apps/*",
@@ -17,14 +23,14 @@
     "setup:native": "./scripts/download-dependencies.sh --native && ./scripts/setup-react-android.sh",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true) && yarn --cwd react-native-lab/react-native/packages/react-native-codegen build) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1",
-    "build": "turbo build",
-    "typecheck": "turbo typecheck",
-    "depscheck": "turbo depscheck",
-    "lint": "turbo lint",
-    "format": "turbo format",
-    "test": "turbo test",
+    "build": "./bin/expo-turbo build",
+    "typecheck": "./bin/expo-turbo typecheck",
+    "depscheck": "./bin/expo-turbo depscheck",
+    "lint": "./bin/expo-turbo lint",
+    "format": "./bin/expo-turbo format",
+    "test": "./bin/expo-turbo test",
     "preprepare": "node scripts/prepare.js",
-    "prepare": "turbo build"
+    "prepare": "./bin/expo-turbo build"
   },
   "dependencies": {
     "expo-asset": "workspace:*",
@@ -44,7 +50,7 @@
     "oxlint": "^1.79.0",
     "prettier": "~3.8.3",
     "ts-node": "^10.9.2",
-    "turbo": "2.10.0",
+    "turbo": "2.10.12",
     "typescript": "^6.0.2"
   },
   "resolutions": {
