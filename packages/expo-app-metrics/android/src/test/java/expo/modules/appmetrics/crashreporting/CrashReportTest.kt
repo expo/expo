@@ -108,7 +108,7 @@ class CrashReportTest {
     val attributes = requireNotNull(JsonAny.decodeJsonStringToMap(requireNotNull(log.attributes)))
 
     assertEquals("session", log.sessionId)
-    assertEquals("exception", log.name)
+    assertEquals("native.exception", log.name)
     assertEquals("fatal", log.severity)
     assertEquals(crashTimestamp, log.timestamp)
     assertEquals("java.lang.IllegalStateException", attributes["exception.type"])

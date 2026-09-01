@@ -48,7 +48,7 @@ data class CrashReport(
     return LogRecord(
       sessionId = sessionId,
       timestamp = timestampBegin,
-      name = "exception",
+      name = "native.exception",
       severity = Severity.FATAL.rawValue,
       attributes = JsonAny.encodeMapToJsonString(attributes)
     )

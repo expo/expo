@@ -183,7 +183,7 @@ struct CrashReportTests {
       let log = report.toLogRecord()
       let attributes = try #require(log.attributes?.value as? [String: Any])
 
-      #expect(log.name == "exception")
+      #expect(log.name == "native.exception")
       #expect(log.severity == .fatal)
       #expect(log.timestamp == timestampEnd.ISO8601Format())
       #expect(attributes["exception.type"] as? String == "EXC_BAD_ACCESS")

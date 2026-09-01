@@ -120,7 +120,7 @@ public struct CrashReport: Codable, Sendable {
       attributes["expo.crash.objc_exception_message"] = exceptionReason.composedMessage
     }
     return LogRecord(
-      name: "exception",
+      name: "native.exception",
       attributes: attributes,
       severity: .fatal,
       // MetricKit gives a time window; its end is the tightest crash-time bound and matches Android.

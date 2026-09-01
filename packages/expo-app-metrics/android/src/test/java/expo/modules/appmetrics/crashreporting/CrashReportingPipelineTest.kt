@@ -118,7 +118,7 @@ class CrashReportingPipelineTest {
 
       val crashed = sessions.single { it.id == crashedSessionId }
       val crashReport = requireNotNull(crashed.crashReport)
-      assertEquals(listOf("exception"), crashed.logs.map { it.name })
+      assertEquals(listOf("native.exception"), crashed.logs.map { it.name })
       assertEquals("3.1.4", crashReport["appVersion"])
       assertEquals("java.lang.IllegalStateException: boom", crashReport["exceptionReason"])
       @Suppress("UNCHECKED_CAST")

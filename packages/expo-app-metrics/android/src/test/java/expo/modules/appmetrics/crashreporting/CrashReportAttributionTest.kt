@@ -78,7 +78,7 @@ class CrashReportAttributionTest {
       attribute("crashed-session", CrashOrigin.JVM_FILE)
 
       assertEquals("java.lang.IllegalStateException: boom", storedMessage("crashed-session"))
-      assertEquals(listOf("exception"), sessionManager.getLogsForSession("crashed-session").map { it.name })
+      assertEquals(listOf("native.exception"), sessionManager.getLogsForSession("crashed-session").map { it.name })
     }
 
   @Test
@@ -128,7 +128,7 @@ class CrashReportAttributionTest {
 
       assertEquals("java.lang.IllegalStateException: native", storedMessage("previous"))
       assertNull(sessionManager.getCrashReport("older"))
-      assertEquals(listOf("exception"), sessionManager.getLogsForSession("previous").map { it.name })
+      assertEquals(listOf("native.exception"), sessionManager.getLogsForSession("previous").map { it.name })
     }
 
   @Test
