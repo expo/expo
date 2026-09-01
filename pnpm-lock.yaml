@@ -6544,6 +6544,9 @@ importers:
       '@expo/package-manager':
         specifier: workspace:*
         version: link:../@expo/package-manager
+      '@vercel/ncc':
+        specifier: ^0.38.4
+        version: 0.38.4
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
