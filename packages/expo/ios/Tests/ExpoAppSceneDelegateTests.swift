@@ -54,6 +54,46 @@ struct ExpoAppSceneDelegateTests {
   func `returns nil launch options without a URL or user activity`() {
     #expect(ExpoAppSceneDelegate.launchOptions(url: nil, userActivity: nil) == nil)
   }
+
+  @Test
+  @MainActor
+  func `forwards scene URLs unchanged by default`() {
+    let url = URL(string: "https://expo.dev/link")!
+    #expect(ExpoAppSceneDelegate().transformURL(url) == url)
+  }
+
+  @Test
+  @MainActor
+  func `allows subclasses to replace a scene URL`() {
+    let url = URL(string: "https://customer.io/live-activity")!
+    let replacement = URL(string: "bareexpo://live-activity")!
+    #expect(RewritingSceneDelegate(replacement: replacement).transformURL(url) == replacement)
+  }
+
+  @Test
+  @MainActor
+  func `allows subclasses to consume a scene URL`() {
+    let url = URL(string: "https://customer.io/live-activity")!
+    #expect(ConsumingSceneDelegate().transformURL(url) == nil)
+  }
+}
+
+private final class RewritingSceneDelegate: ExpoAppSceneDelegate {
+  private let replacement: URL
+
+  init(replacement: URL) {
+    self.replacement = replacement
+  }
+
+  override func transformURL(_ url: URL) -> URL? {
+    replacement
+  }
+}
+
+private final class ConsumingSceneDelegate: ExpoAppSceneDelegate {
+  override func transformURL(_ url: URL) -> URL? {
+    nil
+  }
 }
 
 #endif

@@ -44,6 +44,8 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     // `UIApplication.shared.delegate?.window` keeps working (e.g. expo-system-ui).
     provider.window = window
 
+    let urlContexts = transformedURLContexts(connectionOptions.urlContexts)
+
     // Under the scene life cycle UIKit passes cold-start URLs and activities in `connectionOptions`
     // rather than in the app delegate's launch options. React Native's `Linking.getInitialURL()`
     // only reads them from launch options, so rebuild them here; otherwise a link that cold-starts
@@ -55,13 +57,13 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
       withModuleName: provider.reactNativeFactoryModuleName,
       in: window,
       launchOptions: Self.launchOptions(
-        url: connectionOptions.urlContexts.first?.url,
+        url: urlContexts.first?.url,
         userActivity: browsingWebActivity
       )
     )
 
     // Deep links / universal links.
-    Self.route(urlContexts: connectionOptions.urlContexts)
+    Self.route(urlContexts: urlContexts)
     connectionOptions.userActivities.forEach { Self.route(userActivity: $0) }
   }
 
@@ -89,11 +91,36 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   open func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    Self.route(urlContexts: URLContexts)
+    Self.route(urlContexts: transformedURLContexts(URLContexts))
   }
 
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     Self.route(userActivity: userActivity)
+  }
+
+  /**
+   Gives a scene delegate subclass an opportunity to replace or consume a URL before Expo forwards
+   it to app delegate subscribers and React Native Linking.
+
+   Return the URL to forward, or `nil` when the URL was fully handled and should not be forwarded
+   to either app delegate subscribers or React Native Linking. The default implementation returns
+   the original URL unchanged.
+
+   This hook applies to URL contexts. `NSUserActivity` values are routed separately and unchanged.
+   */
+  open func transformURL(_ url: URL) -> URL? {
+    url
+  }
+
+  private func transformedURLContexts(
+    _ urlContexts: Set<UIOpenURLContext>
+  ) -> [(url: URL, options: UIScene.OpenURLOptions)] {
+    urlContexts.compactMap { context in
+      guard let url = transformURL(context.url) else {
+        return nil
+      }
+      return (url, context.options)
+    }
   }
 }
 
@@ -130,7 +157,15 @@ extension ExpoAppSceneDelegate {
   }
 
   /// Pass incoming URL contexts to both the subscriber manager and `RCTLinkingManager`.
+  /// This static helper routes the contexts as provided; it does not invoke an instance's
+  /// `transformURL(_:)` override.
   public static func route(urlContexts: Set<UIOpenURLContext>) {
+    route(urlContexts: urlContexts.map { ($0.url, $0.options) })
+  }
+
+  private static func route(
+    urlContexts: [(url: URL, options: UIScene.OpenURLOptions)]
+  ) {
     for context in urlContexts {
       let options = openURLOptions(from: context.options)
       _ = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, open: context.url, options: options)
