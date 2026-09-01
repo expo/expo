@@ -248,11 +248,33 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
     ) {
       shorthand += `${resource.weight} `;
     }
-    return document.fonts
-      .load(`${shorthand}1em ${JSON.stringify(fontFamilyName)}`)
-      .then(() => undefined);
+    return withLoadTimeout(
+      document.fonts.load(`${shorthand}1em ${JSON.stringify(fontFamilyName)}`),
+      fontFamilyName
+    );
   },
 };
+
+const FONT_LOAD_TIMEOUT_MS = 12000;
+
+function withLoadTimeout(loading: Promise<unknown>, fontFamilyName: string): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timingOut = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      reject(
+        new CodedError(
+          'ERR_DOWNLOAD',
+          `Fetching the font family "${fontFamilyName}" timed out after ${FONT_LOAD_TIMEOUT_MS}ms. ` +
+            `Check that the font URL is reachable and served with CORS headers.`
+        )
+      );
+    }, FONT_LOAD_TIMEOUT_MS);
+  });
+
+  return Promise.race([loading, timingOut])
+    .finally(() => clearTimeout(timer))
+    .then(() => undefined);
+}
 
 const isServer = process.env.EXPO_OS === 'web' && typeof window === 'undefined';
 
