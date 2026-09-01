@@ -44,13 +44,18 @@ class CrashReportProcessorTest {
     }
   }
 
-  data class StoreCall(val sessionId: String?, val origin: CrashOrigin, val report: CrashReport)
+  data class StoreCall(
+    val sessionId: String?,
+    val origin: CrashOrigin,
+    val report: CrashReport,
+    val logDetails: CrashLogDetails
+  )
 
   private val storeCalls = mutableListOf<StoreCall>()
 
-  private val storeReport: suspend (String?, CrashOrigin, CrashReport) -> Unit =
-    { sessionId, origin, report ->
-      storeCalls += StoreCall(sessionId, origin, report)
+  private val storeReport: suspend (String?, CrashOrigin, CrashReport, CrashLogDetails) -> Unit =
+    { sessionId, origin, report, logDetails ->
+      storeCalls += StoreCall(sessionId, origin, report, logDetails)
     }
 
   @Before
@@ -110,6 +115,8 @@ class CrashReportProcessorTest {
       assertEquals(CrashOrigin.JVM_FILE, call.origin)
       assertEquals("java.lang.IllegalStateException: boom", call.report.exceptionReason)
       assertEquals("1.2.3", call.report.appVersion)
+      assertEquals("java.lang.IllegalStateException", call.logDetails.exceptionType)
+      assertTrue(call.logDetails.stackFrames.orEmpty().isNotEmpty())
     }
 
   @Test

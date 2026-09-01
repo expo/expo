@@ -542,6 +542,21 @@ final class MetricsDatabase: Sendable {
     try statement.run()
   }
 
+  /// Stores a crash report once and, when its session row exists, its dispatchable log atomically.
+  /// The crash report's primary key is the idempotence marker for MetricKit payload redelivery.
+  @AppMetricsActor
+  func storeCrashReportIfNew(sessionId: String, payload: String, log: LogRow) throws {
+    try database.transaction {
+      if try getCrashReport(sessionId: sessionId) != nil {
+        return
+      }
+      try setCrashReport(sessionId: sessionId, payload: payload)
+      if try getSession(id: sessionId) != nil {
+        try insert(log: log)
+      }
+    }
+  }
+
   @AppMetricsActor
   func getCrashReport(sessionId: String) throws -> String? {
     let statement = try database.prepare("SELECT payload FROM crash_reports WHERE sessionId = ?1")
