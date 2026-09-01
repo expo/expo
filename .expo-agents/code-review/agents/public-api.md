@@ -91,29 +91,25 @@ An API is cheapest to fix before it publishes. After that, a fix becomes one of 
 breaking changes the rest of this file polices. So when the diff **adds** public surface —
 a new `Function`, `AsyncFunction`, `Property`, `Events`, `View`, or `Prop` in a module
 definition, a new exported type or function, a new config-plugin property — flag it, as a
-`warning`, when it:
+`warning`, when it contradicts a convention this repo documents. The conventions live in
+the Expo Modules API docs, and in `guides/Expo Documentation Writing Style Guide.md` for
+the JSDoc — JSDoc ships in the published types and feeds the generated docs site, so it is
+API surface, and it is the one prose `docs/` tooling never lints.
 
-- contradicts a convention the Expo Modules API docs state,
-- accepts invalid states in an exported type where the type could rule them out, or
-- carries JSDoc that breaks `guides/Expo Documentation Writing Style Guide.md`. JSDoc ships
-  in the published types and feeds the generated docs site, so it is API surface — and it
-  is the one prose `docs/` tooling never lints.
-
-The docs define the scope of the first rule, not any list in this file. Their sources are
+The docs define the scope of this rule, not any list in this file. Their sources are
 in this checkout; never browse the docs site, and keep the reading small. Read
 `docs/pages/modules/design.mdx` in full — it is ~40 lines and states the rationale behind
 the conventions. Do not read `docs/pages/modules/module-api.mdx` in full (~1,900 lines):
 grep it for the constructs the diff uses and read only those sections. In each finding, say
 what the conforming API looks like, and where the docs state the convention, cite the
-published anchor (e.g. `/modules/module-api/#enums`) the way a human reviewer links it; the
-invalid-state rule stands on the type itself.
+published anchor (e.g. `/modules/module-api/#enums`) the way a human reviewer links it.
 
 Walk every new export once — each new `Function` or `AsyncFunction`, each new exported
-type, and the JSDoc of each new export — and judge it against the rules above. Do not
+type, and the JSDoc of each new export — and judge it against the rule above. Do not
 sample: the miss you skip publishes.
 
 Examples of bad new API, to calibrate what a finding looks like — they do not bound the
-rules above:
+rule above:
 
 - an `AsyncFunction` wrapping sync work — no I/O, no thread hop, no long-running work. The
   docs recommend `AsyncFunction` only for those cases. The JS wrapper inherits the async
