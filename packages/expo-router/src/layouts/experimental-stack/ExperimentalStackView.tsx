@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
 import {
   isRouteRemovalPrevented,
@@ -13,6 +12,7 @@ import {
   type StackNavigationState,
 } from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
+import { StackV5 } from '../../utils/screensCompat';
 import type {
   ExperimentalStackDescriptor,
   ExperimentalStackDescriptorMap,
@@ -39,7 +39,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
 
   return (
     <View style={styles.container}>
-      <ScreensStackV5.Host>
+      <StackV5.Host>
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const isPreloaded = index > state.index;
@@ -116,7 +116,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
             />
           );
         })}
-      </ScreensStackV5.Host>
+      </StackV5.Host>
     </View>
   );
 }
@@ -154,14 +154,14 @@ function ScreenView({
   };
 
   return (
-    <ScreensStackV5.Screen
+    <StackV5.Screen
       activityMode={isPreloaded ? 'detached' : 'attached'}
       screenKey={routeKey}
       preventNativeDismiss={preventNativeDismiss}
       {...lifecycle}>
       <View style={styles.scene}>{descriptor.render()}</View>
-      <ScreensStackV5.HeaderConfig {...headerConfigProps} />
-    </ScreensStackV5.Screen>
+      <StackV5.HeaderConfig {...headerConfigProps} />
+    </StackV5.Screen>
   );
 }
 

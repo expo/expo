@@ -46,6 +46,7 @@
 
 ### 🎉 New features
 
+- Add compatibility with react-native-screens 5.
 - [Android] Add `cornerRadius` support to dropdown menu
 - Add `unstable_useIsNavigating` for observing queued or pending navigation. ([#49448](https://github.com/expo/expo/pull/49448) by [@Ubax](https://github.com/Ubax))
 - Add unstable `NavigationAwareActivity` component. ([#49164](https://github.com/expo/expo/pull/49164) by [@Ubax](https://github.com/Ubax))

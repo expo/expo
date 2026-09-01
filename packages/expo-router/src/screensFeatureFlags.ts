@@ -17,5 +17,5 @@ export function initScreensFeatureFlags() {
 
 // Solves iOS bugs related to quick dismissal of several screens in a row
 // Will become opt-out in the future versions of screens
-// TODO(@ubax): Remove this flag when it becomes default behavior in react-native-screens
+// TODO(@ubax): Remove after dropping react-native-screens v4 support; this is a no-op in v5.
 featureFlags.experiment.iosPreventReattachmentOfDismissedScreens = true;

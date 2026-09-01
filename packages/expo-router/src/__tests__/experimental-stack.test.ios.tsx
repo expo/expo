@@ -7,11 +7,11 @@ import { ExperimentalStack } from '../layouts/experimental-stack';
 import { usePreventRemove } from '../react-navigation/native';
 import { renderRouter } from '../testing-library';
 
-jest.mock('react-native-screens/experimental', () => {
+jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actual = jest.requireActual(
-    'react-native-screens/experimental'
-  ) as typeof import('react-native-screens/experimental');
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
 
   const Host = jest.fn(({ children }: { children: ReactNode }) => (
     <View testID="StackV5.Host">{children}</View>
@@ -32,8 +32,8 @@ jest.mock('react-native-screens/experimental', () => {
 });
 
 const { Stack: MockedStackV5 } = jest.requireMock(
-  'react-native-screens/experimental'
-) as typeof import('react-native-screens/experimental');
+  'react-native-screens'
+) as typeof import('react-native-screens');
 
 const MockedHost = MockedStackV5.Host as unknown as jest.Mock;
 const MockedScreen = MockedStackV5.Screen as unknown as jest.Mock;
