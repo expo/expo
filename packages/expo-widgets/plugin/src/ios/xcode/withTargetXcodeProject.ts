@@ -1,4 +1,4 @@
-import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import { ConfigPlugin, IOSConfig, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
 import * as path from 'path';
 
 import { addBuildPhases } from './addBuildPhases';
@@ -16,6 +16,37 @@ type TargetXcodeProjectProps = {
   appleTeamId?: string;
   getFileUris: () => string[];
 };
+
+type PbxGroup = {
+  children: { value: string; comment?: string }[];
+};
+
+function getGroupAtPath(xcodeProject: XcodeProject, groupPath: string): PbxGroup | null {
+  const { firstProject } = xcodeProject.getFirstProject();
+  let group = xcodeProject.getPBXGroupByKey(firstProject.mainGroup) as PbxGroup | undefined;
+
+  for (const component of groupPath.split('/')) {
+    const child = group?.children.find(({ comment }) => comment === component);
+    if (!child) {
+      return null;
+    }
+    group = xcodeProject.getPBXGroupByKey(child.value) as PbxGroup | undefined;
+  }
+
+  return group ?? null;
+}
+
+export function getLocalizableStringsFileRefs(
+  xcodeProject: XcodeProject,
+  projectName: string,
+  languages: string[]
+): string[] {
+  return languages.flatMap((language) => {
+    const localeGroup = getGroupAtPath(xcodeProject, `${projectName}/Supporting/${language}.lproj`);
+    const file = localeGroup?.children.find(({ comment }) => comment === 'Localizable.strings');
+    return file ? [file.value] : [];
+  });
+}
 
 const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
   config,
@@ -58,12 +89,19 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const targetDirectory = path.join(projectRoot, targetName);
     const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
     const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
+    const projectName = IOSConfig.XcodeUtils.getProjectName(config.modRequest.projectRoot);
+    const localizableStringsFileRefs = getLocalizableStringsFileRefs(
+      xcodeProject,
+      projectName,
+      Object.keys(config.locales ?? {})
+    );
 
     addBuildPhases(xcodeProject, {
       targetUuid: target.uuid,
       groupName,
       productFile,
       widgetFiles: swiftWidgetFiles,
+      resourceFileRefs: localizableStringsFileRefs,
     });
 
     addPbxGroup(xcodeProject, {
