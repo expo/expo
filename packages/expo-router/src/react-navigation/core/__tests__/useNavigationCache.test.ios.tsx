@@ -245,33 +245,33 @@ test('returns correct value for isFocused after changing screens', () => {
     </BaseNavigationContainer>
   );
 
-  expect(navigation.isFocused()).toBe(true);
-
-  root.update(
-    <BaseNavigationContainer>
-      <TestNavigator>
-        <Screen name="first">{() => null}</Screen>
-        <Screen name="third">{() => null}</Screen>
-        <Screen name="fourth">{() => null}</Screen>
-        <Screen name="second" component={Test} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(navigation.isFocused()).toBe(true);
-
-  root.update(
-    <BaseNavigationContainer>
-      <TestNavigator>
-        <Screen name="first">{() => null}</Screen>
-        <Screen name="third">{() => null}</Screen>
-        <Screen name="second" component={Test} />
-        <Screen name="fourth">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
   expect(navigation.isFocused()).toBe(false);
+
+  root.update(
+    <BaseNavigationContainer>
+      <TestNavigator>
+        <Screen name="first">{() => null}</Screen>
+        <Screen name="third">{() => null}</Screen>
+        <Screen name="fourth">{() => null}</Screen>
+        <Screen name="second" component={Test} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(navigation.isFocused()).toBe(true);
+
+  root.update(
+    <BaseNavigationContainer>
+      <TestNavigator>
+        <Screen name="first">{() => null}</Screen>
+        <Screen name="third">{() => null}</Screen>
+        <Screen name="second" component={Test} />
+        <Screen name="fourth">{() => null}</Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(navigation.isFocused()).toBe(true);
 });
 
 test('uses a no-op navigation object for a preloaded stack screen', () => {

@@ -15,7 +15,11 @@ export function getHistoryLength(state: ReactNavigationState): number {
     return state.index + 1;
   }
 
-  // Without a type or history, stack and tabs both use the route count as their history length.
+  if (state.type === 'tab' || state.type === 'drawer') {
+    return (state.index ?? 0) + 1;
+  }
+
+  // Typeless states may still represent a stack, so route count remains the fallback.
   return state.routes.length;
 }
 

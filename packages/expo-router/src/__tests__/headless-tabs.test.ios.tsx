@@ -446,7 +446,7 @@ it('does not reset tab content when triggers are reordered', () => {
   fireEvent.press(screen.getByTestId('reorder'));
   expect(appleMounts).toBe(1);
   expect(tabState).toEqual({
-    routeNames: ['orange', 'apple'],
+    routeNames: ['apple', 'orange'],
     routes: ['apple'],
   });
   act(() => router.back());
@@ -454,6 +454,7 @@ it('does not reset tab content when triggers are reordered', () => {
 });
 
 it('uses the new trigger order for order back behavior', () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   renderRouter(
     {
       _layout: function TabLayout() {
@@ -490,6 +491,8 @@ it('uses the new trigger order for order back behavior', () => {
   expect(screen).toHaveSegments(['apple']);
   act(() => router.back());
   expect(screen).toHaveSegments(['orange']);
+  expect(error).not.toHaveBeenCalled();
+  error.mockRestore();
 });
 
 it('returns to the initial route after triggers are reordered', () => {

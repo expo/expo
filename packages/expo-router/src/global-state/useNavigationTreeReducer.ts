@@ -87,7 +87,10 @@ type NavigationTreeResult = {
 };
 
 const warnedActions = new WeakSet<NavigationAction>();
-const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
+const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set([
+  'ROUTE_NAMES_CHANGED',
+  'ROUTE_NAMES_ORDER_CHANGED',
+]);
 
 function warnIfStaleState(state: NavigationState) {
   if (process.env.NODE_ENV !== 'development') {

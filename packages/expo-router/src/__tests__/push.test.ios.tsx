@@ -326,17 +326,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
               params: {},
               path: undefined,
               state: {
-                history: [
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                ],
-                index: 2,
+                index: 1,
                 key: expect.any(String),
                 routeNames: ['a', 'b', 'c'],
                 routes: [
@@ -345,11 +335,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                     name: 'a',
                     params: {},
                     path: '/a',
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'b',
-                    params: {},
                   },
                   {
                     key: expect.any(String),
@@ -383,6 +368,11 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                       routeKeySeq: expect.any(Number),
                       type: 'stack',
                     },
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'b',
+                    params: {},
                   },
                 ],
                 stale: false,

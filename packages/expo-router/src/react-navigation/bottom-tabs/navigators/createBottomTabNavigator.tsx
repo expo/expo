@@ -39,6 +39,7 @@ function BottomTabNavigatorContent({
   preload,
   ...rest
 }: ContentArgs) {
+  const { backBehavior, ...viewProps } = rest as typeof rest & { backBehavior?: string };
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
@@ -65,6 +66,7 @@ function BottomTabNavigatorContent({
     descriptors: bottomTabDescriptors,
     preload,
     lazyByDefault: true,
+    preloadAll: backBehavior === 'order',
   });
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
@@ -73,7 +75,7 @@ function BottomTabNavigatorContent({
 
   return (
     <BottomTabView
-      {...rest}
+      {...viewProps}
       state={{
         // Only routes are substituted; navigator metadata remains from the real state.
         ...state,

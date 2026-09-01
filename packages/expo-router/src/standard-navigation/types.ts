@@ -119,13 +119,15 @@ export type IntegrateWithRouterOptions<
   processState?: (
     state: State,
     descriptors: PlaceholderDescriptorMap,
-    describe: DescribePlaceholderRoute
+    describe: DescribePlaceholderRoute,
+    routeNames: string[]
   ) => State;
   /** Creates additional descriptors before `processState` and navigator rendering. */
   processDescriptors?: (
     descriptors: PlaceholderDescriptorMap,
     state: State,
-    describe: DescribePlaceholderRoute
+    describe: DescribePlaceholderRoute,
+    routeNames: string[]
   ) => PlaceholderDescriptorMap;
   /**
    * Transforms the screens declared as children of the navigator before they are rendered.

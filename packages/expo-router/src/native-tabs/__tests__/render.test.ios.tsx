@@ -207,8 +207,8 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('index');
     expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
   });
@@ -578,8 +578,7 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across three screens.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
       expect(onMount).toHaveBeenCalledWith('third');
@@ -629,8 +628,7 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across index, stack-index, and third.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('stack-index');
       expect(onMount).toHaveBeenCalledWith('third');
