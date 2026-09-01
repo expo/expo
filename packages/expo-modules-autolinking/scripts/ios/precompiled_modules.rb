@@ -75,6 +75,15 @@ module Expo
     # so it is not resolved through the Expo precompiled tarball pipeline.
     CUSTOM_XCFRAMEWORK_DEPENDENCIES = %w[ExpoModulesJSI].freeze
 
+    # Prebuilt pods whose headers already reach every target through another mechanism.
+    GLOBALLY_INJECTED_PREBUILT_PODS = %w[
+      ExpoModulesCore
+      React
+      React-Core-prebuilt
+      Hermes
+      ReactNativeDependencies
+    ].freeze
+
     # Unavailability reasons where the pod's own artifact is fine and an interdependent
     # pod pulled it to source. The expected-tarball hint is misleading for these.
     CASCADED_UNAVAILABLE_REASONS = %i[dependency_unavailable dependent_unavailable].freeze
@@ -195,6 +204,7 @@ module Expo
         requote_swift_compat_header_paths(installer)
         ensure_artifacts(installer)
         configure_header_search_paths(installer)
+        configure_prebuilt_dependency_header_search_paths(installer)
         configure_codegen_for_prebuilt_modules(installer)
         stub_bundled_pod_targets(installer)
         quote_swift_compatibility_header_search_paths(installer)
@@ -1062,7 +1072,7 @@ module Expo
         expo_core_xcframework = find_expo_modules_core_xcframework(installer)
         return unless expo_core_xcframework
 
-        header_search_paths = collect_xcframework_header_paths(expo_core_xcframework)
+        header_search_paths = collect_xcframework_header_paths(expo_core_xcframework, 'ExpoModulesCore')
         return if header_search_paths.empty?
 
         paths_string = header_search_paths.map { |p| "\"#{p}\"" }.join(' ')
@@ -1083,6 +1093,36 @@ module Expo
             unless existing.include?(paths_string)
               config.build_settings['HEADER_SEARCH_PATHS'] = "#{existing} #{paths_string}"
             end
+          end
+        end
+      end
+
+      # Lets a source-built pod include headers from its prebuilt dependencies, which
+      # exist only inside the xcframework and never in `Pods/Headers/Public`.
+      #
+      # @param installer [Pod::Installer] The CocoaPods installer instance
+      def configure_prebuilt_dependency_header_search_paths(installer)
+        return unless enabled?
+
+        installer.pod_targets.each do |pod_target|
+          next if has_prebuilt_xcframework?(pod_target.pod_name)
+
+          prebuilt_dependencies = pod_target.dependent_targets.map(&:pod_name).uniq.sort.select do |dep_name|
+            !GLOBALLY_INJECTED_PREBUILT_PODS.include?(dep_name) && has_prebuilt_xcframework?(dep_name)
+          end
+          next if prebuilt_dependencies.empty?
+
+          header_search_paths = prebuilt_dependencies.flat_map do |dep_name|
+            prebuilt_xcframework_header_paths(installer, dep_name)
+          end
+          next if header_search_paths.empty?
+
+          paths_string = header_search_paths.map { |p| "\"#{p}\"" }.join(' ')
+          Pod::UI.info "#{'[Expo-precompiled] '.blue}Adding #{prebuilt_dependencies.join(', ')} header search paths to #{pod_target.pod_name}"
+
+          pod_target.build_settings.each_key do |config_name|
+            xcconfig_path = pod_target.xcconfig_path(config_name)
+            update_xcconfig_header_search_paths(xcconfig_path, paths_string) if File.exist?(xcconfig_path)
           end
         end
       end
@@ -2598,17 +2638,24 @@ module Expo
         nil
       end
 
-      # Collects header paths from all slices of an XCFramework
-      def collect_xcframework_header_paths(xcframework_path)
+      # Collects header paths from all slices of an XCFramework.
+      def collect_xcframework_header_paths(xcframework_path, product_name)
         return [] unless File.directory?(xcframework_path)
 
         Dir.children(xcframework_path).filter_map do |slice|
           slice_path = File.join(xcframework_path, slice)
           next unless File.directory?(slice_path)
 
-          framework_headers = File.join(slice_path, 'ExpoModulesCore.framework', 'Headers')
+          framework_headers = File.join(slice_path, "#{product_name}.framework", 'Headers')
           framework_headers if File.directory?(framework_headers)
         end
+      end
+
+      # Header dirs of an installed prebuilt pod's xcframework, one per slice.
+      def prebuilt_xcframework_header_paths(installer, pod_name)
+        product_name = pod_lookup_map[pod_name]&.dig(:product_name) || pod_name
+        xcframework_path = File.join(installer.sandbox.root, pod_name, "#{product_name}.xcframework")
+        collect_xcframework_header_paths(xcframework_path, product_name)
       end
 
       # ──────────────────────────────────────────────────────────────────────
