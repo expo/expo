@@ -138,8 +138,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
    *
    * The id is stored in native preferences and is stable across app launches and app updates. It
-   * is regenerated when the app is reinstalled or its data is cleared, so it identifies an
-   * installation, not a user or a device.
+   * changes when the app's data is cleared or the app is reinstalled, although a backup restore
+   * can carry the previous id over. It identifies an installation, not a user or a device.
    *
    * `null` on web, where there is no EAS client id.
    *
