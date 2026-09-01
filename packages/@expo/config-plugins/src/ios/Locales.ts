@@ -19,6 +19,10 @@ export const withLocales: ConfigPlugin = (config) => {
   });
 };
 
+function escapeStringsLiteral(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+}
+
 export async function writeStringsFile({
   localesMap,
   supportingDirectory,
@@ -40,7 +44,9 @@ export async function writeStringsFile({
     const strings = path.join(dir, fileName);
     const buffer = [];
     for (const [plistKey, localVersion] of Object.entries(localizationObj)) {
-      buffer.push(`${plistKey} = "${localVersion}";`);
+      buffer.push(
+        `"${escapeStringsLiteral(plistKey)}" = "${escapeStringsLiteral(String(localVersion))}";`
+      );
     }
     // Write the file to the file system.
     await fs.promises.writeFile(strings, buffer.join('\n'));
