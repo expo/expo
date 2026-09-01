@@ -4,9 +4,10 @@ import type { DescribePlaceholderRoute, PlaceholderDescriptorMap } from './types
 export function appendMissingPlaceholderTabDescriptors<State extends NavigationState>(
   descriptors: PlaceholderDescriptorMap,
   state: State,
-  describe: DescribePlaceholderRoute
+  describe: DescribePlaceholderRoute,
+  routeNames = state.routeNames
 ): PlaceholderDescriptorMap {
-  const missingRouteNames = state.routeNames.filter(
+  const missingRouteNames = routeNames.filter(
     (name) => !state.routes.some((route) => route.name === name)
   );
   if (missingRouteNames.length === 0) {
@@ -26,29 +27,27 @@ export function appendMissingPlaceholderTabDescriptors<State extends NavigationS
 // TODO: Evaluate making this function public.
 export function appendMissingPlaceholderTabRoutes<State extends NavigationState>(
   state: State,
-  descriptors: PlaceholderDescriptorMap
+  descriptors: PlaceholderDescriptorMap,
+  _describe?: DescribePlaceholderRoute,
+  routeNames = state.routeNames
 ): State {
-  const hasMissingRoute = state.routeNames.some(
-    (name) => !state.routes.some((route) => route.name === name)
-  );
-  if (!hasMissingRoute) {
-    return state;
-  }
-
   const focusedKey = state.routes[state.index]?.key;
-  const routes = state.routeNames.map((name) => {
+  const routes = routeNames.map((name) => {
     const existingRoute = state.routes.find((route) => route.name === name);
     if (existingRoute) {
       return existingRoute;
     }
     return createPlaceholderRoute<State>(name, descriptors);
   });
-  const index = Math.max(
-    0,
-    routes.findIndex((route) => route.key === focusedKey)
-  );
+  const index =
+    routes.length === 0
+      ? -1
+      : Math.max(
+          0,
+          routes.findIndex((route) => route.key === focusedKey)
+        );
 
-  return { ...state, index, routes };
+  return { ...state, routeNames, index, routes };
 }
 
 function createPlaceholderRoute<State extends NavigationState>(

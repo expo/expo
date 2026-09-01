@@ -28,7 +28,7 @@ import { NavigationStateContext } from './NavigationStateContext';
 import { NavigatorTypeContext } from './NavigatorTypeContext';
 import { RootNavigationStateContext } from './RootNavigationStateContext';
 import { Screen } from './Screen';
-import { isArrayEqual } from './isArrayEqual';
+import { isSetEqual } from './isSetEqual';
 import {
   type DefaultNavigatorOptions,
   type DescriptorRouteProp,
@@ -473,9 +473,9 @@ export function useNavigationBuilder<
     }
     const committed = committedState;
 
-    if (isArrayEqual(committed.routeNames, routeNames)) {
+    if (isSetEqual(committed.routeNames, routeNames)) {
       pendingRouteNamesRef.current = undefined;
-    } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
+    } else if (!isSetEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
       pendingRouteNamesRef.current = routeNames;
       enqueue({
         type: 'ACTION',
@@ -550,6 +550,7 @@ export function useNavigationBuilder<
 
   return {
     state,
+    routeNames,
     navigation,
     describe,
     descriptors,

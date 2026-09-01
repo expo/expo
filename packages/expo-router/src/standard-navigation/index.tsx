@@ -24,6 +24,7 @@ import type {
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
+import { useSyncRouteNamesOrder } from './useSyncRouteNamesOrder';
 
 export type {
   IntegrateWithRouterOptions,
@@ -184,26 +185,34 @@ export function unstable_integrateWithRouter<
       NavigatorProps,
       RouterOptions
     >(props, getValidInitialRouteName(routeNode));
-    const { state, navigation, describe, descriptors, NavigationContent } = useNavigationBuilder<
-      State,
-      RouterOptions,
-      Record<string, (...args: unknown[]) => void>,
-      NavigatorOptions,
-      EventMap
-    >(router, useNavigationBuilderProps);
+    const { state, routeNames, navigation, describe, descriptors, NavigationContent } =
+      useNavigationBuilder<
+        State,
+        RouterOptions,
+        Record<string, (...args: unknown[]) => void>,
+        NavigatorOptions,
+        EventMap
+      >(router, useNavigationBuilderProps);
+
+    useSyncRouteNamesOrder({
+      backBehavior: (extraProps as { backBehavior?: string }).backBehavior,
+      routeNames,
+      state,
+      dispatch: navigation.dispatchSync,
+    });
 
     const { dispatch, dispatchSync } = navigation;
 
     const processedDescriptors = useMemo(
       () =>
-        (options?.processDescriptors?.(descriptors, state, describe) as
+        (options?.processDescriptors?.(descriptors, state, describe, routeNames) as
           | typeof descriptors
           | undefined) ?? descriptors,
-      [state, descriptors, describe, options]
+      [state, descriptors, describe, options, routeNames]
     );
     const processedState = useMemo(
-      () => options?.processState?.(state, processedDescriptors, describe) ?? state,
-      [state, processedDescriptors, describe, options]
+      () => options?.processState?.(state, processedDescriptors, describe, routeNames) ?? state,
+      [state, processedDescriptors, describe, options, routeNames]
     );
 
     const derivedProps = useMemo<Partial<CreateProps>>(
