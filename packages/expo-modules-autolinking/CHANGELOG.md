@@ -28,6 +28,7 @@
 
 ### 💡 Others
 
+- [iOS] Extract the prebuilt-modules metadata scan into a product-resolution library with catalog and app-plan projections; standalone projects now resolve through the app's module resolution instead of erroring (ENG-25370). ([#49603](https://github.com/expo/expo/pull/49603) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add a `prebuilt-metadata` command emitting the prebuilt-modules identity document (npm package ↔ pod ↔ product), verified field-by-field against the Ruby derivations fixture (ENG-25370 phase 1). ([#49335](https://github.com/expo/expo/pull/49335) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add a derivations snapshot dump for precompiled modules (`EXPO_PRECOMPILED_DUMP` / `dump_precompiled_derivations.rb`) with a committed bare-expo fixture enforced by an e2e test, guarding the migration of these derivations to autolinking metadata. ([#49150](https://github.com/expo/expo/pull/49150) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Make the autolinking Gradle plugin compatible with Android Gradle Plugin 9. ([#46766](https://github.com/expo/expo/pull/46766) by [@lukmccall](https://github.com/lukmccall))
