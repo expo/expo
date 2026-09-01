@@ -165,6 +165,10 @@ const styles = StyleSheet.create({
 
 The `Roboto Flex` entry in the example above is a variable font: one file that holds many faces. You select a face with the `fontWeight` and `fontStyle` style props. Variable fonts also work with [`useFonts`](#usefonts). To learn more, see [Variable fonts](/develop/user-interface/fonts/#variable-fonts) in the Fonts guide.
 
+### Multiple weights and styles
+
+A font family can also hold several static font files, for example regular, bold, and italic cuts. To load them under a single `fontFamily` name, pass [`useFonts`](#usefonts) or [`loadAsync`](#loadasyncfontfamilyorfontmap-source) an array of [`FontFamilyDefinition`](#fontfamilydefinition)s instead of a map, then select a face with the `fontWeight` and `fontStyle` style props. To learn more, see [Loading multiple weights and styles for one font family](/develop/user-interface/fonts/#loading-multiple-weights-and-styles-for-one-font-family) in the Fonts guide.
+
 ## API
 
 ```js
