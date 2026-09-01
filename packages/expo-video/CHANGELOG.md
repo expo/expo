@@ -12,12 +12,18 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
+- [iOS] Fixed a data race on the video cache's open-file registry, which could crash the app while the cache was being trimmed. ([#49286](https://github.com/expo/expo/pull/49286) by [@huextrat](https://github.com/huextrat))
+- [iOS] Fixed a crash when the device runs out of storage while writing to the video cache. `FileHandle.writeData:` raises an uncatchable Objective-C `NSFileHandleOperationException` on `ENOSPC`; the throwing Swift APIs are now used so the error is caught and logged instead. ([#49284](https://github.com/expo/expo/pull/49284) by [@huextrat](https://github.com/huextrat))
+- [Android] Guard `PictureInPictureParams.Builder.setAutoEnterEnabled` against `NoSuchMethodError` on stock OEM firmwares that report API 31+ without shipping the method, which crashed the app from `VideoView.onLayout` even when Picture in Picture was disabled. ([#48957](https://github.com/expo/expo/pull/48957) by [@onlyshyun](https://github.com/onlyshyun))
+- Fix `TypeError: Cannot read properties of undefined (reading 'prototype')` when a Jest test imports `expo-video` under the `jest-expo` preset, by adding a hand-written mock for the `ExpoVideo` native module. ([#48880](https://github.com/expo/expo/pull/48880) by [@giaBaoJS](https://github.com/giaBaoJS))
 - [iOS] Fix races between overlapping source loads and player release. ([#47967](https://github.com/expo/expo/pull/47967) by [@behenate](https://github.com/behenate))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
 - [iOS] Fixed a thread-safety crash caused by mutating the internal player registries while they were being iterated on another thread (e.g. during audio session and now playing updates). ([#46930](https://github.com/expo/expo/pull/46930) by [@jiunshinn](https://github.com/jiunshinn))
 - Fix VideoView holding a strong reference to VideoPlayer even after the player has been detached. ([#46453](https://github.com/expo/expo/pull/46453) by [@behenate](https://github.com/behenate))
 - [iOS] Fixed fullscreen rotation requesting geometry from an arbitrary scene rather than the one the player is in. ([#48316](https://github.com/expo/expo/pull/48316) by [@alanjhughes](https://github.com/alanjhughes))
+- Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

@@ -126,14 +126,14 @@ runs:
           // [outputs] color and text based on status
           const status = process.env.JOB_STATUS.toLowerCase();
           let color = 'danger';
-          let text = ':no_entry: Failed GitHub Actions\n';
+          let text = ':no_entry: Failed GitHub Actions';
 
           if (status === 'success') {
             color = 'good';
-            text = ':white_check_mark: Succeeded GitHub Actions\n';
+            text = ':white_check_mark: Succeeded GitHub Actions';
           } else if (status === 'cancelled') {
             color = 'warning';
-            text = ':warning: Cancelled GitHub Actions\n';
+            text = ':warning: Cancelled GitHub Actions';
           }
 
           // [outputs] fields
@@ -180,19 +180,25 @@ runs:
             }
           }
 
-          core.setOutput('fields', JSON.stringify(slackFields));
-          core.setOutput('color', color);
-          core.setOutput('text', text);
-          core.setOutput('author_name', escape(process.env.AUTHOR_NAME));
+          // Emit the whole request body as JSON rather than as separate values
+          // interpolated into a YAML template. The action parses the payload input
+          // with js-yaml, which rejects a newline inside a quoted scalar
+          // ("deficient indentation"), so any value containing one would break the
+          // template. JSON.stringify escapes those characters instead.
+          core.setOutput('payload', JSON.stringify({
+            text,
+            attachments: [
+              {
+                color,
+                author_name: escape(process.env.AUTHOR_NAME),
+                fields: slackFields,
+              },
+            ],
+          }));
 
     - name: Send to Slack
       uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
       with:
         webhook: ${{ inputs.webhook }}
         webhook-type: incoming-webhook
-        payload: |
-          text: "${{ steps.details.outputs.text }}"
-          attachments:
-            - color: "${{ steps.details.outputs.color }}"
-              author_name: "${{ steps.details.outputs.author_name }}"
-              fields: ${{ steps.details.outputs.fields }}
+        payload: ${{ steps.details.outputs.payload }}

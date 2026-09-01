@@ -21,6 +21,7 @@ import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
+import { resolveShapeStyle, type ShapeStyle } from './shapeStyle';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
@@ -63,13 +64,47 @@ export const shadow = (params: { radius: number; x?: number; y?: number; color?:
   createModifier('shadow', params);
 
 /**
+ * The geometry properties copied from the source view by `matchedGeometryEffect`.
+ * `'frame'` combines both `'position'` and `'size'`.
+ */
+export type MatchedGeometryPropertiesValue = 'frame' | 'position' | 'size';
+
+/**
  * Adds a matched geometry effect to a view.
  * @param id - The id of the view.
  * @param namespaceId - The namespace id of the view. Use Namespace component to create a namespace.
+ * @param options - Optional parameters of the effect.
+ * @param options.properties - Which geometry properties to copy from the source view. Defaults to `'frame'`.
+ * @param options.anchor - The unit point of this view aligned with the source view's geometry. Defaults to `'center'`.
+ * @param options.isSource - Whether this view is the source of the geometry. Only one view per id should be the source. Defaults to `true`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:)).
  */
-export const matchedGeometryEffect = (id: string, namespaceId: string) =>
-  createModifier('matchedGeometryEffect', { id, namespaceId });
+export const matchedGeometryEffect = (
+  id: string,
+  namespaceId: string,
+  options?: {
+    properties?: MatchedGeometryPropertiesValue;
+    anchor?: UnitPointValue;
+    isSource?: boolean;
+  }
+) => createModifier('matchedGeometryEffect', { id, namespaceId, ...options });
+
+/**
+ * Isolates the geometry (e.g. position and size) of the view from its parent view.
+ *
+ * @example
+ * ```tsx
+ * <VStack modifiers={[animation(Animation.spring(), isBusy)]}>
+ *   {isBusy ? <Text>Working…</Text> : null}
+ *   <Button label="Check now" modifiers={[geometryGroup()]} />
+ * </VStack>
+ * ```
+ *
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/geometrygroup()).
+ */
+export const geometryGroup = () => createModifier('geometryGroup', {});
 
 /**
  * Sets the frame properties of a view.
@@ -123,18 +158,26 @@ export const containerRelativeFrame = (params: {
 
 /**
  * Sets padding on a view.
- * Supports individual edges or shorthand properties.
+ * Supports individual edges or shorthand properties. Every edge accepts a length in points or
+ * `'default'` to apply the system default padding to that edge. Edges set by a specific property
+ * take precedence over the shorthand ones, and unspecified edges get no padding.
+ * Calling it without parameters applies the system default padding to all edges.
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
+ * @example
+ * ```tsx
+ * // The system default padding on top, 12 points on the sides, nothing at the bottom.
+ * <Text modifiers={[padding({ top: 'default', horizontal: 12 })]}>Hello</Text>
+ * ```
  */
 export const padding = (params?: {
-  top?: number;
-  bottom?: number;
-  leading?: number;
-  trailing?: number;
-  horizontal?: number;
-  vertical?: number;
-  all?: number;
+  top?: number | 'default';
+  bottom?: number | 'default';
+  leading?: number | 'default';
+  trailing?: number | 'default';
+  horizontal?: number | 'default';
+  vertical?: number | 'default';
+  all?: number | 'default';
 }) => createModifier('padding', params);
 
 /**
@@ -415,51 +458,20 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * })]}>
  *   Gradient Text
  * </Text>
+ *
+ * // Material
+ * <Text modifiers={[foregroundStyle({ type: 'material', material: 'regular' })]}>
+ *   Text painted with a material
+ * </Text>
  * ```
  *
+ * @param style - Any [`ShapeStyle`](#shapestyle): a color, a hierarchical style, a material or a gradient.
  * @returns A view modifier that applies the specified foreground style
  * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)).
  */
-export const foregroundStyle = (
-  style:
-    | Color // Simple color (hex string, color name, or React Native ColorValue)
-    | { type: 'color'; color: Color }
-    | {
-        type: 'hierarchical';
-        style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
-      }
-    | {
-        type: 'linearGradient';
-        colors: Color[];
-        startPoint: { x: number; y: number };
-        endPoint: { x: number; y: number };
-      }
-    | {
-        type: 'radialGradient';
-        colors: Color[];
-        center: { x: number; y: number };
-        startRadius: number;
-        endRadius: number;
-      }
-    | {
-        type: 'angularGradient';
-        colors: Color[];
-        center: { x: number; y: number };
-      }
-) => {
-  if (style == null || typeof style !== 'object' || !('type' in style)) {
-    return createModifier('foregroundStyle', { styleType: 'color', color: style });
-  }
-  if (style.type === 'hierarchical') {
-    return createModifier('foregroundStyle', {
-      styleType: 'hierarchical',
-      hierarchicalStyle: style.style,
-    });
-  }
-  const { type, ...rest } = style;
-  return createModifier('foregroundStyle', { styleType: type, ...rest });
-};
+export const foregroundStyle = (style: ShapeStyle) =>
+  createModifier('foregroundStyle', { style: resolveShapeStyle(style) });
 
 /**
  * Makes text bold.
@@ -653,6 +665,30 @@ export const buttonBorderShape = (
  */
 export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
   createModifier('toggleStyle', { style });
+
+/**
+ * Sets the style for menus within this view.
+ * @param style - The menu style. Combine `'button'` with `buttonStyle('plain')` and
+ * `menuIndicator('hidden')` to render the menu's own label as the entire trigger, without any
+ * surrounding button chrome or disclosure chevron.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menustyle(_:)).
+ * @platform ios
+ * @platform tvos 17.0+
+ */
+export const menuStyle = (style: 'automatic' | 'button') => createModifier('menuStyle', { style });
+
+/**
+ * Sets the visibility of the menu indicator, the disclosure chevron drawn next to a menu's label.
+ * @param visibility - Indicator visibility:
+ * - `'automatic'`: platform-default behavior.
+ * - `'visible'`: show the indicator.
+ * - `'hidden'`: hide the indicator.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menuindicator(_:)).
+ * @platform ios
+ * @platform tvos 17.0+
+ */
+export const menuIndicator = (visibility: 'automatic' | 'visible' | 'hidden') =>
+  createModifier('menuIndicator', { visibility });
 
 /**
  * Sets the size of controls within this view.
@@ -1047,12 +1083,45 @@ export const listRowSeparator = (
 ) => createModifier('listRowSeparator', { visibility, edges });
 
 /**
+ * Sets the tint color of the separator for a list row.
+ * @param color - The color to apply to the separator (hex string). For example, `#FF0000`. When omitted, the default separator color is used.
+ * @param edges - The edges where the separator tint applies.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowseparatortint(_:edges:)).
+ */
+export const listRowSeparatorTint = (color?: Color, edges?: 'all' | 'top' | 'bottom') =>
+  createModifier('listRowSeparatorTint', { color, edges });
+
+/**
  * Sets the vertical spacing between adjacent rows in a list.
  * @param spacing - The spacing value to use. When omitted, the default spacing is used.
  * @platform ios 15.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowspacing(_:)).
  */
 export const listRowSpacing = (spacing?: number) => createModifier('listRowSpacing', { spacing });
+
+/**
+ * Sets the position of a horizontal alignment guide of this view.
+ *
+ * Use the `'listRowSeparatorLeading'` guide to set where the separator of a `List` row starts.
+ * SwiftUI insets a row separator past a leading `Image`, but not past other leading content, so
+ * rows with different leading content get separators that start at different offsets.
+ * @param guide - The horizontal alignment guide to set. `'listRowSeparatorLeading'` and
+ * `'listRowSeparatorTrailing'` do nothing on tvOS, where SwiftUI does not provide them.
+ * @param value - The position of the guide, in points from the leading edge of the view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/alignmentguide(_:computevalue:)-9mdoh).
+ *
+ * @example
+ * ```tsx
+ * <HStack modifiers={[alignmentGuide('listRowSeparatorLeading', 32)]}>
+ *   <Text>A</Text>
+ *   <Text>The separator starts 32 points from the leading edge</Text>
+ * </HStack>
+ * ```
+ */
+export const alignmentGuide = (
+  guide: 'leading' | 'center' | 'trailing' | 'listRowSeparatorLeading' | 'listRowSeparatorTrailing',
+  value: number
+) => createModifier('alignmentGuide', { guide, value });
 
 /**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
@@ -1620,6 +1689,8 @@ export type BuiltInModifier =
   | ReturnType<typeof buttonStyle>
   | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
+  | ReturnType<typeof menuStyle>
+  | ReturnType<typeof menuIndicator>
   | ReturnType<typeof controlSize>
   | ReturnType<typeof imageScale>
   | ReturnType<typeof labelStyle>
@@ -1643,6 +1714,7 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
+  | ReturnType<typeof geometryGroup>
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
   | ReturnType<typeof contentShape>
@@ -1663,7 +1735,9 @@ export type BuiltInModifier =
   | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
+  | ReturnType<typeof listRowSeparatorTint>
   | ReturnType<typeof listRowSpacing>
+  | ReturnType<typeof alignmentGuide>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>
@@ -1750,6 +1824,7 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
 export * from './symbolEffect';
 export * from './scrollObservation';

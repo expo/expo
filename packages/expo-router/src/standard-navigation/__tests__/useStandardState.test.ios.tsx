@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-native';
 
-import type { NavigationRoute, NavigationState, ParamListBase } from '../../react-navigation/core';
+import type { NavigationState } from '../../react-navigation/core';
 import { useBuildHref } from '../useBuildHref';
 import { useStandardState } from '../useStandardState';
 
@@ -22,11 +22,11 @@ function makeBuilderState(
     routes,
     type: 'tab',
     stale: false,
-    preloadedRouteKeys: [],
+    routeKeySeq: 0,
   } as unknown as NavigationState;
 }
 
-const byName: BuildHref = (route: NavigationRoute<ParamListBase, string>) => `/href/${route.name}`;
+const byName: BuildHref = (route) => `/href/${route.name}`;
 
 beforeEach(() => {
   mockedUseBuildHref.mockReturnValue(byName);

@@ -18,12 +18,13 @@ struct GraphQLErrorLocation: Codable {
   let column: Int
 }
 
-struct MeUserActorResponse: Codable {
-  let data: MeUserActorData
+struct MeActorResponse: Codable {
+  let data: MeActorData
 }
 
-struct MeUserActorData: Codable {
-  let meUserActor: UserActor
+struct MeActorData: Codable {
+  /// Null for an unauthenticated request.
+  let meActor: UserActor?
 }
 
 struct HomeScreenDataResponse: Codable {

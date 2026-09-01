@@ -89,7 +89,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
       <DropdownMenu
         expanded={expanded}
         onDismissRequest={() => setExpanded(false)}
-        color={backgroundColor}>
+        color={backgroundColor}
+        cornerRadius={props.cornerRadius}>
         <DropdownMenu.Trigger>
           <DropdownMenuItem
             onClick={() => {
@@ -147,7 +148,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
       <DropdownMenu
         expanded={expanded}
         onDismissRequest={() => setExpanded(false)}
-        color={backgroundColor}>
+        color={backgroundColor}
+        cornerRadius={props.cornerRadius}>
         <DropdownMenu.Trigger>
           <ToolbarItemBadge badge={props.badge} disabled={props.disabled}>
             {iconButton}

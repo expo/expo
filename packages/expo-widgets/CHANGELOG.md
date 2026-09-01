@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Expose stable ActivityKit identifiers on Live Activity instances. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
 - [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))
 - Add an initial layout registry for widgets. ([#46501](https://github.com/expo/expo/pull/46501) by [@jakex7](https://github.com/jakex7))
@@ -19,15 +20,28 @@
 - [iOS][plugin] Fix extension `CFBundleVersion` sync. ([#47061](https://github.com/expo/expo/pull/47061) by [@jakex7](https://github.com/jakex7))
 - [iOS] Changing widget configuration at runtime. ([#47533](https://github.com/expo/expo/pull/47533) by [@jakex7](https://github.com/jakex7))
 - [Android] Refactor to Peek emittables. ([#47411](https://github.com/expo/expo/pull/47411) by [@jakex7](https://github.com/jakex7))
+- [Android] Support Material Colors inside widgets. ([#48454](https://github.com/expo/expo/pull/48454) by [@jakex7](https://github.com/jakex7))
+- [iOS] Expose ActivityKit's `isStale` on `LiveActivityEnvironment`. ([#48303](https://github.com/expo/expo/pull/48303) by [@dirkpostma](https://github.com/dirkpostma))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix widget and Live Activity `Text` modifiers being applied twice. ([#49535](https://github.com/expo/expo/pull/49535) by [@gee1k](https://github.com/gee1k))
+- Resolve deep `react-native/*` imports as empty modules when bundling widget layouts, fixing every widget failing with "Could not create context for layout evaluation" after `@expo/ui` 57.0.14 introduced such an import. ([#49491](https://github.com/expo/expo/pull/49491) by [@usmsam](https://github.com/usmsam))
+- [iOS] Fix XCFramework precompilation failing on the unguarded `ActivityViewContext` parameter of `getLiveActivityEnvironment`, which requires iOS 16.1. ([#49076](https://github.com/expo/expo/pull/49076) by [@brentvatne](https://github.com/brentvatne))
+- [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Fix `LiveActivityFactory.getInstances()` returning live activities that belong to other factories or that have already ended. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
+- [iOS] Deliver the Live Activity `start()` URL to the Lock Screen banner, and scope it to the activity that set it instead of storing it globally per factory name. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
 - [Android] Add 16KB page size support. ([#47135](https://github.com/expo/expo/pull/47135) by [@jakex7](https://github.com/jakex7))
+- Make deprecated root-level widget config fields optional. ([#47933](https://github.com/expo/expo/pull/47933) by [@eliotgevers](https://github.com/eliotgevers))
 - [iOS][plugin] Only add the `aps-environment` entitlement when `enablePushNotifications` is enabled, and keep a pre-existing value. ([#47645](https://github.com/expo/expo/pull/47645) by [@kadikraman](https://github.com/kadikraman))
 - [Android] Fix modifiers type cast. ([#47616](https://github.com/expo/expo/pull/47721) by [@jakex7](https://github.com/jakex7))
 - Fix blank widget when JSX children mix a `.map()` array with sibling elements. ([#47888](https://github.com/expo/expo/pull/47888) by [@jakex7](https://github.com/jakex7))
+- [iOS] Restore push token observation when retrieving existing Live Activities. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
+- [iOS] Resolve autolinking relative to expo. ([#49453](https://github.com/expo/expo/pull/49453) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
+
+- [iOS] Remove availability check for iOS 16. ([#48651](https://github.com/expo/expo/pull/48651) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.7 - 2026-07-29
 
@@ -78,6 +92,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Temporarily make the Android config plugin opt-in with `enableAndroid`. ([#46463](https://github.com/expo/expo/pull/46463) by [@jakex7](https://github.com/jakex7))
+- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.16 - 2026-05-29
 

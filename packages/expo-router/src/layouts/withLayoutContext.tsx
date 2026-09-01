@@ -19,7 +19,11 @@ import { isScreen, Screen } from '../views/Screen';
 import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
-export function useFilterScreenChildren(
+export function useFilterScreenChildren<
+  TOptions extends object = Record<string, any>,
+  TState extends NavigationState = NavigationState,
+  TEventMap extends EventMapBase = EventMapBase,
+>(
   children: ReactNode,
   {
     isCustomNavigator,
@@ -33,12 +37,12 @@ export function useFilterScreenChildren(
   return useMemo(() => {
     const customChildren: any[] = [];
 
-    const screens: (ScreenProps & { name: string })[] = [];
+    const screens: (ScreenProps<TOptions, TState, TEventMap> & { name: string })[] = [];
     const guardedRedirects: GuardedRedirects = new Map();
 
     function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
       if (isScreen(child, contextKey)) {
-        screens.push(child.props);
+        screens.push(child.props as ScreenProps<TOptions, TState, TEventMap> & { name: string });
         if (exclude) {
           guardedRedirects.set(child.props.name, redirectTo);
         }
@@ -50,7 +54,7 @@ export function useFilterScreenChildren(
         screens.push({
           ...child.props,
           options: exclude ? { ...options, hidden: true } : options,
-        } as ScreenProps & { name: string });
+        } as ScreenProps<TOptions, TState, TEventMap> & { name: string });
         if (exclude) {
           guardedRedirects.set(child.props.name, redirectTo);
         }
@@ -111,7 +115,9 @@ export function useFilterScreenChildren(
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
  * @param Nav - The navigator component to wrap.
- * @param processor - A function that processes the screens before passing them to the navigator.
+ * @param processScreens - A function that processes the screens before passing them to the navigator.
+ * It must preserve every screen name exactly once because guards are associated with the original
+ * screen names.
  *
  *  @example
  * ```tsx app/_layout.tsx
@@ -138,21 +144,47 @@ export function useFilterScreenChildren(
  * ```
  */
 export function withLayoutContext<
-  TOptions extends object,
-  T extends ComponentType<any>,
-  TState extends NavigationState,
-  TEventMap extends EventMapBase,
->(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]) {
+  TOptions extends object = Record<string, any>,
+  T extends ComponentType<any> = ComponentType<any>,
+  TState extends NavigationState = NavigationState,
+  TEventMap extends EventMapBase = EventMapBase,
+>(
+  Nav: T,
+  processScreens?: (
+    screens: (ScreenProps<TOptions, TState, TEventMap> & { name: string })[]
+  ) => (ScreenProps<TOptions, TState, TEventMap> & { name: string })[]
+) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
       const node = useRouteNode();
 
-      const { screens, guardedRedirects } = useFilterScreenChildren(userDefinedChildren, {
-        contextKey,
-      });
+      const { screens, guardedRedirects } = useFilterScreenChildren<TOptions, TState, TEventMap>(
+        userDefinedChildren,
+        { contextKey }
+      );
 
-      const processed = processor ? processor(screens ?? []) : screens;
+      const screenNames =
+        processScreens && process.env.NODE_ENV !== 'production'
+          ? new Set(screens.map(({ name }) => name))
+          : undefined;
+
+      const processed = processScreens ? processScreens(screens ?? []) : screens;
+
+      if (screenNames && processed) {
+        const processedNames = processed.map(({ name }) => name);
+        if (
+          processedNames.length !== screenNames.size ||
+          new Set(processedNames).size !== screenNames.size ||
+          !processedNames.every((name) => screenNames.has(name))
+        ) {
+          throw new Error(
+            '`processScreens` must not add, remove, rename, or duplicate screens. ' +
+              `Received: ${JSON.stringify(processedNames)}. ` +
+              `Expected: ${JSON.stringify([...screenNames])}.`
+          );
+        }
+      }
 
       const sorted = useSortedScreens(processed ?? [], guardedRedirects);
 

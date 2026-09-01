@@ -1,3 +1,4 @@
+import Foundation
 import ExpoModulesCore
 
 class VideoCacheManager {
@@ -12,8 +13,12 @@ class VideoCacheManager {
 
   private let maxCacheSizeKey = "\(VideoCacheManager.expoVideoCacheScheme)/maxCacheSize"
 
-  // Files currently being used/modified by the player - they will be skipped when clearing the cache
+  // Files currently being used/modified by the player - they will be skipped when clearing the cache.
+  // Guarded by `openFilesLock`: it is written from `MediaFileHandle.init`/`deinit` (the main thread when a
+  // player is created, an arbitrary thread when the handle is released) and read from `limitCacheSize` on
+  // `cacheQueue`, so the accessors below must never touch it unlocked.
   private var openFiles: Set<URL> = Set()
+  private let openFilesLock = NSLock()
 
   // All cache commands such as clean or adding new data should be run on this queue
   let cacheQueue = DispatchQueue(label: "\(VideoCacheManager.expoVideoCacheScheme)-dispatch-queue")
@@ -23,10 +28,14 @@ class VideoCacheManager {
   }
 
   func registerOpenFile(at url: URL) {
+    openFilesLock.lock()
+    defer { openFilesLock.unlock() }
     openFiles.insert(url)
   }
 
   func unregisterOpenFile(at url: URL) {
+    openFilesLock.lock()
+    defer { openFilesLock.unlock() }
     openFiles.remove(url)
   }
 
@@ -181,7 +190,11 @@ class VideoCacheManager {
     return fileUrls.filter { !isAuxiliaryCacheFile($0) }
   }
 
+  // Only the set lookup is locked: the lock is also taken from `MediaFileHandle.deinit` on arbitrary
+  // threads, so it must never be held across the file system calls made by the callers.
   private func fileIsOpen(url: URL) -> Bool {
+    openFilesLock.lock()
+    defer { openFilesLock.unlock() }
     return openFiles.contains(url) || openFiles.contains { $0.relativePath == url.relativePath }
   }
 }

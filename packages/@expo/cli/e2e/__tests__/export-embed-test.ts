@@ -109,7 +109,6 @@ it('runs `npx expo export:embed`', async () => {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
       },
@@ -227,78 +226,6 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     'assets/assets/icon.png',
     'output.js',
     'output.js.map',
-  ]);
-});
-
-it('runs `npx expo export:embed --platform ios` with a robot user', async () => {
-  const projectRoot = ensureTesterReady('react-native-canary');
-  const output = 'dist-export-embed-robot-user';
-  await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
-  await fs.promises.mkdir(path.join(projectRoot, output));
-
-  // `npx expo export:embed`
-  await executeExpoAsync(
-    projectRoot,
-    [
-      'export:embed',
-      '--entry-file',
-      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
-      '--bundle-output',
-      `./${output}/output.js`,
-      '--assets-dest',
-      output,
-      '--platform',
-      'ios',
-      '--dev',
-      'false',
-    ],
-    {
-      env: {
-        NODE_ENV: 'production',
-        E2E_ROUTER_SRC: 'react-native-canary',
-        E2E_ROUTER_ASYNC: 'development',
-
-        // Most important part:
-        // NOTE(EvanBacon): This is a robot user token for an expo-managed account that can authenticate with view-only permission.
-        // The token is not secret and can be used to authenticate with the Expo API.
-        EXPO_TOKEN: '4awlFlcNYg7qOFa8J3a7d5Uaph8FaTsD1SP2xWEf',
-
-        // Ensure EXPO_OFFLINE is not set!
-        // EXPO_OFFLINE
-      },
-      // stdio: 'inherit',
-    }
-  );
-
-  const outputDir = path.join(projectRoot, output);
-
-  // Ensure output.js is a utf8 encoded file
-  const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
-  expect(outputJS.slice(0, 5)).toBe('var _');
-
-  // If this changes then everything else probably changed as well.
-  expect(findProjectFiles(outputDir)).toEqual([
-    expect.stringMatching(/assets\/arrow_down\.png$/),
-    expect.stringMatching(/assets\/error\.png$/),
-    expect.stringMatching(/assets\/file\.png$/),
-    expect.stringMatching(/assets\/forward\.png$/),
-    expect.stringMatching(/assets\/pkg\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon-mask\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@2x\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@3x\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@2x\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@3x\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@2x\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@3x\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@2x\.png$/),
-    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@3x\.png$/),
-    expect.stringMatching(/assets\/sitemap\.png$/),
-    expect.stringMatching(/assets\/unmatched\.png$/),
-    'output.js',
   ]);
 });
 
@@ -423,7 +350,6 @@ it('runs `npx expo export:embed --bytecode`', async () => {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
       },

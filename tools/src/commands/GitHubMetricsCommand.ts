@@ -62,8 +62,10 @@ interface WorkflowStats {
   successfulRuns: number;
   failedRuns: number;
   cancelledRuns: number;
-  otherRuns: number; // skipped, timed_out, action_required, neutral, stale, in_progress, etc.
-  successRate: number;
+  skippedRuns: number;
+  otherRuns: number; // timed_out, action_required, neutral, stale, in_progress, etc.
+  resolvedRuns: number; // runs that reached an outcome: successful + failed + cancelled
+  successRate: number; // percentage of resolvedRuns that succeeded or were cancelled
 }
 
 interface CIMetrics {
@@ -71,8 +73,10 @@ interface CIMetrics {
   successfulRuns: number;
   failedRuns: number;
   cancelledRuns: number;
-  otherRuns: number; // skipped, timed_out, action_required, neutral, stale, in_progress, etc.
-  successRate: number;
+  skippedRuns: number;
+  otherRuns: number; // timed_out, action_required, neutral, stale, in_progress, etc.
+  resolvedRuns: number; // runs that reached an outcome: successful + failed + cancelled
+  successRate: number; // percentage of resolvedRuns that succeeded or were cancelled
   workflows: WorkflowStats[];
 }
 
@@ -350,6 +354,78 @@ async function fetchPRMetrics(
   };
 }
 
+export function computeRunConclusionCounts(runs: { conclusion: string | null }[]) {
+  const totalRuns = runs.length;
+  const successfulRuns = runs.filter((run) => run.conclusion === 'success').length;
+  const failedRuns = runs.filter((run) => run.conclusion === 'failure').length;
+  const cancelledRuns = runs.filter((run) => run.conclusion === 'cancelled').length;
+  const skippedRuns = runs.filter((run) => run.conclusion === 'skipped').length;
+  const otherRuns = totalRuns - successfulRuns - failedRuns - cancelledRuns - skippedRuns;
+
+  const resolvedRuns = successfulRuns + failedRuns + cancelledRuns;
+  const effectiveSuccessfulRuns = successfulRuns + cancelledRuns;
+  const successRate = resolvedRuns > 0 ? (effectiveSuccessfulRuns / resolvedRuns) * 100 : 0;
+
+  return {
+    totalRuns,
+    successfulRuns,
+    failedRuns,
+    cancelledRuns,
+    skippedRuns,
+    otherRuns,
+    resolvedRuns,
+    successRate,
+  };
+}
+
+export function formatSuccessRate(stats: { resolvedRuns: number; successRate: number }): string {
+  return stats.resolvedRuns > 0 ? `${stats.successRate.toFixed(1)}%` : 'N/A (no executed runs)';
+}
+
+type WorkflowRunSummary = {
+  workflow_id: number;
+  name?: string | null;
+  path?: string | null;
+  conclusion: string | null;
+};
+
+/**
+ * Group runs per workflow, ordered by run count descending.
+ *
+ * Runs are grouped by `workflow_id` rather than by `name`: a workflow that sets `run-name:` gets a
+ * fresh name on every run (`verify`, `verify #49383 — expo-bot`, …), which would otherwise scatter
+ * one workflow across dozens of single-run rows.
+ */
+export function computeWorkflowStats(workflowRuns: WorkflowRunSummary[]): WorkflowStats[] {
+  const runsByWorkflowId = new Map<number, WorkflowRunSummary[]>();
+  for (const run of workflowRuns) {
+    const runs = runsByWorkflowId.get(run.workflow_id);
+    if (runs) {
+      runs.push(run);
+    } else {
+      runsByWorkflowId.set(run.workflow_id, [run]);
+    }
+  }
+
+  return Array.from(runsByWorkflowId.values())
+    .map((runs) => ({ name: workflowLabel(runs), ...computeRunConclusionCounts(runs) }))
+    .sort((a, b) => b.totalRuns - a.totalRuns);
+}
+
+/**
+ * The shortest run name of a group, which is the workflow's own name without any run-specific
+ * suffix. Falls back to the workflow file name for workflows whose runs are all unnamed.
+ */
+function workflowLabel(runs: WorkflowRunSummary[]): string {
+  const names = runs.flatMap((run) => (run.name ? [run.name] : []));
+  if (names.length > 0) {
+    return names.sort((a, b) => a.length - b.length || a.localeCompare(b))[0];
+  }
+
+  const workflowPath = runs.find((run) => run.path)?.path;
+  return workflowPath ? path.basename(workflowPath) : 'unknown';
+}
+
 /**
  * Fetch CI/CD workflow metrics for the given time period
  */
@@ -372,57 +448,9 @@ async function fetchCIMetrics(
     return data.workflow_runs;
   });
 
-  const totalRuns = workflowRuns.length;
-  const successfulRuns = workflowRuns.filter((run) => run.conclusion === 'success').length;
-  const failedRuns = workflowRuns.filter((run) => run.conclusion === 'failure').length;
-  const cancelledRuns = workflowRuns.filter((run) => run.conclusion === 'cancelled').length;
-  const otherRuns = totalRuns - successfulRuns - failedRuns - cancelledRuns;
-
-  const effectiveSuccessfulRuns = successfulRuns + cancelledRuns;
-  const successRate = totalRuns > 0 ? (effectiveSuccessfulRuns / totalRuns) * 100 : 0;
-
-  const workflowMap = new Map<string, typeof workflowRuns>();
-  for (const run of workflowRuns) {
-    const workflowName = run.name ?? 'unknown';
-    if (!workflowMap.has(workflowName)) {
-      workflowMap.set(workflowName, []);
-    }
-    workflowMap.get(workflowName)!.push(run);
-  }
-
-  const workflows: WorkflowStats[] = Array.from(workflowMap.entries())
-    .map(([name, runs]) => {
-      const workflowTotalRuns = runs.length;
-      const workflowSuccessfulRuns = runs.filter((run) => run.conclusion === 'success').length;
-      const workflowFailedRuns = runs.filter((run) => run.conclusion === 'failure').length;
-      const workflowCancelledRuns = runs.filter((run) => run.conclusion === 'cancelled').length;
-      const workflowOtherRuns =
-        workflowTotalRuns - workflowSuccessfulRuns - workflowFailedRuns - workflowCancelledRuns;
-
-      const workflowEffectiveSuccessful = workflowSuccessfulRuns + workflowCancelledRuns;
-      const workflowSuccessRate =
-        workflowTotalRuns > 0 ? (workflowEffectiveSuccessful / workflowTotalRuns) * 100 : 0;
-
-      return {
-        name,
-        totalRuns: workflowTotalRuns,
-        successfulRuns: workflowSuccessfulRuns,
-        failedRuns: workflowFailedRuns,
-        cancelledRuns: workflowCancelledRuns,
-        otherRuns: workflowOtherRuns,
-        successRate: workflowSuccessRate,
-      };
-    })
-    .sort((a, b) => b.totalRuns - a.totalRuns);
-
   return {
-    totalRuns,
-    successfulRuns,
-    failedRuns,
-    cancelledRuns,
-    otherRuns,
-    successRate,
-    workflows,
+    ...computeRunConclusionCounts(workflowRuns),
+    workflows: computeWorkflowStats(workflowRuns),
   };
 }
 
@@ -552,19 +580,20 @@ function generateMarkdownReport(metrics: MetricsData, options: MetricsOptions): 
 | Successful runs | ${metrics.ci.successfulRuns} | ${metrics.ci.totalRuns > 0 ? ((metrics.ci.successfulRuns / metrics.ci.totalRuns) * 100).toFixed(1) : '0.0'}% |
 | Failed runs | ${metrics.ci.failedRuns} | ${metrics.ci.totalRuns > 0 ? ((metrics.ci.failedRuns / metrics.ci.totalRuns) * 100).toFixed(1) : '0.0'}% |
 | Cancelled runs (concurrency) | ${metrics.ci.cancelledRuns} | ${metrics.ci.totalRuns > 0 ? ((metrics.ci.cancelledRuns / metrics.ci.totalRuns) * 100).toFixed(1) : '0.0'}% |
-| Other runs (skipped, in progress, etc.) | ${metrics.ci.otherRuns} | ${metrics.ci.totalRuns > 0 ? ((metrics.ci.otherRuns / metrics.ci.totalRuns) * 100).toFixed(1) : '0.0'}% |
-| **Success rate** | **${metrics.ci.successfulRuns + metrics.ci.cancelledRuns}/${metrics.ci.totalRuns}** | **${metrics.ci.successRate.toFixed(1)}%** |
+| Skipped runs (never executed) | ${metrics.ci.skippedRuns} | ${metrics.ci.totalRuns > 0 ? ((metrics.ci.skippedRuns / metrics.ci.totalRuns) * 100).toFixed(1) : '0.0'}% |
+| Unresolved runs (in progress, queued, awaiting approval) | ${metrics.ci.otherRuns} | ${metrics.ci.totalRuns > 0 ? ((metrics.ci.otherRuns / metrics.ci.totalRuns) * 100).toFixed(1) : '0.0'}% |
+| **Success rate** | **${metrics.ci.successfulRuns + metrics.ci.cancelledRuns}/${metrics.ci.resolvedRuns}** | **${formatSuccessRate(metrics.ci)}** |
 
-> **Note:** Cancelled runs are counted as successful since they're typically due to concurrency settings (newer runs superseding older ones).
+> **Note:** Cancelled runs are counted as successful since they're typically due to concurrency settings (newer runs superseding older ones). Skipped runs are excluded from the success rate entirely, since a \`skipped\` conclusion means the workflow never executed (usually because an \`if:\` condition gated it, like a fork-only check). Unresolved runs are excluded for the same reason — they had no outcome yet when the report was generated, so counting them as failures would make the rate rise and fall with how much CI happened to be in flight.
 
 ### Workflow Breakdown
 
-| Workflow | Total | Success | Failed | Cancelled | Other | Success Rate |
-|----------|-------|---------|--------|-----------|-------|--------------|
+| Workflow | Total | Success | Failed | Cancelled | Skipped | Unresolved | Success Rate |
+|----------|-------|---------|--------|-----------|---------|------------|--------------|
 ${metrics.ci.workflows
   .map(
     (w) =>
-      `| ${w.name} | ${w.totalRuns} | ${w.successfulRuns} | ${w.failedRuns} | ${w.cancelledRuns} | ${w.otherRuns} | ${w.successRate.toFixed(1)}% |`
+      `| ${w.name} | ${w.totalRuns} | ${w.successfulRuns} | ${w.failedRuns} | ${w.cancelledRuns} | ${w.skippedRuns} | ${w.otherRuns} | ${formatSuccessRate(w)} |`
   )
   .join('\n')}
 
@@ -580,7 +609,7 @@ ${metrics.ci.workflows
 
 - **Issue velocity:** ${metrics.issues.closedDuringPeriod} issues closed, ${metrics.issues.openedDuringPeriod} new issues opened
 - **PR velocity:** ${metrics.pullRequests.mergedDuringPeriod} PRs merged, ${metrics.pullRequests.openedDuringPeriod} new PRs opened
-- **CI reliability:** ${metrics.ci.successRate.toFixed(1)}% success rate across ${metrics.ci.totalRuns} workflow runs (${metrics.ci.failedRuns} failures)
+- **CI reliability:** ${formatSuccessRate(metrics.ci)} success rate across ${metrics.ci.resolvedRuns} resolved workflow runs (${metrics.ci.skippedRuns} skipped, ${metrics.ci.otherRuns} unresolved, ${metrics.ci.failedRuns} failures)
 
 ---
 

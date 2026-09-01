@@ -83,7 +83,8 @@ class InternalHeadlessAppLoader(private val context: Context) :
         override fun onManifestCompleted(manifest: Manifest) {
           Exponent.instance.runOnUiThread {
             try {
-              setManifest(manifestUrl!!, manifest, ExponentUrls.toHttp(manifest.getBundleURL()))
+              val bundleUrl = ExponentUrls.bundleUrlFromManifest(manifest, manifestUrl!!)
+              setManifest(manifestUrl!!, manifest, bundleUrl)
             } catch (e: JSONException) {
               this@InternalHeadlessAppLoader.callback!!.onComplete(false, Exception(e.message))
             }
@@ -194,7 +195,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
   private fun startReactInstance() {
     Exponent.instance.testPackagerStatus(
       isDebugModeEnabled,
-      manifest!!,
+      ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!),
       object : Exponent.PackagerStatusCallback {
         override fun onSuccess() {
           reactHost = startReactInstance(
@@ -242,11 +243,11 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
     val reactHost = ReactHostFactory.getDefaultReactHost(
       context = context,
-      packageList = host.packages,
-      jsMainModulePath = host.jsMainModuleName,
-      jsBundleFilePath = host.jsBundleFile,
-      useDevSupport = host.useDeveloperSupport,
-      devServerBundleUrl = ExponentUrls.toHttp(manifest!!.getBundleURL())
+      packageList = host.getPackages(),
+      jsMainModulePath = host.getJSMainModuleName(),
+      jsBundleFilePath = host.getJSBundleFile(),
+      useDevSupport = host.getUseDeveloperSupport(),
+      devServerBundleUrl = ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!)
     )
 
     (reactHost.devSupportManager as? ExpoGoDevSupportManager)?.exponentActivityId = activityId

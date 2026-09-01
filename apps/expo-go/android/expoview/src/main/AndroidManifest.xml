@@ -2,14 +2,12 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools">
 
-  <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
   <supports-screens
     android:anyDensity="true"
     android:largeScreens="true"
     android:normalScreens="true"
     android:smallScreens="true"
     android:xlargeScreens="true"/>
-  <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -70,7 +68,6 @@
 
   <application android:theme="@style/AppTheme">
 
-    <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
     <!-- Scheduled notifications -->
     <receiver
       android:name="host.exp.exponent.notifications.ScheduledNotificationReceiver"
@@ -87,8 +84,6 @@
         <action android:name="android.intent.action.QUICKBOOT_POWERON" />
       </intent-filter>
     </receiver>
-
-    <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
     <provider
       android:name="androidx.core.content.FileProvider"

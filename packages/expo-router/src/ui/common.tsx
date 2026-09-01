@@ -1,16 +1,23 @@
-import type { UrlObject } from '../LocationProvider';
-import type { RouteNode } from '../Route';
+import {
+  findRouteNodeByName,
+  getValidInitialRouteName,
+  sortRoutesWithInitial,
+  type RouteNode,
+} from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import type { UrlObject } from '../global-state/getRouteInfoFromState';
+import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
+import type { RouterRegistry } from '../global-state/routerRegistry';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type {
   LinkingOptions,
+  NavigationAction,
+  NavigationState,
   ParamListBase,
-  PartialRoute,
-  Route,
+  PartialState,
 } from '../react-navigation/native';
-import { sortRoutesWithInitial } from '../sortRoutes';
 import type { Href } from '../types';
-import { routeToScreen } from '../useScreens';
+import { type ScreenProps, useSortedScreens } from '../useScreens';
 import { Slot } from './Slot';
 import type { ExpoTabActionType } from './TabRouter';
 
@@ -35,17 +42,64 @@ type TriggerConfig =
       name: string;
       href: string;
       routeNode: RouteNode;
+      layoutRouteNode: RouteNode;
+      contextKey: string;
       action: JumpToNavigationAction;
+      targetState?: PartialState<NavigationState>;
+      deep: boolean;
     }
   | { type: 'external'; name: string; href: string };
 
-export type TriggerMap = Record<string, TriggerConfig & { index: number }>;
+export type TriggerMap = Record<string, TriggerConfig>;
 
-export function triggersToScreens(
+export function getTabRoute(state: NavigationState, name: string) {
+  const route = state.routes.find((route) => route.name === name);
+  return { route, isSwitching: state.routes[state.index]?.key !== route?.key };
+}
+
+export function buildTabAction(
+  config: Extract<TriggerConfig, { type: 'internal' }>,
+  state: NavigationState,
+  registry: RouterRegistry,
+  resetOnFocus?: boolean
+): NavigationAction {
+  const { route, isSwitching } = getTabRoute(state, config.routeNode.route);
+  const shouldResolve =
+    config.deep || route?.state === undefined || Boolean(resetOnFocus && isSwitching);
+  const navigationState =
+    resetOnFocus && isSwitching && route?.state
+      ? {
+          ...state,
+          routes: state.routes.map((currentRoute) =>
+            currentRoute.key === route.key ? { ...currentRoute, state: undefined } : currentRoute
+          ),
+        }
+      : state;
+  const action = {
+    ...config.action,
+    type: shouldResolve && !isSwitching ? 'NAVIGATE' : 'JUMP_TO',
+    payload: {
+      ...config.action.payload,
+      ...(resetOnFocus !== undefined ? { resetOnFocus } : undefined),
+    },
+  };
+
+  return shouldResolve && config.targetState
+    ? (resolveNavigationDestination({
+        targetState: config.targetState,
+        navigationState,
+        routeNode: config.layoutRouteNode,
+        registry,
+        action,
+        // The resolver preserves the supplied action type.
+      }) as NavigationAction)
+    : action;
+}
+
+export function useTriggersToScreens(
   triggers: ScreenTrigger[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
-  initialRouteName: undefined | string,
   parentTriggerMap: TriggerMap,
   routeInfo: UrlObject,
   contextKey: string
@@ -90,7 +144,8 @@ export function triggersToScreens(
       { relativeToDirectory: true }
     );
 
-    let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];
+    let state = linking.getStateFromPath?.(resolvedHref, linking.config, routeInfo.segments)
+      ?.routes[0];
 
     if (!state) {
       // This shouldn't occur, as you should get the global +not-found
@@ -119,10 +174,17 @@ export function triggersToScreens(
       if (state.name === targetStateName) break;
       state = state.state.routes[state.state.index ?? state.state.routes.length - 1]!;
     }
+    const isWithinLayout = state?.name === targetStateName;
     routeState =
       state!.state?.routes[state!.state.index ?? state!.state.routes.length - 1] || state;
 
-    const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
+    const routeNode = findRouteNodeByName(layoutRouteNode, routeState?.name);
+
+    if (!isWithinLayout) {
+      throw new Error(
+        `Tab trigger '${trigger.name}' with href '${resolvedHref}' must point to a route within the tabs layout.`
+      );
+    }
 
     if (!routeNode) {
       console.warn(
@@ -144,90 +206,76 @@ export function triggersToScreens(
     if (duplicateTrigger) {
       const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })} and ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
 
+      // TODO(@ubax): Support multiple triggers for one dynamic route with different params.
       throw new Error(
         `A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}.\nBoth triggers map to route ${routeNode.route}.`
       );
     }
 
+    const action: JumpToNavigationAction = {
+      type: 'JUMP_TO',
+      payload: { name: routeState.name, params: routeState.params },
+    };
     configs.push({
       ...trigger,
       href: resolvedHref,
       routeNode,
-      action: stateToAction(state, layoutRouteNode.route),
+      layoutRouteNode,
+      contextKey,
+      action,
+      targetState: state.state,
+      deep: hasDeepDestination(routeState, routeNode),
     });
   }
 
-  const sortFn = sortRoutesWithInitial(initialRouteName);
-
-  const sortedConfigs = configs.sort((a, b) => {
-    // External routes should be last. They will eventually be dropped
-    if (a.type === 'external' && b.type === 'external') {
-      return 0;
-    } else if (a.type === 'external') {
-      return 1;
-    } else if (b.type === 'external') {
-      return -1;
-    }
-
-    return sortFn(a.routeNode, b.routeNode);
-  });
-
-  const children: React.JSX.Element[] = [];
+  const screenProps: ScreenProps[] = [];
   const triggerMap: TriggerMap = { ...parentTriggerMap };
 
-  for (const [index, config] of sortedConfigs.entries()) {
-    triggerMap[config.name] = { ...config, index };
+  for (const config of configs) {
+    triggerMap[config.name] = config;
 
     if (config.type === 'internal') {
-      // Trigger-declared screens are layout-declared, same as `<Screen>` children.
-      children.push(routeToScreen(config.routeNode, undefined, undefined, 'layout'));
+      // TODO(https://github.com/expo/expo/pull/48756): Resolved internal-trigger href params need
+      // to flow through ExpoTabRouter to placeholder, fallback, and action-recreated routes without
+      // restoring Screen.initialParams. Explicit action params must override these defaults.
+      screenProps.push({ name: config.routeNode.route });
     }
   }
+
+  const children = useSortedScreens(screenProps);
+
   return {
     children,
     triggerMap,
   };
 }
 
-export function stateToAction(
-  state: PartialRoute<Route<string, object | undefined>> | undefined,
-  startAtRoute?: string
-): JumpToNavigationAction {
-  const rootPayload: any = {};
-  let payload = rootPayload;
-
-  startAtRoute = startAtRoute === '' ? '__root' : startAtRoute;
-
-  let foundStartingPoint = startAtRoute === undefined || !state?.state;
+function hasDeepDestination(
+  route: { state?: PartialState<NavigationState> },
+  routeNode: RouteNode
+) {
+  let state = route.state;
+  let node = routeNode;
 
   while (state) {
-    if (foundStartingPoint) {
-      if (payload === rootPayload) {
-        payload.name = state.name;
-      } else {
-        payload.screen = state.name;
-      }
-      payload.params = state.params ? { ...state.params } : {};
-
-      state = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
-
-      if (state) {
-        payload.params ??= {};
-        payload = payload.params;
-      }
-    } else {
-      if (state.name === startAtRoute) {
-        foundStartingPoint = true;
-      }
-      const nextState = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
-      if (nextState) {
-        state = nextState;
-      }
+    const childRoute = state.routes[state.index ?? state.routes.length - 1];
+    const initialRouteName =
+      getValidInitialRouteName(node) ?? [...node.children].sort(sortRoutesWithInitial())[0]?.route;
+    if (
+      !childRoute ||
+      childRoute.name !== initialRouteName ||
+      (childRoute.params && Object.keys(childRoute.params).length > 0)
+    ) {
+      return true;
     }
+
+    const childNode = findRouteNodeByName(node, childRoute.name);
+    if (!childNode) {
+      return true;
+    }
+    node = childNode;
+    state = childRoute.state;
   }
 
-  return {
-    type: 'JUMP_TO',
-    payload: rootPayload,
-  };
+  return false;
 }

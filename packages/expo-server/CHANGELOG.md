@@ -9,10 +9,12 @@
 ### 🎉 New features
 
 - Apply per-path `pageHeaders` to matching page responses ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
+- Apply `pageHeaders` rules to loader responses ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 - Support web apps exported using SDK 55 ([#48351](https://github.com/expo/expo/pull/48351) by [@hassankhan](https://github.com/hassankhan))
+- Replace use of Node's `pipeline` helper for manual response draining to avoid treating cancellation cases as exceptions ([#48699](https://github.com/expo/expo/pull/48699) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

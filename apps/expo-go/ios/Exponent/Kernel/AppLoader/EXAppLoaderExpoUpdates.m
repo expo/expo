@@ -252,8 +252,26 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
     return;
   }
   if (isDevServer && (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername])) {
+    // _manifestUrl is what createNewApp was given, so it matches the key the linking manager set.
+    BOOL hasPendingDeviceAuth = [[EXPendingDeviceLogin shared] hasPendingForProjectURL:_manifestUrl];
+    NSURL *verificationURI = [[EXPendingDeviceLogin shared] verificationURIForProjectURL:_manifestUrl];
     NSString *message;
-    if (expoGoUsername == nil || [expoGoUsername length] == 0) {
+    if (hasPendingDeviceAuth) {
+      // The QR asked for a sign in, so the account can be switched here rather than on a computer.
+      NSString *codeSentence = verificationURI.host
+        ? [NSString stringWithFormat:@"Expo Go will show you a code to enter at %@, then tap Try Again.", verificationURI.host]
+        : @"Expo Go will show you a code and where to enter it, then tap Try Again.";
+      if (expoGoUsername != nil && [expoGoUsername length] > 0) {
+        message = [NSString stringWithFormat:
+          @"This project belongs to \"%@\", and you're signed in to Expo Go as \"%@\". Sign in as \"%@\" to open it. %@",
+          manifestUsername, expoGoUsername, manifestUsername, codeSentence];
+      } else {
+        message = [NSString stringWithFormat:
+          @"This project belongs to \"%@\", and you're not signed in to Expo Go. Sign in as \"%@\" to open it. %@",
+          manifestUsername, manifestUsername, codeSentence];
+      }
+      [[ExpoGoHomeBridge shared] offerDeviceLoginWithVerificationURI:verificationURI];
+    } else if (expoGoUsername == nil || [expoGoUsername length] == 0) {
       message = [NSString stringWithFormat:
         @"You're signed in to Expo CLI as \"%@\", but not signed in to Expo Go. Sign in to Expo Go as \"%@\" to open this project.",
         manifestUsername, manifestUsername];
@@ -781,14 +799,31 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
       @"Expo-Client-Release-Type": [EXClientReleaseType clientReleaseType]
   };
 
+  NSMutableDictionary *requestHeadersMutable = [requestHeaders mutableCopy];
+  [requestHeadersMutable addEntriesFromDictionary:[self forwardedHeadersForURL:[[self class] _httpUrlFromManifestUrl:_manifestUrl]]];
+
   NSString *sessionSecret = [[EXSession sharedInstance] sessionSecret];
   if (sessionSecret) {
-    NSMutableDictionary *requestHeadersMutable = [requestHeaders mutableCopy];
     requestHeadersMutable[@"Expo-Session"] = sessionSecret;
-    requestHeaders = requestHeadersMutable;
   }
 
-  return requestHeaders;
+  return requestHeadersMutable;
+}
+
+- (NSDictionary *)forwardedHeadersForURL:(NSURL *)url
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+  if (!components.host || !components.scheme) {
+    return @{};
+  }
+
+  NSString *authority = components.port ? [NSString stringWithFormat:@"%@:%@", components.host, components.port] : components.host;
+  NSMutableDictionary *headers = @{
+    @"Forwarded": [NSString stringWithFormat:@"host=\"%@\";proto=%@", authority, components.scheme],
+    @"X-Forwarded-Host": authority,
+    @"X-Forwarded-Proto": components.scheme,
+  }.mutableCopy;
+  return headers;
 }
 
 - (NSString *)_userAgentString

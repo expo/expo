@@ -14,6 +14,7 @@ data class MediaStoreImage(
   val dateModified: Long?,
   val width: Int?,
   val height: Int?,
+  val orientation: Int?,
   val data: String?,
   val isFavorite: Int?
 ) {
@@ -29,6 +30,7 @@ data class MediaStoreImage(
         dateModified = getNullableLong(columnIndexes.dateModified),
         width = getNullableInt(columnIndexes.width),
         height = getNullableInt(columnIndexes.height),
+        orientation = getNullableInt(columnIndexes.orientation),
         data = getNullableString(columnIndexes.data),
         isFavorite = columnIndexes.isFavorite?.let { getNullableInt(it) }
       )
@@ -41,6 +43,7 @@ data class MediaStoreImage(
       add(DATE_MODIFIED)
       add(WIDTH)
       add(HEIGHT)
+      add(ORIENTATION)
       add(DATA)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         add(IS_FAVORITE)
@@ -56,6 +59,7 @@ data class MediaStoreImageColumnIndexes(
   val dateModified: Int,
   val width: Int,
   val height: Int,
+  val orientation: Int,
   val data: Int,
   val isFavorite: Int?
 ) {
@@ -68,6 +72,7 @@ data class MediaStoreImageColumnIndexes(
         dateModified = getColumnIndexOrThrow(DATE_MODIFIED),
         width = getColumnIndexOrThrow(WIDTH),
         height = getColumnIndexOrThrow(HEIGHT),
+        orientation = getColumnIndexOrThrow(ORIENTATION),
         data = getColumnIndexOrThrow(DATA),
         isFavorite = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           getColumnIndexOrThrow(IS_FAVORITE)

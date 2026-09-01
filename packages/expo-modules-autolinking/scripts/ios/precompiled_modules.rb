@@ -48,6 +48,9 @@ module Expo
     # Environment variable for a shared remote base URL used by external prebuilt packages.
     EXTERNAL_MODULES_BASE_URL_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_BASE_URL'.freeze
 
+    # When set to a file path, `pod install` writes the derivations dump there.
+    DUMP_ENV_VAR = 'EXPO_PRECOMPILED_DUMP'.freeze
+
     # Subdirectory within each pod dir for tarballs and build state
     ARTIFACTS_DIR_NAME = 'artifacts'.freeze
 
@@ -72,6 +75,19 @@ module Expo
     # so it is not resolved through the Expo precompiled tarball pipeline.
     CUSTOM_XCFRAMEWORK_DEPENDENCIES = %w[ExpoModulesJSI].freeze
 
+    # Prebuilt pods whose headers already reach every target through another mechanism.
+    GLOBALLY_INJECTED_PREBUILT_PODS = %w[
+      ExpoModulesCore
+      React
+      React-Core-prebuilt
+      Hermes
+      ReactNativeDependencies
+    ].freeze
+
+    # Unavailability reasons where the pod's own artifact is fine and an interdependent
+    # pod pulled it to source. The expected-tarball hint is misleading for these.
+    CASCADED_UNAVAILABLE_REASONS = %i[dependency_unavailable dependent_unavailable].freeze
+
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
     @repo_root = nil
@@ -81,6 +97,7 @@ module Expo
     @hermes_version = nil
     @claimed_vendored_frameworks = nil  # Set<String> — xcframework names already claimed by a prebuilt pod
     @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
+    @prebuilt_dependent_pods = nil      # Hash: pod_name -> pods declaring it as a dependency
     @failed_remote_downloads = Set.new
     @warned_no_prebuilt_react = false
     @target_platform = nil
@@ -130,6 +147,7 @@ module Expo
 
       def build_from_source=(patterns)
         @build_from_source_patterns = (patterns || []).map { |p| Regexp.new("^#{p}$") }
+        @prebuilt_dependent_pods = nil
         @status_cache = {}
       end
 
@@ -142,6 +160,7 @@ module Expo
         @claimed_vendored_frameworks = nil
         @framework_owner_map = nil
         @xcframework_slice_cache = nil
+        @prebuilt_dependent_pods = nil
         @status_cache = {}
       end
 
@@ -178,13 +197,17 @@ module Expo
       #
       # @param installer [Pod::Installer] The CocoaPods installer instance
       def perform_post_install(installer)
+        dump_derivations(ENV[DUMP_ENV_VAR]) unless ENV[DUMP_ENV_VAR].to_s.empty?
         print_linking_summary
         disable_swift_interface_verification(installer)
         configure_use_frameworks(installer)
+        requote_swift_compat_header_paths(installer)
         ensure_artifacts(installer)
         configure_header_search_paths(installer)
+        configure_prebuilt_dependency_header_search_paths(installer)
         configure_codegen_for_prebuilt_modules(installer)
         stub_bundled_pod_targets(installer)
+        quote_swift_compatibility_header_search_paths(installer)
       end
 
       # Runs all precompiled module pre-install steps.
@@ -205,26 +228,7 @@ module Expo
 
         pods_to_downgrade = Set.new(installer.podfile.framework_modules_to_patch)
 
-        # Pods an earlier pre_install hook already switched to dynamic frameworks —
-        # e.g. @rnmapbox/maps flips its Mapbox binary pods (MapboxCommon,
-        # MapboxCoreMaps, MapboxMaps, Turf) to dynamic. Forcing these back to static
-        # breaks that required linkage and makes CocoaPods abort with "transitive
-        # dependencies that include statically linked binaries".
-        # `build_type` is a private reader on Pod::Target, so read it via `send`;
-        # hooks that override it define a public method, which `send` resolves too.
-        dynamic_framework_pods = installer.pod_targets
-          .select { |t| t.send(:build_type).dynamic_framework? }
-          .map(&:name)
-          .to_set
-
         installer.pod_targets.each do |t|
-          # Leave the dynamic framework itself untouched.
-          next if dynamic_framework_pods.include?(t.name)
-          # Leave a pod that links against one untouched too: a consumer like
-          # rnmapbox-maps is built as a framework under use_frameworks! and imports
-          # the dynamic pod with framework-style headers (#import <Mapbox…/…>), so a
-          # static-library downgrade breaks its compile.
-          next if t.root_spec.dependencies.any? { |d| dynamic_framework_pods.include?(d.name) }
           if has_vendored_xcframeworks?(t)
             pods_to_downgrade.add(t.name)
           elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
@@ -241,6 +245,38 @@ module Expo
             end
           end
         end
+      end
+
+      # Canonical JSON dump (one pod per line) of the pure derivations behind
+      # pod_lookup_map — the ENG-25370 snapshot/differential baseline.
+      # build_output_dir is excluded: it depends on which artifacts exist locally.
+      def dump_derivations(output_path)
+        repo_root = memoized_repo_root
+        lines = pod_lookup_map.sort_by { |pod_name, _| pod_name }.map do |pod_name, info|
+          entry = {
+            'type' => info[:type].to_s,
+            'npmPackage' => info[:npm_package],
+            'packageRoot' => repo_relative_path(info[:package_root], repo_root),
+            'podspecDir' => repo_relative_path(info[:podspec_dir], repo_root),
+            'productName' => info[:product_name],
+            'codegenName' => info[:codegen_name],
+            'spmDependencyFrameworks' => info[:spm_dependency_frameworks] || [],
+            'spmDependencyVersions' => (info[:spm_dependency_versions] || {}).sort.to_h,
+            'dependencyProducts' => info[:prebuilt_dependency_pods] || [],
+            'autolinkWhen' => info[:autolink_when],
+          }
+          "  #{pod_name.to_json}: #{JSON.generate(entry)}"
+        end
+        FileUtils.mkdir_p(File.dirname(output_path))
+        File.write(output_path, "{\n#{lines.join(",\n")}\n}\n")
+        Pod::UI.puts "[Expo-precompiled] Wrote derivations dump (#{lines.size} pods) to #{output_path}"
+      end
+
+      # pnpm store segments are collapsed: their names embed version and patch
+      # hashes, which would churn the fixture on every dependency bump.
+      def repo_relative_path(path, repo_root)
+        return path unless path && repo_root && path.start_with?(repo_root + File::SEPARATOR)
+        path[(repo_root.length + 1)..].sub(%r{\Anode_modules/\.pnpm/[^/]+/node_modules/}, 'node_modules/')
       end
 
       # Symlinks each shared SPM dependency xcframework (e.g. SDWebImage) into the
@@ -656,7 +692,7 @@ module Expo
       def patch_spec_for_prebuilt(spec)
         resolution = resolve_prebuilt_status(spec.name)
         unless resolution[:available]
-          log_linking_status(spec.name, false, resolution) if resolution[:reason] == :dependency_unavailable
+          log_linking_status(spec.name, false, resolution) if CASCADED_UNAVAILABLE_REASONS.include?(resolution[:reason])
           return spec
         end
 
@@ -847,11 +883,36 @@ module Expo
       # build time when switching Debug↔Release configurations.
       def configure_use_frameworks(installer)
         return unless prebuilt_react_active?
+
+        # Modern modular prebuilt React (React.xcframework + flattened ReactNativeHeaders, no VFS
+        # overlay): React Native's rncore.rb wires the header resolution — <React/...> and
+        # `@import React` via the framework, and the relocated namespaces (<react/...>, <yoga/...>,
+        # RCTDeprecation/, ...) via a clang module map at React-Core-prebuilt/Headers/module.modulemap.
+        # But RN's pod-target loop only covers the React-* pods; it misses every Expo pod (Expo,
+        # ExpoModulesCore, ExpoImage, ...). Re-apply that module-map coverage to the pods RN missed so
+        # their <React/...> explicit-module precompile resolves the lowercase namespaces modularly
+        # instead of tripping -Wnon-modular-include-in-framework-module. (The coverage self-skips if the
+        # prebuilt did not actually ship the module map — see ensure_modular_react_header_flags.)
+        unless prebuilt_react_uses_vfs?(installer)
+          ensure_modular_react_header_flags(installer)
+          return
+        end
+
+        # Legacy VFS prebuilt React: the use_frameworks! compat below only applies when use_frameworks!
+        # is active.
         return if linkage(installer).nil?
 
         react_prebuilt_dir = File.join(installer.sandbox.root, 'React-Core-prebuilt')
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
+
+        # This workaround rewires the xcframework-root Headers/ layout that react-native
+        # shipped up to 0.86. react-native 0.87 dropped that layout (headers are extracted
+        # to a Pods/React-Core-prebuilt/Headers sidecar with its own modulemap instead),
+        # so applying it there would point the React module at a missing umbrella header
+        # and break every React module build. Skip when the expected layout is absent.
+        umbrella_header = File.join(xcframework_path, 'Headers', 'React_Core', 'React_Core-umbrella.h')
+        return unless File.exist?(umbrella_header)
 
         target_support_dir = File.join(installer.sandbox.root, 'Target Support Files', 'React-Core-prebuilt')
         FileUtils.mkdir_p(target_support_dir)
@@ -861,6 +922,138 @@ module Expo
         inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
+      end
+
+      # Central discriminator for how the prebuilt React-Core-prebuilt pod exposes its headers. Two
+      # layouts ship today; everything that branches on "are we modular?" should route through here
+      # rather than re-deriving it (the signals diverged once before — keying on the transient
+      # Headers/module.modulemap — and silently broke the build):
+      #
+      #   - Legacy VFS: a single React.xcframework whose headers live at React.xcframework/Headers;
+      #     <react/...>/<yoga/...> are made resolvable via a generated clang VFS overlay. Expo must
+      #     install use_frameworks! compatibility (non-framework modulemap + -isystem) for it.
+      #   - Modern framework-resolved: ReactNativeHeaders' headers are flattened into a top-level
+      #     React-Core-prebuilt/Headers/ directory and vended as ordinary public pod headers, while
+      #     <React/...> resolves through the framework. No VFS, no module-map flag, no Expo compat.
+      #
+      # The presence of the flattened top-level Headers/ directory is the stable signal: it is the
+      # pod's header_mappings_dir output (re-created by prepare_command on every build-time re-extract),
+      # unlike Headers/module.modulemap which the modern layout copies in transiently and then discards.
+      def prebuilt_react_uses_vfs?(installer)
+        return false unless prebuilt_react_active?
+
+        react_prebuilt_dir = File.join(installer.sandbox.root, 'React-Core-prebuilt')
+        !Dir.exist?(File.join(react_prebuilt_dir, 'Headers'))
+      end
+
+      # Mirrors React Native's rncore.rb add_prebuilt_header_search_paths for the pods RN's own loop
+      # misses (it only covers the React-* pod targets, not the Expo pods). Re-applies the flattened
+      # ReactNativeHeaders module map + header search path idempotently, skipping any xcconfig that
+      # already carries the flag (those RN already covered).
+      #
+      # Gated on the module map actually existing: the Maven prebuilt path (RCT_USE_PREBUILT_RNCORE
+      # without RCT_TESTONLY_RNCORE_TARBALL_PATH) can install a React-Core-prebuilt that does not ship
+      # Headers/module.modulemap. Pointing -fmodule-map-file at a missing file fails `ScanDependencies`
+      # ("module map file ... not found"), so when it is absent we inject nothing and warn — the
+      # faithful path is a tarball that ships ReactNativeHeaders via RCT_TESTONLY_RNCORE_TARBALL_PATH.
+      def ensure_modular_react_header_flags(installer)
+        module_map_file = File.join(installer.sandbox.root, 'React-Core-prebuilt', 'Headers', 'module.modulemap')
+        unless File.exist?(module_map_file)
+          Pod::UI.warn "[Expo] Prebuilt React-Core-prebuilt is missing Headers/module.modulemap — " \
+            "skipping Expo module-map coverage. If the build fails with a missing module map or " \
+            "-Wnon-modular-include, the installed prebuilt React does not match React Native's " \
+            "CocoaPods scripts; install a tarball that ships ReactNativeHeaders via " \
+            "RCT_TESTONLY_RNCORE_TARBALL_PATH."
+          return
+        end
+
+        module_map = '$(PODS_ROOT)/React-Core-prebuilt/Headers/module.modulemap'
+        header_path = '"$(PODS_ROOT)/React-Core-prebuilt/Headers"'
+        # Quoted exactly as RN's rncore.rb writes it, for two reasons: a $(PODS_ROOT) containing
+        # spaces has to stay a single clang argument, and the already-present checks below only
+        # recognise RN's own injection — and skip re-adding it — if the spelling matches.
+        cflags_flag = %("-fmodule-map-file=#{module_map}")
+        swift_flag = "-Xcc #{cflags_flag}"
+        umbrella_flag = '-Xcc -Wno-incomplete-umbrella'
+
+        patched = 0
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          original = content.dup
+
+          # Each flag is ensured INDEPENDENTLY (not "skip the pod if the module-map flag is present").
+          # A pod can carry the -fmodule-map-file flag from its own podspec (e.g. react-native-reanimated
+          # 4.x adds it) yet still lack the flattened-headers search path — in which case the module map
+          # activates the yoga/react modules but <yoga/style/Style.h> & co. textually fail to resolve
+          # (the modules' headers live under React-Core-prebuilt/Headers/). Add whichever piece is absent.
+          #
+          # OTHER_CPLUSPLUSFLAGS needs its own copy: Xcode does not fold OTHER_CFLAGS into it, so once a
+          # target sets it (RN's new_architecture.rb does, for -DRCT_NEW_ARCH_ENABLED) that value replaces
+          # OTHER_CFLAGS for every .mm/.cpp/.cc translation unit. Without it the module map never reaches
+          # the C++ sources that consume the relocated react/ and yoga/ namespaces.
+          content = append_xcconfig_flag(content, 'HEADER_SEARCH_PATHS', header_path)
+          content = append_xcconfig_flag(content, 'OTHER_CFLAGS', cflags_flag)
+          content = append_xcconfig_flag(content, 'OTHER_CPLUSPLUSFLAGS', cflags_flag)
+          content = append_xcconfig_flag(content, 'OTHER_SWIFT_FLAGS', umbrella_flag)
+          content = append_xcconfig_flag(content, 'OTHER_SWIFT_FLAGS', swift_flag)
+
+          next if content == original
+          File.write(xcconfig_path, content)
+          patched += 1
+        end
+
+        Pod::UI.puts "[Expo] ".blue + "Ensured modular React header flags on #{patched} xcconfig(s)"
+      end
+
+      # Re-quote unquoted `.../Swift Compatibility Header` entries in HEADER_SEARCH_PATHS. The path
+      # has a space, and CocoaPods drops the podspec's quotes when it's supplied via a joined
+      # `pod_target_xcconfig` string, so clang space-splits it and a cross-pod `#import
+      # "<Pod>-Swift.h"` fails in the static-library source build (no framework bundle, and no VFS
+      # overlay since RN removed it). Runs on the final xcconfigs; RN's post-install preserves
+      # quotes, so this stays authoritative. Idempotent (already-quoted tokens are skipped).
+      def quote_swift_compatibility_header_search_paths(installer)
+        # $(…)/${…}PODS_CONFIGURATION_BUILD_DIR / <pod-name> / "Swift Compatibility Header", unquoted only.
+        token = /(?<!")(\$[({]PODS_CONFIGURATION_BUILD_DIR[)}]\/[^\s"\/]+\/Swift Compatibility Header)(?!")/
+        patched = 0
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          new_content = content.gsub(/^HEADER_SEARCH_PATHS\s*=.*$/) { |line| line.gsub(token, '"\1"') }
+          next if new_content == content
+          File.write(xcconfig_path, new_content)
+          patched += 1
+        end
+        Pod::UI.puts "[Expo] ".blue + "Quoted Swift compatibility header search paths in #{patched} xcconfig(s)" if patched > 0
+      end
+
+      # Appends `value` to an xcconfig `key` line (preserving $(inherited)), or adds the key if absent.
+      # No-ops when `key` already carries `value`.
+      #
+      # The already-present check is scoped to `key`'s own line, not the whole file: the same flag
+      # legitimately belongs on several keys (OTHER_CFLAGS and OTHER_CPLUSPLUSFLAGS both need the
+      # module map), so a file-wide check would let whichever key is written first silently suppress
+      # every later one.
+      def append_xcconfig_flag(content, key, value)
+        line = /^(#{Regexp.escape(key)}\s*=.*)$/
+        existing = content[line, 1]
+        return content if existing&.include?(value)
+        return content.sub(line) { "#{$1} #{value}" } if existing
+
+        (content.end_with?("\n") ? content : content + "\n") + "#{key} = $(inherited) #{value}\n"
+      end
+
+      # CocoaPods shell-splits `pod_target_xcconfig` search paths, dropping the quotes
+      # around entries that contain spaces. `.../Swift Compatibility Header` then lands
+      # in the generated pod xcconfigs as three broken -I flags, so a source-built Swift
+      # pod's dependents can't find its generated ObjC compatibility header (e.g. the
+      # Expo pod importing ExpoModulesCore-Swift.h). Re-quote those entries after
+      # CocoaPods writes the xcconfigs. Aggregate (user-target) xcconfigs keep their
+      # quotes and are left untouched by the negative-lookaround guards.
+      def requote_swift_compat_header_paths(installer)
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          fixed = content.gsub(%r{(?<!")(\$[({]PODS_CONFIGURATION_BUILD_DIR[)}]/[^ "\n]+/Swift Compatibility Header)(?!")}, '"\1"')
+          File.write(xcconfig_path, fixed) if fixed != content
+        end
       end
 
       # TODO(ExpoModulesJSI-xcframework): Remove this method when ExpoModulesJSI.xcframework
@@ -879,7 +1072,7 @@ module Expo
         expo_core_xcframework = find_expo_modules_core_xcframework(installer)
         return unless expo_core_xcframework
 
-        header_search_paths = collect_xcframework_header_paths(expo_core_xcframework)
+        header_search_paths = collect_xcframework_header_paths(expo_core_xcframework, 'ExpoModulesCore')
         return if header_search_paths.empty?
 
         paths_string = header_search_paths.map { |p| "\"#{p}\"" }.join(' ')
@@ -896,9 +1089,40 @@ module Expo
         installer.pods_project.targets.each do |target|
           target.build_configurations.each do |config|
             existing = config.build_settings['HEADER_SEARCH_PATHS'] || '$(inherited)'
+            existing = existing.join(' ') if existing.is_a?(Array)
             unless existing.include?(paths_string)
               config.build_settings['HEADER_SEARCH_PATHS'] = "#{existing} #{paths_string}"
             end
+          end
+        end
+      end
+
+      # Lets a source-built pod include headers from its prebuilt dependencies, which
+      # exist only inside the xcframework and never in `Pods/Headers/Public`.
+      #
+      # @param installer [Pod::Installer] The CocoaPods installer instance
+      def configure_prebuilt_dependency_header_search_paths(installer)
+        return unless enabled?
+
+        installer.pod_targets.each do |pod_target|
+          next if has_prebuilt_xcframework?(pod_target.pod_name)
+
+          prebuilt_dependencies = pod_target.dependent_targets.map(&:pod_name).uniq.sort.select do |dep_name|
+            !GLOBALLY_INJECTED_PREBUILT_PODS.include?(dep_name) && has_prebuilt_xcframework?(dep_name)
+          end
+          next if prebuilt_dependencies.empty?
+
+          header_search_paths = prebuilt_dependencies.flat_map do |dep_name|
+            prebuilt_xcframework_header_paths(installer, dep_name)
+          end
+          next if header_search_paths.empty?
+
+          paths_string = header_search_paths.map { |p| "\"#{p}\"" }.join(' ')
+          Pod::UI.info "#{'[Expo-precompiled] '.blue}Adding #{prebuilt_dependencies.join(', ')} header search paths to #{pod_target.pod_name}"
+
+          pod_target.build_settings.each_key do |config_name|
+            xcconfig_path = pod_target.xcconfig_path(config_name)
+            update_xcconfig_header_search_paths(xcconfig_path, paths_string) if File.exist?(xcconfig_path)
           end
         end
       end
@@ -1677,6 +1901,24 @@ module Expo
         end.uniq
       end
 
+      # Reverse of `prebuilt_dependency_pods` over 3rd-party pods: maps a pod to the
+      # pods that declare it as a dependency.
+      #
+      # @return [Hash<String, Array<String>>] Pod name to the pods depending on it
+      def prebuilt_dependent_pods
+        @prebuilt_dependent_pods ||= begin
+          dependents = {}
+          pod_lookup_map.each do |pod_name, info|
+            next unless info[:type] == :external
+            (info[:prebuilt_dependency_pods] || []).each do |dep_name|
+              next unless pod_lookup_map.dig(dep_name, :type) == :external
+              (dependents[dep_name] ||= []) << pod_name
+            end
+          end
+          dependents
+        end
+      end
+
       # Resolves the codegen module name. For external packages, prefers codegenConfig.name
       # from the installed package.json over spm.config.json's codegenName.
       def resolve_codegen_name(product, pod_name, npm_package, type, repo_root)
@@ -1834,11 +2076,15 @@ module Expo
         pod_lookup_map.each do |pod_name, info|
           next unless info[:type] == :external
 
-          unless has_prebuilt_xcframework?(pod_name)
-            product_name = info[:product_name] || pod_name
-            expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
-            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: prebuilt xcframework unavailable; building from source".yellow}"
-            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  Expected tarball: #{expected}")}"
+          resolution = resolve_prebuilt_status(pod_name)
+          unless resolution[:available]
+            reason = format_prebuilt_unavailable_reason(resolution)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: building from source (#{reason})".yellow}"
+            unless CASCADED_UNAVAILABLE_REASONS.include?(resolution[:reason])
+              product_name = info[:product_name] || pod_name
+              expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+              Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  Expected tarball: #{expected}")}"
+            end
             next
           end
 
@@ -1965,7 +2211,8 @@ module Expo
       end
 
       # A pod may use a prebuilt xcframework only when its own prebuilt artifact
-      # exists and every local Expo dependency also uses prebuilt.
+      # exists and every pod it is interdependent with also uses prebuilt — in either
+      # direction, so a set of interdependent pods is all prebuilt or all from source.
       def resolve_prebuilt_status(pod_name, visiting = Set.new)
         return _resolve_prebuilt_status_uncached(pod_name, visiting) unless visiting.empty?
         @status_cache[pod_name] ||= _resolve_prebuilt_status_uncached(pod_name, visiting)
@@ -1994,8 +2241,22 @@ module Expo
             available: false,
             reason: :dependency_unavailable,
             dependency: dep_name,
-            dependency_reason: dep_resolution[:reason],
-            dependency_path: dep_resolution[:path]
+            dependency_resolution: dep_resolution
+          }
+        end
+
+        # Unavailability propagates to dependencies too: a source-built dependent
+        # includes its dependency's headers from `Pods/Headers/Public/<dep>`, which
+        # CocoaPods only populates while the dependency builds from source.
+        prebuilt_dependent_pods.fetch(pod_name, []).each do |dependent_name|
+          dependent_resolution = resolve_prebuilt_status(dependent_name, next_visiting)
+          next if dependent_resolution[:available]
+
+          return {
+            available: false,
+            reason: :dependent_unavailable,
+            dependent: dependent_name,
+            dependent_resolution: dependent_resolution
           }
         end
 
@@ -2377,17 +2638,24 @@ module Expo
         nil
       end
 
-      # Collects header paths from all slices of an XCFramework
-      def collect_xcframework_header_paths(xcframework_path)
+      # Collects header paths from all slices of an XCFramework.
+      def collect_xcframework_header_paths(xcframework_path, product_name)
         return [] unless File.directory?(xcframework_path)
 
         Dir.children(xcframework_path).filter_map do |slice|
           slice_path = File.join(xcframework_path, slice)
           next unless File.directory?(slice_path)
 
-          framework_headers = File.join(slice_path, 'ExpoModulesCore.framework', 'Headers')
+          framework_headers = File.join(slice_path, "#{product_name}.framework", 'Headers')
           framework_headers if File.directory?(framework_headers)
         end
+      end
+
+      # Header dirs of an installed prebuilt pod's xcframework, one per slice.
+      def prebuilt_xcframework_header_paths(installer, pod_name)
+        product_name = pod_lookup_map[pod_name]&.dig(:product_name) || pod_name
+        xcframework_path = File.join(installer.sandbox.root, pod_name, "#{product_name}.xcframework")
+        collect_xcframework_header_paths(xcframework_path, product_name)
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -2413,8 +2681,11 @@ module Expo
         when :missing_platform_slice
           "prebuilt xcframework does not contain a slice for #{@target_platform}"
         when :dependency_unavailable
-          reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
+          reason = format_prebuilt_unavailable_reason(info[:dependency_resolution])
           "dependency #{info[:dependency]} is not using prebuilt: #{reason}"
+        when :dependent_unavailable
+          reason = format_prebuilt_unavailable_reason(info[:dependent_resolution])
+          "dependent #{info[:dependent]} is not using prebuilt: #{reason}"
         else
           info[:path] || 'prebuilt unavailable'
         end

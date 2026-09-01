@@ -6,12 +6,18 @@
 
 ### 🎉 New features
 
+- Add `Circle` type to the `GoogleMaps` namespace. ([#49124](https://github.com/expo/expo/pull/49124) by [@CatLover01](https://github.com/CatLover01))
+- [iOS] Added `anchor` to `AppleMaps.View` annotations, so a pin-shaped icon can point at its coordinates instead of being centered on them. Matches the `anchor` that `GoogleMaps.View` markers already support. ([#49315](https://github.com/expo/expo/pull/49315) by [@jensdev](https://github.com/jensdev))
+
 ### 🐛 Bug fixes
 
+- [iOS] Stop `AppleMaps.View`'s `onMapClick` from firing when the tap landed on a marker, an annotation, or a drawn shape, as documented. ([#49193](https://github.com/expo/expo/pull/49193) by [@dennytosp](https://github.com/dennytosp))
 - [Android] Return the `Promise` from `GoogleMaps.View`'s imperative `setCameraPosition` so callers can `await` it and catch the `Animation cancelled` rejection (matches iOS). ([#46421](https://github.com/expo/expo/pull/46421) by [@chownation](https://github.com/chownation))
 - [Android] Fixed Google Maps marker info windows reserving blank snippet space when `snippet` is omitted. ([#47271](https://github.com/expo/expo/pull/47271) by [@eliotgevers](https://github.com/eliotgevers))
 
 ### 💡 Others
+
+- Promote Expo Maps from alpha to stable. ([#47338](https://github.com/expo/expo/pull/47338) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.1 - 2026-07-15
 

@@ -59,10 +59,12 @@ export function useTabSlot({
   renderFn = defaultTabsSlotRender,
 }: TabSlotProps = {}) {
   const { state, descriptors } = useNavigatorContext();
-  const focusedRouteKey = state.routes[state.index]!.key;
-  const [loaded, setLoaded] = useState({ [focusedRouteKey]: true });
+  const focusedRouteKey = state.routes[state.index]?.key;
+  const [loaded, setLoaded] = useState<Record<string, boolean>>(
+    focusedRouteKey ? { [focusedRouteKey]: true } : {}
+  );
 
-  if (!loaded[focusedRouteKey]) {
+  if (focusedRouteKey && !loaded[focusedRouteKey]) {
     setLoaded({ ...loaded, [focusedRouteKey]: true });
   }
 
@@ -115,7 +117,7 @@ export function defaultTabsSlotRender(
   descriptor: TabsDescriptor,
   { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions
 ) {
-  const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
+  const { lazy = true, unmountOnBlur } = descriptor.options;
 
   if (unmountOnBlur && !isFocused) {
     return null;
@@ -131,7 +133,7 @@ export function defaultTabsSlotRender(
       key={descriptor.route.key}
       enabled={detachInactiveScreens}
       activityState={isFocused ? 2 : 0}
-      freezeOnBlur={freezeOnBlur}
+      freezeOnBlur={false}
       style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
       {descriptor.render()}
     </Screen>

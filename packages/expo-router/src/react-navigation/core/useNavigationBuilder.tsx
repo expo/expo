@@ -4,73 +4,60 @@ import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
-import useLatestCallback from '../../utils/useLatestCallback';
+import { useRouteNode } from '../../Route';
+import { useComponent } from '../../fork/useComponent';
+import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
+import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
+import { resetNavigatorState } from '../../global-state/stateUtils';
+import { findStateByKey } from '../../global-state/useNavigationTreeReducer';
 import {
-  CommonActions,
   type DefaultRouterOptions,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
-  type PartialState,
   type Route,
   type Router,
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
 import { Group } from './Group';
+import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
-import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
-import { PreventRemoveProvider } from './PreventRemoveProvider';
+import { NavigatorTypeContext } from './NavigatorTypeContext';
+import { RootNavigationStateContext } from './RootNavigationStateContext';
 import { Screen } from './Screen';
-import { UnhandledActionContext } from './UnhandledActionContext';
-import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
-import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
+  type DescriptorRouteProp,
   type EventMapBase,
   type EventMapCore,
-  type NavigatorScreenParams,
   PrivateValueStore,
   type RouteConfig,
 } from './types';
 import { useChildListeners } from './useChildListeners';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
-import { useComponent } from './useComponent';
 import { useCurrentRender } from './useCurrentRender';
 import { type ScreenConfigWithParent, useDescriptors } from './useDescriptors';
 import { useEventEmitter } from './useEventEmitter';
 import { useFocusEvents } from './useFocusEvents';
 import { useFocusedListenersChildrenAdapter } from './useFocusedListenersChildrenAdapter';
 import { FocusedRouteKeyContext } from './useIsFocused';
-import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
-import { NavigationStateListenerProvider } from './useNavigationState';
-import { useOnAction } from './useOnAction';
-import { useOnGetState } from './useOnGetState';
-import { useOnRouteFocus } from './useOnRouteFocus';
+import { NavigatorStateContext } from './useNavigationState';
 import { useRegisterNavigator } from './useRegisterNavigator';
-import { useScheduleUpdate } from './useScheduleUpdate';
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
 PrivateValueStore;
 
-type NavigatorRoute = {
-  key: string;
-  params?: NavigatorScreenParams<ParamListBase>;
-};
-
-const CONSUMED_PARAMS = Symbol('CONSUMED_PARAMS');
-
 const isScreen = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
   name?: unknown;
-  navigationKey?: unknown;
 }> => {
   return child.type === Screen;
 };
@@ -78,16 +65,12 @@ const isScreen = (
 const isGroup = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
-  navigationKey?: unknown;
   screenOptions?: unknown;
   screenLayout?: unknown;
   children?: unknown;
 }> => {
   return child.type === React.Fragment || child.type === Group;
 };
-
-const isValidKey = (key: unknown): key is string | undefined =>
-  key === undefined || (typeof key === 'string' && key !== '');
 
 /**
  * Extract route config object from React children elements.
@@ -100,7 +83,6 @@ const getRouteConfigsFromChildren = <
   EventMap extends EventMapBase,
 >(
   children: React.ReactNode,
-  groupKey?: string,
   groupOptions?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['options'],
   groupLayout?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['layout']
 ) => {
@@ -124,19 +106,7 @@ const getRouteConfigsFromChildren = <
           );
         }
 
-        if (
-          child.props.navigationKey !== undefined &&
-          (typeof child.props.navigationKey !== 'string' || child.props.navigationKey === '')
-        ) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the screen '${child.props.name}'. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         acc.push({
-          keys: [groupKey, child.props.navigationKey],
           options: groupOptions,
           layout: groupLayout,
           props: child.props as RouteConfig<
@@ -153,20 +123,11 @@ const getRouteConfigsFromChildren = <
       }
 
       if (isGroup(child)) {
-        if (!isValidKey(child.props.navigationKey)) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the group. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         // When we encounter a fragment or group, we need to dive into its children to extract the configs
         // This is handy to conditionally define a group of screens
         acc.push(
           ...getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(
             child.props.children as React.ReactNode,
-            child.props.navigationKey,
             // FIXME
             // @ts-expect-error: add validation
             child.type !== Group
@@ -266,24 +227,6 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
-const getStateFromParams = (params: NavigatorRoute['params']) => {
-  if (params?.state != null) {
-    return params.state;
-  } else if (typeof params?.screen === 'string' && params?.initial !== false) {
-    return {
-      routes: [
-        {
-          name: params.screen,
-          params: params.params,
-          path: params.path,
-        },
-      ],
-    };
-  }
-
-  return undefined;
-};
-
 /**
  * Hook for building navigators.
  *
@@ -309,14 +252,9 @@ export function useNavigationBuilder<
   > &
     RouterOptions
 ) {
-  const navigatorKey = useRegisterNavigator();
-
-  const route = use(NavigationRouteContext) as NavigatorRoute | undefined;
-
-  const isNestedParamsConsumed =
-    typeof route?.params === 'object' && route.params != null
-      ? CONSUMED_PARAMS in route.params && route.params[CONSUMED_PARAMS] === route.params
-      : false;
+  useRegisterNavigator();
+  const routeNode = useRouteNode();
+  const enqueue = useEnqueueRoutingIntent();
 
   const {
     children,
@@ -368,15 +306,6 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeKeyList = routeNames.reduce<Record<string, React.Key | undefined>>((acc, curr) => {
-    acc[curr] = screens[curr]!.keys.map((key) => key ?? '').join(':');
-    return acc;
-  }, {});
-  const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
-    const { initialParams } = screens[curr]!.props;
-    acc[curr] = initialParams;
-    return acc;
-  }, {});
   const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
     (acc, curr) =>
       Object.assign(acc, {
@@ -391,300 +320,71 @@ export function useNavigationBuilder<
     );
   }
 
-  const isStateValid = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
-      state.type === undefined || state.type === router.type,
-    [router.type]
-  );
+  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
+  const routeNamesKey = routeNames.join('\0');
 
-  const isStateInitialized = React.useCallback(
-    <T extends NavigationState>(state: T | PartialState<T> | undefined): state is T =>
-      state !== undefined && state.stale === false && isStateValid(state),
-    [isStateValid]
-  );
+  const { state: currentState } = use(NavigationStateContext);
+  const rootState = use(RootNavigationStateContext);
 
-  const {
-    state: currentState,
-    getState: getCurrentState,
-    setState: setCurrentState,
-    setKey,
-    getKey,
-    getIsInitial,
-  } = use(NavigationStateContext);
-
-  const stateCleanupRef = React.useRef<boolean>(false);
-  const lastStateRef = React.useRef<State | PartialState<State> | undefined>(undefined);
-
-  const setState = useLatestCallback((state: State | PartialState<State> | undefined) => {
-    if (stateCleanupRef.current) {
-      // Store the state locally in case the current navigator is in `Activity`
-      lastStateRef.current = state;
-
-      // State might have been already cleaned up due to unmount
-      // We don't want to update `route.state` in parent
-      // Otherwise it will be reused if a new navigator gets mounted
-      return;
-    }
-
-    setCurrentState(state);
-  });
-
-  const [initializedState, isFirstStateInitialization, paramsUsedForInitialization] =
-    React.useMemo((): [State | undefined, boolean, object | undefined] => {
-      // If the state was already cleaned up, but we have it stored in ref,
-      // It likely got cleaned up due to `<Activity mode="hidden">`
-      // We should reuse this state to avoid remounting screens
-      if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
-        const state: State = isStateInitialized(lastStateRef.current)
-          ? lastStateRef.current
-          : router.getRehydratedState(lastStateRef.current, {
-              routeNames,
-              routeParamList,
-              routeGetIdList,
-            });
-
-        return [state, false, undefined];
-      }
-
-      const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-        (acc, curr) => {
-          const { initialParams } = screens[curr]!.props;
-          const initialParamsFromParams =
-            route?.params?.state == null &&
-            route?.params?.initial !== false &&
-            route?.params?.screen === curr
-              ? route.params.params
-              : undefined;
-
-          acc[curr] =
-            initialParams !== undefined || initialParamsFromParams !== undefined
-              ? {
-                  ...initialParams,
-                  ...initialParamsFromParams,
-                }
-              : undefined;
-
-          return acc;
-        },
-        {}
-      );
-
-      // If the current state isn't initialized on first render, we initialize it
-      // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
-      // Otherwise assume that the state was provided as initial state
-      // So we need to rehydrate it to make it usable
-      if (
-        (currentState === undefined || !isStateValid(currentState)) &&
-        route?.params?.state == null &&
-        !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-        !isNestedParamsConsumed
-      ) {
-        return [
-          router.getInitialState({
-            routeNames,
-            routeParamList: initialRouteParamList,
-            routeGetIdList,
-          }),
-          true,
-          undefined,
-        ];
-      } else {
-        const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-        const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
-
-        const stateBeforeInitialization = (stateFromParams ?? currentState) as
-          | PartialState<State>
-          | undefined;
-
-        const hydratedState =
-          stateBeforeInitialization == null
-            ? router.getInitialState({
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              })
-            : router.getRehydratedState(stateBeforeInitialization, {
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              });
-
-        return [hydratedState, false, paramsForState];
-      }
-      // We explicitly don't include routeNames, route.params etc. in the dep list
-      // below. We want to avoid forcing a new state to be calculated in those cases
-      // Instead, we handle changes to these in the nextState code below. Note
-      // that some changes to routeConfigs are explicitly ignored, such as changes
-      // to initialParams
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentState, router, isStateValid]);
-
-  const previousRouteKeyListRef = React.useRef(routeKeyList);
-
-  React.useEffect(() => {
-    previousRouteKeyListRef.current = routeKeyList;
-  });
-
-  const previousRouteKeyList = previousRouteKeyListRef.current;
-
-  let state =
-    // If the state isn't initialized, or stale, use the state we initialized instead
-    // The state won't update until there's a change needed in the state we have initialized locally
-    // So it'll be `undefined` or stale until the first navigation event happens
-    isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
-
-  let nextState: State = state;
+  const { resetNavigator, handleAction } = use(NavigationBuilderContext);
   if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
+    currentState === undefined ||
+    currentState.stale !== false ||
+    typeof currentState.key !== 'string' ||
+    !Array.isArray(currentState.routeNames)
   ) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
-    });
-  }
-
-  let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
-
-  if (route?.params && !didConsumeNestedParams) {
-    let action: CommonActions.Action | undefined;
-
-    if (
-      typeof route.params.state === 'object' &&
-      route.params.state != null &&
-      !isNestedParamsConsumed
-    ) {
-      didConsumeNestedParams = true;
-
-      // If the route was updated with new state, we should reset to it
-      action = CommonActions.reset(route.params.state);
-    } else if (
-      typeof route.params.screen === 'string' &&
-      ((route.params.initial === false && isFirstStateInitialization) || !isNestedParamsConsumed)
-    ) {
-      didConsumeNestedParams = true;
-
-      // If the route was updated with new screen name and/or params, we should navigate there
-      action = CommonActions.navigate({
-        name: route.params.screen,
-        params: route.params.params,
-        path: route.params.path,
-        merge: route.params.merge,
-        pop: route.params.pop,
-      });
-    }
-
-    // The update should be limited to current navigator only, so we call the router manually
-    const updatedState = action
-      ? router.getStateForAction(nextState, action, {
-          routeNames,
-          routeParamList,
-          routeGetIdList,
-        })
-      : null;
-
-    nextState =
-      updatedState !== null
-        ? router.getRehydratedState(updatedState, {
-            routeNames,
-            routeParamList,
-            routeGetIdList,
-          })
-        : nextState;
-  }
-
-  React.useEffect(() => {
-    if (didConsumeNestedParams && typeof route?.params === 'object' && route.params != null) {
-      // Track whether the params have been already consumed
-      // Set it to the same object, so merged params can be handled again
-      Object.defineProperty(route.params, CONSUMED_PARAMS, {
-        value: route.params,
-        enumerable: false,
-      });
-    }
-  }, [didConsumeNestedParams, route?.params]);
-
-  const shouldUpdate = state !== nextState;
-
-  useScheduleUpdate(() => {
-    if (shouldUpdate) {
-      // Schedule an update if the state needs to be updated
-      setState(nextState);
-    }
-  });
-
-  // The up-to-date state will come in next render, but we don't need to wait for it
-  // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
-  // So we override the state object we return to use the latest state as soon as possible
-  state = nextState;
-
-  // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
-  React.useEffect(() => {
-    lastStateRef.current = state;
-  });
-
-  const lastNotifiedStateRef = React.useRef<State | null>(null);
-
-  React.useEffect(() => {
-    // In strict mode, React will double-invoke effects.
-    // So we need to reset the flag if component was not unmounted
-    stateCleanupRef.current = false;
-
-    setKey(navigatorKey);
-
-    if (!getIsInitial() && lastNotifiedStateRef.current !== state) {
-      // If it's not initial render, we need to update the state
-      // This will make sure that our container gets notifier of state changes due to new mounts
-      // This is necessary for proper screen tracking, URL updates etc.
-      // We only notify if the state is different what we already notified
-      // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(state);
-      lastNotifiedStateRef.current = state;
-    }
-
-    return () => {
-      // We need to clean up state for this navigator on unmount
-      if (getCurrentState() !== undefined && getKey() === navigatorKey) {
-        setCurrentState(undefined);
-        stateCleanupRef.current = true;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // In some cases (e.g. route names change), internal state might have changed
-  // But it hasn't been committed yet, so hasn't propagated to the sync external store
-  // During this time, we need to return the internal state in `getState`
-  // Otherwise it can result in inconsistent state during render in children
-  // To avoid this, we use a ref for render phase, and immediately clear it on commit
-  const stateRef = React.useRef<State | null>(state);
-
-  stateRef.current = state;
-
-  useClientLayoutEffect(() => {
-    stateRef.current = null;
-  });
-
-  const getState = useLatestCallback((): State => {
-    const currentState = getCurrentState();
-
-    return deepFreeze(
-      (isStateInitialized(currentState) ? currentState : initializedState) as State
+    throw new Error(
+      'A navigator received a missing, partial, or incompatible navigation state. Navigation state is created globally now, so the container must provide a complete seeded state for every mounted navigator.'
     );
+  }
+
+  const treeState = rootState
+    ? (findStateByKey(rootState, currentState.key) ?? currentState)
+    : currentState;
+  const isForeignType = treeState.type !== undefined && treeState.type !== router.type;
+  // The reset keeps the complete fields required by every navigator state.
+  const committedState = (
+    isForeignType ? resetNavigatorState(treeState, router.type) : treeState
+  ) as State;
+  const state = React.useMemo(
+    () => router.getStateForDeclaredRoutes(committedState, routeNames),
+    [committedState, routeNamesKey, router]
+  );
+  // TODO(@ubax): Check whether this ref can be safely removed.
+  const stateKeyRef = React.useRef(committedState.key);
+
+  React.useInsertionEffect(() => {
+    stateKeyRef.current = committedState.key;
   });
 
+  // TODO(@ubax): find a better way to implement this then ref approach
+  const registryConfigRef = React.useRef({ routeNames, routeGetIdList });
+  React.useInsertionEffect(() => {
+    registryConfigRef.current = { routeNames, routeGetIdList };
+  });
+  const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
+    (registryState, action) =>
+      // The registry stores states from different router types; this entry only receives its own state key.
+      router.getStateForAction(registryState as State, action, {
+        routeNames: registryConfigRef.current.routeNames,
+        routeGetIdList: registryConfigRef.current.routeGetIdList,
+      }),
+    [routeNamesKey, router]
+  );
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
 
     let route: Route<string> | undefined;
+    let isPlaceholder = false;
 
     if (e.target) {
       route = state.routes.find((route) => route.key === e.target);
+      const config = screens[e.target];
+
+      if (!route && config) {
+        route = { key: e.target, name: e.target };
+        isPlaceholder = true;
+      }
 
       if (route?.name) {
         routeNames.push(route.name);
@@ -698,7 +398,10 @@ export function useNavigationBuilder<
       return;
     }
 
-    const navigation = descriptors[route.key]!.navigation;
+    const descriptor = isPlaceholder
+      ? describe({ ...route, key: undefined } as DescriptorRouteProp<ParamListBase, string>)
+      : descriptors[route.key]!;
+    const navigation = descriptor.navigation;
 
     const listeners = ([] as (((e: any) => void) | undefined)[])
       .concat(
@@ -737,44 +440,63 @@ export function useNavigationBuilder<
 
   const { listeners: childListeners, addListener } = useChildListeners();
 
-  const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
+  const onAction = React.useCallback(
+    (action: NavigationAction) => handleAction(action, stateKeyRef.current),
+    [handleAction]
+  );
 
-  const onAction = useOnAction({
-    router,
-    getState,
-    setState,
-    key: route?.key,
-    actionListeners: childListeners.action,
-    beforeRemoveListeners: keyedListeners.beforeRemove,
-    routerConfigOptions: {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-    },
-    emitter,
+  const registryEntry = React.useMemo<RouterRegistryEntry>(
+    () => ({
+      reduce,
+      shouldActionChangeFocus: router.shouldActionChangeFocus,
+      getStateForRouteFocus: (registryState, routeKey) =>
+        router.getStateForRouteFocus(registryState as State, routeKey),
+      routeNode: routeNode ?? undefined,
+    }),
+    [reduce, routeNode, routeNamesKey, router]
+  );
+
+  useRegisterRouter(committedState.key, registryEntry);
+
+  useClientLayoutEffect(() => {
+    if (isForeignType) {
+      resetNavigator(committedState.key, router.type);
+    }
   });
 
-  const onRouteFocus = useOnRouteFocus({
-    router,
-    key: route?.key,
-    getState,
-    setState,
-  });
+  const pendingRouteNamesRef = React.useRef<string[] | undefined>(undefined);
 
-  const onUnhandledActionParent = use(UnhandledActionContext);
+  useClientLayoutEffect(() => {
+    // Wait for the type reset to commit so route-name changes use the mounting router's registry entry.
+    if (isForeignType) {
+      return;
+    }
+    const committed = committedState;
 
-  const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    onUnhandledActionParent?.(action);
+    if (isArrayEqual(committed.routeNames, routeNames)) {
+      pendingRouteNamesRef.current = undefined;
+    } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
+      pendingRouteNamesRef.current = routeNames;
+      enqueue({
+        type: 'ACTION',
+        payload: {
+          action: {
+            type: 'ROUTE_NAMES_CHANGED',
+            payload: { routeNames },
+            target: committed.key,
+          },
+          originKey: committed.key,
+        },
+      });
+    }
   });
 
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
-    onAction,
-    onUnhandledAction,
-    getState,
+    handleAction: onAction,
+    state: committedState,
     emitter,
     router,
-    stateRef,
   });
 
   useFocusedListenersChildrenAdapter({
@@ -782,28 +504,18 @@ export function useNavigationBuilder<
     focusedListeners: childListeners.focus,
   });
 
-  useOnGetState({
-    getState,
-    getStateListeners: keyedListeners.getState,
-  });
-
-  const descriptors = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
+  const { describe, descriptors } = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
     routes: state.routes,
+    routeNames: state.routeNames,
     screens,
     navigation,
     screenOptions,
     screenLayout,
-    onAction,
-    getState,
-    setState,
-    onRouteFocus,
+    state: committedState,
     addListener,
-    addKeyedListener,
     router,
-    // @ts-expect-error: this should have both core and custom events, but too much work right now
     emitter,
   });
-
   useCurrentRender({
     state,
     navigation,
@@ -824,11 +536,13 @@ export function useNavigationBuilder<
     return (
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
-          <NavigationStateListenerProvider state={state}>
-            <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
-              <PreventRemoveProvider>{element}</PreventRemoveProvider>
+          <NavigatorStateContext.Provider value={state}>
+            <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
+              <NavigatorTypeContext.Provider value={router.type}>
+                {element}
+              </NavigatorTypeContext.Provider>
             </FocusedRouteKeyContext.Provider>
-          </NavigationStateListenerProvider>
+          </NavigatorStateContext.Provider>
         </NavigationHelpersContext.Provider>
       </NavigationMetaContext.Provider>
     );
@@ -837,6 +551,7 @@ export function useNavigationBuilder<
   return {
     state,
     navigation,
+    describe,
     descriptors,
     NavigationContent,
   };

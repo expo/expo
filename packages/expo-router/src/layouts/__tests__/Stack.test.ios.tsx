@@ -27,12 +27,12 @@ const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof Scre
 
 type StackItemProps = Parameters<typeof ScreenStackItem>[0];
 
-/** Latest rendered props of the `ScreenStackItem` whose route key starts with `${routeName}-`. */
+/** Latest rendered props of the `ScreenStackItem` whose route key starts with `${routeName}:`. */
 function latestStackItemProps(routeName: string): StackItemProps | undefined {
   return MockedScreenStackItem.mock.calls
     .map((call) => call[0])
     .filter(
-      (props) => typeof props.screenId === 'string' && props.screenId.startsWith(`${routeName}-`)
+      (props) => typeof props.screenId === 'string' && props.screenId.startsWith(`${routeName}:`)
     )
     .at(-1);
 }
@@ -166,7 +166,11 @@ describe('tabPress', () => {
 
     renderRouter(
       {
-        _layout: () => <Tabs />,
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="a" />
+          </Tabs>
+        ),
         'a/_layout': () => <Stack />,
         'a/index': () => <View testID="a-index" />,
         'a/b': () => <View testID="a-b" />,

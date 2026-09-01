@@ -8,6 +8,7 @@
 - [Android] Removed the deprecated `AppContext.errorManager` property. Use `AppContext.jsLogger` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
 - [Android] Replaced the old `ArrayBuffer` interface with a concrete class, so `NativeArrayBuffer` and `JavaScriptArrayBuffer` no longer share a common `ArrayBuffer` supertype. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
 - [Android] Introduce `ConverterContext`. ([#47850](https://github.com/expo/expo/pull/47850) by [@jakex7](https://github.com/jakex7))
+- [iOS] Removed `EXUtilities.screenScale`, which cached the main screen's scale for the process lifetime. Read the scale from the view's trait collection instead. ([#48528](https://github.com/expo/expo/pull/48528) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
 
@@ -17,9 +18,17 @@
 - [iOS] Added module lifecycle hooks that replace the `OnCreate`, `OnDestroy`, `OnStartObserving` and `OnStopObserving` DSL components: `didCreate`, `willDestroy`, `didStartListening` and `didStopListening`. ([#47542](https://github.com/expo/expo/pull/47542) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Support `PlatformColor` as Color. ([#47632](https://github.com/expo/expo/pull/47632) by [@jakex7](https://github.com/jakex7))
 - [Android] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. ([#47261](https://github.com/expo/expo/pull/47261) by [@barthap](https://github.com/barthap))
+- Added `getNativeRef()` to views created with `requireNativeViewManager`, which returns the underlying host component. ([#48788](https://github.com/expo/expo/pull/48788) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
+- [iOS][Android] Fixed a `matchContents` `RNHostView` and the `matchContents` host around it feeding each other's size back and forth, which grew the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed SwiftUI view props re-decoding every field on every props update. Fabric sends the whole props map rather than a delta, so an unrelated prop change replaced each decoded value with an equal but distinct one, which cost a decode per field and stopped SwiftUI from pruning the view tree that reads it. A field whose raw value is unchanged now keeps the value decoded before, the same way `ExpoFabricView.updateProps` already worked for UIKit views. ([#48426](https://github.com/expo/expo/pull/48426) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `matchContents` hosts sometimes being laid out at a stale size. Regression from [#48059](https://github.com/expo/expo/pull/48059). ([#49211](https://github.com/expo/expo/pull/49211) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed an infinite main-thread layout loop (frozen UI, watchdog kill on backgrounding) when a SwiftUI host with `matchContents` and Yoga persistently disagree on the content size, e.g. with the Button Shapes accessibility setting enabled. Synchronous size commits are now budgeted per run-loop turn; over-budget updates are coalesced on the view and committed asynchronously on the next turn, and no-op size updates no longer dirty the layout. ([#48058](https://github.com/expo/expo/issues/48058), [#48059](https://github.com/expo/expo/pull/48059) by [@focux](https://github.com/focux))
+- [iOS] Fixed the `ExpoModulesProvider` lookup missing the generated class when the app `name` starts with a digit, which registered no native modules and left release builds on a blank screen. ([#48793](https://github.com/expo/expo/pull/48793) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Fixed the tap that closes a SwiftUI menu also pressing the React Native view underneath it. ([#48419](https://github.com/expo/expo/issues/48419) by [@bohdanstefaniuk](https://github.com/bohdanstefaniuk)) ([#48463](https://github.com/expo/expo/pull/48463) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fixed hosted Compose views missing layout after reattachment or in-place configuration changes. ([#48370](https://github.com/expo/expo/issues/48370) by [@lujjjh](https://github.com/lujjjh))
 - [iOS] Fixed infinite recursion and `EXC_BAD_ACCESS` when encoding native `Date` values to JavaScript. ([#48239](https://github.com/expo/expo/issues/48239), [#48240](https://github.com/expo/expo/pull/48240) by [@samuelcorsan](https://github.com/samuelcorsan))
 - [iOS] Concurrent functions build on the new two-phase `createAsyncFunction` from `expo-modules-jsi` again, instead of wiring the promise themselves. This also restores rejecting the returned promise (rather than throwing synchronously) when the app context is lost or argument decoding fails. ([#47755](https://github.com/expo/expo/pull/47755) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Support `android.graphics.Color` arguments and props on Android below API 26 by adding a `ColorCompat` wrapper, since the class-based `Color` API (`Color.valueOf` and the float accessors) only exists on API 26 and above. `PlatformColor` values now resolve below API 26 too, via React Native's ARGB-int color path. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
@@ -30,6 +39,9 @@
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
 - [iOS] Resolve the key window from the foregrounded scene in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed a stack overflow crash when converting to JavaScript a `Convertible` value that keeps the default `convertResult` implementation, such as `CMTime`. The value now converts to `undefined` and logs a warning. ([#48266](https://github.com/expo/expo/pull/48266) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Measure hosted React Native views where SwiftUI placed them, instead of at their Yoga box. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Measure hosted React Native views where Jetpack Compose placed them, instead of at their Yoga box. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -39,6 +51,9 @@
 - iOS Turn `getModule(implementing:)` into a public function ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
 - [iOS] Added `SceneGeometry` for reading bounds, safe area, display scale and interface orientation from the scene a view belongs to. ([#48168](https://github.com/expo/expo/pull/48168) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Added `SceneGeometry.foregroundScene()`, which returns nil when no scene is on screen so callers can avoid presenting UI into a background scene. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+- Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
+- Added internal `ExpoModulesProviderModuleName` lookup key for `ExpoModulesProvider` class. ([#49539](https://github.com/expo/expo/pull/49539) by [@kudo](https://github.com/kudo))
 
 ## 57.0.8 - 2026-07-29
 

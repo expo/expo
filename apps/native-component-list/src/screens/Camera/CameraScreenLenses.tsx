@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import {
   Camera,
   CameraMode,
@@ -124,7 +123,7 @@ export default function CameraScreenLenses() {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.bottomButton} onPress={clearSelectedLens}>
-          <MaterialIcons name="clear" size={32} color="white" />
+          <Ionicons name="close" size={32} color="white" />
         </TouchableOpacity>
       </View>
       <Slider

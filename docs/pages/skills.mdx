@@ -32,7 +32,9 @@ Expo Skills are structured instruction files that teach AI agents how to build, 
 
 Run the following command to install the official Expo plugin from the `claude-plugins-official` marketplace:
 
-<Terminal cmd={['$ /plugin install expo@claude-plugins-official']} />
+<Terminal cmd={['$ claude plugin install expo@claude-plugins-official']} />
+
+You can also run `/plugin install expo@claude-plugins-official` inside a Claude Code session.
 
 </Tab>
 
@@ -91,6 +93,8 @@ Use the [skills CLI](https://skills.sh/docs/cli) to add Expo Skills to any compa
 </Tab>
 
 </Tabs>
+
+> **info** For Claude Code and Codex, the plugin also registers the [Expo MCP Server](/mcp/), so you do not add it separately. The skills CLI installs skills only.
 
 ## Available Expo Skills
 

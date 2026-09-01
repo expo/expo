@@ -563,9 +563,7 @@ export class CardStack extends React.Component<Props, State> {
     const previousRoute = getPreviousRoute({ route });
 
     if (previousRoute) {
-      const previousScene = scenes.find(
-        (scene) => scene.descriptor.route.key === previousRoute.key
-      );
+      const previousScene = scenes.find((scene) => scene.route.key === previousRoute.key);
 
       return previousScene;
     }
@@ -599,6 +597,10 @@ export class CardStack extends React.Component<Props, State> {
     const activeScenes = scenes.filter((scene) =>
       routes.some((route) => route.key === scene.route.key)
     );
+
+    if (state.routes.length === 0) {
+      return null;
+    }
 
     const focusedRoute = state.routes[state.index]!;
     const focusedHeaderHeight = headerHeights[focusedRoute.key];
@@ -645,7 +647,6 @@ export class CardStack extends React.Component<Props, State> {
             const {
               headerShown = true,
               headerTransparent,
-              freezeOnBlur,
               autoHideHomeIndicator,
             } = scene.descriptor.options;
 
@@ -675,8 +676,6 @@ export class CardStack extends React.Component<Props, State> {
                 style={[styles.boxNone, StyleSheet.absoluteFill]}
                 enabled={detachInactiveScreens}
                 active={activityState}
-                freezeOnBlur={freezeOnBlur}
-                shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}
                 homeIndicatorHidden={autoHideHomeIndicator}>
                 <CardContainer
                   index={index}

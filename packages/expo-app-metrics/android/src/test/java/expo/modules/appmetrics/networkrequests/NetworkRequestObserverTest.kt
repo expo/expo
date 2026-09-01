@@ -55,6 +55,7 @@ class NetworkRequestObserverTest {
         requestEnd = null,
         responseStart = null,
         responseEnd = responseEnd,
+        measuredResponseEnd = responseEnd,
         totalDuration = 0.5
       ),
       errorDescription = null,
@@ -111,6 +112,7 @@ class NetworkRequestObserverTest {
         requestEnd = null,
         responseStart = null,
         responseEnd = null,
+        measuredResponseEnd = null,
         totalDuration = 0.1
       ),
       errorDescription = "timed out",

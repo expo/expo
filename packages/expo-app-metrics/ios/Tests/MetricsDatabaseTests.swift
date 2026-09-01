@@ -347,7 +347,8 @@ struct MetricsDatabaseTests {
           routeName: "/home",
           updateId: "update-1",
           params: "{\"k\":1}"
-        ))
+        )
+      )
 
       let row = try #require(try database.getMetrics(sessionId: "s").first)
       #expect(row.id != nil)
@@ -393,6 +394,21 @@ struct MetricsDatabaseTests {
     }
   }
 
+  @Test
+  func `getMetrics after id limits the oldest remaining rows`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let ids = try ["a", "b", "c", "d"].map {
+        try database.insert(metric: makeMetricRow(sessionId: "s", name: $0))
+      }
+
+      #expect(try database.getMetrics(afterId: ids[0], limit: 2).map(\.name) == ["b", "c"])
+      #expect(try database.getMetrics(afterId: ids[1], limit: 10).map(\.name) == ["c", "d"])
+      #expect(try database.getMetrics(afterId: ids[0], limit: nil).map(\.name) == ["b", "c", "d"])
+      #expect(try database.getMetrics(afterId: ids[0]).map(\.name) == ["b", "c", "d"])
+    }
+  }
+
   // MARK: - Logs
 
   @Test
@@ -433,7 +449,8 @@ struct MetricsDatabaseTests {
           body: "something exploded",
           attributes: "{\"key\":\"value\"}",
           droppedAttributesCount: 3
-        ))
+        )
+      )
 
       let row = try #require(try database.getLogs(sessionId: "s").first)
       #expect(row.id != nil)
@@ -474,6 +491,21 @@ struct MetricsDatabaseTests {
       try database.deleteSession(id: "s")
       let logs = try database.getLogs(sessionId: "s")
       #expect(logs.isEmpty)
+    }
+  }
+
+  @Test
+  func `getLogs after id limits the oldest remaining rows`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let ids = try ["a", "b", "c", "d"].map {
+        try database.insert(log: makeLogRow(sessionId: "s", name: $0))
+      }
+
+      #expect(try database.getLogs(afterId: ids[0], limit: 2).map(\.name) == ["b", "c"])
+      #expect(try database.getLogs(afterId: ids[1], limit: 10).map(\.name) == ["c", "d"])
+      #expect(try database.getLogs(afterId: ids[0], limit: nil).map(\.name) == ["b", "c", "d"])
+      #expect(try database.getLogs(afterId: ids[0]).map(\.name) == ["b", "c", "d"])
     }
   }
 

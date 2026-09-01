@@ -50,6 +50,7 @@ describe.each(
     expect(files).toContain('request.html');
     expect(files).toContain('response.html');
     expect(files).toContain('second.html');
+    expect(files).toContain('slow.html');
     expect(files).toContain('nested/index.html');
     expect(files).toContain('nullish/[value].html');
     expect(files).toContain('nullish/null.html');
@@ -67,6 +68,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/request');
     expect(files).toContain('_expo/loaders/response');
     expect(files).toContain('_expo/loaders/second');
+    expect(files).toContain('_expo/loaders/slow');
     expect(files).toContain('_expo/loaders/nested/index');
     expect(files).toContain('_expo/loaders/nullish/[value]');
     expect(files).toContain('_expo/loaders/nullish/null');
@@ -226,6 +228,23 @@ describe.each(
   });
 
   (server.isExpoStart ? it.skip : it)(
+    'applies the SSG default Cache-Control to a headerless loader',
+    async () => {
+      const response = await server.fetchAsync('/_expo/loaders/index');
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('private, must-revalidate, max-age=0');
+    }
+  );
+
+  it('passes a loader-declared no-store through verbatim', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/second');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+  });
+
+  (server.isExpoStart ? it.skip : it)(
     'applies loader-declared `Cache-Control` to the pre-rendered page',
     async () => {
       const response = await server.fetchAsync('/response');
@@ -235,19 +254,58 @@ describe.each(
   );
 
   (server.isExpoStart ? it.skip : it)(
-    'writes loader-declared `Cache-Control` rules to the manifest subset',
+    'writes loader and page `Cache-Control` rules to the manifest subset',
     () => {
       const routesJson = JSON.parse(
         fs.readFileSync(path.join(server.outputDir, '_expo/.routes.json'), 'utf8')
       );
+      const SSG_DEFAULT = { 'Cache-Control': 'private, must-revalidate, max-age=0' };
+
       expect(routesJson.pageHeaders).toEqual([
+        // Header-less loader routes: the SSG default, applied to each page and loader file.
+        { namedRegex: '^/(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nested(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/slow(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/\\(group\\)/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nested/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/slow(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        // Loader-declared headers: appended last so they win, applied to page and loader file.
         {
           namedRegex: '^/response(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=604800' },
         },
+        { namedRegex: '^/second(?:/)?$', headers: { 'Cache-Control': 'private, no-store' } },
         {
           namedRegex: '^/_expo/loaders/response(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/second(?:/)?$',
+          headers: { 'Cache-Control': 'private, no-store' },
         },
       ]);
     }

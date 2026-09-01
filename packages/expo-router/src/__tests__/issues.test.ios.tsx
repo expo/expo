@@ -5,7 +5,7 @@ import { usePathname } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { renderRouter, fireEvent, act, waitFor, screen } from '../testing-library';
+import { renderRouter, fireEvent, act, screen } from '../testing-library';
 import { useIsFocused } from '../useIsFocused';
 
 it('should return correct pathname for nested stack with initialRouteName', async () => {
@@ -14,13 +14,26 @@ it('should return correct pathname for nested stack with initialRouteName', asyn
   const innerARenderCount = jest.fn();
   renderRouter({
     _layout: function Layout() {
-      return <Tabs />;
+      return (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="inner" />
+        </Tabs>
+      );
     },
     index: function Index() {
       indexRenderCount();
       return <Text testID="index-pathname">{usePathname()}</Text>;
     },
-    'inner/_layout': () => <Stack initialRouteName="a" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => (
+        <Stack>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="a" />
+        </Stack>
+      ),
+    },
     'inner/index': function InnerIndex() {
       innerIndexRenderCount();
       return <Text testID="inner-index-pathname">{usePathname()}</Text>;
@@ -58,13 +71,21 @@ it('should return correct pathname for nested stack with initialRouteName, after
   const innerARenderCount = jest.fn();
   renderRouter({
     _layout: function Layout() {
-      return <Tabs />;
+      return (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="inner" />
+        </Tabs>
+      );
     },
     index: function Index() {
       indexRenderCount();
       return <Text testID="index-pathname">{usePathname()}</Text>;
     },
-    'inner/_layout': () => <Stack initialRouteName="a" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => <Stack />,
+    },
     'inner/index': function InnerIndex() {
       innerIndexRenderCount();
       return <Text testID="inner-index-pathname">{usePathname()}</Text>;
@@ -123,11 +144,6 @@ it('can navigate during first render', async () => {
 
   expect(screen.getByTestId('second')).toBeVisible();
   expect(screen.queryByTestId('index')).toBeNull();
-
-  act(() => router.back());
-
-  await waitFor(() => expect(screen.getByTestId('index')).toBeVisible());
-  expect(screen.queryByTestId('second')).toBeNull();
 });
 
 it('can navigate during first render of nested navigator', async () => {

@@ -245,10 +245,10 @@ class Kernel : KernelInterface() {
 
           reactHost = ReactHostFactory.getDefaultReactHost(
             context = applicationContext,
-            packageList = nativeHost.packages,
-            jsMainModulePath = nativeHost.jsMainModuleName,
-            jsBundleFilePath = nativeHost.jsBundleFile,
-            useDevSupport = nativeHost.useDeveloperSupport,
+            packageList = nativeHost.getPackages(),
+            jsMainModulePath = nativeHost.getJSMainModuleName(),
+            jsBundleFilePath = nativeHost.getJSBundleFile(),
+            useDevSupport = nativeHost.getUseDeveloperSupport(),
             devServerBundleUrl = toHttp(manifest.getBundleURL())
           )
 
@@ -375,7 +375,7 @@ class Kernel : KernelInterface() {
   fun openHomeActivity() {
     val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     for (task: AppTask in manager.appTasks) {
-      val baseIntent = task.taskInfo.baseIntent
+      val baseIntent = task.taskInfo?.baseIntent ?: continue
       if ((HomeActivity::class.java.name == baseIntent.component!!.className)) {
         task.moveToFront()
         return
@@ -606,7 +606,7 @@ class Kernel : KernelInterface() {
         // There is race condition to retrieve the taskInfo from the finishing task.
         // Uses try-catch to handle the cases.
         try {
-          val baseIntent = task.taskInfo.baseIntent
+          val baseIntent = task.taskInfo!!.baseIntent
           if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
               baseIntent.getStringExtra(
                 KernelConstants.MANIFEST_URL_KEY
@@ -626,7 +626,7 @@ class Kernel : KernelInterface() {
     }
     if (existingTask != null) {
       try {
-        moveTaskToFront(existingTask.taskInfo.id)
+        moveTaskToFront(existingTask.taskInfo!!.id)
       } catch (e: IllegalArgumentException) {
         // Sometimes task can't be found.
         existingTask = null
@@ -693,7 +693,7 @@ class Kernel : KernelInterface() {
     manifest: Manifest,
     existingTask: AppTask?
   ) {
-    val bundleUrl = toHttp(manifest.getBundleURL())
+    val bundleUrl = ExponentUrls.bundleUrlFromManifest(manifest, manifestUrl)
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
     if (existingTask == null) {
@@ -811,7 +811,7 @@ class Kernel : KernelInterface() {
       // Crash with NoSuchFieldException instead of hard crashing at taskInfo.numActivities
       RecentTaskInfo::class.java.getDeclaredField("numActivities")
       for (task: AppTask in tasks) {
-        val taskInfo = task.taskInfo
+        val taskInfo = task.taskInfo ?: continue
         if (taskInfo.numActivities == 0 && (taskInfo.baseIntent.action == Intent.ACTION_MAIN)) {
           task.finishAndRemoveTask()
           return
@@ -830,9 +830,9 @@ class Kernel : KernelInterface() {
   }
 
   private fun moveTaskToFront(taskId: Int) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-    tasks.find { it.taskInfo.taskId == taskId }
+    tasks.find { it.taskInfo?.taskId == taskId }
   } else {
-    tasks.find { it.taskInfo.id == taskId }
+    tasks.find { it.taskInfo?.id == taskId }
   }?.also { task ->
     // If we have the task in memory, tell the ExperienceActivity to check for new options.
     // Otherwise options will be added in initialProps when the Experience starts.
@@ -853,9 +853,9 @@ class Kernel : KernelInterface() {
     // Kill the current task.
     val manager = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      manager.appTasks.find { it.taskInfo.taskId == activity.taskId }
+      manager.appTasks.find { it.taskInfo?.taskId == activity.taskId }
     } else {
-      manager.appTasks.find { it.taskInfo.id == activity.taskId }
+      manager.appTasks.find { it.taskInfo?.id == activity.taskId }
     }?.also { task -> task.finishAndRemoveTask() }
 
     // We're sure that it will be an `ExperienceActivity`. However we still need to do a cast and

@@ -8,17 +8,63 @@ on:
       - .github/workflows/swift-format.yml
       - .swift-format
       - scripts/swift-format.sh
-      - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-age-range/**/*.swift
+      - packages/expo-app-integrity/**/*.swift
+      - packages/expo-app-intents/**/*.swift
       - packages/expo-app-metrics/**/*.swift
+      - packages/expo-application/**/*.swift
+      - packages/expo-asset/**/*.swift
+      - packages/expo-background-fetch/**/*.swift
+      - packages/expo-battery/**/*.swift
+      - packages/expo-blob/**/*.swift
+      - packages/expo-brightness/**/*.swift
+      - packages/expo-cellular/**/*.swift
+      - packages/expo-constants/**/*.swift
+      - packages/expo-document-picker/**/*.swift
+      - packages/expo-haptics/**/*.swift
+      - packages/expo-keep-awake/**/*.swift
+      - packages/expo-linking/**/*.swift
+      - packages/expo-live-photo/**/*.swift
+      - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-network/**/*.swift
       - packages/expo-observe/**/*.swift
+      - packages/expo-router/**/*.swift
+      - packages/expo-sms/**/*.swift
+      - packages/expo-splash-screen/**/*.swift
+      - packages/expo-store-review/**/*.swift
+      - packages/expo-system-ui/**/*.swift
+      - packages/expo-tracking-transparency/**/*.swift
   pull_request:
     paths:
       - .github/workflows/swift-format.yml
       - .swift-format
       - scripts/swift-format.sh
-      - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-age-range/**/*.swift
+      - packages/expo-app-integrity/**/*.swift
+      - packages/expo-app-intents/**/*.swift
       - packages/expo-app-metrics/**/*.swift
+      - packages/expo-application/**/*.swift
+      - packages/expo-asset/**/*.swift
+      - packages/expo-background-fetch/**/*.swift
+      - packages/expo-battery/**/*.swift
+      - packages/expo-blob/**/*.swift
+      - packages/expo-brightness/**/*.swift
+      - packages/expo-cellular/**/*.swift
+      - packages/expo-constants/**/*.swift
+      - packages/expo-document-picker/**/*.swift
+      - packages/expo-haptics/**/*.swift
+      - packages/expo-keep-awake/**/*.swift
+      - packages/expo-linking/**/*.swift
+      - packages/expo-live-photo/**/*.swift
+      - packages/expo-modules-jsi/**/*.swift
+      - packages/expo-network/**/*.swift
       - packages/expo-observe/**/*.swift
+      - packages/expo-router/**/*.swift
+      - packages/expo-sms/**/*.swift
+      - packages/expo-splash-screen/**/*.swift
+      - packages/expo-store-review/**/*.swift
+      - packages/expo-system-ui/**/*.swift
+      - packages/expo-tracking-transparency/**/*.swift
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -71,12 +117,35 @@ jobs:
           cp "$tmp/.build/release/swift-format" ~/.local/bin/swift-format
       - name: ➕ Add swift-format to PATH
         run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - name: 🧹 Lint expo-modules-jsi
-        run: ../../scripts/swift-format.sh --lint
-        working-directory: packages/expo-modules-jsi
-      - name: 🧹 Lint expo-app-metrics
-        run: ../../scripts/swift-format.sh --lint
-        working-directory: packages/expo-app-metrics
-      - name: 🧹 Lint expo-observe
-        run: ../../scripts/swift-format.sh --lint
-        working-directory: packages/expo-observe
+      # Only the packages listed here are linted. Keep this list, the `paths`
+      # filters above, and the `swift:lint` scripts in each package.json in sync.
+      - name: 🧹 Lint
+        run: ./scripts/swift-format.sh --lint $PACKAGES
+        env:
+          PACKAGES: >-
+            packages/expo-age-range
+            packages/expo-app-integrity
+            packages/expo-app-intents
+            packages/expo-app-metrics
+            packages/expo-application
+            packages/expo-asset
+            packages/expo-background-fetch
+            packages/expo-battery
+            packages/expo-blob
+            packages/expo-brightness
+            packages/expo-cellular
+            packages/expo-constants
+            packages/expo-document-picker
+            packages/expo-haptics
+            packages/expo-keep-awake
+            packages/expo-linking
+            packages/expo-live-photo
+            packages/expo-modules-jsi
+            packages/expo-network
+            packages/expo-observe
+            packages/expo-router
+            packages/expo-sms
+            packages/expo-splash-screen
+            packages/expo-store-review
+            packages/expo-system-ui
+            packages/expo-tracking-transparency

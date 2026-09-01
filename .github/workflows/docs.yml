@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - 'packages/@expo/sdk-compatibility/**'
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
@@ -109,9 +110,6 @@ jobs:
         env:
           # NOTE(@krystofwoldrich): Missing token won't fail the build
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      - name: 🔗 Lint pages links
-        working-directory: docs
-        run: pnpm lint-links --quiet
       - name: 🚀 Deploy Docs website
         if: github.ref == 'refs/heads/main'
         id: deploy

@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
 import { router } from '../../imperative-api';
+import Stack from '../../layouts/StackClient';
 import { Link } from '../../link/Link';
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -15,6 +16,7 @@ jest.mock('react-native-screens', () => {
   ) as typeof import('react-native-screens');
   return {
     ...actualModule,
+    ScreenStackItem: jest.fn(({ children }) => <View>{children}</View>),
     Tabs: {
       ...actualModule.Tabs,
       Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
@@ -31,29 +33,21 @@ describe('Native Bottom Tabs Navigation', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(2);
   }
 
-  function expectTwoRenders() {
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
-  }
-
   function lastHostSelectedKey() {
     const calls = TabsHost.mock.calls;
     return calls[calls.length - 1][0].navStateRequest.selectedScreenKey;
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
-    );
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toBe('second');
+    expect(lastHostSelectedKey()).toBe('index');
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
-    );
-    expect(lastHostSelectedKey()).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toBe('second');
+    expect(lastHostSelectedKey()).toBe('second');
   }
 
   beforeEach(() => {
@@ -84,32 +78,30 @@ describe('Native Bottom Tabs Navigation', () => {
       hidden: () => <View testID="hidden" />,
       notSpecified: () => <View testID="not-specified" />,
     });
-    expectOneRender();
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expectIndexTabFocused();
     TabsScreen.mockClear();
   });
 
   it('can navigate using router.push', () => {
     act(() => router.push('/second'));
-    expectTwoRenders();
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
     TabsScreen.mockClear();
     act(() => router.push('/'));
-    expectTwoRenders();
-    expectIndexTabFocused(2);
+    expectOneRender();
+    expectIndexTabFocused();
   });
 
   it('can navigate using Link', () => {
     act(() => fireEvent.press(screen.getByTestId('index-second-link')));
 
-    // First render is deferred index=0, index =1
-    // Second one is deferred index=1, index =1
-    expectTwoRenders();
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-index-link')));
-    expectTwoRenders();
-    expectIndexTabFocused(2);
+    expectOneRender();
+    expectIndexTabFocused();
   });
 
   it('does not re-render when router.push is called to the same tab', () => {
@@ -125,7 +117,7 @@ describe('Native Bottom Tabs Navigation', () => {
 
     TabsScreen.mockClear();
     act(() => router.push('/second'));
-    expectSecondTabFocused(2);
+    expectSecondTabFocused();
 
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-second-link'))); // link to same tab
@@ -135,21 +127,21 @@ describe('Native Bottom Tabs Navigation', () => {
 
   it('when Link is pressed to a hidden tab, it redirects to the initial tab', async () => {
     act(() => fireEvent.press(screen.getByTestId('index-hidden-link')));
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toBe('index');
     expect(screen).toHavePathname('/');
 
     TabsScreen.mockClear();
     act(() => router.push('/second'));
-    expectSecondTabFocused(2);
+    expectSecondTabFocused();
 
     act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toBe('index');
     expect(screen).toHavePathname('/');
   });
 
   it('when Link is pressed to a not-specified tab, it redirects to the initial tab', () => {
     act(() => fireEvent.press(screen.getByTestId('index-not-specified-link')));
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toBe('index');
     expect(screen).toHavePathname('/');
 
     TabsScreen.mockClear();
@@ -157,22 +149,32 @@ describe('Native Bottom Tabs Navigation', () => {
     expectSecondTabFocused();
 
     act(() => fireEvent.press(screen.getByTestId('second-not-specified-link')));
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toBe('index');
     expect(screen).toHavePathname('/');
   });
 
   it('redirects to the initial tab when router.push targets a hidden or not-specified route', () => {
     act(() => router.push('/hidden'));
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toBe('index');
     expect(screen).toHavePathname('/');
 
     act(() => router.push('/notSpecified'));
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toBe('index');
     expect(screen).toHavePathname('/');
   });
 });
 
 describe('Native Bottom Tabs trigger changes', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
   it('renders only routes with visible triggers', () => {
     renderRouter({
       _layout: () => (
@@ -190,7 +192,7 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.queryByTestId('hidden')).toBeNull();
     expect(screen.queryByTestId('not-specified')).toBeNull();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0]![0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
   });
 
   it('removes a tab item when its trigger is removed and redirects navigation to it', () => {
@@ -216,7 +218,7 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.queryByTestId('second')).toBeNull();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0]![0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
 
     act(() => router.push('/second'));
     expect(screen).toHavePathname('/');
@@ -240,6 +242,27 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.queryByTestId('not-specified')).toBeNull();
     expect(screen).toHavePathname('/');
+  });
+
+  it('removes a replaced route from tab history', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs backBehavior="history">
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+      notSpecified: () => <View testID="not-specified" />,
+    });
+
+    act(() => router.push('/second'));
+    act(() => router.push('/notSpecified'));
+    expect(screen).toHavePathname('/');
+
+    act(() => router.back());
+    expect(screen).toHavePathname('/second');
   });
 
   it('respects initialRouteName when redirecting from a route without a visible tab', () => {
@@ -302,7 +325,7 @@ describe('Native Bottom Tabs trigger changes', () => {
     });
 
     // The trigger name `second` matches the route `second/index`.
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
 
     act(() => router.push('/second'));
 
@@ -339,8 +362,43 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.queryByTestId('second')).toBeNull();
     expect(TabsScreen).toHaveBeenCalled();
     for (const call of TabsScreen.mock.calls) {
-      expect(call[0].screenKey).toMatch(/^index-[-\w]+/);
+      expect(call[0].screenKey).toBe('index');
     }
+  });
+
+  it('waits for a nested native tabs navigator to regain focus before redirecting', () => {
+    let setHidden!: (hidden: boolean) => void;
+    function TabsLayout() {
+      const [hidden, set] = useState(false);
+      setHidden = set;
+      return (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" hidden={hidden} />
+        </NativeTabs>
+      );
+    }
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        index: () => <View testID="outside" />,
+        'tabs/_layout': TabsLayout,
+        'tabs/index': () => <View testID="tabs-index" />,
+        'tabs/second': () => <View testID="tabs-second" />,
+      },
+      { initialUrl: '/tabs/second' }
+    );
+
+    act(() => router.push('/'));
+    act(() => setHidden(true));
+
+    expect(screen).toHavePathname('/');
+    expect(screen.getByTestId('outside')).toBeVisible();
+
+    act(() => router.back());
+
+    expect(screen).toHavePathname('/tabs');
+    expect(screen.getByTestId('tabs-index')).toBeVisible();
   });
 
   it('renders no tab UI when every trigger is hidden', () => {
@@ -355,5 +413,6 @@ describe('Native Bottom Tabs trigger changes', () => {
 
     expect(screen.queryByTestId('index')).toBeNull();
     expect(TabsScreen).not.toHaveBeenCalled();
+    expect(warnSpy.mock.calls).toMatchSnapshot();
   });
 });

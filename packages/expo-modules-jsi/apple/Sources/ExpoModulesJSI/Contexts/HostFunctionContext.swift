@@ -19,7 +19,8 @@ internal final class UnownedThisHostFunctionContext: Sendable {
   let call: JavaScriptRuntime.UnownedThisSyncFunctionClosure
 
   init(
-    runtime: JavaScriptRuntime, name: String? = nil,
+    runtime: JavaScriptRuntime,
+    name: String? = nil,
     _ function: @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
   ) {
     self.runtime = runtime

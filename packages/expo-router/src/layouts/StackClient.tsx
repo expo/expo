@@ -13,8 +13,8 @@ import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
 } from '../navigationParams';
 import {
+  type DescriptorRouteProp,
   type ParamListBase,
-  type RouteProp,
   StackActions,
   type StackNavigationState,
   type StackRouterOptions,
@@ -37,60 +37,16 @@ import {
   validateStackPresentation,
 } from './stack-utils';
 
-/**
- * We extend NativeStackNavigationOptions with our custom props
- * to allow for several extra props to be used on web, like modalWidth
- */
-export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
-  webModalStyle?: {
-    /**
-     * Override the width of the modal (px or percentage). Only applies on web platform.
-     * @platform web
-     */
-    width?: number | string;
-    /**
-     * Override the height of the modal (px or percentage). Applies on web desktop.
-     * @platform web
-     */
-    height?: number | string;
-    /**
-     * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
-     * @platform web
-     */
-    minHeight?: number | string;
-    /**
-     * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
-     * @platform web
-     */
-    minWidth?: number | string;
-    /**
-     * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
-     * @platform web
-     */
-    border?: string;
-    /**
-     * Override the overlay background color (any valid CSS color or rgba/hsla value).
-     * @platform web
-     */
-    overlayBackground?: string;
-    /**
-     * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
-     * @platform web
-     */
-    shadow?: string;
-  };
-};
-
 const RNStack = unstable_integrateWithRouter<
-  ExtendedStackNavigationOptions,
+  NativeStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardNativeStackEventMap,
   NativeStackNavigationConfig,
   StackRouterOptions,
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
-  createProps: ({ state, dispatch, navigation }) => ({
-    pop: makePopAction(dispatch, state.key),
+  createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
+    pop: makePopAction(dispatchSync, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
     subscribePopToTopOnParentTabPress: () =>
       // @ts-expect-error: there may not be a tab navigator in parent
@@ -174,7 +130,7 @@ type NativeStackScreenOptions = ComponentProps<typeof RNStack>['screenOptions'];
 
 function disableAnimationInScreenOptions(
   options: NativeStackScreenOptions | undefined,
-  condition: (route: RouteProp<ParamListBase, string>) => boolean
+  condition: (route: DescriptorRouteProp<ParamListBase, string>) => boolean
 ): NativeStackScreenOptions {
   if (options && typeof options === 'function') {
     return (props) => {
@@ -199,7 +155,9 @@ function disableAnimationInScreenOptions(
   };
 }
 
-function shouldDisableAnimationBasedOnParams(route: RouteProp<ParamListBase, string>): boolean {
+function shouldDisableAnimationBasedOnParams(
+  route: DescriptorRouteProp<ParamListBase, string>
+): boolean {
   const expoParams = getInternalExpoRouterParams(route.params);
   return !!expoParams[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }

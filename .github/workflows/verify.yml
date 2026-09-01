@@ -1,0 +1,139 @@
+# Thin adapter only — all logic lives in the @expo/verify engine
+# (design of record: expo-sandbox-mcp LLP 0020). Do not add steps here;
+# customize through .verify/ (config.jsonc, the prompt files) and dispatch
+# inputs.
+#
+# STAGED CUTOVER: this workflow runs only on explicit dispatch and lives
+# beside agent-commands.yml, which remains the live /verify pipeline until
+# shadow parity is approved. The dry_run input runs the full investigation
+# but posts nothing — artifacts only.
+name: verify
+run-name: "verify #${{ inputs.target }}${{ inputs.dry_run == true && ' (dry run)' || '' }} — ${{ github.actor }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Issue or pull request number"
+        type: string
+        required: true
+      fix:
+        type: choice
+        options: ["auto", "yes", "no"]
+        default: auto
+      model:
+        description: "Model override (quiet path only)"
+        type: string
+      retry:
+        type: boolean
+        default: false
+      dry_run:
+        description: "Investigate for real, post nothing (P1b shadow)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+# GHA groups queue when cancel-in-progress is false — defense in depth; the
+# server-side mint enforces per-target serialization regardless.
+concurrency:
+  group: verify-target-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    # Job-level only: a verify failure must never fail the repo's checks, but
+    # the STEP must fail honestly — a step-level continue-on-error here hid an
+    # engine exit 1 behind a green run (run 32919110451).
+    continue-on-error: true
+    env:
+      # Same version feeds the guard and the run, so the engine that clears
+      # the profile is the engine that reads it. Override with the repo
+      # variable VERIFY_VERSION; the fallback pins the tested release.
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.3.0' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false # the engine authenticates via gh from GH_TOKEN
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2.1.229
+
+      - name: Guard profile and credential env
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
+
+      # Token custody across steps: the parent EXPO_SANDBOX_MCP_TOKEN is mapped
+      # into the mint and revoke steps ONLY. The run step — the one that
+      # executes the agent — holds just the scoped token, via a 0600 file in
+      # runner.temp, so nothing in that process can reach the parent.
+      - name: Mint scoped token
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify mint
+        env:
+          VERIFY_TARGET: ${{ inputs.target }}
+          VERIFY_RETRY: ${{ inputs.retry }}
+          VERIFY_RUN_ID: ${{ github.run_id }}
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          # Same deployment agent-commands.yml uses.
+          MCP_URL: https://agile-minnow-543.convex.site
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+
+      - name: Run verify
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify run ${{ inputs.dry_run == true && '--dry-run' || '' }}
+        env:
+          # Inputs cross as env only — never ${{ }} inside run: lines.
+          VERIFY_TARGET: ${{ inputs.target }}
+          VERIFY_FIX: ${{ inputs.fix }}
+          VERIFY_MODEL_OVERRIDE: ${{ inputs.model }}
+          VERIFY_MODEL: ${{ vars.VERIFY_MODEL }}
+          VERIFY_RETRY: ${{ inputs.retry }}
+          VERIFY_ACTOR: ${{ github.actor }}
+          VERIFY_RUN_ID: ${{ github.run_id }}
+          VERIFY_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          # Secrets: held by this step's process only (never the parent MCP
+          # token). The engine strips ALL of these from the agent/critic
+          # subprocess env.
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ECR_1: ${{ secrets.ECR_1 }}
+          ECR_2: ${{ secrets.ECR_2 }}
+          ECR_3: ${{ secrets.ECR_3 }}
+          ECR_4: ${{ secrets.ECR_4 }}
+          ECR_5: ${{ secrets.ECR_5 }}
+          CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+
+      - name: Revoke scoped token
+        if: always() # releases the per-target verify slot; TTL is the backstop
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify revoke
+        env:
+          VERIFY_MCP_CONFIG: ${{ runner.temp }}/verify-mcp.json
+          MCP_URL: https://agile-minnow-543.convex.site
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verify-run-log-${{ inputs.target }}
+          path: |
+            .verify-out/run-log.txt
+            .verify-out/findings.md
+            .verify-out/review.md
+            .verify-out/final-comment.md
+            .verify-out/final-comment-args.json
+            .verify-out/partial-findings.md
+            .verify-out/denied-writes.txt
+            .verify-out/publish-plan.json
+            .verify-out/publish-outcome.json
+          if-no-files-found: ignore
+          retention-days: 14

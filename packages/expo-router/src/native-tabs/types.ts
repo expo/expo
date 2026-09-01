@@ -16,6 +16,7 @@ import type {
 } from '../react-navigation/native';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 /**
  * Event map for `NativeTabs` navigation events.
@@ -228,6 +229,13 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   >;
 }
 
+/**
+ * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
+ * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
+ * @platform ios
+ */
+export type IconRenderingMode = 'template' | 'original';
+
 export type SymbolOrImageSource =
   | {
       /**
@@ -256,7 +264,7 @@ export type SymbolOrImageSource =
        * @platform ios
        * @default 'template'
        */
-      renderingMode?: 'template' | 'original';
+      renderingMode?: IconRenderingMode;
     };
 
 export type NativeTabsLabelStyle = Pick<
@@ -295,6 +303,8 @@ export const SUPPORTED_BLUR_EFFECTS = [
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
 export interface NativeTabsProps extends PropsWithChildren {
+  /** A component to render when an individual tab screen throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   // #region common props
   /**
    * The style of the every tab label in the tab bar.
@@ -317,6 +327,8 @@ export interface NativeTabsProps extends PropsWithChildren {
   tintColor?: ColorValue;
   /**
    * The background color of the tab bar.
+   *
+   * On iOS 26 and later, the system draws the tab bar background and this prop has no effect.
    */
   backgroundColor?: ColorValue;
   /**
@@ -355,11 +367,15 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * The blur effect applied to the tab bar.
    *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
+   *
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
    * The color of the shadow.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
    *
@@ -377,6 +393,8 @@ export interface NativeTabsProps extends PropsWithChildren {
   };
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * @platform iOS
    */
@@ -480,7 +498,6 @@ export interface NativeTabsProps extends PropsWithChildren {
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
-  redirectToRouteName?: string;
 }
 export interface OnTabChangeEventPayload {
   /**
@@ -518,7 +535,6 @@ export interface NativeTabsViewProps extends Omit<
   | 'badgeTextColor'
   | 'rippleColor'
   | 'disableIndicator'
-  | 'redirectToRouteName'
   | 'labelVisibilityMode'
 > {
   focusedIndex: number;
@@ -532,7 +548,6 @@ export interface NativeTabsViewProps extends Omit<
 
 export interface NativeTabsViewTabItem {
   options: NativeTabOptions;
-  routeKey: string;
   name: string;
   contentRenderer: () => React.ReactNode;
 }
@@ -691,6 +706,8 @@ export interface NativeTabTriggerProps {
   contentStyle?: NativeTabOptions['contentStyle'];
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
    *

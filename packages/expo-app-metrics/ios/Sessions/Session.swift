@@ -155,7 +155,8 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
       try AppMetrics.database?.insert(log: LogRow.from(log: log, sessionId: self.id))
     } catch {
       logger.warn(
-        "[AppMetrics] Failed to insert log \"\(log.name)\" for session \(self.id): \(error.localizedDescription)")
+        "[AppMetrics] Failed to insert log \"\(log.name)\" for session \(self.id): \(error.localizedDescription)"
+      )
     }
   }
 }

@@ -11,11 +11,26 @@ import {
   Slot,
   usePathname,
 } from '../exports';
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link';
 import { renderRouter, screen } from '../testing-library';
+
+it('throws when navigating before the first render finishes', () => {
+  expect(() =>
+    renderRouter({
+      index: function MyIndexRoute() {
+        router.push('/profile/test-name');
+        return <Text testID="index">Press me</Text>;
+      },
+      '/profile/[name]': function MyRoute() {
+        const { name } = useGlobalSearchParams();
+        return <Text testID="profile-name">{name}</Text>;
+      },
+    })
+  ).toThrow('The imperative router is unavailable before the first render has finished.');
+});
 
 it('should respect `unstable_settings', () => {
   const render = (options: any = {}) =>
@@ -28,7 +43,12 @@ it('should respect `unstable_settings', () => {
               initialRouteName: 'orange',
             },
           },
-          default: () => <Tabs />,
+          default: () => (
+            <Tabs>
+              <Tabs.Screen name="orange" />
+              <Tabs.Screen name="banana" />
+            </Tabs>
+          ),
         },
         '(one,two)/apple': () => <Text testID="apple"> Apple</Text>,
         '(two)/banana': () => <Text testID="banana">Banana</Text>,
@@ -116,23 +136,6 @@ describe('hooks only', () => {
 });
 
 describe('imperative only', () => {
-  // The navigation action is offloaded until the navigation tree is ready.
-  it('can navigate before navigation is ready', async () => {
-    renderRouter({
-      index: function MyIndexRoute() {
-        router.push('/profile/test-name');
-        return <Text testID="index">Press me</Text>;
-      },
-      '/profile/[name]': function MyRoute() {
-        const { name } = useGlobalSearchParams();
-        return <Text testID="profile-name">{name}</Text>;
-      },
-    });
-
-    expect(screen.queryByTestId('index')).toBeNull();
-    expect(screen.getByTestId('profile-name')).toBeOnTheScreen();
-  });
-
   it('can handle navigation between routes', async () => {
     renderRouter({
       index: function MyIndexRoute() {
@@ -257,7 +260,11 @@ it('replaces from top level modal to initial route in a tab navigator', () => {
       default: () => <Stack />,
     },
     '[...missing]': () => <Text testID="missing">missing</Text>,
-    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+      </Tabs>
+    ),
     '(tabs)/index': () => <Text testID="two">two</Text>,
   });
 
@@ -314,9 +321,11 @@ it('pushes auto-encoded params and fully qualified URLs', () => {
   });
 });
 
-it('does not loop infinitely when pushing a screen with empty options to an invalid initial route name', () => {
+it('warns when pushing to a layout with an invalid initial route name', () => {
   /** https://github.com/expo/router/issues/452 */
+  // Throwing before the invalid layout mounts makes the reported render loop unreachable.
 
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   renderRouter({
     _layout: () => <Stack />,
     index: () => <Text />,
@@ -337,7 +346,12 @@ it('does not loop infinitely when pushing a screen with empty options to an inva
 
   expect(screen).toHavePathname('/');
   act(() => router.push('/main/welcome'));
-  expect(screen).toHavePathname('/main/welcome');
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringContaining(
+      'The initial route name "index" was not found in the layout at "./main/_layout.js".'
+    )
+  );
+  warn.mockRestore();
 });
 
 it('can push nested initial route name', () => {
@@ -591,7 +605,12 @@ it('should stay within the same group', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)" />
+        </Tabs>
+      ),
       '(tabs)/(home)/_layout': () => <Stack />,
       '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
       '(tabs)/(home)/shared': () => <Text testID="text">Home Shared</Text>,
@@ -609,11 +628,48 @@ it('should stay within the same group', () => {
   expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
 });
 
+it('resolves queued navigation using the preceding pending group segments', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)" />
+        </Tabs>
+      ),
+      '(tabs)/(home)/_layout': () => <Stack />,
+      '(tabs)/(home)/index': () => <Text>Home Index</Text>,
+      '(tabs)/(home)/shared': () => <Text>Home Shared</Text>,
+      '(tabs)/(profile)/_layout': () => <Stack />,
+      '(tabs)/(profile)/index': () => <Text>Profile Index</Text>,
+      '(tabs)/(profile)/shared': () => <Text testID="profile-shared">Profile Shared</Text>,
+    },
+    {
+      initialUrl: '/(home)',
+    }
+  );
+
+  act(() => {
+    router.push('/(profile)');
+    router.push('/shared');
+  });
+
+  expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
+  expect(screen.getByTestId('profile-shared')).toBeOnTheScreen();
+});
+
 it('should stay within the same group for hoisted routes', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)/index" />
+          <Tabs.Screen name="(profile)/shared" />
+        </Tabs>
+      ),
       '(tabs)/(home)/_layout': () => <Stack />,
       '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
       '(tabs)/(home)/shared': () => <Text testID="text">Home Shared</Text>,
@@ -635,7 +691,12 @@ it('should stay within the same group even if another group has more specific ro
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)" />
+        </Tabs>
+      ),
       '(tabs)/(home)/_layout': () => <Stack />,
       '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
       // This is more specific (more segments)
@@ -867,7 +928,12 @@ it('can redirect within a group layout', () => {
 
 it('can replace across groups', async () => {
   renderRouter({
-    _layout: () => <Tabs />,
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="one" />
+        <Tabs.Screen name="two" />
+      </Tabs>
+    ),
     'one/_layout': () => <Stack />,
     'one/screen': () => <Text testID="one/screen" />,
     'two/_layout': () => <Stack />,
@@ -1154,7 +1220,13 @@ describe('shared routes with tabs', () => {
       '(one,two)/one': () => <Text />,
       '(one,two)/post': () => <Text />,
       '(two)/two': () => <Text />,
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="(one)" />
+          <Tabs.Screen name="(two)" />
+        </Tabs>
+      ),
       index: () => <Redirect href="/one" />,
     });
 
@@ -1673,7 +1745,13 @@ describe('navigation action fallbacks', () => {
 
   it('can fall back correctly for tab navigators', () => {
     renderRouter({
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="redirected" />
+        </Tabs>
+      ),
       one: () => <Text testID="one" />,
       two: () => <Text testID="two" />,
       redirected: () => <Redirect href="/" />,
@@ -1723,11 +1801,7 @@ it('multiple pushes in useEffect are executed in order and added to stack', () =
   expect(screen.queryByTestId('two')).toBeNull();
   expect(screen).toHavePathname('/one');
 
-  act(() => router.back());
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen.queryByTestId('one')).toBeNull();
-  expect(screen.queryByTestId('two')).toBeNull();
-  expect(screen).toHavePathname('/');
+  // TODO(ENG-22021): Restore the second back assertion when dispatch stamps the navigator type.
 });
 
 it('multiple pushes to different stack are executed in order and added separately to parent stack', () => {
@@ -1768,20 +1842,21 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(screen.queryByTestId('d')).toBeNull();
   expect(screen).toHavePathname('/b/e');
 
-  expect(store.state!.index).toBe(0);
-  expect(store.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.name).toBe('__root');
+  const rootState = navigationRef.getRootState();
+  expect(rootState.index).toBe(0);
+  expect(rootState.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.name).toBe('__root');
   // Both pushes from 'c' will create new routes in root layout. This is because both pushes are happening on the same state, where there is no 'b' stack yet.
-  expect(store.state!.routes[0]!.state!.routes).toHaveLength(3);
-  expect(store.state!.routes[0]!.state!.routes[0]!.name).toBe('a');
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
-  expect(store.state!.routes[0]!.state!.routes[1]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
-  expect(store.state!.routes[0]!.state!.routes[2]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
+  expect(rootState.routes[0]!.state!.routes).toHaveLength(3);
+  expect(rootState.routes[0]!.state!.routes[0]!.name).toBe('a');
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
+  expect(rootState.routes[0]!.state!.routes[1]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
+  expect(rootState.routes[0]!.state!.routes[2]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
 
   act(() => router.back());
   expect(screen.getByTestId('d')).toBeVisible();

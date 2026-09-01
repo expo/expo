@@ -11,6 +11,10 @@ import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
 
+type ExpoImageWebProps = ImageNativeProps & {
+  dataSet?: Record<string, string | undefined>;
+};
+
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = event.target as HTMLImageElement;
@@ -81,8 +85,9 @@ export default function ExpoImage({
   tintColor,
   containerViewRef,
   draggable,
+  dataSet,
   ...props
-}: ImageNativeProps) {
+}: ExpoImageWebProps) {
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
@@ -171,7 +176,7 @@ export default function ExpoImage({
     <View
       ref={containerViewRef}
       // @ts-expect-error: TODO(@kitten): This is related to react-native-web presumably
-      dataSet={{ expoimage: true }}
+      dataSet={{ ...dataSet, expoimage: 'true' }}
       style={[{ overflow: 'hidden' }, style]}
       {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>

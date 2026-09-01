@@ -10,6 +10,7 @@
 
 - [iOS] Fixed the screen-recording overlay staying attached (permanent black screen) after `allowScreenCaptureAsync` is called while a recording is active. ([#48000](https://github.com/expo/expo/pull/48000) by [@bluespore](https://github.com/bluespore))
 - [iOS] Fixed screenshot prevention and the recording overlay attaching to a window in a background scene rather than the one on screen. ([#48372](https://github.com/expo/expo/pull/48372) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed a repeated `preventScreenCaptureAsync` call with a new key corrupting the layer hierarchy and permanently black-screening the app, and made `preventScreenCaptureAsync` reject instead of silently leaving the app unprotected when the secure canvas cannot attach. ([#49372](https://github.com/expo/expo/pull/49372) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
