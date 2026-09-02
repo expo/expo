@@ -1,5 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import ExpoModulesCore
+import UIKit
 
 private let onTasksExpired = "onTasksExpired"
 public let onTasksExpiredNotification = Notification.Name(onTasksExpired)
@@ -65,10 +66,18 @@ public class BackgroundTaskModule: Module {
       }
     }
 
-    AsyncFunction("getStatusAsync") {
-      return BackgroundTaskScheduler.supportsBackgroundTasks()
-        ? BackgroundTaskStatus.available : .restricted
+    // Runs on the main queue because `UIApplication.shared` must only be touched there,
+    // while `AsyncFunction` runs off the main queue by default.
+    AsyncFunction("getStatusAsync") { () -> BackgroundTaskStatus in
+      // BGTaskScheduler never runs work on a simulator, so the system setting is
+      // meaningless there and we keep reporting `restricted`.
+      if !BackgroundTaskScheduler.supportsBackgroundTasks() {
+        return .restricted
+      }
+
+      return BackgroundTaskStatus(refreshStatus: UIApplication.shared.backgroundRefreshStatus)
     }
+    .runOnQueue(.main)
   }
 
   @objc func handleTasksExpiredNotification(_ notification: Notification) {
