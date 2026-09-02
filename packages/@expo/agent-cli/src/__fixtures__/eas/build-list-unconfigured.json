@@ -1,0 +1,5 @@
+{
+  "exitCode": 1,
+  "stdout": "EAS project not configured. This command cannot configure it in non-interactive mode. Run one of the following, then re-run this command:\n\nTo link an existing project:\n\n  eas init --id <project-id> --non-interactive\n\nTo create a new project:\n\n  eas init --account <account-name> --non-interactive\n\nAccounts you can create projects in: alice, expo, community, expo-ci\n",
+  "stderr": "    Error: build:list command failed.\n"
+}

@@ -1,0 +1,69 @@
+{
+  "exprFile": "/tmp/spike7/probe-disabled.js",
+  "exprBytes": 1477,
+  "cdpResponseBytes": 1154,
+  "roundTripMs": 3,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "nodes": [
+        {
+          "accessibilityState": null,
+          "ariaDisabled": "<absent>",
+          "component": "Pressable",
+          "disabledProp": "<absent>",
+          "hasOnPress": true,
+          "pointerEvents": "<absent>",
+          "testID": "add-note"
+        },
+        {
+          "accessibilityState": "{}",
+          "ariaDisabled": "<absent>",
+          "component": "View",
+          "disabledProp": "<absent>",
+          "hasOnPress": false,
+          "pointerEvents": "<absent>",
+          "testID": "add-note"
+        },
+        {
+          "accessibilityState": "{}",
+          "ariaDisabled": "<absent>",
+          "component": "RCTView",
+          "disabledProp": "<absent>",
+          "hasOnPress": false,
+          "pointerEvents": "<absent>",
+          "testID": "add-note"
+        },
+        {
+          "accessibilityState": null,
+          "ariaDisabled": "<absent>",
+          "component": "Pressable",
+          "disabledProp": true,
+          "hasOnPress": true,
+          "pointerEvents": "<absent>",
+          "testID": "disabled-btn"
+        },
+        {
+          "accessibilityState": "{\"disabled\":true}",
+          "ariaDisabled": "<absent>",
+          "component": "View",
+          "disabledProp": "<absent>",
+          "hasOnPress": false,
+          "pointerEvents": "<absent>",
+          "testID": "disabled-btn"
+        },
+        {
+          "accessibilityState": "{\"disabled\":true}",
+          "ariaDisabled": "<absent>",
+          "component": "RCTView",
+          "disabledProp": "<absent>",
+          "hasOnPress": false,
+          "pointerEvents": "<absent>",
+          "testID": "disabled-btn"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "note": "Runs of expr-12-payload-cap.js with __SIZE__ replaced by the value below. The string itself is elided; what is recorded is the size of the CDP frame that carried it and how long the round trip took. No size in this range was refused, so the tree's cap is a readability decision, not a transport one.",
+  "runtime": "Expo Go on iOS 26.5 simulator, SDK 57 / RN 0.86.2, dev server http://127.0.0.1:8230",
+  "capturedAt": "2026-08-24",
+  "runs": [
+    { "requestedChars": 1000000, "cdpResponseBytes": 1000156, "roundTripMs": 25, "refused": false },
+    { "requestedChars": 4000000, "cdpResponseBytes": 4000156, "roundTripMs": 87, "refused": false },
+    { "requestedChars": 16000000, "cdpResponseBytes": 16000158, "roundTripMs": 261, "refused": false },
+    { "requestedChars": 64000000, "cdpResponseBytes": 64000158, "roundTripMs": 1081, "refused": false }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "phases": [
+    {
+      "name": "xcodebuild",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 14
+    }
+  ],
+  "failure": {
+    "phase": "xcodebuild",
+    "signature": "ios.signing.no-profile",
+    "line": 8,
+    "matchedLine": "error: No profiles for 'com.example.notesapp' were found: Xcode couldn't find any iOS App Store provisioning profiles matching 'com.example.notesapp'. (in target 'notesapp' from project 'notesapp')",
+    "confidence": "high",
+    "suggestedCommand": "npx eas credentials --platform ios"
+  },
+  "otherSignatures": [
+    "12:ios.build-failed"
+  ]
+}

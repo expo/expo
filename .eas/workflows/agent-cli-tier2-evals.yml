@@ -1,0 +1,63 @@
+# Tier 2 evals for @expo/agent-cli (llp/0002 in packages/@expo/agent-cli): a frontier agent (Claude Code
+# headless) drives the eval scenarios for real. Advisory, never blocks merge — the eval
+# step reports its result through the PR comment instead of failing the job.
+#
+# Trigger: label a PR with "agent-cli-eval" (mirrors expo/skills' label-triggered evals),
+# or dispatch manually.
+#
+# Prerequisite: ANTHROPIC_API_KEY must exist in the EAS "production" environment.
+name: agent-cli-tier2-evals
+
+on:
+  pull_request_labeled:
+    labels:
+      - agent-cli-eval
+  workflow_dispatch: {}
+
+jobs:
+  tier2:
+    name: tier 2 agent evals
+    runs_on: linux-medium
+    environment: production
+    outputs:
+      result: ${{ steps.evals.outputs.result }}
+      summary: ${{ steps.evals.outputs.summary }}
+    steps:
+      - uses: eas/checkout
+
+      - name: Install dependencies
+        run: npx --yes pnpm@10.33.0 install --ignore-scripts --frozen-lockfile --filter @expo/agent-cli...
+
+      - name: Build @expo/agent-cli
+        run: npx --yes pnpm@10.33.0 --dir packages/@expo/agent-cli build
+
+      - name: Install Claude Code
+        run: npm install --global @anthropic-ai/claude-code
+
+      - name: Run tier 2 evals
+        id: evals
+        # Report-only: capture the outcome for the PR comment, do not fail the job.
+        run: |
+          set +e
+          node packages/@expo/agent-cli/evals/run.mjs --tier 2 | tee /tmp/tier2.log
+          code=$?
+          set-output result "$([ "$code" -eq 0 ] && echo pass || echo fail)"
+          set-output summary "$(tail -n 20 /tmp/tier2.log | head -c 1500)"
+          exit 0
+
+  comment:
+    name: comment
+    after: [tier2]
+    type: github-comment
+    params:
+      payload: |
+        <!-- agent-cli-tier2-evals -->
+        ## @expo/agent-cli tier 2 evals (Claude Code headless)
+
+        Result: **${{ after.tier2.outputs.result }}**
+
+        ```
+        ${{ after.tier2.outputs.summary }}
+        ```
+
+        📎 [Full log](${{ workflow.url }}) — advisory only, never blocks merge (llp/0002).

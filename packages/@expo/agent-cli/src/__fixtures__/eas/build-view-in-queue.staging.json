@@ -1,0 +1,37 @@
+{
+  "id": "77e676e2-dc2f-4b48-a72f-f095bd427d55",
+  "status": "IN_QUEUE",
+  "platform": "IOS",
+  "artifacts": {},
+  "fingerprint": {
+    "id": "01a03d4b-28df-7a2c-a9e0-9141c164c0f4",
+    "hash": "665388c1ea97138f9c977fcd58e4c648195a6e94"
+  },
+  "initiatingActor": {
+    "id": "3ecd85d1-3944-49e0-b70d-ef8084553c03",
+    "displayName": "alice"
+  },
+  "logFiles": [],
+  "app": {
+    "id": "861a6e66-a6c4-4314-abbf-b52f0bf80cef",
+    "name": "SampleApp",
+    "slug": "SampleApp",
+    "ownerAccount": {
+      "id": "82c5fe0f-c64e-4e79-80c2-03d275d6b406",
+      "name": "bob"
+    }
+  },
+  "distribution": "INTERNAL",
+  "buildProfile": "development-simulator",
+  "appIdentifier": "com.example.sampleapp",
+  "sdkVersion": "57.0.0",
+  "appVersion": "1.0.0",
+  "appBuildVersion": "1",
+  "gitCommitHash": "f1634a84a2532cc74982fd6d7bfcd15f4dfbc2f4",
+  "gitCommitMessage": "[@expo/agent-cli] Record the gate exit-code rule as a convention for every future gate",
+  "priority": "HIGH",
+  "createdAt": "2026-08-26T15:17:25.603Z",
+  "updatedAt": "2026-08-26T15:17:31.750Z",
+  "expirationDate": "2026-11-24T15:17:25.642Z",
+  "isForIosSimulator": true
+}

@@ -1,0 +1,15 @@
+{
+  "id": "skills-sync",
+  "fixture": "e2e/fixtures/skills-app",
+  "taskPrompt": "sync agent skills in this project",
+  "drivingAgent": "deterministic",
+  "tiers": [0, 1, 2],
+  "command": {
+    "argv": ["skills:sync", "--agent", "claude-code"],
+    "timeoutMs": 60000
+  },
+  "graders": [
+    { "type": "exit-code", "expect": 0 },
+    { "type": "path-exists", "path": ".claude/skills", "kind": "directory" }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-13-offscreen.js",
+  "exprBytes": 2416,
+  "cdpResponseBytes": 728,
+  "roundTripMs": 11,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "hostTagNames": {
+        "DebuggingOverlay": 1,
+        "RCTScrollContentView": 2,
+        "RCTScrollView": 2,
+        "RCTSinglelineTextInputView": 1,
+        "RCTText": 328,
+        "RCTView": 349,
+        "RCTVirtualText": 5,
+        "RNCSafeAreaProvider": 4,
+        "RNCSafeAreaView": 2,
+        "RNGestureHandlerButton": 2,
+        "RNSTabsHostIOS": 1,
+        "RNSTabsScreenIOS": 3,
+        "ViewManagerAdapter_ExpoImage": 2,
+        "ViewManagerAdapter_SymbolModule": 6
+      },
+      "offscreen": [
+        {
+          "depth": 65,
+          "hiddenByMemoizedState": false,
+          "mode": "visible"
+        },
+        {
+          "depth": 120,
+          "hiddenByMemoizedState": false,
+          "mode": "visible"
+        },
+        {
+          "depth": 120,
+          "hiddenByMemoizedState": false,
+          "mode": "visible"
+        },
+        {
+          "depth": 120,
+          "hiddenByMemoizedState": false,
+          "mode": "visible"
+        }
+      ],
+      "offscreenCount": 4,
+      "screens": []
+    }
+  }
+}

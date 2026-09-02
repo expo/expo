@@ -1,0 +1,25 @@
+{
+  "id": "dev-wait-no-dev-server",
+  "fixture": "e2e/fixtures/go-app",
+  "taskPrompt": "wait until the dev server has finished bundling this app",
+  "drivingAgent": "deterministic",
+  "tiers": [0],
+  "command": {
+    "argv": ["dev:wait", "--dev-server-url", "http://127.0.0.1:1", "--timeout", "1000"],
+    "env": {
+      "LOG_EVENTS": "events.jsonl"
+    },
+    "timeoutMs": 60000
+  },
+  "graders": [
+    {
+      "type": "exit-code",
+      "expect": 1
+    },
+    {
+      "type": "jsonl-event",
+      "file": "events.jsonl",
+      "event": "cli:error"
+    }
+  ]
+}

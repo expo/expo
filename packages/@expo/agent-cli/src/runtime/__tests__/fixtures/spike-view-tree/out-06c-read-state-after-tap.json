@@ -1,0 +1,58 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-06-read-state.js",
+  "exprBytes": 2109,
+  "cdpResponseBytes": 758,
+  "roundTripMs": 2,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "inputValues": [
+        {
+          "component": "TextInput",
+          "tag": 0,
+          "value": ""
+        },
+        {
+          "component": "InternalTextInput",
+          "tag": 0,
+          "value": ""
+        },
+        {
+          "component": "RCTSinglelineTextInputView",
+          "tag": 5,
+          "value": ""
+        }
+      ],
+      "notesScreenState": null,
+      "rowTexts": [
+        "Welcome to Expo",
+        "Open notes",
+        "get started",
+        "Try editing",
+        "src/app/index.tsx",
+        "Dev tools",
+        "press ",
+        "cmd+d",
+        "Fresh start",
+        "npm run reset-project",
+        "Explore",
+        "This starter app includes example",
+        "\n",
+        "code to help you get started.",
+        "Expo documentation",
+        "File-based routing",
+        "Android, iOS, and web support",
+        "Images",
+        "Light and dark mode components",
+        "Animations",
+        "Notes",
+        "Add note",
+        "note-from-runtime-eval",
+        "added-via-add-button",
+        "spike-typed-note"
+      ]
+    }
+  }
+}

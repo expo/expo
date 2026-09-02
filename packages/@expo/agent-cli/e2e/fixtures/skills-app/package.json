@@ -1,0 +1,11 @@
+{
+  "name": "skills-app",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "expo": "54.0.0",
+    "fake-module-plain": "1.0.0",
+    "fake-module-with-skills": "1.0.0"
+  }
+}

@@ -1,0 +1,9 @@
+alice
+alice@example.com
+
+Accounts:
+• alice (Role: Owner)
+• charlie (Role: Viewer)
+• expo (Role: Admin)
+• community (Role: Developer)
+• expo-ci (Role: Admin)

@@ -1,0 +1,78 @@
+expo-doctor: v1.20.1
+Running 21 checks on your project...
+✔ Check for common project setup issues
+✔ Check that local environment files are not committed
+✔ Check package.json for common issues
+✔ Check Expo config for common issues
+✖ Check for overridden dependencies
+✖ Check for Expo SDK versions affected by Hermes V1 regressions
+✔ Check for lock file
+✔ Check dependencies for packages that should not be installed directly
+✔ Check for issues with Metro config
+✔ Check if the project meets version requirements for submission to app stores
+✖ Check Expo config (app.json/ app.config.js) schema
+✔ Check that required peer dependencies are installed
+✖ Check for app config fields that may not be synced in a non-CNG project
+✔ Check npm/yarn versions
+✖ Check that packages match versions required by installed Expo SDK
+✔ Check that no duplicate dependencies are installed
+✔ Validate packages against React Native Directory package metadata
+✔ Check native tooling versions
+✔ Check that @expo/vector-icons package is not installed together with other potentially conflicting icon packages.
+✔ Check that native modules do not use incompatible support packages
+✔ Check for legacy global CLI installed locally
+
+16/21 checks passed. 5 checks failed. Possible issues detected:
+
+✖ Check Expo config (app.json/ app.config.js) schema
+Error validating fields in /project/app.json:
+ Field: newArchEnabled - Additional property "newArchEnabled" is not allowed.
+Advice:
+Resolve schema errors in your app config. Learn more: https://docs.expo.dev/workflow/configuration/
+
+✖ Check for overridden dependencies
+Incompatible versions of critical dependencies are installed, which is unsupported and may cause unexpected behavior.
+"expo" should install "@expo/cli@workspace:^56.1.12", but 57.0.11 is installed.
+"expo" should install "@expo/config@workspace:~56.0.9", but 57.0.6 is installed.
+"expo" should install "@expo/metro-config@workspace:~56.0.13", but 57.0.7 is installed.
+Advice:
+Reinstall your dependencies and check that they're not in a corrupted state.
+
+✖ Check for Expo SDK versions affected by Hermes V1 regressions
+Detected Hermes V1 250829098.0.14 from React Native. Hermes V1 250829098.0.15 and earlier are affected by this regression; 250829098.0.16 is the first version that contains the fix.
+Advice:
+Upgrade to React Native 0.86.2 or later, which includes the fixed Hermes version. For Expo projects, install Expo SDK 57 with expo@57.0.9 or later and run `npx expo install --fix` to align React Native and other dependencies.
+
+✖ Check for app config fields that may not be synced in a non-CNG project
+This project contains native project folders but also has native configuration properties in app.json, indicating it is configured to use Prebuild. When the android/ios folders are present, if you don't run prebuild in your build pipeline, the following properties will not be synced: orientation, icon, userInterfaceStyle, ios, android, plugins. 
+
+
+✖ Check that packages match versions required by installed Expo SDK
+
+🔧 Patch version mismatches
+package                expected  found    
+expo                   ~57.0.15  57.0.9   
+expo-brownfield        ~57.0.13  57.0.8   
+expo-build-properties  ~57.0.13  57.0.8   
+expo-camera            ~57.0.4   57.0.3   
+expo-dev-client        ~57.0.14  57.0.10  
+expo-image             ~57.0.3   57.0.1   
+expo-splash-screen     ~57.0.7   57.0.5   
+expo-updates           ~57.0.16  57.0.11  
+react-native           0.86.2    0.86.0   
+
+Changelogs:
+- expo-brownfield → https://github.com/expo/expo/blob/sdk-57/packages/expo-brownfield/CHANGELOG.md
+- expo-build-properties → https://github.com/expo/expo/blob/sdk-57/packages/expo-build-properties/CHANGELOG.md
+- expo-camera → https://github.com/expo/expo/blob/sdk-57/packages/expo-camera/CHANGELOG.md
+- expo-dev-client → https://github.com/expo/expo/blob/sdk-57/packages/expo-dev-client/CHANGELOG.md
+- expo-image → https://github.com/expo/expo/blob/sdk-57/packages/expo-image/CHANGELOG.md
+- expo-splash-screen → https://github.com/expo/expo/blob/sdk-57/packages/expo-splash-screen/CHANGELOG.md
+- expo-updates → https://github.com/expo/expo/blob/sdk-57/packages/expo-updates/CHANGELOG.md
+
+9 packages out of date.
+Advice:
+Use 'npx expo install --check' to review and upgrade your dependencies.
+To ignore specific packages, add them to "expo.install.exclude" in package.json. Learn more: https://expo.fyi/dependency-validation
+
+5 checks failed, indicating possible issues with the project.

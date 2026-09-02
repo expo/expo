@@ -1,0 +1,508 @@
+{
+  "name": "minimal-tester",
+  "slug": "minimal-tester",
+  "version": "1.0.0",
+  "sdkVersion": "57.0.0",
+  "platforms": [
+    "ios",
+    "android",
+    "web"
+  ],
+  "plugins": [
+    "expo-brownfield",
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
+    ],
+    [
+      "expo-build-properties",
+      {
+        "ios": {
+          "buildReactNativeFromSource": true
+        }
+      }
+    ]
+  ],
+  "_internal": {
+    "isDebug": false,
+    "projectRoot": "/project",
+    "staticConfigPath": "/project/app.json",
+    "packageJsonPath": "/project/package.json",
+    "dynamicConfigPath": null,
+    "pluginHistory": {
+      "expo-splash-screen": {
+        "name": "expo-splash-screen",
+        "version": "57.0.5"
+      },
+      "react-native-maps": {
+        "name": "react-native-maps",
+        "version": "UNVERSIONED"
+      },
+      "expo-apple-authentication": {
+        "name": "expo-apple-authentication",
+        "version": "57.0.1"
+      },
+      "expo-contacts": {
+        "name": "expo-contacts",
+        "version": "UNVERSIONED"
+      },
+      "expo-notifications": {
+        "name": "expo-notifications",
+        "version": "UNVERSIONED"
+      },
+      "expo-updates": {
+        "name": "expo-updates",
+        "version": "57.0.11"
+      },
+      "expo-document-picker": {
+        "name": "expo-document-picker",
+        "version": "UNVERSIONED"
+      },
+      "expo-system-ui": {
+        "name": "expo-system-ui",
+        "version": "UNVERSIONED"
+      },
+      "expo-camera": {
+        "name": "expo-camera",
+        "version": "57.0.3"
+      },
+      "expo-dev-menu": {
+        "name": "expo-dev-menu",
+        "version": "57.0.10"
+      },
+      "expo-dev-launcher": {
+        "name": "expo-dev-launcher",
+        "version": "57.0.10"
+      },
+      "expo-dev-client": {
+        "name": "expo-dev-client",
+        "version": "57.0.10"
+      },
+      "expo-file-system": {
+        "name": "expo-file-system",
+        "version": "57.0.1"
+      }
+    },
+    "autolinkedModules": [
+      "@expo/dom-webview",
+      "@expo/log-box",
+      "expo",
+      "expo-apple-authentication",
+      "expo-asset",
+      "expo-blur",
+      "expo-brownfield",
+      "expo-camera",
+      "expo-constants",
+      "expo-dev-client",
+      "expo-dev-launcher",
+      "expo-dev-menu"
+    ],
+    "modResults": {
+      "android": {
+        "manifest": {
+          "manifest": {
+            "$": {
+              "xmlns:android": "http://schemas.android.com/apk/res/android"
+            },
+            "uses-permission": [
+              {
+                "$": {
+                  "android:name": "android.permission.CAMERA"
+                }
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.INTERNET"
+                }
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.READ_EXTERNAL_STORAGE",
+                  "android:maxSdkVersion": "32"
+                }
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.RECORD_AUDIO"
+                }
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.SYSTEM_ALERT_WINDOW"
+                }
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.VIBRATE"
+                }
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "android:maxSdkVersion": "32"
+                }
+              }
+            ],
+            "queries": [
+              {
+                "intent": [
+                  {
+                    "action": [
+                      {
+                        "$": {
+                          "android:name": "android.intent.action.VIEW"
+                        }
+                      }
+                    ],
+                    "category": [
+                      {
+                        "$": {
+                          "android:name": "android.intent.category.BROWSABLE"
+                        }
+                      }
+                    ],
+                    "data": [
+                      {
+                        "$": {
+                          "android:scheme": "https"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "application": [
+              {
+                "$": {
+                  "android:name": ".MainApplication",
+                  "android:label": "@string/app_name",
+                  "android:icon": "@mipmap/ic_launcher",
+                  "android:roundIcon": "@mipmap/ic_launcher_round",
+                  "android:allowBackup": "true",
+                  "android:theme": "@style/AppTheme",
+                  "android:supportsRtl": "true",
+                  "android:enableOnBackInvokedCallback": "false"
+                },
+                "meta-data": [
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.ENABLED",
+                      "android:value": "false"
+                    }
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH",
+                      "android:value": "ALWAYS"
+                    }
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
+                      "android:value": "0"
+                    }
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true"
+                    }
+                  }
+                ],
+                "activity": [
+                  {
+                    "$": {
+                      "android:name": ".MainActivity",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
+                      "android:launchMode": "singleTask",
+                      "android:windowSoftInputMode": "adjustResize",
+                      "android:theme": "@style/Theme.App.SplashScreen",
+                      "android:exported": "true",
+                      "android:screenOrientation": "portrait"
+                    },
+                    "intent-filter": [
+                      {
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.MAIN"
+                            }
+                          }
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.LAUNCHER"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.VIEW"
+                            }
+                          }
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.DEFAULT"
+                            }
+                          },
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.BROWSABLE"
+                            }
+                          }
+                        ],
+                        "data": [
+                          {
+                            "$": {
+                              "android:scheme": "exp+minimal-tester"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "gradleProperties": [
+          {
+            "type": "property",
+            "key": "org.gradle.jvmargs",
+            "value": "-Xmx2048m -XX:MaxMetaspaceSize=512m"
+          },
+          {
+            "type": "property",
+            "key": "org.gradle.parallel",
+            "value": "true"
+          },
+          {
+            "type": "property",
+            "key": "android.useAndroidX",
+            "value": "true"
+          },
+          {
+            "type": "property",
+            "key": "android.enablePngCrunchInReleaseBuilds",
+            "value": "true"
+          },
+          {
+            "type": "property",
+            "key": "reactNativeArchitectures",
+            "value": "armeabi-v7a,arm64-v8a,x86,x86_64"
+          },
+          {
+            "type": "property",
+            "key": "newArchEnabled",
+            "value": "true"
+          },
+          {
+            "type": "property",
+            "key": "hermesEnabled",
+            "value": "true"
+          },
+          {
+            "type": "property",
+            "key": "edgeToEdgeEnabled",
+            "value": "true"
+          },
+          {
+            "type": "property",
+            "key": "expo.gif.enabled",
+            "value": "true"
+          }
+        ],
+        "styles": {
+          "resources": {
+            "$": {
+              "xmlns:tools": "http://schemas.android.com/tools"
+            },
+            "style": [
+              {
+                "$": {
+                  "name": "AppTheme",
+                  "parent": "Theme.AppCompat.DayNight.NoActionBar"
+                },
+                "item": [
+                  {
+                    "_": "true",
+                    "$": {
+                      "name": "android:enforceNavigationBarContrast",
+                      "tools:targetApi": "29"
+                    }
+                  },
+                  {
+                    "_": "@drawable/rn_edit_text_material",
+                    "$": {
+                      "name": "android:editTextBackground"
+                    }
+                  },
+                  {
+                    "_": "@color/colorPrimary",
+                    "$": {
+                      "name": "colorPrimary"
+                    }
+                  },
+                  {
+                    "_": "@android:color/transparent",
+                    "$": {
+                      "name": "android:statusBarColor"
+                    }
+                  },
+                  {
+                    "$": {
+                      "name": "android:navigationBarColor"
+                    },
+                    "_": "@android:color/transparent"
+                  }
+                ]
+              },
+              {
+                "$": {
+                  "name": "Theme.App.SplashScreen",
+                  "parent": "Theme.SplashScreen"
+                },
+                "item": [
+                  {
+                    "$": {
+                      "name": "windowSplashScreenBackground"
+                    },
+                    "_": "@color/splashscreen_background"
+                  },
+                  {
+                    "$": {
+                      "name": "windowSplashScreenAnimatedIcon"
+                    },
+                    "_": "@drawable/splashscreen_logo"
+                  },
+                  {
+                    "$": {
+                      "name": "postSplashScreenTheme"
+                    },
+                    "_": "@style/AppTheme"
+                  },
+                  {
+                    "$": {
+                      "name": "android:windowSplashScreenBehavior"
+                    },
+                    "_": "icon_preferred"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "colors": {
+          "resources": {
+            "color": [
+              {
+                "_": "#ffffff",
+                "$": {
+                  "name": "splashscreen_background"
+                }
+              },
+              {
+                "_": "#FFFFFF",
+                "$": {
+                  "name": "iconBackground"
+                }
+              },
+              {
+                "_": "#023c69",
+                "$": {
+                  "name": "colorPrimary"
+                }
+              },
+              {
+                "_": "#ffffff",
+                "$": {
+                  "name": "colorPrimaryDark"
+                }
+              }
+            ]
+          }
+        },
+        "colorsNight": {
+          "resources": {}
+        },
+        "strings": {
+          "resources": {
+            "string": [
+              {
+                "$": {
+                  "name": "app_name"
+                },
+                "_": "minimal-tester"
+              },
+              {
+                "$": {
+                  "name": "expo_splash_screen_resize_mode",
+                  "translatable": "false"
+                },
+                "_": "contain"
+              }
+            ]
+          }
+        }
+      },
+      "ios": {
+        "podfileProperties": {
+          "expo.jsEngine": "hermes",
+          "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+          "ios.forceStaticLinking": "[]",
+          "apple.privacyManifestAggregationEnabled": "true",
+          "ios.buildReactNativeFromSource": "false",
+          "ios.useFrameworks": "static",
+          "ios.brownfieldTargetName": "minimaltesterbrownfield",
+          "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{\"mainTarget\":\"minimaltester\",\"targets\":[]}",
+          "EXPO_USE_PRECOMPILED_MODULES": "true"
+        },
+        "infoPlist": {
+          "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
+          "CFBundleName": "$(PRODUCT_NAME)",
+          "CFBundleShortVersionString": "1.0.0",
+          "CFBundleVersion": "1",
+          "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
+          "UILaunchStoryboardName": "SplashScreen",
+          "UIStatusBarStyle": "UIStatusBarStyleDefault",
+          "NSAppTransportSecurity": {
+            "NSAllowsArbitraryLoads": false,
+            "NSAllowsLocalNetworking": true
+          }
+        },
+        "splashScreenStoryboard": {
+          "document": {
+            "$": {
+              "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
+              "version": "3.0"
+            }
+          }
+        },
+        "entitlements": {
+          "com.apple.developer.applesignin": [
+            "Default"
+          ]
+        },
+        "expoPlist": {
+          "EXUpdatesCheckOnLaunch": "ALWAYS",
+          "EXUpdatesEnabled": false,
+          "EXUpdatesLaunchWaitMs": 0,
+          "EXUpdatesEnableBsdiffPatchSupport": true
+        }
+      }
+    }
+  }
+}

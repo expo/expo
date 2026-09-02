@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Live Check",
+    "slug": "livecheck",
+    "version": "1.0.0",
+    "owner": "bob",
+    "web": {
+      "output": "single"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "917ce4e5-41a7-448b-9d0f-f85a0b3d0a55"
+      }
+    }
+  }
+}

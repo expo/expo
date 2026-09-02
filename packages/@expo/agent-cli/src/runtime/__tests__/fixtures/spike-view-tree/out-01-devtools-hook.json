@@ -1,0 +1,77 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-01-devtools-hook.js",
+  "exprBytes": 1675,
+  "cdpResponseBytes": 1230,
+  "roundTripMs": 5,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "hasGetFiberRoots": true,
+      "hookKeys": [
+        "backends",
+        "checkDCE",
+        "emit",
+        "getFiberRoots",
+        "getInternalModuleRanges",
+        "hasUnsupportedRendererAttached",
+        "inject",
+        "listeners",
+        "nativeStyleEditorValidAttributes",
+        "off",
+        "on",
+        "onCommitFiberRoot",
+        "onCommitFiberUnmount",
+        "onPostCommitFiberRoot",
+        "onScheduleFiberRoot",
+        "registerInternalModuleStart",
+        "registerInternalModuleStop",
+        "rendererInterfaces",
+        "renderers",
+        "resolveRNStyle",
+        "setStrictMode",
+        "settings",
+        "sub",
+        "supportsFiber",
+        "supportsFlight"
+      ],
+      "hookPresent": true,
+      "reactNativeVersion": "bridgeless",
+      "rendererCount": 1,
+      "renderers": [
+        {
+          "bundleType": 1,
+          "getFiberRootsCount": 1,
+          "getFiberRootsError": null,
+          "id": 1,
+          "rendererKeys": [
+            "bundleType",
+            "currentDispatcherRef",
+            "getCurrentFiber",
+            "overrideHookState",
+            "overrideHookStateDeletePath",
+            "overrideHookStateRenamePath",
+            "overrideProps",
+            "overridePropsDeletePath",
+            "overridePropsRenamePath",
+            "reconcilerVersion",
+            "rendererConfig",
+            "rendererPackageName",
+            "scheduleRefresh",
+            "scheduleRetry",
+            "scheduleRoot",
+            "scheduleUpdate",
+            "setErrorHandler",
+            "setRefreshHandler",
+            "setSuspenseHandler",
+            "version"
+          ],
+          "rendererPackageName": "react-native-renderer",
+          "version": "19.2.3"
+        }
+      ],
+      "renderersType": "Map"
+    }
+  }
+}

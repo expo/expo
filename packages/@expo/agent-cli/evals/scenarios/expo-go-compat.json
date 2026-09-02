@@ -1,0 +1,12 @@
+{
+  "id": "expo-go-compat",
+  "fixture": "e2e/fixtures/go-app",
+  "taskPrompt": "is this project Expo Go compatible?",
+  "drivingAgent": "deterministic",
+  "tiers": [0],
+  "command": {
+    "argv": ["status", "--json"],
+    "timeoutMs": 60000
+  },
+  "graders": [{ "type": "exit-code", "expect": 0 }]
+}

@@ -1,0 +1,9 @@
+
+[!] Invalid `Podfile` file: cannot load such file -- /private/tmp/wave6-explain-scratch/pods-raise/node_modules/react-native/scripts/react_native_pods.
+
+ #  from /private/tmp/wave6-explain-scratch/pods-raise/Podfile:3
+ #  -------------------------------------------
+ #  
+ >  require_relative 'node_modules/react-native/scripts/react_native_pods'
+ #  
+ #  -------------------------------------------

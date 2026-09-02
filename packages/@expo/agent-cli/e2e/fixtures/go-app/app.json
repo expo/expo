@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "go-app",
+    "slug": "go-app",
+    "sdkVersion": "54.0.0",
+    "platforms": ["ios", "android", "web"]
+  }
+}

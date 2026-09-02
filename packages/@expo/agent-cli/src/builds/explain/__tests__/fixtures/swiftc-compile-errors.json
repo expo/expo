@@ -1,0 +1,21 @@
+{
+  "phases": [
+    {
+      "name": "unknown",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 15
+    }
+  ],
+  "failure": {
+    "phase": "unknown",
+    "signature": "ios.swift.compile-error",
+    "line": 1,
+    "matchedLine": "NoteKit/NoteStore.swift:11:18: error: value of type '[String]' has no member 'joinedWith'",
+    "confidence": "medium",
+    "suggestedCommand": null
+  },
+  "otherSignatures": [
+    "9:ios.swift.compile-error"
+  ]
+}

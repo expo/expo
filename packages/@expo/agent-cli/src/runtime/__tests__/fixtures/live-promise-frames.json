@@ -1,0 +1,92 @@
+{
+  "$comment": [
+    "Chrome DevTools Protocol frames a live app sent back, captured verbatim.",
+    "Source: an SDK 57.0.15 Expo Router app in Expo Go 57.0.9 on an iPhone 17 Pro simulator (iOS 26.5),",
+    "against `@expo/agent-cli start --go --port 8150`, on 2026-08-23. The `Runtime.evaluate` requests carried the",
+    "expressions `wrapExpressionForPromises(...)` and `buildPromisePollExpression(...)` build, with the",
+    "nonce fixed to `liveNonce` so the frames can be replayed.",
+    "These exist because the F21 bug was invisible to a unit test: `awaitPromise: true` was being sent and",
+    "the runtime was answering with the promise polyfill's internals, `{_A,_x,_y,_z}`, which is recorded",
+    "under `polyfillInternals` below."
+  ],
+  "nonce": "liveNonce",
+  "polyfillInternals": {
+    "$comment": "What `Runtime.evaluate(\"Promise.resolve(42)\", {awaitPromise: true, returnByValue: true})` answered before this fix. No `subtype: \"promise\"`, so CDP never awaited anything.",
+    "id": 1,
+    "result": {
+      "result": {
+        "type": "object",
+        "value": { "_A": null, "_x": 0, "_y": 1, "_z": 42 }
+      }
+    }
+  },
+  "pendingMarker": {
+    "$comment": "The wrapper's answer for any thenable: this run's marker, and nothing of the promise itself.",
+    "id": 1,
+    "result": {
+      "result": {
+        "className": "Object",
+        "description": "Object",
+        "type": "object",
+        "value": { "__agentCliPendingPromise_liveNonce__": "liveNonce" }
+      }
+    }
+  },
+  "resolvedNumber": {
+    "$comment": "Poll after `Promise.resolve(42)`.",
+    "id": 2,
+    "result": {
+      "result": {
+        "className": "Object",
+        "description": "Object",
+        "type": "object",
+        "value": { "state": "fulfilled", "type": "number", "value": 42 }
+      }
+    }
+  },
+  "resolvedFetchStatus": {
+    "$comment": "Poll after `fetch('https://example.com').then(function (r) { return r.status })`.",
+    "id": 2,
+    "result": {
+      "result": {
+        "className": "Object",
+        "description": "Object",
+        "type": "object",
+        "value": { "state": "fulfilled", "type": "number", "value": 200 }
+      }
+    }
+  },
+  "rejected": {
+    "$comment": "Poll after `Promise.reject(new Error('BOOM_REJECT_LIVE'))`.",
+    "id": 2,
+    "result": {
+      "result": {
+        "className": "Object",
+        "description": "Object",
+        "type": "object",
+        "value": {
+          "reason": {
+            "stack": "Error: BOOM_REJECT_LIVE\n    at anonymous (:2:49)\n    at global (:56:3)",
+            "text": "Error: BOOM_REJECT_LIVE"
+          },
+          "state": "rejected"
+        }
+      }
+    }
+  },
+  "statementCompileFailure": {
+    "$comment": "What Hermes answers when the wrapper holds a statement (`var __w3b = 41; __w3b + 1`). Not a SyntaxError, which is why the fallback matches this wording too.",
+    "id": 1,
+    "result": {
+      "result": { "type": "object", "subtype": "error" },
+      "exceptionDetails": {
+        "text": "Compiling JS failed: 2:25:invalid expression, sourceURL: ",
+        "exception": {
+          "type": "object",
+          "className": "Error",
+          "description": "Compiling JS failed: 2:25:invalid expression, sourceURL: "
+        }
+      }
+    }
+  }
+}

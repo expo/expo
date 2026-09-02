@@ -1,0 +1,12 @@
+PluginError: Failed to resolve plugin for module "expo-nonexistent-plugin-xyz" relative to "/private/tmp/wave6-explain-scratch/prebuild-plugin". Do you have node modules installed?
+PluginError: Failed to resolve plugin for module "expo-nonexistent-plugin-xyz" relative to "/private/tmp/wave6-explain-scratch/prebuild-plugin". Do you have node modules installed?
+    at resolvePluginForModule (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config-plugins/build/utils/plugin-resolver.js:84:9)
+    at resolveConfigPluginFunctionWithInfo (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config-plugins/build/utils/plugin-resolver.js:133:7)
+    at resolveConfigPluginFunction (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config-plugins/build/utils/plugin-resolver.js:124:7)
+    at withStaticPlugin (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config-plugins/build/plugins/withStaticPlugin.js:83:70)
+    at /private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config-plugins/build/plugins/withPlugins.js:28:84
+    at Array.reduce (<anonymous>)
+    at withPlugins (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config-plugins/build/plugins/withPlugins.js:28:18)
+    at withConfigPlugins (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config/build/plugins/withConfigPlugins.js:33:47)
+    at fillAndReturnConfig (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config/build/Config.js:247:78)
+    at getConfig (/private/tmp/wave6-explain-scratch/prebuild-plugin/node_modules/@expo/config/build/Config.js:304:10)

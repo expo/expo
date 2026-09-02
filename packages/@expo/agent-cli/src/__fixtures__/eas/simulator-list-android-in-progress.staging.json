@@ -1,0 +1,19 @@
+{
+  "sessions": [
+    {
+      "id": "01a03ec5-9255-78c6-bd1d-0f09d4350677",
+      "type": "agent-device",
+      "status": "IN_PROGRESS",
+      "platform": "ANDROID",
+      "createdAt": "2026-08-26T15:52:10.581Z",
+      "startedAt": "2026-08-26T15:57:20.983Z",
+      "deviceRunSessionUrl": "https://staging.expo.dev/accounts/bob/projects/SampleApp/simulator-sessions/01a03ec5-9255-78c6-bd1d-0f09d4350677"
+    }
+  ],
+  "pageInfo": {
+    "hasNextPage": false,
+    "hasPreviousPage": false,
+    "startCursor": "eyJpZCI6IjAxYTAzZWM1LTkyNTUtNzhjNi1iZDFkLTBmMDlkNDM1MDY3NyJ9",
+    "endCursor": "eyJpZCI6IjAxYTAzZWM1LTkyNTUtNzhjNi1iZDFkLTBmMDlkNDM1MDY3NyJ9"
+  }
+}

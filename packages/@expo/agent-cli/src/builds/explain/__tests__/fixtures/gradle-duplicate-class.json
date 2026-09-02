@@ -1,0 +1,23 @@
+{
+  "phases": [
+    {
+      "name": "gradle",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 17
+    }
+  ],
+  "failure": {
+    "phase": "gradle",
+    "signature": "android.gradle.duplicate-class",
+    "line": 12,
+    "matchedLine": "     Duplicate class kotlin.internal.jdk8.JDK8PlatformImplementations found in modules kotlin-stdlib-1.9.24.jar and kotlin-stdlib-jdk8-1.8.22.jar",
+    "confidence": "high",
+    "suggestedCommand": "cd android && ./gradlew :app:dependencies"
+  },
+  "otherSignatures": [
+    "6:android.gradle.build-failed",
+    "8:android.gradle.build-failed",
+    "9:android.gradle.task-failed"
+  ]
+}

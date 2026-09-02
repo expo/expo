@@ -1,0 +1,869 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-03-tree-walk.js",
+  "exprBytes": 5209,
+  "cdpResponseBytes": 11716,
+  "roundTripMs": 8,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "hostComponents": 93,
+      "kept": [
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 133,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Welcome to Expo"
+        },
+        {
+          "component": "#text",
+          "depth": 134,
+          "host": true,
+          "tag": 6,
+          "text": "Welcome to Expo"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Link",
+          "depth": 128,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 0,
+          "testID": "home-notes-link",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "ExpoLink",
+          "depth": 129,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 0,
+          "testID": "home-notes-link",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "ExpoLinkImpl",
+          "depth": 132,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 0,
+          "testID": "home-notes-link",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "BaseExpoRouterLink",
+          "depth": 133,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 0,
+          "testID": "home-notes-link",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": "link",
+          "component": "Text",
+          "depth": 134,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 0,
+          "testID": "home-notes-link",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": "link",
+          "component": "RCTText",
+          "depth": 137,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": "home-notes-link",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTVirtualText",
+          "depth": 140,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Open notes"
+        },
+        {
+          "component": "#text",
+          "depth": 141,
+          "host": true,
+          "tag": 6,
+          "text": "Open notes"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 130,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "get started"
+        },
+        {
+          "component": "#text",
+          "depth": 131,
+          "host": true,
+          "tag": 6,
+          "text": "get started"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 136,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Try editing"
+        },
+        {
+          "component": "#text",
+          "depth": 137,
+          "host": true,
+          "tag": 6,
+          "text": "Try editing"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTVirtualText",
+          "depth": 143,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "src/app/index.tsx"
+        },
+        {
+          "component": "#text",
+          "depth": 144,
+          "host": true,
+          "tag": 6,
+          "text": "src/app/index.tsx"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 136,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Dev tools"
+        },
+        {
+          "component": "#text",
+          "depth": 137,
+          "host": true,
+          "tag": 6,
+          "text": "Dev tools"
+        },
+        {
+          "component": "#text",
+          "depth": 144,
+          "host": true,
+          "tag": 6,
+          "text": "press "
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTVirtualText",
+          "depth": 146,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "cmd+d"
+        },
+        {
+          "component": "#text",
+          "depth": 147,
+          "host": true,
+          "tag": 6,
+          "text": "cmd+d"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 136,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Fresh start"
+        },
+        {
+          "component": "#text",
+          "depth": 137,
+          "host": true,
+          "tag": 6,
+          "text": "Fresh start"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTVirtualText",
+          "depth": 143,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "npm run reset-project"
+        },
+        {
+          "component": "#text",
+          "depth": 144,
+          "host": true,
+          "tag": 6,
+          "text": "npm run reset-project"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 136,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Explore"
+        },
+        {
+          "component": "#text",
+          "depth": 137,
+          "host": true,
+          "tag": 6,
+          "text": "Explore"
+        },
+        {
+          "component": "#text",
+          "depth": 137,
+          "host": true,
+          "tag": 6,
+          "text": "This starter app includes example"
+        },
+        {
+          "component": "#text",
+          "depth": 137,
+          "host": true,
+          "tag": 6,
+          "text": "\n"
+        },
+        {
+          "component": "#text",
+          "depth": 137,
+          "host": true,
+          "tag": 6,
+          "text": "code to help you get started."
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Link",
+          "depth": 135,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 0,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "ExpoLink",
+          "depth": 136,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 0,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "ExpoLinkImpl",
+          "depth": 139,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 0,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "BaseExpoRouterLink",
+          "depth": 140,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 0,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": "link",
+          "component": "RNSlotHOC",
+          "depth": 141,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 11,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": "link",
+          "component": "Slot.Slot",
+          "depth": 142,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 11,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": "link",
+          "component": "Pressable",
+          "depth": 143,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 15,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": "link",
+          "component": "View",
+          "depth": 144,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 0,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": "link",
+          "component": "RCTView",
+          "depth": 145,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 151,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Expo documentation"
+        },
+        {
+          "component": "#text",
+          "depth": 152,
+          "host": true,
+          "tag": 6,
+          "text": "Expo documentation"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Pressable",
+          "depth": 138,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 15,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 144,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "File-based routing"
+        },
+        {
+          "component": "#text",
+          "depth": 145,
+          "host": true,
+          "tag": 6,
+          "text": "File-based routing"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Pressable",
+          "depth": 138,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 15,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 144,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Android, iOS, and web support"
+        },
+        {
+          "component": "#text",
+          "depth": 145,
+          "host": true,
+          "tag": 6,
+          "text": "Android, iOS, and web support"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Pressable",
+          "depth": 138,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 15,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 144,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Images"
+        },
+        {
+          "component": "#text",
+          "depth": 145,
+          "host": true,
+          "tag": 6,
+          "text": "Images"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Pressable",
+          "depth": 138,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 15,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 144,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Light and dark mode components"
+        },
+        {
+          "component": "#text",
+          "depth": 145,
+          "host": true,
+          "tag": 6,
+          "text": "Light and dark mode components"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Pressable",
+          "depth": 138,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 15,
+          "testID": null,
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 144,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Animations"
+        },
+        {
+          "component": "#text",
+          "depth": 145,
+          "host": true,
+          "tag": 6,
+          "text": "Animations"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 130,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Notes"
+        },
+        {
+          "component": "#text",
+          "depth": 131,
+          "host": true,
+          "tag": 6,
+          "text": "Notes"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "TextInput",
+          "depth": 128,
+          "handlers": [
+            "onChangeText"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 0,
+          "testID": "note-input",
+          "text": ""
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "InternalTextInput",
+          "depth": 129,
+          "handlers": [
+            "onChangeText"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 0,
+          "testID": "note-input",
+          "text": ""
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTSinglelineTextInputView",
+          "depth": 131,
+          "handlers": [
+            "onChangeText"
+          ],
+          "host": true,
+          "interactive": true,
+          "tag": 5,
+          "testID": "note-input",
+          "text": ""
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "Pressable",
+          "depth": 128,
+          "handlers": [
+            "onPress"
+          ],
+          "host": false,
+          "interactive": true,
+          "tag": 15,
+          "testID": "add-note",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "View",
+          "depth": 129,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 0,
+          "testID": "add-note",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTView",
+          "depth": 130,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": "add-note",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 133,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "Add note"
+        },
+        {
+          "component": "#text",
+          "depth": 134,
+          "host": true,
+          "tag": 6,
+          "text": "Add note"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "FlatList",
+          "depth": 128,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 1,
+          "testID": "note-list",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "VirtualizedList",
+          "depth": 129,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 1,
+          "testID": "note-list",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "ScrollView",
+          "depth": 133,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 0,
+          "testID": "note-list",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "ScrollView",
+          "depth": 134,
+          "handlers": [],
+          "host": false,
+          "interactive": false,
+          "tag": 1,
+          "testID": "note-list",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTScrollView",
+          "depth": 135,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": "note-list",
+          "text": null
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 145,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "note-from-runtime-eval"
+        },
+        {
+          "component": "#text",
+          "depth": 146,
+          "host": true,
+          "tag": 6,
+          "text": "note-from-runtime-eval"
+        },
+        {
+          "accessibilityLabel": null,
+          "accessibilityRole": null,
+          "component": "RCTText",
+          "depth": 145,
+          "handlers": [],
+          "host": true,
+          "interactive": false,
+          "tag": 5,
+          "testID": null,
+          "text": "added-via-add-button"
+        },
+        {
+          "component": "#text",
+          "depth": 146,
+          "host": true,
+          "tag": 6,
+          "text": "added-via-add-button"
+        }
+      ],
+      "keptCount": 75,
+      "maxDepth": 152,
+      "rootCount": 1,
+      "stateNodeSample": {
+        "canonicalKeys": [
+          "currentProps",
+          "internalInstanceHandle",
+          "nativeTag",
+          "publicInstance",
+          "publicRootInstance",
+          "viewConfig"
+        ],
+        "ctor": "Object",
+        "forComponent": "RCTView",
+        "hasMeasure": false,
+        "keys": [
+          "canonical",
+          "node"
+        ],
+        "publicInstanceCtor": "ReactNativeElement"
+      },
+      "supported": true,
+      "tagCensus": {
+        "0": 244,
+        "1": 22,
+        "3": 1,
+        "5": 93,
+        "6": 24,
+        "7": 6,
+        "9": 1,
+        "10": 88,
+        "11": 6,
+        "13": 4,
+        "14": 4,
+        "15": 7,
+        "22": 4
+      },
+      "totalFibers": 504,
+      "withTestID": 17
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "dev-client-fresh-app",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@expo/fingerprint": "0.20.0",
+    "expo": "54.0.0",
+    "expo-camera": "17.0.0",
+    "expo-dev-client": "6.0.0",
+    "fake-native-module": "1.0.0"
+  }
+}

@@ -1,0 +1,1052 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-02-fiber-shape.js",
+  "exprBytes": 2737,
+  "cdpResponseBytes": 13718,
+  "roundTripMs": 5,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "currentTag": 3,
+      "fiberKeys": [
+        "_debugHookTypes",
+        "_debugInfo",
+        "_debugNeedsRemount",
+        "_debugOwner",
+        "_debugStack",
+        "_debugTask",
+        "actualDuration",
+        "actualStartTime",
+        "alternate",
+        "child",
+        "childLanes",
+        "deletions",
+        "dependencies",
+        "elementType",
+        "flags",
+        "index",
+        "key",
+        "lanes",
+        "memoizedProps",
+        "memoizedState",
+        "mode",
+        "pendingProps",
+        "ref",
+        "refCleanup",
+        "return",
+        "selfBaseDuration",
+        "sibling",
+        "stateNode",
+        "subtreeFlags",
+        "tag",
+        "treeBaseDuration",
+        "type",
+        "updateQueue"
+      ],
+      "nodes": [
+        {
+          "depth": 0,
+          "elementType": {
+            "kind": "null"
+          },
+          "hasOnPress": false,
+          "hasStateNode": true,
+          "key": null,
+          "propKeys": [],
+          "stateNodeCtor": "FiberRootNode",
+          "stateNodeType": "object",
+          "tag": 3,
+          "typeSame": true
+        },
+        {
+          "depth": 1,
+          "elementType": {
+            "displayName": "main(RootComponent)",
+            "kind": "function",
+            "name": "ComponentWithDisplayName"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 2,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "AppContainer"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "WrapperComponent",
+            "children",
+            "initialProps",
+            "internal_excludeLogBox",
+            "rootTag",
+            "rootViewStyle"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 3,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": "RootTagContext",
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount",
+              "displayName"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 4,
+          "elementType": {
+            "displayName": "View",
+            "kind": "function",
+            "name": "View"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "pointerEvents",
+            "ref",
+            "style"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 5,
+          "elementType": {
+            "kind": "string",
+            "value": "RCTView"
+          },
+          "hasOnPress": false,
+          "hasStateNode": true,
+          "key": null,
+          "propKeys": [
+            "children",
+            "pointerEvents",
+            "ref",
+            "style"
+          ],
+          "stateNodeCtor": "Object",
+          "stateNodeType": "object",
+          "tag": 5,
+          "typeSame": true
+        },
+        {
+          "depth": 6,
+          "elementType": {
+            "displayName": "View",
+            "kind": "function",
+            "name": "View"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": "0",
+          "propKeys": [
+            "children",
+            "collapsable",
+            "pointerEvents",
+            "ref",
+            "style"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 7,
+          "elementType": {
+            "kind": "string",
+            "value": "RCTView"
+          },
+          "hasOnPress": false,
+          "hasStateNode": true,
+          "key": null,
+          "propKeys": [
+            "children",
+            "collapsable",
+            "pointerEvents",
+            "ref",
+            "style"
+          ],
+          "stateNodeCtor": "Object",
+          "stateNodeType": "object",
+          "tag": 5,
+          "typeSame": true
+        },
+        {
+          "depth": 8,
+          "elementType": {
+            "displayName": "withDevTools(App)",
+            "kind": "function",
+            "name": "WithDevTools"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "exp",
+            "rootTag"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 9,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "App"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "exp",
+            "rootTag"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 10,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "ExpoRoot"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "context"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 11,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "ContextNavigator"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "context",
+            "wrapper"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 12,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 13,
+          "elementType": {
+            "$$typeof": "Symbol(react.forward_ref)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "render"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "documentTitle",
+            "initialState",
+            "linking",
+            "onReady",
+            "onStateChange",
+            "onUnhandledAction",
+            "ref"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 11,
+          "typeSame": true
+        },
+        {
+          "depth": 14,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": "LocaleDirContext",
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount",
+              "displayName"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 15,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": "UnhandledLinkingContext",
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount",
+              "displayName"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 16,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": "LinkingContext",
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount",
+              "displayName"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 17,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "BaseNavigationContainer"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "initialState",
+            "onReady",
+            "onStateChange",
+            "onUnhandledAction",
+            "ref",
+            "theme"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 18,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 19,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 20,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 21,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 22,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 23,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 24,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "EnsureSingleNavigator"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 25,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 26,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "ThemeProvider"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 27,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": "ThemeContext",
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount",
+              "displayName"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 28,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 29,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": null
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 30,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "LinkPreviewContextProvider"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 31,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 32,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "SafeAreaProvider"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "initialMetrics"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 33,
+          "elementType": {
+            "kind": "string",
+            "value": "RNCSafeAreaProvider"
+          },
+          "hasOnPress": false,
+          "hasStateNode": true,
+          "key": null,
+          "propKeys": [
+            "children",
+            "onInsetsChange",
+            "style"
+          ],
+          "stateNodeCtor": "Object",
+          "stateNodeType": "object",
+          "tag": 5,
+          "typeSame": true
+        },
+        {
+          "depth": 34,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": "SafeAreaFrameContext",
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount",
+              "displayName"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 35,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": "SafeAreaInsetsContext",
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount",
+              "displayName"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        },
+        {
+          "depth": 36,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "Content"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 37,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": null
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 38,
+          "elementType": {
+            "displayName": null,
+            "kind": "function",
+            "name": "NavigationContent"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "render"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 0,
+          "typeSame": true
+        },
+        {
+          "depth": 39,
+          "elementType": {
+            "$$typeof": "Symbol(react.context)",
+            "displayName": null,
+            "keys": [
+              "$$typeof",
+              "Consumer",
+              "Provider",
+              "_currentRenderer",
+              "_currentRenderer2",
+              "_currentValue",
+              "_currentValue2",
+              "_threadCount"
+            ],
+            "kind": "object"
+          },
+          "hasOnPress": false,
+          "hasStateNode": false,
+          "key": null,
+          "propKeys": [
+            "children",
+            "value"
+          ],
+          "stateNodeCtor": null,
+          "stateNodeType": null,
+          "tag": 10,
+          "typeSame": true
+        }
+      ],
+      "rootCount": 1,
+      "rootKeys": [
+        "_debugRootType",
+        "callbackNode",
+        "callbackPriority",
+        "cancelPendingCommit",
+        "containerInfo",
+        "context",
+        "current",
+        "effectDuration",
+        "entangledLanes",
+        "entanglements",
+        "errorRecoveryDisabledLanes",
+        "expirationTimes",
+        "expiredLanes",
+        "formState",
+        "hiddenUpdates",
+        "identifierPrefix",
+        "incompleteTransitions",
+        "memoizedUpdaters",
+        "next",
+        "onCaughtError",
+        "onRecoverableError",
+        "onUncaughtError",
+        "passiveEffectDuration",
+        "pendingChildren",
+        "pendingContext",
+        "pendingLanes",
+        "pendingUpdatersLaneMap",
+        "pingCache",
+        "pingedLanes",
+        "pooledCache",
+        "pooledCacheLanes",
+        "shellSuspendCounter",
+        "suspendedLanes",
+        "tag",
+        "timeoutHandle",
+        "warmLanes"
+      ],
+      "rootTag": 1,
+      "visited": 40
+    }
+  }
+}

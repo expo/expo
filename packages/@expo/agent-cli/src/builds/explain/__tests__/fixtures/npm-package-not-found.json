@@ -1,0 +1,21 @@
+{
+  "phases": [
+    {
+      "name": "install-dependencies",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 8
+    }
+  ],
+  "failure": {
+    "phase": "install-dependencies",
+    "signature": "deps.package-not-found",
+    "line": 2,
+    "matchedLine": "npm error 404 Not Found - GET https://registry.npmjs.org/nonexistent-package-xyz-123 - Not found",
+    "confidence": "high",
+    "suggestedCommand": null
+  },
+  "otherSignatures": [
+    "1:deps.install-failed"
+  ]
+}

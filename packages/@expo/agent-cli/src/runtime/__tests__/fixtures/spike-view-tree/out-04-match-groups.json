@@ -1,0 +1,162 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-04-match-groups.js",
+  "exprBytes": 4055,
+  "cdpResponseBytes": 1523,
+  "roundTripMs": 6,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "countByTestID": {
+        "add-note": 1,
+        "home-notes-link": 1,
+        "note-input": 1,
+        "note-list": 1
+      },
+      "elementCount": 4,
+      "fibersWithTestID": 17,
+      "groups": [
+        {
+          "chain": [
+            {
+              "d": 0,
+              "name": "Link",
+              "tag": 0
+            },
+            {
+              "d": 1,
+              "name": "ExpoLink",
+              "tag": 0
+            },
+            {
+              "d": 4,
+              "name": "ExpoLinkImpl",
+              "tag": 0
+            },
+            {
+              "d": 5,
+              "name": "BaseExpoRouterLink",
+              "tag": 0
+            },
+            {
+              "d": 6,
+              "name": "Text",
+              "tag": 0
+            },
+            {
+              "d": 9,
+              "name": "RCTText",
+              "tag": 5
+            }
+          ],
+          "chainLength": 6,
+          "depth": 128,
+          "handlerFound": {
+            "handler": "onPress",
+            "insideGroup": true,
+            "on": "Text",
+            "stepsUp": 3,
+            "tag": 0
+          },
+          "testID": "home-notes-link",
+          "topComponent": "Link"
+        },
+        {
+          "chain": [
+            {
+              "d": 0,
+              "name": "TextInput",
+              "tag": 0
+            },
+            {
+              "d": 1,
+              "name": "InternalTextInput",
+              "tag": 0
+            },
+            {
+              "d": 3,
+              "name": "RCTSinglelineTextInputView",
+              "tag": 5
+            }
+          ],
+          "chainLength": 3,
+          "depth": 128,
+          "handlerFound": {
+            "handler": "onChangeText",
+            "insideGroup": true,
+            "on": "RCTSinglelineTextInputView",
+            "stepsUp": 0,
+            "tag": 5
+          },
+          "testID": "note-input",
+          "topComponent": "TextInput"
+        },
+        {
+          "chain": [
+            {
+              "d": 0,
+              "name": "Pressable",
+              "tag": 15
+            },
+            {
+              "d": 1,
+              "name": "View",
+              "tag": 0
+            },
+            {
+              "d": 2,
+              "name": "RCTView",
+              "tag": 5
+            }
+          ],
+          "chainLength": 3,
+          "depth": 128,
+          "handlerFound": {
+            "handler": "onPress",
+            "insideGroup": true,
+            "on": "Pressable",
+            "stepsUp": 2,
+            "tag": 15
+          },
+          "testID": "add-note",
+          "topComponent": "Pressable"
+        },
+        {
+          "chain": [
+            {
+              "d": 0,
+              "name": "FlatList",
+              "tag": 1
+            },
+            {
+              "d": 1,
+              "name": "VirtualizedList",
+              "tag": 1
+            },
+            {
+              "d": 5,
+              "name": "ScrollView",
+              "tag": 0
+            },
+            {
+              "d": 6,
+              "name": "ScrollView",
+              "tag": 1
+            },
+            {
+              "d": 7,
+              "name": "RCTScrollView",
+              "tag": 5
+            }
+          ],
+          "chainLength": 5,
+          "depth": 128,
+          "handlerFound": null,
+          "testID": "note-list",
+          "topComponent": "FlatList"
+        }
+      ]
+    }
+  }
+}

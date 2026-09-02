@@ -1,0 +1,21 @@
+{
+  "phases": [
+    {
+      "name": "install-dependencies",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 4
+    }
+  ],
+  "failure": {
+    "phase": "install-dependencies",
+    "signature": "deps.no-matching-version",
+    "line": 2,
+    "matchedLine": "npm error notarget No matching version found for react@99.99.99.",
+    "confidence": "high",
+    "suggestedCommand": "npx expo install --check"
+  },
+  "otherSignatures": [
+    "1:deps.install-failed"
+  ]
+}

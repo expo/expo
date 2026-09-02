@@ -1,0 +1,10 @@
+[08:41:12]: Driving the lane 'ios build' 🚀
+[08:41:13]: ------------------------------
+[08:41:13]: --- Step: sync_code_signing ---
+[08:41:13]: ------------------------------
+[08:44:52]: ▸ ** ARCHIVE SUCCEEDED **
+[08:44:53]: Exporting archive
+error: exportArchive: No signing certificate "iOS Distribution" found
+error: exportArchive: Provisioning profile "notesapp AppStore" doesn't include signing certificate "Apple Distribution: Example Inc (ABCD123456)".
+[08:44:55]: Exit status: 70
+[08:44:55]: fastlane finished with errors

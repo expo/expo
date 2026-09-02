@@ -1,0 +1,14 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace notesapp.xcworkspace -scheme notesapp -configuration Release archive
+
+Build settings from command line:
+    CODE_SIGN_STYLE = Manual
+
+note: Building targets in dependency order
+error: No profiles for 'com.example.notesapp' were found: Xcode couldn't find any iOS App Store provisioning profiles matching 'com.example.notesapp'. (in target 'notesapp' from project 'notesapp')
+** ARCHIVE FAILED **
+
+
+The following build commands failed:
+	Building workspace notesapp with scheme notesapp and configuration Release
+(1 failure)

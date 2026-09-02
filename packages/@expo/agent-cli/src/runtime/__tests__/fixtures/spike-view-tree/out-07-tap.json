@@ -1,0 +1,28 @@
+{
+  "exprFile": "/Users/bonsai/.config/tuft/sessions/1787500752.816299/worktrees/wave7-spike/packages/@expo/agent-cli/src/runtime/__tests__/fixtures/spike-view-tree/expr-07-tap.js",
+  "exprBytes": 4654,
+  "cdpResponseBytes": 334,
+  "roundTripMs": 7,
+  "result": {
+    "className": "Object",
+    "description": "Object",
+    "type": "object",
+    "value": {
+      "groupComponents": [
+        "Pressable",
+        "View",
+        "RCTView"
+      ],
+      "groupSize": 3,
+      "handler": "onPress",
+      "handlerOn": "Pressable",
+      "handlerTag": 15,
+      "matched": 1,
+      "ok": true,
+      "returnedType": "undefined",
+      "searchedOutsideGroup": false,
+      "testID": "add-note",
+      "threw": null
+    }
+  }
+}

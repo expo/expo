@@ -1,0 +1,25 @@
+expo-doctor: v1.20.1
+Running 21 checks on your project...
+✔ Check for common project setup issues
+✔ Check that local environment files are not committed
+✔ Check package.json for common issues
+✔ Check Expo config for common issues
+✔ Check for overridden dependencies
+✔ Check for Expo SDK versions affected by Hermes V1 regressions
+✔ Check for lock file
+✔ Check dependencies for packages that should not be installed directly
+✔ Check for issues with Metro config
+✔ Check if the project meets version requirements for submission to app stores
+✔ Check Expo config (app.json/ app.config.js) schema
+✔ Check that required peer dependencies are installed
+✔ Check for app config fields that may not be synced in a non-CNG project
+✔ Check npm/yarn versions
+✔ Check that packages match versions required by installed Expo SDK
+✔ Check that no duplicate dependencies are installed
+✔ Validate packages against React Native Directory package metadata
+✔ Check native tooling versions
+✔ Check that @expo/vector-icons package is not installed together with other potentially conflicting icon packages.
+✔ Check that native modules do not use incompatible support packages
+✔ Check for legacy global CLI installed locally
+
+21/21 checks passed. No issues detected!

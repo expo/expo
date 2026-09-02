@@ -1,0 +1,39 @@
+{
+  "id": "04994b5e-d572-4660-a472-2f4b135d1733",
+  "status": "IN_PROGRESS",
+  "platform": "ANDROID",
+  "artifacts": {},
+  "fingerprint": {
+    "id": "01a03ead-8671-7416-b3e5-fadfa6f0830e",
+    "hash": "f02880e13b03ef179c3b87daaebadce75966a2fa"
+  },
+  "initiatingActor": {
+    "id": "3ecd85d1-3944-49e0-b70d-ef8084553c03",
+    "displayName": "alice"
+  },
+  "logFiles": [
+    "https://storage.googleapis.com/eas-workflows-staging/logs/861a6e66-a6c4-4314-abbf-b52f0bf80cef/04994b5e-d572-4660-a472-2f4b135d1733/2026-08-26T15%3A26%3A01Z-51150a45-298d-4661-981d-a894958ee846.txt?<signed-query-trimmed>"
+  ],
+  "app": {
+    "id": "861a6e66-a6c4-4314-abbf-b52f0bf80cef",
+    "name": "SampleApp",
+    "slug": "SampleApp",
+    "ownerAccount": {
+      "id": "82c5fe0f-c64e-4e79-80c2-03d275d6b406",
+      "name": "bob"
+    }
+  },
+  "distribution": "INTERNAL",
+  "buildProfile": "development",
+  "appIdentifier": "com.example.sampleapp",
+  "sdkVersion": "57.0.0",
+  "appVersion": "1.0.0",
+  "appBuildVersion": "1",
+  "gitCommitHash": "ea0a1bfd035f954ee3dc4f4deec6460d4c9b00bb",
+  "gitCommitMessage": "[@expo/agent-cli] Run `register` through `npx expo` instead of failing outside a project",
+  "priority": "HIGH",
+  "createdAt": "2026-08-26T15:25:54.637Z",
+  "updatedAt": "2026-08-26T15:26:06.001Z",
+  "expirationDate": "2026-11-24T15:25:54.664Z",
+  "isForIosSimulator": false
+}

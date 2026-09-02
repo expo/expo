@@ -1,0 +1,21 @@
+{
+  "phases": [
+    {
+      "name": "install-dependencies",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 19
+    }
+  ],
+  "failure": {
+    "phase": "install-dependencies",
+    "signature": "deps.peer-conflict",
+    "line": 2,
+    "matchedLine": "npm error ERESOLVE unable to resolve dependency tree",
+    "confidence": "high",
+    "suggestedCommand": "npx expo install --fix"
+  },
+  "otherSignatures": [
+    "1:deps.install-failed"
+  ]
+}

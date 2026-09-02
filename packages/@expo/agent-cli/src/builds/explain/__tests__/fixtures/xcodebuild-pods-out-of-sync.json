@@ -1,0 +1,22 @@
+{
+  "phases": [
+    {
+      "name": "xcodebuild",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 240
+    }
+  ],
+  "failure": {
+    "phase": "xcodebuild",
+    "signature": "ios.pods.sandbox-out-of-sync",
+    "line": 231,
+    "matchedLine": "error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.",
+    "confidence": "high",
+    "suggestedCommand": "npx pod-install --non-interactive"
+  },
+  "otherSignatures": [
+    "234:ios.build-failed",
+    "237:ios.build-failed"
+  ]
+}
