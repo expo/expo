@@ -86,6 +86,46 @@ struct NetworkRequestTests {
     // still has to carry one rather than passing for a success.
     #expect(snapshot.errorDescription != nil)
   }
+
+  @Test
+  func `captures the error domain and code as a low-cardinality error type`() {
+    // `errorDescription` is localized free text, unusable for grouping failures in telemetry.
+    // The domain:code pair is stable across locales, matching what OTel's `error.type`
+    // attribute (and the server's LowCardinality column) expects.
+    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+    let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)
+    let now = Date()
+    let snapshot = NetworkRequest.from(
+      id: UUID(),
+      request: request,
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: now,
+      fallbackEnd: now,
+      error: error
+    )
+    #expect(snapshot.errorType == "NSURLErrorDomain:-1009")
+  }
+
+  @Test
+  func `leaves the error type nil on success`() {
+    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+    let now = Date()
+    let snapshot = NetworkRequest.from(
+      id: UUID(),
+      request: request,
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: now,
+      fallbackEnd: now,
+      error: nil
+    )
+    #expect(snapshot.errorType == nil)
+  }
 }
 
 @AppMetricsActor
@@ -1071,6 +1111,7 @@ struct NetworkRequestSummaryTests {
         totalDuration: duration
       ),
       errorDescription: error,
+      errorType: error == nil ? nil : "TestErrorDomain:1",
       redirects: []
     )
   }
@@ -1122,6 +1163,7 @@ struct NetworkRequestMonitorWindowingTests {
         totalDuration: 0.1
       ),
       errorDescription: nil,
+      errorType: nil,
       redirects: []
     )
   }
@@ -1429,6 +1471,7 @@ struct NetworkRequestObserverTests {
         totalDuration: 0.5
       ),
       errorDescription: nil,
+      errorType: nil,
       redirects: [
         NetworkRequest.Redirect(
           fromUrl: URL(string: "https://expo.dev/a")!,
@@ -1489,6 +1532,7 @@ struct NetworkRequestObserverTests {
         totalDuration: 0.1
       ),
       errorDescription: "timed out",
+      errorType: "NSURLErrorDomain:-1001",
       redirects: []
     )
 

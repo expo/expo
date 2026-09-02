@@ -46,6 +46,12 @@ public final class NetworkRequestMonitor: Sendable {
   private var delegates: [WeakDelegate] = []
   private var started = false
 
+  /// Persists each recorded completion into the metrics database. Installed at launch by
+  /// `AppMetricsAppDelegateSubscriber`; `nil` until then (and in tests that don't exercise
+  /// persistence). Held strongly — unlike delegates, persistence is part of the pipeline, not an
+  /// observer of it.
+  var persistence: NetworkRequestPersistence?
+
   /// Internal so tests can construct dedicated instances; production code uses `shared`.
   init() {}
 
@@ -99,6 +105,7 @@ public final class NetworkRequestMonitor: Sendable {
     if recentRequests.count > recentCapacity {
       recentRequests.removeFirst(recentRequests.count - recentCapacity)
     }
+    persistence?.persist(request)
     pruneDelegates()
     for entry in delegates {
       guard let delegate = entry.value else {
