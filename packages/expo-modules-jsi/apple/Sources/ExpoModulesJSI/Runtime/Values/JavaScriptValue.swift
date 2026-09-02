@@ -31,10 +31,21 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// Creates a string JS value.
   public init(_ runtime: JavaScriptRuntime, _ string: String) {
     self.runtime = runtime
-    self.pointee = facebook.jsi.Value(
-      runtime.pointee,
-      facebook.jsi.String.createFromUtf8(runtime.pointee, std.string(string))
-    )
+    // Hand JSI the Swift string's own UTF-8 storage instead of going through `std::string`: the engine
+    // copies the bytes into its heap right away, so the intermediate `std::string` was one extra
+    // allocation, copy and free per string. `withUTF8` is mutating (it makes a bridged string
+    // contiguous first), hence the local copy; native strings are already contiguous and pay nothing.
+    // The value is moved out through a local because `withUTF8` needs a `Copyable` closure result.
+    var string = string
+    var value = facebook.jsi.Value.undefined()
+    string.withUTF8 { utf8 in
+      guard let base = utf8.baseAddress else {
+        value = facebook.jsi.Value(runtime.pointee, facebook.jsi.String.createFromAscii(runtime.pointee, "", 0))
+        return
+      }
+      value = facebook.jsi.Value(runtime.pointee, facebook.jsi.String.createFromUtf8(runtime.pointee, base, utf8.count))
+    }
+    self.pointee = value
   }
 
   /// Creates a BigInt JS value from an Int64.
@@ -253,7 +264,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(pointee.getString(jsiRuntime).utf8(jsiRuntime))
+    return String(jsiString: pointee.getString(jsiRuntime), in: jsiRuntime)
   }
 
   /// Returns the value as a BigInt, or asserts if not a BigInt.
@@ -420,7 +431,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return String(pointee.toString(jsiRuntime).utf8(jsiRuntime))
+    return String(jsiString: pointee.toString(jsiRuntime), in: jsiRuntime)
   }
 
   /// Converts the JavaScript value to a JSON string representation.

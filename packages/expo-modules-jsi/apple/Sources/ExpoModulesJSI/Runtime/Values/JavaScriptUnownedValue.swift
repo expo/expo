@@ -109,7 +109,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// Returns the value as a string, or asserts if not a string.
   public func getString() -> String {
     assert(isString(), "Value is not a string")
-    return String(pointer.pointee.getString(runtime).utf8(runtime))
+    return String(jsiString: pointer.pointee.getString(runtime), in: runtime)
   }
 
   /// Returns the value as a ``JavaScriptObject`` *without* materializing an owning ``JavaScriptValue``
