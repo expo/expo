@@ -66,7 +66,7 @@ export async function createExpoApp(
 }
 
 /**
- * Setup package.json in the project for resolutions, workspaces and so on.
+ * Setup package.json and pnpm workspace overrides in the project.
  */
 async function setupProjectPackageJsonAsync(
   projectRoot: string,
@@ -76,10 +76,10 @@ async function setupProjectPackageJsonAsync(
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const packageJson = await readJsonFileAsync(packageJsonPath);
 
-  const resolutions: Record<string, string> =
+  const overrides: Record<string, string> =
     (packageJson.resolutions as Record<string, string>) ?? {};
   for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
-    resolutions[name] = `${nightlyVersion}`;
+    overrides[name] = `${nightlyVersion}`;
   }
 
   // Point repo dependencies at the local workspace copy so the build tests the
@@ -103,7 +103,7 @@ async function setupProjectPackageJsonAsync(
   // Also force transitive repo packages (e.g. `expo-modules-autolinking`) to
   // the workspace copy, so pnpm can't pull a published version that lags it.
   for (const name of repoPackageNames) {
-    resolutions[name] = 'workspace:*';
+    overrides[name] = 'workspace:*';
   }
 
   await writeJsonFileAsync(packageJsonPath, {
@@ -116,8 +116,7 @@ async function setupProjectPackageJsonAsync(
       },
     },
 
-    // Pin the versions of transitive dependencies
-    resolutions,
+    resolutions: undefined,
   });
 
   // pnpm ignores the package.json `workspaces` field, so the repo packages must
@@ -128,7 +127,16 @@ async function setupProjectPackageJsonAsync(
 
   await fs.promises.writeFile(
     path.join(projectRoot, 'pnpm-workspace.yaml'),
-    ['packages:', ...workspaceGlobs.map((glob) => `  - '${glob}'`), ''].join('\n')
+    [
+      'packages:',
+      ...workspaceGlobs.map((glob) => `  - '${glob}'`),
+      '',
+      'overrides:',
+      ...Object.entries(overrides).map(
+        ([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`
+      ),
+      '',
+    ].join('\n')
   );
 }
 
