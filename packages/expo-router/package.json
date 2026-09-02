@@ -146,6 +146,14 @@
       "expo-source": "./src/layouts/TopTabs.tsx",
       "default": "./build/layouts/TopTabs.js"
     },
+    "./native-stack": {
+      "types": {
+        "expo-source": "./src/react-navigation/native-stack/index.tsx",
+        "default": "./build/react-navigation/native-stack/index.d.ts"
+      },
+      "expo-source": "./src/react-navigation/native-stack/index.tsx",
+      "default": "./build/react-navigation/native-stack/index.js"
+    },
     "./react-navigation": {
       "types": {
         "expo-source": "./src/react-navigation/index.ts",
