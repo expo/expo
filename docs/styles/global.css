@@ -58,6 +58,10 @@ code {
   outline: none !important;
 }
 
+[cmdk-input]:focus-visible {
+  @apply rounded-3xl;
+}
+
 /* Collapsible */
 
 details::details-content {
