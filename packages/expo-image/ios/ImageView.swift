@@ -9,7 +9,6 @@ import VisionKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
-// swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
   nonisolated static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   nonisolated static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
@@ -66,6 +65,7 @@ public final class ImageView: ExpoView {
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
+        leaveSharedAnimation()
         sdImageView.image = nil
         placeholderImage = nil
         sourceImage = nil
@@ -76,6 +76,25 @@ public final class ImageView: ExpoView {
   var autoplay: Bool = true
 
   var sfEffect: [SFSymbolEffect]?
+
+  // Whether the animation is driven by `SharedAnimationDriver`, so every view of the same image shows the same frame.
+  var synchronizedAnimation: Bool = false {
+    didSet {
+      guard oldValue != synchronizedAnimation else {
+        return
+      }
+      if synchronizedAnimation {
+        joinSharedAnimationIfPossible()
+      } else {
+        leaveSharedAnimation()
+      }
+    }
+  }
+
+  // The image whose frames are driven by the shared clock.
+  private var sharedAnimationImage: SDAnimatedImage?
+
+  private var sharedAnimationTimeline: AnimationTimeline?
 
   var symbolWeight: String?
 
@@ -538,10 +557,13 @@ public final class ImageView: ExpoView {
   private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
     sdImageView.contentMode = contentFit.toContentMode()
 
+    let sharedAnimation = drivableAnimatedImage(image, isPlaceholder: isPlaceholder)
+
     if isPlaceholder {
       sdImageView.autoPlayAnimatedImage = true
     } else {
-      sdImageView.autoPlayAnimatedImage = autoplay
+      // Views on the shared clock don't run their own player.
+      sdImageView.autoPlayAnimatedImage = sharedAnimation == nil && autoplay
     }
 
     // Remove any existing symbol effects before setting new image
@@ -577,6 +599,8 @@ public final class ImageView: ExpoView {
       }
     }
 
+    updateSharedAnimation(with: sharedAnimation)
+
     if !isPlaceholder {
       onDisplay()
     }
@@ -586,6 +610,116 @@ public final class ImageView: ExpoView {
       analyzeImage()
     }
 #endif
+  }
+
+  // MARK: - Shared animation
+
+  // Whether the displayed image is driven by the shared clock.
+  var hasSharedAnimation: Bool {
+    return sharedAnimationTimeline != nil
+  }
+
+  /**
+   * Returns the image if the shared clock can drive it. Placeholders, tinted images and SF Symbols are excluded.
+   * A downscaling `animationTransformer` is fine because `SDAnimatedImageView` applies it when seeking.
+   */
+  private func drivableAnimatedImage(_ image: UIImage?, isPlaceholder: Bool) -> SDAnimatedImage? {
+    guard synchronizedAnimation,
+      !isPlaceholder,
+      !isSFSymbolSource,
+      imageTintColor == nil,
+      let animatedImage = image as? SDAnimatedImage,
+      animatedImage.animatedImageLoopCount == 0,
+      SharedAnimationDriver.shared.canDrive(animatedImage)
+    else {
+      return nil
+    }
+    return animatedImage
+  }
+
+  private func updateSharedAnimation(with image: SDAnimatedImage?) {
+    guard let image, let timeline = SharedAnimationDriver.shared.timeline(for: image) else {
+      leaveSharedAnimation()
+      return
+    }
+    sharedAnimationImage = image
+    sharedAnimationTimeline = timeline
+
+    if autoplay {
+      startSharedAnimation()
+    } else {
+      SharedAnimationDriver.shared.unregister(self)
+    }
+  }
+
+  /**
+   * Moves a view that already displays its image onto the shared clock.
+   */
+  private func joinSharedAnimationIfPossible() {
+    guard !hasSharedAnimation,
+      let sourceImage,
+      sdImageView.image === sourceImage,
+      let image = drivableAnimatedImage(sourceImage, isPlaceholder: false)
+    else {
+      return
+    }
+    sdImageView.stopAnimating()
+    sdImageView.autoPlayAnimatedImage = false
+    updateSharedAnimation(with: image)
+  }
+
+  func startSharedAnimation() {
+    guard let sharedAnimationImage else {
+      return
+    }
+    if !SharedAnimationDriver.shared.register(self, image: sharedAnimationImage) {
+      // No room for this image's frames, fall back to the view's own player.
+      leaveSharedAnimation()
+      if !autoplay {
+        sdImageView.startAnimating()
+      }
+    }
+  }
+
+  func stopSharedAnimation() {
+    SharedAnimationDriver.shared.unregister(self)
+  }
+
+  /**
+   * Hands the view back to its own player.
+   */
+  func leaveSharedAnimation() {
+    guard sharedAnimationTimeline != nil else {
+      return
+    }
+    SharedAnimationDriver.shared.unregister(self)
+    sharedAnimationImage = nil
+    sharedAnimationTimeline = nil
+    sdImageView.autoPlayAnimatedImage = autoplay
+    if autoplay {
+      sdImageView.startAnimating()
+    }
+  }
+
+  /**
+   * Seeks to the frame the shared clock is on.
+   */
+  func renderSharedAnimationFrame(elapsed: TimeInterval) {
+    // `SDAnimatedImageView` only skips hidden views when it plays them itself.
+    guard window != nil, !isHidden, alpha > 0 else {
+      return
+    }
+    guard let sharedAnimationTimeline,
+      let sharedAnimationImage,
+      SharedAnimationDriver.shared.isReady(sharedAnimationImage),
+      let player = sdImageView.player
+    else {
+      return
+    }
+    let frameIndex = sharedAnimationTimeline.frameIndex(atElapsed: elapsed)
+    if player.currentFrameIndex != frameIndex {
+      player.seekToFrame(at: frameIndex, loopCount: 0)
+    }
   }
 
   // MARK: - Symbol Effects

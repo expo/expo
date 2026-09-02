@@ -18,7 +18,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.github.penfeizhou.animation.gif.GifDrawable
+import com.github.penfeizhou.animation.FrameAnimationDrawable
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.ImageCacheType
 import expo.modules.image.enums.Priority
@@ -28,11 +28,13 @@ import expo.modules.image.okhttp.GlideUrlWrapper
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.DecodeFormat
+import expo.modules.image.records.DecodedSource
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.Source
+import expo.modules.image.records.SourceMap
 import expo.modules.image.svg.SVGPictureDrawable
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.tracing.beginAsyncTraceBlock
@@ -164,6 +166,36 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   internal var autoplay: Boolean = true
 
+  /**
+   * Whether the animation is kept in step with other views of the same image by [SharedAnimationDriver].
+   */
+  internal var synchronizedAnimation: Boolean = false
+    set(value) {
+      if (field == value) {
+        return
+      }
+      field = value
+      val drawable = activeView.drawable as? FrameAnimationDrawable<*> ?: return
+      if (value) {
+        sharedAnimationKey(activeView.isPlaceholder)?.let {
+          SharedAnimationDriver.onAnimatableDisplayed(drawable, it)
+        }
+      } else {
+        SharedAnimationDriver.onAnimatableReleased(drawable)
+      }
+    }
+
+  /**
+   * Identifies the image behind the displayed drawable for [SharedAnimationDriver].
+   */
+  private fun sharedAnimationKey(isPlaceholder: Boolean): String? {
+    return when (val source = if (isPlaceholder) bestPlaceholder else bestSource) {
+      is SourceMap -> source.cacheKey ?: source.uri
+      is DecodedSource -> "decoded:${System.identityHashCode(source.drawable)}"
+      else -> null
+    }
+  }
+
   internal var lockResource: Boolean = false
 
   internal var priority: Priority = Priority.NORMAL
@@ -174,17 +206,25 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     // So we check first if the resource is a GifDrawable, because it can continue
     // from where it was paused.
     when (val resource = activeView.drawable) {
-      is GifDrawable -> setIsAnimating(resource, setAnimating)
+      is FrameAnimationDrawable<*> -> setIsAnimating(resource, setAnimating)
       is Animatable -> setIsAnimating(resource, setAnimating)
     }
   }
 
-  private fun setIsAnimating(resource: GifDrawable, setAnimating: Boolean) {
+  private fun setIsAnimating(resource: FrameAnimationDrawable<*>, setAnimating: Boolean) {
     if (setAnimating) {
       if (resource.isPaused) {
         resource.resume()
+        if (synchronizedAnimation) {
+          SharedAnimationDriver.onAnimatableResumed(resource)
+        }
       } else {
         resource.start()
+        if (synchronizedAnimation) {
+          sharedAnimationKey(activeView.isPlaceholder)?.let {
+            SharedAnimationDriver.onAnimatableDisplayed(resource, it)
+          }
+        }
       }
     } else {
       resource.pause()
@@ -400,6 +440,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
     if (resource is Animatable) {
       resource.start()
+      if (synchronizedAnimation && resource is FrameAnimationDrawable<*>) {
+        sharedAnimationKey(isPlaceholder)?.let {
+          SharedAnimationDriver.onAnimatableDisplayed(resource, it)
+        }
+      }
     }
   }
 
