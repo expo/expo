@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Router Tester",
+    "slug": "router-tester",
+    "scheme": "router-tester",
+    "newArchEnabled": true,
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "bundleIdentifier": "dev.expo.routertester"
+    },
+    "android": {
+      "package": "dev.expo.routertester",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
