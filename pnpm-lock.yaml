@@ -13261,6 +13261,10 @@ packages:
     resolution: {integrity: sha512-Dc57t8jsINwA90bbVlqaeDlxf1rVGgj5SmOEnOMbaHNUM/HCYYTJxPV8SRdOBwh7qTz/biO9vaQvBTjRBgbbsg==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
+  metro-minify-terser@0.84.5:
+    resolution: {integrity: sha512-BJoFwCEDsYnagPqarayInv2+diCDNDdLlaof/p6s9w4gh+gc9HXYM+pDvsKGKKUumpZswNF3Z/ftTMqKl/5IBg==}
+    engines: {node: ^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0}
+
   metro-minify-terser@0.84.6:
     resolution: {integrity: sha512-SqhB/Kxrw0XfyW0k8mEscqX/CQopm6Fp3EpdSIPzvKfGgQp9bTMahg9PAdVsXUmIWwErbmFw1VqB+VFBOKksUw==}
     engines: {node: ^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0}
@@ -22602,6 +22606,11 @@ snapshots:
       micromatch: 4.0.8
       nullthrows: 1.1.1
       walker: 1.0.8
+
+  metro-minify-terser@0.84.5:
+    dependencies:
+      flow-enums-runtime: 0.0.6
+      terser: 5.49.0
 
   metro-minify-terser@0.84.6:
     dependencies:
