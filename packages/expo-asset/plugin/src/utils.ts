@@ -28,7 +28,7 @@ export function validateAssets(assets: string[], platform: 'android' | 'ios') {
     const ext = path.extname(asset);
     const name = path.basename(asset, ext);
     const isNameValid = platform === 'android' ? isValidAndroidAssetName(name) : true;
-    const isFont = FONT_TYPES.includes(ext);
+    const isFont = FONT_TYPES.includes(ext.toLowerCase());
 
     if (!isNameValid) {
       WarningAggregator.addWarningForPlatform(
