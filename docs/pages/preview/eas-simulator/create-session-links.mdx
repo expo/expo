@@ -1,16 +1,16 @@
 ---
 title: Start an EAS Simulator session from a link
 sidebar_title: Create session links
-description: Construct an authenticated expo.dev URL that creates and opens an EAS Simulator session from an EAS Build, build fingerprint, or application archive.
+description: Construct an authenticated expo.dev URL that creates an EAS Simulator session and opens its fullscreen browser preview from an EAS Build, build fingerprint, or application archive.
 ---
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-A create session link starts an iOS Simulator session from an EAS Build, build fingerprint, or application archive and opens its session page on expo.dev. Use one to add an EAS Simulator action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/eas-simulator/rest-api/).
+A create session link starts an iOS Simulator session from an EAS Build, build fingerprint, or application archive and opens its browser preview in fullscreen mode when it is ready. Use one to add an EAS Simulator action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/eas-simulator/rest-api/).
 
 Create session links start browser-preview-only sessions. They do not provision agent-device, Appium, or Argent. Use [EAS CLI](/preview/eas-simulator/cli-reference/) or the [REST API](/preview/eas-simulator/rest-api/) when you need a controller, an Android Emulator, a blank device, Expo Go, or custom duration and idle limits.
 
-> **warning** Opening a create session link starts a new session without a confirmation step. The link is not idempotent: opening it again can create another session that consumes EAS Simulator usage. Share the resulting session page URL when you want someone to view an existing session instead of starting a new one.
+> **warning** Opening a create session link starts a new session without a confirmation step. The link is not idempotent: opening it again can create another session that consumes EAS Simulator usage. Open the existing session from the project's **Simulator sessions** page and share its session page URL when you do not want to start a new one.
 
 ## Construct the URL
 
@@ -100,13 +100,13 @@ https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId
 
 ## What happens when the link opens
 
-After authentication, expo.dev validates the parameters and build, creates the session, and redirects to its session page:
+After authentication, expo.dev validates the parameters and build, creates the session, and shows its startup progress while reserving a simulator and preparing the web preview. This can take about a minute. When the web preview becomes available, expo.dev redirects directly to its `webPreviewUrl` with `fullscreen=1`, so the preview fills the page.
+
+To return to or share the same session without starting another one, open it from the project's **Simulator sessions** page. Its session page URL uses this format:
 
 ```text
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>
 ```
-
-The session page shows its startup progress and the browser preview when it becomes available. Keep this resulting URL to return to or share the same session.
 
 Closing the page or navigating away does not cancel a session creation that the service already accepted, and it does not stop a running session. Stop the session when you finish so that it does not continue consuming usage.
 
