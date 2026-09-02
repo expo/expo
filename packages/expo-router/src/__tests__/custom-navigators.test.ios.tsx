@@ -8,7 +8,7 @@ import { Tabs } from '../layouts/Tabs';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import type { TabRouterOptions } from '../react-navigation/native';
 import { TabRouter } from '../react-navigation/native';
-import { createStackNavigator } from '../react-navigation/stack';
+import { createStackNavigator } from '../react-navigation/native/__stubs__/createStackNavigator';
 import { renderRouter } from '../testing-library';
 
 const StackNavigator = createStackNavigator().Navigator;

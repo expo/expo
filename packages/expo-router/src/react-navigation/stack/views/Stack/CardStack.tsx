@@ -3,7 +3,7 @@ import { Animated, type LayoutChangeEvent, Platform, StyleSheet, View } from 're
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
 import { getDefaultHeaderHeight, SafeAreaProviderCompat } from '../../../elements';
-import type { LocaleDirection, ParamListBase, Route, StackNavigationState } from '../../../native';
+import type { LocaleDirection, Route } from '../../../native';
 import {
   forModalPresentationIOS,
   forNoAnimation as forNoAnimationCard,
@@ -29,6 +29,7 @@ import type {
   StackDescriptorMap,
   StackHeaderMode,
   StackNavigationOptions,
+  StackViewState,
   TransitionPreset,
 } from '../../types';
 import { findLastIndex } from '../../utils/findLastIndex';
@@ -45,7 +46,7 @@ type GestureValues = {
 type Props = {
   direction: LocaleDirection;
   insets: EdgeInsets;
-  state: StackNavigationState<ParamListBase>;
+  state: StackViewState;
   descriptors: StackDescriptorMap;
   routes: Route<string>[];
   openingRouteKeys: string[];
@@ -96,7 +97,9 @@ const STATE_INACTIVE = 0;
 const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
 const STATE_ON_TOP = 2;
 
-const FALLBACK_DESCRIPTOR = Object.freeze({ options: {} as StackNavigationOptions });
+const FALLBACK_DESCRIPTOR = Object.freeze({
+  options: {} as StackNavigationOptions,
+});
 
 const getInterpolationIndex = (scenes: Scene[], index: number) => {
   const { cardStyleInterpolator } = scenes[index]!.descriptor.options;
@@ -231,7 +234,7 @@ export function getAnimationEnabled(animation: StackAnimationName | undefined) {
   return getDefaultAnimation(animation) !== 'none';
 }
 
-const getAllRoutes = (routes: Route<string>[], state: StackNavigationState<ParamListBase>) => {
+const getAllRoutes = (routes: Route<string>[], state: StackViewState) => {
   const routeKeys = new Set(routes.map((route) => route.key));
   return routes.concat(
     state.routes.slice(state.index + 1).filter((route) => !routeKeys.has(route.key))

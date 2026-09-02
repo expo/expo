@@ -3,33 +3,18 @@ import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation';
-import { subscribePopToTopOnParentTabPress } from '../../../standard-navigation/subscribePopToTopOnParentTabPress';
-import {
-  createNavigatorFactory,
-  type NavigatorTypeBagBase,
-  type ParamListBase,
-  type StackActionHelpers,
-  type StackNavigationState,
-  StackRouter,
-  type StackRouterOptions,
-  type TypedNavigator,
-  useLocale,
-  useNavigationBuilder,
-} from '../../native';
+import { type Route, useLocale } from '../../native';
 import type {
   StackNavigationEventMap,
   StackDescriptorMap,
   StackNavigationConfig,
-  StackNavigationHelpers,
   StackNavigationOptions,
-  StackNavigationProp,
-  StackNavigatorProps,
 } from '../types';
 import { StackView } from '../views/Stack/StackView';
 
 export interface StackNavigatorCreateProps {
-  navigation: StackNavigationHelpers;
-  stackState: StackNavigationState<ParamListBase>;
+  pop: (count: number, sourceRouteKey: string) => void;
+  restoreRoute: (route: Route<string>) => boolean;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
 
@@ -48,9 +33,10 @@ type StackNavigatorContentProps = NavigatorContentProps<
 
 function StackNavigatorContent({
   state,
-  stackState,
   descriptors,
-  navigation,
+  emitter,
+  pop,
+  restoreRoute,
   subscribePopToTopOnParentTabPress,
   ...rest
 }: StackNavigatorContentProps) {
@@ -66,59 +52,13 @@ function StackNavigatorContent({
     <StackView
       {...rest}
       direction={direction}
-      state={stackState}
+      state={state}
+      // Standard descriptors have the same runtime shape as stack descriptors.
       descriptors={descriptors as unknown as StackDescriptorMap}
-      navigation={navigation}
+      emit={emitter.emit}
+      pop={pop}
+      restoreRoute={restoreRoute}
     />
-  );
-}
-
-const LegacyStackNavigatorContent = StackNavigatorContent as React.ComponentType<
-  Omit<StackNavigatorContentProps, 'actions' | 'emitter'>
->;
-
-function StackNavigator({
-  id,
-  initialRouteName,
-  children,
-  layout,
-  screenListeners,
-  screenOptions,
-  screenLayout,
-  UNSTABLE_router,
-  ...rest
-}: StackNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
-    StackNavigationState<ParamListBase>,
-    StackRouterOptions,
-    StackActionHelpers<ParamListBase>,
-    StackNavigationOptions,
-    StackNavigationEventMap
-  >(StackRouter, {
-    id,
-    initialRouteName,
-    children,
-    layout,
-    screenListeners,
-    screenOptions,
-    screenLayout,
-    UNSTABLE_router,
-  });
-
-  return (
-    <NavigationContent>
-      <LegacyStackNavigatorContent
-        {...rest}
-        // Standard-navigation state carries the same runtime shape as the builder state.
-        state={state as unknown as StackNavigatorContentProps['state']}
-        stackState={state}
-        descriptors={descriptors}
-        navigation={navigation}
-        subscribePopToTopOnParentTabPress={() =>
-          subscribePopToTopOnParentTabPress(navigation, state)
-        }
-      />
-    </NavigationContent>
   );
 }
 
@@ -127,26 +67,3 @@ export const createStandardStackNavigator = createStandardNavigator<
   StandardStackNavigationEventMap,
   StackNavigatorCreateProps
 >(StackNavigatorContent);
-
-/**
- * @deprecated Reserved for libraries that ship a self-contained navigator, which the `Stack` layout
- * cannot express. There is no stable replacement yet, so expect this factory to change or be removed
- * in a future release. App code should use `Stack` from `expo-router/js-stack`.
- */
-export function createStackNavigator<
-  const ParamList extends ParamListBase,
-  const NavigatorID extends string | undefined = string | undefined,
-  const TypeBag extends NavigatorTypeBagBase = {
-    ParamList: ParamList;
-    NavigatorID: NavigatorID;
-    State: StackNavigationState<ParamList>;
-    ScreenOptions: StackNavigationOptions;
-    EventMap: StackNavigationEventMap;
-    NavigationList: {
-      [RouteName in keyof ParamList]: StackNavigationProp<ParamList, RouteName, NavigatorID>;
-    };
-    Navigator: typeof StackNavigator;
-  },
->(): TypedNavigator<TypeBag> {
-  return createNavigatorFactory(StackNavigator)();
-}
