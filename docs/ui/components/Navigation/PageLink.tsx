@@ -12,7 +12,7 @@ export function PageLink({ route, isActive }: NavigationRenderProps) {
   return (
     <A
       className={mergeClasses(
-        'mx-1 my-4 flex items-center rounded-md bg-default px-1.5 py-2 shadow-xs',
+        'mx-1 my-4 flex items-center rounded-lg bg-default px-1.5 py-2 shadow-xs',
         'dark:bg-element'
       )}
       href={route.href}>
