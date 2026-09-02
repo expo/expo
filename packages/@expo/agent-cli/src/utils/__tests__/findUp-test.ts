@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -6,7 +7,10 @@ import { findUpProjectRootOrAssert, findUpProjectRootOrCwd } from '../findUp';
 
 jest.mock('fs');
 
-afterEach(() => vol.reset());
+afterEach(() => {
+  vol.reset();
+  jest.restoreAllMocks();
+});
 
 const repo = path.resolve('/repo');
 const mobile = path.join(repo, 'apps', 'mobile');
@@ -26,6 +30,14 @@ describe(findUpProjectRootOrAssert, () => {
     });
 
     expect(findUpProjectRootOrAssert(path.join(mobile, 'src'))).toBe(mobile);
+  });
+
+  it(`should keep this platform's path when realpath answers in POSIX`, () => {
+    // memfs on Windows returns `/repo/package.json` for a file the walk found at `D:\repo\...`.
+    vol.fromJSON({ [path.join(repo, 'package.json')]: '{}' });
+    jest.spyOn(fs, 'realpathSync').mockReturnValue('/repo/package.json');
+
+    expect(findUpProjectRootOrAssert(repo)).toBe(repo);
   });
 
   // @ref .claude/CLAUDE.md §Error messages — what, why, how, and a next step even when the exact

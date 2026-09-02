@@ -49,8 +49,10 @@ function findUpProjectRoot(root: string): string | null {
   }
   // Windows temp dirs are often the 8.3 form (`C:\Users\RUNNER~1\...`). Commands report this
   // path, so it has to be the same spelling `realpath` would give a caller.
+  // memfs answers with a POSIX spelling even on Windows; `path.resolve` puts that back on
+  // this platform's path.
   try {
-    return fs.realpathSync(file);
+    return path.resolve(fs.realpathSync(file));
   } catch {
     return file;
   }
