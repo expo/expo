@@ -239,7 +239,10 @@ describe('Drawer backBehavior', () => {
 
   it('closes an open drawer before following the configured behavior', () => {
     function DrawerScreen() {
-      const navigation = useNavigation();
+      // The root navigation type does not include helpers added by the Drawer navigator.
+      const navigation = useNavigation() as ReturnType<typeof useNavigation> & {
+        openDrawer(): void;
+      };
       return (
         <>
           <Text testID="drawer-status">{useDrawerStatus()}</Text>

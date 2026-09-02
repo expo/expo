@@ -62,7 +62,8 @@ function NativeTabsContent({
   rippleColor,
   disableIndicator,
   labelVisibilityMode,
-  ...rest
+  backBehavior,
+  ...viewProps
 }: StandardNavigatorContentProps<
   NativeTabOptions,
   NativeTabNavigationEventMap,
@@ -76,7 +77,6 @@ function NativeTabsContent({
   }
 
   const { routes } = state;
-  const { backBehavior, ...viewProps } = rest as typeof rest & { backBehavior?: string };
 
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes,

@@ -47,7 +47,7 @@ export type TabRouterOptions = DefaultRouterOptions & {
    * Control how going back should behave
    * - `firstRoute` - return to the first defined route
    * - `initialRoute` - return to the route from `initialRouteName`
-   * - `order` - return to the route defined before the focused route
+   * - `order` - return to the route defined before the focused route; all declared routes are preloaded
    * - `history` - return to last visited route; if the same route is visited multiple times, the older entries are dropped from the history
    * - `fullHistory` - return to last visited route; doesn't drop duplicate entries unlike `history` - matches behavior of web pages
    * - `none` - do not handle going back
@@ -353,15 +353,21 @@ export function TabRouter({
             backBehavior === 'fullHistory'
               ? state.history!.filter((item) => routes.some((route) => route.key === item.key))
               : undefined;
+          const nextState =
+            backBehavior === 'fullHistory' && focusedIndex === -1 && routes.length > 0
+              ? changeFullHistoryIndex({ ...state, routes, history: history! }, index)
+              : {
+                  ...state,
+                  routes,
+                  index,
+                  ...(history === undefined ? undefined : { history }),
+                };
 
           return {
             state: {
-              ...state,
+              ...nextState,
               routeNames,
-              routes,
               routeKeySeq: minter.routeKeySeq,
-              index,
-              ...(history === undefined ? undefined : { history }),
             },
             affectedRouteKey: routes[index]?.key,
           };
@@ -409,6 +415,7 @@ export function TabRouter({
             const getId = routeGetIdList[route.name];
             const currentId = getId?.({ params: route.params });
             const nextId = getId?.({ params: action.payload.params });
+            // TODO(@ubax): Rewrite `history` when `getId` re-keys a route, as `PRELOAD` does with `replacedKey`.
             const key = currentId === nextId ? route.key : minter.mint(route.name);
 
             let params;
@@ -516,7 +523,7 @@ export function TabRouter({
               };
             }
             if (backBehavior === 'firstRoute' || backBehavior === 'initialRoute') {
-              const anchorName = getAnchorName(declaredRouteNames, backBehavior, initialRouteName);
+              const anchorName = getAnchorName(state.routeNames, backBehavior, initialRouteName);
               const existingAnchor = state.routes.find((route) => route.name === anchorName);
               if (
                 anchorName !== undefined &&

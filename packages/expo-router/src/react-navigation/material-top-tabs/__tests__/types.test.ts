@@ -1,5 +1,5 @@
 import type { JSTopTabsProps } from '../../../layouts/TopTabs';
-import type { DescriptorRouteProp, ParamListBase } from '../../native';
+import type { DescriptorRouteProp, ParamListBase, TabRouterOptions } from '../../native';
 import type { MaterialTopTabNavigatorContentProps } from '../navigators/createMaterialTopTabNavigator';
 import type {
   MaterialTopTabBarProps,
@@ -39,6 +39,9 @@ export type _IndicatorUsesTopTabViewState = Expect<
 >;
 export type _ContentRequiresRouteNames = Expect<
   Equal<MaterialTopTabNavigatorContentProps['routeNames'], string[]>
+>;
+export type _ContentIncludesBackBehavior = Expect<
+  Equal<MaterialTopTabNavigatorContentProps['backBehavior'], TabRouterOptions['backBehavior']>
 >;
 
 describe('material top tabs types', () => {
