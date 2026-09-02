@@ -180,9 +180,11 @@ struct KeyedSerialQueueTests {
       try await queue.run(key: "mailDraft") { throw Boom() }
     }
 
-    var didRun = false
-    try await queue.run(key: "mailDraft") { didRun = true }
-    #expect(didRun)
+    let didRun = Mutex(false)
+    try await queue.run(key: "mailDraft") {
+      didRun.withLock { $0 = true }
+    }
+    #expect(didRun.withLock { $0 })
   }
 }
 
@@ -209,6 +211,25 @@ struct AppEntityIdentifierDiagnosticsTests {
 
     #expect(AppEntityIdentifierDiagnostics.reportOnce(key: key, "first") == true)
     #expect(AppEntityIdentifierDiagnostics.reportOnce(key: key, "again") == false)
+  }
+
+  @Test
+  func `concurrent reports of the same cause are reported once`() async {
+    let key = "test:\(UUID().uuidString)"
+
+    let reportCount = await withTaskGroup(of: Bool.self, returning: Int.self) { group in
+      for _ in 0..<100 {
+        group.addTask {
+          AppEntityIdentifierDiagnostics.reportOnce(key: key, "concurrent")
+        }
+      }
+
+      return await group.reduce(into: 0) { count, wasReported in
+        count += wasReported ? 1 : 0
+      }
+    }
+
+    #expect(reportCount == 1)
   }
 
   /// The report has to go to the `AppContext`'s logger, because that one reaches the JavaScript console
