@@ -14,7 +14,6 @@ const APPS_DIR = path.join(EXPO_DIR, 'apps');
 const PACKAGES_DIR = path.join(EXPO_DIR, 'packages');
 const TEMPLATES_DIR = path.join(EXPO_DIR, 'templates');
 
-const ROOT_PACKAGE_JSON_PATH = path.join(EXPO_DIR, 'package.json');
 const BUNDLED_NATIVE_MODULES_PATH = path.join(EXPO_DIR, 'packages/expo/bundledNativeModules.json');
 
 const REACT_NATIVE_PACKAGE = 'react-native';
@@ -49,7 +48,7 @@ async function main(options: { version?: string }) {
     }
   }
 
-  if (await updateRootResolutions(newVersion)) {
+  if (await updateRootOverride(newVersion)) {
     totalUpdated++;
   }
 
@@ -145,36 +144,38 @@ async function updatePackageJson(packageJsonPath: string, newVersion: string): P
 }
 
 /**
- * Updates react-native and @react-native/* versions in the root package.json's
- * `resolutions` field. Returns true if the file was modified.
+ * Updates the root react-native and @react-native/* overrides. Returns true if the file was modified.
  */
-async function updateRootResolutions(newVersion: string): Promise<boolean> {
-  const json = await JsonFile.readAsync(ROOT_PACKAGE_JSON_PATH);
-  const resolutions = json.resolutions as Record<string, string> | undefined;
-  if (!resolutions) return false;
-
+async function updateRootOverride(newVersion: string): Promise<boolean> {
+  const { stdout } = await spawnAsync('pnpm', ['config', 'get', 'overrides', '--json'], {
+    cwd: EXPO_DIR,
+  });
+  const overrides = JSON.parse(stdout) as Record<string, string>;
   let modified = false;
 
-  for (const [name, currentVersion] of Object.entries(resolutions)) {
-    if (name === REACT_NATIVE_PACKAGE || name.startsWith(REACT_NATIVE_SCOPE)) {
-      if (currentVersion === '*') continue;
-
+  for (const [name, currentVersion] of Object.entries(overrides)) {
+    if (
+      (name === REACT_NATIVE_PACKAGE || name.startsWith(REACT_NATIVE_SCOPE)) &&
+      currentVersion !== '*'
+    ) {
       const prefix = currentVersion.match(/^([~^]?)/)?.[1] ?? '';
       const updatedVersion = `${prefix}${newVersion}`;
-
       if (currentVersion !== updatedVersion) {
-        resolutions[name] = updatedVersion;
+        overrides[name] = updatedVersion;
         modified = true;
       }
     }
   }
 
-  if (modified) {
-    await JsonFile.writeAsync(ROOT_PACKAGE_JSON_PATH, json);
-    logger.log(`  Updated ${chalk.cyan('package.json')} (resolutions)`);
-  }
+  if (!modified) return false;
 
-  return modified;
+  await spawnAsync(
+    'pnpm',
+    ['config', 'set', '--location=project', '--json', 'overrides', JSON.stringify(overrides)],
+    { cwd: EXPO_DIR }
+  );
+  logger.log(`  Updated ${chalk.cyan('pnpm-workspace.yaml')} (overrides)`);
+  return true;
 }
 
 /**
