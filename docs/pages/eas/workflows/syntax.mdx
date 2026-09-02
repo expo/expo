@@ -209,6 +209,31 @@ on:
     # other labels
 ```
 
+### `on.pull_request_comment`
+
+Runs your workflow when someone creates, edits, or deletes a comment on a pull request.
+
+> **info** Only open, unmerged pull requests trigger `pull_request_comment` workflow runs. Pull requests opened from a fork of the connected repository do not trigger workflow runs.
+
+With the `types` list, you can specify which events trigger the workflow. Defaults to `['created']` when not provided. Supported event types:
+
+- `created`
+- `edited`
+- `deleted`
+
+Unlike `on.pull_request`, this trigger has no `branches` or `paths` filter.
+
+```yaml
+on:
+  # @info #
+  pull_request_comment:
+    # @end #
+    types:
+      - created
+      - edited
+      # other event types
+```
+
 ### `on.app_store_connect`
 
 Runs your workflow when one of the selected App Store Connect events occurs.
@@ -825,6 +850,10 @@ type GitHubContext = {
       merged: boolean | null;
       // ... Other fields from the GitHub Pull Request webhook payload
     };
+    comment?: {
+      body: string;
+      // ... Other fields from the GitHub issue_comment webhook payload
+    };
     changes?: {
       base?: {
         ref?: {
@@ -839,7 +868,7 @@ type GitHubContext = {
 };
 ```
 
-> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. For `pull_request_comment` events, `event.comment.body` contains the comment text, and `event.pull_request.number` and `event.number` contain the pull request number. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
