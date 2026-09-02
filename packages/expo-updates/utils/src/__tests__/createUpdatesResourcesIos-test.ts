@@ -21,40 +21,60 @@ describe('create-updates-resources-ios.sh', () => {
       build: 'a Debug build',
       configuration: 'Debug',
       inheritedMode: '',
+      forceBundling: '1',
       mode: 'development',
       metroDev: 'true',
+      resourcesMode: 'all',
     },
     {
-      build: 'a lowercase Debug build',
-      configuration: 'debugStaging',
+      build: 'a custom Debug build',
+      configuration: 'DebugStaging',
       inheritedMode: '',
+      forceBundling: '',
       mode: 'development',
       metroDev: 'true',
+      resourcesMode: 'only-fingerprint',
+    },
+    {
+      build: 'a lowercase debug configuration',
+      configuration: 'debugStaging',
+      inheritedMode: '',
+      forceBundling: '',
+      mode: 'production',
+      metroDev: 'false',
+      resourcesMode: 'all',
     },
     {
       build: 'a Release build',
       configuration: 'Release',
       inheritedMode: '',
+      forceBundling: '',
       mode: 'production',
       metroDev: 'false',
+      resourcesMode: 'all',
     },
     {
       build: 'a Debug build with EAS_BUILD set',
       configuration: 'Debug',
       easBuild: 'true',
       inheritedMode: '',
+      forceBundling: '1',
       mode: 'development',
       metroDev: 'true',
+      resourcesMode: 'all',
     },
     {
       build: 'a build with an inherited config mode',
       configuration: 'Release',
       inheritedMode: 'development',
+      forceBundling: '',
       mode: 'development',
       metroDev: 'false',
+      resourcesMode: 'all',
     },
   ])('passes the config and Metro modes for $build', (testCase) => {
-    const { configuration, easBuild, inheritedMode, mode, metroDev } = testCase;
+    const { configuration, easBuild, inheritedMode, forceBundling, mode, metroDev, resourcesMode } =
+      testCase;
     const captureFile = path.join(projectRoot, 'capture.txt');
     const fakeNode = path.join(projectRoot, 'node');
     const podsRoot = path.join(projectRoot, 'ios', 'Pods');
@@ -80,7 +100,7 @@ describe('create-updates-resources-ios.sh', () => {
         EAS_BUILD: easBuild ?? '',
         ENTRY_FILE: 'index.js',
         FAKE_NODE_BINARY: fakeNode,
-        FORCE_BUNDLING: '1',
+        FORCE_BUNDLING: forceBundling,
         PODS_ROOT: podsRoot,
         PROJECT_DIR: podsRoot,
         PROJECT_ROOT: projectRoot,
@@ -92,7 +112,7 @@ describe('create-updates-resources-ios.sh', () => {
     expect(result.stderr).toBe('');
     expect(result.status).toBe(0);
     const capturedValues = fs.readFileSync(captureFile, 'utf8').trim().split('\n');
+    expect(capturedValues.slice(-3)).toEqual([resourcesMode, 'index.js', metroDev]);
     expect(capturedValues[0]).toBe(mode);
-    expect(capturedValues.at(-1)).toBe(metroDev);
   });
 });
