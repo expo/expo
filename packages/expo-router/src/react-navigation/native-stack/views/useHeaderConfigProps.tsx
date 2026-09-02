@@ -246,7 +246,8 @@ export function useHeaderConfigProps({
       : Platform.OS === 'ios' && (headerTransparent || headerBackgroundColor === 'transparent')
         ? // On iOS 26, we want header title to change color based on content underneath
           // So we don't set an explicit color when header is transparent
-          undefined
+          // Unless a custom tint color is explicitly provided
+          headerTintColor
         : (headerTintColor ?? colors.text);
   const titleFontSize =
     'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
