@@ -43,9 +43,10 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
         'grid grid-cols-2 gap-4',
         connected && 'lg:mb-4 lg:gap-0',
         connected &&
-          '[&>div:nth-child(odd)>div]:lg:rounded-r-none! [&>div:nth-child(odd)>div]:lg:border-r-0',
-        connected && '[&>div:nth-child(even)>div]:lg:rounded-l-none!',
-        '[&_pre]:m-0 [&_pre]:border-0',
+          '[&>div:nth-child(odd)]:lg:rounded-r-none! [&>div:nth-child(odd)>div]:lg:rounded-r-none! [&>div:nth-child(odd)>div]:lg:border-r-0',
+        connected &&
+          '[&>div:nth-child(even)]:lg:rounded-l-none! [&>div:nth-child(even)>div]:lg:rounded-l-none!',
+        '[&_.code-block-wrapper]:m-0 [&_.code-block-wrapper]:border-0',
         'max-lg:grid-cols-1'
       )}
       {...rest}>
