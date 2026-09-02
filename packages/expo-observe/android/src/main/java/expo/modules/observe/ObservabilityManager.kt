@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import expo.modules.easclient.EASClientID
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.Span
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import kotlinx.coroutines.currentCoroutineContext
@@ -49,6 +50,10 @@ class ObservabilityManager(
     baseManager.dispatchUnsentLogs()
   }
 
+  suspend fun dispatchUnsentSpans() {
+    baseManager.dispatchUnsentSpans()
+  }
+
   fun scheduleBackgroundDispatch() {
     ObservabilityBackgroundWorker.scheduleBackgroundDispatch(
       context = context,
@@ -91,6 +96,7 @@ class BaseObservabilityManager(
    */
   private var metricsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
   private var logsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
+  private var spansRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
 
   /**
    * Returns true and logs when an active retry gate suppresses this dispatch round. Called
@@ -276,6 +282,87 @@ class BaseObservabilityManager(
     }
   }
 
+  /**
+   * Dispatches persisted spans to `/v1/traces`.
+   *
+   * Unlike metrics and logs there is no persisted cursor yet: a consumed (or deliberately
+   * dropped) batch is deleted outright and the table itself acts as the queue. Rows survive
+   * on a retryable failure and go out on the next dispatch. Batches are chunked at the
+   * server's per-request span limit.
+   */
+  suspend fun dispatchUnsentSpans(): Unit = spansDispatchMutex.withLock {
+    if (retryGateBlocks(spansRetryGate, "spans")) {
+      return
+    }
+
+    if (!shouldDispatch()) {
+      // Drop the backlog without materializing it; one MAX query is enough to know how far to
+      // delete. Mirrors metrics/logs advancing the cursor past rows they won't send.
+      sessionManager.getMaxSpanId()?.let { sessionManager.deleteSpansUpTo(it) }
+      return
+    }
+
+    // Rows are read in id order one server-sized chunk at a time; a chunk that fails retryably
+    // stops the loop and leaves its rows (and everything after them) for the next dispatch. An
+    // oversized chunk is split in half and retried, so one huge span doesn't drop its whole
+    // chunk.
+    var readCursor = -1L
+    val chunks = ArrayDeque<List<Span>>()
+    while (currentCoroutineContext().isActive) {
+      if (chunks.isEmpty()) {
+        val nextChunk = sessionManager.getSpans(readCursor, MAX_SPANS_PER_REQUEST)
+        if (nextChunk.isEmpty()) {
+          return
+        }
+        readCursor = nextChunk.last().id
+        chunks.addLast(nextChunk)
+      }
+      val chunk = chunks.removeFirst()
+      val batches = chunk.groupBy { it.sessionId }.mapNotNull { (sessionId, spans) ->
+        // Spans whose session row no longer exists are skipped — their rows are about to be
+        // deleted below anyway.
+        val session = sessionManager.getSessionRow(sessionId) ?: return@mapNotNull null
+        SpanBatch(
+          event = Event(metadata = Metadata.fromSessionMetadata(session), metrics = emptyList()),
+          spans = spans.map { it.toOTSpan() }
+        )
+      }
+      val highestId = chunk.last().id
+      if (batches.isEmpty()) {
+        sessionManager.deleteSpansUpTo(highestId)
+        continue
+      }
+      val result = eventDispatcher.dispatchSpans(batches)
+      spansRetryGate = nextGate(spansRetryGate, result)
+      when (result) {
+        is DispatchResult.PartialSuccess ->
+          Log.w(
+            OBSERVE_TAG,
+            "Partial success on batch of ${chunk.size} span(s): " +
+              "server rejected ${result.partial.rejectedCount} " +
+              "(${result.partial.errorMessage ?: "no error message"})"
+          )
+        is DispatchResult.NonRetryableFailure ->
+          Log.w(OBSERVE_TAG, "Dropping batch of ${chunk.size} span(s): ${result.reason}")
+        DispatchResult.PayloadTooLarge -> if (chunk.size == 1) {
+          Log.w(OBSERVE_TAG, "Dropping span that exceeds the server's payload limit")
+        }
+        DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+      }
+      if (result is DispatchResult.PayloadTooLarge && chunk.size > 1) {
+        chunks.addFirst(chunk.subList(chunk.size / 2, chunk.size))
+        chunks.addFirst(chunk.subList(0, chunk.size / 2))
+        continue
+      }
+      when (result) {
+        DispatchResult.Success, is DispatchResult.PartialSuccess,
+        is DispatchResult.NonRetryableFailure, DispatchResult.PayloadTooLarge ->
+          sessionManager.deleteSpansUpTo(highestId)
+        is DispatchResult.RetryableFailure -> return
+      }
+    }
+  }
+
   private fun isInSample(): Boolean {
     val rate = ObservePreferences.getConfig(context)?.sampleRate ?: return true
     val clamped = rate.coerceIn(0.0, 1.0)
@@ -303,8 +390,15 @@ class BaseObservabilityManager(
   }
 
   companion object {
+    /**
+     * Maximum spans per request accepted by the ingestion endpoint; it rejects everything past
+     * this count within one POST, so larger backlogs are sent as sequential chunks.
+     */
+    const val MAX_SPANS_PER_REQUEST = 512
+
     // Serialize foreground and background dispatches without blocking the other signal.
     private val metricsDispatchMutex = Mutex()
     private val logsDispatchMutex = Mutex()
+    private val spansDispatchMutex = Mutex()
   }
 }

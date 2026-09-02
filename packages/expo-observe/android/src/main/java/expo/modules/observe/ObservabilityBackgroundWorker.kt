@@ -72,6 +72,7 @@ class ObservabilityBackgroundWorker(
       observabilityManager.cleanup()
       observabilityManager.dispatchUnsentMetrics()
       observabilityManager.dispatchUnsentLogs()
+      observabilityManager.dispatchUnsentSpans()
       Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics and logs")
       Result.success()
     } catch (e: Exception) {
