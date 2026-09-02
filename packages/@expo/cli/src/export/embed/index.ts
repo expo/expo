@@ -22,6 +22,9 @@ export const expoExportEmbed: Command = async (argv) => {
     '--unstable-transform-profile': String,
     '--config': String,
 
+    // Alternative native bundler (e.g. `rollipop`). Mirrors `expo export` / `expo start`.
+    '--bundler': String,
+
     // By default we also export a standalone server, which is mostly done
     // during the `export:embed` native build to ensure that the server is
     // valid, or to deploy it later (TBD). This can be skipped using this

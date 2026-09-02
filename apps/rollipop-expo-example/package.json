@@ -1,0 +1,36 @@
+{
+  "name": "rollipop-expo-example",
+  "version": "0.0.1",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "start:rollipop": "expo start --bundler rollipop",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-clipboard": "workspace:*",
+    "expo-dev-client": "57.0.12",
+    "expo-glass-effect": "workspace:*",
+    "expo-image-picker": "workspace:*",
+    "expo-linking": "workspace:*",
+    "expo-router": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "expo-status-bar": "workspace:*",
+    "expo-system-ui": "workspace:*",
+    "react": "19.2.3",
+    "react-native": "0.86.2"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "typescript": "~5.8.0"
+  },
+  "engines": {
+    "node": ">=22.11.0"
+  }
+}

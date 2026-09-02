@@ -31,6 +31,7 @@ export interface Options {
   eager?: boolean;
   bytecode?: boolean;
   skipServer?: boolean;
+  bundler?: 'metro' | 'rollipop';
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -81,8 +82,9 @@ export function resolveOptions(
     dev,
     minify: parsed.args['--minify'] as boolean | undefined,
     eager: !!parsed.args['--eager'],
-    bytecode: parsed.args['--bytecode'] as boolean | undefined,
+    bytecode: !!parsed.args['--bytecode'] as boolean | undefined,
     skipServer: !!parsed.args['--skip-server'],
+    bundler: (args['--bundler'] as 'metro' | 'rollipop' | undefined) ?? undefined,
   };
 
   if (commonOptions.eager) {

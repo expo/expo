@@ -22,6 +22,7 @@ export const expoExport: Command = async (argv) => {
     '--no-ssg': Boolean,
     '--api-only': Boolean,
     '--unstable-hosted-native': Boolean,
+    '--bundler': String,
 
     // Hack: This is added because EAS CLI always includes the flag.
     // If supplied, we'll do nothing with the value, but at least the process won't crash.

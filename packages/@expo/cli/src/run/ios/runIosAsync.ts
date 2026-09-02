@@ -211,6 +211,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     mode,
+    platform: 'ios',
     headless: !props.shouldStartBundler,
     // If a scheme is specified then use that instead of the package name.
 

@@ -1,0 +1,33 @@
+# Android e2e for the rollipop + Expo Router example app.
+# Verifies the app loads its bundle from the rollipop dev server and renders.
+appId: com.example.app
+---
+- launchApp:
+    clearState: true
+    stopApp: true
+- waitForAnimationToEnd:
+    timeout: 15000
+# Deep-link directly to our rollipop dev server (bypasses mDNS / vautr).
+- tapOn:
+    point: "540,120"
+    optional: true
+- openLink: "exp+rollipop-expo-example://192.168.1.24:8082"
+- waitForAnimationToEnd:
+    timeout: 15000
+# Tap the discovered server entry to load the bundle.
+- tapOn:
+    text: "rollipop-expo-example"
+    optional: true
+- waitForAnimationToEnd:
+    timeout: 30000
+# Assert the home screen rendered from the rollipop bundle.
+- assertVisible:
+    text: "Rollipop + Expo Router"
+- tapOn:
+    text: "About"
+- assertVisible:
+    text: "Static screen"
+- tapOn:
+    text: "Back"
+- assertVisible:
+    text: "Rollipop + Expo Router"

@@ -27,18 +27,33 @@ const BUNDLERS = {
   metro: () =>
     require('./metro/MetroBundlerDevServer')
       .MetroBundlerDevServer as typeof import('./metro/MetroBundlerDevServer').MetroBundlerDevServer,
+  rollipop: () =>
+    require('./rollipop/RollipopBundlerDevServer')
+      .RollipopBundlerDevServer as typeof import('./rollipop/RollipopBundlerDevServer').RollipopBundlerDevServer,
 };
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
   private devServers: BundlerDevServer[] = [];
 
-  static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
+  static async startMetroAsync(
+    projectRoot: string,
+    startOptions: BundlerStartOptions,
+    /** Bundler override for export, e.g. `expo export --bundler rollipop`. */
+    bundlerOverride?: 'metro' | 'webpack' | 'rollipop'
+  ) {
     const devServerManager = new DevServerManager(projectRoot, startOptions);
+
+    // When exporting, use the bundler configured for native platforms (e.g.
+    // `ios.bundler` / `android.bundler` in app.json), unless explicitly
+    // overridden via `--bundler`. Rollipop ships its own dev server and is
+    // driven through `RollipopBundlerDevServer`.
+    const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
+    const bundler = bundlerOverride ?? getPlatformBundlers(projectRoot, exp).ios;
 
     await devServerManager.startAsync([
       {
-        type: 'metro',
+        type: bundler,
         options: startOptions,
       },
     ]);
@@ -178,7 +193,9 @@ export class DevServerManager {
 
     // Start all dev servers...
     for (const { type, options } of startOptions) {
-      const BundlerDevServerClass = await BUNDLERS[type]();
+      const BundlerDevServerClass = (await BUNDLERS[type]()) as new (
+        ...args: any[]
+      ) => BundlerDevServer;
       const server = new BundlerDevServerClass(this.projectRoot, platformBundlers, {
         devToolsPluginManager: this.devtoolsPluginManager,
         isDevClient: !!options?.devClient,

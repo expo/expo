@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "rollipop-expo-example",
+    "slug": "rollipop-expo-example",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "scheme": "exampleapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.app",
+      "bundler": "rollipop"
+    },
+    "android": {
+      "package": "com.example.app",
+      "bundler": "rollipop"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "modules": {
+      "autolinking": {
+        "exclude": [
+          "expo-ui"
+        ]
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "./rollipop-ios-flags.plugin.js",
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
+    ]
+  }
+}

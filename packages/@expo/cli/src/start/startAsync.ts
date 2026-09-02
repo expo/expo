@@ -51,6 +51,13 @@ export async function _getMultiBundlerStartOptions(
   if (!options.web) {
     delete optionalBundlers['web'];
   }
+  // `tvos`/`macos` are Xcode-built targets, not dev-server platforms. They are
+  // kept on `metro` in `getPlatformBundlers` so their native builds resolve
+  // correctly, but they must never spawn a Metro dev server here — otherwise a
+  // Metro instance collides on the same port as the chosen bundler (e.g.
+  // rollipop) and answers bundle requests with the wrong project root.
+  delete optionalBundlers['tvos'];
+  delete optionalBundlers['macos'];
 
   const bundlers = [...new Set(Object.values(optionalBundlers))];
   // Resolve ports for every bundler, not just the ones starting now, so a bundler that
@@ -60,7 +67,11 @@ export async function _getMultiBundlerStartOptions(
 
   const multiBundlerStartOptions = bundlers.map((bundler) => {
     const port =
-      bundler === 'webpack' ? multiBundlerSettings.webpackPort : multiBundlerSettings.metroPort;
+      bundler === 'webpack'
+        ? multiBundlerSettings.webpackPort
+        : bundler === 'rollipop'
+          ? multiBundlerSettings.rollipopPort
+          : multiBundlerSettings.metroPort;
     return {
       type: bundler,
       options: {
@@ -100,7 +111,7 @@ export async function startAsync(
     });
   }
 
-  const platformBundlers = getPlatformBundlers(projectRoot, exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp, options.bundler);
 
   const [defaultOptions, startOptions, webPort] = await _getMultiBundlerStartOptions(
     projectRoot,

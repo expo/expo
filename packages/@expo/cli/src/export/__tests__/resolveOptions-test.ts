@@ -28,7 +28,7 @@ describe(resolveOptionsAsync, () => {
       exp: { web: { bundler: 'webpack' }, platforms: ['ios', 'android', 'web'] },
     });
     await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
-      /^Platform "web" is not configured to use the Metro bundler in the project Expo config,/
+      /^Platform "web" is not configured to use the Metro or Rollipop bundler in the project Expo config,/
     );
   });
 
@@ -145,6 +145,35 @@ describe(resolveOptionsAsync, () => {
       expect.objectContaining({
         platforms: ['ios', 'android', 'web'],
       })
+    );
+  });
+
+  it(`selects native platforms when configured with the rollipop bundler`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      exp: {
+        ios: { bundler: 'rollipop' },
+        android: { bundler: 'rollipop' },
+        platforms: ['ios', 'android'],
+      },
+    } as any);
+    await expect(
+      resolveOptionsAsync('/', { '--platform': ['ios', 'android'], '--bundler': 'rollipop' })
+    ).resolves.toMatchObject({
+      platforms: ['ios', 'android'],
+      bundler: 'rollipop',
+    });
+  });
+
+  it(`rejects a platform that is not part of the project's platforms`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      exp: {
+        ios: { bundler: 'rollipop' },
+        android: { bundler: 'rollipop' },
+        platforms: ['ios', 'android'],
+      },
+    } as any);
+    await expect(resolveOptionsAsync('/', { '--platform': ['tvos'] })).rejects.toThrow(
+      /not configured to use the Metro or Rollipop bundler/
     );
   });
 });

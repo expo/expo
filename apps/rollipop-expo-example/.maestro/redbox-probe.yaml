@@ -1,0 +1,12 @@
+appId: com.lynx.LynxExplorer
+env:
+  BUNDLER_URL: "exp://127.0.0.1:8081"
+---
+- launchApp
+- waitForAnimationToEnd:
+    timeout: 8000
+- tapOn:
+    point: 50%, 95%
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: redbox-expanded

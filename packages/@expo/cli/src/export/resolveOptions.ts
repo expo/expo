@@ -18,6 +18,8 @@ export type Options = {
   inlineSourceMaps: boolean;
   skipSSG: boolean;
   hostedNative: boolean;
+  /** Bundler override for production export, e.g. `expo export --bundler rollipop`. */
+  bundler?: 'metro' | 'rollipop';
 };
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
@@ -26,15 +28,26 @@ export function resolvePlatformOption(
   platformBundlers: PlatformBundlers,
   platform: string[] = ['all']
 ): Platform[] {
+  // A platform is exportable when it is configured in the project's `platforms`
+  // and its bundler is one of the supported *native* bundlers (Metro or
+  // Rollipop). Rollipop is a drop-in Metro replacement for native (ios/android)
+  // production exports, so it must be eligible here — otherwise
+  // `expo export --bundler rollipop` (or `ios.bundler: 'rollipop'` in
+  // app.json) could never select `ios`/`android`. We keep `webpack` web-only
+  // and exclude Xcode-built `tvos`/`macos` from the dev-server/export path.
+  const isExportableBundler = (bundler: string): boolean =>
+    bundler === 'metro' || bundler === 'rollipop';
+
   const platformsAvailable: Partial<PlatformBundlers> = Object.fromEntries(
     Object.entries(platformBundlers).filter(
-      ([platform, bundler]) => bundler === 'metro' && configPlatforms.includes(platform as Platform)
+      ([platform, bundler]) =>
+        isExportableBundler(bundler) && configPlatforms.includes(platform as Platform)
     )
   );
 
   if (!Object.keys(platformsAvailable).length) {
     throw new CommandError(
-      `No platforms are configured to use the Metro bundler in the project Expo config.`
+      `No platforms are configured to use the Metro or Rollipop bundler in the project Expo config.`
     );
   }
 
@@ -46,7 +59,7 @@ export function resolvePlatformOption(
       }
       throw new CommandError(
         'BAD_ARGS',
-        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${configPlatforms.join(
+        `Platform "${platform}" is not configured to use the Metro or Rollipop bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${configPlatforms.join(
           ', '
         )}].`
       );
@@ -98,6 +111,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   return {
     platforms,
     hostedNative: !!args['--unstable-hosted-native'],
+    bundler: (args['--bundler'] as 'metro' | 'rollipop' | undefined) ?? undefined,
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
     bytecode: !args['--no-bytecode'],

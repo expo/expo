@@ -1,7 +1,10 @@
 import { events } from '2g';
+import type { ExpoConfig } from '@expo/config';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
+import type { BundleAssetWithFileHashes, ExportAssetMap } from '../../export/saveAssets';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -18,6 +21,7 @@ import { DevelopmentSession } from './DevelopmentSession';
 import type { CreateURLOptions } from './UrlCreator';
 import { UrlCreator } from './UrlCreator';
 import { debugEvent } from './events';
+import type { ExpoMetroOptions } from './middleware/metroOptions';
 import type { PlatformBundlers } from './platformBundlers';
 
 declare module '2g' {
@@ -86,6 +90,9 @@ export interface BundlerStartOptions {
   /** Will the bundler be used for exporting. NOTE: This is an odd option to pass to the dev server. */
   isExporting?: boolean;
 
+  /** Override the native bundler (e.g. `rollipop`) instead of the one declared in app.json. */
+  bundlerOverride?: 'metro' | 'webpack' | 'rollipop';
+
   // Webpack options
   /** Should modify and create PWA icons. */
   isImageEditingEnabled?: boolean;
@@ -111,6 +118,23 @@ type PlatformDevice<Platform extends keyof PlatformManagers> =
 
 type PlatformLaunchProps<Platform extends keyof PlatformManagers> =
   PlatformManagers[Platform] extends PlatformManager<any, infer LaunchProps> ? LaunchProps : never;
+
+/**
+ * Declarative feature set advertised by a `BundlerDevServer`. The export
+ * pipeline and dev server consult these flags rather than special-casing a
+ * bundler by name, so adding a new bundler is deny-by-default: it gets none of
+ * Metro's features until it opts in here.
+ */
+export interface BundlerCapabilities {
+  /** React Server Components / server rendering (Metro-only today). */
+  reactServerComponents: boolean;
+  /** Expo Router DOM components (`use dom`). */
+  domComponents: boolean;
+  /** Owns the runtime <-> CLI message socket (HMR reload / dev menu). */
+  messageSocket: boolean;
+  /** Provides the Metro TypeScript symbolication service. */
+  typeScriptServices: boolean;
+}
 
 export abstract class BundlerDevServer {
   /** Name of the bundler. */
@@ -339,6 +363,56 @@ export abstract class BundlerDevServer {
 
   public isTargetingWeb() {
     return this.platformBundlers.web === this.name;
+  }
+
+  /**
+   * Declarative set of features this bundler supports. The export pipeline reads
+   * these capabilities instead of checking `devServer.name === 'metro'`, so a new
+   * bundler starts from a *deny-by-default* baseline and must opt INTO each Metro
+   * feature explicitly. This avoids the trap of "every bundler inherits all of
+   * Metro's RSC/DOM assumptions and silently runs them" that a name-based check
+   * creates.
+   */
+  public capabilities: BundlerCapabilities = {
+    reactServerComponents: false,
+    domComponents: false,
+    // The message socket (HMR reload / dev menu relay) is owned by the bundler.
+    // Metro owns it; Rollipop owns its own and we proxy it. Default true so the
+    // base class asserts a socket exists unless a bundler opts out.
+    messageSocket: true,
+    typeScriptServices: false,
+  };
+
+  /**
+   * Whether this bundler is configured for React Server Components.
+   * Mirrors `capabilities.reactServerComponents` for backward compatibility with
+   * existing call sites; prefer reading `capabilities` in new code.
+   */
+  public isReactServerComponentsEnabled?: boolean;
+
+  /**
+   * Production export entry point used by `expo export`.
+   *
+   * Metro and Rollipop override this. The base implementation throws so that
+   * invoking export through an unsupported bundler fails loudly at runtime
+   * rather than type-checking silently.
+   */
+  public async nativeExportBundleAsync(
+    _exp: ExpoConfig,
+    _options: Omit<
+      ExpoMetroOptions,
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    _files: ExportAssetMap
+  ): Promise<{
+    artifacts: SerialAsset[];
+    assets: readonly BundleAssetWithFileHashes[];
+    files?: ExportAssetMap;
+  }> {
+    throw new CommandError(
+      'BUNDLER_EXPORT',
+      `The '${this.name}' bundler does not support production export. Use Metro or Rollipop.`
+    );
   }
 
   /**

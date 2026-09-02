@@ -1,0 +1,43 @@
+# Real end-to-end test for the rollipop + Expo Router integration on a real
+# iOS simulator. The JS bundle is served by `rollipop` (not Metro).
+#
+# The simulator bridges `localhost` to the host's localhost, so
+# `localhost:8081` reaches the host rollipop dev server. mDNS discovery does
+# not work with rollipop the way it does with Metro, so we enter the URL
+# manually on a fresh client. The Expo dev client shows its Developer Menu on
+# first connect; "Continue" dismisses the welcome modal and the gear icon
+# (resource-id `gearshape.fill`) toggles the full menu closed to reveal the app.
+appId: com.example.app
+---
+- retry:
+    maxRetries: 1
+    commands:
+      - launchApp
+      - waitForAnimationToEnd:
+          timeout: 15000
+      - tapOn: "Enter URL manually"
+      - waitForAnimationToEnd:
+          timeout: 5000
+      - tapOn: "http://"
+      - inputText: "localhost:8081"
+      - tapOn: "Connect"
+      - waitForAnimationToEnd:
+          timeout: 10000
+      # Dismiss the Developer Menu: "Continue" closes the welcome modal, then
+      # "Reload" reloads the bundle and closes the full menu to reveal the app.
+      - tapOn: "Continue"
+      - waitForAnimationToEnd:
+          timeout: 5000
+      - tapOn: "Reload"
+      # Cold-launch settle: Hermes + bundle eval can take a moment on first run.
+      - waitForAnimationToEnd:
+          timeout: 20000
+      - assertVisible: "Rollipop + Expo Router"
+      - tapOn: "Push About"
+      - waitForAnimationToEnd:
+          timeout: 10000
+      - assertVisible: "About"
+      - tapOn: "Go to User 42"
+      - waitForAnimationToEnd:
+          timeout: 10000
+      - assertVisible: "User 42"
