@@ -67,7 +67,11 @@ describe(installStubBinAsync, () => {
     expect(started).toContain('started');
     expect(child.exitCode).toBeNull();
 
-    child.kill('SIGKILL');
+    if (process.platform === 'win32' && child.pid != null) {
+      spawn('taskkill', ['/PID', String(child.pid), '/T', '/F']);
+    } else {
+      child.kill('SIGKILL');
+    }
     await new Promise((resolve) => child.once('close', resolve));
   });
 });

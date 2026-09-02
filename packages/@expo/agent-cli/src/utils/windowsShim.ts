@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 // @ref llp/0001-agentic-cli-on-expo-cli.rfc.md §Constraints — the Expo CLI family is invoked as
 // subprocesses, so how a platform starts a process is this package's problem.
 //
@@ -29,15 +32,56 @@ export interface SpawnTarget {
  * program and the quoted arguments it needs to see.
  */
 export function resolveSpawnTarget(command: string, args: string[]): SpawnTarget {
-  if (process.platform !== 'win32' || !BATCH_FILE.test(command)) {
+  if (process.platform !== 'win32') {
     return { command, args, shell: false };
   }
 
+  // A bare `npx` or `xcrun` is a `.cmd` shim once PATH/PATHEXT has answered. Resolve it here so
+  // the batch-file rule below sees the shim, rather than leaving `spawn` to find it without a shell
+  // and throw EINVAL (CVE-2024-27980).
+  const resolved = resolveBareCommandOnPath(command);
+  if (!BATCH_FILE.test(resolved)) {
+    return { command: resolved, args, shell: false };
+  }
+
   return {
-    command: quotePathForCmd(command),
+    command: quotePathForCmd(resolved),
     args: args.map(escapeArgumentForCmd),
     shell: true,
   };
+}
+
+/**
+ * The file PATH would start for a bare name, or the name itself when nothing matches.
+ *
+ * Kept here rather than imported from `subprocess.ts` so this module does not import the file that
+ * imports it.
+ */
+function resolveBareCommandOnPath(command: string): string {
+  if (/[\\/]/.test(command)) {
+    return command;
+  }
+  const pathEnv = process.env.PATH ?? process.env.Path ?? '';
+  const names =
+    BATCH_FILE.test(command) || /\.exe$/i.test(command)
+      ? [command]
+      : [`${command}.cmd`, `${command}.exe`, `${command}.bat`, command];
+  for (const dir of pathEnv.split(';')) {
+    if (!dir) {
+      continue;
+    }
+    for (const fileName of names) {
+      const candidate = path.win32.join(dir, fileName);
+      try {
+        if (fs.statSync(candidate).isFile()) {
+          return candidate;
+        }
+      } catch {
+        // Not there.
+      }
+    }
+  }
+  return command;
 }
 
 /**
@@ -57,6 +101,11 @@ const CMD_META_CHARS = /([()[\]%!^"`<>&|;, *?])/g;
  * (`C:\Users\Ada Lovelace\app`) staying one token.
  */
 function quotePathForCmd(value: string): string {
+  // A bare name is found on PATH. Quoting it makes cmd.exe look for a file of that name in cwd,
+  // which is how `"npx.cmd"` became "not recognized" on the Windows runner.
+  if (!/[\\/]/.test(value)) {
+    return value;
+  }
   return `"${value}"`;
 }
 

@@ -111,6 +111,22 @@ describe(resolveSpawnTarget, () => {
         shell: false,
       });
     });
+
+    it(`should not quote a bare .cmd name, so cmd.exe still searches PATH`, () => {
+      // Quoting `"npx.cmd"` makes cmd.exe look in cwd rather than PATH, which printed
+      // `'"npx.cmd"' is not recognized` on the Windows runner.
+      const originalPath = process.env.PATH;
+      process.env.PATH = 'C:\\no-such-npx';
+      try {
+        expect(resolveSpawnTarget('npx.cmd', ['--yes', 'eas-cli@latest'])).toEqual({
+          command: 'npx.cmd',
+          args: ['^"--yes^"', '^"eas-cli@latest^"'],
+          shell: true,
+        });
+      } finally {
+        process.env.PATH = originalPath;
+      }
+    });
   });
 });
 

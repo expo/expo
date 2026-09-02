@@ -30,6 +30,13 @@ function hostJoin(...segments: string[]): string {
   return (process.platform === 'win32' ? path.win32 : path.posix).join(...segments);
 }
 
+function javaBinaries(home: string): string[] {
+  const bin = hostJoin(home, 'bin');
+  return process.platform === 'win32'
+    ? [hostJoin(bin, 'java.exe'), hostJoin(bin, 'java.cmd'), hostJoin(bin, 'java')]
+    : [hostJoin(bin, 'java')];
+}
+
 /**
  * One probe per platform per process.
  *
@@ -239,8 +246,8 @@ async function detectAndroidSdkAsync(): Promise<ToolchainProbe> {
  */
 async function detectJvmAsync(): Promise<{ status: ToolchainStatus; detail: string }> {
   const home = readEnv('JAVA_HOME');
-  const named = home ? hostJoin(home, 'bin', 'java') : null;
-  const command = named && fileExistsSync(named) ? named : 'java';
+  const named = home ? (javaBinaries(home).find(fileExistsSync) ?? null) : null;
+  const command = named ?? 'java';
 
   const version = await spawnCaptureAsync(command, ['-version'], { timeoutMs: PROBE_TIMEOUT_MS });
   if (version.spawnError) {

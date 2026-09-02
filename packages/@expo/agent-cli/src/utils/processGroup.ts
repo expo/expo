@@ -12,15 +12,13 @@
 // Every timeout, every prompt guard and every forwarded Ctrl-C is affected, which is why the fix is
 // here rather than at one call site.
 
-import type { ChildProcess } from 'child_process';
+import { spawnSync, type ChildProcess } from 'child_process';
 
 /**
  * Whether a spawn should be put in a process group of its own.
  *
  * POSIX only. `detached` is what creates the group, and a group is what can be signalled as a unit.
- * Windows has no equivalent — killing a tree there needs `taskkill /T /F`, a second process — and
- * the runner case is the same shape on it, so a Windows tree is a known gap rather than a solved
- * problem [decided — 2026-08-27].
+ * Windows has no process-group equivalent; {@link killProcessTree} uses `taskkill /T /F` there.
  *
  * Safe for every caller here because **stdin is never attached** (llp/0006 §Surface improvements
  * parity): a detached child is not in the terminal's foreground group, so it could not read a
@@ -43,6 +41,18 @@ export function killProcessTree(child: ChildProcess, signal?: NodeJS.Signals): v
       return;
     } catch {
       // Already gone, or never in a group of its own. The direct kill below is the honest fallback.
+    }
+  }
+  if (process.platform === 'win32' && child.pid != null) {
+    // `child.kill()` signals cmd.exe when the spawn went through a shell, and the tool it started
+    // keeps the pipes open. `/T` takes the tree. A fake pid in a unit test fails this and falls
+    // through to `child.kill`.
+    const killed = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], {
+      stdio: 'ignore',
+      windowsHide: true,
+    });
+    if (killed.status === 0) {
+      return;
     }
   }
   try {

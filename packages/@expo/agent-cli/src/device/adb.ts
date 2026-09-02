@@ -101,14 +101,16 @@ export function resolveAdb({
 }: ResolveAdbOptions = {}): AdbResolution {
   const searched: string[] = [];
   const join = pathFor(platform).join;
-  const executable = platform === 'win32' ? 'adb.exe' : 'adb';
+  const executables = platform === 'win32' ? ['adb.exe', 'adb.cmd', 'adb'] : ['adb'];
 
   const fromRoot = (root: string, source: AdbSource): AdbResolution | null => {
-    const candidate = join(root, 'platform-tools', executable);
-    if (exists(candidate)) {
-      return { bin: candidate, source, searched, fromPathOnly: false };
+    for (const executable of executables) {
+      const candidate = join(root, 'platform-tools', executable);
+      if (exists(candidate)) {
+        return { bin: candidate, source, searched, fromPathOnly: false };
+      }
+      searched.push(candidate);
     }
-    searched.push(candidate);
     return null;
   };
 
@@ -127,7 +129,7 @@ export function resolveAdb({
   }
 
   // A copy somebody put on `PATH` on purpose, before this module's own guess at where the SDK is.
-  const onPath = findOnPath(executable, env.PATH ?? '', platform, exists, searched);
+  const onPath = findOnPath(executables, env.PATH ?? '', platform, exists);
   if (onPath) {
     return { bin: onPath, source: 'PATH', searched, fromPathOnly: false };
   }
@@ -141,7 +143,7 @@ export function resolveAdb({
 
   // Nothing on disk anywhere. The bare name is still spawned rather than refused here: `PATH` can
   // be rewritten by a shim this module cannot see, and letting the spawn fail names the real error.
-  return { bin: executable, source: 'PATH', searched, fromPathOnly: true };
+  return { bin: executables[0]!, source: 'PATH', searched, fromPathOnly: true };
 }
 
 /**
@@ -151,20 +153,21 @@ export function resolveAdb({
  * SDKs on one machine is common, and "adb" names neither of them.
  */
 function findOnPath(
-  executable: string,
+  executables: string[],
   pathValue: string,
   platform: string,
-  exists: (candidate: string) => boolean,
-  searched: string[]
+  exists: (candidate: string) => boolean
 ): string | null {
   const separator = platform === 'win32' ? ';' : ':';
   for (const entry of pathValue.split(separator)) {
     if (!entry) {
       continue;
     }
-    const candidate = pathFor(platform).join(entry, executable);
-    if (exists(candidate)) {
-      return candidate;
+    for (const executable of executables) {
+      const candidate = pathFor(platform).join(entry, executable);
+      if (exists(candidate)) {
+        return candidate;
+      }
     }
   }
   // Not listed in `searched`: `PATH` is often dozens of directories, and naming every one of them

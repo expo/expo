@@ -117,10 +117,13 @@ async function androidToolchainEnvAsync(projectRoot: string): Promise<Record<str
   const sdk = path.join(projectRoot, '.stub-android-sdk');
   await fs.promises.mkdir(path.join(sdk, 'platform-tools'), { recursive: true });
   const jdk = path.join(projectRoot, '.stub-jdk');
+  const javaScript = path.join(jdk, 'bin', 'java-stub.js');
   await fs.promises.mkdir(path.join(jdk, 'bin'), { recursive: true });
-  const java = path.join(jdk, 'bin', 'java');
-  await fs.promises.writeFile(java, '#!/bin/sh\necho \'openjdk version "21.0.5"\' 1>&2\nexit 0\n');
-  await fs.promises.chmod(java, 0o755);
+  await fs.promises.writeFile(
+    javaScript,
+    'process.stderr.write(\'openjdk version "21.0.5"\\n\');\n'
+  );
+  await installStubBinAsync(path.join(jdk, 'bin'), 'java', javaScript);
   return { ANDROID_HOME: sdk, JAVA_HOME: jdk };
 }
 
