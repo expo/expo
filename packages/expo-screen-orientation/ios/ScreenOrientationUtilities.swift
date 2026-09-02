@@ -6,11 +6,21 @@ internal func isPad() -> Bool {
 
 // https://medium.com/@cafielo/how-to-detect-notch-screen-in-swift-56271827625d
 internal var doesDeviceHaveNotch = {
-  var bottomSafeAreaInsetIsPositive = false
+  var deviceHasNotch = false
   EXUtilities.performSynchronously {
-    bottomSafeAreaInsetIsPositive = (UIApplication.shared.delegate?.window??.safeAreaInsets.bottom ?? 0.0) > 0.0
+    // The UIKit reads here have to happen on the main thread, and this closure
+    // is not guaranteed to run there: it runs wherever `doesDeviceHaveNotch` is
+    // first touched, which for a lock is `lockAsync`'s `AsyncFunction` body.
+    //
+    // No iPad has ever had a notch, but every iPad since 2018 has a home
+    // indicator and so a positive bottom safe area inset. Without this guard
+    // the check below reports a notch on every modern iPad.
+    guard !isPad() else {
+      return
+    }
+    deviceHasNotch = (UIApplication.shared.delegate?.window??.safeAreaInsets.bottom ?? 0.0) > 0.0
   }
-  return bottomSafeAreaInsetIsPositive
+  return deviceHasNotch
 }()
 
 extension UIInterfaceOrientationMask {
