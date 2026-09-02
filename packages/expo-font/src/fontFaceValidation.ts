@@ -5,7 +5,8 @@ import type { FontFaceDefinition, FontFamilyDefinition, FontResource } from './F
 
 // Converts a declared weight to the single number native face selection needs. A value that
 // doesn't map to one number — a web-only range like '100 900', or garbage — returns undefined,
-// so native falls back to the weight embedded in the font file.
+// so native resolves the weight from the font file: a static font keeps its embedded weight,
+// and on Android a variable font keeps its whole `wght` axis.
 export function normalizeWeight(weight: FontFaceDefinition['weight']): number | undefined {
   if (weight == null) {
     return undefined;
@@ -67,8 +68,9 @@ export function assertValidFontFaces(
       `No font faces were provided for font family "${fontFamily}". Set \`fontDefinitions\` to a non-empty array of \`FontFaceDefinition\`s.`
     );
   }
-  // Two faces may only collide when both fully declare weight and style; an undeclared value is
-  // resolved from the font file at load time, so it can't be compared here.
+  // This check compares declared values only. Native resolves an undeclared value from the font
+  // file at load time, and Android rejects resolved duplicates there. Web defaults an undeclared
+  // descriptor per CSS, and the web loader warns about effective duplicates in dev.
   const seenFaces = new Set<string>();
   for (const face of fontDefinitions) {
     if (typeof face !== 'object' || face === null || face.path == null) {
