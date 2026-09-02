@@ -71,4 +71,60 @@ test.describe('server rendering in production', () => {
     ).toBe('alive');
     expect(pageErrors.all).toEqual([]);
   });
+
+  test('streams two pending Suspense boundaries and completes them later', async ({ page }) => {
+    const response = await page.request.get(new URL('/streaming?delay=300', expoServe.url).href);
+    const html = await response.text();
+
+    expect(html.match(/<!--\$\?-->/g)).toHaveLength(2);
+    expect(html.match(/\$RC\(/g)).toHaveLength(2);
+    expect(html).toContain('Dana K.');
+    expect(html).toContain('Burr Hand Grinder');
+  });
+
+  test('adopts streamed Suspense content during hydration', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    // Runs before the client bundle, so the flag marks the server-rendered node.
+    await page.addInitScript(() => {
+      const observer = new MutationObserver(() => {
+        const header = document.querySelector('[data-testid="streaming-header"]');
+        if (header) {
+          (header as any).__fromServer = true;
+          observer.disconnect();
+        }
+      });
+      observer.observe(document, { childList: true, subtree: true });
+    });
+
+    // `load` fires only when the stream ends; `commit` lets us observe hydration while pending.
+    await page.goto(new URL('/streaming?delay=4000', expoServe.url).href, {
+      waitUntil: 'commit',
+    });
+    await page.waitForSelector('[data-testid="streaming-hydrated"]');
+
+    // Hydration must happen while both are pending, or the test proves nothing.
+    await expect(page.getByTestId('streaming-reviews-skeleton')).toHaveCount(1);
+    await expect(page.getByTestId('streaming-related-skeleton')).toHaveCount(1);
+    await expect(page.getByTestId('streaming-reviews')).toHaveCount(0);
+    await expect(page.getByTestId('streaming-related')).toHaveCount(0);
+
+    // The client promises never resolve, so this content can only come from the server stream.
+    await expect(page.getByTestId('streaming-reviews')).toContainText('Dana K.', {
+      timeout: 10_000,
+    });
+    await expect(page.getByTestId('streaming-reviews-skeleton')).toHaveCount(0);
+    await expect(page.getByTestId('streaming-related')).toContainText('Burr Hand Grinder', {
+      timeout: 10_000,
+    });
+    await expect(page.getByTestId('streaming-related-skeleton')).toHaveCount(0);
+
+    const headerFromServer = await page.evaluate(
+      () =>
+        (document.querySelector('[data-testid="streaming-header"]') as any)?.__fromServer === true
+    );
+    expect(headerFromServer).toBe(true);
+
+    expect(pageErrors.all).toEqual([]);
+  });
 });

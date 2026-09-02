@@ -100,6 +100,7 @@ describe('exports static with bundle splitting', () => {
         'about',
         'asset',
         'links',
+        'streaming',
         'styled',
         'metadata',
         '\\[id\\]',
