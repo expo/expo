@@ -35,6 +35,10 @@ export type BackgroundOptions = {
  *   Rounded
  * </Text>
  * ```
+ *
+ * @param style - Any [`ShapeStyle`](#shapestyle): a color, a hierarchical style, a material, or a gradient.
+ * @param shape - The shape the style is painted in. Omit it to paint the whole view.
+ * @param options - Options of the variant without a shape, such as the safe area edges the background extends into.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/background(_:ignoressafeareaedges:)).
  */
 export function background(style: ShapeStyle, options?: BackgroundOptions): ModifierConfig;
