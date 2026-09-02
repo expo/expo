@@ -43,7 +43,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none shadow-none!"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none shadow-none!"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -981,7 +981,7 @@ properties.
     </a>
   </h2>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -1229,7 +1229,7 @@ properties.
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -1528,7 +1528,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -1679,7 +1679,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -1937,7 +1937,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -2246,7 +2246,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -2578,7 +2578,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -2779,7 +2779,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
+    class="rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -3031,7 +3031,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -3625,7 +3625,7 @@ developers.
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -3994,7 +3994,7 @@ may be
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -4189,7 +4189,7 @@ for more details.
     </p>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -4526,7 +4526,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -4883,7 +4883,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -5186,7 +5186,7 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -5468,7 +5468,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -5787,7 +5787,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -6169,7 +6169,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -6480,7 +6480,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -6787,7 +6787,7 @@ for more details.
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -7161,7 +7161,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -7284,7 +7284,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -7671,7 +7671,7 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -7816,7 +7816,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -7939,7 +7939,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
+    class="overflow-hidden rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -8282,7 +8282,7 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="rounded-lg border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
+    class="rounded-3xl border border-palette-gray4 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -8534,7 +8534,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -8668,7 +8668,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -8842,7 +8842,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -8945,7 +8945,7 @@ After calling this function, the listener will no longer receive any events from
     </p>
   </div>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
@@ -9247,7 +9247,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="mb-5 overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
+    class="mb-5 overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none"
   >
     <div
       class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
