@@ -1,4 +1,5 @@
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
+import spawnAsync from '@expo/spawn-async';
 import crypto from 'crypto';
 import type { EmbeddedManifest } from 'expo-manifests';
 import { resolveEntryPoint } from 'expo/config/paths';
@@ -54,7 +55,7 @@ export async function createManifestForBuildAsync(
 
   const manifest: EmbeddedManifest = {
     id: crypto.randomUUID(),
-    commitTime: new Date().getTime(),
+    commitTime: await resolveCommitTimeAsync(projectRoot, Date.now()),
     assets: [],
   };
 
@@ -92,6 +93,104 @@ export async function createManifestForBuildAsync(
   });
 
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
+}
+
+/**
+ * The time to stamp the embedded bundle with, in epoch milliseconds.
+ *
+ * `commitTime` orders an update against every other update for the same runtime
+ * version — `LauncherSelectionPolicyFilterAware` launches the newest and
+ * `LoaderSelectionPolicyFilterAware` will not even download one that is not
+ * strictly newer than what is running. A remote update's value is its manifest's
+ * `createdAt`, i.e. when it was published.
+ *
+ * The default is unchanged: the moment this build produced the bundle.
+ *
+ * That timestamp has a known failure. It dates the bundle to when the build ran
+ * rather than to the source it carries, so a build that outlasts the gap between
+ * two commits finishes *newer* than an update published from the later of them.
+ * Same runtime version, so the update is offered and downloaded — and then never
+ * launches. It is silent, because an install running its own embedded bundle is
+ * not an error state.
+ *
+ * `EXPO_UPDATES_COMMIT_TIME_SOURCE=git` trades that for the source commit's
+ * committer date, which orders builds by the code they carry. It is opt-in
+ * because the trade is real in both directions: build order and publication
+ * order are different clocks from source order, and lowering the embedded
+ * timestamp to its commit lets an update *published* later from an *older*
+ * commit outrank the binary — turning a stall into a downgrade. Only pipelines
+ * that never publish behind the commit they are building (CI that always
+ * publishes the tip of the branch it builds) can take that trade safely.
+ *
+ * `EXPO_UPDATES_COMMIT_TIME_OVERRIDE` takes epoch milliseconds directly and wins
+ * over both, for builds that know their own ordering better than either clock.
+ */
+async function resolveCommitTimeAsync(projectRoot: string, now: number): Promise<number> {
+  const commitTimeOverride = process.env.EXPO_UPDATES_COMMIT_TIME_OVERRIDE;
+  if (commitTimeOverride) {
+    const overriddenCommitTime = Number(commitTimeOverride);
+    if (Number.isInteger(overriddenCommitTime) && overriddenCommitTime > 0) {
+      console.log(
+        `Using commit time from EXPO_UPDATES_COMMIT_TIME_OVERRIDE: ${commitTimeOverride}`
+      );
+      return overriddenCommitTime;
+    }
+    console.warn(
+      `Ignoring EXPO_UPDATES_COMMIT_TIME_OVERRIDE: expected epoch milliseconds, got "${commitTimeOverride}".`
+    );
+  }
+
+  const commitTimeSource = process.env.EXPO_UPDATES_COMMIT_TIME_SOURCE;
+  if (commitTimeSource !== 'git') {
+    if (commitTimeSource !== undefined && commitTimeSource !== 'build') {
+      console.warn(
+        `Ignoring EXPO_UPDATES_COMMIT_TIME_SOURCE: expected "git" or "build", got "${commitTimeSource}".`
+      );
+    }
+    return now;
+  }
+
+  return await resolveCommitTimeFromGitAsync(projectRoot, now);
+}
+
+/**
+ * HEAD's committer date, or `now` when it cannot be trusted to describe the
+ * bundle: a dirty working tree (whose bundle corresponds to no commit), no git,
+ * no commits yet, or a source archive with no `.git` such as an EAS Build
+ * workspace.
+ */
+async function resolveCommitTimeFromGitAsync(projectRoot: string, now: number): Promise<number> {
+  let committerDate: string;
+  let workingTreeChanges: string;
+  try {
+    // `%ct` is the committer date, not `%at`: the author date survives a rebase or
+    // cherry-pick from the original write, which would order a backport ahead of
+    // the work it already contains.
+    committerDate = (await spawnAsync('git', ['log', '-1', '--format=%ct'], { cwd: projectRoot }))
+      .stdout;
+    workingTreeChanges = (await spawnAsync('git', ['status', '--porcelain'], { cwd: projectRoot }))
+      .stdout;
+  } catch {
+    console.warn(
+      'EXPO_UPDATES_COMMIT_TIME_SOURCE=git, but no commit could be read; using the build time instead.'
+    );
+    return now;
+  }
+
+  if (workingTreeChanges.trim() !== '') {
+    console.warn(
+      'EXPO_UPDATES_COMMIT_TIME_SOURCE=git, but the working tree is dirty, so the bundle matches no commit; using the build time instead.'
+    );
+    return now;
+  }
+
+  const commitTime = Number(committerDate.trim()) * 1000;
+  if (!Number.isInteger(commitTime) || commitTime <= 0) {
+    return now;
+  }
+  // A commit dated in the future would outrank every update published after it,
+  // which is the same failure with the sign flipped.
+  return Math.min(commitTime, now);
 }
 
 function getAndroidResourceFolderName(asset: HashedAssetData) {
