@@ -7,7 +7,7 @@ RESOURCE_BUNDLE_NAME="EXConstants.bundle"
 EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 is_debug_configuration() {
-  [[ "$1" =~ [Dd][Ee][Bb][Uu][Gg] ]]
+  [[ "$1" == *Debug* ]]
 }
 
 if [[ -n "$__EXPO_CONFIG_MODE" ]]; then
