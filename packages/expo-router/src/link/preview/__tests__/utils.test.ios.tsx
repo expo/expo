@@ -314,7 +314,7 @@ describe(getPreviewActivationPathByHref, () => {
     ]);
   });
 
-  it('matches the preloaded route by nested state shape', () => {
+  it('matches the preloaded route by nested destination', () => {
     getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
       routes: [
         {
@@ -402,6 +402,59 @@ describe(getPreviewActivationPathByHref, () => {
 
     expect(getActivationPath('/details', state)).toEqual([
       { key: matchingRoute.key, name: matchingRoute.name },
+      { key: 'child-generated', name: 'child' },
+    ]);
+  });
+
+  it('matches catch-all params structurally', () => {
+    getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
+      routes: [
+        {
+          name: '[...user]',
+          params: { user: ['bob'] },
+          state: { routes: [{ name: 'index' }] },
+        },
+      ],
+    });
+    const state: NavigationState = {
+      key: 'root-stack',
+      index: 0,
+      routeNames: ['[...user]'],
+      routes: [
+        {
+          key: 'alice',
+          name: '[...user]',
+          params: { user: ['alice'] },
+          state: {
+            key: 'alice-stack',
+            index: 0,
+            routeNames: ['index'],
+            routes: [{ key: 'alice-index', name: 'index' }],
+            stale: false,
+            routeKeySeq: 0,
+          },
+        },
+        {
+          key: 'bob',
+          name: '[...user]',
+          params: { user: ['bob'] },
+          state: {
+            key: 'bob-stack',
+            index: 0,
+            routeNames: ['index'],
+            routes: [{ key: 'bob-index', name: 'index' }],
+            stale: false,
+            routeKeySeq: 0,
+          },
+        },
+      ],
+      stale: false,
+      routeKeySeq: 0,
+    };
+
+    expect(getActivationPath('/bob', state)).toEqual([
+      { key: 'bob', name: '[...user]' },
+      { key: 'bob-index', name: 'index' },
     ]);
   });
 
