@@ -5,7 +5,7 @@ set -eo pipefail
 CREATE_UPDATES_RESOURCES_MODE="all"
 
 is_debug_configuration() {
-  [[ "$1" =~ [Dd][Ee][Bb][Uu][Gg] ]]
+  [[ "$1" == *Debug* ]]
 }
 
 if [[ -n "$__EXPO_CONFIG_MODE" ]]; then
