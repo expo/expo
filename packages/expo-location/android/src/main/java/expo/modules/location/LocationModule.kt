@@ -327,7 +327,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
         throw ForegroundServiceStartNotAllowedException()
       }
 
-      if (!hasForegroundServicePermissions()) {
+      if (shouldUseForegroundService && !hasForegroundServicePermissions()) {
         throw ForegroundServicePermissionsException()
       }
 
