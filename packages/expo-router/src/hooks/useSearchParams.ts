@@ -7,9 +7,9 @@ import { useLocalSearchParams } from './useLocalSearchParams';
 
 // TODO(@ubax): Add missing JSDoc
 export function useSearchParams({ global = false } = {}): URLSearchParams {
-  const globalRef = React.useRef(global);
+  const [initialGlobal] = React.useState(global);
   if (process.env.NODE_ENV !== 'production') {
-    if (global !== globalRef.current) {
+    if (global !== initialGlobal) {
       console.warn(
         `Detected change in 'global' option of useSearchParams. This value cannot change between renders`
       );
