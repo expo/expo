@@ -30,6 +30,21 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
 
     Events("onIntent")
 
+    // UIKit is unavailable on macOS, which the podspec also builds for.
+    #if canImport(UIKit)
+    View(AppEntityView.self) {
+      Prop("entity") { (view: AppEntityView, entity: String) in
+        view.entity = entity
+      }
+      Prop("entityId") { (view: AppEntityView, entityId: String) in
+        view.entityId = entityId
+      }
+      OnViewDidUpdateProps { (view: AppEntityView) in
+        view.updateAppEntityIdentifierIfNeeded()
+      }
+    }
+    #endif
+
     OnCreate { [weak self] in
       guard let self else {
         return
@@ -142,27 +157,14 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
       }
     } else {
       ViewModifierRegistry.register("appEntityIdentifier") { _, appContext, _ in
-        AppEntityIdentifierDiagnostics.reportOnce(
-          key: "unavailableOSVersion",
-          to: appContext.jsLogger,
-          "expo-app-intents: appEntityIdentifier() does nothing on this device, because reporting "
-            + "the entity behind a view to the system requires iOS or tvOS 18.4, or macOS 15.4. "
-            + "The view still "
-            + "renders the same way, so gate the call on the OS version only if your app has to "
-            + "tell the two cases apart."
-        )
+        AppEntityIdentifierDiagnostics.reportUnavailableOSVersion(to: appContext.jsLogger)
         return UnavailableAppEntityIdentifierModifier()
       }
     }
     #else
     // Apple first exposed the SwiftUI app-entity APIs to source in the Swift 6.4 SDK (Xcode 27+).
     ViewModifierRegistry.register("appEntityIdentifier") { _, appContext, _ in
-      AppEntityIdentifierDiagnostics.reportOnce(
-        key: "unavailableCompilerVersion",
-        to: appContext.jsLogger,
-        "expo-app-intents: appEntityIdentifier() does nothing in this build because the SwiftUI "
-          + "API it uses requires Xcode 27 or newer. The view will still render without visual intelligence support."
-      )
+      AppEntityIdentifierDiagnostics.reportUnavailableCompilerVersion(to: appContext.jsLogger)
       return UnavailableAppEntityIdentifierModifier()
     }
     #endif
