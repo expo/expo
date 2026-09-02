@@ -3869,7 +3869,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 7a59e803916fbfd1b96c75ff91ea8dddac7e722f
   ExpoAgeRange: f30bef82f1a99c097e28f50ed41ca04d5e1cab1c
   ExpoAppIntegrity: c4f6d2065674ec9744881f8c04d52ade9b6cacd8
-  ExpoAppIntents: acff970ea34b53c4b84fd70ccba36958bc8df819
+  ExpoAppIntents: d429ba6637f7749597bfbf36d420202a2d313209
   ExpoAppleAuthentication: 97d113f0f2680067e6e76d3c9249e7e1fc026b42
   ExpoAppMetrics: 69a2783720b7d2f5c6f50f5c757f4a7217e145f1
   ExpoAsset: a76534cf7b762978861dd31708308496c676166f

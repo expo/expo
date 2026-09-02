@@ -1,5 +1,8 @@
 import ExpoModulesCore
+
+#if canImport(ExpoUI)
 import ExpoUI
+#endif
 
 internal final class ShortcutsRefreshUnavailableException: Exception, @unchecked Sendable {
   override var reason: String {
@@ -18,7 +21,9 @@ internal final class ShortcutsRefreshUnavailableException: Exception, @unchecked
 public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
   private var invocationEventsTask: Task<Void, Never>?
   private var invocationEventsSubscription: AppIntentEventSubscription?
+  #if canImport(ExpoUI)
   private var modifierRegistration: AppEntityIdentifierModifierRegistration?
+  #endif
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAppIntents")
@@ -29,6 +34,7 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
       guard let self else {
         return
       }
+      #if canImport(ExpoUI)
       // Every context claims the process-wide registration, and only the first claim installs the
       // factory: a reload has two contexts alive at once, and registering again while the previous
       // claim stands would make `ViewModifierRegistry` log an overwrite for a factory that already
@@ -38,6 +44,7 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
       if registration.isFirstClaim {
         Self.registerAppEntityIdentifierModifier()
       }
+      #endif
 
       // The token is created here, synchronously, so `OnDestroy` can invalidate it before the task
       // below ever reaches the dispatcher.
@@ -54,6 +61,7 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
     }
 
     OnDestroy {
+      #if canImport(ExpoUI)
       // The registry is process-wide and the factory is shared, so it goes away only with the last
       // context that claimed it. A dev-client reload creates the new context before destroying the
       // old one, and unregistering unconditionally here would strip the factory the new context
@@ -63,6 +71,7 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
         ViewModifierRegistry.unregister("appEntityIdentifier")
       }
       modifierRegistration = nil
+      #endif
 
       invocationEventsSubscription?.invalidate()
       invocationEventsSubscription = nil
@@ -118,7 +127,9 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
   /// Installs the `appEntityIdentifier` factory. Both factories take the `AppContext` from the call
   /// rather than from the context that registered them, which is what lets one registration serve every
   /// context. See `AppEntityIdentifierModifierRegistration`.
+  #if canImport(ExpoUI)
   private static func registerAppEntityIdentifierModifier() {
+    #if compiler(>=6.4)
     if #available(iOS 18.4, macOS 15.4, tvOS 18.4, *) {
       ViewModifierRegistry.register("appEntityIdentifier") { params, appContext, _ in
         // The modifier reports a call it cannot honour from `body`, and this logger is what carries
@@ -143,7 +154,20 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
         return UnavailableAppEntityIdentifierModifier()
       }
     }
+    #else
+    // Apple first exposed the SwiftUI app-entity APIs to source in the Swift 6.4 SDK (Xcode 27+).
+    ViewModifierRegistry.register("appEntityIdentifier") { _, appContext, _ in
+      AppEntityIdentifierDiagnostics.reportOnce(
+        key: "unavailableCompilerVersion",
+        to: appContext.jsLogger,
+        "expo-app-intents: appEntityIdentifier() does nothing in this build because the SwiftUI "
+          + "API it uses requires Xcode 27 or newer. The view will still render without visual intelligence support."
+      )
+      return UnavailableAppEntityIdentifierModifier()
+    }
+    #endif
   }
+  #endif
 
   /// Rebuilds the Spotlight index from the stored catalog. Unlike `setEntityCatalogAsync` this does
   /// not check whether the catalog changed, because the point of asking for it explicitly is to

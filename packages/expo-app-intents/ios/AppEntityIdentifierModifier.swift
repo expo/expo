@@ -460,6 +460,7 @@ internal final class AppEntityIdentifierModifierRegistration: @unchecked Sendabl
   }
 }
 
+#if compiler(>=6.4)
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, *)
 struct AppEntityIdentifierModifier: ViewModifier, Record {
   @Field var entity: String = ""
@@ -512,6 +513,7 @@ struct AppEntityIdentifierModifier: ViewModifier, Record {
     return content
   }
 }
+#endif
 
 /// Registered in place of `AppEntityIdentifierModifier` below iOS 18.4, where the on-screen entity API
 /// does not exist. A modifier name with no factory is dropped by `ViewModifierRegistry` without a
