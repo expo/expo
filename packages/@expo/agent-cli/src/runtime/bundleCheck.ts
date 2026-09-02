@@ -215,7 +215,11 @@ export async function checkEntryBundleAsync(
     }
 
     // HEAD, so a bundle that compiles costs a status line instead of megabytes of JavaScript.
-    const head = await fetch(entry.url, { method: 'HEAD', signal: controller.signal });
+    const head = await fetch(entry.url, {
+      method: 'HEAD',
+      signal: controller.signal,
+      headers: { connection: 'close' },
+    });
     if (head.ok || head.status === 304) {
       return finish({ outcome: 'ok', url: entry.url, error: null });
     }

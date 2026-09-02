@@ -290,7 +290,8 @@ describe('@expo/agent-cli start', () => {
           port: 8087,
           pid: child.pid,
         });
-        expect(fs.realpathSync(lock!.projectRoot)).toBe(fs.realpathSync(projectRoot));
+        const realpath = fs.realpathSync.native ?? fs.realpathSync;
+        expect(realpath(lock!.projectRoot)).toBe(realpath(projectRoot));
 
         // The port came out of the dev server's own log, not off the command line.
         const events = fs

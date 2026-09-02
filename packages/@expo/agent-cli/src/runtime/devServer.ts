@@ -314,7 +314,7 @@ export async function probeDevServerAsync(
 
   let response: Response;
   try {
-    response = await fetch(url, { signal });
+    response = await fetch(url, { signal, headers: { connection: 'close' } });
   } catch (error: unknown) {
     return {
       reachable: false,

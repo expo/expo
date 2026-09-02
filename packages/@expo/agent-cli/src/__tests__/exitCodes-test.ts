@@ -112,7 +112,7 @@ describe(exitWithCodeAsync, () => {
     });
 
     exitWithCodeAsync(EXIT_OUTCOME_FAILED);
-    await new Promise((resolve) => setImmediate(resolve));
+    await waitForExitAsync();
 
     expect(flushed).toBe(true);
     expect(exitSpy).toHaveBeenCalledWith(20);
@@ -123,7 +123,7 @@ describe(exitWithCodeAsync, () => {
     jest.mocked(flushEventLogger).mockRejectedValue(new Error('no writer'));
 
     exitWithCodeAsync(EXIT_NEEDS_HUMAN);
-    await new Promise((resolve) => setImmediate(resolve));
+    await waitForExitAsync();
 
     expect(exitSpy).toHaveBeenCalledWith(7);
   });
@@ -133,8 +133,14 @@ describe(exitWithCodeAsync, () => {
     const settled = jest.fn();
 
     exitWithCodeAsync(EXIT_OK).then(settled, settled);
-    await new Promise((resolve) => setImmediate(resolve));
+    await waitForExitAsync();
 
     expect(settled).not.toHaveBeenCalled();
   });
 });
+
+/** Flush is async, then exit is a `setImmediate`, so one tick is not enough. */
+async function waitForExitAsync(): Promise<void> {
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+}

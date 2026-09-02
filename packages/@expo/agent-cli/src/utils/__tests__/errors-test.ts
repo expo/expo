@@ -71,6 +71,7 @@ describe(logCmdError, () => {
   async function exitCodeOfAsync(error: Error): Promise<unknown> {
     logCmdError(error);
     await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
     return exitSpy.mock.calls[0]?.[0];
   }
 

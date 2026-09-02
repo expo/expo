@@ -95,33 +95,52 @@ export function exitWithCodeAsync(code: number): Promise<never> {
   flushEventLogger()
     .catch(() => {})
     .finally(() => {
-      // `process.exit` while fetch still holds a keep-alive socket is STATUS_STACK_BUFFER_OVERRUN
-      // (exit 3221226505) on Windows. Drop those sockets first so the code we chose is the one
-      // that leaves.
+      // Drop fetch keep-alive first. process.exit in the same turn as a live socket is
+      // STATUS_STACK_BUFFER_OVERRUN (3221226505) on Windows.
       destroyActiveSockets();
-      process.exit(code);
+      setImmediate(() => process.exit(code));
     });
   return new Promise<never>(() => {});
 }
 
 function destroyActiveSockets(): void {
+  try {
+    require('http').globalAgent.destroy();
+    require('https').globalAgent.destroy();
+  } catch {
+    // Agents already gone.
+  }
+
   const handles = (
     process as NodeJS.Process & {
-      _getActiveHandles?: () => { constructor?: { name?: string }; destroy?: () => void }[];
+      _getActiveHandles?: () => {
+        constructor?: { name?: string };
+        destroy?: () => void;
+        close?: () => void;
+        fd?: number;
+      }[];
     }
   )._getActiveHandles?.();
   if (!Array.isArray(handles)) {
     return;
   }
   for (const handle of handles) {
-    const name = handle?.constructor?.name;
-    if (name !== 'Socket' && name !== 'TLSSocket') {
+    const fd = handle.fd;
+    if (fd === 0 || fd === 1 || fd === 2) {
+      continue;
+    }
+    const name = handle.constructor?.name ?? '';
+    if (name === 'TTYWrap' || name === 'WriteStream' || name === 'ReadStream') {
       continue;
     }
     try {
       handle.destroy?.();
     } catch {
-      // Already closed.
+      try {
+        handle.close?.();
+      } catch {
+        // Already closed.
+      }
     }
   }
 }

@@ -91,7 +91,10 @@ export async function waitForBundlerReadyAsync(
   let projectRootMatched: boolean | null = null;
 
   try {
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { connection: 'close' },
+    });
     reported = decodeProjectRoot(response.headers.get(PROJECT_ROOT_HEADER));
     projectRootMatched = matchProjectRoot(reported, projectRoot);
     const body = (await response.text()).trim();
