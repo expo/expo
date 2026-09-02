@@ -76,7 +76,6 @@ details::details-content {
 }
 
 *:focus-visible:not(div) {
-  @apply rounded-sm;
   outline: 3px solid var(--expo-theme-icon-info);
   outline-offset: 1px;
 }
