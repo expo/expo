@@ -10,6 +10,7 @@ import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { resetNavigatorState } from '../../global-state/stateUtils';
 import { findStateByKey } from '../../global-state/useNavigationTreeReducer';
+import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
   type NavigationAction,
@@ -350,26 +351,12 @@ export function useNavigationBuilder<
     () => router.getStateForDeclaredRoutes(committedState, routeNames),
     [committedState, routeNamesKey, router]
   );
-  // TODO(@ubax): Check whether this ref can be safely removed.
-  const stateKeyRef = React.useRef(committedState.key);
-
-  React.useInsertionEffect(() => {
-    stateKeyRef.current = committedState.key;
-  });
-
-  // TODO(@ubax): find a better way to implement this then ref approach
-  const registryConfigRef = React.useRef({ routeNames, routeGetIdList });
-  React.useInsertionEffect(() => {
-    registryConfigRef.current = { routeNames, routeGetIdList };
-  });
-  const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
-    (registryState, action) =>
-      // The registry stores states from different router types; this entry only receives its own state key.
-      router.getStateForAction(registryState as State, action, {
-        routeNames: registryConfigRef.current.routeNames,
-        routeGetIdList: registryConfigRef.current.routeGetIdList,
-      }),
-    [routeNamesKey, router]
+  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
+    // The registry stores states from different router types; this entry only receives its own state key.
+    router.getStateForAction(registryState as State, action, {
+      routeNames,
+      routeGetIdList,
+    })
   );
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
@@ -440,9 +427,9 @@ export function useNavigationBuilder<
 
   const { listeners: childListeners, addListener } = useChildListeners();
 
-  const onAction = React.useCallback(
-    (action: NavigationAction) => handleAction(action, stateKeyRef.current),
-    [handleAction]
+  // TODO(@ubax): Check whether this ref can be safely removed.
+  const onAction = useLatestCallback((action: NavigationAction) =>
+    handleAction(action, committedState.key)
   );
 
   const registryEntry = React.useMemo<RouterRegistryEntry>(
