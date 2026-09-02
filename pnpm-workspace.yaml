@@ -11,6 +11,10 @@ ignoreWorkspaceCycles: true
 verifyDepsBeforeRun: warn
 linkWorkspacePackages: deep
 preferWorkspacePackages: true
+resolvePeersFromWorkspaceRoot: true
+dedupePeerDependents: true
+strictDepBuilds: true
+blockExoticSubdeps: true
 shellEmulator: true
 
 loglevel: info
