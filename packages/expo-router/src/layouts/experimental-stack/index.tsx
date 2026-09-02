@@ -4,6 +4,7 @@ import { Children, useMemo } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { StackRouter } from '../../react-navigation/native';
+import { makePopAction } from '../../react-navigation/native-stack';
 import { unstable_integrateWithRouter } from '../../standard-navigation';
 import { subscribePopToTopOnParentTabPress } from '../../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../../utils/children';
@@ -25,10 +26,8 @@ const RNExperimentalStack = unstable_integrateWithRouter<
   object,
   ExperimentalStackNavigatorCreateProps
 >(createStandardExperimentalStackNavigator, StackRouter, {
-  createProps: ({ navigation, state }) => ({
-    // The experimental stack receives the complete event-emitting navigation object at runtime.
-    navigation: navigation as unknown as ExperimentalStackNavigatorCreateProps['navigation'],
-    stackState: state,
+  createProps: ({ dispatchSync, navigation, state }) => ({
+    pop: makePopAction(dispatchSync, state.key),
     subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
   }),
 });

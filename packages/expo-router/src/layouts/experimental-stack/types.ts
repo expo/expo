@@ -10,6 +10,7 @@ import type {
   StackNavigationState,
   StackRouterOptions,
 } from '../../react-navigation/native';
+import type { NativeStackViewState } from '../../react-navigation/native-stack';
 
 /**
  * Options accepted by `ExperimentalStack` screens. Mirrors the narrow option
@@ -39,6 +40,18 @@ export type ExperimentalStackNavigationEventMap = {
   transitionEnd: { data: { closing: boolean } };
   gestureCancel: { data: undefined };
 };
+
+export type ExperimentalStackViewEmit = (
+  event:
+    | {
+        type: 'transitionStart' | 'transitionEnd';
+        target?: string;
+        data: { closing: boolean };
+      }
+    | { type: 'gestureCancel'; target?: string; data?: undefined }
+) => void;
+
+export type ExperimentalStackViewState = NativeStackViewState;
 
 export type ExperimentalStackNavigationProp<
   ParamList extends ParamListBase,

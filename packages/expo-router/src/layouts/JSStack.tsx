@@ -4,15 +4,17 @@ import type { ComponentProps } from 'react';
 
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import { StackRouter } from '../react-navigation/native';
+import { makePopAction } from '../react-navigation/native-stack';
 import {
   createStandardStackNavigator,
   type StackNavigationOptions,
 } from '../react-navigation/stack';
-import type { StandardStackNavigationEventMap } from '../react-navigation/stack/navigators/createStackNavigator';
 import type {
-  StackNavigationConfig,
-  StackNavigationHelpers,
-} from '../react-navigation/stack/types';
+  StackNavigatorCreateProps,
+  StandardStackNavigationEventMap,
+} from '../react-navigation/stack/navigators/createStackNavigator';
+import type { StackNavigationConfig } from '../react-navigation/stack/types';
+import { makeRestoreRouteAction } from '../react-navigation/stack/utils/makeRestoreRouteAction';
 import { unstable_integrateWithRouter } from '../standard-navigation';
 import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
 import { Protected } from '../views/Protected';
@@ -27,16 +29,11 @@ const JSStack = unstable_integrateWithRouter<
   StandardStackNavigationEventMap,
   StackNavigationConfig,
   object,
-  {
-    navigation: StackNavigationHelpers;
-    stackState: StackNavigationState<ParamListBase>;
-    subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
-  }
+  StackNavigatorCreateProps
 >(createStandardStackNavigator, StackRouter, {
-  createProps: ({ navigation, state }) => ({
-    // `useNavigationBuilder` returns base helpers, while StackView needs stack helpers at runtime.
-    navigation: navigation as StackNavigationHelpers,
-    stackState: state,
+  createProps: ({ dispatchSync, navigation, state }) => ({
+    pop: makePopAction(dispatchSync, state.key),
+    restoreRoute: makeRestoreRouteAction(dispatchSync, state),
     subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
   }),
 });
