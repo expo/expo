@@ -91,8 +91,37 @@ export const EXIT_OUTCOME_TIMEOUT = 22;
  * is not {@link EXIT_ERROR} — so the error is printed and put on the event stream first.
  */
 export function exitWithCodeAsync(code: number): Promise<never> {
+  process.exitCode = code;
   flushEventLogger()
     .catch(() => {})
-    .finally(() => process.exit(code));
+    .finally(() => {
+      // `process.exit` while fetch still holds a keep-alive socket is STATUS_STACK_BUFFER_OVERRUN
+      // (exit 3221226505) on Windows. Drop those sockets first so the code we chose is the one
+      // that leaves.
+      destroyActiveSockets();
+      process.exit(code);
+    });
   return new Promise<never>(() => {});
+}
+
+function destroyActiveSockets(): void {
+  const handles = (
+    process as NodeJS.Process & {
+      _getActiveHandles?: () => { constructor?: { name?: string }; destroy?: () => void }[];
+    }
+  )._getActiveHandles?.();
+  if (!Array.isArray(handles)) {
+    return;
+  }
+  for (const handle of handles) {
+    const name = handle?.constructor?.name;
+    if (name !== 'Socket' && name !== 'TLSSocket') {
+      continue;
+    }
+    try {
+      handle.destroy?.();
+    } catch {
+      // Already closed.
+    }
+  }
 }

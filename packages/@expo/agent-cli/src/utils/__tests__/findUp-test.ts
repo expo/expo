@@ -7,9 +7,12 @@ import { findUpProjectRootOrAssert, findUpProjectRootOrCwd } from '../findUp';
 
 jest.mock('fs');
 
+const originalNative = fs.realpathSync.native;
+
 afterEach(() => {
   vol.reset();
   jest.restoreAllMocks();
+  fs.realpathSync.native = originalNative;
 });
 
 const repo = path.resolve('/repo');
@@ -35,9 +38,19 @@ describe(findUpProjectRootOrAssert, () => {
   it(`should keep this platform's path when realpath answers in POSIX`, () => {
     // memfs on Windows returns `/repo/package.json` for a file the walk found at `D:\repo\...`.
     vol.fromJSON({ [path.join(repo, 'package.json')]: '{}' });
+    delete (fs.realpathSync as { native?: unknown }).native;
     jest.spyOn(fs, 'realpathSync').mockReturnValue('/repo/package.json');
 
     expect(findUpProjectRootOrAssert(repo)).toBe(repo);
+  });
+
+  it(`should prefer native realpath so Windows 8.3 names expand`, () => {
+    vol.fromJSON({ [path.join(repo, 'package.json')]: '{}' });
+    const native = jest.fn(() => path.join(repo, 'long-name', 'package.json'));
+    (fs.realpathSync as { native?: typeof native }).native = native;
+
+    expect(findUpProjectRootOrAssert(repo)).toBe(path.join(repo, 'long-name'));
+    expect(native).toHaveBeenCalled();
   });
 
   // @ref .claude/CLAUDE.md §Error messages — what, why, how, and a next step even when the exact
