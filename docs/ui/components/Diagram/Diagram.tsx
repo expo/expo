@@ -36,7 +36,7 @@ export const Diagram = ({ source, darkSource, disableSrcSet, alt }: Props) => {
   const withFormats = source.endsWith('.png') && !disableSrcSet;
 
   return (
-    <div className="relative m-auto my-6 max-w-187.5 overflow-hidden rounded-md border border-default bg-default">
+    <div className="relative m-auto my-6 max-w-187.5 overflow-hidden rounded-3xl border border-default bg-default">
       <DotGrid />
       <DiagramPicture
         src={source}
