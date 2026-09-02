@@ -63,12 +63,18 @@ import {
  * actually lists is what makes the lookup hermetic (`src/utils/easCli.ts` §resolveEasCli).
  */
 const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!;
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value });
+}
 
 /** A project with a reachable runner and nothing else. */
 function project(files: Record<string, string> = {}): void {
   vol.fromJSON({
     '/project/package.json': '{}',
-    [path.join(RUNNER_DIR, process.platform === 'win32' ? 'npx.cmd' : 'npx')]: '#!/bin/sh\n',
+    [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh\n',
+    [path.join(RUNNER_DIR, 'npx.cmd')]: '#!/bin/sh\n',
     ...files,
   });
 }
@@ -78,6 +84,15 @@ const EAS_PREFIX = ['--yes', 'eas-cli@latest'];
 
 /** The argv a spawn actually receives: the runner's prefix, then the EAS argv. */
 const easArgv = (args: string[]) => [...EAS_PREFIX, ...args];
+
+beforeEach(() => {
+  // Spawn argv assertions are the unquoted form. Windows `.cmd` wrapping quotes every token.
+  mockPlatform('darwin');
+});
+
+afterEach(() => {
+  mockPlatform(realPlatform);
+});
 
 /** One recorded spawn, so a test can assert on the argv that was actually sent. */
 let spawned: { command: string; args: string[] }[] = [];

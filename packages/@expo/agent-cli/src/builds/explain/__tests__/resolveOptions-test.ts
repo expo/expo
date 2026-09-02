@@ -146,7 +146,7 @@ describe('the rest of the flags', () => {
 
   it('reads the short aliases', () => {
     expect(resolveExplainOptions(['-f', 'a.log', '-p', 'ios'], TERMINAL)).toMatchObject({
-      source: { kind: 'file', path: '/project/a.log' },
+      source: { kind: 'file', path: path.resolve(cwd, 'a.log') },
       platform: 'ios',
     });
   });

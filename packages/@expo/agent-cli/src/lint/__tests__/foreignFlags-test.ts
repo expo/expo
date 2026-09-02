@@ -138,7 +138,7 @@ describe('the flags this CLI writes onto a command line', () => {
     // default `fingerprint:generate` carries no option at all, so a published CLI too old for
     // either of them still answers. `buildGenerateArgs` has the per-option tests.
     const fingerprint = sweep.foreignFlags.filter(
-      (use) => use.file === path.join('src', 'project', 'fingerprint.ts')
+      (use) => use.file.split(path.sep).join('/') === 'src/project/fingerprint.ts'
     );
     expect(fingerprint.map((use) => use.flag).sort()).toEqual(['--platform', '--preset']);
   });

@@ -174,16 +174,14 @@ describe('stopping the app on a cloud simulator session', () => {
    * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
    * used to be what made this hermetic; there is no rung that reads one any more.
    */
-  const RUNNER = path.join(
-    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
-    process.platform === 'win32' ? 'npx.cmd' : 'npx'
-  );
+  const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!;
 
   /** A project the cloud verbs can be resolved in. */
   function cloudProject(): void {
     vol.fromJSON({
       '/project/package.json': '{}',
-      [RUNNER]: '#!/bin/sh\n',
+      [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh\n',
+      [path.join(RUNNER_DIR, 'npx.cmd')]: '#!/bin/sh\n',
     });
   }
 

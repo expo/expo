@@ -46,7 +46,7 @@ export function killProcessTree(child: ChildProcess, signal?: NodeJS.Signals): v
     }
   }
   try {
-    child.kill(signal);
+    child.kill(signal ?? 'SIGTERM');
   } catch {
     // A child that cannot be signalled is a child that is not running.
   }

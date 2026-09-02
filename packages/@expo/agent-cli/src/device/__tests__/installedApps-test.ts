@@ -26,7 +26,7 @@ describe(appBundleDirs, () => {
   it(`lists the .app bundle of every installed app`, () => {
     const listed = appBundleDirs('/dev/ABC', {
       readdir: (dir) => {
-        if (dir.endsWith('Bundle/Application')) {
+        if (dir.endsWith(path.join('Bundle', 'Application'))) {
           return ['40DA8569', '991142D5', '.DS_Store'];
         }
         if (dir.endsWith('40DA8569')) {

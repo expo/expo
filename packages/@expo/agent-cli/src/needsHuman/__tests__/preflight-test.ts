@@ -5,6 +5,11 @@ import * as subprocess from '../../utils/subprocess';
 import { readAuthPreflightAsync, resetAuthPreflightCache } from '../preflight';
 
 const projectRoot = '/project';
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value });
+}
 
 /**
  * What `eas whoami` printed on a real signed-in machine.
@@ -42,15 +47,21 @@ const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[
 function withPinnedEasCli(files: Record<string, string> = {}) {
   vol.fromJSON({
     [`${projectRoot}/package.json`]: JSON.stringify({ devDependencies: { 'eas-cli': '22.4.0' } }),
-    [path.join(RUNNER_DIR, process.platform === 'win32' ? 'npx.cmd' : 'npx')]: '#!/bin/sh',
+    [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh',
+    [path.join(RUNNER_DIR, 'npx.cmd')]: '#!/bin/sh',
     ...files,
   });
 }
 
 beforeEach(() => {
+  mockPlatform('darwin');
   vol.reset();
   resetAuthPreflightCache();
   delete process.env.EXPO_TOKEN;
+});
+
+afterEach(() => {
+  mockPlatform(realPlatform);
 });
 
 describe(readAuthPreflightAsync, () => {
@@ -130,7 +141,8 @@ describe(readAuthPreflightAsync, () => {
   it('never spends a package install to read a local session file', async () => {
     vol.fromJSON({
       [`${projectRoot}/package.json`]: JSON.stringify({ dependencies: { expo: '~54.0.0' } }),
-      [path.join(RUNNER_DIR, process.platform === 'win32' ? 'npx.cmd' : 'npx')]: '#!/bin/sh',
+      [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh',
+      [path.join(RUNNER_DIR, 'npx.cmd')]: '#!/bin/sh',
     });
     const spawned = mockWhoami({ exitCode: 0, stdout: 'alice\n' });
 

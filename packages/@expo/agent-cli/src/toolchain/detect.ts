@@ -25,6 +25,11 @@ const PROBE_TIMEOUT_MS = 5_000;
 /** Environment variables the Android tooling reads, in the order it reads them. */
 const ANDROID_SDK_ENV_VARS = ['ANDROID_HOME', 'ANDROID_SDK_ROOT'] as const;
 
+/** Join using the platform under test, so a mocked `process.platform` keeps POSIX paths. */
+function hostJoin(...segments: string[]): string {
+  return (process.platform === 'win32' ? path.win32 : path.posix).join(...segments);
+}
+
 /**
  * One probe per platform per process.
  *
@@ -183,7 +188,7 @@ async function detectAndroidSdkAsync(): Promise<ToolchainProbe> {
   }
 
   const caveats: string[] = [];
-  const platformTools = path.join(sdkDir, 'platform-tools');
+  const platformTools = hostJoin(sdkDir, 'platform-tools');
   if (!directoryExistsSync(platformTools)) {
     caveats.push(
       `The SDK at ${sdkDir} has no platform-tools directory, so adb is not installed in it yet; the Android tooling installs that package itself.`
@@ -234,7 +239,7 @@ async function detectAndroidSdkAsync(): Promise<ToolchainProbe> {
  */
 async function detectJvmAsync(): Promise<{ status: ToolchainStatus; detail: string }> {
   const home = readEnv('JAVA_HOME');
-  const named = home ? path.join(home, 'bin', 'java') : null;
+  const named = home ? hostJoin(home, 'bin', 'java') : null;
   const command = named && fileExistsSync(named) ? named : 'java';
 
   const version = await spawnCaptureAsync(command, ['-version'], { timeoutMs: PROBE_TIMEOUT_MS });
@@ -264,14 +269,17 @@ async function detectJvmAsync(): Promise<{ status: ToolchainStatus; detail: stri
 /** Where the Android Studio installer puts the SDK, per host. */
 function defaultAndroidSdkDir(): string {
   const home = os.homedir();
-  const join = (process.platform === 'win32' ? path.win32 : path.posix).join;
   if (process.platform === 'darwin') {
-    return join(home, 'Library', 'Android', 'sdk');
+    return hostJoin(home, 'Library', 'Android', 'sdk');
   }
   if (process.platform === 'win32') {
-    return join(process.env.LOCALAPPDATA || join(home, 'AppData', 'Local'), 'Android', 'Sdk');
+    return hostJoin(
+      process.env.LOCALAPPDATA || hostJoin(home, 'AppData', 'Local'),
+      'Android',
+      'Sdk'
+    );
   }
-  return join(home, 'Android', 'Sdk');
+  return hostJoin(home, 'Android', 'Sdk');
 }
 
 /** An environment variable that is set to something, treating an empty value as unset. */

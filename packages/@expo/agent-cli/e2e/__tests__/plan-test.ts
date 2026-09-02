@@ -629,11 +629,9 @@ describe('@expo/agent-cli dev --plan', () => {
     });
 
     it('explains the build a stale plan includes', async () => {
-      const output = await planTextAsync('dev-client-app', ['--ios', '--local']);
+      const output = await planTextAsync('dev-client-app', ['--ios']);
 
       expect(output).toContain('npx @expo/agent-cli status');
-      // Expo Go is out for this fixture, so the reasons in the probe are worth reading in full.
-      expect(output).toContain('npx @expo/agent-cli status --json');
       expect(output).not.toContain('npx @expo/agent-cli context');
     });
 

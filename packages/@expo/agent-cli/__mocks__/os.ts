@@ -19,6 +19,8 @@ function existingDir(posixPath, winName) {
 
 module.exports = {
   ...os,
-  homedir: jest.fn(() => existingDir('/home', 'agent-cli-mock-home')),
+  // Keep the POSIX home so memfs fixtures planted at `/home/...` still match. Only tmpdir
+  // has to exist on the real disk, because `mkdtempSync` is used against it.
+  homedir: jest.fn(() => '/home'),
   tmpdir: jest.fn(() => existingDir('/tmp', 'agent-cli-mock-tmp')),
 };

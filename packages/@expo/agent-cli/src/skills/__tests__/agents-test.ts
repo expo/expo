@@ -1,4 +1,6 @@
 import { vol } from 'memfs';
+import os from 'os';
+import path from 'path';
 
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
@@ -52,7 +54,13 @@ describe('Detecting installed agents', () => {
   });
 
   it('should detect agents from home marker directories', async () => {
-    createDirectories('/home/.codex', '/home/.config/opencode', '/home/.codeium', '/home/.gemini');
+    const home = os.homedir();
+    createDirectories(
+      path.join(home, '.codex'),
+      path.join(home, '.config', 'opencode'),
+      path.join(home, '.codeium'),
+      path.join(home, '.gemini')
+    );
 
     const agents = await detectInstalledAgentsAsync(projectRoot);
     expect(agents.map((agent) => agent.id)).toEqual([
@@ -130,7 +138,7 @@ describe('Resolving agents', () => {
   });
 
   it('should fall back to the detected agents', async () => {
-    createDirectories(`${projectRoot}/.cursor`, '/home/.gemini');
+    createDirectories(`${projectRoot}/.cursor`, path.join(os.homedir(), '.gemini'));
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
       agents: [

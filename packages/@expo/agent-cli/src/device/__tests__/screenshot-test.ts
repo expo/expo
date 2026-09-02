@@ -24,6 +24,12 @@ import {
 /** The eight bytes every PNG starts with, which is what a capture is checked against. */
 const PNG_HEADER = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value });
+}
+
 describe(buildScreenshotCommand, () => {
   it(`writes the file itself on iOS, because simctl is given the path`, () => {
     const command = buildScreenshotCommand({
@@ -274,18 +280,20 @@ describe(`${captureScreenshotAsync.name} on a cloud simulator`, () => {
    * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
    * used to be what made this hermetic; there is no rung that reads one any more.
    */
-  const RUNNER = path.join(
-    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
-    process.platform === 'win32' ? 'npx.cmd' : 'npx'
-  );
+  const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!;
 
-  beforeEach(() =>
+  beforeEach(() => {
+    mockPlatform('darwin');
     vol.fromJSON({
       '/project/package.json': '{}',
-      [RUNNER]: '#!/bin/sh\n',
-    })
-  );
-  afterEach(() => vol.reset());
+      [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh\n',
+      [path.join(RUNNER_DIR, 'npx.cmd')]: '#!/bin/sh\n',
+    });
+  });
+  afterEach(() => {
+    mockPlatform(realPlatform);
+    vol.reset();
+  });
 
   it(`takes the picture through the session, and never through xcrun`, async () => {
     mockTool({ toFile: Buffer.concat([PNG_HEADER, Buffer.from('bytes')]) });

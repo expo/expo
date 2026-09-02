@@ -261,16 +261,14 @@ describe(`${resolveDeviceAsync.name} with the cloud backend`, () => {
    * `process.env.PATH` (`src/utils/easCli.ts` §resolveEasCli). Planting a `node_modules/.bin/eas`
    * used to be what made this hermetic; there is no rung that reads one any more.
    */
-  const RUNNER = path.join(
-    (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!,
-    process.platform === 'win32' ? 'npx.cmd' : 'npx'
-  );
+  const RUNNER_DIR = (process.env.PATH ?? '/usr/local/bin').split(path.delimiter)[0]!;
 
   /** A project the cloud backend can be resolved in, and optionally a session on record. */
   function cloudProject(sessionId: string | null): void {
     vol.fromJSON({
       '/project/package.json': '{}',
-      [RUNNER]: '#!/bin/sh\n',
+      [path.join(RUNNER_DIR, 'npx')]: '#!/bin/sh\n',
+      [path.join(RUNNER_DIR, 'npx.cmd')]: '#!/bin/sh\n',
       ...(sessionId
         ? { '/project/.env.eas-simulator': `EAS_SIMULATOR_SESSION_ID=${sessionId}\n` }
         : {}),
