@@ -194,8 +194,11 @@ struct AppEntityIdentifierRegistryTests {
   func `reindexing ignores a kind that is not registered for indexing`() async throws {
     let kind = "testUnregistered-\(UUID().uuidString)"
     let key = "dev.expo.appintents.entities.\(kind)"
-    UserDefaults.standard.set(Data("not json".utf8), forKey: key)
-    defer { UserDefaults.standard.removeObject(forKey: key) }
+    let defaults = try #require(
+      UserDefaults(suiteName: AppIntentEntityStore.userDefaultsSuiteName)
+    )
+    defaults.set(Data("not json".utf8), forKey: key)
+    defer { defaults.removeObject(forKey: key) }
 
     try await AppEntityIdentifierRegistry.shared.replaceIndexFromCatalog(kind: kind)
   }

@@ -20,7 +20,8 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'ExpoUI'
+  s.ios.dependency 'ExpoUI'
+  s.tvos.dependency 'ExpoUI'
 
   s.source_files = "**/*.{h,m,swift}"
   s.pod_target_xcconfig = {

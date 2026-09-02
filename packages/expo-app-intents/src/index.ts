@@ -268,7 +268,8 @@ export async function refreshShortcutsAsync(): Promise<void> {
  * Returns an ExpoUI SwiftUI modifier config that ties a view to an AppEntity identifier.
  *
  * The `entity` value must be registered from app-target Swift with
- * `AppEntityIdentifierRegistry.shared.register(_:as:)`.
+ * `AppEntityIdentifierRegistry.shared.register(_:as:)` or
+ * `AppEntityIdentifierRegistry.shared.registerIndexed(_:as:)`.
  *
  * @platform ios
  */
