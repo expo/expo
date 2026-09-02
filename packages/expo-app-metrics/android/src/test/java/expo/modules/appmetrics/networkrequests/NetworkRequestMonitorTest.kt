@@ -70,6 +70,19 @@ class NetworkRequestMonitorTest {
   }
 
   @Test
+  fun `adding the same delegate again does not duplicate fan-out`() {
+    val monitor = NetworkRequestMonitor()
+    val collector = CollectingDelegate()
+    monitor.addDelegate(collector)
+    monitor.addDelegate(collector)
+
+    monitor.record(makeRequest())
+
+    assertEquals(1, monitor.delegateCount)
+    assertEquals(1, collector.completed.size)
+  }
+
+  @Test
   fun `does not fan out events the delegate filters out`() {
     val monitor = NetworkRequestMonitor()
     val collector = FilteringDelegate(allowedHost = "api.expo.dev")
