@@ -92,6 +92,7 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
 }
 
 const expoResolutions: { [key: string]: string } = {};
+const reactNativeTvosVersion = '0.86.0-1';
 
 function linkExpoDependency(repoRoot: string, projectRoot: string, dependencyName: string) {
   // Pack up the named Expo package into the destination folder
@@ -426,7 +427,7 @@ async function preparePackageJson(
       dependencies: {
         ...packageJson.dependencies,
         glob: '^11.0.0',
-        'react-native-tvos': '0.86.0-1',
+        'react-native-tvos': reactNativeTvosVersion,
         '@react-native-tvos/config-tv': '^0.1.6',
       },
     };
@@ -434,7 +435,10 @@ async function preparePackageJson(
 
   const packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
-  const overrides = { ...expoResolutions, typescript: '~5.9.3' };
+  const overrides = {
+    ...expoResolutions,
+    typescript: '~5.9.3',
+  };
   await fs.writeFile(
     path.join(projectRoot, 'pnpm-workspace.yaml'),
     `overrides:\n${Object.entries(overrides)
