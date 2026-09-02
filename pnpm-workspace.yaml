@@ -39,6 +39,9 @@ patchedDependencies:
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 
 packageExtensions:
+  # NOTE(@kitten): `debug` has an optional peer on `supports-color`. However, depending on
+  # where `debug` is installed, which can happen transitively, this may be missing. This
+  # then leads to an upward cascade of peers being split into two or more variants
   'debug@*':
     dependencies:
       supports-color: ^8.1.1
